@@ -97,8 +97,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		release(KeyCode.CONTROL);
 		press(SHIFT).type(T).release(SHIFT).type(U, R, R, I, C, A, N).press(SHIFT).type(UNDERSCORE).release(SHIFT)
 				.type(DIGIT2, MINUS).press(SHIFT).type(T).release(SHIFT).type(H, E).press(SHIFT).type(UNDERSCORE)
-				.type(F).release(SHIFT).type(I, N, A, L).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(F)
-				.release(SHIFT).type(I, G, H, T, PERIOD, S, I, D);
+				.type(F).release(SHIFT).type(I, N, A, L).press(SHIFT).type(UNDERSCORE).type(F).release(SHIFT)
+				.type(I, G, H, T, PERIOD, S, I, D);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -135,8 +135,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		press(KeyCode.CONTROL);
 		type(KeyCode.A);
 		release(KeyCode.CONTROL);
-		press(SHIFT).type(A).release(SHIFT).type(N, G, I, E).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(A)
-				.release(SHIFT).type(PERIOD, M, U, S);
+		press(SHIFT).type(A).release(SHIFT).type(N, G, I, E).press(SHIFT).type(UNDERSCORE).type(A).release(SHIFT)
+				.type(PERIOD, M, U, S);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -159,8 +159,8 @@ public class SidTuneTest extends JSIDPlay2Test {
 		press(KeyCode.CONTROL);
 		type(KeyCode.A);
 		release(KeyCode.CONTROL);
-		press(SHIFT).type(S).release(SHIFT).type(A, F, E, T, Y).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(D)
-				.release(SHIFT).type(A, N, C, E, PERIOD, M, U, S);
+		press(SHIFT).type(S).release(SHIFT).type(A, F, E, T, Y).press(SHIFT).type(UNDERSCORE).type(D).release(SHIFT)
+				.type(A, N, C, E, PERIOD, M, U, S);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 
@@ -203,7 +203,7 @@ public class SidTuneTest extends JSIDPlay2Test {
 		press(KeyCode.CONTROL);
 		type(KeyCode.A);
 		release(KeyCode.CONTROL);
-		press(SHIFT).type(A).release(SHIFT).type(R, C, A, D, E).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(M)
+		press(SHIFT).type(A).release(SHIFT).type(R, C, A, D, E).press(SHIFT).type(UNDERSCORE).type(M)
 				.release(SHIFT).type(E, M, O, R, I, E, S).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(DIGIT3)
 				.press(SHIFT).type(S, I, D).release(SHIFT).type(PERIOD, S, I, D);
 		push(ENTER);

@@ -14,10 +14,21 @@ import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidutils.Petscii;
 import sidplay.Player;
+import ui.JSidPlay2;
 import ui.JSidPlay2Main;
 import ui.entities.config.Configuration;
 
 public class JSIDPlay2Test extends ApplicationTest {
+
+	private static JSidPlay2 jSidplay2;
+
+	public static class JSidPlay2TestMain extends JSidPlay2Main {
+		@Override
+		public void start(Stage primaryStage) {
+			super.start(primaryStage);
+			JSIDPlay2Test.jSidplay2 = jSidplay2;
+		}
+	}
 
 	/**
 	 * Sleep time to wait for JSIDPlay2 to start.
@@ -54,12 +65,12 @@ public class JSIDPlay2Test extends ApplicationTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		try {
-			if (JSidPlay2Main.getInstance() == null) {
-				launch(JSidPlay2Main.class);
+			if (jSidplay2 == null) {
+				launch(JSidPlay2TestMain.class);
 			}
 			do {
 				Thread.sleep(JSIDPLAY2_STARTUP_SLEEP);
-			} while (JSidPlay2Main.getInstance() == null);
+			} while (jSidplay2 == null);
 		} catch (InterruptedException exception) {
 			throw new RuntimeException(exception);
 		}
@@ -67,15 +78,15 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	@Before
 	public final void jsidplay2Before() {
-		JSidPlay2Main.getInstance().setCloseActionEnabler(() -> {
+		jSidplay2.setCloseActionEnabler(() -> {
 			// abort test on close operation
 			abortTest = true;
 			// do not close application
 			return false;
 		});
 		abortTest = false;
-		config = JSidPlay2Main.getInstance().getUtil().getConfig();
-		player = JSidPlay2Main.getInstance().getUtil().getPlayer();
+		config = jSidplay2.getUtil().getConfig();
+		player = jSidplay2.getUtil().getPlayer();
 		player.setMenuHook(player -> {
 		});
 	}

@@ -63,6 +63,16 @@ public class JSidPlay2Main extends Application {
 	private List<String> filenames = new ArrayList<String>();
 
 	/**
+	 * Main Window
+	 */
+	protected JSidPlay2 jSidplay2;
+
+	/**
+	 * Config service class.
+	 */
+	private ConfigService configService;
+
+	/**
 	 * Player
 	 */
 	private Player player;
@@ -91,16 +101,8 @@ public class JSidPlay2Main extends Application {
 		}
 	};
 
-	/**
-	 * Config service class.
-	 */
-	private ConfigService configService;
-
-	private static JSidPlay2 testInstance;
-
 	@Override
 	public void start(Stage primaryStage) {
-		testInstance = null;
 		player = new Player(getConfigurationFromCommandLineArgs());
 		player.setMenuHook(menuHook);
 		// automatically load tune on start-up
@@ -112,7 +114,7 @@ public class JSidPlay2Main extends Application {
 				System.err.println(e.getMessage());
 			}
 		}
-		final JSidPlay2 jSidplay2 = new JSidPlay2(primaryStage, player);
+		jSidplay2 = new JSidPlay2(primaryStage, player);
 		// Set default position and size
 		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 		primaryStage.setFullScreen(Boolean.TRUE.equals(section.getFullScreen()));
@@ -133,7 +135,6 @@ public class JSidPlay2Main extends Application {
 			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
 		}
 		jSidplay2.open();
-		testInstance = jSidplay2;
 	}
 
 	@Override
@@ -205,7 +206,4 @@ public class JSidPlay2Main extends Application {
 		launch(args);
 	}
 
-	public static JSidPlay2 getInstance() {
-		return testInstance;
-	}
 }
