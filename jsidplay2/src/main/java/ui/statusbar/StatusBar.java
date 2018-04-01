@@ -211,6 +211,22 @@ public class StatusBar extends AnchorPane implements UIPart {
 		statusTooltip.setText(playerinfos.toString());
 	}
 
+	@Override
+	public void doClose() {
+		closeClip(MOTORSOUND_AUDIOCLIP);
+		closeClip(TRACKSOUND_AUDIOCLIP);
+	}
+
+	private void closeClip(Clip clip) {
+		if (clip.isActive()) {
+			clip.stop();
+			clip.flush();
+		}
+		if (clip.isOpen()) {
+			clip.close();
+		}
+	}
+	
 	private String detectPSID64ChipModel() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		if (SidTune.isSolelyPrg(util.getPlayer().getTune())) {
