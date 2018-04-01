@@ -1,5 +1,14 @@
 package ui.statusbar;
 
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -12,7 +21,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.AudioClip;
 import javafx.util.Duration;
 import libpsid64.PSid64TuneInfo;
 import libpsid64.Psid64;
@@ -37,13 +45,27 @@ import ui.entities.config.EmulationSection;
 
 public class StatusBar extends AnchorPane implements UIPart {
 
-	private static final AudioClip MOTORSOUND_AUDIOCLIP = new AudioClip(
-			StatusBar.class.getResource("/ui/sounds/motor.wav").toString());
-	private static final AudioClip TRACKSOUND_AUDIOCLIP = new AudioClip(
-			StatusBar.class.getResource("/ui/sounds/track.wav").toString());
+	private static final Clip MOTORSOUND_AUDIOCLIP;
+	private static final Clip TRACKSOUND_AUDIOCLIP;
 
 	static {
-		MOTORSOUND_AUDIOCLIP.setCycleCount(AudioClip.INDEFINITE);
+		try {
+			AudioInputStream motorSoundAudioClip = AudioSystem
+					.getAudioInputStream(StatusBar.class.getResource("/ui/sounds/motor.wav"));
+			MOTORSOUND_AUDIOCLIP = (Clip) AudioSystem
+					.getLine(new DataLine.Info(Clip.class, motorSoundAudioClip.getFormat()));
+			MOTORSOUND_AUDIOCLIP.open(motorSoundAudioClip);
+			MOTORSOUND_AUDIOCLIP.setLoopPoints(0, (int) motorSoundAudioClip.getFrameLength());
+
+			AudioInputStream trackSoundAudioClip = AudioSystem
+					.getAudioInputStream(StatusBar.class.getResource("/ui/sounds/track.wav"));
+			TRACKSOUND_AUDIOCLIP = (Clip) AudioSystem
+					.getLine(new DataLine.Info(Clip.class, trackSoundAudioClip.getFormat()));
+			TRACKSOUND_AUDIOCLIP.open(trackSoundAudioClip);
+			TRACKSOUND_AUDIOCLIP.setLoopPoints(0, (int) trackSoundAudioClip.getFrameLength());
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+			throw new ExceptionInInitializerError();
+		}
 	}
 
 	@FXML
@@ -76,11 +98,10 @@ public class StatusBar extends AnchorPane implements UIPart {
 		}
 
 		/**
-		 * Set SID Tune Player (name) and Details (author, released, comment and
-		 * CSDB link)
+		 * Set SID Tune Player (name) and Details (author, released, comment and CSDB
+		 * link)
 		 * 
-		 * e.g. player ID: Soedesoft, author: Jeroen Soede and Michiel Soede,
-		 * etc.
+		 * e.g. player ID: Soedesoft, author: Jeroen Soede and Michiel Soede, etc.
 		 * 
 		 * @param sidTune
 		 *            tune containing player details
@@ -144,7 +165,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 		// Disk motor status
 		boolean motorOn = util.getConfig().getC1541Section().isDriveSoundOn() && c1541.getDiskController().isMotorOn();
 		if (!oldMotorOn && motorOn) {
-			MOTORSOUND_AUDIOCLIP.play();
+			MOTORSOUND_AUDIOCLIP.loop(Clip.LOOP_CONTINUOUSLY);
 		} else if (oldMotorOn && !motorOn) {
 			MOTORSOUND_AUDIOCLIP.stop();
 		}
@@ -152,7 +173,9 @@ public class StatusBar extends AnchorPane implements UIPart {
 		// Read/Write head position (half tracks)
 		final int halfTrack = c1541.getDiskController().getHalfTrack();
 		if (oldHalfTrack != halfTrack && motorOn) {
-			TRACKSOUND_AUDIOCLIP.play();
+			TRACKSOUND_AUDIOCLIP.stop();
+			TRACKSOUND_AUDIOCLIP.setFramePosition(0);
+			TRACKSOUND_AUDIOCLIP.start();
 		}
 		oldHalfTrack = halfTrack;
 		// Get status information of the datasette
