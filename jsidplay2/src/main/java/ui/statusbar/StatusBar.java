@@ -55,14 +55,14 @@ public class StatusBar extends AnchorPane implements UIPart {
 			MOTORSOUND_AUDIOCLIP = (Clip) AudioSystem
 					.getLine(new DataLine.Info(Clip.class, motorSoundAudioClip.getFormat()));
 			MOTORSOUND_AUDIOCLIP.open(motorSoundAudioClip);
-			MOTORSOUND_AUDIOCLIP.setLoopPoints(0, (int) motorSoundAudioClip.getFrameLength());
+			MOTORSOUND_AUDIOCLIP.setLoopPoints(0, -1);
 
 			AudioInputStream trackSoundAudioClip = AudioSystem
 					.getAudioInputStream(StatusBar.class.getResource("/ui/sounds/track.wav"));
 			TRACKSOUND_AUDIOCLIP = (Clip) AudioSystem
 					.getLine(new DataLine.Info(Clip.class, trackSoundAudioClip.getFormat()));
 			TRACKSOUND_AUDIOCLIP.open(trackSoundAudioClip);
-			TRACKSOUND_AUDIOCLIP.setLoopPoints(0, (int) trackSoundAudioClip.getFrameLength());
+			TRACKSOUND_AUDIOCLIP.setLoopPoints(0, -1);
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 			throw new ExceptionInInitializerError();
 		}
@@ -226,7 +226,7 @@ public class StatusBar extends AnchorPane implements UIPart {
 			clip.close();
 		}
 	}
-	
+
 	private String detectPSID64ChipModel() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		if (SidTune.isSolelyPrg(util.getPlayer().getTune())) {
