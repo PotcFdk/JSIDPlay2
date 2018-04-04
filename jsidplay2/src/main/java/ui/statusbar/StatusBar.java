@@ -24,12 +24,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import libpsid64.PSid64TuneInfo;
 import libpsid64.Psid64;
-import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
-import libsidplay.common.Event;
-import libsidplay.common.EventScheduler;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
@@ -239,7 +236,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 						rememberCPUClock = emulationSection.getDefaultClockSpeed();
 					}
 					emulationSection.setDefaultClockSpeed(psid64TuneInfo.getCpuClock());
-					restartPlayerThreadSafe();
 					return "";
 				}
 				// remember saved state
@@ -294,7 +290,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 			if (rememberCPUClock != null && emulationSection.getDefaultClockSpeed() != rememberCPUClock) {
 				emulationSection.setDefaultClockSpeed(rememberCPUClock);
 				rememberCPUClock = null;
-				restartPlayerThreadSafe();
 				return "";
 			}
 			if (rememberUserSidModel != null && emulationSection.getUserSidModel() != rememberUserSidModel) {
@@ -322,17 +317,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 			}
 		}
 		return "";
-	}
-
-	private void restartPlayerThreadSafe() {
-		final C64 c64 = util.getPlayer().getC64();
-		final EventScheduler ctx = c64.getEventScheduler();
-		ctx.scheduleThreadSafe(new Event("Restart Player for CPUClock change") {
-			@Override
-			public void event() {
-				util.getPlayer().play(util.getPlayer().getTune());
-			}
-		});
 	}
 
 	private String determineChipModel() {

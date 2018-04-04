@@ -34,6 +34,12 @@ import libsidutils.assembler.KickAssembler;
 
 class Mus extends PSid {
 
+	private class PreparedDriver {
+		private byte[] driver;
+		private Integer dataLow;
+		private Integer dataHigh;
+	}
+
 	private static final String MUSDRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
 	private static final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
 	private static final String MUSDRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
@@ -56,6 +62,9 @@ class Mus extends PSid {
 	 * Needed for MUS/STR player installation.
 	 */
 	private int musDataLen;
+
+	private PreparedDriver preparedDriver = new PreparedDriver();
+	private PreparedDriver preparedStereoDriver = new PreparedDriver();
 
 	@Override
 	public Integer placeProgramInMemory(final byte[] c64buf) {
@@ -108,10 +117,9 @@ class Mus extends PSid {
 		musDataLen = musBuf.length;
 
 		/*
-		 * FIXME: dealing with credits is problematic. The data is unstructured,
-		 * and longer than fits into DB index. We could assume that first line
-		 * is title, second is author, third is release, but that's actually not
-		 * very likely.
+		 * FIXME: dealing with credits is problematic. The data is unstructured, and
+		 * longer than fits into DB index. We could assume that first line is title,
+		 * second is author, third is release, but that's actually not very likely.
 		 */
 		if (voice3DataEnd < musBuf.length) {
 			String credits = getCredits(musBuf, voice3DataEnd);
@@ -191,39 +199,52 @@ class Mus extends PSid {
 		return null;
 	}
 
-	private void assembleAndinstallMusPlayers(final byte[] c64buf) {
-		KickAssembler assembler = new KickAssembler();
+	public void prepare() {
+		if (USE_KICKASSEMBLER) {
+			KickAssembler assembler = new KickAssembler();
+	
+			Integer init;
+			Integer start;
+			{
+				// Assemble MUS player 1
+				HashMap<String, String> globals = new HashMap<String, String>();
+				InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
+				preparedDriver.driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
+				// Install MUS player 1
+				preparedDriver.dataLow = assembler.getLabels().get("data_low");
+				preparedDriver.dataHigh = assembler.getLabels().get("data_high");
+				init = assembler.getLabels().get("init");
+				start = assembler.getLabels().get("start");
+				checkLabels(MUSDRIVER1_ASM, preparedDriver.dataLow, preparedDriver.dataHigh, init, start);
+			}
+			if (info.getSIDChipBase(1) != 0) {
+				// Assemble MUS player 2
+				HashMap<String, String> globals = new HashMap<String, String>();
+				InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
+				preparedStereoDriver.driver = assembler.assemble(MUSDRIVER2_ASM, asm, globals);
+				// Install MUS player 2
+				preparedStereoDriver.dataLow = assembler.getLabels().get("data_low");
+				preparedStereoDriver.dataHigh = assembler.getLabels().get("data_high");
+				init = assembler.getLabels().get("init");
+				start = assembler.getLabels().get("start");
+				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.dataLow, preparedStereoDriver.dataHigh, init, start);
+			}
+			info.initAddr = init;
+			info.playAddr = start;
+			super.prepare();
+		}
+	}
 
-		Integer init;
-		Integer start;
-		{
-			// Assemble MUS player 1
-			HashMap<String, String> globals = new HashMap<String, String>();
-			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
-			byte[] driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
-			// Install MUS player 1
-			Integer data_low = assembler.getLabels().get("data_low");
-			Integer data_high = assembler.getLabels().get("data_high");
-			init = assembler.getLabels().get("init");
-			start = assembler.getLabels().get("start");
-			checkLabels(MUSDRIVER1_ASM, data_low, data_high, init, start);
-			installMusPlayer(c64buf, MUS_DATA_ADDR, driver, data_low, data_high);
+	private void assembleAndinstallMusPlayers(final byte[] c64buf) {
+		if (preparedDriver.driver == null) {
+			prepare();
 		}
+		installMusPlayer(c64buf, MUS_DATA_ADDR, preparedDriver.driver, preparedDriver.dataLow, preparedDriver.dataHigh);
+
 		if (info.getSIDChipBase(1) != 0) {
-			// Assemble MUS player 2
-			HashMap<String, String> globals = new HashMap<String, String>();
-			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
-			byte[] driver = assembler.assemble(MUSDRIVER2_ASM, asm, globals);
-			// Install MUS player 2
-			Integer data_low = assembler.getLabels().get("data_low");
-			Integer data_high = assembler.getLabels().get("data_high");
-			init = assembler.getLabels().get("init");
-			start = assembler.getLabels().get("start");
-			checkLabels(MUSDRIVER2_ASM, data_low, data_high, init, start);
-			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, driver, data_low, data_high);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, preparedStereoDriver.driver,
+					preparedStereoDriver.dataLow, preparedStereoDriver.dataHigh);
 		}
-		info.initAddr = init;
-		info.playAddr = start;
 	}
 
 	private void checkLabels(final String asmSource, final Integer data_low, final Integer data_high,
@@ -253,7 +274,7 @@ class Mus extends PSid {
 			throw new RuntimeException("Load failed for resource: " + MUS_DRIVER1_BIN);
 		}
 		int dest = (MUS_DRIVER1[0] & 0xff) + ((MUS_DRIVER1[1] & 0xff) << 8);
-		installMusPlayer(c64buf, MUS_DATA_ADDR, MUS_DRIVER1, dest + 0xc6e-1, dest + 0xc70-1);
+		installMusPlayer(c64buf, MUS_DATA_ADDR, MUS_DRIVER1, dest + 0xc6e - 1, dest + 0xc70 - 1);
 
 		info.initAddr = 0xec60;
 		info.playAddr = 0xec80;
@@ -269,7 +290,7 @@ class Mus extends PSid {
 				throw new RuntimeException("Load failed for resource: " + MUS_DRIVER2_BIN);
 			}
 			dest = (MUS_DRIVER2[0] & 0xff) + ((MUS_DRIVER2[1] & 0xff) << 8);
-			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, MUS_DRIVER2, dest + 0xc6e-1, dest + 0xc70-1);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, MUS_DRIVER2, dest + 0xc6e - 1, dest + 0xc70 - 1);
 
 			info.initAddr = 0xfc90;
 			info.playAddr = 0xfc96;

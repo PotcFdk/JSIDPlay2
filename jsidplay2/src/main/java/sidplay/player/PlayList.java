@@ -64,6 +64,7 @@ public class PlayList {
 			singleton = new PlayList(config, tune);
 		}
 		singleton.tune.getInfo().setSelectedSong(singleton.current);
+		singleton.tune.prepare();
 		return singleton;
 	}
 

@@ -560,7 +560,7 @@ public class Psid64 {
 
 	public static PSid64TuneInfo detectPSid64TuneInfo(byte[] ram, int videoScreenAddress) {
 		boolean detected = false;
-		CPUClock cpuClock = CPUClock.PAL;
+		CPUClock cpuClock = null;
 		List<ChipModel> chipModels = new ArrayList<>();
 		int stereoAddress = 0;
 		int row = 2;
@@ -578,6 +578,8 @@ public class Psid64 {
 				cpuClock = CPUClock.NTSC;
 				// NTSC one char longer than PAL
 				col++;
+			} else {
+				cpuClock = CPUClock.PAL;
 			}
 			// Search for MOS6581 or MOS8580 for mono SID chip model
 			String chipModel = detectChipModel6581or8580(ram, videoScreenAddress, row, col + 5);

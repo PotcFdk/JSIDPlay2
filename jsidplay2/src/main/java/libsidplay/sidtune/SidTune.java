@@ -385,4 +385,7 @@ public abstract class SidTune {
 	public static boolean isSolelyPrg(SidTune tune) {
 		return tune != RESET && tune.getClass().equals(Prg.class);
 	}
+
+	public void prepare() {
+	}
 }

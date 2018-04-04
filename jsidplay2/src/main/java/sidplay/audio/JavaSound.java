@@ -76,7 +76,9 @@ public class JavaSound implements AudioDriver {
 		close();
 		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
 		dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
-
+		
+		dataLine.start();
+		
 		// The actual buffer size for the open line may differ from the
 		// requested buffer size, therefore
 		cfg.setBufferFrames(dataLine.getBufferSize() / Short.BYTES / cfg.getChannels());

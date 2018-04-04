@@ -223,6 +223,11 @@ class PSid extends Prg {
 
 	}
 
+	private class PreparedDriver {
+		private byte[] driver;
+		private Integer start;
+	}
+
 	private static final String PSID_DRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
 
 	private static final String PSID_DRIVER_BIN = "/libsidplay/sidtune/psiddriver.bin";
@@ -253,6 +258,8 @@ class PSid extends Prg {
 
 	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
+	private PreparedDriver preparedDriver = new PreparedDriver();
+
 	@Override
 	public Integer placeProgramInMemory(final byte[] mem) {
 		super.placeProgramInMemory(mem);
@@ -268,38 +275,46 @@ class PSid extends Prg {
 		}
 	}
 
+	public void prepare() {
+		if (USE_KICKASSEMBLER) {
+			HashMap<String, String> globals = new HashMap<String, String>();
+			globals.put("pc", String.valueOf(info.determinedDriverAddr));
+			globals.put("songNum", String.valueOf(info.currentSong));
+			globals.put("songs", String.valueOf(info.songs));
+			globals.put("songSpeed", String.valueOf(getSongSpeed(info.currentSong) == Speed.CIA_1A ? 1 : 0));
+			globals.put("speed", String.valueOf(getSongSpeedWord()));
+			globals.put("loadAddr", String.valueOf(info.loadAddr));
+			globals.put("initAddr", String.valueOf(info.initAddr));
+			globals.put("playAddr", String.valueOf(info.playAddr));
+			globals.put("powerOnDelay", String.valueOf((int) (0x100 + (System.currentTimeMillis() & 0x1ff))));
+			globals.put("initIOMap", String.valueOf(info.iomap(info.initAddr)));
+			globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
+			globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
+			if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
+				globals.put("flags", String.valueOf(1));
+			} else {
+				globals.put("flags", String.valueOf(1 << MOS6510.SR_INTERRUPT));
+			}
+			InputStream asm = PSid.class.getResourceAsStream(PSID_DRIVER_ASM);
+			KickAssembler assembler = new KickAssembler();
+			preparedDriver.driver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
+			preparedDriver.start = assembler.getLabels().get("start");
+			if (preparedDriver.start == null) {
+				throw new RuntimeException("Label start not found in " + PSID_DRIVER_ASM);
+			}
+		}
+	}
+
 	private int assembleAndInstallDriver(final byte[] mem) {
-		HashMap<String, String> globals = new HashMap<String, String>();
-		globals.put("pc", String.valueOf(info.determinedDriverAddr));
-		globals.put("songNum", String.valueOf(info.currentSong));
-		globals.put("songs", String.valueOf(info.songs));
-		globals.put("songSpeed", String.valueOf(getSongSpeed(info.currentSong) == Speed.CIA_1A ? 1 : 0));
-		globals.put("speed", String.valueOf(getSongSpeedWord()));
-		globals.put("loadAddr", String.valueOf(info.loadAddr));
-		globals.put("initAddr", String.valueOf(info.initAddr));
-		globals.put("playAddr", String.valueOf(info.playAddr));
-		globals.put("powerOnDelay", String.valueOf((int) (0x100 + (System.currentTimeMillis() & 0x1ff))));
-		globals.put("initIOMap", String.valueOf(info.iomap(info.initAddr)));
-		globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
-		globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
-		if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
-			globals.put("flags", String.valueOf(1));
-		} else {
-			globals.put("flags", String.valueOf(1 << MOS6510.SR_INTERRUPT));
+		if (preparedDriver.driver == null) {
+			prepare();
 		}
-		InputStream asm = PSid.class.getResourceAsStream(PSID_DRIVER_ASM);
-		KickAssembler assembler = new KickAssembler();
-		byte[] driver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
-		info.determinedDriverLength = driver.length - 2;
-		System.arraycopy(driver, 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
-		Integer start = assembler.getLabels().get("start");
-		if (start == null) {
-			throw new RuntimeException("Label start not found in " + PSID_DRIVER_ASM);
-		}
+		info.determinedDriverLength = preparedDriver.driver.length - 2;
+		System.arraycopy(preparedDriver.driver, 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
 		if ((info.determinedDriverLength + 255) >> 8 != 1) {
 			throw new RuntimeException("Driver must not be greater than one block! " + PSID_DRIVER_ASM);
 		}
-		return start;
+		return preparedDriver.start;
 	}
 
 	private int relocateAndInstallDriver(final byte[] ram) {
