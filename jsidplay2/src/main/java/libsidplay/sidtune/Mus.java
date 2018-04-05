@@ -196,7 +196,7 @@ class Mus extends PSid {
 	}
 
 	/**
-	 * Linux ALSA is very sensible for timing: therefore we compile before we open AudioLine
+	 * Linux ALSA is very sensible for timing: therefore we assemble before we open AudioLine
 	 */
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
