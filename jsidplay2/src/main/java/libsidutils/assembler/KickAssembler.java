@@ -4,26 +4,26 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import kickass.AssemblerToolbox;
+import kickass.common.errors.AsmError;
+import kickass.common.errors.printers.OneLineErrorPrinter;
+import kickass.common.exceptions.AsmErrorException;
+import kickass.nonasm.tools.tuples.Pair;
+import kickass.parsing.sourcelocation.SourceRange;
 import kickass.pass.asmnode.AsmNode;
 import kickass.pass.asmnode.metanodes.AsmNodeList;
 import kickass.pass.asmnode.metanodes.NamespaceNode;
 import kickass.pass.asmnode.metanodes.ScopeAndSymbolPageNode;
 import kickass.pass.asmnode.output.reciever.MainOutputReciever;
-import kickass.state.segments.MemoryBlock;
-import kickass.state.EvaluationState;
-import kickass.state.scope.symboltable.SymbolStatus;
-import kickass.nonasm.tools.tuples.Pair;
 import kickass.pass.valueholder.ConstantValueHolder;
 import kickass.pass.values.HashtableValue;
-import kickass.common.errors.AsmError;
-import kickass.common.errors.printers.OneLineErrorPrinter;
-import kickass.common.exceptions.AsmErrorException;
-import kickass.parsing.sourcelocation.SourceRange;
+import kickass.state.EvaluationState;
+import kickass.state.scope.symboltable.SymbolStatus;
+import kickass.state.segments.MemoryBlock;
 
 public class KickAssembler {
 
@@ -70,7 +70,7 @@ public class KickAssembler {
 	/**
 	 * @return assembly bytes of the ASM resource
 	 */
-	public byte[] assemble(String resource, InputStream asm, final Map<String, String> globals) {
+	public KickAssemblerResult assemble(String resource, InputStream asm, final Map<String, String> globals) {
 		try {
 			evaluationState = new EvaluationState();
 			HashtableValue hashtableValue = new HashtableValue().addStringValues(globals);
@@ -110,7 +110,10 @@ public class KickAssembler {
 					evaluationState.log);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
-			return new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
+			byte[] data = new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
+			Map<String, Integer> resolvedSymbols = evaluationState.scopeMgr.getResolvedSymbols().stream()
+					.collect(Collectors.toMap(Pair::getA, entry -> entry.getB(), (entry1, entry2) -> entry2));
+			return new KickAssemblerResult(data, resolvedSymbols);
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
 			asmError.setCallStack(evaluationState.callStack);
@@ -133,15 +136,4 @@ public class KickAssembler {
 		}
 	}
 
-	/**
-	 * @return label values of the assembly
-	 */
-	public Map<String, Integer> getLabels() {
-		Map<String, Integer> result = new HashMap<>();
-		List<Pair<String, Integer>> localDefines = evaluationState.scopeMgr.getResolvedSymbols();
-		for (Pair<String, Integer> entry : localDefines) {
-			result.put(entry.getA(), entry.getB());
-		}
-		return result;
-	}
 }

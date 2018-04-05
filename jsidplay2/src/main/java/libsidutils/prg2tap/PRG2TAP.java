@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import libsidutils.assembler.KickAssembler;
+import libsidutils.assembler.KickAssemblerResult;
 
 public class PRG2TAP {
 
@@ -128,8 +129,8 @@ public class PRG2TAP {
 	private byte[] compile(HashMap<String, String> globals, String resource, String compiledBin) {
 		if (USE_KICKASSEMBLER) {
 			InputStream asm = PRG2TAP.class.getResourceAsStream(resource);
-			byte[] result = assembler.assemble(resource, asm, globals);
-			return Arrays.copyOfRange(result, 2, result.length);
+			KickAssemblerResult kickassemblerResult = assembler.assemble(resource, asm, globals);
+			return Arrays.copyOfRange(kickassemblerResult.getData(), 2, kickassemblerResult.getData().length);
 		} else {
 			byte[] DRIVER;
 			try (DataInputStream is = new DataInputStream(PRG2TAP.class.getResourceAsStream(compiledBin))) {

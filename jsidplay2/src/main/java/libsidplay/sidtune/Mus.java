@@ -27,18 +27,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import libsidutils.PathUtils;
 import libsidutils.Petscii;
 import libsidutils.assembler.KickAssembler;
+import libsidutils.assembler.KickAssemblerResult;
 
 class Mus extends PSid {
-
-	private class PreparedDriver {
-		private byte[] driver;
-		private Integer dataLow;
-		private Integer dataHigh;
-	}
 
 	private static final String MUSDRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
 	private static final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
@@ -63,8 +59,8 @@ class Mus extends PSid {
 	 */
 	private int musDataLen;
 
-	private PreparedDriver preparedDriver = new PreparedDriver();
-	private PreparedDriver preparedStereoDriver = new PreparedDriver();
+	private KickAssemblerResult preparedDriver;
+	private KickAssemblerResult preparedStereoDriver;
 
 	@Override
 	public Integer placeProgramInMemory(final byte[] c64buf) {
@@ -199,67 +195,62 @@ class Mus extends PSid {
 		return null;
 	}
 
+	/**
+	 * Linux ALSA is very sensible for timing: therefore we compile before we open AudioLine
+	 */
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
 			KickAssembler assembler = new KickAssembler();
-	
-			Integer init;
-			Integer start;
-			{
-				// Assemble MUS player 1
-				HashMap<String, String> globals = new HashMap<String, String>();
-				InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
-				preparedDriver.driver = assembler.assemble(MUSDRIVER1_ASM, asm, globals);
-				// Install MUS player 1
-				preparedDriver.dataLow = assembler.getLabels().get("data_low");
-				preparedDriver.dataHigh = assembler.getLabels().get("data_high");
-				init = assembler.getLabels().get("init");
-				start = assembler.getLabels().get("start");
-				checkLabels(MUSDRIVER1_ASM, preparedDriver.dataLow, preparedDriver.dataHigh, init, start);
-			}
+
+			// Assemble MUS player 1
+			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
+			preparedDriver = assembler.assemble(MUSDRIVER1_ASM, asm, new HashMap<String, String>());
+			// Install MUS player 1
+			checkLabels(MUSDRIVER1_ASM, preparedDriver.getResolvedSymbols(), "data_low", "data_high", "init", "start");
+			info.initAddr = preparedDriver.getResolvedSymbols().get("init");
+			info.playAddr = preparedDriver.getResolvedSymbols().get("start");
+
 			if (info.getSIDChipBase(1) != 0) {
 				// Assemble MUS player 2
-				HashMap<String, String> globals = new HashMap<String, String>();
-				InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
-				preparedStereoDriver.driver = assembler.assemble(MUSDRIVER2_ASM, asm, globals);
+				InputStream stereoAsm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
+				preparedStereoDriver = assembler.assemble(MUSDRIVER2_ASM, stereoAsm, new HashMap<String, String>());
 				// Install MUS player 2
-				preparedStereoDriver.dataLow = assembler.getLabels().get("data_low");
-				preparedStereoDriver.dataHigh = assembler.getLabels().get("data_high");
-				init = assembler.getLabels().get("init");
-				start = assembler.getLabels().get("start");
-				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.dataLow, preparedStereoDriver.dataHigh, init, start);
+				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.getResolvedSymbols(), "data_low", "data_high", "init", "start");
+				info.initAddr = preparedStereoDriver.getResolvedSymbols().get("init");
+				info.playAddr = preparedStereoDriver.getResolvedSymbols().get("start");
 			}
-			info.initAddr = init;
-			info.playAddr = start;
 			super.prepare();
 		}
 	}
 
 	private void assembleAndinstallMusPlayers(final byte[] c64buf) {
-		if (preparedDriver.driver == null) {
+		if (preparedDriver == null) {
 			prepare();
 		}
-		installMusPlayer(c64buf, MUS_DATA_ADDR, preparedDriver.driver, preparedDriver.dataLow, preparedDriver.dataHigh);
+		installMusPlayer(c64buf, MUS_DATA_ADDR, preparedDriver.getData(),
+				preparedDriver.getResolvedSymbols().get("data_low"),
+				preparedDriver.getResolvedSymbols().get("data_high"));
 
 		if (info.getSIDChipBase(1) != 0) {
-			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, preparedStereoDriver.driver,
-					preparedStereoDriver.dataLow, preparedStereoDriver.dataHigh);
+			installMusPlayer(c64buf, MUS_DATA_ADDR + musDataLen, preparedStereoDriver.getData(),
+					preparedStereoDriver.getResolvedSymbols().get("data_low"),
+					preparedStereoDriver.getResolvedSymbols().get("data_high"));
 		}
 	}
 
-	private void checkLabels(final String asmSource, final Integer data_low, final Integer data_high,
-			final Integer init, final Integer start) {
-		if (data_low == null) {
-			throw new RuntimeException("Label data_low not found in " + asmSource);
+	private void checkLabels(String asmSource, Map<String, Integer> resolvedSymbols, String data_low, String data_high,
+			String init, String start) {
+		if (resolvedSymbols.get(data_low) == null) {
+			throw new RuntimeException("Symbol data_low not found in " + asmSource);
 		}
-		if (data_high == null) {
-			throw new RuntimeException("Label data_high not found in " + asmSource);
+		if (resolvedSymbols.get(data_high) == null) {
+			throw new RuntimeException("Symbol data_high not found in " + asmSource);
 		}
-		if (init == null) {
-			throw new RuntimeException("Label init not found in " + asmSource);
+		if (resolvedSymbols.get(init) == null) {
+			throw new RuntimeException("Symbol init not found in " + asmSource);
 		}
-		if (start == null) {
-			throw new RuntimeException("Label start not found in " + asmSource);
+		if (resolvedSymbols.get(start) == null) {
+			throw new RuntimeException("Symbol start not found in " + asmSource);
 		}
 	}
 

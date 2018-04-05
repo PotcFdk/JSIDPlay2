@@ -32,6 +32,7 @@ import java.util.Scanner;
 
 import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
+import libsidutils.assembler.KickAssemblerResult;
 import libsidutils.reloc65.Reloc65;
 
 class PSid extends Prg {
@@ -223,11 +224,6 @@ class PSid extends Prg {
 
 	}
 
-	private class PreparedDriver {
-		private byte[] driver;
-		private Integer start;
-	}
-
 	private static final String PSID_DRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
 
 	private static final String PSID_DRIVER_BIN = "/libsidplay/sidtune/psiddriver.bin";
@@ -258,7 +254,7 @@ class PSid extends Prg {
 
 	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
-	private PreparedDriver preparedDriver = new PreparedDriver();
+	private KickAssemblerResult preparedDriver;
 
 	@Override
 	public Integer placeProgramInMemory(final byte[] mem) {
@@ -275,6 +271,9 @@ class PSid extends Prg {
 		}
 	}
 
+	/**
+	 * Linux ALSA is very sensible for timing: therefore we compile before we open AudioLine
+	 */
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
 			HashMap<String, String> globals = new HashMap<String, String>();
@@ -297,24 +296,24 @@ class PSid extends Prg {
 			}
 			InputStream asm = PSid.class.getResourceAsStream(PSID_DRIVER_ASM);
 			KickAssembler assembler = new KickAssembler();
-			preparedDriver.driver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
-			preparedDriver.start = assembler.getLabels().get("start");
-			if (preparedDriver.start == null) {
-				throw new RuntimeException("Label start not found in " + PSID_DRIVER_ASM);
-			}
+			preparedDriver = assembler.assemble(PSID_DRIVER_ASM, asm, globals);
 		}
 	}
 
 	private int assembleAndInstallDriver(final byte[] mem) {
-		if (preparedDriver.driver == null) {
+		if (preparedDriver == null) {
 			prepare();
 		}
-		info.determinedDriverLength = preparedDriver.driver.length - 2;
-		System.arraycopy(preparedDriver.driver, 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
+		info.determinedDriverLength = preparedDriver.getData().length - 2;
+		System.arraycopy(preparedDriver.getData(), 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
 		if ((info.determinedDriverLength + 255) >> 8 != 1) {
 			throw new RuntimeException("Driver must not be greater than one block! " + PSID_DRIVER_ASM);
 		}
-		return preparedDriver.start;
+		Integer start = preparedDriver.getResolvedSymbols().get("start");
+		if (start == null) {
+			throw new RuntimeException("Label start not found in " + PSID_DRIVER_ASM);
+		}
+		return start;
 	}
 
 	private int relocateAndInstallDriver(final byte[] ram) {

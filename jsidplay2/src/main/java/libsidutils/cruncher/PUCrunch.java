@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import libsidutils.assembler.KickAssembler;
+import libsidutils.assembler.KickAssemblerResult;
 
 /**
  * <PRE>
@@ -139,8 +140,6 @@ public class PUCrunch {
 
 	private boolean verbose = false;
 
-	private final KickAssembler assembler = new KickAssembler();
-
 	private Decruncher BestMatch(int type) {
 		Decruncher best = null;
 
@@ -179,9 +178,9 @@ public class PUCrunch {
 			overlap = endAddr - memEnd;
 			endAddr = memEnd;
 			/*
-			 * Make the decrunch code wrap from $ffff to $004b. The decrunch
-			 * code first copies the data that would exceed $ffff to $004b and
-			 * then copy the rest of it to end at $ffff.
+			 * Make the decrunch code wrap from $ffff to $004b. The decrunch code first
+			 * copies the data that would exceed $ffff to $004b and then copy the rest of it
+			 * to end at $ffff.
 			 */
 			if (overlap > 22) {
 				System.err.printf("Warning: data overlap is %d, but only 22 " + "is totally safe!\n", overlap);
@@ -216,12 +215,17 @@ public class PUCrunch {
 			globals.put("rleValue" + i, String.valueOf(rleValues[i]));
 		}
 		InputStream asm = PUCrunch.class.getResourceAsStream(dc.getResourceName());
-		byte[] header = assembler.assemble(dc.getResourceName(), asm, globals);
+		KickAssembler assembler = new KickAssembler();
+		KickAssemblerResult kickAssemblerResult = assembler.assemble(dc.getResourceName(), asm, globals);
+		byte[] header = kickAssemblerResult.getData();
+		Map<String, Integer> labels = kickAssemblerResult.getResolvedSymbols();
+		int stackUsed = labels.get("ftStackSize");
+		int ibufferUsed = labels.get("ftIBufferSize") != null ? labels.get("ftIBufferSize") : 0;
 
 		fp.write(header, 0, header.length + rleUsed - 15);
 		fp.write(outBuffer, 0, size);
 
-		printCrunchingResult(start, endAddr, memStart, overlap, dc, header);
+		printCrunchingResult(stackUsed, ibufferUsed, start, endAddr, memStart, overlap, dc, header);
 	}
 
 	private void FlushBits() {
@@ -243,8 +247,7 @@ public class PUCrunch {
 		int bits = 0, count = 0;
 
 		while (value > 1) {
-			bits = (bits << 1)
-					| (value & 1); /* is reversed compared to value */
+			bits = (bits << 1) | (value & 1); /* is reversed compared to value */
 			value >>= 1;
 			count++;
 			PutBit(1);
@@ -469,7 +472,8 @@ public class PUCrunch {
 			return 100000;
 		}
 		return escBits + 8 + extraLZPosBits + lenValue[((lzpos - 1) >> (8 + extraLZPosBits)) + 1] + lzlen < 257
-				? lenValue[lzlen - 1] : 50;
+				? lenValue[lzlen - 1]
+				: 50;
 	}
 
 	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data, int dataPos, int curpos) {
@@ -588,14 +592,12 @@ public class PUCrunch {
 					int ii, mini = rle[i], minv = r2;
 
 					/*
-					 * Check only the original length and all shorter lengths
-					 * that are power of two.
+					 * Check only the original length and all shorter lengths that are power of two.
 					 * 
-					 * Does not really miss many 'minimums' this way, at least
-					 * not globally..
+					 * Does not really miss many 'minimums' this way, at least not globally..
 					 * 
-					 * Makes the assumption that the Elias Gamma Code is used,
-					 * i.e. values of the form 2^n are 'optimal'
+					 * Makes the assumption that the Elias Gamma Code is used, i.e. values of the
+					 * form 2^n are 'optimal'
 					 */
 					ii = 2;
 					while (rle[i] > ii) {
@@ -622,14 +624,12 @@ public class PUCrunch {
 					int topLen = LenLz(lzlen[i], lzpos[i]) - lenValue[lzlen[i] - 1];
 
 					/*
-					 * Check only the original length and all shorter lengths
-					 * that are power of two.
+					 * Check only the original length and all shorter lengths that are power of two.
 					 * 
-					 * Does not really miss many 'minimums' this way, at least
-					 * not globally..
+					 * Does not really miss many 'minimums' this way, at least not globally..
 					 * 
-					 * Makes the assumption that the Elias Gamma Code is used,
-					 * i.e. values of the form 2^n are 'optimal'
+					 * Makes the assumption that the Elias Gamma Code is used, i.e. values of the
+					 * form 2^n are 'optimal'
 					 */
 					ii = 4;
 					while (lzlen[i] > ii) {
@@ -642,9 +642,8 @@ public class PUCrunch {
 					}
 
 					/*
-					 * Then check the max lengths we have found, but did not
-					 * originally approve because they seemed to gain less than
-					 * the shorter, nearer matches.
+					 * Then check the max lengths we have found, but did not originally approve
+					 * because they seemed to gain less than the shorter, nearer matches.
 					 */
 					ii = 3;
 					while (lzmlen[i] >= ii) {
@@ -657,9 +656,9 @@ public class PUCrunch {
 						ii++;
 					}
 					/*
-					 * Note: 2-byte optimization checks are no longer done with
-					 * the rest, because the equation gives too long code
-					 * lengths for 2-byte matches if extraLzPosBits>0.
+					 * Note: 2-byte optimization checks are no longer done with the rest, because
+					 * the equation gives too long code lengths for 2-byte matches if
+					 * extraLzPosBits>0.
 					 */
 					/* Two-byte rescan/check */
 					if (backSkip[i] != 0 && backSkip[i] <= 256) {
@@ -676,8 +675,7 @@ public class PUCrunch {
 					}
 					if (minv != r3 && minv < r2) {
 						/*
-						 * printf("@%05d LZ %d %4x -> %d %4x\n", i, lzlen[i],
-						 * lzpos[i], mini, lzpos[i]);
+						 * printf("@%05d LZ %d %4x -> %d %4x\n", i, lzlen[i], lzpos[i], mini, lzpos[i]);
 						 */
 						lzopt += r3 - minv;
 						lzlen[i] = mini;
@@ -792,8 +790,8 @@ public class PUCrunch {
 				mode[i] = LITERAL;
 
 				/*
-				 * k are the matching bytes, minv is the minimum value, minp is
-				 * the minimum index
+				 * k are the matching bytes, minv is the minimum value, minp is the minimum
+				 * index
 				 */
 
 				newesc[i] = (byte) (minp << esc8);
@@ -808,9 +806,8 @@ public class PUCrunch {
 							minv = a[k];
 							minp = k;
 							/*
-							 * There may be others, but the first one that is
-							 * smaller than the old minimum is equal to any
-							 * other new minimum.
+							 * There may be others, but the first one that is smaller than the old minimum
+							 * is equal to any other new minimum.
 							 */
 							break;
 						}
@@ -967,14 +964,13 @@ public class PUCrunch {
 			/* check run-length code - must be done, LZ77 search needs it! */
 			if (rle[p] <= 0) {
 				/*
-				 * There are so few RLE's and especially so few long RLE's that
-				 * byte-by-byte is good enough.
+				 * There are so few RLE's and especially so few long RLE's that byte-by-byte is
+				 * good enough.
 				 */
 				a = p;
-				int val = indata[a++]
-						& 0xff; /*
-								 * if this were uchar, it would go to stack..
-								 */
+				int val = indata[a++] & 0xff; /*
+												 * if this were uchar, it would go to stack..
+												 */
 				int top = inlen - p;
 				int rlelen = 1;
 
@@ -1000,8 +996,7 @@ public class PUCrunch {
 				hashCompare = hashValue[p];
 
 				/*
-				 * There's always 1 equal byte, although it may not be marked as
-				 * RLE.
+				 * There's always 1 equal byte, although it may not be marked as RLE.
 				 */
 				if (rlep <= 0)
 					rlep = 1;
@@ -1010,9 +1005,8 @@ public class PUCrunch {
 				bot += (rlep - 1);
 
 				/*
-				 * First get the shortest possible match (if any). If there is
-				 * no 2-byte match, don't look further, because there can't be a
-				 * longer match.
+				 * First get the shortest possible match (if any). If there is no 2-byte match,
+				 * don't look further, because there can't be a longer match.
 				 */
 				i = lastPair[((indata[p] & 0xff) << 8) | (indata[p + 1] & 0xff)] - 1;
 				if (i >= 0 && i >= bot) {
@@ -1023,36 +1017,28 @@ public class PUCrunch {
 					/*
 					 * A..AB rlep # of A's, B is something else..
 					 * 
-					 * Search for bytes that are in p + (rlep-1), i.e. the last
-					 * rle byte ('A') and the non-matching one ('B'). When
-					 * found, check if the rle in the compare position (i) is
-					 * long enough (i.e. the same number of A's at p and
-					 * i-rlep+1).
+					 * Search for bytes that are in p + (rlep-1), i.e. the last rle byte ('A') and
+					 * the non-matching one ('B'). When found, check if the rle in the compare
+					 * position (i) is long enough (i.e. the same number of A's at p and i-rlep+1).
 					 * 
-					 * There are dramatically less matches for AB than for AA,
-					 * so we get a huge speedup with this approach. We are still
-					 * guaranteed to find the most recent longest match there
-					 * is.
+					 * There are dramatically less matches for AB than for AA, so we get a huge
+					 * speedup with this approach. We are still guaranteed to find the most recent
+					 * longest match there is.
 					 */
 
 					i = lastPair[((indata[p + (rlep - 1)] & 0xff) << 8) | (indata[p + rlep] & 0xff)] - 1;
 					while (i >= bot /* && i>=rlep-1 */) { /*
-															 * bot>=rlep-1,
-															 * i>=bot ==>
-															 * i>=rlep-1
+															 * bot>=rlep-1, i>=bot ==> i>=rlep-1
 															 */
 
 						/* Equal number of A's ? */
-						if (0 == (rlep - 1) || rle[i
-								- (rlep - 1)] == rlep) { /*
-															 * 'head' matches
-															 */
+						if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
+																				 * 'head' matches
+																				 */
 							/*
-							 * Check the hash values corresponding to the last
-							 * two bytes of the currently longest match and the
-							 * first new matching(?) byte. If the hash values
-							 * don't match, don't bother to check the data
-							 * itself.
+							 * Check the hash values corresponding to the last two bytes of the currently
+							 * longest match and the first new matching(?) byte. If the hash values don't
+							 * match, don't bother to check the data itself.
 							 */
 							if ((hashValue[i + maxval - rlep - 1] == hashCompare)
 									|| ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) /* HASH_COMPARE */
@@ -1077,8 +1063,7 @@ public class PUCrunch {
 										lzmpos[p] = tmppos;
 									}
 									/*
-									 * Accept only versions that really are
-									 * shorter
+									 * Accept only versions that really are shorter
 									 */
 									if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval * 8 - LenLz(maxval, maxpos)) {
 										maxval = tmplen;
@@ -1096,16 +1081,15 @@ public class PUCrunch {
 					}
 
 					/*
-					 * If there is 'A' in the previous position also, RLE-like
-					 * LZ77 is possible, although rarely shorter than real RLE.
+					 * If there is 'A' in the previous position also, RLE-like LZ77 is possible,
+					 * although rarely shorter than real RLE.
 					 */
 					if (p != 0 && rle[p - 1] > maxval) {
 						maxval = rle[p - 1] - 1;
 						maxpos = 1;
 					}
 					/*
-					 * Last, try to find as long as possible match for the RLE
-					 * part only.
+					 * Last, try to find as long as possible match for the RLE part only.
 					 */
 					if (maxval < maxlzlen && rlep > maxval) {
 						bot = p - lzsz;
@@ -1154,8 +1138,7 @@ public class PUCrunch {
 					int valueCompare = ((indata[p + 2] & 0xff) + rot) & 0xff;
 
 					/*
-					 * There's always 1 equal byte, although it may not be
-					 * marked as RLE.
+					 * There's always 1 equal byte, although it may not be marked as RLE.
 					 */
 					if (rlep <= 0)
 						rlep = 1;
@@ -1164,9 +1147,8 @@ public class PUCrunch {
 					bot += (rlep - 1);
 
 					/*
-					 * First get the shortest possible match (if any). If there
-					 * is no 2-byte match, don't look further, because there
-					 * can't be a longer match.
+					 * First get the shortest possible match (if any). If there is no 2-byte match,
+					 * don't look further, because there can't be a longer match.
 					 */
 					i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8) | (((indata[p + 1] & 0xff) + rot) & 0xff)]
 							- 1;
@@ -1178,37 +1160,29 @@ public class PUCrunch {
 						/*
 						 * A..AB rlep # of A's, B is something else..
 						 * 
-						 * Search for bytes that are in p + (rlep-1), i.e. the
-						 * last rle byte ('A') and the non-matching one ('B').
-						 * When found, check if the rle in the compare position
-						 * (i) is long enough (i.e. the same number of A's at p
-						 * and i-rlep+1).
+						 * Search for bytes that are in p + (rlep-1), i.e. the last rle byte ('A') and
+						 * the non-matching one ('B'). When found, check if the rle in the compare
+						 * position (i) is long enough (i.e. the same number of A's at p and i-rlep+1).
 						 * 
-						 * There are dramatically less matches for AB than for
-						 * AA, so we get a huge speedup with this approach. We
-						 * are still guaranteed to find the most recent longest
-						 * match there is.
+						 * There are dramatically less matches for AB than for AA, so we get a huge
+						 * speedup with this approach. We are still guaranteed to find the most recent
+						 * longest match there is.
 						 */
 
 						i = lastPair[((((indata[p + (rlep - 1)] & 0xff) + rot) & 0xff) << 8)
 								| (((indata[p + rlep] & 0xff) + rot) & 0xff)] - 1;
 						while (i >= bot /* && i>=rlep-1 */) { /*
-																 * bot>=rlep-1,
-																 * i>=bot ==>
-																 * i>=rlep-1
+																 * bot>=rlep-1, i>=bot ==> i>=rlep-1
 																 */
 
 							/* Equal number of A's ? */
-							if (0 == (rlep - 1) || rle[i - (rlep
-									- 1)] == rlep) { /*
-														 * 'head' matches
-														 */
+							if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
+																					 * 'head' matches
+																					 */
 								/*
-								 * Check the hash values corresponding to the
-								 * last two bytes of the currently longest match
-								 * and the first new matching(?) byte. If the
-								 * hash values don't match, don't bother to
-								 * check the data itself.
+								 * Check the hash values corresponding to the last two bytes of the currently
+								 * longest match and the first new matching(?) byte. If the hash values don't
+								 * match, don't bother to check the data itself.
 								 */
 								if ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) {
 									a = i + 2; /* match */
@@ -1228,8 +1202,7 @@ public class PUCrunch {
 											tmplen = maxlzlen;
 
 										/*
-										 * Accept only versions that really are
-										 * shorter
+										 * Accept only versions that really are shorter
 										 */
 										if (tmplen * 8 - LenLz(tmplen, tmppos) > maxval * 8 - LenLz(maxval, maxpos)) {
 											maxval = tmplen;
@@ -1268,8 +1241,7 @@ public class PUCrunch {
 			}
 
 			/*
-			 * Update the two-byte history ('hash table') & backSkip ('linked
-			 * list')
+			 * Update the two-byte history ('hash table') & backSkip ('linked list')
 			 */
 			if (p + 1 < inlen) {
 				int index = ((indata[p] & 0xff) << 8) | (indata[p + 1] & 0xff);
@@ -1301,11 +1273,11 @@ public class PUCrunch {
 			int mb, mv;
 
 			/*
-			 * Absolute maximum number of escaped bytes with the escape optimize
-			 * is 2^-n, where n is the number of escape bits used.
+			 * Absolute maximum number of escaped bytes with the escape optimize is 2^-n,
+			 * where n is the number of escape bits used.
 			 * 
-			 * This worst case happens only on equal- distributed normal bytes
-			 * (01230123..). This is why the typical values are so much smaller.
+			 * This worst case happens only on equal- distributed normal bytes (01230123..).
+			 * This is why the typical values are so much smaller.
 			 */
 
 			mb = 0;
@@ -1478,10 +1450,9 @@ public class PUCrunch {
 						i = p - backSkip[p];
 						while (i >= bot /* && i>=rlep-1 */) {
 							/* Equal number of A's ? */
-							if (rlep == 1 || rle[i - rlep
-									+ 1] == rlep) { /*
-													 * 'head' matches
-													 */
+							if (rlep == 1 || rle[i - rlep + 1] == rlep) { /*
+																			 * 'head' matches
+																			 */
 								a = i + 1; /* match */
 								int b = p + rlep - 1 + 1; /* curpos */
 								int topindex = inlen - (p + rlep - 1);
@@ -1613,12 +1584,9 @@ public class PUCrunch {
 		}
 	}
 
-	private void printCrunchingResult(int start, int endAddr, int memStart, int overlap, Decruncher dc, byte[] header) {
+	private void printCrunchingResult(int stackUsed, int ibufferUsed, int start, int endAddr, int memStart, int overlap,
+			Decruncher dc, byte[] header) {
 		if (verbose) {
-			Map<String, Integer> labels = assembler.getLabels();
-			int stackUsed = labels.get("ftStackSize");
-			int ibufferUsed = labels.get("ftIBufferSize") != null ? labels.get("ftIBufferSize") : 0;
-
 			System.out.printf("Saving %s\n", dc.getName());
 
 			if ((dc.getFlags() & FIXF_SHORT) != 0) {

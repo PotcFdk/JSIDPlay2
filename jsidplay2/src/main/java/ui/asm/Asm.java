@@ -126,7 +126,7 @@ public class Asm extends Tab implements UIPart {
 			HashMap<String, String> globals = new HashMap<String, String>();
 			variables.stream().forEach(var -> globals.put(var.getName(), var.getValue()));
 			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes("UTF-8"));
-			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals);
+			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals).getData();
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");

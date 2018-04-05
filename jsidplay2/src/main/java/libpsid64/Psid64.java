@@ -200,7 +200,7 @@ public class Psid64 {
 			globals.put("block" + blockNum + "Size", String.valueOf(blockSize));
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(PSID64_BOOT_ASM);
-		byte[] psidBoot = assembler.assemble(PSID64_BOOT_ASM, asm, globals);
+		byte[] psidBoot = assembler.assemble(PSID64_BOOT_ASM, asm, globals).getData();
 		byte[] programData = new byte[psidBoot.length + size];
 		System.arraycopy(psidBoot, 0, programData, 0, psidBoot.length);
 
@@ -307,7 +307,7 @@ public class Psid64 {
 			resource = PSID64_ASM;
 		}
 		InputStream asm = Psid64.class.getResourceAsStream(resource);
-		return assembler.assemble(resource, asm, globals);
+		return assembler.assemble(resource, asm, globals).getData();
 	}
 
 	private StringBuffer formatStilText() {
