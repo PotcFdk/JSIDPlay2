@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.sound.sampled.Mixer.Info;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -19,7 +21,6 @@ import libsidutils.debug.MOS6510Debug;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
-import sidplay.audio.JavaSound.Device;
 import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.ParameterTimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
@@ -119,9 +120,9 @@ final public class ConsolePlayer {
 
 	private void printSoundcardDevices() {
 		int deviceIdx = 0;
-		for (Device device : JavaSound.getDevices()) {
-			System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++), device.getInfo().getName(),
-					device.getInfo().getDescription());
+		for (Info device : JavaSound.getDevices()) {
+			System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++), device.getName(),
+					device.getDescription());
 		}
 	}
 

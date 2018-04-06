@@ -3,9 +3,8 @@ package sidplay.audio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -16,22 +15,6 @@ import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
 public class JavaSound implements AudioDriver {
-	public static final class Device {
-		private final Info info;
-
-		public Device(Info info) {
-			this.info = info;
-		}
-
-		public Info getInfo() {
-			return info;
-		}
-
-		@Override
-		public String toString() {
-			return info.getName();
-		}
-	}
 
 	private AudioConfig cfg;
 	private AudioFormat audioFormat;
@@ -42,12 +25,24 @@ public class JavaSound implements AudioDriver {
 	public synchronized void open(final AudioConfig cfg, String recordingFilename)
 			throws IOException, LineUnavailableException {
 		int device = cfg.getDevice();
-		ObservableList<Device> devices = getDevices();
+		List<Info> devices = getDevices();
 		if (device < devices.size()) {
-			open(cfg, devices.get(device).getInfo());
+			open(cfg, devices.get(device));
 		} else {
 			open(cfg, (Info) null);
 		}
+	}
+
+	public static final List<Info> getDevices() {
+		List<Info> devices = new ArrayList<>();
+		for (Info info : AudioSystem.getMixerInfo()) {
+			Mixer mixer = AudioSystem.getMixer(info);
+			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
+			if (mixer.isLineSupported(lineInfo)) {
+				devices.add(info);
+			}
+		}
+		return devices;
 	}
 
 	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
@@ -57,18 +52,6 @@ public class JavaSound implements AudioDriver {
 		boolean bigEndian = false;
 		this.audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
 		setAudioDevice(info);
-	}
-
-	public static final ObservableList<Device> getDevices() {
-		ObservableList<Device> devices = FXCollections.<Device>observableArrayList();
-		for (Info info : AudioSystem.getMixerInfo()) {
-			Mixer mixer = AudioSystem.getMixer(info);
-			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
-			if (mixer.isLineSupported(lineInfo)) {
-				devices.add(new Device(info));
-			}
-		}
-		return devices;
 	}
 
 	public synchronized void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {

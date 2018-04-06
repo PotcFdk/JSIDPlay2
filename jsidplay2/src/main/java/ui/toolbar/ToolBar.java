@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import javax.sound.sampled.Mixer.Info;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -29,9 +31,9 @@ import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
-import sidplay.audio.JavaSound.Device;
 import ui.common.C64Window;
 import ui.common.EnumToString;
+import ui.common.MixerInfoToString;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -56,7 +58,7 @@ public class ToolBar extends VBox implements UIPart {
 	@FXML
 	private ComboBox<Audio> audioBox;
 	@FXML
-	private ComboBox<Device> devicesBox;
+	private ComboBox<Info> devicesBox;
 	@FXML
 	private ComboBox<Engine> engineBox;
 	@FXML
@@ -101,7 +103,8 @@ public class ToolBar extends VBox implements UIPart {
 		});
 		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
-		devicesBox.setItems(JavaSound.getDevices());
+		devicesBox.setConverter(new MixerInfoToString());
+		devicesBox.setItems(FXCollections.<Info>observableArrayList(JavaSound.getDevices()));
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 
 		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
