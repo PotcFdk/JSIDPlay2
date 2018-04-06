@@ -17,14 +17,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import de.haendel.impl.IJSIDPlay2;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.audio.MP3Driver.MP3Stream;
-import ui.entities.config.Configuration;
-import de.haendel.impl.IJSIDPlay2;
+import sidplay.ini.IniConfig;
 
 @Path("/JSIDPlay2REST")
 public class JSIDPlay2ServiceREST {
@@ -107,7 +108,7 @@ public class JSIDPlay2ServiceREST {
 			@QueryParam("isVbr") boolean isVbr) {
 		SamplingRate samplingRate = frequency == 44100 ? SamplingRate.LOW
 				: frequency == 48000 ? SamplingRate.MEDIUM : SamplingRate.HIGH;
-		Configuration cfg = new Configuration();
+		IConfig cfg = new IniConfig();
 		cfg.getSidplay2Section().setDefaultPlayLength(defaultPlayLength);
 		cfg.getSidplay2Section().setEnableDatabase(enableDatabase);
 		cfg.getSidplay2Section().setSingle(single);

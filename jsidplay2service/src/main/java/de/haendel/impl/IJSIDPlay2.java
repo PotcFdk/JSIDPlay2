@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.audio.AudioDriver;
-import ui.entities.config.Configuration;
 
 public interface IJSIDPlay2 {
 
@@ -46,7 +46,7 @@ public interface IJSIDPlay2 {
 	 * @throws SidTuneError
 	 *             invalid tune
 	 */
-	void convert(Configuration config, String resource, AudioDriver driver) throws IOException, SidTuneError;
+	void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError;
 
 	/**
 	 * Get composer photo

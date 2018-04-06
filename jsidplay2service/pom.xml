@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<jsidplay2.version>3.8</jsidplay2.version>
+		<jsidplay2.version>3.9</jsidplay2.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -49,16 +49,6 @@
 			<groupId>jsidplay2</groupId>
 			<artifactId>photos</artifactId>
 			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-file</artifactId>
-			<version>7.7.10</version>
-		</dependency>
-		<dependency>
-			<groupId>kickassembler</groupId>
-			<artifactId>kickassembler</artifactId>
-			<version>4.9</version>
 		</dependency>
 		<dependency>
 			<groupId>jsidplay2</groupId>

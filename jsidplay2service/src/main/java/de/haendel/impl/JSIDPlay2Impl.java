@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.IntSupplier;
 
+import libsidplay.config.IConfig;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -33,7 +34,6 @@ import sidplay.audio.AudioDriver;
 import sidplay.ini.IniConfig;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.StilEntry;
-import ui.entities.config.Configuration;
 
 public class JSIDPlay2Impl implements IJSIDPlay2 {
 
@@ -121,22 +121,12 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 	}
 
 	@Override
-	public void convert(Configuration config, String resource, AudioDriver driver) throws IOException, SidTuneError {
+	public void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
-		player.setSidDatabase(getSidDatabase(HVSC_ROOT));
+		player.setSidDatabase(new SidDatabase(HVSC_ROOT));
 		player.setAudioDriver(driver);
 		player.play(SidTune.load(getAbsoluteFile(resource)));
 		player.stopC64(false);
-	}
-
-	private SidDatabase getSidDatabase(String hvscRoot) throws IOException {
-		if (hvscRoot != null) {
-			File file = new File(hvscRoot, SidDatabase.SONGLENGTHS_FILE);
-			try (FileInputStream input = new FileInputStream(file)) {
-				return new SidDatabase(input);
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -172,13 +162,13 @@ public class JSIDPlay2Impl implements IJSIDPlay2 {
 		Map<String, String> tuneInfos = new HashMap<String, String>();
 		File tuneFile = getAbsoluteFile(resource);
 		SidTune tune = SidTune.load(tuneFile);
-		SidDatabase db = getSidDatabase(HVSC_ROOT);
+		SidDatabase db = new SidDatabase(HVSC_ROOT);
 		STIL stil = getSTIL(HVSC_ROOT);
 		if (tune != null) {
 			IntSupplier lengthFnct = new IntSupplier() {
 				@Override
 				public int getAsInt() {
-					return db != null ? db.getTuneLength(tune) : 0;
+					return db.getTuneLength(tune);
 				}
 			};
 			HVSCEntry hvscEntry = new HVSCEntry(lengthFnct, "", tuneFile, tune);
