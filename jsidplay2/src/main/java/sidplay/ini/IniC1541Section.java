@@ -10,7 +10,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X8000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0XA000;
 
-import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IC1541Section;
 
 /**

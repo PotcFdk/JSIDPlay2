@@ -6,7 +6,7 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
-import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IEmulationSection;

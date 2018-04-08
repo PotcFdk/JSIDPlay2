@@ -2,7 +2,7 @@ package libsidplay.config;
 
 import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
 
-import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.FloppyType;
 
 public interface IC1541Section {
 

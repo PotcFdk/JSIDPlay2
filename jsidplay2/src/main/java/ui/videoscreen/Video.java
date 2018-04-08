@@ -47,7 +47,7 @@ import libsidplay.common.Event;
 import libsidplay.components.c1530.Datasette.DatasetteStatus;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541.FloppyStatus;
-import libsidplay.components.c1541.C1541.FloppyType;
+import libsidplay.components.c1541.FloppyType;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.components.mos656x.VIC;
