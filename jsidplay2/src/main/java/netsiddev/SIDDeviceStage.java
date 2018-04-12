@@ -1,6 +1,7 @@
 package netsiddev;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -48,4 +49,7 @@ public abstract class SIDDeviceStage extends Stage implements SIDDeviceUIPart {
 		this.wait = wait;
 	}
 
+	public ResourceBundle getBundle() {
+		return util.getBundle();
+	}
 }

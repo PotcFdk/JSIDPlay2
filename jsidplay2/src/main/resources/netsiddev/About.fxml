@@ -16,8 +16,8 @@
 				<padding>
 					<Insets top="5" right="5" left="5" bottom="5" />
 				</padding>
-				<TextFlow fx:id="credits">
-					<Text text="%CREDITS" />
+				<TextFlow>
+					<Text fx:id="credits" />
 				</TextFlow>
 			</HBox>
 		</center>

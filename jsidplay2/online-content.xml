@@ -31,7 +31,7 @@
 	<property name="gamebase_name" value="GameBase64" />
 	<!-- webstart -->
 	<property name="webstart_dir" location="${result_dir}/webstart" />
-	
+
 	<target name="all" depends="compress_jsiddevice_exe,zip_jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
 
 	<!-- ================================= 
@@ -40,7 +40,7 @@
           Update latest version.
          ================================= -->
 	<target name="updateVersion">
-	    <echo output="latest.properties">version=${project.version}</echo>
+		<echo output="latest.properties">version=${project.version}</echo>
 	</target>
 
 	<!-- ================================= 
@@ -56,15 +56,15 @@
 		</exec>
 		<move file="${deploy_dir}/${jsiddevice}-proguard.jar" tofile="${deploy_dir}/${jsiddevice}.jar" />
 	</target>
-	
+
 	<!-- ================================= 
           target: compress_jsiddevice_exe
           Description:
           Compress executable of JSIDDevice with UPX.
-         ================================= -->	
+         ================================= -->
 	<target name="check_upx">
-		<available file="${upx.home}/upx" property="upx.present"/>
-		<available file="${upx.home}/upx.exe" property="upx.present"/>
+		<available file="${upx.home}/upx" property="upx.present" />
+		<available file="${upx.home}/upx.exe" property="upx.present" />
 	</target>
 	<target name="compress_jsiddevice_exe" depends="check_upx" if="upx.present">
 		<exec executable="${upx.home}/upx" failonerror="true">
@@ -72,8 +72,8 @@
 			<arg value="--best" />
 			<arg value="${deploy_dir}/${jsiddevice}.exe" />
 		</exec>
-	</target>	
-	
+	</target>
+
 	<!-- ================================= 
           target: zip_jsiddevice
           Description:
@@ -96,19 +96,19 @@
 	<target name="webstart">
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
 		<taskdef resource="net/sf/antcontrib/antlib.xml">
-	        <classpath>
-	            <pathelement location="${ant-contrib-jar}" />
-	        </classpath>
-		</taskdef> 
+			<classpath>
+				<pathelement location="${ant-contrib-jar}" />
+			</classpath>
+		</taskdef>
 
 		<!-- Compile stylesheets -->
 		<fx:csstobin outdir="target/classes">
-			<fileset dir="target/classes" includes="**/*.css" excludes="javadoc/**/*.css"/>
+			<fileset dir="target/classes" includes="**/*.css" excludes="javadoc/**/*.css" />
 		</fx:csstobin>
 		<delete>
 			<fileset dir="target/classes">
-				<include name="**/*.css"/>
-				<exclude name="javadoc/**/*.css"/>
+				<include name="**/*.css" />
+				<exclude name="javadoc/**/*.css" />
 			</fileset>
 		</delete>
 		<!-- Create main jar -->
@@ -157,8 +157,9 @@
 			</fx:info>
 			<fx:permissions elevated="true" cachecertificates="true" />
 			<fx:platform javafx="2.2+" j2se="1.8+">
-				<fx:jvmarg value="-Xms${javafx.initialHeapSize}m" />
-				<fx:jvmarg value="-Xmx${javafx.maxHeapSize}m" />
+				<!-- https://community.oracle.com/thread/3676876 - jp2launcher.exe exits when launching Java Web Start application -->
+				<!--fx:jvmarg value="-Xms${javafx.initialHeapSize}m" />
+				<fx:jvmarg value="-Xmx${javafx.maxHeapSize}m" /-->
 			</fx:platform>
 			<fx:preferences shortcut="true" install="true" menu="true" />
 		</fx:deploy>
@@ -172,17 +173,17 @@
 	<target name="manifest">
 		<jar update="true" file="${jarToUpdate}">
 			<manifest>
-				<attribute name="Application-Name" value="${project.name}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Codebase" value="${codebase}"/>
-				<attribute name="Specification-Title" value="${project.name}"/>
-				<attribute name="Specification-Version" value="${project.version}"/>
-				<attribute name="Specification-Vendor" value="${project.organization.name}"/>
-				<attribute name="Implementation-Title" value="${project.name}"/>
-				<attribute name="Implementation-Version" value="${project.version}"/>
-				<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
-				<attribute name="Implementation-Vendor-Id" value="${project.artifactId}"/>
-			  </manifest>
+				<attribute name="Application-Name" value="${project.name}" />
+				<attribute name="Permissions" value="all-permissions" />
+				<attribute name="Codebase" value="${codebase}" />
+				<attribute name="Specification-Title" value="${project.name}" />
+				<attribute name="Specification-Version" value="${project.version}" />
+				<attribute name="Specification-Vendor" value="${project.organization.name}" />
+				<attribute name="Implementation-Title" value="${project.name}" />
+				<attribute name="Implementation-Version" value="${project.version}" />
+				<attribute name="Implementation-Vendor" value="${project.organization.name}" />
+				<attribute name="Implementation-Vendor-Id" value="${project.artifactId}" />
+			</manifest>
 		</jar>
 	</target>
 	<!-- ================================= 

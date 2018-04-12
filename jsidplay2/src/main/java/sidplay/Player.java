@@ -21,8 +21,11 @@ import static sidplay.player.State.START;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -76,6 +79,19 @@ import sidplay.player.Timer;
  * 
  */
 public class Player extends HardwareEnsemble {
+
+	/** Build date calculated from our own modify time */
+	public static Calendar LAST_MODIFIED;
+
+	static {
+		try {
+			URL us = Player.class.getProtectionDomain().getCodeSource().getLocation();
+			LAST_MODIFIED = Calendar.getInstance();
+			LAST_MODIFIED.setTime(new Date(us.openConnection().getLastModified()));
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
 
@@ -843,7 +859,7 @@ public class Player extends HardwareEnsemble {
 	 * The credits for the authors of many parts of this emulator.
 	 * 
 	 * @param properties
-	 *            containing dynamic values for the credits
+	 *            containing dynamic values for the credits (version)
 	 * @return the credits
 	 */
 	public final String getCredits(final Properties properties) {
@@ -851,7 +867,7 @@ public class Player extends HardwareEnsemble {
 		credits.append("Java Version and User Interface v");
 		credits.append(properties.getProperty("version"));
 		credits.append(":\n");
-		credits.append("\tCopyright (©) 2007-2017 Ken Händel\n");
+		credits.append("\tCopyright (©) 2007-" + LAST_MODIFIED.get(Calendar.YEAR) + " Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n");
 		credits.append("\thttp://bel.fi/~alankila/c64-sw/\n");

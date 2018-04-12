@@ -1,10 +1,7 @@
 package ui;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Function;
@@ -26,19 +23,6 @@ import ui.common.C64Window;
 
 public class JSidPlay2 extends C64Window implements IExtendImageListener, Function<SidTune, String> {
 
-	/** Build date calculated from our own modify time */
-	private static String DATE = "unknown";
-
-	static {
-		try {
-			URL us = JSidPlay2Main.class.getResource("/" + JSidPlay2.class.getName().replace('.', '/') + ".class");
-			Date date = new Date(us.openConnection().getLastModified());
-			DATE = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
-
 	@FXML
 	protected TabPane tabbedPane;
 
@@ -48,12 +32,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	@FXML
 	private void initialize() {
+		String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Player.LAST_MODIFIED.getTime());
 		getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
-				util.getBundle().getString("RELEASE"), DATE, util.getBundle().getString("AUTHOR")));
+				util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
-
 	}
 
 	public TabPane getTabbedPane() {
