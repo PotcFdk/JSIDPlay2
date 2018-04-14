@@ -3,18 +3,20 @@
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.Scene?>
+<?import javafx.scene.text.Text?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.paint.*?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.TitledPane?>
 <?scenebuilder-preview-i18n-resource VirtualKeyboard.properties?>
 
-<Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@Keyboard.css">
+<Scene xmlns:fx="http://javafx.com/fxml"
+	stylesheets="@Keyboard.css">
 	<BorderPane>
 		<center>
 			<StackPane>
@@ -26,300 +28,371 @@
 					</ImageView>
 					<Pane>
 						<children>
-							<Button fx:id="arrowLeft" layoutX="49.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#arrowLeft" />
-							<Button fx:id="one" layoutX="72.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#one" />
-							<Button fx:id="two" layoutX="96.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#two" />
-							<Button fx:id="three" layoutX="122.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#three" />
-							<Button fx:id="four" layoutX="145.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#four" />
-							<Button fx:id="five" layoutX="170.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#five" />
-							<Button fx:id="six" layoutX="194.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#six" />
-							<Button fx:id="seven" layoutX="219.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#seven" />
-							<Button fx:id="eight" layoutX="244.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#eight" />
-							<Button fx:id="nine" layoutX="266.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#nine" />
-							<Button fx:id="zero" layoutX="290.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#zero" />
-							<Button fx:id="plus" layoutX="316.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#plus" />
-							<Button fx:id="minus" layoutX="341.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="16.0"
-								onAction="#minus" />
-							<Button fx:id="pound" layoutX="366.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="16.0"
-								onAction="#pound" />
-							<Button fx:id="clrHome" layoutX="390.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="16.0"
-								onAction="#clrHome" />
-							<Button fx:id="insDel" layoutX="412.0" layoutY="115.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="16.0"
-								onAction="#insDel" />
-							<ToggleButton fx:id="ctrl" layoutX="49.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
-								onAction="#ctrl" />
-							<Button fx:id="q" layoutX="84.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#q" />
-							<Button fx:id="w" layoutX="108.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#w" />
-							<Button fx:id="e" layoutX="134.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#e" />
-							<Button fx:id="r" layoutX="158.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#r" />
-							<Button fx:id="t" layoutX="182.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#t" />
-							<Button fx:id="y" layoutX="206.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#y" />
-							<Button fx:id="u" layoutX="232.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#u" />
-							<Button fx:id="i" layoutX="254.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#i" />
-							<Button fx:id="o" layoutX="280.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#o" />
-							<Button fx:id="p" layoutX="306.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#p" />
-							<Button fx:id="at" layoutX="330.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#at" />
-							<Button fx:id="asterisk" layoutX="354.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#asterisk" />
-							<Button fx:id="arrowUp" layoutX="378.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#arrowUp" />
-							<Button fx:id="restore" layoutX="401.0" layoutY="140.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
+							<ToggleButton layoutX="49.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="ARROW_LEFT" />
+							<ToggleButton layoutX="72.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="ONE" />
+							<ToggleButton layoutX="96.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="TWO" />
+							<ToggleButton layoutX="122.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="THREE" />
+							<ToggleButton layoutX="145.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="FOUR" />
+							<ToggleButton layoutX="170.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="FIVE" />
+							<ToggleButton layoutX="194.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SIX" />
+							<ToggleButton layoutX="219.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SEVEN" />
+							<ToggleButton layoutX="244.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="EIGHT" />
+							<ToggleButton layoutX="266.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="NINE" />
+							<ToggleButton layoutX="290.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="ZERO" />
+							<ToggleButton layoutX="316.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="PLUS" />
+							<ToggleButton layoutX="341.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="MINUS" />
+							<ToggleButton layoutX="366.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="POUND" />
+							<ToggleButton layoutX="390.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="CLEAR_HOME" />
+							<ToggleButton layoutX="412.0" layoutY="115.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="INS_DEL" />
+							<ToggleButton layoutX="49.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="CTRL" />
+							<ToggleButton layoutX="84.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="Q" />
+							<ToggleButton layoutX="108.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="W" />
+							<ToggleButton layoutX="134.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="E" />
+							<ToggleButton layoutX="158.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="R" />
+							<ToggleButton layoutX="182.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="T" />
+							<ToggleButton layoutX="206.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="Y" />
+							<ToggleButton layoutX="232.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="U" />
+							<ToggleButton layoutX="254.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="I" />
+							<ToggleButton layoutX="280.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="O" />
+							<ToggleButton layoutX="306.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="P" />
+							<ToggleButton layoutX="330.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="AT" />
+							<ToggleButton layoutX="354.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="STAR" />
+							<ToggleButton layoutX="378.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="ARROW_UP" />
+							<Button layoutX="401.0" layoutY="140.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
 								onAction="#restore" />
-							<ToggleButton fx:id="runStop" layoutX="41.0"
+							<ToggleButton layoutX="41.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="RUN_STOP" />
+							<ToggleButton fx:id="shiftLocked" layoutX="65.0"
 								layoutY="164.0" minHeight="14.951171875" minWidth="16.0"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="16.0" onAction="#runStop" />
-							<ToggleButton fx:id="shiftLock" layoutX="65.0"
-								layoutY="164.0" minHeight="14.951171875" minWidth="16.0"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="16.0" onAction="#shiftLock" />
-							<Button fx:id="a" layoutX="90.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#a" />
-							<Button fx:id="s" layoutX="114.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#s" />
-							<Button fx:id="d" layoutX="138.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#d" />
-							<Button fx:id="f" layoutX="164.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#f" />
-							<Button fx:id="g" layoutX="190.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#g" />
-							<Button fx:id="h" layoutX="214.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#h" />
-							<Button fx:id="j" layoutX="238.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#j" />
-							<Button fx:id="k" layoutX="262.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#k" />
-							<Button fx:id="l" layoutX="288.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#l" />
-							<Button fx:id="colon" layoutX="312.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#colon" />
-							<Button fx:id="semicolon" layoutX="336.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#semicolon" />
-							<Button fx:id="equals" layoutX="360.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#equals" />
-							<Button fx:id="ret" layoutX="386.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="42.0"
-								onAction="#ret" />
-							<ToggleButton fx:id="commodore" layoutX="41.0"
-								layoutY="188.0" minHeight="14.951171875" minWidth="16.0"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="16.0" onAction="#commodore" />
-							<ToggleButton fx:id="shift" layoutX="65.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="27.0"
-								onAction="#shift" />
-							<Button fx:id="z" layoutX="102.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#z" />
-							<Button fx:id="x" layoutX="128.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#x" />
-							<Button fx:id="c" layoutX="151.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#c" />
-							<Button fx:id="v" layoutX="176.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#v" />
-							<Button fx:id="b" layoutX="202.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#b" />
-							<Button fx:id="n" layoutX="226.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#n" />
-							<Button fx:id="m" layoutX="250.0" layoutY="188.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951171875" prefWidth="16.0"
-								onAction="#m" />
-							<Button fx:id="comma" layoutX="276.0" layoutY="188.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SHIFT_LEFT" />
+							<ToggleButton layoutX="90.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="A" />
+							<ToggleButton layoutX="114.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="S" />
+							<ToggleButton layoutX="138.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="D" />
+							<ToggleButton layoutX="164.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="F" />
+							<ToggleButton layoutX="190.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="G" />
+							<ToggleButton layoutX="214.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="H" />
+							<ToggleButton layoutX="238.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="J" />
+							<ToggleButton layoutX="262.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="K" />
+							<ToggleButton layoutX="288.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="L" />
+							<ToggleButton layoutX="312.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="COLON" />
+							<ToggleButton layoutX="336.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SEMICOLON" />
+							<ToggleButton layoutX="360.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="EQUALS" />
+							<ToggleButton layoutX="386.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="42.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="RETURN" />
+							<ToggleButton layoutX="41.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="COMMODORE" />
+							<ToggleButton layoutX="65.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SHIFT_LEFT" />
+							<ToggleButton layoutX="102.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="Z" />
+							<ToggleButton layoutX="128.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="X" />
+							<ToggleButton layoutX="151.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="C" />
+							<ToggleButton layoutX="176.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="V" />
+							<ToggleButton layoutX="202.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="B" />
+							<ToggleButton layoutX="226.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="N" />
+							<ToggleButton layoutX="250.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951171875" prefWidth="16.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="M" />
+							<ToggleButton layoutX="276.0" layoutY="188.0"
 								minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onAction="#comma" />
-							<Button fx:id="period" layoutX="298.0" layoutY="188.0"
+								prefHeight="14.951171875" prefWidth="15.9998779296875"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="COMMA" />
+							<ToggleButton layoutX="298.0" layoutY="188.0"
 								minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onAction="#period" />
-							<Button fx:id="slash" layoutX="325.0" layoutY="188.0"
+								prefHeight="14.951171875" prefWidth="15.9998779296875"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="PERIOD" />
+							<ToggleButton layoutX="325.0" layoutY="188.0"
 								minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onAction="#slash" />
-							<ToggleButton fx:id="rightShift" layoutX="349.0"
-								layoutY="188.0" minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="27.0" onAction="#rightShift" />
-							<Button fx:id="cursorUpDown" layoutX="386.0" layoutY="188.0"
+								prefHeight="14.951171875" prefWidth="15.9998779296875"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SLASH" />
+							<ToggleButton layoutX="349.0" layoutY="188.0"
 								minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onAction="#cursorUpDown" />
-							<Button fx:id="cursorLeftRight" layoutX="409.0" layoutY="188.0"
+								prefHeight="14.951171875" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SHIFT_RIGHT" />
+							<ToggleButton layoutX="386.0" layoutY="188.0"
 								minHeight="14.951171875" minWidth="15.9998779296875"
-								mnemonicParsing="false" opacity="0.5" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onAction="#cursorLeftRight" />
-							<Button fx:id="space" layoutX="104.0" layoutY="215.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="21.951171875" prefWidth="222.0"
-								onAction="#space" />
-							<Button fx:id="f1" layoutX="468.0" layoutY="117.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
-								onAction="#f1" />
-							<Button fx:id="f3" layoutX="468.0" layoutY="142.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
-								onAction="#f3" />
-							<Button fx:id="f5" layoutX="468.0" layoutY="164.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
-								onAction="#f5" />
-							<Button fx:id="f7" layoutX="468.0" layoutY="190.0"
-								minHeight="14.951171875" minWidth="16.0" mnemonicParsing="false"
-								opacity="0.5" prefHeight="14.951271874997474" prefWidth="27.0"
-								onAction="#f7" />
+								prefHeight="14.951171875" prefWidth="15.9998779296875"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="CURSOR_UP_DOWN" />
+							<ToggleButton fx:id="cursorLeftRight"
+								layoutX="409.0" layoutY="188.0" minHeight="14.951171875"
+								minWidth="15.9998779296875" prefHeight="14.951171875"
+								prefWidth="15.9998779296875" onMousePressed="#keyPressed"
+								onMouseReleased="#keyReleased" userData="CURSOR_LEFT_RIGHT" />
+							<ToggleButton layoutX="104.0" layoutY="215.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="21.951171875" prefWidth="222.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="SPACE" />
+							<ToggleButton layoutX="468.0" layoutY="117.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="F1" />
+							<ToggleButton layoutX="468.0" layoutY="142.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="F3" />
+							<ToggleButton layoutX="468.0" layoutY="164.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="F5" />
+							<ToggleButton layoutX="468.0" layoutY="190.0"
+								minHeight="14.951171875" minWidth="16.0"
+								prefHeight="14.951271874997474" prefWidth="27.0"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="F7" />
 						</children>
 					</Pane>
 				</children>
 			</StackPane>
 		</center>
 		<bottom>
-			<TitledPane text="%COMMANDS" collapsible="false">
-				<VBox spacing="5">
-					<FlowPane hgap="5" vgap="2">
-						<Button text="%FLOPPY_DIR" onAction="#directory"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%FLOPPY_LOAD" onAction="#diskLoad"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-					</FlowPane>
-					<FlowPane hgap="5" vgap="2">
-						<Button text="%DATASETTE_LOAD" onAction="#tapeLoad"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-					</FlowPane>
-					<FlowPane hgap="5" vgap="2">
-						<Button text="%LIST" onAction="#list"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%RUN" onAction="#run"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%SYS" onAction="#sys"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-						<Button text="%RESET" onAction="#reset"
-							style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
-					</FlowPane>
-				</VBox>
-			</TitledPane>
+			<VBox>
+				<Text text="%LEGEND"/>
+				<Text text="%LEGEND_MOUSE_LEFT" wrappingWidth="550"/>
+				<Text text="%LEGEND_MOUSE_RIGHT" wrappingWidth="550" />
+				<Text text="%LEGEND_SHIFT_LOCK" wrappingWidth="550" />
+				<TitledPane text="%COMMANDS" collapsible="false">
+					<VBox spacing="5">
+						<FlowPane hgap="5" vgap="2">
+							<Button text="%FLOPPY_DIR" onAction="#directory"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+							<Button text="%FLOPPY_LOAD" onAction="#diskLoad"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						</FlowPane>
+						<FlowPane hgap="5" vgap="2">
+							<Button text="%DATASETTE_LOAD" onAction="#tapeLoad"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						</FlowPane>
+						<FlowPane hgap="5" vgap="2">
+							<Button text="%LIST" onAction="#list"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+							<Button text="%RUN" onAction="#run"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+							<Button text="%SYS" onAction="#sys"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+							<Button text="%RESET" onAction="#reset"
+								style="-fx-opacity: 1;-fx-background-color: lightblue;-fx-stroke: blue" />
+						</FlowPane>
+					</VBox>
+				</TitledPane>
+			</VBox>
 		</bottom>
 	</BorderPane>
 </Scene>

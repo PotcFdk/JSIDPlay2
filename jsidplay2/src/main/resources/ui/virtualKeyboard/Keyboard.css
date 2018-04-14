@@ -1,11 +1,25 @@
 .button {
 	-fx-opacity: 0.5;
-	-fx-background-color: azure;
 }
 
 .toggle-button {
-	-fx-background-color: aqua ;
+	-fx-opacity: 0.5;
+}
+
+.toggle-button {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, 
+        -fx-inner-border, -fx-body-color;
+    -fx-text-fill: -fx-text-base-color;
 }
 .toggle-button:selected {
-	-fx-opacity: 0.7;
+	-fx-opacity: 0.9;
+    -fx-background-color: -fx-shadow-highlight-color,
+        linear-gradient(to bottom, derive(-fx-outer-border, -20%)),
+        linear-gradient(to bottom, derive(-fx-color, -22%) 0%);
+}
+.toggle-button:selected:focused {
+	-fx-opacity: 0.8;
+    -fx-background-color: -fx-focus-color, 
+        linear-gradient(to bottom, derive(-fx-color, -22%) 0%),
+        -fx-faint-focus-color, linear-gradient(to bottom, derive(-fx-color, -22%) 0%);
 }

@@ -14,8 +14,10 @@ import java.util.Set;
  * Implements the C64's keyboard.<br>
  * <br>
  * For documentation on the C64 keyboard handling, see
- * <a href='http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt'>http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt</a> or
- * <a href='http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</a>.
+ * <a href=
+'http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt'>http://www.zimmers.net/anonftp/pub/cbm/c64/programming/documents/keymatrix.txt</a> or
+ * <a href=
+'http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</a>.
  * </pre>
  * 
  * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
@@ -41,6 +43,15 @@ public abstract class Keyboard {
 	}
 
 	/**
+	 * Get currently pressed keys
+	 * 
+	 * @return which keys are currently pressed
+	 */
+	public synchronized Set<KeyTableEntry> getKeysDown() {
+		return keysDown;
+	}
+
+	/**
 	 * Handle a released key
 	 * 
 	 * @param ktEntry
@@ -56,8 +67,7 @@ public abstract class Keyboard {
 	 * @param selected
 	 * @param wantRow
 	 *
-	 * @return read adjustment, to be AND connected to the normal register
-	 *         output
+	 * @return read adjustment, to be AND connected to the normal register output
 	 */
 	private synchronized byte readMatrix(final byte selected, final boolean wantRow) {
 		/* temporarily adjust all matrices with controls for reading */
