@@ -118,7 +118,7 @@ public class GameBase extends VBox implements UIPart {
 		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem();
+				GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem().getContent();
 				if (filterField.getText().trim().length() == 0) {
 					page.filter("");
 				} else {
@@ -130,7 +130,7 @@ public class GameBase extends VBox implements UIPart {
 
 		contents.setPrefHeight(Double.MAX_VALUE);
 		for (Tab tab : letter.getTabs()) {
-			GameBasePage page = (GameBasePage) tab;
+			GameBasePage page = (GameBasePage) tab.getContent();
 			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
 					.addListener((observable, oldValue, newValue) -> {
 						if (newValue != null) {
@@ -153,7 +153,7 @@ public class GameBase extends VBox implements UIPart {
 					});
 		}
 		letter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			selectTab((GameBasePage) newValue);
+			selectTab(newValue);
 		});
 		Platform.runLater(() -> {
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
@@ -244,7 +244,7 @@ public class GameBase extends VBox implements UIPart {
 		enableGameBase.setDisable(false);
 		setLettersDisable(false);
 		letter.getSelectionModel().selectFirst();
-		selectTab((GameBasePage) letter.getSelectionModel().getSelectedItem());
+		selectTab(letter.getSelectionModel().getSelectedItem());
 	}
 
 	protected void setLettersDisable(boolean b) {
@@ -270,9 +270,10 @@ public class GameBase extends VBox implements UIPart {
 		}
 	}
 
-	protected void selectTab(GameBasePage page) {
+	protected void selectTab(Tab newValue) {
 		if (gamesService != null) {
-			page.setGames(gamesService.select(page.getText().charAt(0)));
+			((GameBasePage) newValue.getContent())
+					.setGames(gamesService.select(newValue.getText().charAt(0)));
 		}
 		filterField.setText("");
 	}

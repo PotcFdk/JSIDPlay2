@@ -188,7 +188,7 @@ public class Favorites extends VBox implements UIPart {
 				for (Tab tab : favoritesList.getTabs()) {
 					if (tab.getText().equals(currentFavorite)) {
 						favoritesList.getSelectionModel().select(tab);
-						currentlyPlayedFavorites = getSelectedTab();
+						currentlyPlayedFavorites = (FavoritesTab) getSelectedTab().getContent();
 						break;
 					}
 				}
@@ -209,7 +209,7 @@ public class Favorites extends VBox implements UIPart {
 				if (db.hasFiles()) {
 					success = true;
 					List<File> files = db.getFiles();
-					FavoritesTab selectedTab = getSelectedTab();
+					FavoritesTab selectedTab = (FavoritesTab) getSelectedTab().getContent();
 					selectedTab.addFavorites(files);
 				}
 				event.setDropCompleted(success);
@@ -241,7 +241,7 @@ public class Favorites extends VBox implements UIPart {
 									favoritesSection.setName(tabName);
 									favorites.add(favoritesSection);
 									try {
-										getSelectedTab().loadFavorites(file);
+										((FavoritesTab) getSelectedTab().getContent()).loadFavorites(file);
 									} catch (IOException e1) {
 										e1.printStackTrace();
 									}
@@ -265,25 +265,28 @@ public class Favorites extends VBox implements UIPart {
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
-			FavoritesTab selectedTab = getSelectedTab();
+			Tab tab = getSelectedTab();
+
+			FavoritesTab selectedTab = (FavoritesTab) tab.getContent();
 			selectedTab.addFavorites(files);
-			renameTab(selectedTab, PathUtils.getFilenameWithoutSuffix(file.getParentFile().getName()));
+			renameTab(tab, PathUtils.getFilenameWithoutSuffix(file.getParentFile().getName()));
+			tab.setText(selectedTab.getFavoritesSection().getName());
 		}
 	}
 
 	@FXML
 	private void removeFavorites() {
-		getSelectedTab().removeSelectedFavorites();
+		((FavoritesTab) getSelectedTab().getContent()).removeSelectedFavorites();
 	}
 
 	@FXML
 	private void selectAllFavorites() {
-		getSelectedTab().selectAllFavorites();
+		((FavoritesTab) getSelectedTab().getContent()).selectAllFavorites();
 	}
 
 	@FXML
 	private void clearSelection() {
-		getSelectedTab().clearSelection();
+		((FavoritesTab) getSelectedTab().getContent()).clearSelection();
 	}
 
 	@FXML
@@ -296,7 +299,7 @@ public class Favorites extends VBox implements UIPart {
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			try {
-				getSelectedTab().loadFavorites(file);
+				((FavoritesTab) getSelectedTab().getContent()).loadFavorites(file);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -314,7 +317,7 @@ public class Favorites extends VBox implements UIPart {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".js2");
 			try {
-				getSelectedTab().saveFavorites(target);
+				((FavoritesTab) getSelectedTab().getContent()).saveFavorites(target);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -332,6 +335,7 @@ public class Favorites extends VBox implements UIPart {
 	@FXML
 	private void renameTab() {
 		renameTab(getSelectedTab(), renameTab.getText());
+		getSelectedTab().setText(renameTab.getText());
 	}
 
 	@FXML
@@ -387,8 +391,8 @@ public class Favorites extends VBox implements UIPart {
 		}
 	}
 
-	private FavoritesTab getSelectedTab() {
-		return (FavoritesTab) favoritesList.getSelectionModel().getSelectedItem();
+	private Tab getSelectedTab() {
+		return favoritesList.getSelectionModel().getSelectedItem();
 	}
 
 	protected void addTab(final FavoritesSection favoritesSection) {
@@ -396,10 +400,10 @@ public class Favorites extends VBox implements UIPart {
 		if (favoritesSection.getName() == null) {
 			favoritesSection.setName(util.getBundle().getString("NEW_TAB"));
 		}
-		newTab.setText(favoritesSection.getName());
+		Tab tab = new Tab(favoritesSection.getName(), newTab);
 		newTab.restoreColumns(favoritesSection);
-		newTab.setClosable(favoritesList.getTabs().size() != 0);
-		newTab.setOnClosed(new EventHandler<Event>() {
+		tab.setClosable(favoritesList.getTabs().size() != 0);
+		tab.setOnClosed(new EventHandler<Event>() {
 
 			@Override
 			public void handle(Event event) {
@@ -409,13 +413,12 @@ public class Favorites extends VBox implements UIPart {
 		});
 		newTab.setFavorites(this);
 
-		favoritesList.getTabs().add(newTab);
-		favoritesList.getSelectionModel().select(newTab);
+		favoritesList.getTabs().add(tab);
+		favoritesList.getSelectionModel().select(tab);
 	}
 
-	private void renameTab(FavoritesTab selectedTab, String name) {
-		selectedTab.setText(name);
-		selectedTab.getFavoritesSection().setName(name);
+	private void renameTab(Tab selectedTab, String name) {
+		((FavoritesTab) selectedTab.getContent()).getFavoritesSection().setName(name);
 	}
 
 	protected void playNextTune() {
@@ -426,7 +429,7 @@ public class Favorites extends VBox implements UIPart {
 			if (pt == PlaybackType.RANDOM_ALL) {
 				favoritesList.getSelectionModel()
 						.select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
-				currentlyPlayedFavorites = getSelectedTab();
+				currentlyPlayedFavorites = (FavoritesTab) getSelectedTab().getContent();
 				currentlyPlayedFavorites.playNextRandom();
 			} else if (pt == PlaybackType.RANDOM_ONE && currentlyPlayedFavorites != null) {
 				currentlyPlayedFavorites.playNextRandom();

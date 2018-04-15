@@ -14,11 +14,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -29,7 +29,7 @@ import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.entities.gamebase.Games;
 
-public class GameBasePage extends Tab implements UIPart {
+public class GameBasePage extends VBox implements UIPart {
 
 	@FXML
 	private TableView<Games> gamebaseTable;

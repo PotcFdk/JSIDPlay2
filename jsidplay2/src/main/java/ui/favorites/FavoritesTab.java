@@ -43,6 +43,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
@@ -61,7 +62,7 @@ import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
 import ui.stilview.STILView;
 
-public class FavoritesTab extends Tab implements UIPart {
+public class FavoritesTab extends VBox implements UIPart {
 
 	@FXML
 	private TextField filterField;
@@ -165,14 +166,14 @@ public class FavoritesTab extends Tab implements UIPart {
 				MenuItem moveToTabItem = new MenuItem(name);
 				moveToTabItem.setOnAction(event2 -> {
 					ObservableList<HVSCEntry> selectedItems = favoritesTable.getSelectionModel().getSelectedItems();
-					copyToTab(selectedItems, (FavoritesTab) tab);
+					copyToTab(selectedItems, (FavoritesTab) tab.getContent());
 					removeFavorites(selectedItems);
 				});
 				moveToTab.getItems().add(moveToTabItem);
 				MenuItem copyToTabItem = new MenuItem(name);
 				copyToTabItem.setOnAction(event2 -> {
 					ObservableList<HVSCEntry> selectedItems = favoritesTable.getSelectionModel().getSelectedItems();
-					copyToTab(selectedItems, (FavoritesTab) tab);
+					copyToTab(selectedItems, (FavoritesTab) tab.getContent());
 				});
 				copyToTab.getItems().add(copyToTabItem);
 			}
@@ -321,7 +322,6 @@ public class FavoritesTab extends Tab implements UIPart {
 
 	void restoreColumns(final FavoritesSection favoritesSection) {
 		this.favoritesSection = favoritesSection;
-		setText(favoritesSection.getName());
 		filteredFavorites.addAll(favoritesSection.getFavorites());
 
 		// Restore persisted columns
