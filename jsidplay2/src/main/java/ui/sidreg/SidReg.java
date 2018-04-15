@@ -12,16 +12,16 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.VBox;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class SidReg extends Tab implements UIPart {
+public class SidReg extends VBox implements UIPart {
 	public static final String ID = "SIDREGISTERS";
 	private static final int REFRESH_RATE = 1000;
 
@@ -53,8 +53,6 @@ public class SidReg extends Tab implements UIPart {
 	public SidReg(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

@@ -20,13 +20,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DesktopIntegration;
@@ -46,7 +46,7 @@ import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
 
-public class DiskCollection extends Tab implements UIPart {
+public class DiskCollection extends VBox implements UIPart {
 
 	public static final String MAGS_ID = "MAGS";
 	public static final String DEMOS_ID = "DEMOS";
@@ -79,21 +79,6 @@ public class DiskCollection extends Tab implements UIPart {
 	}
 
 	public void setType(DiskCollectionType type) {
-		switch (type) {
-		case HVMEC:
-			setId(HVMEC_ID);
-			break;
-		case DEMOS:
-			setId(DEMOS_ID);
-			break;
-		case MAGS:
-			setId(MAGS_ID);
-			break;
-
-		default:
-			break;
-		}
-		setText(util.getBundle().getString(getId()));
 		this.type.set(type);
 	}
 

@@ -19,7 +19,7 @@
 <?scenebuilder-preview-i18n-resource Oscilloscope.properties?>
 <?import javafx.scene.control.ScrollPane?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<BorderPane AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"

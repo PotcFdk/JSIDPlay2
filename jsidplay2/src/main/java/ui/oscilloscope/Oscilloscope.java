@@ -11,7 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Tab;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -27,7 +27,7 @@ import ui.entities.config.EmulationSection;
 /**
  * @author Ken Händel
  */
-public class Oscilloscope extends Tab implements UIPart {
+public class Oscilloscope extends VBox implements UIPart {
 
 	public static final String ID = "OSCILLOSCOPE";
 
@@ -79,8 +79,6 @@ public class Oscilloscope extends Tab implements UIPart {
 	public Oscilloscope(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	private ChangeListener<? super State> listener = (observable, oldValue, newValue) -> {

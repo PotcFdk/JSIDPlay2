@@ -22,8 +22,8 @@
 <?import ui.asm.VariablesRowFactory?>
 <?scenebuilder-preview-i18n-resource Asm.properties?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
-	<AnchorPane>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<AnchorPane VBox.vgrow="ALWAYS">
 		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 			<children>

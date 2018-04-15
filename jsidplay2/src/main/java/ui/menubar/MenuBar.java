@@ -117,8 +117,8 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	@FXML
-	protected CheckMenuItem pauseContinue, turboTape, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000, expand4000,
-			expand6000, expand8000, expandA000, turnPrinterOn;
+	protected CheckMenuItem pauseContinue, turboTape, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000,
+			expand4000, expand6000, expand8000, expandA000, turnPrinterOn;
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
 	@FXML
@@ -436,7 +436,7 @@ public class MenuBar extends VBox implements UIPart {
 	private void resetCounter() {
 		util.getPlayer().getDatasette().control(Datasette.Control.RESET_COUNTER);
 	}
-	
+
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
@@ -674,22 +674,28 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void video() {
 		if (!tabAlreadyOpen(Video.ID)) {
-			addTab(new Video(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Video.ID), new Video(window, util.getPlayer()));
+			tab.setId(Video.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void oscilloscope() {
 		if (!tabAlreadyOpen(Oscilloscope.ID)) {
-			addTab(new Oscilloscope(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Oscilloscope.ID), new Oscilloscope(window, util.getPlayer()));
+			tab.setId(Oscilloscope.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void hvsc() {
 		if (!tabAlreadyOpen(MusicCollection.HVSC_ID)) {
-			MusicCollection tab = new MusicCollection(window, util.getPlayer());
-			tab.setType(MusicCollectionType.HVSC);
+			MusicCollection collection = new MusicCollection(window, util.getPlayer());
+			collection.setType(MusicCollectionType.HVSC);
+			Tab tab = new Tab(util.getBundle().getString(MusicCollection.HVSC_ID), collection);
+			tab.setId(MusicCollection.HVSC_ID);
 			addTab(tab);
 		}
 	}
@@ -697,8 +703,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void cgsc() {
 		if (!tabAlreadyOpen(MusicCollection.CGSC_ID)) {
-			MusicCollection tab = new MusicCollection(window, util.getPlayer());
-			tab.setType(MusicCollectionType.CGSC);
+			MusicCollection collection = new MusicCollection(window, util.getPlayer());
+			collection.setType(MusicCollectionType.CGSC);
+			Tab tab = new Tab(util.getBundle().getString(MusicCollection.CGSC_ID), collection);
+			tab.setId(MusicCollection.CGSC_ID);
 			addTab(tab);
 		}
 	}
@@ -706,8 +714,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void hvmec() {
 		if (!tabAlreadyOpen(DiskCollection.HVMEC_ID)) {
-			DiskCollection tab = new DiskCollection(window, util.getPlayer());
-			tab.setType(DiskCollectionType.HVMEC);
+			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			collection.setType(DiskCollectionType.HVMEC);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollection.HVMEC_ID), collection);
+			tab.setId(DiskCollection.HVMEC_ID);
 			addTab(tab);
 		}
 	}
@@ -715,8 +725,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void demos() {
 		if (!tabAlreadyOpen(DiskCollection.DEMOS_ID)) {
-			DiskCollection tab = new DiskCollection(window, util.getPlayer());
-			tab.setType(DiskCollectionType.DEMOS);
+			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			collection.setType(DiskCollectionType.DEMOS);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollection.DEMOS_ID), collection);
+			tab.setId(DiskCollection.DEMOS_ID);
 			addTab(tab);
 		}
 	}
@@ -724,8 +736,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void mags() {
 		if (!tabAlreadyOpen(DiskCollection.MAGS_ID)) {
-			DiskCollection tab = new DiskCollection(window, util.getPlayer());
-			tab.setType(DiskCollectionType.MAGS);
+			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			collection.setType(DiskCollectionType.MAGS);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollection.MAGS_ID), collection);
+			tab.setId(DiskCollection.MAGS_ID);
 			addTab(tab);
 		}
 	}
@@ -733,64 +747,82 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void favorites() {
 		if (!tabAlreadyOpen(Favorites.ID)) {
-			addTab(new Favorites(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Favorites.ID), new Favorites(window, util.getPlayer()));
+			tab.setId(Favorites.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void gamebase() {
 		if (!tabAlreadyOpen(GameBase.ID)) {
-			addTab(new GameBase(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(GameBase.ID), new GameBase(window, util.getPlayer()));
+			tab.setId(GameBase.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void asm() {
 		if (!tabAlreadyOpen(Asm.ID)) {
-			addTab(new Asm(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Asm.ID), new Asm(window, util.getPlayer()));
+			tab.setId(Asm.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void printer() {
 		if (!tabAlreadyOpen(Printer.ID)) {
-			addTab(new Printer(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Printer.ID), new Printer(window, util.getPlayer()));
+			tab.setId(Printer.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void console() {
 		if (!tabAlreadyOpen(Console.ID)) {
-			addTab(new Console(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Console.ID), new Console(window, util.getPlayer()));
+			tab.setId(Console.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void sidDump() {
 		if (!tabAlreadyOpen(SidDump.ID)) {
-			addTab(new SidDump(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(SidDump.ID), new SidDump(window, util.getPlayer()));
+			tab.setId(SidDump.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void sidRegisters() {
 		if (!tabAlreadyOpen(SidReg.ID)) {
-			addTab(new SidReg(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(SidReg.ID), new SidReg(window, util.getPlayer()));
+			tab.setId(SidReg.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void disassembler() {
 		if (!tabAlreadyOpen(Disassembler.ID)) {
-			addTab(new Disassembler(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Disassembler.ID), new Disassembler(window, util.getPlayer()));
+			tab.setId(Disassembler.ID);
+			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void csdb() {
 		if (!tabAlreadyOpen(WebViewType.CSDB.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.CSDB);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.CSDB);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.CSDB.name()), collection);
+			tab.setId(WebViewType.CSDB.name());
 			addTab(tab);
 		}
 	}
@@ -798,8 +830,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void codebase64() {
 		if (!tabAlreadyOpen(WebViewType.CODEBASE64.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.CODEBASE64);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.CODEBASE64);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.CODEBASE64.name()), collection);
+			tab.setId(WebViewType.CODEBASE64.name());
 			addTab(tab);
 		}
 	}
@@ -807,8 +841,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void remixKweqOrg() {
 		if (!tabAlreadyOpen(WebViewType.REMIX_KWED_ORG.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.REMIX_KWED_ORG);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.REMIX_KWED_ORG);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.REMIX_KWED_ORG.name()), collection);
+			tab.setId(WebViewType.REMIX_KWED_ORG.name());
 			addTab(tab);
 		}
 	}
@@ -816,8 +852,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void sidOth4Com() {
 		if (!tabAlreadyOpen(WebViewType.SID_OTH4_COM.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.SID_OTH4_COM);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.SID_OTH4_COM);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.SID_OTH4_COM.name()), collection);
+			tab.setId(WebViewType.SID_OTH4_COM.name());
 			addTab(tab);
 		}
 	}
@@ -825,8 +863,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void c64() {
 		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.C64_SK);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.C64_SK);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.C64_SK.name()), collection);
+			tab.setId(WebViewType.C64_SK.name());
 			addTab(tab);
 		}
 	}
@@ -834,8 +874,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void forum64() {
 		if (!tabAlreadyOpen(WebViewType.FORUM64_DE.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.FORUM64_DE);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.FORUM64_DE);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.FORUM64_DE.name()), collection);
+			tab.setId(WebViewType.FORUM64_DE.name());
 			addTab(tab);
 		}
 	}
@@ -843,8 +885,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void lemon64() {
 		if (!tabAlreadyOpen(WebViewType.LEMON64_COM.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.LEMON64_COM);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.LEMON64_COM);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.LEMON64_COM.name()), collection);
+			tab.setId(WebViewType.LEMON64_COM.name());
 			addTab(tab);
 		}
 	}
@@ -852,8 +896,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void soasc() {
 		if (!tabAlreadyOpen(WebViewType.SOASC.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.SOASC);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.SOASC);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.SOASC.name()), collection);
+			tab.setId(WebViewType.SOASC.name());
 			addTab(tab);
 		}
 	}
@@ -861,8 +907,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void jsidplay2() {
 		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_SRC.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.JSIDPLAY2_SRC);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.JSIDPLAY2_SRC);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_SRC.name()), collection);
+			tab.setId(WebViewType.JSIDPLAY2_SRC.name());
 			addTab(tab);
 		}
 	}
@@ -870,8 +918,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void jsidplay2Javadoc() {
 		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_JAVADOC.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.JSIDPLAY2_JAVADOC);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_JAVADOC.name()), collection);
+			tab.setId(WebViewType.JSIDPLAY2_JAVADOC.name());
 			addTab(tab);
 		}
 	}
@@ -879,8 +929,10 @@ public class MenuBar extends VBox implements UIPart {
 	@FXML
 	private void userguide() {
 		if (!tabAlreadyOpen(WebViewType.USERGUIDE.name())) {
-			WebView tab = new WebView(window, util.getPlayer());
-			tab.setType(WebViewType.USERGUIDE);
+			WebView collection = new WebView(window, util.getPlayer());
+			collection.setType(WebViewType.USERGUIDE);
+			Tab tab = new Tab(util.getBundle().getString(WebViewType.USERGUIDE.name()), collection);
+			tab.setId(WebViewType.USERGUIDE.name());
 			addTab(tab);
 		}
 	}
@@ -957,7 +1009,7 @@ public class MenuBar extends VBox implements UIPart {
 			views.add(new ViewEntity(tab.getId()));
 		}
 		tab.setOnClosed(evt -> {
-			window.close((UIPart) tab);
+			window.close((UIPart) tab.getContent());
 			views.removeIf(view -> view.getFxId().equals(tab.getId()));
 		});
 		window.getTabbedPane().getTabs().add(tab);
@@ -1016,8 +1068,9 @@ public class MenuBar extends VBox implements UIPart {
 	private void createHardCopy(String format) {
 		video();
 		try {
-			Video videoScreen = (Video) window.getTabbedPane().getTabs().stream()
-					.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get();
+			Tab tab = (Tab) window.getTabbedPane().getTabs().stream()
+					.filter(tab2 -> tab2.getId().equals(Video.ID)).findFirst().get();
+			Video videoScreen = (Video) tab.getContent();
 			Image vicImage = videoScreen.getVicImage();
 			if (vicImage != null) {
 				ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format,
@@ -1046,7 +1099,7 @@ public class MenuBar extends VBox implements UIPart {
 		next.setText(String.format(util.getBundle().getString("NEXT2") + " (%d/%d)", playList.getNext(),
 				playList.getLength()));
 		next2ToolTip.setText(next.getText());
-		
+
 		save.setDisable(util.getPlayer().getTune() == RESET);
 	}
 
@@ -1090,7 +1143,7 @@ public class MenuBar extends VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		Alert alert = new Alert(AlertType.ERROR,"");
+		Alert alert = new Alert(AlertType.ERROR, "");
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
 		alert.getDialogPane().setHeaderText(msg);
 		alert.showAndWait();

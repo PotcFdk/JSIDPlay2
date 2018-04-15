@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
@@ -17,7 +17,7 @@ import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class Printer extends Tab implements UIPart, IPaper {
+public class Printer extends VBox implements UIPart, IPaper {
 
 	public static final String ID = "PRINTER";
 
@@ -34,8 +34,6 @@ public class Printer extends Tab implements UIPart, IPaper {
 	public Printer(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

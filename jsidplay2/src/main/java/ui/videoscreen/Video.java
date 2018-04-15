@@ -31,12 +31,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -66,7 +66,7 @@ import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
-public class Video extends Tab implements UIPart, Consumer<int[]> {
+public class Video extends VBox implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
 	private static final double PAL_MARGIN_LEFT = 55;
 	private static final double PAL_MARGIN_RIGHT = 55;
@@ -142,8 +142,6 @@ public class Video extends Tab implements UIPart, Consumer<int[]> {
 	public Video(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

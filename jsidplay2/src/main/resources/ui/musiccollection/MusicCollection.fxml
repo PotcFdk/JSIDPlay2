@@ -32,7 +32,7 @@
 <?import ui.musiccollection.TuneInfoRowFactory?>
 <?scenebuilder-preview-i18n-resource MusicCollection.properties?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">

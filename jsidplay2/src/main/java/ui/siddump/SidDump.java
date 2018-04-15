@@ -16,12 +16,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddump.SIDDumpConfiguration;
@@ -34,7 +34,7 @@ import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class SidDump extends Tab implements UIPart {
+public class SidDump extends VBox implements UIPart {
 
 	public static final String ID = "SIDDUMP";
 	private static final String CELL_VALUE_OK = "cellValueOk";
@@ -82,8 +82,6 @@ public class SidDump extends Tab implements UIPart {
 	public SidDump(final C64Window window, final Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

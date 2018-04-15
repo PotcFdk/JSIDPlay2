@@ -21,7 +21,7 @@
 <?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource Video.properties?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<BorderPane AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"

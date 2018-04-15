@@ -1,13 +1,13 @@
 package ui.console;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
+import javafx.scene.layout.VBox;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class Console extends Tab implements UIPart {
+public class Console extends VBox implements UIPart {
 	public static final String ID = "CONSOLE";
 	private static final String STYLE_ERROR_CONSOLE = "errorConsole";
 	private static final String STYLE_OUTPUT_CONSOLE = "outputConsole";
@@ -20,8 +20,6 @@ public class Console extends Tab implements UIPart {
 	public Console(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

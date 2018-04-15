@@ -21,8 +21,8 @@
 <?scenebuilder-preview-i18n-resource Favorites.properties?>
 <?import javafx.geometry.Insets?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
-	<AnchorPane>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<AnchorPane VBox.vgrow="ALWAYS">
 		<fx:define>
 			<ToggleGroup fx:id="playbackGroup" />
 			<ToggleGroup fx:id="repeatGroup" />

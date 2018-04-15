@@ -25,10 +25,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import libsidplay.sidtune.SidTune;
@@ -43,7 +43,7 @@ import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
-public class WebView extends Tab implements UIPart {
+public class WebView extends VBox implements UIPart {
 
 	public class HyperlinkRedirectListener implements ChangeListener<Worker.State>, EventListener {
 
@@ -179,8 +179,6 @@ public class WebView extends Tab implements UIPart {
 
 	public void setType(WebViewType type) {
 		this.type = type;
-		setId(type.name());
-		setText(util.getBundle().getString(getId()));
 		home();
 	}
 

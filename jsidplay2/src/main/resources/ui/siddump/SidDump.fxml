@@ -22,7 +22,7 @@
 <?import ui.siddump.SidDumpCellFactory?>
 <?scenebuilder-preview-i18n-resource SidDump.properties?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane stylesheets="@SidDump.css">
 		<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" fx:id="root">

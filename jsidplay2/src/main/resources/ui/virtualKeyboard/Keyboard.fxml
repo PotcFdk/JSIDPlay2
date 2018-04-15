@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.TitledPane?>
-<?scenebuilder-preview-i18n-resource VirtualKeyboard.properties?>
+<?scenebuilder-preview-i18n-resource Keyboard.properties?>
 
 <Scene xmlns:fx="http://javafx.com/fxml"
 	stylesheets="@Keyboard.css">
@@ -363,8 +363,8 @@
 			</StackPane>
 		</center>
 		<bottom>
-			<VBox>
-				<Text text="%LEGEND"/>
+			<VBox spacing="5" style="-fx-padding: 5px">
+				<Text text="%LEGEND" />
 				<Text text="%LEGEND_MOUSE_LEFT" wrappingWidth="550"/>
 				<Text text="%LEGEND_MOUSE_RIGHT" wrappingWidth="550" />
 				<Text text="%LEGEND_SHIFT_LOCK" wrappingWidth="550" />

@@ -13,13 +13,13 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import kickass.common.errors.AsmError;
 import kickass.common.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
@@ -31,7 +31,7 @@ import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
 
-public class Asm extends Tab implements UIPart {
+public class Asm extends VBox implements UIPart {
 
 	public static final String ID = "ASM";
 
@@ -57,8 +57,6 @@ public class Asm extends Tab implements UIPart {
 	public Asm(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML
@@ -130,6 +128,7 @@ public class Asm extends Tab implements UIPart {
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);
 			status.setText("");
+			util.setPlayingTab(this);
 			util.getPlayer().play(tune);
 		} catch (AsmErrorException e) {
 			if (e.getError() != null) {

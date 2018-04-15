@@ -52,7 +52,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -61,6 +60,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 import libpsid64.Psid64;
@@ -112,7 +112,7 @@ import ui.stilview.STILView;
  * @author Ken Händel
  * @author Antti Lankila
  */
-public class MusicCollection extends Tab implements UIPart {
+public class MusicCollection extends VBox implements UIPart {
 
 	public static final String HVSC_ID = "HVSC";
 	public static final String CGSC_ID = "CGSC";
@@ -230,13 +230,11 @@ public class MusicCollection extends Tab implements UIPart {
 	public void setType(MusicCollectionType type) {
 		switch (type) {
 		case HVSC:
-			setId(HVSC_ID);
 			collectionURL = HVSC_URL;
 			collectionDS = HVSC_DS;
 			break;
 
 		case CGSC:
-			setId(CGSC_ID);
 			collectionURL = CGSC_URL;
 			collectionDS = CGSC_DS;
 			break;
@@ -244,7 +242,6 @@ public class MusicCollection extends Tab implements UIPart {
 		default:
 			break;
 		}
-		setText(util.getBundle().getString(getId()));
 		this.type.set(type);
 	}
 

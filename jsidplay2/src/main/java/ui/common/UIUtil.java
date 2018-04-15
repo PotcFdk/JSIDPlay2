@@ -64,9 +64,13 @@ public class UIUtil {
 	}
 
 	public final void setPlayingTab(Tab tab) {
-		resetPlayingTab(tab.getTabPane().getScene().getRoot());
+		setPlayingTab(tab.getTabPane());
 		tab.setGraphic(new ImageView(PLAYED_ICON));
-		Parent p = tab.getTabPane().getParent();
+	}
+
+	public final void setPlayingTab(Node node) {
+		resetPlayingTab(node.getScene().getRoot());
+		Parent p = node.getParent();
 		while (p != null) {
 			if (p instanceof TabPane) {
 				TabPane tabPane = (TabPane) p;

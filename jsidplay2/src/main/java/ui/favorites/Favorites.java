@@ -27,6 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidutils.PathUtils;
@@ -46,7 +47,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
 
-public class Favorites extends Tab implements UIPart {
+public class Favorites extends VBox implements UIPart {
 
 	public static final String ID = "FAVORITES";
 
@@ -80,8 +81,6 @@ public class Favorites extends Tab implements UIPart {
 		this.window = window;
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML

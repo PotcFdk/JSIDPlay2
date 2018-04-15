@@ -18,7 +18,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.Hyperlink?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.Tab">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">

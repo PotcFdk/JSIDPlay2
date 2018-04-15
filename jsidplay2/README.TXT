@@ -44,6 +44,12 @@ Add:
 /usr/lib/jvm/java-8-openjdk-amd64/jre
 X Use as default Java
 
+Eclipse JavaFX support:
+=======================
+1. Install e(fx)clipse
+2. To get a content assistant on javafx css files:
+Right click on your project -> properties -> Java build path -> libraries -> add library -> javaFX SDK
+
 Java WebStart pitfalls:
 =======================
 Common:

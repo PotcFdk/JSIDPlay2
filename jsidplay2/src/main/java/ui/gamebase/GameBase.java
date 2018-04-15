@@ -23,6 +23,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
@@ -41,7 +42,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
 
-public class GameBase extends Tab implements UIPart {
+public class GameBase extends VBox implements UIPart {
 
 	public static final String ID = "GAMEBASE";
 
@@ -110,8 +111,6 @@ public class GameBase extends Tab implements UIPart {
 	public GameBase(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
-		setId(ID);
-		setText(util.getBundle().getString(getId()));
 	}
 
 	@FXML
