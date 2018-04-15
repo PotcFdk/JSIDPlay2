@@ -148,8 +148,8 @@ public class MenuBar extends VBox implements UIPart {
 
 					final Tab selectedItem = window.getTabbedPane().getSelectionModel().getSelectedItem();
 					boolean doNotSwitch = selectedItem != null
-							&& (MusicCollection.class.isAssignableFrom(selectedItem.getClass())
-									|| Favorites.class.isAssignableFrom(selectedItem.getClass()));
+							&& (MusicCollection.class.isAssignableFrom(selectedItem.getContent().getClass())
+									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
 					if (sidTune == RESET || (!MP3Tune.class.isAssignableFrom(sidTune.getClass())
 							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
@@ -178,7 +178,7 @@ public class MenuBar extends VBox implements UIPart {
 	public MenuBar() {
 		// only for e(fx)clipse JavaFX Preview
 	}
-	
+
 	public MenuBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
@@ -1072,8 +1072,8 @@ public class MenuBar extends VBox implements UIPart {
 	private void createHardCopy(String format) {
 		video();
 		try {
-			Tab tab = (Tab) window.getTabbedPane().getTabs().stream()
-					.filter(tab2 -> tab2.getId().equals(Video.ID)).findFirst().get();
+			Tab tab = (Tab) window.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
+					.findFirst().get();
 			Video videoScreen = (Video) tab.getContent();
 			Image vicImage = videoScreen.getVicImage();
 			if (vicImage != null) {
