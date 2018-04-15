@@ -49,6 +49,15 @@ Eclipse JavaFX support:
 1. Install e(fx)clipse
 2. To get a content assistant on javafx css files:
 Right click on your project -> properties -> Java build path -> libraries -> add library -> javaFX SDK
+To edit .fxml files with FXML Editor:
+Right click on .fxml file: Open With -> Other... -> FXML Editor (Check "Use it for all '*.fxml' files") -> OK
+To specify text resource inside .fxml file use:
+<?scenebuilder-preview-i18n-resource GameBasePage.properties?>
+To use style sheets inside .fxml file use:
+<Scene stylesheets="@JSidPlay2.css"> ...
+
+TODO scenebuilder, provide testdata:
+<?scenebuilder-classpath-element ../../../../target/classes?>
 
 Java WebStart pitfalls:
 =======================

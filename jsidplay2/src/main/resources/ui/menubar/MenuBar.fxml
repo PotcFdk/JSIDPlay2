@@ -19,7 +19,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource MenuBar.properties?>
-<?scenebuilder-classpath-element ../../../../../target/classes?>
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<fx:define>

@@ -45,6 +45,10 @@ public class GameBasePage extends Tab implements UIPart {
 
 	private UIUtil util;
 
+	public GameBasePage() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public GameBasePage(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

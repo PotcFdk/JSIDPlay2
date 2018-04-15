@@ -8,7 +8,6 @@
 <?import ui.toolbar.ToolBar?>
 <?import ui.statusbar.StatusBar?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
-<?scenebuilder-classpath-element ../../../../target/classes?>
 <Scene stylesheets="@JSidPlay2.css">
 	<BorderPane xmlns:fx="http://javafx.com/fxml">
 		<top>

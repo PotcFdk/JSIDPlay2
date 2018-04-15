@@ -78,6 +78,10 @@ public class ToolBar extends VBox implements UIPart {
 
 	private UIUtil util;
 
+	public ToolBar() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public ToolBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

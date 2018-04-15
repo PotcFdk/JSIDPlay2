@@ -25,6 +25,10 @@ public class ConsoleOutput extends VBox implements UIPart {
 
 	private UIUtil util;
 
+	public ConsoleOutput() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public ConsoleOutput(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

@@ -175,6 +175,10 @@ public class MenuBar extends VBox implements UIPart {
 	private UIUtil util;
 	private JSidPlay2 window;
 
+	public MenuBar() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public MenuBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

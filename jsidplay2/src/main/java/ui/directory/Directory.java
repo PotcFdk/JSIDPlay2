@@ -54,6 +54,10 @@ public class Directory extends VBox implements UIPart {
 
 	private File previewFile;
 
+	public Directory() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public Directory(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

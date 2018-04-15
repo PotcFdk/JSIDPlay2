@@ -126,6 +126,10 @@ public class StatusBar extends AnchorPane implements UIPart {
 		}
 	}
 
+	public StatusBar() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public StatusBar(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);

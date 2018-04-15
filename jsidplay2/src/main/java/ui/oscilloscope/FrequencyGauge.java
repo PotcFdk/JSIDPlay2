@@ -14,6 +14,10 @@ public final class FrequencyGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
+	public FrequencyGauge() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public FrequencyGauge(C64Window window, Player player) {
 		super(window, player);
 	}

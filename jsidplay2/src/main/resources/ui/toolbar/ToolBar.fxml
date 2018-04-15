@@ -18,7 +18,6 @@
 <?import java.lang.Integer?>
 <?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource ToolBar.properties?>
-<?scenebuilder-classpath-element ../../../../../target/classes?>
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<fx:define>

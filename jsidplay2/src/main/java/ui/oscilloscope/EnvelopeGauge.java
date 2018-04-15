@@ -15,6 +15,10 @@ public final class EnvelopeGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
+	public EnvelopeGauge() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public EnvelopeGauge(C64Window window, Player player) {
 		super(window, player);
 	}

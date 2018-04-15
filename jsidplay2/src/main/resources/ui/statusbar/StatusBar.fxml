@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?scenebuilder-preview-i18n-resource StatusBar.properties?>
-<?scenebuilder-classpath-element ../../../../../target/classes?>
 
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.AnchorPane">
 	<Label fx:id="status" AnchorPane.leftAnchor="10" />

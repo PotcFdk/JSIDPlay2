@@ -29,6 +29,10 @@ public class Gauge extends VBox implements UIPart {
 	private String text;
 	private int voice;
 
+	public Gauge() {
+		// only for e(fx)clipse JavaFX Preview
+	}
+	
 	public Gauge(C64Window window, Player player) {
 		util = new UIUtil(window, player, this);
 		util.parse(this);
