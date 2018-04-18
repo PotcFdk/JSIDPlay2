@@ -134,7 +134,6 @@ public abstract class MP3Driver implements AudioDriver {
 			int bytesWritten = jump3r.encodeBuffer(sampleBuffer.array(), 0, sampleBuffer.capacity(), encoded);
 			out.write(encoded, 0, bytesWritten);
 		} catch (ArrayIndexOutOfBoundsException | IOException e) {
-			e.printStackTrace();
 			throw new InterruptedException();
 		}
 	}

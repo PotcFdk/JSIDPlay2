@@ -30,6 +30,7 @@ import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
+import ui.servlets.JSIDPlay2Server;
 
 /**
  * @author Ken Händel
@@ -46,7 +47,9 @@ public class JSidPlay2Main extends Application {
 		try {
 			// turn off HSQL logging re-configuration
 			System.setProperty("hsqldb.reconfig_logging", "false");
-			// configure JSIDPlay2 logging
+			// make jetty use java util logging
+			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.JavaUtilLog");
+			// configure JSIDPlay2 logging (java util logging)
 			LogManager.getLogManager().readConfiguration(JSidPlay2Main.class.getResourceAsStream(LOG_CONFIG_RES));
 		} catch (final IOException e) {
 			Logger.getAnonymousLogger().severe("Could not load " + LOG_CONFIG_RES + ": " + e.getMessage());
@@ -76,6 +79,11 @@ public class JSidPlay2Main extends Application {
 	 * Player
 	 */
 	private Player player;
+
+	/**
+	 * JSIPlay2 REST based web-services
+	 */
+	private JSIDPlay2Server jsidplay2Server = new JSIDPlay2Server();
 
 	private Consumer<Player> menuHook = player -> {
 		if (player.getTune() != SidTune.RESET) {
@@ -135,6 +143,11 @@ public class JSidPlay2Main extends Application {
 			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
 		}
 		jSidplay2.open();
+		try {
+			jsidplay2Server.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -155,6 +168,12 @@ public class JSidPlay2Main extends Application {
 		}
 		configService.save((Configuration) player.getConfig());
 		configService.close();
+
+		try {
+			jsidplay2Server.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	//
