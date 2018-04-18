@@ -1,5 +1,6 @@
 package de.haendel.jsidplay2.request;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,10 +20,10 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import de.haendel.jsidplay2.config.IConfiguration;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
+import de.haendel.jsidplay2.config.IConfiguration;
 
 public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		AsyncTask<String, Void, ResultType> {
@@ -43,6 +44,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		}
 	}
 
+	private static final String UTF_8 = "UTF-8";
 	private static final String CONTEXT_ROOT = "/jsidplay2service";
 	private static final String ROOT_PATH = "/JSIDPlay2REST";
 	private static final String ROOT_URL = CONTEXT_ROOT + ROOT_PATH;
@@ -139,18 +141,21 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 	protected ArrayList<String> receiveList(HttpEntity httpEntity)
 			throws IllegalStateException, IOException {
 		InputStream content = httpEntity.getContent();
-		StringBuffer out = new StringBuffer();
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		int n = 1;
 		while (n > 0) {
 			byte[] b = new byte[4096];
 			n = content.read(b);
 			if (n > 0)
-				out.append(new String(b, 0, n));
+				out.write(b, 0, n);
 		}
-		String line = out.substring(1, out.length() - 1);
+		String trimmed = out.toString(UTF_8).trim();
+		String line = trimmed.substring(1, trimmed.length() - 1);
 		String[] childs = splitJSONToken(line, ",");
 		ArrayList<String> list = new ArrayList<String>();
 		for (String child : childs) {
+			child=child.trim();
 			if (child.length() > 2) {
 				list.add(child.substring(1, child.length() - 1));
 			}
@@ -173,18 +178,19 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 			HttpEntity httpEntity, IKeyLocalizer localizer)
 			throws IllegalStateException, IOException {
 		InputStream content = httpEntity.getContent();
-		final StringBuffer out = new StringBuffer();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		int n = 1;
 		while (n > 0) {
 			byte[] b = new byte[4096];
 			n = content.read(b);
 			if (n > 0)
-				out.append(new String(b, 0, n));
+				out.write(b, 0, n);
 		}
 		// out is string containing a map
 		List<Pair<String, String>> rows = new ArrayList<Pair<String, String>>();
 
-		String mapToken = out.substring(1, out.length() - 1);
+		String trimmed = out.toString(UTF_8).trim();
+		String mapToken = trimmed.substring(1, trimmed.length() - 1);
 		String[] splittedMap = JSIDPlay2RESTRequest.splitJSONToken(mapToken,
 				",");
 		for (String mapEntryToken : splittedMap) {
@@ -193,6 +199,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 			String tuneInfoName = null;
 			String tuneInfoValue = "";
 			for (String keyOrValueToken : splittedMapEntry) {
+				keyOrValueToken = keyOrValueToken.trim();
 				String keyOrValue = keyOrValueToken.substring(1,
 						keyOrValueToken.length() - 1);
 				// newline handling
