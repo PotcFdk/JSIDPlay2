@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.VBox;
 import sidplay.Player;
 import ui.entities.config.Configuration;
+import ui.entities.config.service.ConfigService;
+import ui.entities.config.service.ConfigService.ConfigurationType;
 
 public abstract class C64VBox extends VBox implements UIPart, Initializable {
 
@@ -17,7 +19,10 @@ public abstract class C64VBox extends VBox implements UIPart, Initializable {
 	 * configuration for the controller)
 	 */
 	public C64VBox() {
-		util = new UIUtil(null, new Player(new Configuration()), this);
+		ConfigService configService = new ConfigService(ConfigurationType.XML);
+		Configuration configuration = configService.load();
+		util = new UIUtil(null, new Player(configuration), this);
+		configService.close();
 		// XXX Uncomment line ONLY for JavaFX Preview in Eclipse of JSidPlay2.fxml -->
 //		util.parse(this);
 	}
