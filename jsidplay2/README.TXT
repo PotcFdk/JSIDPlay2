@@ -55,9 +55,8 @@ To specify text resource inside .fxml file use:
 <?scenebuilder-preview-i18n-resource GameBasePage.properties?>
 To use style sheets inside .fxml file use:
 <Scene stylesheets="@JSidPlay2.css"> ...
-
-TODO scenebuilder, provide testdata:
-<?scenebuilder-classpath-element ../../../../target/classes?>
+To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment commented out alternative version)
+Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why some of the layouts need that.
 
 Java WebStart pitfalls:
 =======================
