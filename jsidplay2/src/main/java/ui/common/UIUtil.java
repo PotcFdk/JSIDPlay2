@@ -39,7 +39,9 @@ public class UIUtil {
 		this.player = player;
 		this.controller = controller;
 		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
-		window.getUiParts().add(controller);
+		if (window != null) {
+			window.getUiParts().add(controller);
+		}
 	}
 
 	public Object parse() {
@@ -116,4 +118,7 @@ public class UIUtil {
 		return bundle;
 	}
 
+	void setBundle(ResourceBundle bundle) {
+		this.bundle = bundle;
+	}
 }

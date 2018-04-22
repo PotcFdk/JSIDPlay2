@@ -29,12 +29,15 @@ public class STILView extends C64Window {
 	@FXML
 	private SplitPane splitPane;
 
+	public STILView() {
+	}
+	
 	public STILView(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		splitPane.setDividerPosition(0, 0.3);
 		tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {

@@ -20,9 +20,16 @@ public class Keyboard extends C64Window {
 	
 	private final Set<KeyTableEntry> keysPressed = new HashSet<KeyTableEntry>();
 	
+	public Keyboard() {
+	}
+	
 	public Keyboard(Player player) {
 		super(player);
 		getStage().resizableProperty().set(false);
+	}
+
+	@Override
+	protected void initialize() {
 	}
 
 	@Override

@@ -34,7 +34,9 @@ public class JSIDPlay2Server {
 	}
 
 	public void stop() throws Exception {
-		server.stop();
-		server.join();
+		if (server != null) {
+			server.stop();
+			server.join();
+		}
 	}
 }

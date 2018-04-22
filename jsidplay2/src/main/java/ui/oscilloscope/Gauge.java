@@ -6,15 +6,14 @@ import java.util.Arrays;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class Gauge extends VBox implements UIPart {
+public class Gauge extends C64VBox implements UIPart {
 	protected static final Color[] gaugeColors = new Color[256];
 
 	static {
@@ -24,20 +23,20 @@ public class Gauge extends VBox implements UIPart {
 		}
 	}
 
-	private UIUtil util;
-
 	private String text;
 	private int voice;
 
 	public Gauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public Gauge(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
+	@Override
+	protected void initialize() {
+	}
+	
 	/** data plots normalized between -1 .. 1 */
 	private float[] dataMin = new float[256];
 	/** data plots normalized between -1 .. 1 */
@@ -96,6 +95,9 @@ public class Gauge extends VBox implements UIPart {
 	}
 
 	public void updateGauge(SIDEmu sidemu) {
+		if (getTitledPane() == null) {
+			return;
+		}
 		getTitledPane().setText(text);
 
 		GraphicsContext g = getArea().getGraphicsContext2D();

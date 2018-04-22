@@ -26,17 +26,16 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.directory.Directory;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
@@ -46,7 +45,7 @@ import ui.filefilter.DocsFileFilter;
 import ui.filefilter.ScreenshotFileFilter;
 import ui.filefilter.TapeFileFilter;
 
-public class DiskCollection extends VBox implements UIPart {
+public class DiskCollection extends C64VBox implements UIPart {
 
 	public static final String MAGS_ID = "MAGS";
 	public static final String DEMOS_ID = "DEMOS";
@@ -68,8 +67,6 @@ public class DiskCollection extends VBox implements UIPart {
 	private MenuItem start, attachDisk;
 	@FXML
 	private TextField collectionDir;
-
-	private UIUtil util;
 
 	private Convenience convenience;
 	private ObjectProperty<DiskCollectionType> type;
@@ -101,13 +98,15 @@ public class DiskCollection extends VBox implements UIPart {
 		}
 	};
 
+	public DiskCollection() {
+	}
+	
 	public DiskCollection(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		convenience = new Convenience(util.getPlayer());
 		directory.setPrefHeight(Double.MAX_VALUE);
 		directory.getAutoStartFileProperty().addListener(

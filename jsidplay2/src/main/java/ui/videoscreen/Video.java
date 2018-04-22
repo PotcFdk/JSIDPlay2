@@ -36,7 +36,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -55,10 +54,10 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.NumberToString;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.CartFileExtensions;
@@ -66,7 +65,7 @@ import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
-public class Video extends VBox implements UIPart, Consumer<int[]> {
+public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	public static final String ID = "VIDEO";
 	private static final double PAL_MARGIN_LEFT = 55;
 	private static final double PAL_MARGIN_RIGHT = 55;
@@ -104,51 +103,31 @@ public class Video extends VBox implements UIPart, Consumer<int[]> {
 	private int vicFrames;
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
-	private UIUtil util;
+	private ScheduledService<Void> screenUpdateService;
 
-	private ScheduledService<Void> screenUpdateService = new ScheduledService<Void>() {
-		@Override
-		protected Task<Void> createTask() {
-			return new Task<Void>() {
+	private ChangeListener<? super State> stateListener;
 
-				public Void call() throws InterruptedException {
-					synchronized (syncFrame) {
-						lastFrame = frame;
-					}
-					if (lastFrame != null) {
-						screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
-								lastFrame.getHeight(), marginLeft, marginTop,
-								screen.getWidth() - (marginLeft + marginRight),
-								screen.getHeight() - (marginTop + marginBottom));
-					}
-					return null;
-				}
-
-			};
-		}
-	};
-
-	private ChangeListener<? super State> stateListener = (obj, oldValue, newValue) -> {
-		if (newValue == State.START) {
-			Platform.runLater(() -> {
-				SidTune tune = util.getPlayer().getTune();
-				EmulationSection emulationSection = util.getConfig().getEmulationSection();
-				setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
-				setVisibilityBasedOnChipType(tune);
-			});
-		}
-	};
-
+	public Video() {
+	}
+	
 	public Video(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
+		stateListener = (obj, oldValue, newValue) -> {
+			if (newValue == State.START) {
+				Platform.runLater(() -> {
+					SidTune tune = util.getPlayer().getTune();
+					setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
+					setVisibilityBasedOnChipType(tune);
+				});
+			}
+		};
 		util.getPlayer().stateProperty().addListener(stateListener);
 
 		scaling.setLabelFormatter(new NumberToString<>(2));
@@ -216,6 +195,28 @@ public class Video extends VBox implements UIPart, Consumer<int[]> {
 
 		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
+		screenUpdateService = new ScheduledService<Void>() {
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+
+					public Void call() throws InterruptedException {
+						synchronized (syncFrame) {
+							lastFrame = frame;
+						}
+						if (lastFrame != null) {
+							screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
+									lastFrame.getHeight(), marginLeft, marginTop,
+									screen.getWidth() - (marginLeft + marginRight),
+									screen.getHeight() - (marginTop + marginBottom));
+						}
+						return null;
+					}
+
+				};
+			}
+		};
+
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 		setVisibilityBasedOnChipType(tune);
@@ -223,6 +224,7 @@ public class Video extends VBox implements UIPart, Consumer<int[]> {
 		setupKeyboard();
 
 		updatePeripheralImages();
+
 		screenUpdateService.start();
 	}
 

@@ -10,7 +10,6 @@ abstract class SIDGauge extends Gauge {
 	protected ResourceBundle localizer;
 
 	public SIDGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public SIDGauge(C64Window window, Player player) {

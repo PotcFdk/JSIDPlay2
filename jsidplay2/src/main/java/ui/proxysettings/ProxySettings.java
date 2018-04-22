@@ -13,12 +13,15 @@ public class ProxySettings extends C64Window {
 	@FXML
 	private CheckBox proxyEnable;
 
+	public ProxySettings() {
+	}
+	
 	public ProxySettings(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		proxyEnable.setSelected(util.getConfig().getSidplay2Section().isEnableProxy());
 		proxyHost.setText(util.getConfig().getSidplay2Section().getProxyHostname());
 		proxyHost.setEditable(proxyEnable.isSelected());

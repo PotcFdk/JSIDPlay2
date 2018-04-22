@@ -15,7 +15,6 @@ public final class ResonanceGauge extends SIDGauge {
 	private Canvas area;
 
 	public ResonanceGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public ResonanceGauge(C64Window window, Player player) {

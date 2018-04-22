@@ -95,14 +95,17 @@ public class EmulationSettings extends C64Window {
 
 	private boolean duringInitialization;
 
+	public EmulationSettings() {
+		super();
+	}
+	
 	public EmulationSettings(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		duringInitialization = true;
-
 		ResourceBundle bundle = util.getBundle();
 		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();

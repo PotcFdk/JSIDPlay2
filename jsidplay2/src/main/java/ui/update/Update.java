@@ -26,12 +26,15 @@ public class Update extends C64Window {
 	@FXML
 	private Hyperlink latestVersionLink;
 
+	public Update() {
+	}
+	
 	public Update(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		// check our version
 		float currentVersion = Integer.MAX_VALUE;
 		try {

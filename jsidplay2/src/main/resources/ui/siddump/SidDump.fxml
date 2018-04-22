@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Scene?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -22,10 +23,14 @@
 <?import ui.siddump.SidDumpCellFactory?>
 <?scenebuilder-preview-i18n-resource SidDump.properties?>
 
+<!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Use root tag ELSE -->
+
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.siddump.SidDump"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane stylesheets="@SidDump.css">
 		<VBox AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
-			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" fx:id="root">
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 			<HBox>
 				<ToggleButton text="%START_STOP_RECORDING" fx:id="startStopRecording"
 					onAction="#doStartStopRecording">
@@ -346,4 +351,5 @@
 			</TableView>
 		</VBox>
 	</AnchorPane>
+<!-- </Scene> -->
 </fx:root>

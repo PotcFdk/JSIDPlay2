@@ -15,7 +15,6 @@ public final class FilterGauge extends SIDGauge {
 	private Canvas area;
 
 	public FilterGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public FilterGauge(C64Window window, Player player) {

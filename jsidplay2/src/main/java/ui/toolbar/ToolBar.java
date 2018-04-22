@@ -17,7 +17,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.C64;
@@ -31,18 +30,18 @@ import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.EnumToString;
 import ui.common.MixerInfoToString;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 
-public class ToolBar extends VBox implements UIPart {
+public class ToolBar extends C64VBox implements UIPart {
 
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
@@ -76,19 +75,16 @@ public class ToolBar extends VBox implements UIPart {
 
 	private boolean duringInitialization;
 
-	private UIUtil util;
-
 	public ToolBar() {
-		// only for e(fx)clipse JavaFX Preview
+		super();
 	}
-	
+
 	public ToolBar(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		this.duringInitialization = true;
 
 		final ResourceBundle bundle = util.getBundle();

@@ -16,7 +16,6 @@ public final class EnvelopeGauge extends SIDGauge {
 	private Canvas area;
 
 	public EnvelopeGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public EnvelopeGauge(C64Window window, Player player) {

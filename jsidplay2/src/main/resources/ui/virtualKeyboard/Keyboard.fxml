@@ -15,13 +15,17 @@
 <?import javafx.scene.control.TitledPane?>
 <?scenebuilder-preview-i18n-resource Keyboard.properties?>
 
+<!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
+
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" -->
+<!-- 	stylesheets="@Keyboard.css" fx:controller="ui.virtualKeyboard.Keyboard"> -->
 <Scene xmlns:fx="http://javafx.com/fxml"
 	stylesheets="@Keyboard.css">
 	<BorderPane>
 		<center>
 			<StackPane>
 				<children>
-					<ImageView>
+					<ImageView StackPane.alignment="TOP_LEFT">
 						<image>
 							<Image url="@/ui/icons/c64.png" smooth="false" />
 						</image>
@@ -327,11 +331,11 @@
 								prefHeight="14.951171875" prefWidth="15.9998779296875"
 								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
 								userData="CURSOR_UP_DOWN" />
-							<ToggleButton fx:id="cursorLeftRight"
-								layoutX="409.0" layoutY="188.0" minHeight="14.951171875"
-								minWidth="15.9998779296875" prefHeight="14.951171875"
-								prefWidth="15.9998779296875" onMousePressed="#keyPressed"
-								onMouseReleased="#keyReleased" userData="CURSOR_LEFT_RIGHT" />
+							<ToggleButton layoutX="409.0" layoutY="188.0"
+								minHeight="14.951171875" minWidth="15.9998779296875"
+								prefHeight="14.951171875" prefWidth="15.9998779296875"
+								onMousePressed="#keyPressed" onMouseReleased="#keyReleased"
+								userData="CURSOR_LEFT_RIGHT" />
 							<ToggleButton layoutX="104.0" layoutY="215.0"
 								minHeight="14.951171875" minWidth="16.0"
 								prefHeight="21.951171875" prefWidth="222.0"
@@ -365,7 +369,7 @@
 		<bottom>
 			<VBox spacing="5" style="-fx-padding: 5px">
 				<Text text="%LEGEND" />
-				<Text text="%LEGEND_MOUSE_LEFT" wrappingWidth="550"/>
+				<Text text="%LEGEND_MOUSE_LEFT" wrappingWidth="550" />
 				<Text text="%LEGEND_MOUSE_RIGHT" wrappingWidth="550" />
 				<Text text="%LEGEND_SHIFT_LOCK" wrappingWidth="550" />
 				<TitledPane text="%COMMANDS" collapsible="false">

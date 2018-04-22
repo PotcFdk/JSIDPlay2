@@ -19,7 +19,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import kickass.common.errors.AsmError;
 import kickass.common.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
@@ -27,11 +26,11 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.DesktopIntegration;
 import libsidutils.assembler.KickAssembler;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class Asm extends VBox implements UIPart {
+public class Asm extends C64VBox implements UIPart {
 
 	public static final String ID = "ASM";
 
@@ -52,15 +51,15 @@ public class Asm extends VBox implements UIPart {
 	private KickAssembler assembler;
 	private ObservableList<Variable> variables;
 
-	private UIUtil util;
+	public Asm() {
+	}
 
 	public Asm(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		status.setPrefHeight(Double.MAX_VALUE);
 		assembler = new KickAssembler();
 		InputStream is = Asm.class.getResourceAsStream(ASM_EXAMPLE);

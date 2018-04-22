@@ -37,7 +37,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.C64;
@@ -60,10 +59,10 @@ import ui.JSidPlay2;
 import ui.JSidPlay2Main;
 import ui.about.About;
 import ui.asm.Asm;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
 import ui.diskcollection.DiskCollection;
@@ -94,7 +93,7 @@ import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
 
-public class MenuBar extends VBox implements UIPart {
+public class MenuBar extends C64VBox implements UIPart {
 	/** NUVIE video player */
 	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
 	private static byte[] NUVIE_PLAYER;
@@ -172,21 +171,19 @@ public class MenuBar extends VBox implements UIPart {
 	private BooleanProperty nextFavoriteDisabledState;
 	private int hardcopyCounter;
 
-	private UIUtil util;
-	private JSidPlay2 window;
-
+	JSidPlay2 window;
+	
 	public MenuBar() {
-		// only for e(fx)clipse JavaFX Preview
+		super();
 	}
 
 	public MenuBar(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 		this.window = (JSidPlay2) window;
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		final Configuration config = util.getConfig();
 		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final C1541Section c1541Section = config.getC1541Section();

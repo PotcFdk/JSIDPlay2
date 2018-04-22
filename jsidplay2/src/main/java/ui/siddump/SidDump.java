@@ -21,7 +21,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddump.SIDDumpConfiguration;
@@ -29,12 +28,12 @@ import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
 import netsiddev.InvalidCommandException;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class SidDump extends VBox implements UIPart {
+public class SidDump extends C64VBox implements UIPart {
 
 	public static final String ID = "SIDDUMP";
 	private static final String CELL_VALUE_OK = "cellValueOk";
@@ -64,28 +63,29 @@ public class SidDump extends VBox implements UIPart {
 
 	private Thread fPlayerThread;
 
-	private UIUtil util;
+	private ChangeListener<State> changeListener;
 
-	private ChangeListener<State> changeListener = (observable, oldValue, newValue) -> {
-		if (newValue == State.START) {
-			Platform.runLater(() -> setTune(util.getPlayer().getTune()));
-		}
-		if (newValue == State.END) {
-			Platform.runLater(() -> {
-				startStopRecording.setSelected(false);
-				replayAll.setDisable(false);
-				sidDumpExtension.stopRecording();
-			});
-		}
-	};
-
+	public SidDump() {
+	}
+	
 	public SidDump(final C64Window window, final Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		changeListener = (observable, oldValue, newValue) -> {
+			if (newValue == State.START) {
+				Platform.runLater(() -> setTune(util.getPlayer().getTune()));
+			}
+			if (newValue == State.END) {
+				Platform.runLater(() -> {
+					startStopRecording.setSelected(false);
+					replayAll.setDisable(false);
+					sidDumpExtension.stopRecording();
+				});
+			}
+		};
 		sidDumpExtension = new SidDumpExtension(util.getPlayer(), util.getConfig()) {
 
 			@Override

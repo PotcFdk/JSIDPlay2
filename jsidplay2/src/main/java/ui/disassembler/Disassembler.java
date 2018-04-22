@@ -14,19 +14,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.disassembler.CPUCommand;
 import libsidutils.disassembler.SimpleDisassembler;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.config.SidPlay2Section;
 
-public class Disassembler extends VBox implements UIPart {
+public class Disassembler extends C64VBox implements UIPart {
 
 	private final class DisassemblerRefresh implements ChangeListener<State> {
 		@Override
@@ -52,15 +51,15 @@ public class Disassembler extends VBox implements UIPart {
 
 	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler.getCpuCommands();
 
-	private UIUtil util;
-
+	public Disassembler() {
+	}
+	
 	public Disassembler(final C64Window window, final Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		assemblyLines = FXCollections.<AssemblyLine> observableArrayList();
 		SortedList<AssemblyLine> sortedList = new SortedList<>(assemblyLines);
 		sortedList.comparatorProperty().bind(memoryTable.comparatorProperty());

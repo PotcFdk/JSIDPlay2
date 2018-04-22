@@ -28,22 +28,21 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
-public class WebView extends VBox implements UIPart {
+public class WebView extends C64VBox implements UIPart {
 
 	public class HyperlinkRedirectListener implements ChangeListener<Worker.State>, EventListener {
 
@@ -149,32 +148,21 @@ public class WebView extends VBox implements UIPart {
 	private WebEngine engine;
 	private boolean isDownloading;
 
-	private UIUtil util;
+	private ChangeListener<? super Number> progressListener;
 
-	private ChangeListener<? super Number> progressListener = (observable, oldValue, newValue) -> {
-		Platform.runLater(() -> {
-			DoubleProperty progressProperty = util.progressProperty(webView.getScene());
-			progressProperty.setValue(newValue);
-		});
-	};
+	private ChangeListener<? super String> locationListener;
 
-	private ChangeListener<? super String> locationListener = (observable, oldValue, newValue) -> {
-		urlField.setText(newValue);
-	};
+	private HyperlinkRedirectListener hyperlinkRedirectListener;
 
-	private HyperlinkRedirectListener hyperlinkRedirectListener = new HyperlinkRedirectListener();
-
-	private ChangeListener<? super Number> historyListener = (observable, oldValue, newValue) -> {
-		backward.setDisable(newValue.intValue() <= 0);
-		forward.setDisable(newValue.intValue() + 1 >= engine.getHistory().getEntries().size());
-
-	};
+	private ChangeListener<? super Number> historyListener;
 
 	private boolean showTuneInfos;
 
+	public WebView() {
+	}
+	
 	public WebView(final C64Window window, final Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	public void setType(WebViewType type) {
@@ -183,7 +171,22 @@ public class WebView extends VBox implements UIPart {
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		progressListener = (observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				DoubleProperty progressProperty = util.progressProperty(webView.getScene());
+				progressProperty.setValue(newValue);
+			});
+		};
+		locationListener = (observable, oldValue, newValue) -> {
+			urlField.setText(newValue);
+		};
+		hyperlinkRedirectListener = new HyperlinkRedirectListener();
+		historyListener = (observable, oldValue, newValue) -> {
+			backward.setDisable(newValue.intValue() <= 0);
+			forward.setDisable(newValue.intValue() + 1 >= engine.getHistory().getEntries().size());
+
+		};
 		convenience = new Convenience(util.getPlayer());
 		convenience.setAutoStartedFile(file -> {
 			if (showTuneInfos && PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(".sid")) {

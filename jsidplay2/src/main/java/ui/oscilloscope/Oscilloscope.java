@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -19,15 +18,15 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.config.EmulationSection;
 
 /**
  * @author Ken Händel
  */
-public class Oscilloscope extends VBox implements UIPart {
+public class Oscilloscope extends C64VBox implements UIPart {
 
 	public static final String ID = "OSCILLOSCOPE";
 
@@ -69,37 +68,41 @@ public class Oscilloscope extends VBox implements UIPart {
 	@FXML
 	private FilterGauge filterMono, filterStereo, filter3Sid;
 
-	private PauseTransition pt = new PauseTransition(Duration.millis(50));
-	private SequentialTransition st = new SequentialTransition(pt);
+	private PauseTransition pt;
+	private SequentialTransition st;
 
-	private UIUtil util;
+	protected HighResolutionEvent highResolutionEvent;
 
-	protected final HighResolutionEvent highResolutionEvent = new HighResolutionEvent();
+	private ChangeListener<? super State> listener;
 
+	public Oscilloscope() {
+	}
+	
 	public Oscilloscope(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
-	private ChangeListener<? super State> listener = (observable, oldValue, newValue) -> {
-		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
-		if (newValue == State.PLAY) {
-			if (!ctx.isPending(highResolutionEvent)) {
-				ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
-			}
-			Platform.runLater(() -> {
-				startOscilloscope();
-			});
-		} else if (newValue == State.PAUSE) {
-			ctx.cancel(highResolutionEvent);
-			Platform.runLater(() -> {
-				stopOscilloscope();
-			});
-		}
-	};
-
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		pt = new PauseTransition(Duration.millis(50));
+		st = new SequentialTransition(pt);
+		highResolutionEvent = new HighResolutionEvent();
+		listener = (observable, oldValue, newValue) -> {
+			final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
+			if (newValue == State.PLAY) {
+				if (!ctx.isPending(highResolutionEvent)) {
+					ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
+				}
+				Platform.runLater(() -> {
+					startOscilloscope();
+				});
+			} else if (newValue == State.PAUSE) {
+				ctx.cancel(highResolutionEvent);
+				Platform.runLater(() -> {
+					stopOscilloscope();
+				});
+			}
+		};
 		util.getPlayer().stateProperty().addListener(listener);
 		waveMono_0.setLocalizer(util.getBundle());
 		waveMono_1.setLocalizer(util.getBundle());

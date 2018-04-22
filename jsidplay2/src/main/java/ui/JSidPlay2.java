@@ -26,15 +26,20 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	protected TabPane tabbedPane;
 
+	public JSidPlay2() {
+	}
+	
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Player.LAST_MODIFIED.getTime());
-		getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
-				util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
+		if (getStage() != null) {
+			getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
+					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
+		}
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);

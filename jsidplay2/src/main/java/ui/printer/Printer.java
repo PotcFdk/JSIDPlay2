@@ -7,17 +7,16 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import libsidplay.components.printer.IPaper;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.components.printer.paper.ConsolePaper;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class Printer extends VBox implements UIPart, IPaper {
+public class Printer extends C64VBox implements UIPart, IPaper {
 
 	public static final String ID = "PRINTER";
 
@@ -26,18 +25,18 @@ public class Printer extends VBox implements UIPart, IPaper {
 	@FXML
 	protected Canvas paper;
 
-	private UIUtil util;
-
 	private boolean[] currentPixelRow = new boolean[MPS803.MAX_WIDTH];
 	private int x, y;
 
+	public Printer() {
+	}
+	
 	public Printer(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		paper.setWidth(MPS803.MAX_WIDTH);
 		util.getPlayer().getPrinter().setPaper(this);
 	}

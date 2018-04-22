@@ -15,7 +15,6 @@ public final class VolumeGauge extends SIDGauge {
 	private Canvas area;
 
 	public VolumeGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public VolumeGauge(C64Window window, Player player) {

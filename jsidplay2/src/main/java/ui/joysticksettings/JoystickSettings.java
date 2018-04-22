@@ -44,12 +44,15 @@ public class JoystickSettings extends C64Window {
 
 	private Timeline timer;
 
+	public JoystickSettings() {
+	}
+	
 	public JoystickSettings(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		components1 = FXCollections.<Component> observableArrayList();
 		SortedList<Component> sortedList1 = new SortedList<>(components1);
 		sortedList1.comparatorProperty().bind(testTable1.comparatorProperty());

@@ -52,7 +52,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	private static final MOS6526.Model CIAMODEL = MOS6526.Model.MOS6526;
 
 	/** System clock */
-	protected CPUClock clock;
+	protected CPUClock clock = CPUClock.PAL;
 
 	/** MMU chip */
 	private final PLA pla;

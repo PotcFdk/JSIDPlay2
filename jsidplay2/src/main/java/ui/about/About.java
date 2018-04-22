@@ -26,13 +26,16 @@ public class About extends C64Window {
 	@FXML
 	private Text credits;
 
+	public About() {
+	}
+	
 	public About(Player player) {
 		super(player);
 		getStage().resizableProperty().set(false);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		credits.setText(util.getPlayer().getCredits(properties));
 	}
 

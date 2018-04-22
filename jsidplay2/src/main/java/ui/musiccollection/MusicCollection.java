@@ -60,7 +60,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 import libpsid64.Psid64;
@@ -73,11 +72,11 @@ import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.EnumToString;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.Database;
@@ -112,7 +111,7 @@ import ui.stilview.STILView;
  * @author Ken Händel
  * @author Antti Lankila
  */
-public class MusicCollection extends VBox implements UIPart {
+public class MusicCollection extends C64VBox implements UIPart {
 
 	public static final String HVSC_ID = "HVSC";
 	public static final String CGSC_ID = "CGSC";
@@ -158,8 +157,6 @@ public class MusicCollection extends VBox implements UIPart {
 
 	private final FileFilter tuneFilter = new TuneFileFilter();
 
-	private UIUtil util;
-
 	private ObjectProperty<MusicCollectionType> type;
 
 	private ObservableList<TuneInfo> tuneInfos;
@@ -180,47 +177,17 @@ public class MusicCollection extends VBox implements UIPart {
 
 	private FavoritesSection favoritesToAddSearchResult;
 
-	private ChangeListener<? super State> tuneMatcherListener = (observable, oldValue, newValue) -> {
-		Platform.runLater(() -> showCurrentTune());
-	};
+	private ChangeListener<? super State> tuneMatcherListener;
 
-	private ChangeListener<? super TreeItem<File>> tuneInfoListener = (observable, oldValue, newValue) -> {
-		if (newValue != null && newValue.getValue().isFile()) {
-			File tuneFile = newValue.getValue();
-			try {
-				SidTune sidTune = SidTune.load(tuneFile);
-				if (getType() == MusicCollectionType.HVSC) {
-					enableSOASC(sidTune.getInfo(), tuneFile);
-					showPhoto(sidTune.getInfo());
-				}
-				showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
-			} catch (IOException | SidTuneError e) {
-				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
-			}
-		}
-	};
+	private ChangeListener<? super TreeItem<File>> tuneInfoListener;
 
-	private EventHandler<WindowEvent> contextMenuEvent = event -> {
-		final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
-		showStil.setDisable(selectedItem == null || !((MusicCollectionTreeItem) selectedItem).hasSTIL());
-		convertToPSID64.setDisable(selectedItem == null);
+	private EventHandler<WindowEvent> contextMenuEvent;
 
-		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
-		List<FavoritesSection> favorites = util.getConfig().getFavorites();
-		addToFavoritesMenu.getItems().clear();
-		for (final FavoritesSection section : favorites) {
-			MenuItem item = new MenuItem(section.getName());
-			item.setOnAction(event2 -> {
-				addFavorites(sidplay2Section, section, Collections.singletonList(selectedItem.getValue()));
-			});
-			addToFavoritesMenu.getItems().add(item);
-		}
-		addToFavoritesMenu.setDisable(addToFavoritesMenu.getItems().isEmpty());
-	};
-
+	public MusicCollection() {
+	}
+	
 	public MusicCollection(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	public MusicCollectionType getType() {
@@ -246,7 +213,42 @@ public class MusicCollection extends VBox implements UIPart {
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		tuneMatcherListener = (observable, oldValue, newValue) -> {
+			Platform.runLater(() -> showCurrentTune());
+		};
+		tuneInfoListener = (observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.getValue().isFile()) {
+				File tuneFile = newValue.getValue();
+				try {
+					SidTune sidTune = SidTune.load(tuneFile);
+					if (getType() == MusicCollectionType.HVSC) {
+						enableSOASC(sidTune.getInfo(), tuneFile);
+						showPhoto(sidTune.getInfo());
+					}
+					showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
+				} catch (IOException | SidTuneError e) {
+					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
+				}
+			}
+		};
+		contextMenuEvent = event -> {
+			final TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
+			showStil.setDisable(selectedItem == null || !((MusicCollectionTreeItem) selectedItem).hasSTIL());
+			convertToPSID64.setDisable(selectedItem == null);
+
+			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+			List<FavoritesSection> favorites = util.getConfig().getFavorites();
+			addToFavoritesMenu.getItems().clear();
+			for (final FavoritesSection section : favorites) {
+				MenuItem item = new MenuItem(section.getName());
+				item.setOnAction(event2 -> {
+					addFavorites(sidplay2Section, section, Collections.singletonList(selectedItem.getValue()));
+				});
+				addToFavoritesMenu.getItems().add(item);
+			}
+			addToFavoritesMenu.setDisable(addToFavoritesMenu.getItems().isEmpty());
+		};
 		util.getPlayer().stateProperty().addListener(tuneMatcherListener);
 		tuneInfos = FXCollections.<TuneInfo>observableArrayList();
 		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);

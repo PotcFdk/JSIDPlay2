@@ -5,14 +5,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.persistence.metamodel.SingularAttribute;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
-
-import javax.persistence.metamodel.SingularAttribute;
-
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -27,12 +26,15 @@ public class TuneInfos extends C64Window {
 
 	private ObservableList<TuneInfo> tuneInfos;
 
+	public TuneInfos() {
+	}
+
 	public TuneInfos(Player player) {
 		super(player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		tuneInfos = FXCollections.<TuneInfo> observableArrayList();
 		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);
 		sortedList.comparatorProperty().bind(tuneInfoTable.comparatorProperty());

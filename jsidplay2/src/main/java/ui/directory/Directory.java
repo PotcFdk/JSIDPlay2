@@ -12,14 +12,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import libsidutils.directory.DirEntry;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class Directory extends VBox implements UIPart {
+public class Directory extends C64VBox implements UIPart {
 
 	/**
 	 * Upper case letters.
@@ -43,8 +42,6 @@ public class Directory extends VBox implements UIPart {
 	@FXML
 	private TableColumn<DirectoryItem, String> dirColumn;
 
-	private UIUtil util;
-
 	private ObservableList<DirectoryItem> directoryEntries;
 
 	private ObjectProperty<File> autoStartFileProperty = new SimpleObjectProperty<File>();
@@ -55,16 +52,14 @@ public class Directory extends VBox implements UIPart {
 	private File previewFile;
 
 	public Directory() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public Directory(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		dirColumn.prefWidthProperty().bind(directory.widthProperty());
 		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
 		directory.setItems(directoryEntries);
@@ -79,6 +74,11 @@ public class Directory extends VBox implements UIPart {
 				autoStartProgram();
 			}
 		});
+		if (directory.getUserData() != null) {
+			// JavaFX Preview, only
+			loadPreview(new File(directory.getUserData().toString()));
+			doSwitchFont();
+		}
 	}
 
 	@FXML

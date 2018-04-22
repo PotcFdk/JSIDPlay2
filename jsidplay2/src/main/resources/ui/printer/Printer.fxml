@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Scene?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -10,6 +11,10 @@
 <?import javafx.scene.control.Button?>
 <?scenebuilder-preview-i18n-resource Printer.properties?>
 
+<!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Use root tag ELSE -->
+
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.printer.Printer"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
@@ -34,4 +39,5 @@
 			</rowConstraints>
 		</GridPane>
 	</AnchorPane>
+<!-- </Scene> -->
 </fx:root>

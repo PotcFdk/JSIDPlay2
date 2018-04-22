@@ -21,7 +21,6 @@ public final class WaveGauge extends SIDGauge {
 	}
 
 	public WaveGauge() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public WaveGauge(C64Window window, Player player) {

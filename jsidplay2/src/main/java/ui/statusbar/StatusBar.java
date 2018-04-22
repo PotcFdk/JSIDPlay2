@@ -13,14 +13,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import libpsid64.PSid64TuneInfo;
 import libpsid64.Psid64;
@@ -35,12 +33,12 @@ import libsidutils.DesktopIntegration;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.config.EmulationSection;
 
-public class StatusBar extends AnchorPane implements UIPart {
+public class StatusBar extends C64VBox implements UIPart {
 
 	private static final Clip MOTORSOUND_AUDIOCLIP;
 	private static final Clip TRACKSOUND_AUDIOCLIP;
@@ -80,8 +78,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 	private ChipModel rememberUserSidModel, rememberStereoSidModel;
 	private Boolean rememberForceStereoTune;
 	private Integer rememberDualSidBase;
-
-	protected UIUtil util;
 
 	private class StateChangeListener implements ChangeListener<State> {
 		@Override
@@ -127,16 +123,15 @@ public class StatusBar extends AnchorPane implements UIPart {
 	}
 
 	public StatusBar() {
-		// only for e(fx)clipse JavaFX Preview
+		super();
 	}
-	
+
 	public StatusBar(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		this.playerId = new StringBuilder();
 		this.playerinfos = new StringBuilder();
 		this.statusTooltip = new Tooltip();
@@ -157,10 +152,6 @@ public class StatusBar extends AnchorPane implements UIPart {
 	 * Set all the internal information of the emulation in the status bar.
 	 */
 	protected void setStatusLine() {
-		ReadOnlyObjectProperty<State> state = util.getPlayer().stateProperty();
-		if (!(state.get().equals(State.PLAY) || state.get().equals(State.PAUSE))) {
-			return;
-		}
 		// Get status information of the first disk drive
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
