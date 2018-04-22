@@ -8,13 +8,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.VBox;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class ConsoleOutput extends VBox implements UIPart {
+public class ConsoleOutput extends C64VBox implements UIPart {
 	
 	private StringBuilder output = new StringBuilder();
 	
@@ -23,17 +22,17 @@ public class ConsoleOutput extends VBox implements UIPart {
 	@FXML
 	private TitledPane titledPane;
 
-	private UIUtil util;
-
 	public ConsoleOutput() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public ConsoleOutput(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
+	@Override
+	protected void initialize() {
+	}
+	
 	@FXML
 	private void clearConsole() {
 		console.clear();

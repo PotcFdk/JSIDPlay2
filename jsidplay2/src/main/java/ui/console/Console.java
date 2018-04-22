@@ -1,13 +1,12 @@
 package ui.console;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 
-public class Console extends VBox implements UIPart {
+public class Console extends C64VBox implements UIPart {
 	public static final String ID = "CONSOLE";
 	private static final String STYLE_ERROR_CONSOLE = "errorConsole";
 	private static final String STYLE_OUTPUT_CONSOLE = "outputConsole";
@@ -15,15 +14,15 @@ public class Console extends VBox implements UIPart {
 	@FXML
 	private ConsoleOutput out, err;
 
-	private UIUtil util;
-
+	public Console() {
+	}
+	
 	public Console(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		out.getTitledPane().setText(util.getBundle().getString("OUT"));
 		out.getConsole().getStyleClass().add(STYLE_OUTPUT_CONSOLE);
 		err.getTitledPane().setText(util.getBundle().getString("ERR"));

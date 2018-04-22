@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Scene?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
@@ -19,6 +20,7 @@
 <?import ui.favorites.FavoritesCellFactory?>
 <?scenebuilder-preview-i18n-resource FavoritesTab.properties?>
 
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.favorites.FavoritesTab"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane VBox.vgrow="ALWAYS">
 		<BorderPane AnchorPane.bottomAnchor="10"
@@ -91,4 +93,5 @@
 			</right>
 		</BorderPane>
 	</AnchorPane>
+<!-- </Scene> -->
 </fx:root>

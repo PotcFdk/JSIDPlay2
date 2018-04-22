@@ -23,7 +23,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
@@ -31,6 +30,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
@@ -42,7 +42,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
 import ui.filefilter.MDBFileExtensions;
 
-public class GameBase extends VBox implements UIPart {
+public class GameBase extends C64VBox implements UIPart {
 
 	public static final String ID = "GAMEBASE";
 
@@ -106,15 +106,15 @@ public class GameBase extends VBox implements UIPart {
 	private EntityManager em;
 	private GamesService gamesService;
 
-	private UIUtil util;
+	public GameBase() {
+	}
 
 	public GameBase(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
@@ -131,26 +131,28 @@ public class GameBase extends VBox implements UIPart {
 		contents.setPrefHeight(Double.MAX_VALUE);
 		for (Tab tab : letter.getTabs()) {
 			GameBasePage page = (GameBasePage) tab.getContent();
-			page.getGamebaseTable().getSelectionModel().selectedItemProperty()
-					.addListener((observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							comment.setText(newValue.getComment());
-							String genre = newValue.getGenres().getGenre();
-							String pGenre = newValue.getGenres().getParentGenres().getParentGenre();
-							if (pGenre != null && pGenre.length() != 0) {
-								category.setText(pGenre + "-" + genre);
-							} else {
-								category.setText(genre);
+			if (page.getGamebaseTable() != null) {
+				page.getGamebaseTable().getSelectionModel().selectedItemProperty()
+						.addListener((observable, oldValue, newValue) -> {
+							if (newValue != null) {
+								comment.setText(newValue.getComment());
+								String genre = newValue.getGenres().getGenre();
+								String pGenre = newValue.getGenres().getParentGenres().getParentGenre();
+								if (pGenre != null && pGenre.length() != 0) {
+									category.setText(pGenre + "-" + genre);
+								} else {
+									category.setText(genre);
+								}
+								infos.setText(String.format(util.getBundle().getString("PUBLISHER"),
+										newValue.getYears().getYear(), newValue.getPublishers().getPublisher()));
+								musician.setText(newValue.getMusicians().getMusician());
+								programmer.setText(newValue.getProgrammers().getProgrammer());
+								String sidFilename = newValue.getSidFilename();
+								linkMusic.setText(sidFilename != null ? sidFilename : "");
+								linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
 							}
-							infos.setText(String.format(util.getBundle().getString("PUBLISHER"),
-									newValue.getYears().getYear(), newValue.getPublishers().getPublisher()));
-							musician.setText(newValue.getMusicians().getMusician());
-							programmer.setText(newValue.getProgrammers().getProgrammer());
-							String sidFilename = newValue.getSidFilename();
-							linkMusic.setText(sidFilename != null ? sidFilename : "");
-							linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
-						}
-					});
+						});
+			}
 		}
 		letter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			selectTab(newValue);
@@ -272,8 +274,7 @@ public class GameBase extends VBox implements UIPart {
 
 	protected void selectTab(Tab newValue) {
 		if (gamesService != null) {
-			((GameBasePage) newValue.getContent())
-					.setGames(gamesService.select(newValue.getText().charAt(0)));
+			((GameBasePage) newValue.getContent()).setGames(gamesService.select(newValue.getText().charAt(0)));
 		}
 		filterField.setText("");
 	}

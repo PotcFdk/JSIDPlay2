@@ -18,7 +18,6 @@
 <?scenebuilder-preview-i18n-resource SidReg.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
-<!-- Use root tag ELSE -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.sidreg.SidReg"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">

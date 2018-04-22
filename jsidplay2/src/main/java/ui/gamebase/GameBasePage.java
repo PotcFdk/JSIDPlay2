@@ -18,18 +18,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.IDownloadListener;
 import ui.entities.gamebase.Games;
 
-public class GameBasePage extends VBox implements UIPart {
+public class GameBasePage extends C64VBox implements UIPart {
 
 	@FXML
 	private TableView<Games> gamebaseTable;
@@ -43,19 +42,15 @@ public class GameBasePage extends VBox implements UIPart {
 	private ObservableList<Games> allGames;
 	private ObservableList<Games> filteredGames;
 
-	private UIUtil util;
-
 	public GameBasePage() {
-		// only for e(fx)clipse JavaFX Preview
 	}
 	
 	public GameBasePage(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		convenience = new Convenience(util.getPlayer());
 		allGames = FXCollections.<Games>observableArrayList();
 		filteredGames = FXCollections.<Games>observableArrayList();
