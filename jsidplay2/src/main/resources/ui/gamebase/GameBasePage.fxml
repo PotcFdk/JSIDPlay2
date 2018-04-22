@@ -10,8 +10,8 @@
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
-<Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.gamebase.GameBasePage">
-<!-- <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox"> -->
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.gamebase.GameBasePage"> -->
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane VBox.vgrow="ALWAYS">
 		<TableView fx:id="gamebaseTable" AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
@@ -28,5 +28,5 @@
 			</columns>
 		</TableView>
 	</AnchorPane>
-</Scene>
-<!-- </fx:root> -->
+<!-- </Scene> -->
+</fx:root>
