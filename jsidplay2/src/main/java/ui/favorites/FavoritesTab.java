@@ -43,16 +43,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import libpsid64.Psid64;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import sidplay.Player;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.FavoriteColumn;
@@ -62,7 +61,7 @@ import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileFilter;
 import ui.stilview.STILView;
 
-public class FavoritesTab extends VBox implements UIPart {
+public class FavoritesTab extends C64VBox implements UIPart {
 
 	@FXML
 	private TextField filterField;
@@ -77,8 +76,6 @@ public class FavoritesTab extends VBox implements UIPart {
 	@FXML
 	private ContextMenu contextMenu;
 
-	private UIUtil util;
-
 	private ObservableList<HVSCEntry> filteredFavorites;
 
 	private FileFilter tuneFilter = new TuneFileFilter();
@@ -88,14 +85,16 @@ public class FavoritesTab extends VBox implements UIPart {
 	private Favorites favorites;
 	private int selectedColumn;
 
+	public FavoritesTab() {
+	}
+	
 	public FavoritesTab(C64Window window, Player player) {
-		util = new UIUtil(window, player, this);
-		util.parse(this);
+		super(window, player);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@FXML
-	private void initialize() {
+	protected void initialize() {
 		filteredFavorites = FXCollections.<HVSCEntry>observableArrayList();
 		SortedList<HVSCEntry> sortedList = new SortedList<>(filteredFavorites);
 		sortedList.comparatorProperty().bind(favoritesTable.comparatorProperty());

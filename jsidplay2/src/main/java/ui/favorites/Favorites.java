@@ -27,7 +27,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidutils.PathUtils;
@@ -35,10 +34,10 @@ import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.player.State;
+import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
-import ui.common.UIUtil;
 import ui.download.DownloadThread;
 import ui.download.ProgressListener;
 import ui.entities.config.FavoritesSection;
@@ -47,7 +46,7 @@ import ui.entities.config.SidPlay2Section;
 import ui.filefilter.FavoritesExtension;
 import ui.filefilter.TuneFileExtensions;
 
-public class Favorites extends VBox implements UIPart {
+public class Favorites extends C64VBox implements UIPart {
 
 	public static final String ID = "FAVORITES";
 
@@ -65,26 +64,27 @@ public class Favorites extends VBox implements UIPart {
 	@FXML
 	private RadioButton off, normal, randomOne, randomAll, randomHVSC, repeatOff, repeatOne;
 
-	private UIUtil util;
-
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
 	private C64Window window;
 
-	private ChangeListener<? super State> nextTuneListener = (observable, oldValue, newValue) -> {
-		if (newValue == State.END) {
-			Platform.runLater(() -> playNextTune());
-		}
-	};
+	private ChangeListener<? super State> nextTuneListener;
 
+	public Favorites() {
+	}
+	
 	public Favorites(C64Window window, Player player) {
+		super(window, player);
 		this.window = window;
-		util = new UIUtil(window, player, this);
-		util.parse(this);
 	}
 
 	@FXML
-	private void initialize() {
+	protected void initialize() {
+		nextTuneListener = (observable, oldValue, newValue) -> {
+			if (newValue == State.END) {
+				Platform.runLater(() -> playNextTune());
+			}
+		};
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
