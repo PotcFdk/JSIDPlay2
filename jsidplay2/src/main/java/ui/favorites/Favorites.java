@@ -391,7 +391,7 @@ public class Favorites extends VBox implements UIPart {
 		}
 	}
 
-	private Tab getSelectedTab() {
+	Tab getSelectedTab() {
 		return favoritesList.getSelectionModel().getSelectedItem();
 	}
 

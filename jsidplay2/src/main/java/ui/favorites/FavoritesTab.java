@@ -159,7 +159,7 @@ public class FavoritesTab extends VBox implements UIPart {
 			moveToTab.getItems().clear();
 			copyToTab.getItems().clear();
 			for (final Tab tab : tabs) {
-				if (tab.equals(FavoritesTab.this)) {
+				if (tab.equals(favorites.getSelectedTab())) {
 					continue;
 				}
 				final String name = tab.getText();
