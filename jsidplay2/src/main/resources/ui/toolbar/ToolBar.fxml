@@ -14,6 +14,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.collections.FXCollections?> 
 <?import javafx.geometry.Insets?>
 <?import java.lang.Integer?>
@@ -30,7 +31,8 @@
 			<fx:define>
 				<ToggleGroup fx:id="playSourceGroup" />
 			</fx:define>
-			<HBox AnchorPane.leftAnchor="10" alignment="CENTER">
+			<HBox AnchorPane.leftAnchor="10" alignment="TOP_LEFT"
+				spacing="10">
 				<ComboBox onAction="#setVideoStandard"
 					fx:id="videoStandardBox" />
 				<ComboBox onAction="#setEngine" fx:id="engineBox" />
@@ -50,112 +52,93 @@
 						</ImageView>
 					</graphic>
 				</Button>
+				<VBox>
+					<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
+						onAction="#doEnableSldb" />
+
+					<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
+				</VBox>
+				<VBox>
+					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
+					<TextField fx:id="defaultTime" prefWidth="60">
+						<tooltip>
+							<Tooltip text="%DEFAULT_LENGTH_TIP" />
+						</tooltip>
+					</TextField>
+				</VBox>
 			</HBox>
 		</AnchorPane>
-		<HBox>
-			<HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-				<spacing>10</spacing>
-				<padding>
-					<Insets left="10.0" right="10.0" />
-				</padding>
-				<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-				<TextField fx:id="defaultTime" prefWidth="60">
-					<tooltip>
-						<Tooltip text="%DEFAULT_LENGTH_TIP" />
-					</tooltip>
-				</TextField>
-				<CheckBox text="%RESPECT_SONG_LENGTH" fx:id="enableSldb"
-					onAction="#doEnableSldb" />
-
-				<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
-
+		<AnchorPane>
+			<HBox AnchorPane.leftAnchor="10" alignment="TOP_LEFT"
+				spacing="10">
+				<TitledPane text="%NETSID" expanded="false">
+					<VBox>
+						<Label text="%HOSTNAME" fx:id="hostnameLabel" />
+						<TextField fx:id="hostname" onAction="#setHostname"
+							prefWidth="80">
+							<tooltip>
+								<Tooltip text="%HOSTNAME_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%PORT" fx:id="portLabel" />
+						<TypeTextField type="Integer" fx:id="port"
+							onAction="#setPort" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+					</VBox>
+				</TitledPane>
+				<TitledPane text="%HARDSID" expanded="false">
+					<VBox>
+						<Label text="%6581" fx:id="hardsid6581Label" />
+						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<!-- Put in enough devices for: 4 HardSID USB -->
+									<Integer fx:value="0" />
+									<Integer fx:value="1" />
+									<Integer fx:value="2" />
+									<Integer fx:value="3" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<Label text="%8580" fx:id="hardsid8580Label" />
+						<ComboBox fx:id="hardsid8580Box" onAction="#setSid8580">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<!-- Put in enough devices for: 4 HardSID USB -->
+									<Integer fx:value="0" />
+									<Integer fx:value="1" />
+									<Integer fx:value="2" />
+									<Integer fx:value="3" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+					</VBox>
+				</TitledPane>
+				<TitledPane text="%COMPARE_MP3" expanded="false">
+					<HBox spacing="5">
+						<VBox>
+							<RadioButton text="%EMU" fx:id="playEmulation"
+								toggleGroup="$playSourceGroup" />
+							<RadioButton text="%RECORDING" fx:id="playMP3"
+								toggleGroup="$playSourceGroup" />
+						</VBox>
+						<Button fx:id="mp3Browse" onAction="#doBrowse"
+							text="Browse...">
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/browse.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+				</TitledPane>
 			</HBox>
-			<HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-				<spacing>10</spacing>
-				<padding>
-					<Insets left="10.0" right="10.0" />
-				</padding>
-				<Label text="%HOSTNAME" fx:id="hostnameLabel" />
-				<TextField fx:id="hostname" onAction="#setHostname"
-					prefWidth="80">
-					<tooltip>
-						<Tooltip text="%HOSTNAME_TIP" />
-					</tooltip>
-				</TextField>
-				<Label text="%PORT" fx:id="portLabel" />
-				<TypeTextField type="Integer" fx:id="port"
-					onAction="#setPort" prefWidth="60">
-					<tooltip>
-						<Tooltip text="%PORT_TIP" />
-					</tooltip>
-				</TypeTextField>
-				<Label text="%6581" fx:id="hardsid6581Label" />
-				<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID USB 
-								chips + 8 Network SID Devices -->
-							<Integer fx:value="0" />
-							<Integer fx:value="1" />
-							<Integer fx:value="2" />
-							<Integer fx:value="3" />
-							<Integer fx:value="4" />
-							<Integer fx:value="5" />
-							<Integer fx:value="6" />
-							<Integer fx:value="7" />
-							<Integer fx:value="8" />
-							<Integer fx:value="9" />
-							<Integer fx:value="10" />
-							<Integer fx:value="11" />
-							<Integer fx:value="12" />
-							<Integer fx:value="13" />
-							<Integer fx:value="14" />
-							<Integer fx:value="15" />
-						</FXCollections>
-					</items>
-				</ComboBox>
-				<Label text="%8580" fx:id="hardsid8580Label" />
-				<ComboBox fx:id="hardsid8580Box" onAction="#setSid8580">
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<!-- Put in enough devices for: 4 HardSID PCI cards + 4 HardSID USB 
-								chips + 8 Network SID Devices -->
-							<Integer fx:value="0" />
-							<Integer fx:value="1" />
-							<Integer fx:value="2" />
-							<Integer fx:value="3" />
-							<Integer fx:value="4" />
-							<Integer fx:value="5" />
-							<Integer fx:value="6" />
-							<Integer fx:value="7" />
-							<Integer fx:value="8" />
-							<Integer fx:value="9" />
-							<Integer fx:value="10" />
-							<Integer fx:value="11" />
-							<Integer fx:value="12" />
-							<Integer fx:value="13" />
-							<Integer fx:value="14" />
-							<Integer fx:value="15" />
-						</FXCollections>
-					</items>
-				</ComboBox>
-				<VBox alignment="CENTER">
-					<RadioButton text="%EMU" fx:id="playEmulation"
-						toggleGroup="$playSourceGroup" />
-					<RadioButton text="%RECORDING" fx:id="playMP3"
-						toggleGroup="$playSourceGroup" />
-				</VBox>
-				<Button fx:id="mp3Browse" onAction="#doBrowse">
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/browse.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-			</HBox>
-		</HBox>
+		</AnchorPane>
 	</VBox>
 	</fx:root>
 <!-- </Scene> -->
