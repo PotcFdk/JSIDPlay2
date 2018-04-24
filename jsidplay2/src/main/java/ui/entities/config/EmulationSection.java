@@ -30,6 +30,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -341,6 +343,38 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setNetSIDDevPort(int port) {
 		this.netSidDevPortProperty.set(port);
+	}
+
+	private ObjectProperty<Integer> appServerPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_APP_SERVER_PORT);
+
+	public ObjectProperty<Integer> appServerPortProperty() {
+		return appServerPortProperty;
+	}
+
+	@Override
+	public int getAppServerPort() {
+		return appServerPortProperty.get();
+	}
+
+	@Override
+	public void setAppServerPort(int port) {
+		this.appServerPortProperty.set(port);
+	}
+
+	private ObjectProperty<String> appServerDirProperty = new SimpleObjectProperty<String>(DEFAULT_APP_SERVER_DIR);
+
+	public ObjectProperty<String> appServerDirProperty() {
+		return appServerDirProperty;
+	}
+
+	@Override
+	public String getAppServerDir() {
+		return appServerDirProperty.get();
+	}
+
+	@Override
+	public void setAppServerDir(String dir) {
+		this.appServerDirProperty.set(dir);
 	}
 
 	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);

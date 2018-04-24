@@ -1,5 +1,5 @@
 package ui.servlets;
-import static ui.servlets.JSIDPlay2Server.ROOT_DIR;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_BIN;
@@ -44,6 +44,6 @@ public class DownloadServlet extends HttpServlet {
 	}
 
 	private File getAbsoluteFile(String path) {
-		return new File(ROOT_DIR, path);
+		return new File(DEFAULT_APP_SERVER_DIR, path);
 	}
 }

@@ -1,7 +1,6 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.HVSC_ROOT;
-import static ui.servlets.JSIDPlay2Server.ROOT_DIR;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 
 import java.io.File;
@@ -31,6 +30,8 @@ import ui.entities.collection.StilEntry;
 public class TuneInfoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String HVSC_ROOT = DEFAULT_APP_SERVER_DIR + "/C64Music";
 
 	public static final String SERVLET_PATH = "/info";
 
@@ -111,7 +112,7 @@ public class TuneInfoServlet extends HttpServlet {
 	}
 
 	private File getAbsoluteFile(String path) {
-		return new File(ROOT_DIR, path);
+		return new File(DEFAULT_APP_SERVER_DIR, path);
 	}
 
 	private void addTuneInfo(Map<String, String> tuneInfos, String name, Object value) {

@@ -30,6 +30,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -231,6 +233,26 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public void setNetSIDDevPort(int port) {
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
+	}
+
+	@Override
+	public int getAppServerPort() {
+		return iniReader.getPropertyInt("Emulation", "AppServer Port", DEFAULT_APP_SERVER_PORT);
+	}
+
+	@Override
+	public void setAppServerPort(int port) {
+		iniReader.setProperty("Emulation", "AppServer Port", port);
+	}
+
+	@Override
+	public String getAppServerDir() {
+		return iniReader.getPropertyString("Emulation", "AppServer Dir", DEFAULT_APP_SERVER_DIR);
+	}
+
+	@Override
+	public void setAppServerDir(String dir) {
+		iniReader.setProperty("Emulation", "AppServer Dir", dir);
 	}
 
 	@Override

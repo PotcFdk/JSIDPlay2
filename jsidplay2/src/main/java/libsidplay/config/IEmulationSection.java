@@ -203,6 +203,36 @@ public interface IEmulationSection {
 	void setNetSIDDevPort(int port);
 
 	/**
+	 * Getter of the port address of the built-in Android App Server.
+	 * 
+	 * @return port address of the built-in Android App Server
+	 */
+	int getAppServerPort();
+
+	/**
+	 * Setter of the port address of the built-in Android App Server.
+	 * 
+	 * @param port
+	 *            port address of the built-in Android App Server
+	 */
+	void setAppServerPort(int port);
+
+	/**
+	 * Getter of the root directory of the built-in Android App Server.
+	 * 
+	 * @return root directory of the built-in Android App Server
+	 */
+	String getAppServerDir();
+
+	/**
+	 * Setter of the root directory of the built-in Android App Server.
+	 * 
+	 * @param dir
+	 *            root directory of the built-in Android App Server
+	 */
+	void setAppServerDir(String dir);
+
+	/**
 	 * Is SID filter enabled?
 	 * 
 	 * @return filter enabled

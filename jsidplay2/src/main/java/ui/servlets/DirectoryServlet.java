@@ -1,7 +1,7 @@
 package ui.servlets;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 
-import static ui.servlets.JSIDPlay2Server.ROOT_DIR;
+import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -81,14 +81,14 @@ public class DirectoryServlet extends HttpServlet {
 	}
 
 	private File getAbsoluteFile(String path) {
-		return new File(ROOT_DIR, path);
+		return new File(DEFAULT_APP_SERVER_DIR, path);
 	}
 
 	private void addPath(ArrayList<String> result, File f) {
 		try {
 			String canonicalPath = f.getCanonicalPath();
-			if (canonicalPath.startsWith(ROOT_DIR)) {
-				String path = canonicalPath.substring(ROOT_DIR.length());
+			if (canonicalPath.startsWith(DEFAULT_APP_SERVER_DIR)) {
+				String path = canonicalPath.substring(DEFAULT_APP_SERVER_DIR.length());
 				if (!path.isEmpty()) {
 					result.add(path + (f.isDirectory() ? "/" : ""));
 				} else {

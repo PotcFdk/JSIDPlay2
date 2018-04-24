@@ -40,6 +40,7 @@ import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
+import ui.servlets.JSIDPlay2Server;
 
 public class ToolBar extends C64VBox implements UIPart {
 
@@ -63,7 +64,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong;
 	@FXML
-	private TextField defaultTime, hostname, port;
+	private TextField defaultTime, hostname, port, appServerPort;
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
@@ -74,6 +75,11 @@ public class ToolBar extends C64VBox implements UIPart {
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label;
 
 	private boolean duringInitialization;
+
+	/**
+	 * JSIPlay2 REST based web-services
+	 */
+	private JSIDPlay2Server jsidplay2Server = new JSIDPlay2Server();
 
 	public ToolBar() {
 		super();
@@ -157,6 +163,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
 				new IntegerStringConverter());
 
+		Bindings.bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
+				new IntegerStringConverter());
+
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
 
@@ -214,6 +223,24 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void setPort() {
 		NetSIDDevConnection.getInstance().invalidate();
 		restart();
+	}
+
+	@FXML
+	private void startAppServer() {
+		try {
+			jsidplay2Server.start(util.getConfig());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void stopAppServer() {
+		try {
+			jsidplay2Server.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -284,6 +311,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		restart();
 	}
 
+	@Override
+	public void doClose() {
+		stopAppServer();
+	}
+	
 	private void restart() {
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());

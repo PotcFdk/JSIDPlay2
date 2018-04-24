@@ -3,14 +3,12 @@ package ui.servlets;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
 
+import ui.entities.config.Configuration;
+import ui.entities.config.EmulationSection;
+
 public class JSIDPlay2Server {
 
-	private static final int PORT = 8080;
-	
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
-
-	protected static final String ROOT_DIR = "/home/ken/Downloads/C64Music";
-	protected static final String HVSC_ROOT = ROOT_DIR + "/C64Music";
 
 	protected static final String MIME_TYPE_JSON= "application/json;charset=UTF-8";
 	protected static final String MIME_TYPE_OCTET_STREAM= "application/octet-stream";
@@ -20,8 +18,9 @@ public class JSIDPlay2Server {
 
 	private Server server;
 
-	public void start() throws Exception {
-		server = new Server(PORT);
+	public void start(Configuration configuration) throws Exception {
+		final EmulationSection emulationSection = configuration.getEmulationSection();
+		server = new Server(emulationSection.getAppServerPort());
 		ServletHandler handler = new ServletHandler();
 		handler.addServletWithMapping(FiltersServlet.class, CONTEXT_ROOT + FiltersServlet.SERVLET_PATH);
 		handler.addServletWithMapping(DirectoryServlet.class, CONTEXT_ROOT + DirectoryServlet.SERVLET_PATH + "/*");
