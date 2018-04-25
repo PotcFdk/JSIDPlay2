@@ -10,11 +10,11 @@ public class JSIDPlay2Server {
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
-	protected static final String MIME_TYPE_JSON= "application/json;charset=UTF-8";
-	protected static final String MIME_TYPE_OCTET_STREAM= "application/octet-stream";
-	protected static final String MIME_TYPE_MPEG= "audio/mpeg";
-	protected static final String MIME_TYPE_SID= "audio/prs.sid";
-	protected static final String MIME_TYPE_BIN= "bin";
+	protected static final String MIME_TYPE_JSON = "application/json;charset=UTF-8";
+	protected static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
+	protected static final String MIME_TYPE_MPEG = "audio/mpeg";
+	protected static final String MIME_TYPE_SID = "audio/prs.sid";
+	protected static final String MIME_TYPE_BIN = "bin";
 
 	private Server server;
 
@@ -37,5 +37,9 @@ public class JSIDPlay2Server {
 			server.stop();
 			server.join();
 		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		new JSIDPlay2Server().start(new Configuration());
 	}
 }
