@@ -16,7 +16,7 @@ import ui.common.C64Window;
 public class Keyboard extends C64Window {
 
 	@FXML
-	ToggleButton shiftLocked;
+	private ToggleButton shiftLocked;
 	
 	private final Set<KeyTableEntry> keysPressed = new HashSet<KeyTableEntry>();
 	

@@ -85,7 +85,6 @@ import ui.musiccollection.MusicCollection;
 import ui.musiccollection.MusicCollectionType;
 import ui.oscilloscope.Oscilloscope;
 import ui.printer.Printer;
-import ui.proxysettings.ProxySettings;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.update.Update;
@@ -171,7 +170,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private BooleanProperty nextFavoriteDisabledState;
 	private int hardcopyCounter;
 
-	JSidPlay2 window;
+	private JSidPlay2 window;
 	
 	public MenuBar() {
 		super();
@@ -391,11 +390,6 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void doHardcopyPng() {
 		createHardCopy("png");
-	}
-
-	@FXML
-	private void proxySettings() {
-		new ProxySettings(util.getPlayer()).open();
 	}
 
 	@FXML

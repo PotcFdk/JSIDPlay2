@@ -132,7 +132,7 @@
 				<ImageView fitWidth="320"
 					fitHeight="200" GridPane.halignment="CENTER"
 					GridPane.valignment="CENTER" preserveRatio="true"
-					GridPane.rowIndex="2" GridPane.columnIndex="1" />
+					GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="screenshot"/>
 				<TitledPane text="%INFOS" collapsible="false"
 					GridPane.rowIndex="3" GridPane.columnIndex="1">
 					<TextField fx:id="infos" />

@@ -22,6 +22,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -102,6 +103,8 @@ public class GameBase extends C64VBox implements UIPart {
 	protected Button linkMusic;
 	@FXML
 	protected TextField gameBaseFile;
+	@FXML
+	protected ImageView screenshot;
 
 	private EntityManager em;
 	private GamesService gamesService;

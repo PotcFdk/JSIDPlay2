@@ -158,6 +158,24 @@
 						</VBox>
 					</HBox>
 				</TitledPane>
+				<TitledPane text="%PROXY" expanded="false">
+					<VBox>
+						<CheckBox text="%PROXY_ENABLE" fx:id="proxyEnable" />
+						<Label text="%PROXY_HOSTNAME" />
+						<TextField fx:id="proxyHostname" prefWidth="80">
+							<tooltip>
+								<Tooltip text="%PROXY_HOSTNAME_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%PROXY_PORT" />
+						<TypeTextField type="Integer" fx:id="proxyPort"
+							prefWidth="60">
+							<tooltip>
+								<Tooltip text="%PROXY_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+					</VBox>
+				</TitledPane>
 			</HBox>
 		</AnchorPane>
 	</VBox>

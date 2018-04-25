@@ -50,7 +50,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1192;
 	public static final int DEFAULT_FRAME_HEIGHT = 975;
-	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 166;
+	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 116;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.5f;
@@ -294,40 +294,52 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.gameBase64.set(gameBase64);
 	}
 
-	private boolean enableProxy = DEFAULT_ENABLE_PROXY;
+	private BooleanProperty enableProxyProperty = new SimpleBooleanProperty(DEFAULT_ENABLE_PROXY);
 
 	public boolean isEnableProxy() {
-		return enableProxy;
+		return enableProxyProperty.get();
 	}
 
 	public void setEnableProxy(boolean isEnableProxy) {
-		this.enableProxy = isEnableProxy;
+		singleProperty.set(isEnableProxy);
 	}
 
-	private String proxyHostname;
+	public BooleanProperty enableProxyProperty() {
+		return enableProxyProperty;
+	}
+
+	private StringProperty proxyHostnameProperty = new SimpleStringProperty();
+
+	public StringProperty proxyHostnameProperty() {
+		return proxyHostnameProperty;
+	}
 
 	public String getProxyHostname() {
-		return proxyHostname;
+		return proxyHostnameProperty.get();
 	}
 
-	public void setProxyHostname(String proxyHostname) {
-		this.proxyHostname = proxyHostname;
+	public void setProxyHostname(String hostname) {
+		this.proxyHostnameProperty.set(hostname);
 	}
 
-	private int proxyPort = DEFAULT_PROXY_PORT;
+	private ObjectProperty<Integer> proxyPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_PROXY_PORT);
+
+	public ObjectProperty<Integer> proxyPortProperty() {
+		return proxyPortProperty;
+	}
 
 	public int getProxyPort() {
-		return proxyPort;
+		return proxyPortProperty.get();
 	}
 
-	public void setProxyPort(int proxyPort) {
-		this.proxyPort = proxyPort;
+	public void setProxyPort(int port) {
+		this.proxyPortProperty.set(port);
 	}
 
 	@Transient
 	public Proxy getProxy() {
-		if (enableProxy) {
-			return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHostname, proxyPort));
+		if (isEnableProxy()) {
+			return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(getProxyHostname(), getProxyPort()));
 		} else {
 			return Proxy.NO_PROXY;
 		}

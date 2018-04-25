@@ -278,7 +278,6 @@
 						onAction="#emulationSettings" />
 					<MenuItem text="%JOYSTICK_SETTINGS"
 						onAction="#joystickSettings" />
-					<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
 				</Menu>
 				<Menu text="%HELP">
 					<MenuItem text="%USERGUIDE" onAction="#userguide" />

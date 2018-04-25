@@ -62,13 +62,13 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<Engine> engineBox;
 	@FXML
-	private CheckBox enableSldb, singleSong;
+	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private TextField defaultTime, hostname, port, appServerPort;
+	private TextField defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort;
 	@FXML
 	protected RadioButton playMP3, playEmulation;
 	@FXML
-	ToggleGroup playSourceGroup;
+	ToggleGroup playSourceGroup, appServerGroup;
 	@FXML
 	protected Button volumeButton, mp3Browse;
 	@FXML
@@ -158,6 +158,11 @@ public class ToolBar extends C64VBox implements UIPart {
 				defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 			}
 		});
+
+		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
+		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
+		Bindings.bindBidirectional(proxyPort.textProperty(), sidplay2Section.proxyPortProperty(),
+				new IntegerStringConverter());
 
 		hostname.textProperty().bindBidirectional(emulationSection.netSidDevHostProperty());
 		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
@@ -315,7 +320,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	public void doClose() {
 		stopAppServer();
 	}
-	
+
 	private void restart() {
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());
