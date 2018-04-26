@@ -1,11 +1,15 @@
 package ui.toolbar;
 
+import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 import javax.sound.sampled.Mixer.Info;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -26,6 +30,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidutils.DesktopIntegration;
 import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
@@ -72,7 +77,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	protected Button volumeButton, mp3Browse;
 	@FXML
-	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label;
+	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appHostname;
 
 	private boolean duringInitialization;
 
@@ -178,6 +183,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
 		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
 
+		Platform.runLater(() -> appHostname.setText(execReadToString("hostname")));
 		this.duringInitialization = false;
 	}
 
@@ -316,11 +322,28 @@ public class ToolBar extends C64VBox implements UIPart {
 		restart();
 	}
 
+	@FXML
+	private void downloadApp() {
+		DesktopIntegration.browse(JSIDPLAY2_APP_URL);
+	}
+	
 	@Override
 	public void doClose() {
 		stopAppServer();
 	}
 
+	private String execReadToString(String execCommand) {
+		try {
+			Process proc = Runtime.getRuntime().exec(execCommand);
+			try (Scanner s = new Scanner(proc.getInputStream())) {
+				s.useDelimiter("\\A");
+				return s.hasNext() ? s.next().trim() : "";
+			}
+		} catch (IOException e) {
+			return "?hostname?";
+		}
+	}
+	
 	private void restart() {
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());

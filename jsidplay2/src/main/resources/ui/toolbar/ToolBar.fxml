@@ -142,6 +142,12 @@
 				<TitledPane text="%APP_SERVER" expanded="false">
 					<HBox spacing="5">
 						<VBox>
+							<HBox>
+								<RadioButton text="%START"
+									onAction="#startAppServer" toggleGroup="$appServerGroup" />
+								<RadioButton text="%STOP" onAction="#stopAppServer"
+									selected="true" toggleGroup="$appServerGroup" />
+							</HBox>
 							<Label text="%APP_SERVER_PORT" />
 							<TypeTextField type="Integer" fx:id="appServerPort"
 								prefWidth="60">
@@ -149,12 +155,8 @@
 									<Tooltip text="%APP_SERVER_PORT_TIP" />
 								</tooltip>
 							</TypeTextField>
-						</VBox>
-						<VBox>
-							<RadioButton text="%START" onAction="#startAppServer"
-								toggleGroup="$appServerGroup" />
-							<RadioButton text="%STOP" onAction="#stopAppServer"
-								selected="true" toggleGroup="$appServerGroup" />
+							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />
+							<Button text="%DOWNLOAD_APP" onAction="#downloadApp" />
 						</VBox>
 					</HBox>
 				</TitledPane>

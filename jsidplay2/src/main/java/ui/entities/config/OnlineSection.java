@@ -39,6 +39,7 @@ public class OnlineSection {
 	}
 
 	public static final String JSIDPLAY2_JS2_URL = DEPLOYMENT_URL + "jsidplay2.js2";
+	public static final String JSIDPLAY2_APP_URL = DEPLOYMENT_URL + "jsidplay2app.apk";
 
 	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 
