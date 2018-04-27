@@ -25,7 +25,7 @@ public class InternetUtils {
 						location = URLDecoder.decode(location, "UTF-8");
 						// Deal with relative URLs
 						URL next = new URL(currentURL, location);
-						currentURL = new URL(next.toExternalForm().replace(" ", "%20"));
+						currentURL = new URL(next.toExternalForm().replace("%", "%25").replace(" ", "%20"));
 						continue;
 					}
 				case HttpURLConnection.HTTP_OK:
