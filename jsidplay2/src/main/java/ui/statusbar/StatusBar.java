@@ -195,9 +195,12 @@ public class StatusBar extends C64VBox implements UIPart {
 		if (c1541.getDiskController().isMotorOn()) {
 			line.append(String.format("%s: %02d, ", util.getBundle().getString("FLOPPY_TRACK"), halfTrack >> 1));
 		}
-		line.append(String.format("%s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
+		Runtime runtime = Runtime.getRuntime();
+		line.append(String.format("%s: %sMb/%sMb, ", util.getBundle().getString("MEMORY"),
+				(runtime.totalMemory() - runtime.freeMemory()) >> 20, runtime.maxMemory() >> 20));
+		line.append(String.format("%s: %s%s, ", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
-
+		
 		status.setText(line.toString());
 		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());

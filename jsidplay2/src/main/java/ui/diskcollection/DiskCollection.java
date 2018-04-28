@@ -13,6 +13,8 @@ import java.util.zip.GZIPInputStream;
 
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
+import de.schlichtherle.truezip.file.TVFS;
+import de.schlichtherle.truezip.fs.FsSyncException;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -177,6 +179,18 @@ public class DiskCollection extends C64VBox implements UIPart {
 		});
 	}
 
+	@Override
+	public void doClose() {
+		if (fileBrowser.getRoot().getValue() instanceof TFile) {
+			TFile tf = (TFile) fileBrowser.getRoot().getValue();
+			try {
+				TVFS.umount(tf);
+			} catch (FsSyncException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	@FXML
 	private void doAutoConfiguration() {
 		if (autoConfiguration.isSelected()) {

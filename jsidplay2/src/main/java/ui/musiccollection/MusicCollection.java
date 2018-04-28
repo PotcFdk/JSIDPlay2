@@ -32,6 +32,8 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
+import de.schlichtherle.truezip.file.TVFS;
+import de.schlichtherle.truezip.fs.FsSyncException;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -328,6 +330,14 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
+		if (fileBrowser.getRoot().getValue() instanceof TFile) {
+			TFile tf = (TFile) fileBrowser.getRoot().getValue();
+			try {
+				TVFS.umount(tf);
+			} catch (FsSyncException e) {
+				e.printStackTrace();
+			}
+		}
 		if (em != null) {
 			em.close();
 			em.getEntityManagerFactory().close();
