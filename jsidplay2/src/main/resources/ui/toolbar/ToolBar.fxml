@@ -25,8 +25,8 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml"
 	type="javafx.scene.layout.VBox">
-	<!-- <Scene xmlns:fx="http://javafx.com/fxml" -->
-	<!-- fx:controller="ui.toolbar.ToolBar"> -->
+<!-- 	<Scene xmlns:fx="http://javafx.com/fxml" -->
+<!-- 	fx:controller="ui.toolbar.ToolBar"> -->
 	<VBox>
 		<AnchorPane>
 			<fx:define>
@@ -156,6 +156,7 @@
 								</tooltip>
 							</TypeTextField>
 							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />
+							<Label text="%APP_SERVER_IP" fx:id="appIpAddress" />
 							<Button text="%DOWNLOAD_APP" onAction="#downloadApp" />
 						</VBox>
 					</HBox>

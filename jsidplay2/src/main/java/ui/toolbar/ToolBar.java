@@ -4,8 +4,12 @@ import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer.Info;
 
@@ -77,7 +81,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	protected Button volumeButton, mp3Browse;
 	@FXML
-	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appHostname;
+	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname;
 
 	private boolean duringInitialization;
 
@@ -183,7 +187,10 @@ public class ToolBar extends C64VBox implements UIPart {
 		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
 		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
 
-		Platform.runLater(() -> appHostname.setText(execReadToString("hostname")));
+		Platform.runLater(() -> {
+			appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
+			appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
+		});
 		this.duringInitialization = false;
 	}
 
@@ -326,15 +333,15 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void downloadApp() {
 		DesktopIntegration.browse(JSIDPLAY2_APP_URL);
 	}
-	
+
 	@Override
 	public void doClose() {
 		stopAppServer();
 	}
 
-	private String execReadToString(String execCommand) {
+	private String getHostname() {
 		try {
-			Process proc = Runtime.getRuntime().exec(execCommand);
+			Process proc = Runtime.getRuntime().exec("hostname");
 			try (Scanner s = new Scanner(proc.getInputStream())) {
 				s.useDelimiter("\\A");
 				return s.hasNext() ? s.next().trim() : "";
@@ -343,7 +350,18 @@ public class ToolBar extends C64VBox implements UIPart {
 			return "?hostname?";
 		}
 	}
-	
+
+	private String getIpAddresses() {
+		try {
+			return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
+					.flatMap(iface -> Collections.list(iface.getInetAddresses()).stream())
+					.filter(address -> !address.isLoopbackAddress() && address.isSiteLocalAddress())
+					.map(address -> address.getHostAddress()).collect(Collectors.joining("\n"));
+		} catch (SocketException ex) {
+			return "?ip?";
+		}
+	}
+
 	private void restart() {
 		if (!duringInitialization) {
 			util.getPlayer().play(util.getPlayer().getTune());
