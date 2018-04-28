@@ -14,6 +14,7 @@ import com.beust.jcommander.Parameters;
 
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
+import sidplay.audio.CmpMP3File.MP3Termination;
 
 /**
  * Abstract base class to output an MP3 encoded tune to an output stream.
@@ -134,7 +135,7 @@ public abstract class MP3Driver implements AudioDriver {
 			int bytesWritten = jump3r.encodeBuffer(sampleBuffer.array(), 0, sampleBuffer.capacity(), encoded);
 			out.write(encoded, 0, bytesWritten);
 		} catch (ArrayIndexOutOfBoundsException | IOException e) {
-			throw new InterruptedException();
+			throw new MP3Termination(e);
 		}
 	}
 

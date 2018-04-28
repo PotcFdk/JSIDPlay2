@@ -17,6 +17,13 @@ public class CmpMP3File extends JavaSound {
 
 	public static class MP3Termination extends InterruptedException {
 		private static final long serialVersionUID = -7204524330347735933L;
+
+		public MP3Termination() {
+		}
+		
+		public MP3Termination(Exception e) {
+			super(e.getMessage());
+		}
 	}
 
 	/**

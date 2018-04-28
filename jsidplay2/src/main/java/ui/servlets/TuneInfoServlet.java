@@ -1,11 +1,10 @@
 package ui.servlets;
 
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.IntSupplier;
@@ -17,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TFileInputStream;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
@@ -26,14 +27,19 @@ import libsidutils.stil.STIL.STILEntry;
 import libsidutils.stil.STIL.TuneEntry;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.StilEntry;
+import ui.entities.config.Configuration;
 
 public class TuneInfoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String HVSC_ROOT = DEFAULT_APP_SERVER_DIR + "/C64Music";
-
 	public static final String SERVLET_PATH = "/info";
+
+	private ServletUtil util;
+
+	public TuneInfoServlet(Configuration configuration) {
+		this.util = new ServletUtil(configuration);
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -56,10 +62,11 @@ public class TuneInfoServlet extends HttpServlet {
 
 	public Map<String, String> getTuneInfos(String resource) throws IOException, SidTuneError {
 		Map<String, String> tuneInfos = new HashMap<String, String>();
-		File tuneFile = getAbsoluteFile(resource);
+		File tuneFile = util.getAbsoluteFile(resource);
 		SidTune tune = SidTune.load(tuneFile);
-		SidDatabase db = new SidDatabase(HVSC_ROOT);
-		STIL stil = getSTIL(HVSC_ROOT);
+		String root = util.getConfiguration().getSidplay2Section().getHvsc();
+		SidDatabase db = new SidDatabase(root);
+		STIL stil = getSTIL(root);
 		if (tune != null) {
 			IntSupplier lengthFnct = new IntSupplier() {
 				@Override
@@ -111,19 +118,15 @@ public class TuneInfoServlet extends HttpServlet {
 		return tuneInfos;
 	}
 
-	private File getAbsoluteFile(String path) {
-		return new File(DEFAULT_APP_SERVER_DIR, path);
-	}
-
 	private void addTuneInfo(Map<String, String> tuneInfos, String name, Object value) {
 		tuneInfos.put(name, String.valueOf(value != null ? value : ""));
 	}
 
 	private STIL getSTIL(String hvscRoot) {
-		try (FileInputStream input = new FileInputStream(new File(HVSC_ROOT, STIL.STIL_FILE))) {
+		try (InputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			return new STIL(input);
-		} catch (Exception e) {
-			// ignore
+		} catch (NoSuchFieldException | IllegalAccessException | IOException e) {
+			System.err.println(e.getMessage());
 		}
 		return null;
 	}

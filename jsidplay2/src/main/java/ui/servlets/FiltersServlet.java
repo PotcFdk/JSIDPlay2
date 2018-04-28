@@ -1,6 +1,7 @@
 package ui.servlets;
 
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,13 +15,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import libsidplay.config.IFilterSection;
-import sidplay.ini.IniDefaults;
+import ui.entities.config.Configuration;
 
 public class FiltersServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String SERVLET_PATH = "/filters";
+
+	private ServletUtil util;
+
+	public FiltersServlet(Configuration configuration) {
+		this.util = new ServletUtil(configuration);
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -34,7 +41,7 @@ public class FiltersServlet extends HttpServlet {
 
 	public List<String> getFilters() {
 		List<String> result = new ArrayList<String>();
-		List<? extends IFilterSection> filterSection = IniDefaults.DEFAULTS.getFilterSection();
+		List<? extends IFilterSection> filterSection = util.getConfiguration().getFilterSection();
 		for (Iterator<? extends IFilterSection> iterator = filterSection.iterator(); iterator.hasNext();) {
 			final IFilterSection iFilterSection = (IFilterSection) iterator.next();
 			if (iFilterSection.isReSIDFilter6581()) {

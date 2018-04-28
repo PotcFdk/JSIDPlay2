@@ -1,8 +1,8 @@
 package ui.servlets;
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
+
+import static ui.servlets.JSIDPlay2Server.MIME_TYPE_BIN;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_BIN;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ui.entities.config.Configuration;
+
 public class DownloadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String SERVLET_PATH = "/download";
+
+	private ServletUtil util;
+
+	public DownloadServlet(Configuration configuration) {
+		this.util = new ServletUtil(configuration);
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -40,10 +48,7 @@ public class DownloadServlet extends HttpServlet {
 	}
 
 	public byte[] getFile(String path) throws IOException {
-		return Files.readAllBytes(Paths.get(getAbsoluteFile(path).getPath()));
+		return Files.readAllBytes(Paths.get(util.getAbsoluteFile(path).getPath()));
 	}
 
-	private File getAbsoluteFile(String path) {
-		return new File(DEFAULT_APP_SERVER_DIR, path);
-	}
 }

@@ -1,7 +1,8 @@
 package ui.servlets;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
@@ -20,15 +21,23 @@ public class JSIDPlay2Server {
 
 	public void start(Configuration configuration) throws Exception {
 		final EmulationSection emulationSection = configuration.getEmulationSection();
+
 		server = new Server(emulationSection.getAppServerPort());
-		ServletHandler handler = new ServletHandler();
-		handler.addServletWithMapping(FiltersServlet.class, CONTEXT_ROOT + FiltersServlet.SERVLET_PATH);
-		handler.addServletWithMapping(DirectoryServlet.class, CONTEXT_ROOT + DirectoryServlet.SERVLET_PATH + "/*");
-		handler.addServletWithMapping(TuneInfoServlet.class, CONTEXT_ROOT + TuneInfoServlet.SERVLET_PATH + "/*");
-		handler.addServletWithMapping(PhotoServlet.class, CONTEXT_ROOT + PhotoServlet.SERVLET_PATH + "/*");
-		handler.addServletWithMapping(ConvertServlet.class, CONTEXT_ROOT + ConvertServlet.SERVLET_PATH + "/*");
-		handler.addServletWithMapping(DownloadServlet.class, CONTEXT_ROOT + DownloadServlet.SERVLET_PATH + "/*");
-		server.setHandler(handler);
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
+		server.setHandler(context);
+
+		context.addServlet(new ServletHolder(new FiltersServlet(configuration)),
+				CONTEXT_ROOT + FiltersServlet.SERVLET_PATH);
+		context.addServlet(new ServletHolder(new DirectoryServlet(configuration)),
+				CONTEXT_ROOT + DirectoryServlet.SERVLET_PATH + "/*");
+		context.addServlet(new ServletHolder(new TuneInfoServlet(configuration)),
+				CONTEXT_ROOT + TuneInfoServlet.SERVLET_PATH + "/*");
+		context.addServlet(new ServletHolder(new PhotoServlet(configuration)), CONTEXT_ROOT + PhotoServlet.SERVLET_PATH + "/*");
+		context.addServlet(new ServletHolder(new ConvertServlet(configuration)), CONTEXT_ROOT + ConvertServlet.SERVLET_PATH + "/*");
+		context.addServlet(new ServletHolder(new DownloadServlet(configuration)),
+				CONTEXT_ROOT + DownloadServlet.SERVLET_PATH + "/*");
+
 		server.start();
 	}
 

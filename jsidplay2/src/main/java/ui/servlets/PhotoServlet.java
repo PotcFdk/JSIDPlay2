@@ -1,10 +1,8 @@
 package ui.servlets;
 
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -19,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import ui.entities.config.Configuration;
 
 public class PhotoServlet extends HttpServlet {
 
@@ -39,6 +38,12 @@ public class PhotoServlet extends HttpServlet {
 		}
 	}
 
+	private ServletUtil util;
+
+	public PhotoServlet(Configuration configuration) {
+		this.util = new ServletUtil(configuration);
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getRequestURI()
@@ -57,7 +62,7 @@ public class PhotoServlet extends HttpServlet {
 	}
 
 	public byte[] getPhoto(String resource) throws IOException, SidTuneError {
-		SidTune tune = SidTune.load(getAbsoluteFile(resource));
+		SidTune tune = SidTune.load(util.getAbsoluteFile(resource));
 		if (tune != null) {
 			Collection<String> infos = tune.getInfo().getInfoString();
 			if (infos.size() > 1) {
@@ -81,10 +86,6 @@ public class PhotoServlet extends HttpServlet {
 			}
 		}
 		return new byte[0];
-	}
-
-	private File getAbsoluteFile(String path) {
-		return new File(DEFAULT_APP_SERVER_DIR, path);
 	}
 
 }

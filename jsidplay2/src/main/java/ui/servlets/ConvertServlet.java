@@ -1,9 +1,7 @@
 package ui.servlets;
 
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_DIR;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -23,21 +21,26 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
-import sidplay.ini.IniDefaults;
+import ui.entities.config.Configuration;
 
 public class ConvertServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String HVSC_ROOT = DEFAULT_APP_SERVER_DIR + "/C64Music";
 	public static final String SERVLET_PATH = "/convert";
+
+	private ServletUtil util;
+
+	public ConvertServlet(Configuration configuration) {
+		this.util = new ServletUtil(configuration);
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getRequestURI()
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 
-		IConfig cfg = IniDefaults.DEFAULTS;
+		IConfig cfg = util.getConfiguration();
 		cfg.getSidplay2Section().setDefaultPlayLength(Integer.parseInt(request.getParameter("defaultPlayLength")));
 		cfg.getSidplay2Section().setEnableDatabase(Boolean.parseBoolean(request.getParameter("enableDatabase")));
 		cfg.getSidplay2Section().setSingle(Boolean.parseBoolean(request.getParameter("single")));
@@ -89,13 +92,10 @@ public class ConvertServlet extends HttpServlet {
 
 	public void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
-		player.setSidDatabase(new SidDatabase(HVSC_ROOT));
+		player.setSidDatabase(new SidDatabase(util.getConfiguration().getSidplay2Section().getHvsc()));
 		player.setAudioDriver(driver);
-		player.play(SidTune.load(getAbsoluteFile(resource)));
+		player.play(SidTune.load(util.getAbsoluteFile(resource)));
 		player.stopC64(false);
 	}
 
-	private File getAbsoluteFile(String path) {
-		return new File(DEFAULT_APP_SERVER_DIR, path);
-	}
 }

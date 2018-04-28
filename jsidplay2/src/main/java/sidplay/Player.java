@@ -600,7 +600,7 @@ public class Player extends HardwareEnsemble {
 			} catch (CmpMP3File.MP3Termination e) {
 				stateProperty.set(END);
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
-				throw new RuntimeException(e.getMessage());
+				throw new RuntimeException(e.getMessage(), e);
 			} finally {
 				close();
 			}
