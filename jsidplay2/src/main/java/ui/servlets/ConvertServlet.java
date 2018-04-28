@@ -21,6 +21,7 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.ini.IniDefaults;
 import ui.entities.config.Configuration;
 
 public class ConvertServlet extends HttpServlet {
@@ -40,7 +41,8 @@ public class ConvertServlet extends HttpServlet {
 		String filePath = request.getRequestURI()
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 
-		IConfig cfg = util.getConfiguration();
+		// we use default base settings to not disturb the main player instance
+		IConfig cfg = IniDefaults.DEFAULTS;
 		cfg.getSidplay2Section().setDefaultPlayLength(Integer.parseInt(request.getParameter("defaultPlayLength")));
 		cfg.getSidplay2Section().setEnableDatabase(Boolean.parseBoolean(request.getParameter("enableDatabase")));
 		cfg.getSidplay2Section().setSingle(Boolean.parseBoolean(request.getParameter("single")));
