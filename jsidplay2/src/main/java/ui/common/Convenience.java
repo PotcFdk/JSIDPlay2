@@ -10,9 +10,9 @@ import java.util.function.Consumer;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 import libsidplay.components.cart.CartridgeType;
-import libsidplay.components.cart.supported.REU;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.Extract7Zip;
 import sidplay.Player;
 import ui.filefilter.CartFileFilter;
 import ui.filefilter.DiskFileFilter;
@@ -38,9 +38,9 @@ public class Convenience {
 	private static final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	/**
-	 * Magically chooses files to be attached, rules are:
-	 * Attach first supported file,
-	 * eventually replace by lexically first disk or tape (e.g. side A, not B).
+	 * Magically chooses files to be attached, rules are: Attach first supported
+	 * file, eventually replace by lexically first disk or tape (e.g. side A, not
+	 * B).
 	 */
 	public static final BiPredicate<File, File> LEXICALLY_FIRST_MEDIA = (file, toAttach) -> toAttach == null
 			|| !tuneFileFilter.accept(file) && file.getName().compareTo(toAttach.getName()) < 0;
@@ -63,9 +63,8 @@ public class Convenience {
 	}
 
 	/**
-	 * Auto-start C64 bundle (ZIP containing well-known formats or un-zipped
-	 * entry). Attach specific disk/tape/cartridge and automatically start
-	 * entry.<BR>
+	 * Auto-start C64 bundle (ZIP containing well-known formats or un-zipped entry).
+	 * Attach specific disk/tape/cartridge and automatically start entry.<BR>
 	 * 
 	 * Note: temporary files are removed or marked to be removed on exit.
 	 * 
@@ -74,9 +73,8 @@ public class Convenience {
 	 * @param isMediaToAttach
 	 *            tester for media to attach
 	 * @param autoStartFile
-	 *            if media to attach is a disk/tape/cartridge this tune is
-	 *            loaded after attaching the media (null means just reset C64,
-	 *            instead).
+	 *            if media to attach is a disk/tape/cartridge this tune is loaded
+	 *            after attaching the media (null means just reset C64, instead).
 	 * @throws IOException
 	 *             image read error
 	 * @throws SidTuneError
@@ -84,6 +82,7 @@ public class Convenience {
 	 */
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError, URISyntaxException {
+		player.getC64().ejectCartridge();
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
 		TFile zip = new TFile(file);
 		File toAttach = null;
@@ -93,24 +92,23 @@ public class Convenience {
 			// search media file to attach
 			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			TFile.rm_r(zip);
+		} else if (file.getName().toLowerCase(Locale.US).endsWith("7z")) {
+			Extract7Zip extract7Zip = new Extract7Zip(zip, new File(tmpDir));
+			extract7Zip.extract();
+			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
 		} else if (isSupportedMedia(file)) {
 			toAttach = file;
 		}
 		if (toAttach != null) {
 			if (tuneFileFilter.accept(toAttach)) {
-				if (!(player.getC64().getCartridge() instanceof REU)) {
-					player.getC64().ejectCartridge();
-				}
 				player.play(SidTune.load(toAttach));
 				autoStartedFile.accept(toAttach);
 				return true;
 			} else if (diskFileFilter.accept(toAttach)) {
-				player.getC64().ejectCartridge();
 				player.insertDisk(toAttach);
 				autoStart(autoStartFile, LOAD_8_1_RUN);
 				return true;
 			} else if (tapeFileFilter.accept(toAttach)) {
-				player.getC64().ejectCartridge();
 				player.insertTape(toAttach);
 				autoStart(autoStartFile, LOAD_RUN);
 				return true;
@@ -171,6 +169,13 @@ public class Convenience {
 				if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 					try {
 						player.insertCartridge(CartridgeType.REU, memberFile);
+					} catch (IOException | SidTuneError e) {
+						e.printStackTrace();
+					}
+				} else if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
+					try {
+						player.insertCartridge(CartridgeType.CRT, memberFile);
+						toAttach = memberFile;
 					} catch (IOException | SidTuneError e) {
 						e.printStackTrace();
 					}
