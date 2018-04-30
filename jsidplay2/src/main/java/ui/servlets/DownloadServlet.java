@@ -29,26 +29,27 @@ public class DownloadServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration);
 	}
 
+	/**
+	 * Download SID.
+	 * 
+	 * E.g.
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download/C64Music/DEMOS/0-9/1_45_Tune.sid
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getRequestURI()
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 
-		byte[] contents = getFile(filePath);
 		response.setContentType(
 				filePath.endsWith(".mp3") ? MIME_TYPE_MPEG : filePath.endsWith(".sid") ? MIME_TYPE_SID : MIME_TYPE_BIN);
 		response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
 		try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-			servletOutputStream.write(contents);
+			servletOutputStream.write(Files.readAllBytes(Paths.get(util.getAbsoluteFile(filePath).getPath())));
 		} finally {
 			response.getOutputStream().flush();
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
-	}
-
-	public byte[] getFile(String path) throws IOException {
-		return Files.readAllBytes(Paths.get(util.getAbsoluteFile(path).getPath()));
 	}
 
 }

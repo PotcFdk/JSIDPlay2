@@ -3,6 +3,7 @@ package ui.servlets;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -36,6 +37,12 @@ public class ConvertServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration);
 	}
 
+	/**
+	 * Stream SID as MP3.
+	 * 
+	 * E.g.
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/C64Music/DEMOS/0-9/1_45_Tune.sid
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getRequestURI()
@@ -51,10 +58,9 @@ public class ConvertServlet extends HttpServlet {
 		cfg.getSidplay2Section().setFadeOutTime(5);
 		cfg.getAudioSection().setBufferSize(Integer.parseInt(request.getParameter("bufferSize")));
 		cfg.getAudioSection().setSampling(SamplingMethod.valueOf(request.getParameter("samplingMethod")));
-		SamplingRate sampligRate = Integer.parseInt(request.getParameter("frequency")) == 44100 ? SamplingRate.LOW
-				: Integer.parseInt(request.getParameter("frequency")) == 48000 ? SamplingRate.MEDIUM
-						: SamplingRate.HIGH;
-		cfg.getAudioSection().setSamplingRate(sampligRate);
+		Stream.of(SamplingRate.values())
+				.filter(rate -> rate.getFrequency() == Integer.parseInt(request.getParameter("frequency"))).findFirst()
+				.ifPresent(freq -> cfg.getAudioSection().setSamplingRate(freq));
 		cfg.getAudioSection().setMainVolume(3f);
 		cfg.getAudioSection().setSecondVolume(3f);
 		cfg.getAudioSection().setThirdVolume(3f);
@@ -92,7 +98,7 @@ public class ConvertServlet extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	public void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError {
+	private void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(new SidDatabase(util.getConfiguration().getSidplay2Section().getHvsc()));
 		player.setAudioDriver(driver);

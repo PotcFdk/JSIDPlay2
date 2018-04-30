@@ -26,6 +26,12 @@ public class DirectoryServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration);
 	}
 
+	/**
+	 * Get directory contents containing music collections.
+	 * 
+	 * E.g.
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getRequestURI()
@@ -33,10 +39,8 @@ public class DirectoryServlet extends HttpServlet {
 		String filter = request.getParameter("filter");
 		List<String> files = util.getDirectory(filePath, filter);
 
-		ObjectMapper mapper = new ObjectMapper();
 		response.setContentType(MIME_TYPE_JSON);
-		response.getWriter().println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(files));
-
+		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 

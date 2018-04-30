@@ -4,7 +4,6 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import libsidplay.config.IFilterSection;
 import ui.entities.config.Configuration;
+import ui.entities.config.FilterSection;
 
 public class FiltersServlet extends HttpServlet {
 
@@ -29,21 +28,22 @@ public class FiltersServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration);
 	}
 
+	/**
+	 * Get SID filter definitions.
+	 * 
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/filters
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<String> filters = getFilters();
 
 		response.setContentType(MIME_TYPE_JSON);
-		response.getWriter().println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(filters));
-
+		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(getFilters()));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	public List<String> getFilters() {
+	private List<String> getFilters() {
 		List<String> result = new ArrayList<String>();
-		List<? extends IFilterSection> filterSection = util.getConfiguration().getFilterSection();
-		for (Iterator<? extends IFilterSection> iterator = filterSection.iterator(); iterator.hasNext();) {
-			final IFilterSection iFilterSection = (IFilterSection) iterator.next();
+		for (FilterSection iFilterSection : util.getConfiguration().getFilterSection()) {
 			if (iFilterSection.isReSIDFilter6581()) {
 				result.add("RESID_MOS6581_" + iFilterSection.getName());
 			} else if (iFilterSection.isReSIDFilter8580()) {
