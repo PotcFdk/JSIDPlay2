@@ -37,7 +37,8 @@ public class DirectoryServlet extends HttpServlet {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 		String filter = request.getParameter("filter");
-		List<String> files = util.getDirectory(filePath, filter);
+		
+		List<String> files = util.getDirectory(filePath, filter, request.getUserPrincipal());
 
 		response.setContentType(MIME_TYPE_JSON);
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));

@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,27 +45,27 @@ public class ServletUtil {
 		this.configuration = configuration;
 	}
 
-	public List<String> getDirectory(String path, String filter) {
+	public List<String> getDirectory(String path, String filter, Principal principal) {
 		if (path.equals("/")) {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
+			return getRoot(principal);
 		} else if (path.startsWith(C64_MUSIC)) {
 			String root = configuration.getSidplay2Section().getHvsc();
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
-			return getCollectionFiles(rootFile, root, path, filter, C64_MUSIC);
+			return getCollectionFiles(rootFile, root, path, filter, C64_MUSIC, principal);
 		} else if (path.startsWith(CGSC)) {
 			String root = configuration.getSidplay2Section().getCgsc();
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
-			return getCollectionFiles(rootFile, root, path, filter, CGSC);
-		} else if (path.startsWith(MP3)) {
+			return getCollectionFiles(rootFile, root, path, filter, CGSC, principal);
+		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
 			String root = MEDIA_NAS1_MUSIK_UND_HÖRSPIEL;
 			File rootFile = new File(root);
-			return getCollectionFiles(rootFile, root, path, filter, MP3);
+			return getCollectionFiles(rootFile, root, path, filter, MP3, principal);
 		}
 		return null;
 	}
 
 	private List<String> getCollectionFiles(File rootFile, String root, String path, String filter,
-			String virtualCollectionRoot) {
+			String virtualCollectionRoot, Principal principal) {
 		ArrayList<String> result = new ArrayList<String>();
 		if (rootFile != null) {
 			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
@@ -87,7 +88,7 @@ public class ServletUtil {
 			}
 		}
 		if (result.isEmpty()) {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
+			return getRoot(principal);
 		}
 		return result;
 	}
@@ -96,14 +97,22 @@ public class ServletUtil {
 		result.add(path + (f != null && f.isDirectory() ? "/" : ""));
 	}
 
-	public File getAbsoluteFile(String path) {
+	private List<String> getRoot(Principal principal) {
+		if (principal.getName().equals("kenchis")) {
+			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
+		} else {
+			return Arrays.asList(C64_MUSIC + "/", CGSC + "/");
+		}
+	}
+
+	public File getAbsoluteFile(String path, Principal principal) {
 		if (path.startsWith(C64_MUSIC)) {
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
 			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);
 		} else if (path.startsWith(CGSC)) {
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
-		} else if (path.startsWith(MP3)) {
+		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
 			return PathUtils.getFile(MEDIA_NAS1_MUSIK_UND_HÖRSPIEL + path.substring(MP3.length()), null, null);
 		}
 		return null;

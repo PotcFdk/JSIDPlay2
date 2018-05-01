@@ -5,6 +5,7 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,16 +51,17 @@ public class TuneInfoServlet extends HttpServlet {
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 		try {
 			response.setContentType(MIME_TYPE_JSON);
-			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(getTuneInfos(filePath)));
+			response.getWriter().println(
+					new ObjectMapper().writer().writeValueAsString(getTuneInfos(filePath, request.getUserPrincipal())));
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (SidTuneError e) {
 			throw new ServletException(e.getMessage());
 		}
 	}
 
-	private Map<String, String> getTuneInfos(String resource) throws IOException, SidTuneError {
+	private Map<String, String> getTuneInfos(String resource, Principal principal) throws IOException, SidTuneError {
 		Map<String, String> tuneInfos = new HashMap<String, String>();
-		File tuneFile = util.getAbsoluteFile(resource);
+		File tuneFile = util.getAbsoluteFile(resource, principal);
 		if (tuneFile == null) {
 			return tuneInfos;
 		}

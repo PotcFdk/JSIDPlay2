@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
@@ -57,7 +58,7 @@ public class PhotoServlet extends HttpServlet {
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 
 		try (ServletOutputStream out = response.getOutputStream()) {
-			byte[] photo = getPhoto(filePath);
+			byte[] photo = getPhoto(filePath, request.getUserPrincipal());
 			out.write(photo);
 
 			response.setContentType(MIME_TYPE_OCTET_STREAM);
@@ -68,8 +69,8 @@ public class PhotoServlet extends HttpServlet {
 		}
 	}
 
-	private byte[] getPhoto(String resource) throws IOException, SidTuneError {
-		SidTune tune = SidTune.load(util.getAbsoluteFile(resource));
+	private byte[] getPhoto(String resource, Principal principal) throws IOException, SidTuneError {
+		SidTune tune = SidTune.load(util.getAbsoluteFile(resource, principal));
 		if (tune != null) {
 			Collection<String> infos = tune.getInfo().getInfoString();
 			if (infos.size() > 1) {

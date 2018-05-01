@@ -45,7 +45,8 @@ public class DownloadServlet extends HttpServlet {
 		response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
 		try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-			servletOutputStream.write(Files.readAllBytes(Paths.get(util.getAbsoluteFile(filePath).getPath())));
+			servletOutputStream.write(Files
+					.readAllBytes(Paths.get(util.getAbsoluteFile(filePath, request.getUserPrincipal()).getPath())));
 		} finally {
 			response.getOutputStream().flush();
 		}

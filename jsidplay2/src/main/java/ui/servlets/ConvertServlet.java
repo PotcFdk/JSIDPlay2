@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -57,7 +58,8 @@ public class ConvertServlet extends HttpServlet {
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
 			try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-				servletOutputStream.write(Files.readAllBytes(Paths.get(util.getAbsoluteFile(filePath).getPath())));
+				servletOutputStream.write(Files
+						.readAllBytes(Paths.get(util.getAbsoluteFile(filePath, request.getUserPrincipal()).getPath())));
 			} finally {
 				response.getOutputStream().flush();
 			}
@@ -104,7 +106,7 @@ public class ConvertServlet extends HttpServlet {
 				driver.setCbr(Integer.parseInt(request.getParameter("cbr")));
 				driver.setVbrQuality(Integer.parseInt(request.getParameter("vbr")));
 				driver.setVbr(Boolean.parseBoolean(request.getParameter("isVbr")));
-				convert(cfg, filePath, driver);
+				convert(cfg, filePath, driver, request.getUserPrincipal());
 			} catch (SidTuneError e) {
 				throw new ServletException(e.getMessage());
 			} finally {
@@ -114,11 +116,12 @@ public class ConvertServlet extends HttpServlet {
 		}
 	}
 
-	private void convert(IConfig config, String resource, AudioDriver driver) throws IOException, SidTuneError {
+	private void convert(IConfig config, String resource, AudioDriver driver, Principal principal)
+			throws IOException, SidTuneError {
 		Player player = new Player(config);
 		player.setSidDatabase(new SidDatabase(util.getConfiguration().getSidplay2Section().getHvsc()));
 		player.setAudioDriver(driver);
-		player.play(SidTune.load(util.getAbsoluteFile(resource)));
+		player.play(SidTune.load(util.getAbsoluteFile(resource, principal)));
 		player.stopC64(false);
 	}
 

@@ -1,11 +1,16 @@
 package ui.servlets;
 
-import static org.eclipse.jetty.servlet.ServletContextHandler.NO_SECURITY;
-import static org.eclipse.jetty.servlet.ServletContextHandler.NO_SESSIONS;
+import java.util.Collections;
 
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.security.Constraint;
 
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
@@ -28,9 +33,29 @@ public class JSIDPlay2Server {
 		final EmulationSection emulationSection = configuration.getEmulationSection();
 
 		server = new Server(emulationSection.getAppServerPort());
-		ServletContextHandler context = new ServletContextHandler(NO_SESSIONS | NO_SECURITY);
+
+		LoginService loginService = new HashLoginService("JSIDPlay2",
+				JSIDPlay2Server.class.getResource("/realm.properties").getFile());
+		server.addBean(loginService);
+
+		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
+		server.setHandler(security);
+
+		Constraint constraint = new Constraint();
+		constraint.setName("auth");
+		constraint.setAuthenticate(true);
+		constraint.setRoles(new String[] { "user", "admin" });
+
+		ConstraintMapping mapping = new ConstraintMapping();
+		mapping.setPathSpec("/*");
+		mapping.setConstraint(constraint);
+
+		security.setConstraintMappings(Collections.singletonList(mapping));
+		security.setAuthenticator(new BasicAuthenticator());
+		security.setLoginService(loginService);
+
+		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");
-		server.setHandler(context);
 
 		context.addServlet(new ServletHolder(new FiltersServlet(configuration)),
 				CONTEXT_ROOT + FiltersServlet.SERVLET_PATH);
@@ -45,6 +70,8 @@ public class JSIDPlay2Server {
 		context.addServlet(new ServletHolder(new DownloadServlet(configuration)),
 				CONTEXT_ROOT + DownloadServlet.SERVLET_PATH + "/*");
 
+		security.setHandler(context);
+		server.setHandler(security);
 		server.start();
 	}
 
