@@ -53,7 +53,7 @@ public class PhotoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = request.getRequestURI()
+		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
 
 		try (ServletOutputStream out = response.getOutputStream()) {

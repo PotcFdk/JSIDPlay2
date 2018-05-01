@@ -14,6 +14,8 @@ import ui.entities.config.Configuration;
 
 public class ServletUtil {
 
+	private static final String MEDIA_NAS1_MUSIK_UND_HÖRSPIEL = "/media/nas1/Musik und Hörspiel";
+
 	private static class FileTypeComparator implements Comparator<File> {
 
 		@Override
@@ -33,8 +35,9 @@ public class ServletUtil {
 
 	private static final String C64_MUSIC = "/C64Music";
 	private static final String CGSC = "/CGSC";
+	private static final String MP3 = "/MP3";
 	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = new FileTypeComparator();
-	
+
 	private Configuration configuration;
 
 	public ServletUtil(Configuration configuration) {
@@ -43,7 +46,7 @@ public class ServletUtil {
 
 	public List<String> getDirectory(String path, String filter) {
 		if (path.equals("/")) {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/");
+			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
 		} else if (path.startsWith(C64_MUSIC)) {
 			String root = configuration.getSidplay2Section().getHvsc();
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
@@ -52,6 +55,10 @@ public class ServletUtil {
 			String root = configuration.getSidplay2Section().getCgsc();
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
 			return getCollectionFiles(rootFile, root, path, filter, CGSC);
+		} else if (path.startsWith(MP3)) {
+			String root = MEDIA_NAS1_MUSIK_UND_HÖRSPIEL;
+			File rootFile = new File(root);
+			return getCollectionFiles(rootFile, root, path, filter, MP3);
 		}
 		return null;
 	}
@@ -66,7 +73,8 @@ public class ServletUtil {
 				public boolean accept(File pathname) {
 					if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
 						return false;
-					return pathname.isDirectory() || filter == null || pathname.getName().matches(filter);
+					return pathname.isDirectory() || filter == null || pathname.getName().endsWith(".mp3")
+							|| pathname.getName().matches(filter);
 				}
 			});
 			if (listFiles != null) {
@@ -77,8 +85,9 @@ public class ServletUtil {
 					addPath(result, virtualCollectionRoot + PathUtils.getCollectionName(rootFile, f), f);
 				}
 			}
-		} else {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/");
+		}
+		if (result.isEmpty()) {
+			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
 		}
 		return result;
 	}
@@ -94,6 +103,8 @@ public class ServletUtil {
 		} else if (path.startsWith(CGSC)) {
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
+		} else if (path.startsWith(MP3)) {
+			return PathUtils.getFile(MEDIA_NAS1_MUSIK_UND_HÖRSPIEL + path.substring(MP3.length()), null, null);
 		}
 		return null;
 	}
