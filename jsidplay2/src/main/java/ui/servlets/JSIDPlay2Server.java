@@ -35,7 +35,7 @@ public class JSIDPlay2Server {
 		server = new Server(emulationSection.getAppServerPort());
 
 		LoginService loginService = new HashLoginService("JSIDPlay2",
-				JSIDPlay2Server.class.getResource("/realm.properties").getFile());
+				JSIDPlay2Server.class.getResource("/realm.properties").toExternalForm());
 		server.addBean(loginService);
 
 		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
