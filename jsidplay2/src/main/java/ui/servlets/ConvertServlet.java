@@ -34,7 +34,7 @@ public class ConvertServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String SERVLET_PATH = "/convert";
+	public static final String SERVLET_PATH_CONVERT = "/convert";
 
 	private ServletUtil util;
 
@@ -51,7 +51,7 @@ public class ConvertServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
+				.substring(request.getRequestURI().indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			response.setContentType(MIME_TYPE_MPEG);

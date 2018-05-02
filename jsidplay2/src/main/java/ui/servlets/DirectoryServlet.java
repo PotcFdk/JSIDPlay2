@@ -18,7 +18,7 @@ public class DirectoryServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String SERVLET_PATH = "/directory";
+	public static final String SERVLET_PATH_DIRECTORY = "/directory";
 
 	private ServletUtil util;
 
@@ -35,7 +35,7 @@ public class DirectoryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
+				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
 		String filter = request.getParameter("filter");
 		
 		List<String> files = util.getDirectory(filePath, filter, request.getUserPrincipal());

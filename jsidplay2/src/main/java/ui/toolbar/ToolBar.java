@@ -88,7 +88,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	/**
 	 * JSIPlay2 REST based web-services
 	 */
-	private JSIDPlay2Server jsidplay2Server = new JSIDPlay2Server();
+	private JSIDPlay2Server jsidplay2Server;
 
 	public ToolBar() {
 		super();
@@ -107,6 +107,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final AudioSection audioSection = config.getAudioSection();
 		final EmulationSection emulationSection = config.getEmulationSection();
+
+		jsidplay2Server = new JSIDPlay2Server(config);
 
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
@@ -246,7 +248,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void startAppServer() {
 		try {
-			jsidplay2Server.start(util.getConfig());
+			jsidplay2Server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -25,7 +25,7 @@ public class PhotoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String SERVLET_PATH = "/photo";
+	public static final String SERVLET_PATH_PHOTO = "/photo";
 
 	/*
 	 * Contains a mapping: Author to picture resource path.
@@ -55,7 +55,7 @@ public class PhotoServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH) + SERVLET_PATH.length());
+				.substring(request.getRequestURI().indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
 		try (ServletOutputStream out = response.getOutputStream()) {
 			byte[] photo = getPhoto(filePath, request.getUserPrincipal());

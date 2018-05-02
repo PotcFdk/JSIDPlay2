@@ -20,7 +20,7 @@ public class FiltersServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String SERVLET_PATH = "/filters";
+	public static final String SERVLET_PATH_FILTERS = "/filters";
 
 	private ServletUtil util;
 
