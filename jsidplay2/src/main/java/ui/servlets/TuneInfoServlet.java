@@ -19,13 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneError;
 import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
-import libsidutils.stil.STIL.Info;
 import libsidutils.stil.STIL.STILEntry;
-import libsidutils.stil.STIL.TuneEntry;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
@@ -57,30 +54,39 @@ public class TuneInfoServlet extends HttpServlet {
 		File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 		try {
 			response.setContentType(MIME_TYPE_JSON);
-			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(getTuneInfos(tuneFile)));
+			response.getWriter()
+					.println(new ObjectMapper().writer().writeValueAsString(getTuneInfos(getHVSCEntry(tuneFile))));
 			response.setStatus(HttpServletResponse.SC_OK);
-		} catch (SidTuneError e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ServletException(e.getMessage());
 		}
 	}
 
-	private Map<String, String> getTuneInfos(File tuneFile) throws IOException, SidTuneError {
-		Map<String, String> result = new HashMap<String, String>();
+	private HVSCEntry getHVSCEntry(File tuneFile) throws Exception {
 		if (tuneFile == null) {
-			return result;
+			return null;
 		}
 		SidTune tune = SidTune.load(tuneFile);
 		String root = util.getConfiguration().getSidplay2Section().getHvsc();
 		if (root == null) {
-			return result;
+			return null;
 		}
 		SidDatabase db = new SidDatabase(root);
 		STIL stil = getSTIL(root);
 		HVSCEntry hvscEntry = new HVSCEntry(() -> db.getTuneLength(tune), "", tuneFile, tune);
 		String path = db.getPath(tune);
 		STILEntry stilEntry = stil != null && path.length() > 0 ? stil.getSTILEntry(path) : null;
-		if (stilEntry != null) {
-			hvscEntry.setStilGlbComment(formatStilText(stilEntry).toString());
+		if (stilEntry != null && stilEntry.globalComment != null) {
+			hvscEntry.setStilGlbComment(stilEntry.globalComment.replaceAll("([ \t\r])+", " "));
+		}
+		return hvscEntry;
+	}
+
+	private Map<String, String> getTuneInfos(HVSCEntry hvscEntry) throws Exception {
+		Map<String, String> result = new HashMap<String, String>();
+		if (hvscEntry == null) {
+			return result;
 		}
 		for (SearchCriteria<?, ?> field : SearchCriteria.getSearchableAttributes()) {
 			SingularAttribute<?, ?> singleAttribute = field.getAttribute();
@@ -101,73 +107,9 @@ public class TuneInfoServlet extends HttpServlet {
 		return result;
 	}
 
-	private STIL getSTIL(String hvscRoot) {
+	private STIL getSTIL(String hvscRoot) throws Exception {
 		try (InputStream input = ZipFileUtils.newFileInputStream(ZipFileUtils.newFile(hvscRoot, STIL.STIL_FILE))) {
 			return new STIL(input);
-		} catch (NoSuchFieldException | IllegalAccessException | IOException e) {
-			System.err.println(e.getMessage());
-		}
-		return null;
-	}
-
-	private StringBuffer formatStilText(STILEntry stilEntry) {
-		StringBuffer result = new StringBuffer();
-		if (stilEntry != null) {
-			// append STIL infos,replace multiple whitespaces
-			String writeSTILEntry = writeSTILEntry(stilEntry);
-			String replaceAll = writeSTILEntry.replaceAll("([ \t\r])+", " ");
-			result.append(replaceAll);
-		}
-		return result;
-	}
-
-	private String writeSTILEntry(STILEntry stilEntry) {
-		StringBuffer result = new StringBuffer();
-		if (stilEntry.filename != null) {
-			result.append("Filename: ");
-			result.append(stilEntry.filename);
-			result.append(" - ");
-		}
-		if (stilEntry.globalComment != null) {
-			result.append("\n" + stilEntry.globalComment);
-		}
-		for (Info info : stilEntry.infos) {
-			writeSTILEntry(result, info);
-		}
-		int subTuneNo = 1;
-		for (TuneEntry entry : stilEntry.subtunes) {
-			if (entry.globalComment != null) {
-				result.append("\n" + entry.globalComment);
-			}
-			for (Info info : entry.infos) {
-				result.append("\nSubTune #" + subTuneNo + ": ");
-				writeSTILEntry(result, info);
-			}
-			subTuneNo++;
-		}
-		return result.append("                                        ").toString();
-	}
-
-	private void writeSTILEntry(StringBuffer buffer, Info info) {
-		if (info.name != null) {
-			buffer.append("\nName: ");
-			buffer.append(info.name);
-		}
-		if (info.author != null) {
-			buffer.append("\nAuthor: ");
-			buffer.append(info.author);
-		}
-		if (info.title != null) {
-			buffer.append("\nTitle: ");
-			buffer.append(info.title);
-		}
-		if (info.artist != null) {
-			buffer.append("\nArtist: ");
-			buffer.append(info.artist);
-		}
-		if (info.comment != null) {
-			buffer.append("\nComment: ");
-			buffer.append(info.comment.replaceAll("\"", "'"));
 		}
 	}
 
