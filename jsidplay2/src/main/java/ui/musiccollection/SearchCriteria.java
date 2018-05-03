@@ -1,11 +1,16 @@
 package ui.musiccollection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import javafx.util.Pair;
+import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.collection.StilEntry_;
 
@@ -39,4 +44,24 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 		return result;
 	}
 
+	public static List<Pair<String, String>> getAttributeValues(HVSCEntry hvscEntry,
+			Function<SearchCriteria<?, ?>, String> nameLocalizer) {
+		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		if (hvscEntry == null) {
+			return result;
+		}
+		for (SearchCriteria<?, ?> field : getSearchableAttributes()) {
+			SingularAttribute<?, ?> singleAttribute = field.getAttribute();
+			if (!singleAttribute.getDeclaringType().getJavaType().equals(HVSCEntry.class)) {
+				continue;
+			}
+			try {
+				String name = nameLocalizer.apply(field);
+				Object value = ((Method) singleAttribute.getJavaMember()).invoke(hvscEntry);
+				result.add(new Pair<>(name, String.valueOf(value != null ? value : "")));
+			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			}
+		}
+		return result;
+	}
 }

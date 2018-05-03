@@ -5,12 +5,9 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.persistence.metamodel.SingularAttribute;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javafx.util.Pair;
 import libsidplay.sidtune.SidTune;
 import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
@@ -26,7 +24,6 @@ import libsidutils.stil.STIL.STILEntry;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
-import ui.musiccollection.TuneInfo;
 
 public class TuneInfoServlet extends HttpServlet {
 
@@ -53,9 +50,14 @@ public class TuneInfoServlet extends HttpServlet {
 
 		File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 		try {
+			HVSCEntry hvscEntry = getHVSCEntry(tuneFile);
+			Map<String, String> tuneInfos = SearchCriteria
+					.getAttributeValues(hvscEntry,
+							field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
+									+ field.getAttribute().getName())
+					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.setContentType(MIME_TYPE_JSON);
-			response.getWriter()
-					.println(new ObjectMapper().writer().writeValueAsString(getTuneInfos(getHVSCEntry(tuneFile))));
+			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,30 +83,6 @@ public class TuneInfoServlet extends HttpServlet {
 			hvscEntry.setStilGlbComment(stilEntry.globalComment.replaceAll("([ \t\r])+", " "));
 		}
 		return hvscEntry;
-	}
-
-	private Map<String, String> getTuneInfos(HVSCEntry hvscEntry) throws Exception {
-		Map<String, String> result = new HashMap<String, String>();
-		if (hvscEntry == null) {
-			return result;
-		}
-		for (SearchCriteria<?, ?> field : SearchCriteria.getSearchableAttributes()) {
-			SingularAttribute<?, ?> singleAttribute = field.getAttribute();
-			if (!singleAttribute.getDeclaringType().getJavaType().equals(HVSCEntry.class)) {
-				continue;
-			}
-			try {
-				String name = singleAttribute.getDeclaringType().getJavaType().getSimpleName() + "."
-						+ singleAttribute.getName();
-				Object value = ((Method) singleAttribute.getJavaMember()).invoke(hvscEntry);
-				TuneInfo tuneInfo = new TuneInfo();
-				tuneInfo.setName(name);
-				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
-				result.put(name, String.valueOf(value != null ? value : ""));
-			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-			}
-		}
-		return result;
 	}
 
 	private STIL getSTIL(String hvscRoot) throws Exception {

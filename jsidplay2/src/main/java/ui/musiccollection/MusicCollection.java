@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -23,12 +21,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
-import javax.persistence.metamodel.SingularAttribute;
 
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -187,7 +185,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	public MusicCollection() {
 	}
-	
+
 	public MusicCollection(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -230,7 +228,8 @@ public class MusicCollection extends C64VBox implements UIPart {
 					}
 					showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
 				} catch (IOException | SidTuneError e) {
-					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
+					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()),
+							getType());
 				}
 			}
 		};
@@ -813,20 +812,9 @@ public class MusicCollection extends C64VBox implements UIPart {
 		String collectionName = PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile);
 		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
 				collectionName, tuneFile, tune);
-		tuneInfos.clear();
-		for (SearchCriteria<?, ?> field : searchCriteria.getItems()) {
-			SingularAttribute<?, ?> singleAttribute = field.getAttribute();
-			String name = searchCriteria.getConverter().toString(field);
-			Object value = "";
-			try {
-				value = ((Method) singleAttribute.getJavaMember()).invoke(entry);
-				TuneInfo tuneInfo = new TuneInfo();
-				tuneInfo.setName(name);
-				tuneInfo.setValue(String.valueOf(value != null ? value : ""));
-				tuneInfos.add(tuneInfo);
-			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-			}
-		}
+		tuneInfos.setAll(SearchCriteria
+				.getAttributeValues(entry, field -> searchCriteria.getConverter().toString(field)).stream()
+				.map(info -> new TuneInfo(info.getKey(), info.getValue())).collect(Collectors.toList()));
 	}
 
 	private void addFavorites(SidPlay2Section sidplay2Section, FavoritesSection section, List<File> files) {

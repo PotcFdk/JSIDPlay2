@@ -7,6 +7,11 @@ public class TuneInfo {
 	private StringProperty nameProperty = new SimpleStringProperty();
 	private StringProperty valueProperty = new SimpleStringProperty();
 
+	public TuneInfo(String name, String value) {
+		setName(name);
+		setValue(value);
+	}
+
 	public String getName() {
 		return nameProperty.get();
 	}
