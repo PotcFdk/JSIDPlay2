@@ -4,8 +4,8 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
+import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -17,10 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.util.Pair;
 import libsidplay.sidtune.SidTune;
-import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
-import libsidutils.stil.STIL;
-import libsidutils.stil.STIL.STILEntry;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
@@ -50,7 +47,7 @@ public class TuneInfoServlet extends HttpServlet {
 
 		File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 		try {
-			HVSCEntry hvscEntry = getHVSCEntry(tuneFile);
+			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
 					.getAttributeValues(hvscEntry,
 							field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
@@ -60,35 +57,22 @@ public class TuneInfoServlet extends HttpServlet {
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new ServletException(e.getMessage());
 		}
 	}
 
-	private HVSCEntry getHVSCEntry(File tuneFile) throws Exception {
+	private HVSCEntry createHVSCEntry(File tuneFile) throws Exception {
 		if (tuneFile == null) {
 			return null;
 		}
 		SidTune tune = SidTune.load(tuneFile);
 		String root = util.getConfiguration().getSidplay2Section().getHvsc();
-		if (root == null) {
-			return null;
+		IntSupplier songLengthFnct = () -> 0;
+		if (root != null) {
+			SidDatabase db = new SidDatabase(root);
+			songLengthFnct = () -> db.getTuneLength(tune);
 		}
-		SidDatabase db = new SidDatabase(root);
-		STIL stil = getSTIL(root);
-		HVSCEntry hvscEntry = new HVSCEntry(() -> db.getTuneLength(tune), "", tuneFile, tune);
-		String path = db.getPath(tune);
-		STILEntry stilEntry = stil != null && path.length() > 0 ? stil.getSTILEntry(path) : null;
-		if (stilEntry != null && stilEntry.globalComment != null) {
-			hvscEntry.setStilGlbComment(stilEntry.globalComment.replaceAll("([ \t\r])+", " "));
-		}
-		return hvscEntry;
-	}
-
-	private STIL getSTIL(String hvscRoot) throws Exception {
-		try (InputStream input = ZipFileUtils.newFileInputStream(ZipFileUtils.newFile(hvscRoot, STIL.STIL_FILE))) {
-			return new STIL(input);
-		}
+		return new HVSCEntry(songLengthFnct, "", tuneFile, tune);
 	}
 
 }

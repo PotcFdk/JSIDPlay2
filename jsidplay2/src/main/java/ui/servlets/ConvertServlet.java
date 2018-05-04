@@ -119,7 +119,10 @@ public class ConvertServlet extends HttpServlet {
 	private void convert(IConfig config, String resource, AudioDriver driver, Principal principal)
 			throws IOException, SidTuneError {
 		Player player = new Player(config);
-		player.setSidDatabase(new SidDatabase(util.getConfiguration().getSidplay2Section().getHvsc()));
+		String root = util.getConfiguration().getSidplay2Section().getHvsc();
+		if (root != null) {
+			player.setSidDatabase(new SidDatabase(root));
+		}
 		player.setAudioDriver(driver);
 		player.play(SidTune.load(util.getAbsoluteFile(resource, principal)));
 		player.stopC64(false);
