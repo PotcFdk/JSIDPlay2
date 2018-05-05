@@ -1,5 +1,6 @@
 package ui.musiccollection;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -13,7 +14,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -58,6 +58,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
@@ -799,12 +800,12 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void showPhoto(SidTuneInfo info) {
-		Collection<String> infoString = info.getInfoString();
-		if (infoString.size() > 1) {
-			Iterator<String> it = infoString.iterator();
+		if (info.getInfoString().size() > 1) {
+			Iterator<String> it = info.getInfoString().iterator();
 			/* String name = */it.next();
 			String author = it.next();
-			photograph.setImage(SidAuthors.getImage(author));
+			byte[] imageData = SidAuthors.getImageData(author);
+			photograph.setImage(imageData != null ? new Image(new ByteArrayInputStream(imageData)) : null);
 		}
 	}
 

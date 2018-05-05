@@ -1,18 +1,19 @@
 package ui.musiccollection;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import javafx.scene.image.Image;
 import libsidplay.sidtune.SidTune;
 
 public class SidAuthors {
 
-	private static Map<String, Image> author2image = new HashMap<String, Image>();
+	private static Map<String, byte[]> author2imageData = new HashMap<String, byte[]>();
 
 	/**
 	 * Contains a mapping: Author to picture resource path.
@@ -24,17 +25,23 @@ public class SidAuthors {
 			SID_AUTHORS.load(is);
 			for (Iterator<Object> authors = SID_AUTHORS.keySet().iterator(); authors.hasNext();) {
 				String author = (String) authors.next();
-				String photo = SID_AUTHORS.getProperty(author);
-				photo = "Photos/" + photo;
-				Image image = new Image(SidTune.class.getResource(photo).toString());
-				author2image.put(author, image);
+				String photoResource = SID_AUTHORS.getProperty(author);
+				if (photoResource != null) {
+					URL us = SidTune.class.getResource("Photos/" + photoResource);
+					byte[] photo = new byte[us.openConnection().getContentLength()];
+					try (DataInputStream is2 = new DataInputStream(
+							SidTune.class.getResourceAsStream("Photos/" + photoResource))) {
+						is2.readFully(photo);
+						author2imageData.put(author, photo);
+					}
+				}
 			}
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
 
-	public static final Image getImage(String author) {
-		return author2image.get(author);
+	public static final byte[] getImageData(String author) {
+		return author2imageData.get(author);
 	}
 }

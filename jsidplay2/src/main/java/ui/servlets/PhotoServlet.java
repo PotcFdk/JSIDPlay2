@@ -2,14 +2,8 @@ package ui.servlets;
 
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.security.Principal;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -20,25 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import ui.entities.config.Configuration;
+import ui.musiccollection.SidAuthors;
 
 public class PhotoServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String SERVLET_PATH_PHOTO = "/photo";
-
-	/*
-	 * Contains a mapping: Author to picture resource path.
-	 */
-	private static final Properties SID_AUTHORS = new Properties();
-
-	static {
-		try (InputStream is = SidTune.class.getResourceAsStream("pictures.properties")) {
-			SID_AUTHORS.load(is);
-		} catch (IOException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
 
 	private ServletUtil util;
 
@@ -58,38 +40,26 @@ public class PhotoServlet extends HttpServlet {
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
 		try (ServletOutputStream out = response.getOutputStream()) {
-			byte[] photo = getPhoto(filePath, request.getUserPrincipal());
-			out.write(photo);
-
+			byte[] photo = getPhoto(SidTune.load(util.getAbsoluteFile(filePath, request.getUserPrincipal())));
+			if (photo != null) {
+				out.write(photo);
+			}
 			response.setContentType(MIME_TYPE_OCTET_STREAM);
-			response.setContentLength(photo.length);
+			response.setContentLength(photo != null ? photo.length : 0);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (SidTuneError e) {
 			throw new ServletException(e.getMessage());
 		}
 	}
 
-	private byte[] getPhoto(String resource, Principal principal) throws IOException, SidTuneError {
-		SidTune tune = SidTune.load(util.getAbsoluteFile(resource, principal));
-		if (tune != null) {
-			Collection<String> infos = tune.getInfo().getInfoString();
-			if (infos.size() > 1) {
-				Iterator<String> iterator = infos.iterator();
-				/* title = */iterator.next();
-				String author = iterator.next();
-				String photoResource = SID_AUTHORS.getProperty(author);
-				if (photoResource != null) {
-					URL us = SidTune.class.getResource("Photos/" + photoResource);
-					byte[] photo = new byte[us.openConnection().getContentLength()];
-					try (DataInputStream is = new DataInputStream(
-							SidTune.class.getResourceAsStream("Photos/" + photoResource))) {
-						is.readFully(photo);
-						return photo;
-					}
-				}
-			}
+	private byte[] getPhoto(SidTune tune) throws IOException, SidTuneError {
+		if (tune.getInfo().getInfoString().size() > 1) {
+			Iterator<String> iterator = tune.getInfo().getInfoString().iterator();
+			/* title = */iterator.next();
+			String author = iterator.next();
+			return SidAuthors.getImageData(author);
 		}
-		return new byte[0];
+		return null;
 	}
 
 }
