@@ -74,8 +74,7 @@ public class ServletUtil {
 				public boolean accept(File pathname) {
 					if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
 						return false;
-					return pathname.isDirectory() || filter == null || pathname.getName().endsWith(".mp3")
-							|| pathname.getName().matches(filter);
+					return pathname.isDirectory() || filter == null || pathname.getName().matches(filter);
 				}
 			});
 			if (listFiles != null) {
