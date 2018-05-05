@@ -18,7 +18,7 @@ import de.haendel.jsidplay2.request.DirectoryRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
 public abstract class SidsTab extends TabBase {
-	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str)$";
+	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str|mp3)$";
 
 	private ListView directory;
 
@@ -32,7 +32,7 @@ public abstract class SidsTab extends TabBase {
 		directory = (ListView) activity.findViewById(R.id.directory);
 
 		try {
-			requestDirectory(new File("/"), SidsTab.TUNE_FILTER);
+			requestDirectory(new File("/"), TUNE_FILTER);
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
