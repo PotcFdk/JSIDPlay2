@@ -25,13 +25,12 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml"
 	type="javafx.scene.layout.VBox">
-<!-- 	<Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.menubar.MenuBar"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.menubar.MenuBar"> -->
 	<AnchorPane>
 		<fx:define>
-			<ToggleGroup />
-			<ToggleGroup />
-			<ToggleGroup />
-			<ToggleGroup />
+			<ToggleGroup fx:id="playSpeedGroup" />
+			<ToggleGroup fx:id="floppyGroup" />
+			<ToggleGroup fx:id="extensionGroup" />
 		</fx:define>
 		<MenuBar AnchorPane.leftAnchor="10">
 			<menus>

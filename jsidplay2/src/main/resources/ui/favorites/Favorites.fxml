@@ -28,8 +28,8 @@
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane VBox.vgrow="ALWAYS">
 		<fx:define>
-			<ToggleGroup />
-			<ToggleGroup />
+			<ToggleGroup fx:id="playbackGroup"/>
+			<ToggleGroup fx:id="repeatGroup"/>
 		</fx:define>
 		<BorderPane AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
