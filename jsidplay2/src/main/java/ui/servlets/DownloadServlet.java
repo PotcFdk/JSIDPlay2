@@ -6,15 +6,14 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.OutputStream;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import libsidutils.ZipFileUtils;
 import ui.entities.config.Configuration;
 
 public class DownloadServlet extends HttpServlet {
@@ -44,9 +43,8 @@ public class DownloadServlet extends HttpServlet {
 				filePath.endsWith(".mp3") ? MIME_TYPE_MPEG : filePath.endsWith(".sid") ? MIME_TYPE_SID : MIME_TYPE_BIN);
 		response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
-		try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-			servletOutputStream.write(Files
-					.readAllBytes(Paths.get(util.getAbsoluteFile(filePath, request.getUserPrincipal()).getPath())));
+		try (OutputStream outputStream = response.getOutputStream()) {
+			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), outputStream);
 		} finally {
 			response.getOutputStream().flush();
 		}

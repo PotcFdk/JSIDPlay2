@@ -3,13 +3,21 @@ package libsidutils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 @SuppressWarnings("unchecked")
 public class ZipFileUtils {
 
+	private static final int COPY_BUFFER_CHUNK_SIZE = 16 * 1024;
+	
 	private static Constructor<? extends InputStream> INPUT_STREAM;
 	private static Constructor<File> FILE;
 
@@ -42,6 +50,22 @@ public class ZipFileUtils {
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return new FileInputStream(file);
+		}
+	}
+
+	public static void copy(File file, OutputStream os) throws IOException {
+		final ReadableByteChannel inputChannel = Channels.newChannel(newFileInputStream(file));
+		final WritableByteChannel outputChannel = Channels.newChannel(os);
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(COPY_BUFFER_CHUNK_SIZE);
+
+		while (inputChannel.read(buffer) != -1) {
+			buffer.flip();
+			outputChannel.write(buffer);
+			buffer.compact();
+		}
+		buffer.flip();
+		while (buffer.hasRemaining()) {
+			outputChannel.write(buffer);
 		}
 	}
 }

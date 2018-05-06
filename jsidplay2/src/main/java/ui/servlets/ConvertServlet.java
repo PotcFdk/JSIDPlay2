@@ -4,8 +4,7 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.OutputStream;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -23,6 +22,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
@@ -57,9 +57,8 @@ public class ConvertServlet extends HttpServlet {
 			response.setContentType(MIME_TYPE_MPEG);
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
-			try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-				servletOutputStream.write(Files
-						.readAllBytes(Paths.get(util.getAbsoluteFile(filePath, request.getUserPrincipal()).getPath())));
+			try (OutputStream outputStream = response.getOutputStream()) {
+				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), outputStream);
 			} finally {
 				response.getOutputStream().flush();
 			}
