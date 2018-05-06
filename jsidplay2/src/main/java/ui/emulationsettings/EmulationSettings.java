@@ -6,6 +6,7 @@ import static libsidplay.common.Emulation.RESID;
 import static libsidplay.common.Emulation.RESIDFP;
 import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.common.Engine.NETSID;
+import static libsidplay.common.SIDChip.FC_MAX;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,6 @@ import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
-import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
@@ -110,11 +110,6 @@ public class EmulationSettings extends C64Window {
 		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		for (LineChart<Number, Number> chart : Arrays.asList(mainFilterCurve, secondFilterCurve, thirdFilterCurve)) {
-			chart.setAnimated(false);
-			chart.setCreateSymbols(false);
-			chart.setLegendVisible(false);
-		}
 		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
 		secondFilters = FXCollections.<String>observableArrayList();
@@ -454,7 +449,7 @@ public class EmulationSettings extends C64Window {
 			FilterSection filter = optFilter.get();
 			// stereo curve or 3-SID curve currently not used?
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
-				for (int fc = 0; fc < SIDChip.FC_MAX; fc++) {
+				for (int fc = 0; fc < FC_MAX; fc++) {
 					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
 						double data = resid_builder.resid.FilterModelConfig.estimateFrequency(filter, fc);
 						dataList.add(new XYChart.Data<Number, Number>(fc, data));
