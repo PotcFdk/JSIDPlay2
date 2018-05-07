@@ -144,7 +144,7 @@ public class MenuBar extends C64VBox implements UIPart {
 					setCurrentTrack(sidTune);
 					updatePlayerButtons(util.getPlayer().getPlayList());
 
-					final Tab selectedItem = window.getTabbedPane().getSelectionModel().getSelectedItem();
+					final Tab selectedItem = jSidPlay2.getTabbedPane().getSelectionModel().getSelectedItem();
 					boolean doNotSwitch = selectedItem != null
 							&& (MusicCollection.class.isAssignableFrom(selectedItem.getContent().getClass())
 									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
@@ -167,18 +167,16 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	}
 
+	private JSidPlay2 jSidPlay2;
 	private BooleanProperty nextFavoriteDisabledState;
 	private int hardcopyCounter;
 
-	private JSidPlay2 window;
-	
 	public MenuBar() {
 		super();
 	}
 
 	public MenuBar(C64Window window, Player player) {
 		super(window, player);
-		this.window = (JSidPlay2) window;
 	}
 
 	@FXML
@@ -187,6 +185,8 @@ public class MenuBar extends C64VBox implements UIPart {
 		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final C1541Section c1541Section = config.getC1541Section();
 		final PrinterSection printer = config.getPrinterSection();
+
+		jSidPlay2 = (JSidPlay2) util.getWindow();
 
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
@@ -242,7 +242,7 @@ public class MenuBar extends C64VBox implements UIPart {
 					List<File> files = db.getFiles();
 					try {
 						video();
-						util.setPlayingTab(window.getTabbedPane().getTabs().stream()
+						util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
 								.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get());
 						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
 								null);
@@ -253,7 +253,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				event.setDropCompleted(success);
 				event.consume();
 			});
-			window.getTabbedPane().requestFocus();
+			jSidPlay2.getTabbedPane().requestFocus();
 			util.getPlayer().startC64();
 		});
 	}
@@ -319,7 +319,7 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void quit() {
-		window.close();
+		util.getWindow().close();
 	}
 
 	@FXML
@@ -669,7 +669,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void video() {
 		if (!tabAlreadyOpen(Video.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Video.ID), new Video(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Video.ID), new Video(util.getWindow(), util.getPlayer()));
 			tab.setId(Video.ID);
 			addTab(tab);
 		}
@@ -678,7 +678,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void oscilloscope() {
 		if (!tabAlreadyOpen(Oscilloscope.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Oscilloscope.ID), new Oscilloscope(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Oscilloscope.ID),
+					new Oscilloscope(util.getWindow(), util.getPlayer()));
 			tab.setId(Oscilloscope.ID);
 			addTab(tab);
 		}
@@ -687,7 +688,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void hvsc() {
 		if (!tabAlreadyOpen(MusicCollection.HVSC_ID)) {
-			MusicCollection collection = new MusicCollection(window, util.getPlayer());
+			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 			collection.setType(MusicCollectionType.HVSC);
 			Tab tab = new Tab(util.getBundle().getString(MusicCollection.HVSC_ID), collection);
 			tab.setId(MusicCollection.HVSC_ID);
@@ -698,7 +699,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void cgsc() {
 		if (!tabAlreadyOpen(MusicCollection.CGSC_ID)) {
-			MusicCollection collection = new MusicCollection(window, util.getPlayer());
+			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 			collection.setType(MusicCollectionType.CGSC);
 			Tab tab = new Tab(util.getBundle().getString(MusicCollection.CGSC_ID), collection);
 			tab.setId(MusicCollection.CGSC_ID);
@@ -709,7 +710,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void hvmec() {
 		if (!tabAlreadyOpen(DiskCollection.HVMEC_ID)) {
-			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.HVMEC);
 			Tab tab = new Tab(util.getBundle().getString(DiskCollection.HVMEC_ID), collection);
 			tab.setId(DiskCollection.HVMEC_ID);
@@ -720,7 +721,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void demos() {
 		if (!tabAlreadyOpen(DiskCollection.DEMOS_ID)) {
-			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.DEMOS);
 			Tab tab = new Tab(util.getBundle().getString(DiskCollection.DEMOS_ID), collection);
 			tab.setId(DiskCollection.DEMOS_ID);
@@ -731,7 +732,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void mags() {
 		if (!tabAlreadyOpen(DiskCollection.MAGS_ID)) {
-			DiskCollection collection = new DiskCollection(window, util.getPlayer());
+			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.MAGS);
 			Tab tab = new Tab(util.getBundle().getString(DiskCollection.MAGS_ID), collection);
 			tab.setId(DiskCollection.MAGS_ID);
@@ -742,7 +743,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void favorites() {
 		if (!tabAlreadyOpen(Favorites.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Favorites.ID), new Favorites(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Favorites.ID),
+					new Favorites(util.getWindow(), util.getPlayer()));
 			tab.setId(Favorites.ID);
 			addTab(tab);
 		}
@@ -751,7 +753,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void gamebase() {
 		if (!tabAlreadyOpen(GameBase.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(GameBase.ID), new GameBase(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(GameBase.ID),
+					new GameBase(util.getWindow(), util.getPlayer()));
 			tab.setId(GameBase.ID);
 			addTab(tab);
 		}
@@ -760,7 +763,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void asm() {
 		if (!tabAlreadyOpen(Asm.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Asm.ID), new Asm(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Asm.ID), new Asm(util.getWindow(), util.getPlayer()));
 			tab.setId(Asm.ID);
 			addTab(tab);
 		}
@@ -769,7 +772,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void printer() {
 		if (!tabAlreadyOpen(Printer.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Printer.ID), new Printer(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Printer.ID), new Printer(util.getWindow(), util.getPlayer()));
 			tab.setId(Printer.ID);
 			addTab(tab);
 		}
@@ -778,7 +781,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void console() {
 		if (!tabAlreadyOpen(Console.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Console.ID), new Console(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Console.ID), new Console(util.getWindow(), util.getPlayer()));
 			tab.setId(Console.ID);
 			addTab(tab);
 		}
@@ -787,7 +790,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void sidDump() {
 		if (!tabAlreadyOpen(SidDump.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(SidDump.ID), new SidDump(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(SidDump.ID), new SidDump(util.getWindow(), util.getPlayer()));
 			tab.setId(SidDump.ID);
 			addTab(tab);
 		}
@@ -796,7 +799,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void sidRegisters() {
 		if (!tabAlreadyOpen(SidReg.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(SidReg.ID), new SidReg(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(SidReg.ID), new SidReg(util.getWindow(), util.getPlayer()));
 			tab.setId(SidReg.ID);
 			addTab(tab);
 		}
@@ -805,7 +808,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void disassembler() {
 		if (!tabAlreadyOpen(Disassembler.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Disassembler.ID), new Disassembler(window, util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Disassembler.ID),
+					new Disassembler(util.getWindow(), util.getPlayer()));
 			tab.setId(Disassembler.ID);
 			addTab(tab);
 		}
@@ -814,7 +818,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void csdb() {
 		if (!tabAlreadyOpen(WebViewType.CSDB.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.CSDB);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.CSDB.name()), collection);
 			tab.setId(WebViewType.CSDB.name());
@@ -825,7 +829,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void codebase64() {
 		if (!tabAlreadyOpen(WebViewType.CODEBASE64.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.CODEBASE64);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.CODEBASE64.name()), collection);
 			tab.setId(WebViewType.CODEBASE64.name());
@@ -836,7 +840,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void remixKweqOrg() {
 		if (!tabAlreadyOpen(WebViewType.REMIX_KWED_ORG.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.REMIX_KWED_ORG);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.REMIX_KWED_ORG.name()), collection);
 			tab.setId(WebViewType.REMIX_KWED_ORG.name());
@@ -847,7 +851,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void sidOth4Com() {
 		if (!tabAlreadyOpen(WebViewType.SID_OTH4_COM.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.SID_OTH4_COM);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.SID_OTH4_COM.name()), collection);
 			tab.setId(WebViewType.SID_OTH4_COM.name());
@@ -858,7 +862,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void c64() {
 		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.C64_SK);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.C64_SK.name()), collection);
 			tab.setId(WebViewType.C64_SK.name());
@@ -869,7 +873,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void forum64() {
 		if (!tabAlreadyOpen(WebViewType.FORUM64_DE.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.FORUM64_DE);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.FORUM64_DE.name()), collection);
 			tab.setId(WebViewType.FORUM64_DE.name());
@@ -880,7 +884,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void lemon64() {
 		if (!tabAlreadyOpen(WebViewType.LEMON64_COM.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.LEMON64_COM);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.LEMON64_COM.name()), collection);
 			tab.setId(WebViewType.LEMON64_COM.name());
@@ -891,7 +895,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void soasc() {
 		if (!tabAlreadyOpen(WebViewType.SOASC.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.SOASC);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.SOASC.name()), collection);
 			tab.setId(WebViewType.SOASC.name());
@@ -902,7 +906,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void jsidplay2() {
 		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_SRC.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.JSIDPLAY2_SRC);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_SRC.name()), collection);
 			tab.setId(WebViewType.JSIDPLAY2_SRC.name());
@@ -913,7 +917,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void jsidplay2Javadoc() {
 		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_JAVADOC.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_JAVADOC.name()), collection);
 			tab.setId(WebViewType.JSIDPLAY2_JAVADOC.name());
@@ -924,7 +928,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void userguide() {
 		if (!tabAlreadyOpen(WebViewType.USERGUIDE.name())) {
-			WebView collection = new WebView(window, util.getPlayer());
+			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.USERGUIDE);
 			Tab tab = new Tab(util.getBundle().getString(WebViewType.USERGUIDE.name()), collection);
 			tab.setId(WebViewType.USERGUIDE.name());
@@ -1004,19 +1008,19 @@ public class MenuBar extends C64VBox implements UIPart {
 			views.add(new ViewEntity(tab.getId()));
 		}
 		tab.setOnClosed(evt -> {
-			window.close((UIPart) tab.getContent());
+			util.getWindow().close((UIPart) tab.getContent());
 			views.removeIf(view -> view.getFxId().equals(tab.getId()));
 		});
-		window.getTabbedPane().getTabs().add(tab);
-		window.getTabbedPane().getSelectionModel().select(tab);
+		jSidPlay2.getTabbedPane().getTabs().add(tab);
+		jSidPlay2.getTabbedPane().getSelectionModel().select(tab);
 		minimizeMaximize.setSelected(false);
 	}
 
 	private boolean tabAlreadyOpen(String fxId) {
-		Optional<Tab> alreadyOpened = window.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(fxId))
-				.findFirst();
+		Optional<Tab> alreadyOpened = jSidPlay2.getTabbedPane().getTabs().stream()
+				.filter(tab -> tab.getId().equals(fxId)).findFirst();
 		if (alreadyOpened.isPresent()) {
-			window.getTabbedPane().getSelectionModel().select(alreadyOpened.get());
+			jSidPlay2.getTabbedPane().getSelectionModel().select(alreadyOpened.get());
 		}
 		return alreadyOpened.isPresent();
 	}
@@ -1051,7 +1055,7 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	private void playTune(final SidTune tune) {
 		video();
-		util.setPlayingTab(window.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
+		util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
 				.findFirst().get());
 		util.getPlayer().play(tune);
 	}
@@ -1063,7 +1067,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void createHardCopy(String format) {
 		video();
 		try {
-			Tab tab = (Tab) window.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
+			Tab tab = (Tab) jSidPlay2.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
 					.findFirst().get();
 			Video videoScreen = (Video) tab.getContent();
 			Image vicImage = videoScreen.getVicImage();
@@ -1104,7 +1108,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		if (rndPath != null) {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
 			hvsc();
-			util.setPlayingTab(window.getTabbedPane().getTabs().stream()
+			util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
 					.filter(tab -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get());
 			try {
 				util.getPlayer().play(SidTune.load(file));

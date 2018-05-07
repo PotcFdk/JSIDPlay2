@@ -118,7 +118,7 @@ public class JoystickSettings extends C64Window {
 		fire2Value.setValue(joystickSettings.getComponentValueBtn2());
 
 		// periodically update joystick test tables
-		final Duration oneFrameAmt = Duration.millis(1000);
+		final Duration oneFrameAmt = Duration.millis(500);
 		final KeyFrame oneFrame = new KeyFrame(oneFrameAmt, evt -> {
 			if (activateJoy1.isSelected()) {
 				testTable1.refresh();

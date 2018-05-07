@@ -40,6 +40,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -308,14 +309,17 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	void addFavorites(List<File> files) {
-		for (int i = 0; files != null && i < files.size(); i++) {
-			final File file = files.get(i);
+		String result = "";
+		for (File file: files) {
 			final File[] listFiles = file.listFiles();
 			if (file.isDirectory() && listFiles != null) {
 				addFavorites(Arrays.asList(listFiles));
 			} else if (tuneFilter.accept(file)) {
-				addFavorite(file);
+				result = String.join("", result, addFavorite(file));
 			}
+		}
+		if (!result.isEmpty()) {
+			openErrorDialog(result);
 		}
 	}
 
@@ -414,21 +418,25 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	void loadFavorites(File favoritesFile) throws IOException {
+		String result = "";
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		favoritesFile = addFileExtension(favoritesFile);
 		try (BufferedReader r = new BufferedReader(
 				new InputStreamReader(new FileInputStream(favoritesFile), "ISO-8859-1"))) {
 			String line;
 			while ((line = r.readLine()) != null) {
-				if (line.startsWith("<HVSC>/") || line.startsWith("<CGSC>/")) {
+				if (line.startsWith("<HVSC>") || line.startsWith("<CGSC>")) {
 					// backward compatibility
 					line = line.substring(7);
 				}
 				File file = PathUtils.getFile(line, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
 				if (file != null) {
-					addFavorite(file);
+					result = String.join("", result, addFavorite(file));
 				}
 			}
+		}
+		if (!result.isEmpty()) {
+			openErrorDialog(result);
 		}
 	}
 
@@ -474,7 +482,8 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		return favoritesFile;
 	}
 
-	private void addFavorite(File file) {
+	private String addFavorite(File file) {
+		String result = "";
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		SidTune tune;
 		try {
@@ -484,8 +493,9 @@ public class FavoritesTab extends C64VBox implements UIPart {
 					collectionName, file, tune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {
-			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
+			result = String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()) + "\n";
 		}
+		return result;
 	}
 
 	void removeFavorites(ObservableList<HVSCEntry> selectedItems) {
@@ -558,8 +568,12 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
+		String result = "";
 		for (HVSCEntry hvscEntry : toCopy) {
-			tab.addFavorite(getHVSCFile(hvscEntry));
+			result = String.join("", result, tab.addFavorite(getHVSCFile(hvscEntry)));
+		}
+		if (!result.isEmpty()) {
+			openErrorDialog(result);
 		}
 	}
 
@@ -583,9 +597,12 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		Alert alert = new Alert(AlertType.ERROR,"");
+		Alert alert = new Alert(AlertType.ERROR, "");
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alert.getDialogPane().setHeaderText(msg);
+		TextArea textArea = new TextArea(msg);
+		textArea.setEditable(false);
+		textArea.setWrapText(true);
+		alert.getDialogPane().setContent(textArea);		
 		alert.showAndWait();
 	}
 

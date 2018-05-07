@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -25,9 +26,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.util.converter.IntegerStringConverter;
-import libsidplay.C64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
@@ -250,7 +251,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		try {
 			jsidplay2Server.start();
 		} catch (Exception e) {
-			e.printStackTrace();
+			openErrorDialog(e.getMessage());
 		}
 	}
 
@@ -259,14 +260,13 @@ public class ToolBar extends C64VBox implements UIPart {
 		try {
 			jsidplay2Server.stop();
 		} catch (Exception e) {
-			e.printStackTrace();
+			openErrorDialog(e.getMessage());
 		}
 	}
 
 	@FXML
 	private void doEnableSldb() {
-		final C64 c64 = util.getPlayer().getC64();
-		final EventScheduler ctx = c64.getEventScheduler();
+		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 		ctx.scheduleThreadSafe(new Event("Update Play Timer!") {
 			@Override
 			public void event() {
@@ -345,8 +345,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		try {
 			Process proc = Runtime.getRuntime().exec("hostname");
 			try (Scanner s = new Scanner(proc.getInputStream())) {
-				s.useDelimiter("\\A");
-				return s.hasNext() ? s.next().trim() : "";
+				return s.useDelimiter("\\A").hasNext() ? s.next().trim() : "";
 			}
 		} catch (IOException e) {
 			return "?hostname?";
@@ -362,6 +361,13 @@ public class ToolBar extends C64VBox implements UIPart {
 		} catch (SocketException ex) {
 			return "?ip?";
 		}
+	}
+
+	private void openErrorDialog(String msg) {
+		Alert alert = new Alert(AlertType.ERROR, "");
+		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
+		alert.getDialogPane().setHeaderText(msg);
+		alert.showAndWait();
 	}
 
 	private void restart() {

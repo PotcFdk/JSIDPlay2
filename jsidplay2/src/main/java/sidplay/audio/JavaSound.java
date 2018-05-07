@@ -26,11 +26,7 @@ public class JavaSound implements AudioDriver {
 			throws IOException, LineUnavailableException {
 		int device = cfg.getDevice();
 		List<Info> devices = getDevices();
-		if (device < devices.size()) {
-			open(cfg, devices.get(device));
-		} else {
-			open(cfg, (Info) null);
-		}
+		open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);
 	}
 
 	public static final List<Info> getDevices() {

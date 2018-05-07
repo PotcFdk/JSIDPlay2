@@ -23,13 +23,13 @@ public class UIUtil {
 
 	private static final Image PLAYED_ICON = new Image(JSidPlay2Main.class.getResource("icons/play.png").toString());
 
-	private C64Window window;
+	private final C64Window window;
 	/** Model */
-	private Player player;
+	private final Player player;
 	/** View localization */
 	private ResourceBundle bundle;
 	/** Controller */
-	private UIPart controller;
+	private final UIPart controller;
 
 	/** Progress bar support */
 	private DoubleProperty progressProperty;
@@ -106,6 +106,10 @@ public class UIUtil {
 		return progressProperty;
 	}
 
+	public C64Window getWindow() {
+		return window;
+	}
+	
 	public final Player getPlayer() {
 		return player;
 	}

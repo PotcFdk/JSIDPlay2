@@ -66,16 +66,14 @@ public class Favorites extends C64VBox implements UIPart {
 
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
-	private C64Window window;
 
 	private ChangeListener<? super State> nextTuneListener;
 
 	public Favorites() {
 	}
-	
+
 	public Favorites(C64Window window, Player player) {
 		super(window, player);
-		this.window = window;
 	}
 
 	@FXML
@@ -396,7 +394,7 @@ public class Favorites extends C64VBox implements UIPart {
 	}
 
 	protected void addTab(final FavoritesSection favoritesSection) {
-		final FavoritesTab newTab = new FavoritesTab(this.window, util.getPlayer());
+		final FavoritesTab newTab = new FavoritesTab(util.getWindow(), util.getPlayer());
 		if (favoritesSection.getName() == null) {
 			favoritesSection.setName(util.getBundle().getString("NEW_TAB"));
 		}
