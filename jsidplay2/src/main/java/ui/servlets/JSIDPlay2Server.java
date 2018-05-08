@@ -1,5 +1,6 @@
 package ui.servlets;
 
+import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static ui.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
 import static ui.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
 import static ui.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
@@ -26,8 +27,7 @@ public class JSIDPlay2Server {
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
-	protected static final String MIME_TYPE_JSON = "application/json;charset=UTF-8";
-	protected static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
+	protected static final String MIME_TYPE_JPG = "image/jpeg";
 	protected static final String MIME_TYPE_MPEG = "audio/mpeg";
 	protected static final String MIME_TYPE_SID = "audio/prs.sid";
 	protected static final String MIME_TYPE_BIN = "bin";
@@ -43,6 +43,7 @@ public class JSIDPlay2Server {
 	public JSIDPlay2Server(Configuration configuration) {
 		this.configuration = configuration;
 
+		StartPageServlet startPageServlet = new StartPageServlet(configuration);
 		FiltersServlet filtersServlet = new FiltersServlet(configuration);
 		DirectoryServlet directoryServlet = new DirectoryServlet(configuration);
 		TuneInfoServlet tuneInfoServlet = new TuneInfoServlet(configuration);
@@ -52,6 +53,7 @@ public class JSIDPlay2Server {
 
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");
+		context.addServlet(new ServletHolder(startPageServlet), SERVLET_PATH_STARTPAGE);
 		context.addServlet(new ServletHolder(filtersServlet), CONTEXT_ROOT + SERVLET_PATH_FILTERS);
 		context.addServlet(new ServletHolder(directoryServlet), CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
 		context.addServlet(new ServletHolder(tuneInfoServlet), CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
@@ -65,7 +67,7 @@ public class JSIDPlay2Server {
 		constraint.setRoles(new String[] { "user", "admin" });
 
 		ConstraintMapping mapping = new ConstraintMapping();
-		mapping.setPathSpec("/*");
+		mapping.setPathSpec(CONTEXT_ROOT + "/*");
 		mapping.setConstraint(constraint);
 
 		loginService = new HashLoginService("JSIDPlay2",

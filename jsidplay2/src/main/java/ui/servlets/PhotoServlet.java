@@ -1,6 +1,6 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
+import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JPG;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -32,7 +32,7 @@ public class PhotoServlet extends HttpServlet {
 	 * Get photo of composer.
 	 * 
 	 * E.g.
-	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/C64Music/DEMOS/0-9/1_45_Tune.sid
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -44,7 +44,7 @@ public class PhotoServlet extends HttpServlet {
 			if (photo != null) {
 				out.write(photo);
 			}
-			response.setContentType(MIME_TYPE_OCTET_STREAM);
+			response.setContentType(MIME_TYPE_JPG);
 			response.setContentLength(photo != null ? photo.length : 0);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (SidTuneError e) {

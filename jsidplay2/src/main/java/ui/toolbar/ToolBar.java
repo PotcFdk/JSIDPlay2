@@ -8,7 +8,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer.Info;
@@ -18,15 +17,16 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.common.CPUClock;
@@ -36,6 +36,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.DesktopIntegration;
+import libsidutils.ZipFileUtils;
 import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
@@ -76,13 +77,15 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private TextField defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort;
 	@FXML
-	protected RadioButton playMP3, playEmulation;
+	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
 	ToggleGroup playSourceGroup, appServerGroup;
 	@FXML
 	protected Button volumeButton, mp3Browse;
 	@FXML
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname;
+	@FXML
+	private Hyperlink appServerUsage, downloadApp;
 
 	private boolean duringInitialization;
 
@@ -194,6 +197,10 @@ public class ToolBar extends C64VBox implements UIPart {
 			appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
 			appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
 		});
+		startAppServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			appServerUsage.setDisable(!newValue);
+			downloadApp.setDisable(!newValue);
+		});
 		this.duringInitialization = false;
 	}
 
@@ -264,6 +271,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		}
 	}
 
+	@FXML
+	private void gotoRestApiUsage() {
+		DesktopIntegration.browse("http://127.0.0.1:8080");
+	}
+	
 	@FXML
 	private void doEnableSldb() {
 		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
@@ -344,9 +356,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private String getHostname() {
 		try {
 			Process proc = Runtime.getRuntime().exec("hostname");
-			try (Scanner s = new Scanner(proc.getInputStream())) {
-				return s.useDelimiter("\\A").hasNext() ? s.next().trim() : "";
-			}
+			return ZipFileUtils.convertStreamToString(proc.getInputStream(), "UTF-8");
 		} catch (IOException e) {
 			return "?hostname?";
 		}

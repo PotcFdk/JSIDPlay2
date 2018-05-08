@@ -1,7 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.MimeTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,9 +35,10 @@ public class FiltersServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		List<String> filters = getFilters();
 
-		response.setContentType(MIME_TYPE_JSON);
-		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(getFilters()));
+		response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
+		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 

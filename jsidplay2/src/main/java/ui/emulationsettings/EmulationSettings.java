@@ -81,7 +81,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
-	Label mainVolumeValue, secondVolumeValue, thirdVolumeValue;
+	private Label mainVolumeValue, secondVolumeValue, thirdVolumeValue;
 	@FXML
 	private LineChart<Number, Number> mainFilterCurve, secondFilterCurve, thirdFilterCurve;
 

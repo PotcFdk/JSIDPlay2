@@ -1,7 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -12,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.MimeTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,7 +38,7 @@ public class TuneInfoServlet extends HttpServlet {
 	 * Get SID tune infos.
 	 * 
 	 * E.g.
-	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/C64Music/DEMOS/0-9/1_45_Tune.sid
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -53,7 +53,7 @@ public class TuneInfoServlet extends HttpServlet {
 							field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
 									+ field.getAttribute().getName())
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
-			response.setContentType(MIME_TYPE_JSON);
+			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {

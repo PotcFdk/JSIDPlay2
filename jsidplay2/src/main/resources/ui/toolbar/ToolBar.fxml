@@ -15,6 +15,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.collections.FXCollections?> 
 <?import javafx.geometry.Insets?>
 <?import java.lang.Integer?>
@@ -25,8 +26,8 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml"
 	type="javafx.scene.layout.VBox">
-<!-- 	<Scene xmlns:fx="http://javafx.com/fxml" -->
-<!-- 	fx:controller="ui.toolbar.ToolBar"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" -->
+	<!-- fx:controller="ui.toolbar.ToolBar"> -->
 	<VBox>
 		<AnchorPane>
 			<fx:define>
@@ -144,9 +145,11 @@
 						<VBox>
 							<HBox>
 								<RadioButton text="%START"
-									onAction="#startAppServer" toggleGroup="$appServerGroup" />
+									onAction="#startAppServer" toggleGroup="$appServerGroup"
+									fx:id="startAppServer" />
 								<RadioButton text="%STOP" onAction="#stopAppServer"
-									selected="true" toggleGroup="$appServerGroup" />
+									selected="true" toggleGroup="$appServerGroup"
+									fx:id="stopAppServer" />
 							</HBox>
 							<Label text="%APP_SERVER_PORT" />
 							<TypeTextField type="Integer" fx:id="appServerPort"
@@ -157,7 +160,12 @@
 							</TypeTextField>
 							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />
 							<Label text="%APP_SERVER_IP" fx:id="appIpAddress" />
-							<Button text="%DOWNLOAD_APP" onAction="#downloadApp" />
+							<Hyperlink text="%APP_SERVER_USAGE" textFill="BLUE"
+								underline="true" onAction="#gotoRestApiUsage"
+								fx:id="appServerUsage" disable="true" />
+							<Hyperlink text="%DOWNLOAD_APP" textFill="BLUE"
+								underline="true" onAction="#downloadApp" fx:id="downloadApp"
+								disable="true" />
 						</VBox>
 					</HBox>
 				</TitledPane>

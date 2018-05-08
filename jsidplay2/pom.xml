@@ -21,6 +21,9 @@
 		<debug>true</debug>
 		<debuglevel>lines,vars,source</debuglevel>
 		<codebase>http://haendel.ddns.net/~ken/</codebase>
+		<appServerHostname>127.0.0.1</appServerHostname>
+		<appServerPort>8080</appServerPort>
+		<appServerContextRoot>/jsidplay2service/JSIDPlay2REST</appServerContextRoot>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.run.width>1024</javafx.run.width>
 		<javafx.run.height>768</javafx.run.height>
@@ -248,6 +251,10 @@
 								<codebase>${codebase}</codebase>
 								<artifactId>${project.artifactId}</artifactId>
 								<version>${project.version}</version>
+								
+								<hostname>${appServerHostname}</hostname>
+								<port>${appServerPort}</port>
+								<contextRoot>${appServerContextRoot}</contextRoot>
 
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>

@@ -68,4 +68,12 @@ public class ZipFileUtils {
 			outputChannel.write(buffer);
 		}
 	}
+
+	public static String convertStreamToString(java.io.InputStream is, String charsetName) {
+		try (java.util.Scanner s = new java.util.Scanner(is, charsetName)) {
+			s.useDelimiter("\\A");
+			return s.hasNext() ? s.next() : "";
+		}
+	}
 }
+

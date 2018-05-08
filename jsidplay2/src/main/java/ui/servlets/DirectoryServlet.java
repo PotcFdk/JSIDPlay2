@@ -1,7 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JSON;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -9,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.MimeTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,10 +37,10 @@ public class DirectoryServlet extends HttpServlet {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
 		String filter = request.getParameter("filter");
-		
+
 		List<String> files = util.getDirectory(filePath, filter, request.getUserPrincipal());
 
-		response.setContentType(MIME_TYPE_JSON);
+		response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
