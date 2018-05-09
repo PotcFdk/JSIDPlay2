@@ -1,6 +1,6 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_BIN;
+import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
 
@@ -39,8 +39,8 @@ public class DownloadServlet extends HttpServlet {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
-		response.setContentType(
-				filePath.endsWith(".mp3") ? MIME_TYPE_MPEG : filePath.endsWith(".sid") ? MIME_TYPE_SID : MIME_TYPE_BIN);
+		response.setContentType(filePath.endsWith(".mp3") ? MIME_TYPE_MPEG
+				: filePath.endsWith(".sid") ? MIME_TYPE_SID : MIME_TYPE_OCTET_STREAM);
 		response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 
 		try (OutputStream outputStream = response.getOutputStream()) {

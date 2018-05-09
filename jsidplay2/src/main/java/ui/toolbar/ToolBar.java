@@ -270,10 +270,23 @@ public class ToolBar extends C64VBox implements UIPart {
 			openErrorDialog(e.getMessage());
 		}
 	}
+	
+	@FXML
+	private void setAppServerPort() {
+		if (startAppServer.isSelected()) {
+			try {
+				jsidplay2Server.stop();
+				jsidplay2Server.start();
+			} catch (Exception e) {
+				openErrorDialog(e.getMessage());
+			}
+		}
+	}
 
 	@FXML
 	private void gotoRestApiUsage() {
-		DesktopIntegration.browse("http://127.0.0.1:8080");
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		DesktopIntegration.browse("http://127.0.0.1:" + emulationSection.getAppServerPort());
 	}
 	
 	@FXML

@@ -12,6 +12,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @SuppressWarnings("unchecked")
 public class ZipFileUtils {
@@ -70,9 +73,17 @@ public class ZipFileUtils {
 	}
 
 	public static String convertStreamToString(java.io.InputStream is, String charsetName) {
+		return convertStreamToString(is, charsetName, new HashMap<>());
+	}
+
+	public static String convertStreamToString(java.io.InputStream is, String charsetName, Map<String,String>replacements) {
 		try (java.util.Scanner s = new java.util.Scanner(is, charsetName)) {
 			s.useDelimiter("\\A");
-			return s.hasNext() ? s.next() : "";
+			String string = s.hasNext() ? s.next() : "";
+			for (Entry<String, String> replacement : replacements.entrySet()) {
+				string = string.replace(replacement.getKey(), replacement.getValue());
+			}
+			return string;
 		}
 	}
 }

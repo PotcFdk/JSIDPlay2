@@ -30,7 +30,7 @@ public class JSIDPlay2Server {
 	protected static final String MIME_TYPE_JPG = "image/jpeg";
 	protected static final String MIME_TYPE_MPEG = "audio/mpeg";
 	protected static final String MIME_TYPE_SID = "audio/prs.sid";
-	protected static final String MIME_TYPE_BIN = "bin";
+	protected static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
 
 	private Configuration configuration;
 
@@ -81,14 +81,16 @@ public class JSIDPlay2Server {
 	}
 
 	public void start() throws Exception {
-		server = new Server(configuration.getEmulationSection().getAppServerPort());
-		server.addBean(loginService);
-		server.setHandler(security);
-		server.start();
+		if (server == null || server.isStopped()) {
+			server = new Server(configuration.getEmulationSection().getAppServerPort());
+			server.addBean(loginService);
+			server.setHandler(security);
+			server.start();
+		}
 	}
 
 	public void stop() throws Exception {
-		if (server != null) {
+		if (server != null && server.isRunning()) {
 			server.stop();
 			server.join();
 		}
