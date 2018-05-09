@@ -4,16 +4,16 @@ import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.MimeTypes;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -55,10 +55,13 @@ public class ConvertServlet extends HttpServlet {
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			response.setContentType(MIME_TYPE_MPEG);
-			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
-
-			try (OutputStream outputStream = response.getOutputStream()) {
-				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), outputStream);
+			try {
+				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()),
+						response.getOutputStream());
+				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
+			} catch (Exception e) {
+				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.getOutputStream().println(e.getMessage());
 			} finally {
 				response.getOutputStream().flush();
 			}
@@ -100,14 +103,15 @@ public class ConvertServlet extends HttpServlet {
 			cfg.getEmulationSection().setDigiBoosted8580(Boolean.parseBoolean(request.getParameter("digiBoosted8580")));
 
 			response.setContentType(MIME_TYPE_MPEG);
-			try (ServletOutputStream out = response.getOutputStream()) {
-				MP3Stream driver = new MP3Stream(out);
+			try {
+				MP3Stream driver = new MP3Stream(response.getOutputStream());
 				driver.setCbr(Integer.parseInt(request.getParameter("cbr")));
 				driver.setVbrQuality(Integer.parseInt(request.getParameter("vbr")));
 				driver.setVbr(Boolean.parseBoolean(request.getParameter("isVbr")));
 				convert(cfg, filePath, driver, request.getUserPrincipal());
-			} catch (SidTuneError e) {
-				throw new ServletException(e.getMessage());
+			} catch (Exception e) {
+				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.getOutputStream().println(e.getMessage());
 			} finally {
 				response.getOutputStream().flush();
 			}

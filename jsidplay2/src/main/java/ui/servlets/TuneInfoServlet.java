@@ -45,8 +45,8 @@ public class TuneInfoServlet extends HttpServlet {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
 
-		File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 		try {
+			File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
 					.getAttributeValues(hvscEntry,
@@ -55,10 +55,11 @@ public class TuneInfoServlet extends HttpServlet {
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
-			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
-			throw new ServletException(e.getMessage());
+			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+			response.getOutputStream().println(e.getMessage());
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	private HVSCEntry createHVSCEntry(File tuneFile) throws Exception {

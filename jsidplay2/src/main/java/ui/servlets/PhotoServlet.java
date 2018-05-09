@@ -2,14 +2,17 @@ package ui.servlets;
 
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JPG;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.MimeTypes;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -39,17 +42,22 @@ public class PhotoServlet extends HttpServlet {
 		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
-		try (ServletOutputStream out = response.getOutputStream()) {
-			byte[] photo = getPhoto(SidTune.load(util.getAbsoluteFile(filePath, request.getUserPrincipal())));
-			if (photo != null) {
-				out.write(photo);
+		response.setContentType(MIME_TYPE_JPG);
+
+		try {
+			File absoluteFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
+			byte[] photo = getPhoto(SidTune.load(absoluteFile));
+			if (photo == null) {
+				throw new FileNotFoundException(
+						absoluteFile.getAbsolutePath() + " (Datei oder Verzeichnis nicht gefunden)");
 			}
-			response.setContentType(MIME_TYPE_JPG);
-			response.setContentLength(photo != null ? photo.length : 0);
-			response.setStatus(HttpServletResponse.SC_OK);
-		} catch (SidTuneError e) {
-			throw new ServletException(e.getMessage());
+			response.getOutputStream().write(photo);
+			response.setContentLength(photo.length);
+		} catch (Exception e) {
+			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+			response.getOutputStream().println(String.valueOf(e.getMessage()));
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	private byte[] getPhoto(SidTune tune) throws IOException, SidTuneError {

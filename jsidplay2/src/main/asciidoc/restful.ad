@@ -1,8 +1,27 @@
 == RESTful web-services in JSIDPlay2
 
-=== Security
+You can access this emulator by using these service methods to stream music or browse music collection directories.
+You can implement your own client to access this emulator.
 
-Basic authentication is used for security reasons.
+Note: You can start an instance of JSIDPlay2 without user interface using the following command in a console window:
+
+[source,subs="attributes+"]
+----
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
+----
+<1> Launch the JSIDPlay2 server,only
+
+
+
+=== Preparation
+
+==== Examples
+
+To make the following examples work, first configure HVSC music collection in JSIDPlay2, properly!
+
+==== Security
+
+Basic authentication is used calling the following services.
 
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
