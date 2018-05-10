@@ -98,8 +98,11 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private Object syncFrame = new Object();
-	private Image frame, lastFrame;
+	/**
+	 * Note: volatile, because Player thread writes it and javafx thread reads it!
+	 */
+	private volatile Image lastFrame;
+
 	private int vicFrames;
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
@@ -109,7 +112,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 	public Video() {
 	}
-	
+
 	public Video(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -201,13 +204,10 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return new Task<Void>() {
 
 					public Void call() throws InterruptedException {
-						synchronized (syncFrame) {
-							lastFrame = frame;
-						}
-						if (lastFrame != null) {
-							screen.getGraphicsContext2D().drawImage(lastFrame, 0, 0, lastFrame.getWidth(),
-									lastFrame.getHeight(), marginLeft, marginTop,
-									screen.getWidth() - (marginLeft + marginRight),
+						Image frame = lastFrame;
+						if (frame != null) {
+							screen.getGraphicsContext2D().drawImage(frame, 0, 0, frame.getWidth(), frame.getHeight(),
+									marginLeft, marginTop, screen.getWidth() - (marginLeft + marginRight),
 									screen.getHeight() - (marginTop + marginBottom));
 						}
 						return null;
@@ -533,10 +533,10 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	}
 
 	/**
-	 * Queue an image per frame of VIC screen output.
+	 * Create an image per frame of VIC screen output.
 	 * 
-	 * Fast forward skips frames and produces output for each Xth frame (X = 1x,
-	 * 2x, 4x, ... , 32x).
+	 * Fast forward skips frames and produces output for each Xth frame (X = 1x, 2x,
+	 * 4x, ... , 32x).
 	 * 
 	 * @see java.util.function.Consumer#accept(java.lang.Object)
 	 */
@@ -547,10 +547,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			vicFrames = 0;
 			// create image with a copy of the pixels to prevent tearing
-			Image image = createImage(Arrays.copyOf(pixels, pixels.length));
-			synchronized (syncFrame) {
-				frame = image;
-			}
+			lastFrame = createImage(Arrays.copyOf(pixels, pixels.length));
 		}
 	}
 

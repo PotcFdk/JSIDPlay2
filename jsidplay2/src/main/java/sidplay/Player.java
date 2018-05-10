@@ -545,10 +545,6 @@ public class Player extends HardwareEnsemble {
 					quit();
 				}
 				playerThread.join(QUIT_TIME_MAX_WAIT);
-				if (quitOrWait && playerThread.isAlive()) {
-					// emergency break, if audio driver is locked
-					playerThread.interrupt();
-				}
 			}
 		} catch (InterruptedException e) {
 		}

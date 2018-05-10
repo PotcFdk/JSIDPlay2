@@ -25,11 +25,11 @@ public class Keyboard extends C64Window {
 	
 	public Keyboard(Player player) {
 		super(player);
-		getStage().resizableProperty().set(false);
 	}
 
 	@Override
 	protected void initialize() {
+		getStage().resizableProperty().set(false);
 	}
 
 	@Override
