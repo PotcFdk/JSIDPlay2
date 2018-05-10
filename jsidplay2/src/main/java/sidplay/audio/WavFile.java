@@ -76,6 +76,7 @@ public class WavFile implements AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
+		System.out.println("Recording, file=" + recordingFilename + ".wav");
 		file = new RandomAccessFile(recordingFilename + ".wav", "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());

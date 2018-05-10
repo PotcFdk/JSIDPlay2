@@ -34,6 +34,7 @@ public abstract class MP3Driver implements AudioDriver {
 	public static class MP3File extends MP3Driver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
+			System.out.println("Recording, file=" + recordingFilename + ".mp3");
 			return new FileOutputStream(recordingFilename + ".mp3");
 		}
 
