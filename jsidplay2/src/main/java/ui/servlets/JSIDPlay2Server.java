@@ -1,11 +1,11 @@
 package ui.servlets;
 
-import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static ui.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
 import static ui.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
 import static ui.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
 import static ui.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
 import static ui.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
+import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static ui.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
 import java.util.Collections;
@@ -19,11 +19,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 
+import libsidutils.DebugUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 
 public class JSIDPlay2Server {
+
+	static {
+		DebugUtil.init();
+	}
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 

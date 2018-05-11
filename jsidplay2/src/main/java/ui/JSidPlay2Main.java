@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -24,6 +22,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.DebugUtil;
 import sidplay.Player;
 import ui.common.Convenience;
 import ui.entities.config.Configuration;
@@ -40,19 +39,8 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
 @Parameters(resourceBundle = "ui.JSidPlay2Main")
 public class JSidPlay2Main extends Application {
 
-	private static final String LOG_CONFIG_RES = "/sidplay/logconfig.properties";
-
 	static {
-		try {
-			// turn off HSQL logging re-configuration
-			System.setProperty("hsqldb.reconfig_logging", "false");
-			// make jetty use java util logging
-			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.JavaUtilLog");
-			// configure JSIDPlay2 logging (java util logging)
-			LogManager.getLogManager().readConfiguration(JSidPlay2Main.class.getResourceAsStream(LOG_CONFIG_RES));
-		} catch (final IOException e) {
-			Logger.getAnonymousLogger().severe("Could not load " + LOG_CONFIG_RES + ": " + e.getMessage());
-		}
+		DebugUtil.init();
 	}
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)

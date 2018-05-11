@@ -38,7 +38,8 @@ public class StartPageServlet extends HttpServlet {
 		
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
-			response.getWriter().println(ZipFileUtils.convertStreamToString(is, "UTF-8", replacements));
+			response.getWriter()
+					.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
 			response.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
