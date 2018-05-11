@@ -43,7 +43,6 @@ public class PhotoServlet extends HttpServlet {
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
 		response.setContentType(MIME_TYPE_JPG);
-
 		try {
 			File absoluteFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));

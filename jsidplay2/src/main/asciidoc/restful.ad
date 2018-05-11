@@ -1,15 +1,16 @@
 == RESTful web-services in JSIDPlay2
 
-You can access this emulator by using these service methods to stream music or browse music collection directories.
 You can implement your own client to access this emulator.
+You can access this emulator by using the following service methods to stream music or browse music collection directories.
+The service methods are available as soon as you click start in the built-in App Server in JSIDPlay2.
 
-Note: You can start an instance of JSIDPlay2 without user interface using the following command in a console window:
+Note: You can start the built-in App Server standalone using the following command in a console window, instead:
 
 [source,subs="attributes+"]
 ----
 java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
 ----
-<1> Launch the JSIDPlay2 server,only
+<1> Launch the JSIDPlay2 server standalone
 
 
 
@@ -17,42 +18,77 @@ java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
 
 ==== Examples
 
-To make the following examples work, first configure HVSC music collection in JSIDPlay2, properly!
+All the following service methods are using your configured music collections HVSC and CGSC.
+To make the following examples to work, first configure HVSC and CGSC music collection in JSIDPlay2, properly!
+If you can browse these music collections in JSIDPlay2 the service methods can browse and stream the contained tune files as well.
 
 ==== Security
 
-Basic authentication is used calling the following services.
+Basic authentication is used calling the following services with the following credentials:
 
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
 
+==== Access from the Internet
+
+To use your client from within your private local area network does not require additional preparations, you just need to know and reach the IP address, where JSIDPlay2 is running on.
+
+But, if you want to use a client from any location in the internet, that would require some additional preparations:
+
+. You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like http://freeddns.noip.com and configure dynamic DNS inside your router)
+. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in App server in JSIDPlay2.
+Keep in mind, that opening ports in your firewall will raise the security risk. You will make yourself vulnerable to attacks from hackers.
+
+Note: I will not take responsability for any risks or damages. Do this on your own risk!
+
 === Usage
 
-* Get SID filter names
+* Get all SID filter names (required to stream SID as MP3 later)
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters]
 
-Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580), e.g. RESID_MOS8580_FilterAverage8580, That way filters can be sorted on the client side
+Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and appended by their name, e.g. RESID_MOS8580_FilterAverage8580, That way filters can be grouped or sorted on the client side.
 
 * Get music collection directory
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
 
+You can access any sub-directory of your music collection to navigate to the tunes you want to play on the client side.
+HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
+Directory type entries are appended by a slash, whereas file type entries like tunes ends with their file extensions.
+To each directory contents a parent folder entry will be added appended by "../". Following that directory entry, you can easily navigate back to the parent directory.
+Additionally cou can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|mp3)$"
+
 * Get tune infos
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+
+Return a list of information of the specified tune file.
 
 * Get composer photo
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
+Return a photo of a well-known tune composer to be displayed on the client side.
+
 * Download SID
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
+Download a tune file of your music collection to the client.
+
 * Stream SID as MP3
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultPlayLength=180&enableDatabase=true&single=true&loop=false&bufferSize=65536&samplingMethod=RESAMPLE&frequency=48000&emulation=RESIDFP&defaultSidModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoost8580=true&cbr=64&vbr=0&isVbr=true[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultPlayLength=180&enableDatabase=true&single=true&loop=false&bufferSize=65536&samplingMethod=RESAMPLE&frequency=48000&emulation=RESIDFP&defaultSidModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoost8580=true&cbr=64&vbr=0&isVbr=true]
+
+Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
+All parameters are used to specify emulation settings that should be used.
+Especially the MP3 parameters control the quality and size of the returned mp3 stream. Using these parameter gives you the control about mobile phone transfer data volume and especially the costs that arise, if you stream over the internet using your specific mobile phone provider contract (as nobody has an unlimited flat rate these days). It is recommended to use less data volume with less precision (lower quality) for connections over the internet and higher data volume with more precision (higher quality) inside your private local network, e.g. WLAN connection.
+I have implemented an example android app as a client for the built-in App server of JSIDPlay2.
+My android app uses constant bitrate of 64K for the internet and variable bitrate and highest quality for my private WLAN.
+This is according to my recommendation above.
+
+Note: I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
 
 .Streaming parameters
 |===
@@ -62,7 +98,7 @@ link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MU
 | enableDatabase | Enable song length database (true, false)
 | single | Play single song (true, false)
 | loop | Loop tune (true, false)
-| bufferSize | Emulation buffer size
+| bufferSize | Emulation buffer size (default is 65536)
 | samplingMethod | Sampling method (DECIMATE, RESAMPLE)
 | frequency | Sampling frequency (44100, 48000, 96000)
 | emulation | Emulation type (RESID, RESIDFP)
