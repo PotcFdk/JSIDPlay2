@@ -19,7 +19,7 @@ public class EnumToString<T extends Enum<?>> extends StringConverter<T> {
 
 	@Override
 	public String toString(T object) {
-		return bundle.getString(object.name());
+		return object != null ? bundle.getString(object.name()) : null;
 	}
 
 }

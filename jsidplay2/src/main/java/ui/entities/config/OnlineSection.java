@@ -1,12 +1,5 @@
 package ui.entities.config;
 
-import java.net.URI;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Optional;
-
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -14,29 +7,10 @@ public class OnlineSection {
 
 	private static final double DEF_ZOOM = 1.5;
 
-	private static final String MAFIFEST_URL_KEY = "url:";
-
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
 	 */
-	private static final String DEPLOYMENT_URL;
-
-	static {
-		String codebase = "http://haendel.ddns.net/~ken/";
-		try {
-			// Determine download URL from project URL
-			URI uri = OnlineSection.class.getResource("/META-INF/MANIFEST.MF").toURI();
-			FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"));
-			Optional<String> url = Files.lines(Paths.get(uri)).filter(s -> s.startsWith(MAFIFEST_URL_KEY)).findFirst();
-			if (url.isPresent()) {
-				codebase = url.get().substring(MAFIFEST_URL_KEY.length()).trim();
-			}
-		} catch (Exception e) {
-			// MANIFEST.MF is only available in a release version!
-			e.printStackTrace(System.err);
-		}
-		DEPLOYMENT_URL = codebase;
-	}
+	private static final String DEPLOYMENT_URL = "http://haendel.ddns.net/~ken/";
 
 	public static final String JSIDPLAY2_JS2_URL = DEPLOYMENT_URL + "jsidplay2.js2";
 	public static final String JSIDPLAY2_APP_URL = DEPLOYMENT_URL + "jsidplay2app.apk";
