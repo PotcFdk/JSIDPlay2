@@ -70,6 +70,12 @@ public class ViceSync {
 		}
 
 		@Override
+		public int hashCode() {
+			assert false : "hashCode not designed";
+			return 42; // any arbitrary constant will do
+		}
+		
+		@Override
 		public String toString() {
 			return String.format("%08d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a,
 					(byte) x, (byte) y, (byte) sp);

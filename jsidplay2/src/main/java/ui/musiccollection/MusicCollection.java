@@ -544,18 +544,16 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private void setRoot(final File rootFile) {
 		try {
-			File theRootFile = null;
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			if (getType() == MusicCollectionType.HVSC) {
 				util.getPlayer().setSidDatabase(new SidDatabase(rootFile.getAbsolutePath()));
 				setSTIL(rootFile.getAbsolutePath());
 				sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
-				theRootFile = sidPlay2Section.getHvscFile();
+				setViewRoot(sidPlay2Section.getHvscFile());
 			} else if (getType() == MusicCollectionType.CGSC) {
 				sidPlay2Section.setCgsc(rootFile.getAbsolutePath());
-				theRootFile = sidPlay2Section.getCgscFile();
+				setViewRoot(sidPlay2Section.getCgscFile());
 			}
-			setViewRoot(theRootFile);
 
 			if (em != null) {
 				em.close();

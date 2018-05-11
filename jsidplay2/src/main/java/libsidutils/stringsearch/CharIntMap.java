@@ -222,10 +222,11 @@ class CharIntMap implements Externalizable, Cloneable {
 			return false;
 		} else if (array == null && m.array != null) {
 			return false;
-		}
-		for (int i = 0; i < array.length; i++) {
-			if (array[i] != m.array[i]) {
-				return false;
+		} else if (array != null && m.array != null){
+			for (int i = 0; i < array.length; i++) {
+				if (array[i] != m.array[i]) {
+					return false;
+				}
 			}
 		}
 		return true;
