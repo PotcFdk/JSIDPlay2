@@ -1037,7 +1037,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			try {
 				util.getPlayer().insertCartridge(type, file);
 				util.getPlayer().play(RESET);
-			} catch (IOException | SidTuneError e) {
+			} catch (IOException e) {
 				System.err.println(String.format("Cannot insert file '%s' as cartridge of type '%s'.",
 						file.getAbsolutePath(), type.name()));
 			}
@@ -1048,7 +1048,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		try {
 			util.getPlayer().insertCartridge(type, sizeKB);
 			util.getPlayer().play(RESET);
-		} catch (IOException | SidTuneError ex) {
+		} catch (IOException ex) {
 			System.err.println(
 					String.format("Cannot insert cartridge of type '%s' and size '%d'KB.", type.name(), sizeKB));
 		}

@@ -101,21 +101,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	/** Joystick port devices */
 	protected final IJoystick[] joystickPort = new IJoystick[2];
 
-	/**
-	 * This class implements a disconnected joystick.
-	 * 
-	 * @author Ken Händel
-	 * 
-	 */
-	protected static final class DisconnectedJoystick implements IJoystick {
-		@Override
-		public byte getValue() {
-			return (byte) 0xff;
-		}
-	}
-
 	/** Implementation of a disconnected Joystick */
-	private final DisconnectedJoystick disconnectedJoystick = new DisconnectedJoystick();
+	private final IJoystick disconnectedJoystick = () -> (byte) 0xff;
 
 	/**
 	 * Area backed by RAM, including cpu port addresses 0 and 1.

@@ -288,8 +288,7 @@ public class HardwareEnsemble {
 		for (final C1541 floppy : floppies) {
 			floppy.setFloppyType(c1541Section.getFloppyType());
 			for (int selector = 0; selector < MAX_RAM_EXPANSIONS; selector++) {
-				boolean hasRamExpansion = c1541Section.isRamExpansion(selector);
-				floppy.setRamExpansion(selector, hasRamExpansion);
+				floppy.setRamExpansion(selector, c1541Section.isRamExpansion(selector));
 			}
 			floppy.setCustomKernalRom(c1541Section.isJiffyDosInstalled() ? JIFFYDOS_C1541 : null);
 			floppy.reset();
@@ -453,11 +452,9 @@ public class HardwareEnsemble {
 		try {
 			try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
 					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
-				/* Read decorated stream (dis) to EOF as normal... */
 				// read the file and update the hash calculation
 				while (dis.read() != -1)
 					;
-
 				// get the hash value as byte array
 				boolean hack = Arrays.equals(MD5_DIGEST.digest(), EOD_HACK);
 				if (hack) {
@@ -512,7 +509,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             never thrown here
 	 */
-	public final void insertCartridge(final CartridgeType type, final int sizeKB) throws IOException, SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final int sizeKB) throws IOException {
 		c64.ejectCartridge();
 		c64.setCartridge(type, sizeKB);
 	}
@@ -527,7 +524,7 @@ public class HardwareEnsemble {
 	 * @throws IOException
 	 *             image read error
 	 */
-	public final void insertCartridge(final CartridgeType type, final File file) throws IOException, SidTuneError {
+	public final void insertCartridge(final CartridgeType type, final File file) throws IOException {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(type, file);
