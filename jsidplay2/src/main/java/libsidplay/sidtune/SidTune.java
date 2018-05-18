@@ -315,9 +315,8 @@ public abstract class SidTune {
 			forcedSidBase = emulation.getDualSidBase();
 			tuneChipBase = tune != RESET ? tune.getInfo().getSIDChipBase(sidNum) : 0;
 			if (tuneChipBase == 0 && !forcedStereoTune && emulation.isFakeStereo()) {
-				// A mono tune, not already forced to play in stereo mode shall
-				// be played in fake stereo mode (2nd SID at the same base
-				// address)
+				// A mono tune - not already forced to play in stereo mode - shall be played in
+				// fake stereo mode
 				return DEF_BASE_ADDRESS;
 			}
 			break;
