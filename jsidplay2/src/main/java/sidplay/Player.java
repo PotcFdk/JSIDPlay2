@@ -609,30 +609,28 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * <B>Note:</B> Audio driver different to {@link Audio} members are on hold!
 	 * 
-	 * @throws InterruptedException
-	 *             audio play-back interrupted
 	 * @throws LineUnavailableException
 	 *             audio line currently in use
 	 * @throws IOException
 	 *             audio output file cannot be written
 	 */
-	private void open() throws InterruptedException, IOException, LineUnavailableException {
+	private void open() throws IOException, LineUnavailableException {
+		IAudioSection audioSection = config.getAudioSection();
+
 		playList = PlayList.getInstance(config, tune);
 
-		IAudioSection audioSection = config.getAudioSection();
 		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = audioSection.getAudio().getAudioDriver(audioSection, tune);
 		}
 		// open audio driver
-		AudioConfig audioConfig = AudioConfig.getInstance(audioSection);
-		audioDriver.open(audioConfig, recordingFilenameProvider.apply(tune));
+		audioDriver.open(AudioConfig.getInstance(audioSection), recordingFilenameProvider.apply(tune));
+		stateProperty.addListener(pauseListener);
 
 		// PAL/NTSC
 		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
 		
 		configureMixer(mixer -> mixer.setAudioDriver(audioDriver));
 
-		stateProperty.addListener(pauseListener);
 		reset();
 	}
 
@@ -782,17 +780,14 @@ public class Player extends HardwareEnsemble {
 	 * @return mixer info
 	 */
 	public final <T> T getMixerInfo(final Function<Mixer, T> function, final T defaultValue) {
-		boolean isMixer = sidBuilder instanceof Mixer;
-		return isMixer ? function.apply((Mixer) sidBuilder) : defaultValue;
+		return sidBuilder instanceof Mixer ? function.apply((Mixer) sidBuilder) : defaultValue;
 	}
 
 	/**
 	 * Quit player.
 	 */
 	public final void quit() {
-		executeInPlayerThread("Quit", () -> {
-			stateProperty.set(QUIT);
-		});
+		executeInPlayerThread("Quit", () -> stateProperty.set(QUIT));
 	}
 
 	/**
