@@ -286,19 +286,20 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setDefaultEmulation() {
 		// default emulation has an impact on all emulation settings
-		setSid1Emulation();
-		setSid2Emulation();
-		setSid3Emulation();
+		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid1Model() {
-		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		updateSIDChipConfiguration();
 		// 1st chip model has an impact on all chip model settings
 		// (because "Automatic" means: use 1st chip model)
-		setSid2Model();
-		setSid3Model();
+		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -316,9 +317,10 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setDefaultModel() {
 		// default chip model has an impact on all chip model settings
-		setSid1Model();
-		// already called: setSid2Model();
-		// already called: setSid3Model();
+		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -355,9 +357,13 @@ public class EmulationSettings extends C64Window {
 		}
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
-		setMainFilter();
-		setSecondFilter();
-		setThirdFilter();
+		setFilter(0, mainFilter);
+		setFilter(1, secondFilter);
+		setFilter(2, thirdFilter);
+		updateSIDChipConfiguration();
+		drawFilterCurve(mainFilter, mainFilterCurve);
+		drawFilterCurve(secondFilter, secondFilterCurve);
+		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML

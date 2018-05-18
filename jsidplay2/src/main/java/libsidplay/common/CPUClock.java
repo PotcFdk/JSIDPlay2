@@ -46,13 +46,11 @@ public enum CPUClock {
 		if (forcedCPUClock != null) {
 			return forcedCPUClock;
 		}
-		if (tuneCPUClock == UNKNOWN) {
-			return defaultCPUClock;
-		}
 		switch (tuneCPUClock) {
 		case PAL:
 		case NTSC:
 			return tuneCPUClock.asCPUClock();
+		case UNKNOWN:
 		default:
 			return defaultCPUClock;
 		}

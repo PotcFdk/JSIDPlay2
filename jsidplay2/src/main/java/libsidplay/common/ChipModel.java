@@ -53,13 +53,11 @@ public enum ChipModel {
 		if (forcedChipModel != AUTO) {
 			return forcedChipModel;
 		}
-		if (tuneSidModel == UNKNOWN) {
-			return defaultSidModel;
-		}
 		switch (tuneSidModel) {
 		case MOS6581:
 		case MOS8580:
 			return tuneSidModel.asChipModel();
+		case UNKNOWN:
 		default:
 			return defaultSidModel;
 		}

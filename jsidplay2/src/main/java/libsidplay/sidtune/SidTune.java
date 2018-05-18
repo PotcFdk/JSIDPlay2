@@ -329,11 +329,7 @@ public abstract class SidTune {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		if (forcedStereoTune) {
-			return forcedSidBase;
-		} else {
-			return tuneChipBase;
-		}
+		return forcedStereoTune ? forcedSidBase : tuneChipBase;
 	}
 
 	/**
