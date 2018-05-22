@@ -338,8 +338,12 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setFakeStereo() {
 		enableStereoSettings(util.getPlayer().getTune());
-		setMainFilter();
-		setSecondFilter();
+		// fake stereo mode has an impact on mono and stereo filter curves
+		setFilter(0, mainFilter);
+		setFilter(1, secondFilter);
+		updateSIDChipConfiguration();
+		drawFilterCurve(mainFilter, mainFilterCurve);
+		drawFilterCurve(secondFilter, secondFilterCurve);
 	}
 	
 	@FXML
