@@ -11,7 +11,7 @@ public enum WebViewType {
 	/**
 	 * The C-64 Scene Database
 	 */
-	CSDB("http://csdb.dk/"),
+	CSDB("https://csdb.dk/"),
 	/**
 	 * Codebase 64 Wiki
 	 */
@@ -31,7 +31,7 @@ public enum WebViewType {
 	/**
 	 * Forum 64
 	 */
-	FORUM64_DE("http://www.forum64.de/"),
+	FORUM64_DE("https://www.forum64.de/"),
 	/**
 	 * Lemon Retro Store
 	 */
@@ -43,7 +43,7 @@ public enum WebViewType {
 	/**
 	 * JSIDPlay2 Source Code
 	 */
-	JSIDPLAY2_SRC("http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/"),
+	JSIDPLAY2_SRC("https://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/"),
 	/**
 	 * JSIDPlay2 Java Documentation
 	 */

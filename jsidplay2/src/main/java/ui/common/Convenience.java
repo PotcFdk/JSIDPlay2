@@ -112,6 +112,12 @@ public class Convenience {
 				player.insertTape(toAttach);
 				autoStart(autoStartFile, LOAD_RUN);
 				return true;
+			} else if (toAttach.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
+				try {
+					player.insertCartridge(CartridgeType.REU, toAttach);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			} else if (cartFileFilter.accept(toAttach)) {
 				player.insertCartridge(CartridgeType.CRT, toAttach);
 				autoStart(autoStartFile, null);
@@ -165,7 +171,7 @@ public class Convenience {
 		for (File member : listFiles) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
-			if (memberFile.isFile() && isSupportedMedia(memberFile) && mediaTester.test(memberFile, toAttach)) {
+			if (memberFile.isFile() && isSupportedMedia(memberFile)) {
 				if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 					try {
 						player.insertCartridge(CartridgeType.REU, memberFile);
@@ -180,7 +186,9 @@ public class Convenience {
 						e.printStackTrace();
 					}
 				} else {
-					toAttach = memberFile;
+					if (mediaTester.test(memberFile, toAttach)) {
+						toAttach = memberFile;
+					}
 				}
 			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
 				File toAttachChild = getToAttach(memberFile.getPath(), new TFile(memberFile), mediaTester, toAttach);
