@@ -25,13 +25,11 @@ import android.util.Log;
 import android.util.Pair;
 import de.haendel.jsidplay2.config.IConfiguration;
 
-public abstract class JSIDPlay2RESTRequest<ResultType> extends
-		AsyncTask<String, Void, ResultType> {
+public abstract class JSIDPlay2RESTRequest<ResultType> extends AsyncTask<String, Void, ResultType> {
 
 	public enum RequestType {
-		DOWNLOAD(REST_DOWNLOAD_URL), CONVERT(REST_CONVERT_URL), DIRECTORY(
-				REST_DIRECTORY_URL), PHOTO(REST_PHOTO_URL), INFO(REST_INFO), FILTERS(
-				REST_FILTERS_URL);
+		DOWNLOAD(REST_DOWNLOAD_URL), CONVERT(REST_CONVERT_URL), DIRECTORY(REST_DIRECTORY_URL), PHOTO(
+				REST_PHOTO_URL), INFO(REST_INFO), FILTERS(REST_FILTERS_URL);
 
 		private String url;
 
@@ -59,12 +57,14 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 	private static final int CONNECTION_TIMEOUT = 10000;
 	private static final int SOCKET_TIMEOUT = 10000;
 
+	private static final int RETRY_PERIOD_S = 10;
+
 	protected final String appName;
 	protected IConfiguration configuration;
 	protected String url, query;
 
-	public JSIDPlay2RESTRequest(String appName, IConfiguration configuration,
-			RequestType type, String url, String query) {
+	public JSIDPlay2RESTRequest(String appName, IConfiguration configuration, RequestType type, String url,
+			String query) {
 		this.appName = appName;
 		this.configuration = configuration;
 		this.url = type.getUrl() + url;
@@ -73,47 +73,47 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 
 	@Override
 	protected ResultType doInBackground(String... params) {
-		try {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
+		while (true) {
+			try {
+				DefaultHttpClient httpClient = new DefaultHttpClient();
 
-			HttpParams httpParams = httpClient.getParams();
-			HttpConnectionParams.setConnectionTimeout(httpParams,
-					CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
+				HttpParams httpParams = httpClient.getParams();
+				HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
+				HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
 
-			httpClient.getCredentialsProvider().setCredentials(
-					new AuthScope(configuration.getHostname(), AuthScope.ANY_PORT),
-					new UsernamePasswordCredentials(configuration.getUsername(), configuration
-							.getPassword()));
+				httpClient.getCredentialsProvider().setCredentials(
+						new AuthScope(configuration.getHostname(), AuthScope.ANY_PORT),
+						new UsernamePasswordCredentials(configuration.getUsername(), configuration.getPassword()));
 
-			URI myUri = new URI("http", null, configuration.getHostname(),
-					Integer.valueOf(configuration.getPort()), url, query, null);
+				URI myUri = new URI("http", null, configuration.getHostname(), Integer.valueOf(configuration.getPort()),
+						url, query, null);
 
-			Log.d(appName, "HTTP-GET: " + myUri);
+				Log.d(appName, "HTTP-GET: " + myUri);
 
-			HttpGet httpGet = new HttpGet(myUri);
-			HttpContext localContext = new BasicHttpContext();
-			HttpResponse response = httpClient.execute(httpGet, localContext);
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode == HttpURLConnection.HTTP_OK) {
-				return getResult(response.getEntity());
-			} else {
-				Log.e(appName,
-						String.format("URL: '%s', HTTP status: '%d':",
-								myUri.toString(), statusCode));
-				return null;
+				HttpGet httpGet = new HttpGet(myUri);
+				HttpContext localContext = new BasicHttpContext();
+				HttpResponse response = httpClient.execute(httpGet, localContext);
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == HttpURLConnection.HTTP_OK) {
+					return getResult(response.getEntity());
+				} else {
+					Log.e(appName, String.format("URL: '%s', HTTP status: '%d', Retry in '%d' seconds!",
+							myUri.toString(), statusCode, RETRY_PERIOD_S));
+				}
+			} catch (IOException e) {
+				Log.e(appName, e.getMessage(), e);
+			} catch (URISyntaxException e) {
+				Log.e(appName, e.getMessage(), e);
 			}
-		} catch (IOException e) {
-			Log.e(appName, e.getMessage(), e);
-			return null;
-		} catch (URISyntaxException e) {
-			Log.e(appName, e.getMessage(), e);
-			return null;
+			try {
+				Thread.sleep(RETRY_PERIOD_S * 1000);
+			} catch (InterruptedException e) {
+				Log.e(appName, "Interrupted while sleeping!", e);
+			}
 		}
 	}
 
-	protected abstract ResultType getResult(HttpEntity httpEntity)
-			throws IllegalStateException, IOException;
+	protected abstract ResultType getResult(HttpEntity httpEntity) throws IllegalStateException, IOException;
 
 	public static String[] splitJSONToken(String line, String sep) {
 		String otherThanQuote = " [^\"] ";
@@ -138,8 +138,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		return line.split(regex, -1);
 	}
 
-	protected ArrayList<String> receiveList(HttpEntity httpEntity)
-			throws IllegalStateException, IOException {
+	protected ArrayList<String> receiveList(HttpEntity httpEntity) throws IllegalStateException, IOException {
 		InputStream content = httpEntity.getContent();
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -155,7 +154,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		String[] childs = splitJSONToken(line, ",");
 		ArrayList<String> list = new ArrayList<String>();
 		for (String child : childs) {
-			child=child.trim();
+			child = child.trim();
 			if (child.length() > 2) {
 				list.add(child.substring(1, child.length() - 1));
 			}
@@ -174,8 +173,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 		String getString(String key);
 	}
 
-	protected List<Pair<String, String>> receiveListOfKeyValues(
-			HttpEntity httpEntity, IKeyLocalizer localizer)
+	protected List<Pair<String, String>> receiveListOfKeyValues(HttpEntity httpEntity, IKeyLocalizer localizer)
 			throws IllegalStateException, IOException {
 		InputStream content = httpEntity.getContent();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -191,17 +189,14 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 
 		String trimmed = out.toString(UTF_8).trim();
 		String mapToken = trimmed.substring(1, trimmed.length() - 1);
-		String[] splittedMap = JSIDPlay2RESTRequest.splitJSONToken(mapToken,
-				",");
+		String[] splittedMap = JSIDPlay2RESTRequest.splitJSONToken(mapToken, ",");
 		for (String mapEntryToken : splittedMap) {
-			String[] splittedMapEntry = JSIDPlay2RESTRequest.splitJSONToken(
-					mapEntryToken, ":");
+			String[] splittedMapEntry = JSIDPlay2RESTRequest.splitJSONToken(mapEntryToken, ":");
 			String tuneInfoName = null;
 			String tuneInfoValue = "";
 			for (String keyOrValueToken : splittedMapEntry) {
 				keyOrValueToken = keyOrValueToken.trim();
-				String keyOrValue = keyOrValueToken.substring(1,
-						keyOrValueToken.length() - 1);
+				String keyOrValue = keyOrValueToken.substring(1, keyOrValueToken.length() - 1);
 				// newline handling
 				keyOrValue = keyOrValue.replaceAll("\\\\n", "\n");
 				if (tuneInfoName == null) {
@@ -213,8 +208,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends
 			}
 			// sort out empty tune infos
 			if (!tuneInfoValue.equals("")) {
-				Pair<String, String> p = new Pair<String, String>(tuneInfoName,
-						tuneInfoValue);
+				Pair<String, String> p = new Pair<String, String>(tuneInfoName, tuneInfoValue);
 				rows.add(p);
 			}
 		}
