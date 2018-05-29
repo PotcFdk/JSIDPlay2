@@ -65,7 +65,7 @@ final public class ConsolePlayer {
 				printSoundcardDevices();
 				exit(1);
 			}
-			if (config.getSidplay2Section().isLoop() && isRecording(config.getAudioSection().getAudio())) {
+			if (config.getSidplay2Section().isLoop() && config.getAudioSection().getAudio().isRecording()) {
 				System.out.println("Warning: Loop has been disabled while recording audio files!");
 				config.getSidplay2Section().setLoop(false);
 			}
@@ -89,7 +89,7 @@ final public class ConsolePlayer {
 				}
 				return basename;
 			});
-			if (isRecording(config.getAudioSection().getAudio())
+			if (config.getAudioSection().getAudio().isRecording()
 					&& config.getSidplay2Section().getDefaultPlayLength() <= 0
 					&& player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0) == 0) {
 				System.err.println("ERROR: unknown song length in record mode"
@@ -112,10 +112,6 @@ final public class ConsolePlayer {
 				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
 			}
 		}
-	}
-
-	private boolean isRecording(Audio audio) {
-		return audio == Audio.WAV || audio == Audio.MP3 || audio == Audio.LIVE_WAV || audio == Audio.LIVE_MP3;
 	}
 
 	private void printSoundcardDevices() {

@@ -16,21 +16,22 @@ import sidplay.audio.MP3Driver.MP3File;
  */
 public enum Audio {
 	/** Java Sound API. */
-	SOUNDCARD(JavaSound.class),
+	SOUNDCARD(false, JavaSound.class),
 	/** WAV file write. */
-	WAV(WavFile.class),
+	WAV(true, WavFile.class),
 	/** MP3 file write. */
-	MP3(MP3File.class),
+	MP3(true, MP3File.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFile.class),
+	LIVE_WAV(true, ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
-	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3File.class),
+	LIVE_MP3(true, ProxyDriver.class, JavaSound.class, MP3File.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CmpMP3File.class);
+	COMPARE_MP3(false, CmpMP3File.class);
 
+	private boolean recording;
 	private final Class<? extends AudioDriver> audioDriverClass;
 	private final Class<? extends AudioDriver>[] parameterClasses;
-	private AudioDriver audioDriver;
+	private AudioDriver audioDriver, oldAudioDriver;
 
 	/**
 	 * Create audio output using the audio driver
@@ -39,9 +40,18 @@ public enum Audio {
 	 *            audio driver
 	 */
 	@SafeVarargs
-	Audio(Class<? extends AudioDriver> audioDriverClass, Class<? extends AudioDriver>... parameters) {
+	Audio(boolean recording, Class<? extends AudioDriver> audioDriverClass,
+			Class<? extends AudioDriver>... parameters) {
+		this.recording = recording;
 		this.audioDriverClass = audioDriverClass;
 		this.parameterClasses = parameters;
+	}
+
+	/**
+	 * @return is this audio driver recording tunes?
+	 */
+	public boolean isRecording() {
+		return recording;
 	}
 
 	/**
@@ -77,8 +87,6 @@ public enum Audio {
 			throw new RuntimeException("Audiodriver cannot be instanciated: " + audioDriverClass.getName(), e);
 		}
 	}
-
-	private AudioDriver oldAudioDriver;
 
 	/**
 	 * Get audio driver for tune.
