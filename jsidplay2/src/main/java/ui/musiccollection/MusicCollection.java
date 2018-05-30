@@ -330,7 +330,11 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
-		if (fileBrowser.getRoot().getValue() instanceof TFile) {
+		closeDatabase();
+	}
+
+	private void closeDatabase() {
+		if (fileBrowser.getRoot() != null && fileBrowser.getRoot().getValue() instanceof TFile) {
 			TFile tf = (TFile) fileBrowser.getRoot().getValue();
 			try {
 				TVFS.umount(tf);
@@ -338,7 +342,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 				e.printStackTrace();
 			}
 		}
-		if (em != null) {
+		if (em != null && em.isOpen()) {
 			em.close();
 			em.getEntityManagerFactory().close();
 		}
@@ -396,14 +400,18 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	private void doAutoConfiguration() {
-		String url;
+		String url,urlSearchIndex,urlSearchIndexProperties;
 		switch (getType()) {
 		case HVSC:
 			url = util.getConfig().getOnlineSection().getHvscUrl();
+			urlSearchIndex = util.getConfig().getOnlineSection().getHvscSearchIndexUrl();
+			urlSearchIndexProperties = util.getConfig().getOnlineSection().getHvscSearchIndexPropertiesUrl();
 			break;
 
 		case CGSC:
 			url = util.getConfig().getOnlineSection().getCgscUrl();
+			urlSearchIndex = util.getConfig().getOnlineSection().getCgscSearchIndexUrl();
+			urlSearchIndexProperties = util.getConfig().getOnlineSection().getCgscSearchIndexPropertiesUrl();
 			break;
 
 		default:
@@ -411,21 +419,40 @@ public class MusicCollection extends C64VBox implements UIPart {
 		}
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
+			closeDatabase();
 			try {
-				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-						new ProgressListener(util, fileBrowser.getScene()) {
+				new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
 
-							@Override
-							public void downloaded(final File downloadedFile) {
-								Platform.runLater(() -> {
-									autoConfiguration.setDisable(false);
-									if (downloadedFile != null) {
-										setRoot(downloadedFile);
+					@Override
+					public void downloaded(final File downloadedFile) {
+						try {
+							new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
+
+								@Override
+								public void downloaded(final File downloadedFile) {
+									try {
+										new DownloadThread(util.getConfig(),
+												new ProgressListener(util, fileBrowser.getScene()) {
+													@Override
+													public void downloaded(final File downloadedFile) {
+														Platform.runLater(() -> {
+															autoConfiguration.setDisable(false);
+															if (downloadedFile != null) {
+																setRoot(downloadedFile);
+															}
+														});
+													}
+												}, new URL(url)).start();
+									} catch (MalformedURLException e) {
+										e.printStackTrace();
 									}
-								});
-							}
-						}, new URL(url));
-				downloadThread.start();
+								}
+							}, new URL(urlSearchIndexProperties)).start();
+						} catch (MalformedURLException e) {
+							e.printStackTrace();
+						}
+					}
+				}, new URL(urlSearchIndex)).start();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -555,10 +582,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 				setViewRoot(sidPlay2Section.getCgscFile());
 			}
 
-			if (em != null) {
-				em.close();
-				em.getEntityManagerFactory().close();
-			}
+			closeDatabase();
 			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
 			PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), Database.HSQL_FILE);
 			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(collectionDS, pp);

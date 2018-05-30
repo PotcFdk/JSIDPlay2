@@ -25,6 +25,26 @@ public class OnlineSection {
 		this.hvscUrl = hvscUrl;
 	}
 
+	private String hvscSearchIndexUrl = DEPLOYMENT_URL + "online/hvsc/HVSC.script";
+
+	public String getHvscSearchIndexUrl() {
+		return hvscSearchIndexUrl;
+	}
+
+	public void setHvscSearchIndexUrl(String hvscSearchIndexUrl) {
+		this.hvscSearchIndexUrl = hvscSearchIndexUrl;
+	}
+	
+	private String hvscSearchIndexPropertiesUrl = DEPLOYMENT_URL + "online/hvsc/HVSC.properties";
+
+	public String getHvscSearchIndexPropertiesUrl() {
+		return hvscSearchIndexPropertiesUrl;
+	}
+	
+	public void setHvscSearchIndexPropertiesUrl(String hvscSearchIndexPropertiesUrl) {
+		this.hvscSearchIndexPropertiesUrl = hvscSearchIndexPropertiesUrl;
+	}
+	
 	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
 
 	public String getCgscUrl() {
@@ -34,6 +54,24 @@ public class OnlineSection {
 	public void setCgscUrl(String cgscUrl) {
 		this.cgscUrl = cgscUrl;
 	}
+
+	private String cgscSearchIndexUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.script";
+
+	public String getCgscSearchIndexUrl() {
+		return cgscSearchIndexUrl;
+	}
+	public void setCgscSearchIndexUrl(String cgscSearchIndexUrl) {
+		this.cgscSearchIndexUrl = cgscSearchIndexUrl;
+	}
+	
+	public String getCgscSearchIndexPropertiesUrl() {
+		return cgscSearchIndexPropertiesUrl;
+	}
+	public void setCgscSearchIndexPropertiesUrl(String cgscSearchIndexPropertiesUrl) {
+		this.cgscSearchIndexPropertiesUrl = cgscSearchIndexPropertiesUrl;
+	}
+	
+	private String cgscSearchIndexPropertiesUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.properties";
 
 	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
 

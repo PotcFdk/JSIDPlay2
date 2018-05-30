@@ -20,7 +20,7 @@ import libsidutils.PathUtils;
  * 
  * @author Ken Händel
  */
-@Parameters(resourceBundle = "libsidutils.ant.split.Split")
+@Parameters(resourceBundle = "ant.split.Split")
 public class Split {
 
 	private static final int CHUNK_SIZE = 1 << 20;

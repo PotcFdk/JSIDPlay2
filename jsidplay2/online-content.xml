@@ -288,6 +288,16 @@
 			<arg value="${hvsc_max_size}" />
 			<arg value="${hvsc_dir}/${hvsc_zip}" />
 		</java>
+
+		<!-- Create search index -->
+		<java fork="true" classname="ant.index.CreateIndex">
+			<classpath path="${compile_classpath}" />
+			<classpath path="${runtime_classpath}" />
+			<arg value="-c" />
+			<arg value="HVSC" />
+			<arg value="${hvsc_dir}/${hvsc_zip}" />
+		</java>
+
 		<delete file="${hvsc_dir}/${hvsc_zip}" />
 	</target>
 
@@ -340,6 +350,15 @@
 			<entry operation="=" type="string" key="size" value="${filesize_cgsc}" />
 			<entry operation="=" type="string" key="crc32" value="${checksum_cgsc}" />
 		</propertyfile>
+		
+		<!-- Create search index -->
+		<java fork="true" classname="ant.index.CreateIndex">
+			<classpath path="${compile_classpath}" />
+			<classpath path="${runtime_classpath}" />
+			<arg value="-c" />
+			<arg value="CGSC" />
+			<arg value="${cgsc_dir}/${cgsc_zip}" />
+		</java>
 	</target>
 
 	<!-- ================================= 

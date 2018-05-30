@@ -14,7 +14,7 @@ import ui.download.DownloadThread;
  * 
  * @author Ken Händel
  */
-@Parameters(resourceBundle = "libsidutils.ant.crc.CreateChecksum")
+@Parameters(resourceBundle = "ant.crc.CreateChecksum")
 public class CreateChecksum {
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
