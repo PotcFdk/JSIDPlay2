@@ -77,7 +77,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private TextField baseAddress, thirdAddress;
 	@FXML
-	private CheckBox boosted8580, fakeStereo,detectPSID64ChipModel;
+	private CheckBox boosted8580, fakeStereo, detectPSID64ChipModel;
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
 	@FXML
@@ -98,7 +98,7 @@ public class EmulationSettings extends C64Window {
 	public EmulationSettings() {
 		super();
 	}
-	
+
 	public EmulationSettings(Player player) {
 		super(player);
 	}
@@ -216,9 +216,9 @@ public class EmulationSettings extends C64Window {
 	}
 
 	private void updateSettingsForTune(SidTune tune) {
-		addFilters(tune, 0, mainFilters, mainFilter);
-		addFilters(tune, 1, secondFilters, secondFilter);
-		addFilters(tune, 2, thirdFilters, thirdFilter);
+		updateFilterList(tune, 0, mainFilters, mainFilter);
+		updateFilterList(tune, 1, secondFilters, secondFilter);
+		updateFilterList(tune, 2, thirdFilters, thirdFilter);
 		enableStereoSettings(tune);
 	}
 
@@ -267,28 +267,29 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setSid1Emulation() {
-		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Emulation() {
-		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Emulation() {
-		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setDefaultEmulation() {
 		// default emulation has an impact on all emulation settings
-		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		// (because "Default" means: use default emulation)
+		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
@@ -296,30 +297,31 @@ public class EmulationSettings extends C64Window {
 	private void setSid1Model() {
 		// 1st chip model has an impact on all chip model settings
 		// (because "Automatic" means: use 1st chip model)
-		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Model() {
-		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Model() {
-		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setDefaultModel() {
 		// default chip model has an impact on all chip model settings
-		addFilters(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		addFilters(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		addFilters(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+		// (because "Automatic" means: use default chip model, if tune model is unknown)
+		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 		updateSIDChipConfiguration();
 	}
 
@@ -339,13 +341,11 @@ public class EmulationSettings extends C64Window {
 	private void setFakeStereo() {
 		enableStereoSettings(util.getPlayer().getTune());
 		// fake stereo mode has an impact on mono and stereo filter curves
-		setFilter(0, mainFilter);
-		setFilter(1, secondFilter);
+		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
+		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
 		updateSIDChipConfiguration();
-		drawFilterCurve(mainFilter, mainFilterCurve);
-		drawFilterCurve(secondFilter, secondFilterCurve);
 	}
-	
+
 	@FXML
 	private void setStereoMode() {
 		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();
@@ -361,13 +361,10 @@ public class EmulationSettings extends C64Window {
 		}
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
-		setFilter(0, mainFilter);
-		setFilter(1, secondFilter);
-		setFilter(2, thirdFilter);
+		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
+		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
+		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
 		updateSIDChipConfiguration();
-		drawFilterCurve(mainFilter, mainFilterCurve);
-		drawFilterCurve(secondFilter, secondFilterCurve);
-		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML
@@ -384,35 +381,44 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setMainFilter() {
-		setFilter(0, mainFilter);
+		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
 		updateSIDChipConfiguration();
-		drawFilterCurve(mainFilter, mainFilterCurve);
 	}
 
 	@FXML
 	private void setSecondFilter() {
-		setFilter(1, secondFilter);
+		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
 		updateSIDChipConfiguration();
-		drawFilterCurve(secondFilter, secondFilterCurve);
 	}
 
 	@FXML
 	private void setThirdFilter() {
-		setFilter(2, thirdFilter);
+		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
 		updateSIDChipConfiguration();
-		drawFilterCurve(thirdFilter, thirdFilterCurve);
 	}
 
 	/**
-	 * Set filter name of the specified SID number according to the current
-	 * emulation and chip model
+	 * Update SID configuration on-the-fly.
+	 */
+	private void updateSIDChipConfiguration() {
+		if (!duringInitialization) {
+			util.getPlayer().updateSIDChipConfiguration();
+		}
+	}
+
+	/**
+	 * Update filter settings of the specified SID number according to the currently
+	 * selected filter.
 	 * 
 	 * @param sidNum
 	 *            SID chip number
 	 * @param filterBox
 	 *            filter combo box
+	 * @param filterCurve
+	 *            filter curve to update
 	 */
-	private void setFilter(int sidNum, ComboBox<String> filterBox) {
+	private void updateFilterConfiguration(int sidNum, ComboBox<String> filterBox,
+			LineChart<Number, Number> filterCurve) {
 		IEmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		SidTune tune = util.getPlayer().getTune();
@@ -425,14 +431,61 @@ public class EmulationSettings extends C64Window {
 
 		emulationSection.setFilterEnable(sidNum, !filterDisabled);
 		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
+
+		drawFilterCurve(filterBox, filterCurve);
 	}
 
 	/**
-	 * Update SID configuration on-the-fly.
+	 * Update combo-box filter list according to the current emulation and chip
+	 * model.
+	 * 
+	 * @param tune
+	 *            currently played tune
+	 * @param num
+	 *            SID chip number
+	 * @param filters
+	 *            resulting filter list to add matching filter names to
+	 * @param filter
+	 *            combo box to select currently selected filter
 	 */
-	private void updateSIDChipConfiguration() {
-		if (!duringInitialization) {
-			util.getPlayer().updateSIDChipConfiguration();
+	private void updateFilterList(final SidTune tune, int num, ObservableList<String> filters,
+			ComboBox<String> filter) {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		Engine engine = emulationSection.getEngine();
+		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
+		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
+		String filterName = emulationSection.getFilterName(num, engine, emulation, model);
+		boolean filterEnable = emulationSection.isFilterEnable(num);
+
+		filters.clear();
+		if (engine == NETSID) {
+			filters.addAll(TrySetSidModel.getFilterNames(model));
+		} else {
+			filters.add("");
+			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
+				switch (model) {
+				case MOS6581:
+					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter6581()
+							|| emulation.equals(RESID) && filterSection.isReSIDFilter6581()) {
+						filters.add(filterSection.getName());
+					}
+					break;
+				case MOS8580:
+					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter8580()
+							|| emulation.equals(RESID) && filterSection.isReSIDFilter8580()) {
+						filters.add(filterSection.getName());
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		if (filterEnable) {
+			filter.getSelectionModel().select(filterName);
+		} else {
+			filter.getSelectionModel().select(0);
 		}
 	}
 
@@ -475,59 +528,6 @@ public class EmulationSettings extends C64Window {
 
 		List<XYChart.Series<Number, Number>> seriesList = Arrays.asList(series);
 		filterCurve.setData(FXCollections.observableArrayList(seriesList));
-	}
-
-	/**
-	 * Add filters according to the current emulation and chip model of the
-	 * currently played tune.
-	 * 
-	 * @param tune
-	 *            currently played tune
-	 * @param num
-	 *            SID chip number
-	 * @param filters
-	 *            resulting filter list to add matching filter names to
-	 * @param filter
-	 *            combo box to select currently selected filter
-	 */
-	private void addFilters(final SidTune tune, int num, ObservableList<String> filters, ComboBox<String> filter) {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-
-		Engine engine = emulationSection.getEngine();
-		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
-		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
-		String filterName = emulationSection.getFilterName(num, engine, emulation, model);
-		boolean filterEnable = emulationSection.isFilterEnable(num);
-
-		filters.clear();
-		if (engine == NETSID) {
-			filters.addAll(TrySetSidModel.getFilterNames(model));
-		} else {
-			filters.add("");
-			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
-				switch (model) {
-				case MOS6581:
-					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter6581()
-							|| emulation.equals(RESID) && filterSection.isReSIDFilter6581()) {
-						filters.add(filterSection.getName());
-					}
-					break;
-				case MOS8580:
-					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter8580()
-							|| emulation.equals(RESID) && filterSection.isReSIDFilter8580()) {
-						filters.add(filterSection.getName());
-					}
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		if (filterEnable) {
-			filter.getSelectionModel().select(filterName);
-		} else {
-			filter.getSelectionModel().select(0);
-		}
 	}
 
 }
