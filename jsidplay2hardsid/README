@@ -13,13 +13,20 @@ We do cross-compilation here, therefore install:
 sudo apt-get install mingw-w64
 
 In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
-GCC/C++ Compiler/Settings/Includes
-GCC/C Compiler/Settings/Includes
-/usr/lib/jvm/java-8-openjdk-amd64/include
-/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+
+In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
+C/C++ Build
+  Settings
+    GCC/C++ Compiler/Settings/Command: i686-w64-mingw32-g++
+    GCC/C++ Compiler/Settings/Includes
+    GCC/C Compiler/Settings/Command: i686-w64-mingw32-gcc
+    GCC/C Compiler/Settings/Includes
+      /usr/lib/jvm/java-8-openjdk-amd64/include
+      /usr/lib/jvm/java-8-openjdk-amd64/include/linux
+    GCC/C++ Linker/Settings/Command: i686-w64-mingw32-g++
 Click on Menu/Project/Build All
-Copy DLL to JSIDPlay2 directory
-src/main/resources/hardsid_builder/win32/release
+Copy JHardSID.dll to JSIDPlay2 directory
+src/main/resources/hardsid_builder/win32/Release
 
 Test:
 =====
@@ -31,6 +38,7 @@ Press F8 on Windows boot
 Choose deactivate Driver signature checks and continue booting.
 Connect HardSID4U device to your real computer.
 Allow Windows to use USB hardware with Virtual box Toolbar icon in the bottom right side of the window.
+Your user has to be a member of the group: vboxusers to let virtualbox access USB hardware.
 Start JSIDPlay2 and switch from Emulation to HardSID4U.
 Check console, that there are no error messages.
 
