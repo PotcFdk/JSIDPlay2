@@ -62,6 +62,7 @@ import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
 import netsiddev_builder.NetSIDDevBuilder;
 import resid_builder.ReSIDBuilder;
+import sidblaster_builder.SidBlasterSIDBuilder;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
@@ -328,6 +329,8 @@ public class Player extends HardwareEnsemble {
 			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
+		case SIDBLASTER:
+			return new SidBlasterSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}

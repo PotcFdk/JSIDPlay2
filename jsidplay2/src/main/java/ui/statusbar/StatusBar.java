@@ -353,6 +353,7 @@ public class StatusBar extends C64VBox implements UIPart {
 			break;
 		case NETSID:
 		case HARDSID:
+		case SIDBLASTER:
 			line.append(String.format("%s", emulation.getEngine().name()));
 			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 				line.append(String.format("+%s", emulation.getEngine().name()));

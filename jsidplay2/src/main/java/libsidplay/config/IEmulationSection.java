@@ -907,6 +907,7 @@ public interface IEmulationSection {
 			switch (engine) {
 			case EMULATION:
 			case HARDSID:
+			case SIDBLASTER:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -964,6 +965,7 @@ public interface IEmulationSection {
 			switch (engine) {
 			case EMULATION:
 			case HARDSID:
+			case SIDBLASTER:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -1044,6 +1046,7 @@ public interface IEmulationSection {
 			switch (engine) {
 			case EMULATION:
 			case HARDSID:
+			case SIDBLASTER:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
@@ -1113,6 +1116,7 @@ public interface IEmulationSection {
 			switch (engine) {
 			case EMULATION:
 			case HARDSID:
+			case SIDBLASTER:
 				switch (emulation) {
 				case RESID:
 					switch (sidNum) {
