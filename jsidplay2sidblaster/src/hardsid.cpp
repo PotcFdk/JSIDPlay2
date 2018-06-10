@@ -1,10 +1,10 @@
 #include "sidblaster_builder_SIDBlasterSID.h"
 #include "StdAfx.h"
 
-// Original HardSID4U driver
+// Original SIDBlaster driver
 static HINSTANCE hOrigDll;
 
-// Function Pointers to original HardSID DLL
+// Function Pointers to original hardsid.dll
 typedef BYTE (CALLBACK* LPFNDLL_GETHARDSIDCOUNT)();
 static LPFNDLL_GETHARDSIDCOUNT pfnGetHardSIDCount;
 typedef BYTE (CALLBACK* LPFNDLL_HARDSIDDEVICES)();
@@ -261,32 +261,32 @@ BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD ul_reason_for_call,
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_DeviceCount
  * Signature: ()B
  */
 __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_sidblaster_1builder_SIDBlasterSID_HardSID_1DeviceCount(
 		JNIEnv *, jobject) {
-	// Get the real HardSID devices
+	// Get the real SIDBlaster devices
 	BYTE result = (*pfnHardSID_Devices)();
 	return (jbyte) result;
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_SIDCount
  * Signature: (B)B
  */
 __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_sidblaster_1builder_SIDBlasterSID_HardSID_1SIDCount(
 		JNIEnv *, jobject, jbyte deviceId) {
 	//BYTE DeviceID = deviceId;
-	// Get the real HardSID devices
-	BYTE result = (*pfnHardSID_Devices)();
+	// Get the real SIDBlaster devices (just one SID per hardware device)
+	BYTE result = 1;
 	return (jbyte) result;
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_Read
  * Signature: (BBSB)B
  */
@@ -302,7 +302,7 @@ __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_sidblaster_1builder_SIDBlaste
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_Write
  * Signature: (BBSBB)V
  */
@@ -322,7 +322,7 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_sidblaster_1builder_SIDBlaster
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_Reset
  * Signature: (B)V
  */
@@ -333,7 +333,7 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_sidblaster_1builder_SIDBlaster
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_Delay
  * Signature: (BS)V
  */
@@ -345,7 +345,7 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_sidblaster_1builder_SIDBlaster
 }
 
 /*
- * Class:     hardsid_builder_HardSID4U
+ * Class:     sidblaster_builder_SIDBlasterSID
  * Method:    HardSID_Flush
  * Signature: (B)V
  */
