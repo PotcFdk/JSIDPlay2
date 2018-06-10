@@ -19,22 +19,6 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
 /**
- * <pre>
- * **************************************************************************
- *       hardsid-builder.cpp - HardSID builder class for creating/controlling
- *                             HardSIDs.
- *                             -------------------
- *  begin                : Wed Sep 5 2001
- *  copyright            : (C) 2001 by Simon White
- *  email                : s_a_white@email.com
- * **************************************************************************
- * **************************************************************************
- * * This program is free software; you can redistribute it and/or modify 
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation; either version 2 of the License, or
- * * (at your option) any later version.
- * **************************************************************************
- * </pre>
  * 
  * @author Ken Händel
  * 
@@ -51,17 +35,12 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 	private EventScheduler context;
 
 	/**
-	 * Configuration
-	 */
-	private IConfig config;
-
-	/**
 	 * Native library wrapper.
 	 */
 	private static SIDBlasterSID hardSID;
 
 	/**
-	 * Already used HardSIDs.
+	 * Already used SIDBlaster SIDs.
 	 */
 	private List<HardSID> sids = new ArrayList<HardSID>();
 
@@ -76,21 +55,20 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 
 	public SidBlasterSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
-		this.config = config;
 		if (!initialized) {
-			// Extract and Load JNI driver wrapper recognizing real HardSID4U devices
+			// Extract and Load driver recognizing real SIDBlaster devices
 			try {
 				System.load(extract(config, "/sidblaster_builder/win64/Release/", "hardsid.dll"));
 			} catch (IOException e) {
-				throw new RuntimeException(String.format("HARDSID ERROR: hardsid.dll not found!"));
+				throw new RuntimeException(String.format("SIDBLASTER ERROR: hardsid.dll not found!"));
 			}
-			// Extract and Load JNI driver wrapper recognizing real HardSID4U devices
+			// Extract and Load JNI driver wrapper using the library above
 			try {
 				System.load(extract(config, "/sidblaster_builder/win64/Release/", "JSIDBlaster.dll"));
-				initialized = true;
 			} catch (IOException e) {
-				throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
+				throw new RuntimeException(String.format("SIDBLASTER ERROR: JSIDBlaster.dll not found!"));
 			}
+			initialized = true;
 		}
 		// Go and use JNI driver wrapper
 		hardSID = new SIDBlasterSID();
@@ -121,7 +99,6 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		final ChipModel chipModel = getChipModel(tune, sidNum);
 		final byte chipNum = 0;
 		if (deviceID < hardSID.HardSID_DeviceCount() && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
 			if (oldHardSID != null) {
@@ -129,13 +106,15 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
+			// what chip model is plugged-in? We don't know
+			ChipModel chipModel = ChipModel.MOS6581;
 			HardSID hsid = new HardSID(context, this, hardSID, deviceID, chipNum, chipModel);
 			sids.add(hsid);
 			hsid.lock();
 			return hsid;
 		}
 		throw new RuntimeException(
-				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
+				String.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
 						deviceID, chipNum));
 	}
 
@@ -144,34 +123,6 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 		HardSID hardSid = (HardSID) sidEmu;
 		hardSid.unlock();
 		sids.remove(sidEmu);
-	}
-
-	/**
-	 * Choose desired chip model.
-	 * <OL>
-	 * <LI>Detect chip model of specific SID number
-	 * <LI>For the second SID (stereo) always use the other model
-	 * </OL>
-	 * Note: In mono mode we always want to use a SID depending on the correct
-	 * chip model. But, in stereo mode we need another SID. Therefore we change
-	 * the chip model to match the second configured SID.
-	 * 
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * @return desired chip model
-	 */
-	private ChipModel getChipModel(SidTune tune, int sidNum) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
-		if (sids.size() > 0) {
-			// Stereo SID? Use a HardSID SID different to the first SID
-			ChipModel modelAlreadyInUse = sids.get(0).getChipModel();
-			if (chipModel == modelAlreadyInUse) {
-				chipModel = (chipModel == ChipModel.MOS6581) ? ChipModel.MOS8580 : ChipModel.MOS6581;
-			}
-		}
-		return chipModel;
 	}
 
 	int clocksSinceLastAccess() {

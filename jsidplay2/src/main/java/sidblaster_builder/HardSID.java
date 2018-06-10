@@ -11,18 +11,7 @@ import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
 /**
- * <pre>
- * *************************************************************************
- *           hardsid.cpp  -  Hardsid support interface.
- *                           Created from Jarnos original
- *                           Sidplay2 patch
- *                           -------------------
- *  begin                : Fri Dec 15 2000
- *  copyright            : (C) 2000-2002 by Simon White
- *  email                : s_a_white@email.com
- * *************************************************************************
- * </pre>
- * 
+ *
  * @author Ken Händel
  * 
  */
@@ -36,7 +25,7 @@ public class HardSID extends SIDEmu {
 	};
 
 	private EventScheduler context;
-	
+
 	private final SIDBlasterSID hardSID;
 
 	private final byte deviceID;
@@ -47,9 +36,9 @@ public class HardSID extends SIDEmu {
 
 	private SidBlasterSIDBuilder hardSIDBuilder;
 
-	public HardSID(EventScheduler context, SidBlasterSIDBuilder hardSIDBuilder, final SIDBlasterSID hardSID, final byte deviceID, final byte sid,
-			final ChipModel model) {
-		this.context  = context;
+	public HardSID(EventScheduler context, SidBlasterSIDBuilder hardSIDBuilder, final SIDBlasterSID hardSID,
+			final byte deviceID, final byte sid, final ChipModel model) {
+		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
