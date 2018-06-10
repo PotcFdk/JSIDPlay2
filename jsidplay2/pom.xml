@@ -488,6 +488,7 @@
 								<include>netsiddev_builder/**/*.class</include>
 								<include>resid_builder/**/*.class</include>
 								<include>hardsid_builder/**/*.class</include>
+								<include>sidblaster_builder/**/*.class</include>
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
 								<include>libsidutils/*.class</include>
