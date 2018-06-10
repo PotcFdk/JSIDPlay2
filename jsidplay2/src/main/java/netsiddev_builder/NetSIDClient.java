@@ -71,6 +71,8 @@ public class NetSIDClient {
 			connection.open(emulationSection.getNetSIDDevHost(), emulationSection.getNetSIDDevPort());
 		} catch (IOException e) {
 			connection.close();
+			System.err.printf("Creating connection for %s:%d failed!\n", emulationSection.getNetSIDDevHost(),
+					emulationSection.getNetSIDDevPort());
 			throw new RuntimeException(e.getMessage());
 		}
 		// Get version and all available SID models once per connection

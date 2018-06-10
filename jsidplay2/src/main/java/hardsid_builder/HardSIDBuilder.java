@@ -82,6 +82,9 @@ public class HardSIDBuilder implements SIDBuilder {
 			try {
 				System.load(extract(config, "/hardsid_builder/win32/Release/", "JHardSID.dll"));
 				initialized = true;
+			} catch (Error e) {
+				System.err.println("32-bit Java and Windows is required to make use of that feature!");
+				throw e;
 			} catch (IOException e) {
 				throw new RuntimeException(String.format("HARDSID ERROR: JHardSID.dll not found!"));
 			}

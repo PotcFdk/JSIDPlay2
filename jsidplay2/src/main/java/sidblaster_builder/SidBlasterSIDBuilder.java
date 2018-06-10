@@ -59,12 +59,18 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 			// Extract and Load driver recognizing real SIDBlaster devices
 			try {
 				System.load(extract(config, "/sidblaster_builder/win64/Release/", "hardsid.dll"));
+			} catch (Error e) {
+				System.err.println("64-bit Java and Windows is required to make use of that feature!");
+				throw e;
 			} catch (IOException e) {
 				throw new RuntimeException(String.format("SIDBLASTER ERROR: hardsid.dll not found!"));
 			}
 			// Extract and Load JNI driver wrapper using the library above
 			try {
 				System.load(extract(config, "/sidblaster_builder/win64/Release/", "JSIDBlaster.dll"));
+			} catch (Error e) {
+				System.err.println("64-bit Java and Windows is required to make use of that feature!");
+				throw e;
 			} catch (IOException e) {
 				throw new RuntimeException(String.format("SIDBLASTER ERROR: JSIDBlaster.dll not found!"));
 			}
