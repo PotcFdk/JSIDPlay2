@@ -101,7 +101,7 @@ public class KickAssembler {
 					evaluationState.setFailOnInvalidValue(true);
 					asmNode2 = asmNode2.executePass(evaluationState);
 					throw new AsmErrorException(
-							"Made no progress and can\'t solve the program.. You should have gotten an error. Contact the author!",
+							"Made no progress and can\'t solve the program. You should have gotten an error. Contact the author!",
 							(SourceRange) null);
 				}
 			} while (!asmNode2.isFinished());
@@ -120,7 +120,7 @@ public class KickAssembler {
 			System.err.println(OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			throw new AsmErrorException(asmError);
 		} catch (Exception e) {
-			throw new RuntimeException("Internal Error!");
+			throw new RuntimeException("Internal Error!", e);
 		}
 	}
 
