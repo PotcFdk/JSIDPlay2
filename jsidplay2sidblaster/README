@@ -3,7 +3,7 @@ SIDBlaster driver wrapper:
 Web-Site: http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster
 
 This driver is a wrapper around the original USB driver functions contained in hardsid.dll
-provided by Andreas Schumm
+provided by Stein Pederesen (https://csdb.dk/release/?id=136549)
 It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
 Note:
