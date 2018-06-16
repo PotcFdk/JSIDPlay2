@@ -23,7 +23,6 @@
                 android:id="@+id/ConfigurationScroll"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:fadeScrollbars="false"
                 android:fillViewport="true"
                 android:scrollbarAlwaysDrawHorizontalTrack="true"
@@ -35,7 +34,7 @@
                 <LinearLayout
                     android:id="@+id/settings"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical" >
 
                     <LinearLayout
@@ -50,7 +49,7 @@
 
                         <EditText
                             android:id="@+id/defaultLength"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:ems="10"
@@ -103,8 +102,21 @@
                             android:layout_weight="1"
                             android:ems="10"
                             android:inputType="numberDecimal" />
-                    </LinearLayout>
 
+                        <TextView
+                            android:id="@+id/editText4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bufferSizeWlan" />
+
+                        <EditText
+                            android:id="@+id/bufferSizeWlan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:inputType="numberDecimal" />
+                        </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" >
@@ -117,7 +129,7 @@
 
                         <Spinner
                             android:id="@+id/emulation"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -134,7 +146,7 @@
 
                         <Spinner
                             android:id="@+id/samplingMethod"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -151,7 +163,7 @@
 
                         <Spinner
                             android:id="@+id/frequency"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -168,7 +180,7 @@
 
                         <Spinner
                             android:id="@+id/defaultModel"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -185,7 +197,7 @@
 
                         <Spinner
                             android:id="@+id/filter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -202,7 +214,7 @@
 
                         <Spinner
                             android:id="@+id/filter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -219,7 +231,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpFilter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -236,7 +248,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpFilter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -253,7 +265,7 @@
 
                         <Spinner
                             android:id="@+id/stereoFilter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -270,7 +282,7 @@
 
                         <Spinner
                             android:id="@+id/stereoFilter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -287,7 +299,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpStereoFilter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -304,7 +316,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpStereoFilter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -321,7 +333,7 @@
 
                         <Spinner
                             android:id="@+id/thirdFilter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -338,7 +350,7 @@
 
                         <Spinner
                             android:id="@+id/thirdFilter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -355,7 +367,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpThirdFilter6581"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -372,7 +384,7 @@
 
                         <Spinner
                             android:id="@+id/reSIDfpThirdFilter8580"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
                     </LinearLayout>
@@ -439,7 +451,7 @@
                         android:layout_weight="0.23"
                         android:ems="10"
                         android:hint="@string/port"
-                        android:text="8080" />
+                        android:text="@string/portNum" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -470,6 +482,7 @@
                     android:layout_width="218dp"
                     android:layout_height="96dp"
                     android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/splash"
                     android:src="@drawable/jsidplay2" />
 
                 <TextView
@@ -531,7 +544,7 @@
                 <ScrollView
                     android:id="@+id/favoritesScroll"
                     android:layout_width="fill_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:fadeScrollbars="false"
                     android:fillViewport="true"
@@ -547,7 +560,7 @@
                         android:scrollbars="horizontal|vertical" >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:orientation="vertical" >
 
@@ -585,6 +598,7 @@
                         android:maxWidth="5dp"
                         android:minHeight="5dp"
                         android:minWidth="5dp"
+                        android:contentDescription="@string/photo"
                         android:src="@drawable/ic_launcher" />
 
                     <Button
@@ -615,7 +629,7 @@
 
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:fadeScrollbars="false"
                     android:fillViewport="true"
@@ -631,7 +645,7 @@
                         android:scrollbars="horizontal|vertical" >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="fill_parent"
                             android:orientation="vertical" >
 

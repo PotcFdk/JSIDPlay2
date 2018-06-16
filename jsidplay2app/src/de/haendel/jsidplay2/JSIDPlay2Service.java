@@ -279,8 +279,11 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
 		StringBuilder query = new StringBuilder();
-		query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSize()
-				+ "&");
+		if (mWifi.isConnected()) {
+			query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSizeWlan() + "&");
+		} else {
+			query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSize() + "&");
+		}
 		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation()
 				+ "&");
 		query.append(PAR_ENABLE_DATABASE + "="

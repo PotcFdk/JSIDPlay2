@@ -310,6 +310,18 @@ public class Configuration implements IConfiguration {
 		this.bufferSize = bufferSize;
 	}
 
+	private String bufferSizeWlan;
+
+	@Override
+	public String getBufferSizeWlan() {
+		return bufferSizeWlan;
+	}
+
+	@Override
+	public void setBufferSizeWlan(String bufferSizeWlan) {
+		this.bufferSizeWlan = bufferSizeWlan;
+	}
+
 	private String cbr;
 
 	@Override

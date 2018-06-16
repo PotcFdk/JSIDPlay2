@@ -2,6 +2,7 @@ package de.haendel.jsidplay2.tab;
 
 import static de.haendel.jsidplay2.config.IConfiguration.DECIMATE;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_BUFFER_SIZE;
+import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_BUFFER_SIZE_WLAN;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_CBR;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_DIGI_BOOSTED_8580;
 import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_ENABLE_DATABASE;
@@ -16,6 +17,7 @@ import static de.haendel.jsidplay2.config.IConfiguration.DEFAULT_VBR;
 import static de.haendel.jsidplay2.config.IConfiguration.MOS6581;
 import static de.haendel.jsidplay2.config.IConfiguration.MOS8580;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE;
+import static de.haendel.jsidplay2.config.IConfiguration.PAR_BUFFER_SIZE_WLAN;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_CBR;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_MODEL;
 import static de.haendel.jsidplay2.config.IConfiguration.PAR_DEFAULT_PLAY_LENGTH;
@@ -136,6 +138,8 @@ public class ConfigurationTab extends TabBase {
 		protected void editTextUpdated(String parName, String newValue) {
 			if (PAR_BUFFER_SIZE.equals(parName)) {
 				configuration.setBufferSize(newValue);
+			} else if (PAR_BUFFER_SIZE_WLAN.equals(parName)) {
+				configuration.setBufferSizeWlan(newValue);
 			} else if (PAR_DEFAULT_PLAY_LENGTH.equals(parName)) {
 				configuration.setDefaultLength(newValue);
 			} else if (PAR_CBR.equals(parName)) {
@@ -167,7 +171,7 @@ public class ConfigurationTab extends TabBase {
 
 	}
 
-	private EditText bufferSize, defaultLength;
+	private EditText bufferSize, bufferSizeWlan, defaultLength;
 	private CheckBox enableDatabase, singleSong, loop, digiBoosted8580;
 	private Spinner emulation, defaultModel;
 
@@ -200,6 +204,7 @@ public class ConfigurationTab extends TabBase {
 				.setContent(R.id.settings));
 
 		bufferSize = (EditText) activity.findViewById(R.id.bufferSize);
+		bufferSizeWlan = (EditText) activity.findViewById(R.id.bufferSizeWlan);
 		defaultLength = (EditText) activity.findViewById(R.id.defaultLength);
 		enableDatabase = (CheckBox) activity.findViewById(R.id.enableDatabase);
 		singleSong = (CheckBox) activity.findViewById(R.id.singleSong);
@@ -262,6 +267,8 @@ public class ConfigurationTab extends TabBase {
 		vbr = (EditText) activity.findViewById(R.id.vbr);
 
 		ui.setupEditText(bufferSize, PAR_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
+
+		ui.setupEditText(bufferSizeWlan, PAR_BUFFER_SIZE_WLAN, DEFAULT_BUFFER_SIZE_WLAN);
 
 		ui.setupEditText(defaultLength, PAR_DEFAULT_PLAY_LENGTH,
 				DEFAULT_PLAY_LENGTH);

@@ -2,6 +2,7 @@ package de.haendel.jsidplay2.config;
 
 public interface IConfiguration {
 	String PAR_BUFFER_SIZE = "bufferSize";
+	String PAR_BUFFER_SIZE_WLAN = "bufferSizeWlan";
 	String PAR_EMULATION = "emulation";
 	String PAR_ENABLE_DATABASE = "enableDatabase";
 	String PAR_DEFAULT_PLAY_LENGTH = "defaultPlayLength";
@@ -40,7 +41,8 @@ public interface IConfiguration {
 	String _48000 = "48000";
 	String _96000 = "96000";
 
-	String DEFAULT_BUFFER_SIZE = "65536";
+	String DEFAULT_BUFFER_SIZE = "6553600";
+	String DEFAULT_BUFFER_SIZE_WLAN = "2500";
 	String DEFAULT_PLAY_LENGTH = "300";
 	String DEFAULT_ENABLE_DATABASE = Boolean.TRUE.toString();
 	String DEFAULT_SINGLE_SONG = Boolean.FALSE.toString();
@@ -72,6 +74,10 @@ public interface IConfiguration {
 	String getBufferSize();
 
 	void setBufferSize(String bufferSize);
+
+	String getBufferSizeWlan();
+
+	void setBufferSizeWlan(String bufferSizeWlan);
 
 	String getDefaultEmulation();
 
