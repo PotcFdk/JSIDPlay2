@@ -140,8 +140,12 @@ public class MainActivity extends Activity implements PlayListener, View.OnClick
 		tabHost.setCurrentTabByTag(GeneralTab.class.getSimpleName());
 
 		findViewById(R.id.btn_open_battery_optimization_settings).setOnClickListener(this);
-		findViewById(R.id.btn_open_memory_settings).setOnClickListener(this);
 
+		View findViewById = findViewById(R.id.btn_open_memory_settings);
+		boolean disablePermission = !isOverMarshmallow() || (ContextCompat.checkSelfPermission(this,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+		findViewById.setEnabled(!disablePermission);
+		findViewById.setOnClickListener(this);
 	}
 
 	final static int REQUEST_WRITE_STORAGE = 112;
@@ -208,6 +212,9 @@ public class MainActivity extends Activity implements PlayListener, View.OnClick
 				} catch (URISyntaxException e) {
 					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
 				}
+				View findViewById = findViewById(R.id.btn_open_memory_settings);
+				findViewById.setEnabled(false);
+
 				finish();
 
 				startActivity(getIntent());
