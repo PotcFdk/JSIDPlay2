@@ -33,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost;
-import android.widget.Toast;
 import de.haendel.jsidplay2.JSIDPlay2Service.JSIDPlay2Binder;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListener;
@@ -47,7 +46,7 @@ import de.haendel.jsidplay2.tab.PlayListTab;
 import de.haendel.jsidplay2.tab.SidTab;
 import de.haendel.jsidplay2.tab.SidsTab;
 
-public class MainActivity extends Activity implements PlayListener, View.OnClickListener {
+public class MainActivity extends Activity implements PlayListener {
 
 	private static final String PLAYLIST_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/jsidplay2.js2";
 
@@ -139,53 +138,17 @@ public class MainActivity extends Activity implements PlayListener, View.OnClick
 
 		tabHost.setCurrentTabByTag(GeneralTab.class.getSimpleName());
 
-		findViewById(R.id.btn_open_battery_optimization_settings).setOnClickListener(this);
-
-		View findViewById = findViewById(R.id.btn_open_memory_settings);
-		boolean disablePermission = !isOverMarshmallow() || (ContextCompat.checkSelfPermission(this,
-				Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-		findViewById.setEnabled(!disablePermission);
-		findViewById.setOnClickListener(this);
+		if (isOverMarshmallow()) {
+			boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+					Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+			if (!hasPermission) {
+				ActivityCompat.requestPermissions(MainActivity.this,
+						new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_WRITE_STORAGE);
+			}
+		}
 	}
 
 	final static int REQUEST_WRITE_STORAGE = 112;
-
-	@Override
-	public void onClick(View v) {
-		int id = v.getId();
-		switch (id) {
-		case R.id.btn_open_battery_optimization_settings:
-			if (isOverMarshmallow()) {
-				Intent batteryIntent = new Intent();
-				String packageName = getPackageName();
-				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-				// http://developer.android.com/intl/ko/training/monitoring-device-state/doze-standby.html#support_for_other_use_cases
-				if (pm.isIgnoringBatteryOptimizations(packageName))
-					batteryIntent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-				else {
-					batteryIntent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-					batteryIntent.setData(Uri.parse("package:" + packageName));
-				}
-
-				startActivity(batteryIntent);
-			} else {
-				Toast.makeText(MainActivity.this, "battery optimizations on Android6.0", Toast.LENGTH_SHORT).show();
-			}
-			break;
-		case R.id.btn_open_memory_settings:
-			if (isOverMarshmallow()) {
-				boolean hasPermission = (ContextCompat.checkSelfPermission(this,
-						Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-				if (!hasPermission) {
-					ActivityCompat.requestPermissions(MainActivity.this,
-							new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_WRITE_STORAGE);
-				}
-			} else {
-				Toast.makeText(MainActivity.this, "battery optimizations on Android6.0", Toast.LENGTH_SHORT).show();
-			}
-			break;
-		}
-	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -193,10 +156,8 @@ public class MainActivity extends Activity implements PlayListener, View.OnClick
 		switch (requestCode) {
 		case REQUEST_WRITE_STORAGE: {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Toast.makeText(this, "Permission granted.", Toast.LENGTH_SHORT).show();
 				// reload my activity with permission granted or use the features what required
 				// the permission
-
 				try {
 					jsidplay2service.load();
 				} catch (UnsupportedEncodingException e) {
@@ -212,16 +173,20 @@ public class MainActivity extends Activity implements PlayListener, View.OnClick
 				} catch (URISyntaxException e) {
 					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
 				}
-				View findViewById = findViewById(R.id.btn_open_memory_settings);
-				findViewById.setEnabled(false);
-
 				finish();
 
 				startActivity(getIntent());
-			} else {
-				Toast.makeText(this,
-						"The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission",
-						Toast.LENGTH_LONG).show();
+			}
+			if (isOverMarshmallow()) {
+				Intent batteryIntent = new Intent();
+				String packageName = getPackageName();
+				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+				// http://developer.android.com/intl/ko/training/monitoring-device-state/doze-standby.html#support_for_other_use_cases
+				if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+					batteryIntent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+					batteryIntent.setData(Uri.parse("package:" + packageName));
+				}
+				startActivity(batteryIntent);
 			}
 		}
 		}
