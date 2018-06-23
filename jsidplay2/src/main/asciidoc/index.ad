@@ -48,7 +48,7 @@ Preparation: Open Java Plugin Control Panel / Click Security High / Add site to 
 {codebase}online/webstart/{name}.jnlp +
 Then, click here to link:{codebase}online/webstart/{name}.html[Launch] JSIDPlay2
 
-== Android Client Version Demo (my LapTop is the Server)
+== Android Client Version Demo (using my own Server running JSIDPlay2)
 
 Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +
 *Please note: Streaming music using your mobile can cause additional costs!*
