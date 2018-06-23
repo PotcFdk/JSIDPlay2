@@ -32,8 +32,8 @@
 		<remoteDir></remoteDir>
 		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
-		<hvsc.zip />
 		<zip7.home />
+		<hvsc.7z />
 		<cgsc.7z />
 		<hvmec.bz2 />
 		<upx.home />
@@ -622,7 +622,7 @@
 									<property name="deploy_dir" value="${project.build.directory}/deploy" />
 									<property name="jsiddevice" value="jsiddevice-${project.version}" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
-									<property name="hvsc.zip" value="${hvsc.zip}" />
+									<property name="hvsc.7z" value="${hvsc.7z}" />
 									<property name="zip7.home" value="${zip7.home}" />
 									<property name="cgsc.7z" value="${cgsc.7z}" />
 									<property name="hvmec.bz2" value="${hvmec.bz2}" />

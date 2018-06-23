@@ -18,7 +18,7 @@ e.g. SSH copy
 
 Optional:
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
--Dhvsc.zip=<pathToHVSC.zip>
+-Dhvsc.7z=<pathToHVSC.7z>
 -Dzip7.home=<pathToPacker7zip>
 -Dcgsc.7z=<pathToCGSZ.7z>
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>

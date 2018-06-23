@@ -233,30 +233,32 @@
 	<!-- ================================= 
           target: hvsc_import
           Description:
-          Import HVSC ZIP file (.zip) containing another ZIP file
-          into a single high compressed ZIP file.
+          Import HVSC ZIP file (.7z)
+          into a ZIP file.
          ================================= -->
-	<target name="check.hvsc.zip">
-		<condition property="hvsc.zip.isset" value="true">
+	<target name="check.hvsc.7z">
+		<condition property="hvsc.7z.isset" value="true">
 			<and>
-				<isset property="hvsc.zip" />
+				<isset property="zip7.home" />
 				<not>
-					<equals arg1="${hvsc.zip}" arg2="" />
+					<equals arg1="${zip7.home}" arg2="" />
+				</not>
+				<isset property="hvsc.7z" />
+				<not>
+					<equals arg1="${hvsc.7z}" arg2="" />
 				</not>
 			</and>
 		</condition>
 	</target>
-	<target name="hvsc_import" if="hvsc.zip.isset" depends="check.hvsc.zip">
+	<target name="hvsc_import" if="hvsc.7z.isset" depends="check.hvsc.7z">
 		<delete dir="${hvsc_dir}" />
 		<mkdir dir="${hvsc_dir}" />
-		<!-- Uncompress HVSC completely -->
-		<unzip dest="${hvsc_dir}" src="${hvsc.zip}" />
-		<unzip dest="${hvsc_dir}" src="${hvsc_dir}/${hvsc_zip}" />
-		<delete>
-			<fileset dir="${hvsc_dir}">
-				<include name="*.zip" />
-			</fileset>
-		</delete>
+		<!-- Uncompress HVSC -->
+		<exec executable="${zip7.home}/7z" failonerror="true">
+			<arg value="x" />
+			<arg value="-o${hvsc_dir}" />
+			<arg value="${hvsc.7z}" />
+		</exec>
 		<!-- Compress HVSC -->
 		<zip level="9" destfile="${hvsc_dir}/${hvsc_zip}" compress="true" update="false">
 			<fileset dir="${hvsc_dir}/${hvsc_subfolder}">

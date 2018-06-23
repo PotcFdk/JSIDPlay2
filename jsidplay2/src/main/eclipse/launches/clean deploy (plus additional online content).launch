@@ -10,7 +10,7 @@
 <listEntry value="serverUrl=${serverUrl}"/>
 <listEntry value="remoteDir=${remoteDir}"/>
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>
-<listEntry value="hvsc.zip=${hvsc.zip}"/>
+<listEntry value="hvsc.7z=${hvsc.7z}"/>
 <listEntry value="zip7.home=${zip7.home}"/>
 <listEntry value="cgsc.7z=${cgsc.7z}"/>
 <listEntry value="hvmec.bz2=${hvmec.bz2}"/>

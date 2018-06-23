@@ -107,7 +107,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			if (isSplittedInChunks) {
 				downloadedFile = downloadAndMergeChunks();
 			} else {
-				downloadedFile = download(url, true);
+				downloadedFile = download(url, true, true);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -132,7 +132,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private boolean checkCrcOfAvailableFile(File file) throws IOException {
-		File crcFile = download(getCrcUrl(), false);
+		File crcFile = download(getCrcUrl(), false, false);
 		return checkCrc(crcFile, file);
 	}
 
@@ -153,7 +153,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		List<File> chunks = new ArrayList<File>();
 		int part = 1;
 		do {
-			File chunk = download(getURL(part), true);
+			File chunk = download(getURL(part), true, true);
 			chunk.deleteOnExit();
 			chunks.add(chunk);
 		} while (hasNextPart(++part));
@@ -175,7 +175,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		}
 	}
 
-	private File download(URL currentURL, boolean retry) throws IOException {
+	private File download(URL currentURL, boolean retry, boolean useAlreadyAvailableFile) throws IOException {
 		String decoded = URLDecoder.decode(currentURL.toString(), UTF_8);
 		int tries = 0;
 		do {
@@ -188,7 +188,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				currentURL = connection.getURL();
 				long contentLength = connection.getContentLengthLong();
 				File file = createLocalFile(currentURL);
-				if (isAlreadyAvailableFile(contentLength, file)) {
+				if (useAlreadyAvailableFile && isAlreadyAvailableFile(contentLength, file)) {
 					// only un-zipped entries will be remembered here (because we clean-up zips)
 					return file;
 				}
