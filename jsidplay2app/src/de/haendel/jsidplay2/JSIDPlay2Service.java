@@ -68,7 +68,6 @@ import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener {
 
-	private static final String JSIDPLAY2_FOLDER = "Download";
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 
 	public interface PlayListener {
@@ -352,12 +351,11 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		return playList.size() > 0 ? playList.get(playList.size() - 1) : null;
 	}
 
-	private void load() throws UnsupportedEncodingException, IOException,
+	public void load() throws UnsupportedEncodingException, IOException,
 			IllegalArgumentException, SecurityException, IllegalStateException,
 			URISyntaxException {
-		File sdRootDir = Environment.getExternalStorageDirectory();
-		File playlistFile = new File(new File(sdRootDir, JSIDPLAY2_FOLDER),
-				JSIDPLAY2_JS2);
+		File sdRootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		File playlistFile = new File(sdRootDir, JSIDPLAY2_JS2);
 		if (!playlistFile.exists()) {
 			playlistFile.createNewFile();
 		}
@@ -374,9 +372,8 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	}
 
 	public void save() throws UnsupportedEncodingException, IOException {
-		File sdRootDir = Environment.getExternalStorageDirectory();
-		File playlistFile = new File(new File(sdRootDir, JSIDPLAY2_FOLDER),
-				JSIDPLAY2_JS2);
+		File sdRootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		File playlistFile = new File(sdRootDir, JSIDPLAY2_JS2);
 		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(playlistFile), "ISO-8859-1"));
 		try {

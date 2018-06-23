@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -16,14 +18,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost;
+import android.widget.Toast;
 import de.haendel.jsidplay2.JSIDPlay2Service.JSIDPlay2Binder;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListener;
@@ -37,36 +47,36 @@ import de.haendel.jsidplay2.tab.PlayListTab;
 import de.haendel.jsidplay2.tab.SidTab;
 import de.haendel.jsidplay2.tab.SidsTab;
 
-public class MainActivity extends Activity implements PlayListener {
+public class MainActivity extends Activity implements PlayListener, View.OnClickListener {
 
 	private static final String PLAYLIST_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/jsidplay2.js2";
 
-	private class PlayListDownload extends AsyncTask<Void,Void,List<String>> {
-	    private String requestUrl;
+	private class PlayListDownload extends AsyncTask<Void, Void, List<String>> {
+		private String requestUrl;
 		private PlayListTab playListTab;
 
-	    private PlayListDownload(String requestUrl, PlayListTab playListTab) {
-	        this.requestUrl = requestUrl;
-	        this.playListTab = playListTab;
-	    }
+		private PlayListDownload(String requestUrl, PlayListTab playListTab) {
+			this.requestUrl = requestUrl;
+			this.playListTab = playListTab;
+		}
 
-	    @Override
-	    protected List<String> doInBackground(Void... objects) {
-	    	List<String> downloadedFavorites = new ArrayList<String>();
-	    	try {
-	    	    BufferedReader in = new BufferedReader(new InputStreamReader(new URL(requestUrl).openStream()));
-	    	    String str;
-	    	    while ((str = in.readLine()) != null) {
-	    	    	downloadedFavorites.add("/C64Music" + str);
-	    	    }
-	    	    in.close();
-	    	} catch (MalformedURLException e) {
-	    	} catch (IOException e) {
-	    	}
-	        return downloadedFavorites;
-	    }
+		@Override
+		protected List<String> doInBackground(Void... objects) {
+			List<String> downloadedFavorites = new ArrayList<String>();
+			try {
+				BufferedReader in = new BufferedReader(new InputStreamReader(new URL(requestUrl).openStream()));
+				String str;
+				while ((str = in.readLine()) != null) {
+					downloadedFavorites.add("/C64Music" + str);
+				}
+				in.close();
+			} catch (MalformedURLException e) {
+			} catch (IOException e) {
+			}
+			return downloadedFavorites;
+		}
 
-	    @Override
+		@Override
 		protected void onPostExecute(List<String> downloadedFavorites) {
 			for (String favorite : downloadedFavorites) {
 				try {
@@ -82,7 +92,7 @@ public class MainActivity extends Activity implements PlayListener {
 			}
 		}
 	}
-	
+
 	private String appName;
 	private Configuration configuration;
 
@@ -128,6 +138,86 @@ public class MainActivity extends Activity implements PlayListener {
 		new ConfigurationTab(this, appName, configuration, tabHost);
 
 		tabHost.setCurrentTabByTag(GeneralTab.class.getSimpleName());
+
+		findViewById(R.id.btn_open_battery_optimization_settings).setOnClickListener(this);
+		findViewById(R.id.btn_open_memory_settings).setOnClickListener(this);
+
+	}
+
+	final static int REQUEST_WRITE_STORAGE = 112;
+
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		switch (id) {
+		case R.id.btn_open_battery_optimization_settings:
+			if (isOverMarshmallow()) {
+				Intent batteryIntent = new Intent();
+				String packageName = getPackageName();
+				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+				// http://developer.android.com/intl/ko/training/monitoring-device-state/doze-standby.html#support_for_other_use_cases
+				if (pm.isIgnoringBatteryOptimizations(packageName))
+					batteryIntent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+				else {
+					batteryIntent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+					batteryIntent.setData(Uri.parse("package:" + packageName));
+				}
+
+				startActivity(batteryIntent);
+			} else {
+				Toast.makeText(MainActivity.this, "battery optimizations on Android6.0", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.btn_open_memory_settings:
+			if (isOverMarshmallow()) {
+				boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+						Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+				if (!hasPermission) {
+					ActivityCompat.requestPermissions(MainActivity.this,
+							new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_WRITE_STORAGE);
+				}
+			} else {
+				Toast.makeText(MainActivity.this, "battery optimizations on Android6.0", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		switch (requestCode) {
+		case REQUEST_WRITE_STORAGE: {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(this, "Permission granted.", Toast.LENGTH_SHORT).show();
+				// reload my activity with permission granted or use the features what required
+				// the permission
+
+				try {
+					jsidplay2service.load();
+				} catch (UnsupportedEncodingException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				} catch (IllegalArgumentException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				} catch (SecurityException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				} catch (IllegalStateException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				} catch (IOException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				} catch (URISyntaxException e) {
+					Log.e(JSIDPlay2Service.class.getSimpleName(), e.getMessage(), e);
+				}
+				finish();
+
+				startActivity(getIntent());
+			} else {
+				Toast.makeText(this,
+						"The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission",
+						Toast.LENGTH_LONG).show();
+			}
+		}
+		}
 	}
 
 	@Override
@@ -153,13 +243,16 @@ public class MainActivity extends Activity implements PlayListener {
 		return super.onOptionsItemSelected(item);
 	}
 
+	public static boolean isOverMarshmallow() {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+	}
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 		if (playIntent == null) {
 			playIntent = new Intent(this, JSIDPlay2Service.class);
-			bindService(playIntent, jsidplay2Connection,
-					Context.BIND_AUTO_CREATE);
+			bindService(playIntent, jsidplay2Connection, Context.BIND_AUTO_CREATE);
 			startService(playIntent);
 		}
 	}
@@ -219,7 +312,7 @@ public class MainActivity extends Activity implements PlayListener {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
+
 	public void setRandomized(boolean randomized) {
 		this.randomized = randomized;
 		if (jsidplay2service != null) {
@@ -228,8 +321,7 @@ public class MainActivity extends Activity implements PlayListener {
 	}
 
 	public void asSid(View view) {
-		new DownloadRequest(appName, configuration, RequestType.DOWNLOAD,
-				sidTab.getCurrentTune()) {
+		new DownloadRequest(appName, configuration, RequestType.DOWNLOAD, sidTab.getCurrentTune()) {
 			protected void onPostExecute(DataAndType music) {
 				if (music == null) {
 					return;

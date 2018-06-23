@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="open_memory_settings">Allow SD-Card Access</string>
+    <string name="open_battery_optimization_settings">Disable Akku Opt.</string>
     <string name="app_name">JSIDPlay2</string>
     <string name="splash">splash screen</string>
     <string name="portNum">8080</string>
