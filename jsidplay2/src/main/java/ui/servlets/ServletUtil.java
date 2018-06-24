@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
@@ -80,7 +81,8 @@ public class ServletUtil {
 				public boolean accept(File pathname) {
 					if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
 						return false;
-					return pathname.isDirectory() || filter == null || pathname.getName().matches(filter);
+					return pathname.isDirectory() || filter == null
+							|| pathname.getName().toLowerCase(Locale.US).matches(filter);
 				}
 			});
 			if (listFiles != null) {
