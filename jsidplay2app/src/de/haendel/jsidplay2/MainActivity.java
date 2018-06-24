@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,8 +38,6 @@ import de.haendel.jsidplay2.JSIDPlay2Service.JSIDPlay2Binder;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListener;
 import de.haendel.jsidplay2.config.Configuration;
-import de.haendel.jsidplay2.request.DataAndType;
-import de.haendel.jsidplay2.request.DownloadRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 import de.haendel.jsidplay2.tab.ConfigurationTab;
 import de.haendel.jsidplay2.tab.GeneralTab;
@@ -119,6 +118,26 @@ public class MainActivity extends Activity implements PlayListener {
 			@Override
 			protected void showSid(String cannonicalPath) {
 				sidTab.requestSidDetails(cannonicalPath);
+			}
+
+			@Override
+			protected void showJpg(String cannonicalPath) {
+				try {
+					String authorization = configuration.getUsername() + ":" + configuration.getPassword();
+					URI myUri = new URI("http", authorization, configuration.getHostname(),
+							Integer.valueOf(configuration.getPort()), RequestType.DOWNLOAD.getUrl() + cannonicalPath,
+							null, null);
+
+					Intent intent = new Intent();
+					intent.setAction(android.content.Intent.ACTION_VIEW);
+					intent.setDataAndType(Uri.parse(myUri.toString()), "image/*");
+
+					startActivity(intent);
+				} catch (NumberFormatException e) {
+					Log.e(appName, e.getMessage(), e);
+				} catch (URISyntaxException e) {
+					Log.e(appName, e.getMessage(), e);
+				}
 			}
 		};
 		sidTab = new SidTab(this, appName, configuration, tabHost);
@@ -293,17 +312,22 @@ public class MainActivity extends Activity implements PlayListener {
 	}
 
 	public void asSid(View view) {
-		new DownloadRequest(appName, configuration, RequestType.DOWNLOAD, sidTab.getCurrentTune()) {
-			protected void onPostExecute(DataAndType music) {
-				if (music == null) {
-					return;
-				}
-				Intent intent = new Intent();
-				intent.setAction(android.content.Intent.ACTION_VIEW);
-				intent.setDataAndType(music.getUri(), music.getType());
-				startActivity(intent);
-			}
-		}.execute();
+		try {
+			String authorization = configuration.getUsername() + ":" + configuration.getPassword();
+			URI myUri = new URI("http", authorization, configuration.getHostname(),
+					Integer.valueOf(configuration.getPort()), RequestType.DOWNLOAD.getUrl() + sidTab.getCurrentTune(),
+					null, null);
+
+			Intent intent = new Intent();
+			intent.setAction(android.content.Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.parse(myUri.toString()), "audio/mpeg");
+
+			startActivity(intent);
+		} catch (NumberFormatException e) {
+			Log.e(appName, e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			Log.e(appName, e.getMessage(), e);
+		}
 	}
 
 	public void addToPlaylist(View view) {

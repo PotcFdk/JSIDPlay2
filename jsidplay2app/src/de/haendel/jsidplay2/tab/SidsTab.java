@@ -18,7 +18,7 @@ import de.haendel.jsidplay2.request.DirectoryRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
 public abstract class SidsTab extends TabBase {
-	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str|mp3)$";
+	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str|mp3|jpg)$";
 
 	private ListView directory;
 
@@ -78,6 +78,8 @@ public abstract class SidsTab extends TabBase {
 								viewDirectory(childs, filter);
 							}
 						}.execute();
+					} else if (dirEntry.endsWith(".jpg")) {
+						showJpg(canonicalPath);
 					} else {
 						showSid(canonicalPath);
 						tabHost.setCurrentTabByTag(SidTab.class.getSimpleName());
@@ -98,6 +100,7 @@ public abstract class SidsTab extends TabBase {
 		}
 	}
 
+	protected abstract void showJpg(String canonicalPath);
 	protected abstract void showSid(String canonicalPath);
 
 }
