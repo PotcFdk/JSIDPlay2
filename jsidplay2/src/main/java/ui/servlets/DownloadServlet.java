@@ -3,6 +3,7 @@ package ui.servlets;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
 import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
+import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JPG;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class DownloadServlet extends HttpServlet {
 				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
 		response.setContentType(filePath.endsWith(".mp3") ? MIME_TYPE_MPEG
-				: filePath.endsWith(".sid") ? MIME_TYPE_SID : MIME_TYPE_OCTET_STREAM);
+				: filePath.endsWith(".sid") ? MIME_TYPE_SID : (filePath.endsWith(".jpg") ? MIME_TYPE_JPG : MIME_TYPE_OCTET_STREAM));
 
 		try {
 			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), response.getOutputStream());

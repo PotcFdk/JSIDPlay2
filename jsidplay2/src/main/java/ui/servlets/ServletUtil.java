@@ -16,6 +16,7 @@ import ui.entities.config.Configuration;
 public class ServletUtil {
 
 	private static final String MEDIA_NAS1_MUSIK_UND_HÖRSPIEL = "/media/nas1/Musik und Hörspiel";
+	private static final String MEDIA_NAS1_IMAGES = "/media/nas1/Chronik";
 
 	private static class FileTypeComparator implements Comparator<File> {
 
@@ -37,6 +38,7 @@ public class ServletUtil {
 	private static final String C64_MUSIC = "/C64Music";
 	private static final String CGSC = "/CGSC";
 	private static final String MP3 = "/MP3";
+	private static final String IMAGES = "/Images";
 	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = new FileTypeComparator();
 
 	private Configuration configuration;
@@ -60,6 +62,10 @@ public class ServletUtil {
 			String root = MEDIA_NAS1_MUSIK_UND_HÖRSPIEL;
 			File rootFile = new File(root);
 			return getCollectionFiles(rootFile, root, path, filter, MP3, principal);
+		} else if (principal.getName().equals("kenchis") && path.startsWith(IMAGES)) {
+			String root = MEDIA_NAS1_IMAGES;
+			File rootFile = new File(root);
+			return getCollectionFiles(rootFile, root, path, filter, IMAGES, principal);
 		}
 		return null;
 	}
@@ -98,7 +104,7 @@ public class ServletUtil {
 
 	private List<String> getRoot(Principal principal) {
 		if (principal.getName().equals("kenchis")) {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/");
+			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/", IMAGES + "/");
 		} else {
 			return Arrays.asList(C64_MUSIC + "/", CGSC + "/");
 		}
@@ -113,6 +119,8 @@ public class ServletUtil {
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
 		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
 			return PathUtils.getFile(MEDIA_NAS1_MUSIK_UND_HÖRSPIEL + path.substring(MP3.length()), null, null);
+		} else if (principal.getName().equals("kenchis") && path.startsWith(IMAGES)) {
+			return PathUtils.getFile(MEDIA_NAS1_IMAGES + path.substring(IMAGES.length()), null, null);
 		}
 		return null;
 	}
