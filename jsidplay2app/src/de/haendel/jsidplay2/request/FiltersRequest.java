@@ -1,9 +1,8 @@
 package de.haendel.jsidplay2.request;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.List;
-
-import org.apache.http.HttpEntity;
 
 import de.haendel.jsidplay2.config.IConfiguration;
 
@@ -14,8 +13,7 @@ public class FiltersRequest extends JSIDPlay2RESTRequest<List<String>> {
 	}
 
 	@Override
-	protected List<String> getResult(HttpEntity httpEntity)
-			throws IllegalStateException, IOException {
-		return receiveList(httpEntity);
+	protected List<String> getResult(URLConnection connection) throws IllegalStateException, IOException {
+		return receiveList(connection);
 	}
 }

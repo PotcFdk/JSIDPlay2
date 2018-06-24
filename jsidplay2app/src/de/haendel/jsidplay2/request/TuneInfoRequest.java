@@ -1,33 +1,27 @@
 package de.haendel.jsidplay2.request;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-
-import de.haendel.jsidplay2.config.IConfiguration;
 import android.util.Pair;
+import de.haendel.jsidplay2.config.IConfiguration;
 
-public abstract class TuneInfoRequest extends
-		JSIDPlay2RESTRequest<List<Pair<String, String>>> implements
-		JSIDPlay2RESTRequest.IKeyLocalizer {
-	public TuneInfoRequest(String appName, IConfiguration configuration, RequestType type,
-			String url) {
+public abstract class TuneInfoRequest extends JSIDPlay2RESTRequest<List<Pair<String, String>>>
+		implements JSIDPlay2RESTRequest.IKeyLocalizer {
+	public TuneInfoRequest(String appName, IConfiguration configuration, RequestType type, String url) {
 		super(appName, configuration, type, url, null);
 	}
 
 	@Override
-	protected List<Pair<String, String>> getResult(HttpEntity httpEntity)
-			throws IllegalStateException, IOException {
-		List<Pair<String, String>> rows = receiveListOfKeyValues(httpEntity,
-				this);
+	protected List<Pair<String, String>> getResult(URLConnection connection) throws IllegalStateException, IOException {
+		List<Pair<String, String>> rows = receiveListOfKeyValues(connection, this);
 
 		Comparator<? super Pair<String, String>> rowC = new Comparator<Pair<String, String>>() {
 			@Override
-			public int compare(Pair<String, String> lhs,
-					Pair<String, String> rhs) {
+			public int compare(Pair<String, String> lhs, Pair<String, String> rhs) {
 				return lhs.first.compareTo(rhs.first);
 			}
 		};

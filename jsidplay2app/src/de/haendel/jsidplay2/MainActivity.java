@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,6 +34,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TabHost;
 import de.haendel.jsidplay2.JSIDPlay2Service.JSIDPlay2Binder;
 import de.haendel.jsidplay2.JSIDPlay2Service.PlayListEntry;
@@ -48,6 +50,7 @@ import de.haendel.jsidplay2.tab.SidsTab;
 public class MainActivity extends Activity implements PlayListener {
 
 	private static final String PLAYLIST_DOWNLOAD_URL = "http://haendel.ddns.net/~ken/jsidplay2.js2";
+	final static int REQUEST_WRITE_STORAGE = 112;
 
 	private class PlayListDownload extends AsyncTask<Void, Void, List<String>> {
 		private String requestUrl;
@@ -121,7 +124,7 @@ public class MainActivity extends Activity implements PlayListener {
 			}
 
 			@Override
-			protected void showJpg(String cannonicalPath) {
+			protected void showMedia(String cannonicalPath) {
 				try {
 					String authorization = configuration.getUsername() + ":" + configuration.getPassword();
 					URI myUri = new URI("http", authorization, configuration.getHostname(),
@@ -130,7 +133,11 @@ public class MainActivity extends Activity implements PlayListener {
 
 					Intent intent = new Intent();
 					intent.setAction(android.content.Intent.ACTION_VIEW);
-					intent.setDataAndType(Uri.parse(myUri.toString()), "image/*");
+
+					MimeTypeMap myMime = MimeTypeMap.getSingleton();
+					String mimeType = myMime.getMimeTypeFromExtension(
+							cannonicalPath.substring(cannonicalPath.lastIndexOf(".") + 1).toLowerCase(Locale.US));
+					intent.setDataAndType(Uri.parse(myUri.toString()), mimeType);
 
 					startActivity(intent);
 				} catch (NumberFormatException e) {
@@ -166,8 +173,6 @@ public class MainActivity extends Activity implements PlayListener {
 			}
 		}
 	}
-
-	final static int REQUEST_WRITE_STORAGE = 112;
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

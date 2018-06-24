@@ -65,8 +65,7 @@ import android.widget.Toast;
 import de.haendel.jsidplay2.config.IConfiguration;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
-public class JSIDPlay2Service extends Service implements OnPreparedListener,
-		OnErrorListener, OnCompletionListener {
+public class JSIDPlay2Service extends Service implements OnPreparedListener, OnErrorListener, OnCompletionListener {
 
 	private static final String JSIDPLAY2_JS2 = "jsidplay2.js2";
 
@@ -161,12 +160,10 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		Log.e(getPackageName(), String.format("Error(%s%s)", what, extra));
 		switch (what) {
 		case MEDIA_ERROR_SERVER_DIED:
-			Toast.makeText(this, "MEDIA_ERROR_SERVER_DIED", Toast.LENGTH_SHORT)
-					.show();
+			Toast.makeText(this, "MEDIA_ERROR_SERVER_DIED", Toast.LENGTH_SHORT).show();
 			break;
 		case MEDIA_ERROR_UNKNOWN:
-			Toast.makeText(this, "MEDIA_ERROR_UNKNOWN", Toast.LENGTH_SHORT)
-					.show();
+			Toast.makeText(this, "MEDIA_ERROR_UNKNOWN", Toast.LENGTH_SHORT).show();
 			break;
 		default:
 			break;
@@ -195,8 +192,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		player.reset();
 
 		try {
-			byte[] toEncrypt = (configuration.getUsername() + ":" + configuration
-					.getPassword()).getBytes();
+			byte[] toEncrypt = (configuration.getUsername() + ":" + configuration.getPassword()).getBytes();
 			String encoded = Base64.encodeToString(toEncrypt, Base64.DEFAULT);
 			HashMap<String, String> headers = new HashMap<String, String>();
 			headers.put("Authorization", "Basic " + encoded);
@@ -204,25 +200,22 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 			Uri uri = getURI(configuration, currentEntry.getResource());
 			player.setDataSource(getApplicationContext(), uri, headers);
 		} catch (Exception e) {
-			Log.e(JSIDPlay2Service.class.getSimpleName(),
-					"Error setting data source!", e);
+			Log.e(JSIDPlay2Service.class.getSimpleName(), "Error setting data source!", e);
 		}
 		player.prepareAsync();
 	}
 
 	public void playNextSong() {
-		int currentSong = currentEntry == null ? -1 : playList
-				.indexOf(currentEntry);
+		int currentSong = currentEntry == null ? -1 : playList.indexOf(currentEntry);
 		if (randomized) {
 			currentSong = rnd.nextInt(playList.size());
 		} else {
-			currentSong = currentSong + 1 < playList.size() ? currentSong + 1
-					: -1;
+			currentSong = currentSong + 1 < playList.size() ? currentSong + 1 : -1;
 		}
 		if (currentSong == -1) {
 			return;
 		}
-		if (currentEntry!=null&&currentEntry.getResource().endsWith("mp3")) {
+		if (currentEntry != null && currentEntry.getResource().endsWith("mp3")) {
 			return;
 		}
 		playSong(playList.get(currentSong));
@@ -233,8 +226,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		stopMediaPlayer(player);
 	}
 
-	public PlayListEntry add(String resource)
-			throws UnsupportedEncodingException, IOException {
+	public PlayListEntry add(String resource) throws UnsupportedEncodingException, IOException {
 		PlayListEntry entry = new PlayListEntry(resource);
 		playList.add(entry);
 		return entry;
@@ -272,8 +264,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		mp.release();
 	}
 
-	private Uri getURI(IConfiguration configuration, String resource)
-			throws URISyntaxException {
+	private Uri getURI(IConfiguration configuration, String resource) throws URISyntaxException {
 		ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
@@ -283,47 +274,29 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		} else {
 			query.append(PAR_BUFFER_SIZE + "=" + configuration.getBufferSize() + "&");
 		}
-		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation()
-				+ "&");
-		query.append(PAR_ENABLE_DATABASE + "="
-				+ configuration.isEnableDatabase() + "&");
-		query.append(PAR_DEFAULT_PLAY_LENGTH + "="
-				+ getNumber(configuration.getDefaultLength()) + "&");
-		query.append(PAR_DEFAULT_MODEL + "=" + configuration.getDefaultModel()
-				+ "&");
+		query.append(PAR_EMULATION + "=" + configuration.getDefaultEmulation() + "&");
+		query.append(PAR_ENABLE_DATABASE + "=" + configuration.isEnableDatabase() + "&");
+		query.append(PAR_DEFAULT_PLAY_LENGTH + "=" + getNumber(configuration.getDefaultLength()) + "&");
+		query.append(PAR_DEFAULT_MODEL + "=" + configuration.getDefaultModel() + "&");
 		query.append(PAR_SINGLE_SONG + "=" + configuration.isSingleSong() + "&");
 		query.append(PAR_LOOP + "=" + configuration.isLoop() + "&");
 
-		query.append(PAR_FILTER_6581 + "=" + configuration.getFilter6581()
-				+ "&");
-		query.append(PAR_FILTER_8580 + "=" + configuration.getFilter8580()
-				+ "&");
-		query.append(PAR_RESIDFP_FILTER_6581 + "="
-				+ configuration.getReSIDfpFilter6581() + "&");
-		query.append(PAR_RESIDFP_FILTER_8580 + "="
-				+ configuration.getReSIDfpFilter8580() + "&");
+		query.append(PAR_FILTER_6581 + "=" + configuration.getFilter6581() + "&");
+		query.append(PAR_FILTER_8580 + "=" + configuration.getFilter8580() + "&");
+		query.append(PAR_RESIDFP_FILTER_6581 + "=" + configuration.getReSIDfpFilter6581() + "&");
+		query.append(PAR_RESIDFP_FILTER_8580 + "=" + configuration.getReSIDfpFilter8580() + "&");
 
-		query.append(PAR_STEREO_FILTER_6581 + "="
-				+ configuration.getStereoFilter6581() + "&");
-		query.append(PAR_STEREO_FILTER_8580 + "="
-				+ configuration.getStereoFilter8580() + "&");
-		query.append(PAR_RESIDFP_STEREO_FILTER_6581 + "="
-				+ configuration.getReSIDfpStereoFilter6581() + "&");
-		query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "="
-				+ configuration.getReSIDfpStereoFilter8580() + "&");
+		query.append(PAR_STEREO_FILTER_6581 + "=" + configuration.getStereoFilter6581() + "&");
+		query.append(PAR_STEREO_FILTER_8580 + "=" + configuration.getStereoFilter8580() + "&");
+		query.append(PAR_RESIDFP_STEREO_FILTER_6581 + "=" + configuration.getReSIDfpStereoFilter6581() + "&");
+		query.append(PAR_RESIDFP_STEREO_FILTER_8580 + "=" + configuration.getReSIDfpStereoFilter8580() + "&");
 
-		query.append(PAR_THIRD_FILTER_6581 + "="
-				+ configuration.getThirdFilter6581() + "&");
-		query.append(PAR_THIRD_FILTER_8580 + "="
-				+ configuration.getThirdFilter8580() + "&");
-		query.append(PAR_RESIDFP_THIRD_FILTER_6581 + "="
-				+ configuration.getReSIDfpThirdFilter6581() + "&");
-		query.append(PAR_RESIDFP_THIRD_FILTER_8580 + "="
-				+ configuration.getReSIDfpThirdFilter8580() + "&");
-		query.append(PAR_DIGI_BOOSTED_8580 + "="
-				+ configuration.isDigiBoosted8580() + "&");
-		query.append(PAR_SAMPLING_METHOD + "="
-				+ configuration.getSamplingMethod() + "&");
+		query.append(PAR_THIRD_FILTER_6581 + "=" + configuration.getThirdFilter6581() + "&");
+		query.append(PAR_THIRD_FILTER_8580 + "=" + configuration.getThirdFilter8580() + "&");
+		query.append(PAR_RESIDFP_THIRD_FILTER_6581 + "=" + configuration.getReSIDfpThirdFilter6581() + "&");
+		query.append(PAR_RESIDFP_THIRD_FILTER_8580 + "=" + configuration.getReSIDfpThirdFilter8580() + "&");
+		query.append(PAR_DIGI_BOOSTED_8580 + "=" + configuration.isDigiBoosted8580() + "&");
+		query.append(PAR_SAMPLING_METHOD + "=" + configuration.getSamplingMethod() + "&");
 		query.append(PAR_FREQUENCY + "=" + configuration.getFrequency() + "&");
 		if (mWifi.isConnected()) {
 			query.append(PAR_IS_VBR + "=true&");
@@ -333,10 +306,8 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		query.append(PAR_CBR + "=" + configuration.getCbr() + "&");
 		query.append(PAR_VBR + "=" + configuration.getVbr());
 
-		return Uri.parse(new URI("http", null, configuration.getHostname(),
-				getNumber(configuration.getPort()), RequestType.CONVERT
-						.getUrl() + resource, query.toString(), null)
-				.toString());
+		return Uri.parse(new URI("http", null, configuration.getHostname(), getNumber(configuration.getPort()),
+				RequestType.CONVERT.getUrl() + resource, query.toString(), null).toString());
 	}
 
 	private int getNumber(String txt) {
@@ -351,16 +322,14 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 		return playList.size() > 0 ? playList.get(playList.size() - 1) : null;
 	}
 
-	public void load() throws UnsupportedEncodingException, IOException,
-			IllegalArgumentException, SecurityException, IllegalStateException,
-			URISyntaxException {
+	public void load() throws UnsupportedEncodingException, IOException, IllegalArgumentException, SecurityException,
+			IllegalStateException, URISyntaxException {
 		File sdRootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 		File playlistFile = new File(sdRootDir, JSIDPLAY2_JS2);
 		if (!playlistFile.exists()) {
 			playlistFile.createNewFile();
 		}
-		BufferedReader r = new BufferedReader(new InputStreamReader(
-				new FileInputStream(playlistFile), "ISO-8859-1"));
+		BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile), "ISO-8859-1"));
 		try {
 			String line;
 			while ((line = r.readLine()) != null) {
@@ -374,8 +343,7 @@ public class JSIDPlay2Service extends Service implements OnPreparedListener,
 	public void save() throws UnsupportedEncodingException, IOException {
 		File sdRootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 		File playlistFile = new File(sdRootDir, JSIDPLAY2_JS2);
-		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(playlistFile), "ISO-8859-1"));
+		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(playlistFile), "ISO-8859-1"));
 		try {
 			for (PlayListEntry playListEntry : playList) {
 				w.write(playListEntry.getResource());

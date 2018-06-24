@@ -18,7 +18,6 @@ import de.haendel.jsidplay2.request.DirectoryRequest;
 import de.haendel.jsidplay2.request.JSIDPlay2RESTRequest.RequestType;
 
 public abstract class SidsTab extends TabBase {
-	private static final String TUNE_FILTER = ".*\\.(sid|dat|mus|str|mp3|jpg)$";
 
 	private ListView directory;
 
@@ -32,28 +31,28 @@ public abstract class SidsTab extends TabBase {
 		directory = (ListView) activity.findViewById(R.id.directory);
 
 		try {
-			requestDirectory(new File("/"), TUNE_FILTER);
+			requestDirectory(new File("/"));
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
 	}
 
-	public void requestDirectory(final File dir, final String filter)
+	public void requestDirectory(final File dir)
 			throws IOException {
 		new DirectoryRequest(appName, configuration, RequestType.DIRECTORY,
-				dir.getCanonicalPath(), filter) {
+				dir.getCanonicalPath()) {
 
 			@Override
 			protected void onPostExecute(List<String> childs) {
 				if (childs == null) {
 					return;
 				}
-				viewDirectory(childs, filter);
+				viewDirectory(childs);
 			}
 		}.execute();
 	}
 
-	private void viewDirectory(List<String> childs, final String filter) {
+	private void viewDirectory(List<String> childs) {
 		directory.setAdapter(new ArrayAdapter<String>(activity,
 				android.R.layout.simple_list_item_1, childs));
 		directory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -68,21 +67,21 @@ public abstract class SidsTab extends TabBase {
 					String canonicalPath = file.getCanonicalPath();
 					if (dirEntry.endsWith("/")) {
 						new DirectoryRequest(appName, configuration,
-								RequestType.DIRECTORY, canonicalPath, filter) {
+								RequestType.DIRECTORY, canonicalPath) {
 
 							@Override
 							protected void onPostExecute(List<String> childs) {
 								if (childs == null) {
 									return;
 								}
-								viewDirectory(childs, filter);
+								viewDirectory(childs);
 							}
 						}.execute();
-					} else if (dirEntry.endsWith(".jpg")) {
-						showJpg(canonicalPath);
-					} else {
+					} else if (dirEntry.endsWith(".sid")) {
 						showSid(canonicalPath);
 						tabHost.setCurrentTabByTag(SidTab.class.getSimpleName());
+					} else {
+						showMedia(canonicalPath);
 					}
 				} catch (IOException e) {
 					Log.e(appName, e.getMessage(), e);
@@ -92,15 +91,15 @@ public abstract class SidsTab extends TabBase {
 		});
 	}
 
-	public void viewDirectory(final File dir, final String filter) {
+	public void viewDirectory(final File dir) {
 		try {
-			requestDirectory(dir, filter);
+			requestDirectory(dir);
 		} catch (IOException e) {
 			Log.e(appName, e.getMessage(), e);
 		}
 	}
 
-	protected abstract void showJpg(String canonicalPath);
+	protected abstract void showMedia(String canonicalPath);
 	protected abstract void showSid(String canonicalPath);
 
 }

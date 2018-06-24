@@ -3,22 +3,16 @@ package de.haendel.jsidplay2.request;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -54,48 +48,48 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends AsyncTask<String,
 	private static final String REST_INFO = ROOT_URL + "/info";
 	private static final String REST_FILTERS_URL = ROOT_URL + "/filters";
 
-	private static final int CONNECTION_TIMEOUT = 10000;
-	private static final int SOCKET_TIMEOUT = 10000;
-
 	private static final int RETRY_PERIOD_S = 10;
 
 	protected final String appName;
 	protected IConfiguration configuration;
-	protected String url, query;
+	protected String url;
+	protected Map<String, String> properties;
 
 	public JSIDPlay2RESTRequest(String appName, IConfiguration configuration, RequestType type, String url,
-			String query) {
+			Map<String, String> properties) {
 		this.appName = appName;
 		this.configuration = configuration;
 		this.url = type.getUrl() + url;
-		this.query = query;
+		this.properties = properties;
 	}
 
 	@Override
 	protected ResultType doInBackground(String... params) {
 		while (true) {
 			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
-
-				HttpParams httpParams = httpClient.getParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
-				HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
-
-				httpClient.getCredentialsProvider().setCredentials(
-						new AuthScope(configuration.getHostname(), AuthScope.ANY_PORT),
-						new UsernamePasswordCredentials(configuration.getUsername(), configuration.getPassword()));
-
+				String query = "";
+				if (properties != null) {
+					for (Entry<String, String> property : properties.entrySet()) {
+						query += "&" + property.getKey() + "=" + property.getValue();
+					}
+				}
 				URI myUri = new URI("http", null, configuration.getHostname(), Integer.valueOf(configuration.getPort()),
 						url, query, null);
 
 				Log.d(appName, "HTTP-GET: " + myUri);
 
-				HttpGet httpGet = new HttpGet(myUri);
-				HttpContext localContext = new BasicHttpContext();
-				HttpResponse response = httpClient.execute(httpGet, localContext);
-				int statusCode = response.getStatusLine().getStatusCode();
+				Authenticator.setDefault(new Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(configuration.getUsername(),
+								configuration.getPassword().toCharArray());
+					}
+				});
+				HttpURLConnection conn = (HttpURLConnection) myUri.toURL().openConnection();
+				conn.setUseCaches(false);
+				conn.setRequestMethod("GET");
+				int statusCode = conn.getResponseCode();
 				if (statusCode == HttpURLConnection.HTTP_OK) {
-					return getResult(response.getEntity());
+					return getResult(conn);
 				} else {
 					Log.e(appName, String.format("URL: '%s', HTTP status: '%d', Retry in '%d' seconds!",
 							myUri.toString(), statusCode, RETRY_PERIOD_S));
@@ -113,7 +107,7 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends AsyncTask<String,
 		}
 	}
 
-	protected abstract ResultType getResult(HttpEntity httpEntity) throws IllegalStateException, IOException;
+	protected abstract ResultType getResult(URLConnection httpEntity) throws IllegalStateException, IOException;
 
 	public static String[] splitJSONToken(String line, String sep) {
 		String otherThanQuote = " [^\"] ";
@@ -138,8 +132,8 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends AsyncTask<String,
 		return line.split(regex, -1);
 	}
 
-	protected ArrayList<String> receiveList(HttpEntity httpEntity) throws IllegalStateException, IOException {
-		InputStream content = httpEntity.getContent();
+	protected ArrayList<String> receiveList(URLConnection connection) throws IllegalStateException, IOException {
+		InputStream content = connection.getInputStream();
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		int n = 1;
@@ -173,9 +167,9 @@ public abstract class JSIDPlay2RESTRequest<ResultType> extends AsyncTask<String,
 		String getString(String key);
 	}
 
-	protected List<Pair<String, String>> receiveListOfKeyValues(HttpEntity httpEntity, IKeyLocalizer localizer)
+	protected List<Pair<String, String>> receiveListOfKeyValues(URLConnection connection, IKeyLocalizer localizer)
 			throws IllegalStateException, IOException {
-		InputStream content = httpEntity.getContent();
+		InputStream content = connection.getInputStream();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		int n = 1;
 		while (n > 0) {
