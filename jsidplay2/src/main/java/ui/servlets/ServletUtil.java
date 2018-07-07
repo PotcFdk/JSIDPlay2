@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import de.schlichtherle.truezip.file.TFile;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import ui.entities.config.Configuration;
@@ -61,11 +62,11 @@ public class ServletUtil {
 			return getCollectionFiles(rootFile, root, path, filter, CGSC, principal);
 		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
 			String root = MEDIA_NAS1_MUSIK_UND_HÖRSPIEL;
-			File rootFile = new File(root);
+			File rootFile = new TFile(root);
 			return getCollectionFiles(rootFile, root, path, filter, MP3, principal);
 		} else if (principal.getName().equals("kenchis") && path.startsWith(IMAGES)) {
 			String root = MEDIA_NAS1_IMAGES;
-			File rootFile = new File(root);
+			File rootFile = new TFile(root);
 			return getCollectionFiles(rootFile, root, path, filter, IMAGES, principal);
 		}
 		return null;

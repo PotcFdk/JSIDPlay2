@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.util.URIUtil;
 
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -50,8 +51,9 @@ public class ConvertServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
+		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String filePath = decodedPath
+				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			response.setContentType(MIME_TYPE_MPEG);

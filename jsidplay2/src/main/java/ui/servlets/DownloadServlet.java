@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.util.URIUtil;
 
 import libsidutils.ZipFileUtils;
 import ui.entities.config.Configuration;
@@ -38,11 +39,13 @@ public class DownloadServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
+		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String filePath = decodedPath
+				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
 		response.setContentType(filePath.endsWith(".mp3") ? MIME_TYPE_MPEG
-				: filePath.endsWith(".sid") ? MIME_TYPE_SID : (filePath.endsWith(".jpg") ? MIME_TYPE_JPG : MIME_TYPE_OCTET_STREAM));
+				: filePath.endsWith(".sid") ? MIME_TYPE_SID
+						: (filePath.endsWith(".jpg") ? MIME_TYPE_JPG : MIME_TYPE_OCTET_STREAM));
 
 		try {
 			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), response.getOutputStream());

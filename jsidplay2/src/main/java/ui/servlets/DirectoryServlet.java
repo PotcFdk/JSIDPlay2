@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.util.URIUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,8 +35,9 @@ public class DirectoryServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
+		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String filePath = decodedPath
+				.substring(decodedPath.indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
 		String filter = request.getParameter("filter");
 
 		List<String> files = util.getDirectory(filePath, filter, request.getUserPrincipal());

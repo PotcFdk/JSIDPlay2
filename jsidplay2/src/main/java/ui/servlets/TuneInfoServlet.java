@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.util.URIUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,8 +43,9 @@ public class TuneInfoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = java.net.URLDecoder.decode(request.getRequestURI(), "UTF-8")
-				.substring(request.getRequestURI().indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
+		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String filePath = decodedPath
+				.substring(decodedPath.indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
 
 		try {
 			File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
