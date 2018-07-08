@@ -172,3 +172,23 @@ with a maximum of 255 characters excluding a null terminated byte
 **** 8-bit unsigned value between 0 \<= value \<= max_config-1
 *** always returns OK.
 
+==== Launch Network SID Device
+
+Note: Whereas *Windows* users get an executable (.EXE) to launch:
+
+[source,subs="attributes+"]
+----
+jsiddevice-{version}.exe # <1>
+----
+<1> Launch User interface version (console version is not available as an executable, see below)
+
+other operating systems launch Network SID Device using the following command:
+
+[source,subs="attributes+"]
+----
+cd Downloads/jsidplay2-{version}
+java -jar jsiddevice-{version}.jar # <1>
+java -classpath jsiddevice-{version}.jar netsiddev.NetworkSIDDevice # <2>
+---- 
+<1> Launch User interface version
+<2> Launch Console version

@@ -18,6 +18,10 @@ public class IniJSIDDeviceSection extends IniSection {
 		return iniReader.getPropertyInt("JSIDDevice", "Version", JSIDDeviceConfig.REQUIRED_CONFIG_VERSION);
 	}
 
+	public final void setVersion(final int version) {
+		iniReader.setProperty("JSIDDevice", "Version", version);
+	}
+
 	public final String getHostname() {
 		return iniReader.getPropertyString("JSIDDevice", "Hostname", null);
 	}

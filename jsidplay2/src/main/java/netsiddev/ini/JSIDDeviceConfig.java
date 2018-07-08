@@ -132,9 +132,13 @@ public class JSIDDeviceConfig {
 		return filterList;
 	}
 
-	public JSIDDeviceConfig() {
+	public JSIDDeviceConfig(boolean createIfNotExists) {
 		iniPath = getINIPath();
 		read();
+
+		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+			write();
+		}
 	}
 
 	private void read() {
@@ -195,6 +199,10 @@ public class JSIDDeviceConfig {
 		try (InputStream is = getClass().getClassLoader().getResourceAsStream("netsiddev/ini/" + FILE_NAME)) {
 			iniReader = new IniReader(is);
 			clear();
+			/*
+			 * Set the current version so that we detect old versions in future.
+			 */
+			jsiddeviceSection.setVersion(REQUIRED_CONFIG_VERSION);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}

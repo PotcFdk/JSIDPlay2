@@ -472,7 +472,7 @@
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>false</addClasspath>
-									<mainClass>netsiddev.NetworkSIDDevice</mainClass>
+									<mainClass>netsiddev.NetworkSIDDeviceMain</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
@@ -744,7 +744,7 @@
 								<mutexName>JSidDevice</mutexName>
 							</singleInstance>
 							<classPath>
-								<mainClass>netsiddev.NetworkSIDDevice</mainClass>
+								<mainClass>netsiddev.NetworkSIDDeviceMain</mainClass>
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>
