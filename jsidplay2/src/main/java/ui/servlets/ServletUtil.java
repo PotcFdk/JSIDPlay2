@@ -1,7 +1,6 @@
 package ui.servlets;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,31 +16,22 @@ import ui.entities.config.Configuration;
 
 public class ServletUtil {
 
-	private static final String MEDIA_NAS1_MUSIK_UND_HÖRSPIEL = "/media/nas1/Musik und Hörspiel";
-	private static final String MEDIA_NAS1_IMAGES = "/media/nas1/Chronik";
-
-	private static class FileTypeComparator implements Comparator<File> {
-
-		@Override
-		public int compare(File file1, File file2) {
-
-			if (file1.isDirectory() && file2.isFile())
-				return -1;
-			if (file1.isDirectory() && file2.isDirectory()) {
-				return file1.getName().compareToIgnoreCase(file2.getName());
-			}
-			if (file1.isFile() && file2.isFile()) {
-				return file1.getName().compareToIgnoreCase(file2.getName());
-			}
-			return 1;
-		}
-	}
-
 	private static final String C64_MUSIC = "/C64Music";
 	private static final String CGSC = "/CGSC";
 	private static final String MP3 = "/MP3";
 	private static final String IMAGES = "/Images";
-	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = new FileTypeComparator();
+	private static final String MEDIA_NAS1_MUSIK_UND_HÖRSPIEL = "/media/nas1/Musik und Hörspiel";
+	private static final String MEDIA_NAS1_IMAGES = "/media/nas1/Chronik";
+
+	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = (file1, file2) -> {
+		if (file1.isDirectory() && file2.isFile()) {
+			return -1;
+		} else if (file1.isFile() && file2.isDirectory()) {
+			return 1;
+		} else {
+			return file1.getName().compareToIgnoreCase(file2.getName());
+		}
+	};
 
 	private Configuration configuration;
 
@@ -77,14 +67,11 @@ public class ServletUtil {
 		ArrayList<String> result = new ArrayList<String>();
 		if (rootFile != null) {
 			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
-			File[] listFiles = file.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
-						return false;
-					return pathname.isDirectory() || filter == null
-							|| pathname.getName().toLowerCase(Locale.US).matches(filter);
-				}
+			File[] listFiles = file.listFiles(pathname -> {
+				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
+					return false;
+				return pathname.isDirectory() || filter == null
+						|| pathname.getName().toLowerCase(Locale.US).matches(filter);
 			});
 			if (listFiles != null) {
 				List<File> asList = Arrays.asList(listFiles);
