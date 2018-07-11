@@ -1,10 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_OCTET_STREAM;
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_SID;
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JPG;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -16,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.URIUtil;
 
+import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import ui.entities.config.Configuration;
 
@@ -43,10 +39,7 @@ public class DownloadServlet extends HttpServlet {
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
-		response.setContentType(filePath.endsWith(".mp3") ? MIME_TYPE_MPEG
-				: filePath.endsWith(".sid") ? MIME_TYPE_SID
-						: (filePath.endsWith(".jpg") ? MIME_TYPE_JPG : MIME_TYPE_OCTET_STREAM));
-
+		response.setContentType(ContentType.getContentType(PathUtils.getFilenameSuffix(filePath)).getContentType());
 		try {
 			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), response.getOutputStream());
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());

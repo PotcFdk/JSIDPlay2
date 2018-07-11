@@ -32,11 +32,6 @@ public class JSIDPlay2Server {
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
-	protected static final String MIME_TYPE_JPG = "image/jpeg";
-	protected static final String MIME_TYPE_MPEG = "audio/mpeg";
-	protected static final String MIME_TYPE_SID = "audio/prs.sid";
-	protected static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
-
 	private Configuration configuration;
 
 	private HashLoginService loginService;

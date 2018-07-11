@@ -1,7 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_MPEG;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
@@ -56,7 +54,7 @@ public class ConvertServlet extends HttpServlet {
 				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			response.setContentType(MIME_TYPE_MPEG);
+			response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 			try {
 				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()),
 						response.getOutputStream());
@@ -103,7 +101,7 @@ public class ConvertServlet extends HttpServlet {
 			cfg.getEmulationSection().setReSIDfpThirdSIDFilter8580(request.getParameter("reSIDfpThirdFilter8580"));
 			cfg.getEmulationSection().setDigiBoosted8580(Boolean.parseBoolean(request.getParameter("digiBoosted8580")));
 
-			response.setContentType(MIME_TYPE_MPEG);
+			response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 			try {
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
 				driver.setCbr(Integer.parseInt(request.getParameter("cbr")));

@@ -1,7 +1,5 @@
 package ui.servlets;
 
-import static ui.servlets.JSIDPlay2Server.MIME_TYPE_JPG;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,7 +41,7 @@ public class PhotoServlet extends HttpServlet {
 		String decodedPath = URIUtil.decodePath(request.getRequestURI());
 		String filePath = decodedPath.substring(decodedPath.indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
-		response.setContentType(MIME_TYPE_JPG);
+		response.setContentType(ContentType.MIME_TYPE_JPG.getContentType());
 		try {
 			File absoluteFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
