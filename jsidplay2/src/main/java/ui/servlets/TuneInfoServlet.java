@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class TuneInfoServlet extends HttpServlet {
 				.substring(decodedPath.indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
 
 		try {
+			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 			File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
@@ -55,11 +57,10 @@ public class TuneInfoServlet extends HttpServlet {
 							field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
 									+ field.getAttribute().getName())
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
-			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 		} catch (Exception e) {
 			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
-			response.getOutputStream().println(e.getMessage());
+			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

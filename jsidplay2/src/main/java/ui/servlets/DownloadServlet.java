@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,13 +40,13 @@ public class DownloadServlet extends HttpServlet {
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
-		response.setContentType(ContentType.getContentType(PathUtils.getFilenameSuffix(filePath)).getContentType());
 		try {
+			response.setContentType(ContentType.getContentType(PathUtils.getFilenameSuffix(filePath)).getContentType());
 			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), response.getOutputStream());
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 		} catch (Exception e) {
 			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
-			response.getOutputStream().println(e.getMessage());
+			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		} finally {
 			response.getOutputStream().flush();
 		}

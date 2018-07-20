@@ -3,7 +3,7 @@ SIDBlaster driver wrapper:
 Web-Site: http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster
 
 This driver is a wrapper around the original USB driver functions contained in hardsid.dll
-provided by Stein Pederesen (https://csdb.dk/release/?id=136549)
+provided by Stein Pedersen (https://csdb.dk/release/?id=136549)
 It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
 Note:
@@ -31,7 +31,7 @@ src/main/resources/sidblaster_builder/win64/Release
 Test:
 =====
 Windows is guest in Virtual Box, Ubuntu Linux is host:
-Launch Windows Vista
+Launch Windows
 Install Java 64-Bit
 Connect SIDBlaster-USB device to your real computer.
 Allow Windows to use USB hardware with Virtual box Toolbar icon in the bottom right side of the window.

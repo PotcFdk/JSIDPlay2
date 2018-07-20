@@ -3,6 +3,7 @@ package ui.servlets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
@@ -41,8 +42,8 @@ public class PhotoServlet extends HttpServlet {
 		String decodedPath = URIUtil.decodePath(request.getRequestURI());
 		String filePath = decodedPath.substring(decodedPath.indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
-		response.setContentType(ContentType.MIME_TYPE_JPG.getContentType());
 		try {
+			response.setContentType(ContentType.MIME_TYPE_JPG.getContentType());
 			File absoluteFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
@@ -53,7 +54,7 @@ public class PhotoServlet extends HttpServlet {
 			response.setContentLength(photo.length);
 		} catch (Exception e) {
 			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
-			response.getOutputStream().println(String.valueOf(e.getMessage()));
+			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

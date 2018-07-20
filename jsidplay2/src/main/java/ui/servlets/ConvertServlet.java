@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -54,14 +55,14 @@ public class ConvertServlet extends HttpServlet {
 				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-			response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 			try {
+				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()),
 						response.getOutputStream());
 				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
-				response.getOutputStream().println(e.getMessage());
+				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			} finally {
 				response.getOutputStream().flush();
 			}
@@ -101,8 +102,8 @@ public class ConvertServlet extends HttpServlet {
 			cfg.getEmulationSection().setReSIDfpThirdSIDFilter8580(request.getParameter("reSIDfpThirdFilter8580"));
 			cfg.getEmulationSection().setDigiBoosted8580(Boolean.parseBoolean(request.getParameter("digiBoosted8580")));
 
-			response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 			try {
+				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
 				driver.setCbr(Integer.parseInt(request.getParameter("cbr")));
 				driver.setVbrQuality(Integer.parseInt(request.getParameter("vbr")));
@@ -110,7 +111,7 @@ public class ConvertServlet extends HttpServlet {
 				convert(cfg, filePath, driver, request.getUserPrincipal());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
-				response.getOutputStream().println(e.getMessage());
+				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			} finally {
 				response.getOutputStream().flush();
 			}
