@@ -8,7 +8,11 @@ import static ui.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
 import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static ui.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
+import java.net.URL;
 import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -20,6 +24,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 
 import libsidutils.DebugUtil;
+import ui.JSidPlay2;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
@@ -32,59 +37,21 @@ public class JSIDPlay2Server {
 
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
-	private Configuration configuration;
+	private static final URL SERVER_SECURITY_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
 
-	private HashLoginService loginService;
-
-	private ConstraintSecurityHandler security;
+	private static final String[] ROLES = new String[] { "user", "admin" };
 
 	private Server server;
 
+	private final Configuration configuration;
+
 	public JSIDPlay2Server(Configuration configuration) {
 		this.configuration = configuration;
-
-		StartPageServlet startPageServlet = new StartPageServlet(configuration);
-		FiltersServlet filtersServlet = new FiltersServlet(configuration);
-		DirectoryServlet directoryServlet = new DirectoryServlet(configuration);
-		TuneInfoServlet tuneInfoServlet = new TuneInfoServlet(configuration);
-		PhotoServlet photoServlet = new PhotoServlet(configuration);
-		ConvertServlet convertServlet = new ConvertServlet(configuration);
-		DownloadServlet downloadServlet = new DownloadServlet(configuration);
-
-		ServletContextHandler context = new ServletContextHandler();
-		context.setContextPath("/");
-		context.addServlet(new ServletHolder(startPageServlet), SERVLET_PATH_STARTPAGE);
-		context.addServlet(new ServletHolder(filtersServlet), CONTEXT_ROOT + SERVLET_PATH_FILTERS);
-		context.addServlet(new ServletHolder(directoryServlet), CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
-		context.addServlet(new ServletHolder(tuneInfoServlet), CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
-		context.addServlet(new ServletHolder(photoServlet), CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
-		context.addServlet(new ServletHolder(convertServlet), CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
-		context.addServlet(new ServletHolder(downloadServlet), CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
-
-		Constraint constraint = new Constraint();
-		constraint.setName("auth");
-		constraint.setAuthenticate(true);
-		constraint.setRoles(new String[] { "user", "admin" });
-
-		ConstraintMapping mapping = new ConstraintMapping();
-		mapping.setPathSpec(CONTEXT_ROOT + "/*");
-		mapping.setConstraint(constraint);
-
-		loginService = new HashLoginService("JSIDPlay2",
-				JSIDPlay2Server.class.getResource("/realm.properties").toExternalForm());
-
-		security = new ConstraintSecurityHandler();
-		security.setConstraintMappings(Collections.singletonList(mapping));
-		security.setAuthenticator(new BasicAuthenticator());
-		security.setLoginService(loginService);
-		security.setHandler(context);
 	}
 
 	public void start() throws Exception {
 		if (server == null || server.isStopped()) {
-			server = new Server(configuration.getEmulationSection().getAppServerPort());
-			server.addBean(loginService);
-			server.setHandler(security);
+			server = createServer();
 			server.start();
 		}
 	}
@@ -94,6 +61,60 @@ public class JSIDPlay2Server {
 			server.stop();
 			server.join();
 		}
+	}
+
+	private Server createServer() {
+		String config = SERVER_SECURITY_CONFIG.toExternalForm();
+		HashLoginService loginService = new HashLoginService(JSidPlay2.class.getSimpleName(), config);
+
+		ConstraintSecurityHandler securityHandler = createSecurity();
+		securityHandler.setLoginService(loginService);
+		securityHandler.setHandler(createServletContextHandler());
+
+		Server server = new Server(configuration.getEmulationSection().getAppServerPort());
+		server.addBean(loginService);
+		server.setHandler(securityHandler);
+		return server;
+	}
+
+	private ConstraintSecurityHandler createSecurity() {
+		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
+		security.setConstraintMappings(createConstrainedMappings());
+		security.setAuthenticator(new BasicAuthenticator());
+		return security;
+	}
+
+	private ServletContextHandler createServletContextHandler() {
+		HttpServlet startPageServlet = new StartPageServlet(configuration);
+		HttpServlet filtersServlet = new FiltersServlet(configuration);
+		HttpServlet directoryServlet = new DirectoryServlet(configuration);
+		HttpServlet tuneInfoServlet = new TuneInfoServlet(configuration);
+		HttpServlet photoServlet = new PhotoServlet(configuration);
+		HttpServlet convertServlet = new ConvertServlet(configuration);
+		HttpServlet downloadServlet = new DownloadServlet(configuration);
+
+		ServletContextHandler contextHandler = new ServletContextHandler();
+		contextHandler.setContextPath("/");
+		contextHandler.addServlet(new ServletHolder(startPageServlet), SERVLET_PATH_STARTPAGE);
+		contextHandler.addServlet(new ServletHolder(filtersServlet), CONTEXT_ROOT + SERVLET_PATH_FILTERS);
+		contextHandler.addServlet(new ServletHolder(directoryServlet), CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
+		contextHandler.addServlet(new ServletHolder(tuneInfoServlet), CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
+		contextHandler.addServlet(new ServletHolder(photoServlet), CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
+		contextHandler.addServlet(new ServletHolder(convertServlet), CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
+		contextHandler.addServlet(new ServletHolder(downloadServlet), CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
+		return contextHandler;
+	}
+
+	private List<ConstraintMapping> createConstrainedMappings() {
+		Constraint constraint = new Constraint();
+		constraint.setName("auth");
+		constraint.setAuthenticate(true);
+		constraint.setRoles(ROLES);
+
+		ConstraintMapping constrainedMapping = new ConstraintMapping();
+		constrainedMapping.setPathSpec(CONTEXT_ROOT + "/*");
+		constrainedMapping.setConstraint(constraint);
+		return Collections.singletonList(constrainedMapping);
 	}
 
 	public static void main(String[] args) throws Exception {
