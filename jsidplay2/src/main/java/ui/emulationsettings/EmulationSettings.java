@@ -65,6 +65,9 @@ public class EmulationSettings extends C64Window {
 	}
 
 	@FXML
+	private CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4, muteVoice5, muteVoice6, muteVoice7, muteVoice8,
+			muteVoice9, muteVoice10, muteVoice11, muteVoice12;
+	@FXML
 	private ComboBox<Emulation> sid1Emulation, sid2Emulation, sid3Emulation, defaultEmulation;
 	@FXML
 	private ComboBox<ChipModel> sid1Model, sid2Model, sid3Model, defaultModel;
@@ -109,6 +112,43 @@ public class EmulationSettings extends C64Window {
 		ResourceBundle bundle = util.getBundle();
 		AudioSection audioSection = util.getConfig().getAudioSection();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		muteVoice1.selectedProperty().bindBidirectional(emulationSection.muteVoice1Property());
+		muteVoice1.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected())));
+		muteVoice2.selectedProperty().bindBidirectional(emulationSection.muteVoice2Property());
+		muteVoice2.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected())));
+		muteVoice3.selectedProperty().bindBidirectional(emulationSection.muteVoice3Property());
+		muteVoice3.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected())));
+		muteVoice4.selectedProperty().bindBidirectional(emulationSection.muteVoice4Property());
+		muteVoice4.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(3, muteVoice4.isSelected())));
+		muteVoice5.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice1Property());
+		muteVoice5.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice5.isSelected())));
+		muteVoice6.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice2Property());
+		muteVoice6.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice6.isSelected())));
+		muteVoice7.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice3Property());
+		muteVoice7.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice7.isSelected())));
+		muteVoice8.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice4Property());
+		muteVoice8.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(3, muteVoice8.isSelected())));
+		muteVoice9.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice1Property());
+		muteVoice9.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice9.isSelected())));
+		muteVoice10.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice2Property());
+		muteVoice10.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice10.isSelected())));
+		muteVoice11.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice3Property());
+		muteVoice11.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice11.isSelected())));
+		muteVoice12.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice4Property());
+		muteVoice12.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice12.isSelected())));
 
 		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
@@ -243,6 +283,10 @@ public class EmulationSettings extends C64Window {
 		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second);
 		secondFilterCurve.setDisable(!second);
+		muteVoice5.setDisable(!second);
+		muteVoice6.setDisable(!second);
+		muteVoice7.setDisable(!second);
+		muteVoice8.setDisable(!second);
 		// 3-SID, only:
 		thirdVolume.setDisable(!third);
 		thirdBalance.setDisable(!third);
@@ -250,6 +294,10 @@ public class EmulationSettings extends C64Window {
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
+		muteVoice9.setDisable(!third);
+		muteVoice10.setDisable(!third);
+		muteVoice11.setDisable(!third);
+		muteVoice12.setDisable(!third);
 		// fake stereo, only:
 		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:
@@ -410,12 +458,9 @@ public class EmulationSettings extends C64Window {
 	 * Update filter settings of the specified SID number according to the currently
 	 * selected filter.
 	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @param filterBox
-	 *            filter combo box
-	 * @param filterCurve
-	 *            filter curve to update
+	 * @param sidNum      SID chip number
+	 * @param filterBox   filter combo box
+	 * @param filterCurve filter curve to update
 	 */
 	private void updateFilterConfiguration(int sidNum, ComboBox<String> filterBox,
 			LineChart<Number, Number> filterCurve) {
@@ -439,14 +484,10 @@ public class EmulationSettings extends C64Window {
 	 * Update combo-box filter list according to the current emulation and chip
 	 * model.
 	 * 
-	 * @param tune
-	 *            currently played tune
-	 * @param num
-	 *            SID chip number
-	 * @param filters
-	 *            resulting filter list to add matching filter names to
-	 * @param filter
-	 *            combo box to select currently selected filter
+	 * @param tune    currently played tune
+	 * @param num     SID chip number
+	 * @param filters resulting filter list to add matching filter names to
+	 * @param filter  combo box to select currently selected filter
 	 */
 	private void updateFilterList(final SidTune tune, int num, ObservableList<String> filters,
 			ComboBox<String> filter) {
@@ -492,10 +533,8 @@ public class EmulationSettings extends C64Window {
 	/**
 	 * Draw filter curve of the specified SID number and filter name
 	 * 
-	 * @param filterBox
-	 *            filter combo box
-	 * @param num
-	 *            SID chip number
+	 * @param filterBox filter combo box
+	 * @param num       SID chip number
 	 */
 	private void drawFilterCurve(final ComboBox<String> filterBox, LineChart<Number, Number> filterCurve) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
