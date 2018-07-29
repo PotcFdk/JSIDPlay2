@@ -4,13 +4,16 @@ import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 
 import java.io.File;
@@ -237,6 +240,54 @@ public class AudioSection implements IAudioSection {
 	@Override
 	public void setThirdBalance(float third) {
 		this.thirdBalance.set(third);
+	}
+
+	private FloatProperty mainDelay = new SimpleFloatProperty(DEFAULT_MAIN_DELAY);
+
+	public FloatProperty mainDelayProperty() {
+		return mainDelay;
+	}
+
+	@Override
+	public float getMainDelay() {
+		return this.mainDelay.get();
+	}
+
+	@Override
+	public void setMainDelay(float delay) {
+		this.mainDelay.set(delay);
+	}
+
+	private FloatProperty secondDelay = new SimpleFloatProperty(DEFAULT_SECOND_DELAY);
+
+	public FloatProperty secondDelayProperty() {
+		return secondDelay;
+	}
+
+	@Override
+	public float getSecondDelay() {
+		return this.secondDelay.get();
+	}
+
+	@Override
+	public void setSecondDelay(float delay) {
+		this.secondDelay.set(delay);
+	}
+
+	private FloatProperty thirdDelay = new SimpleFloatProperty(DEFAULT_THIRD_DELAY);
+
+	public FloatProperty thirdDelayProperty() {
+		return this.thirdDelay;
+	}
+
+	@Override
+	public float getThirdDelay() {
+		return this.thirdDelay.get();
+	}
+
+	@Override
+	public void setThirdDelay(float delay) {
+		this.thirdDelay.set(delay);
 	}
 
 	private IntegerProperty bufferSize = new SimpleIntegerProperty(DEFAULT_BUFFER_SIZE);

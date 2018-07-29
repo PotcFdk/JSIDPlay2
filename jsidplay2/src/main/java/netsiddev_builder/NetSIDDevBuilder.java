@@ -138,6 +138,12 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	}
 
 	@Override
+	public void setDelay(int sidNum, float delay) {
+		System.err.println("Delay unsupported by network SID client");
+		// XXX unsupported by JSIDDevice
+	}
+	
+	@Override
 	public void fastForward() {
 		client.fastForward();
 	}

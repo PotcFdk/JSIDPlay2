@@ -176,6 +176,51 @@ public interface IAudioSection {
 	void setThirdBalance(float balance);
 
 	/**
+	 * Getter of the main SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @return the main SID delay setting
+	 */
+	float getMainDelay();
+
+	/**
+	 * Setter of the main SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @param delay
+	 *            the main SID delay setting
+	 */
+	void setMainDelay(float delay);
+
+	/**
+	 * Getter of the second SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @return the second SID delay setting
+	 */
+	float getSecondDelay();
+
+	/**
+	 * Setter of the second SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @param delay
+	 *            the second SID delay setting
+	 */
+	void setSecondDelay(float delay);
+
+	/**
+	 * Getter of the third SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @return the third SID delay setting
+	 */
+	float getThirdDelay();
+
+	/**
+	 * Setter of the third SID delay setting (0 - no delay, 1 - 1s delay).
+	 * 
+	 * @param delay
+	 *            the third SID delay setting
+	 */
+	void setThirdDelay(float delay);
+
+	/**
 	 * Getter of the output buffer size.
 	 * 
 	 * @return size of the output buffer
@@ -211,6 +256,19 @@ public interface IAudioSection {
 			return getSecondBalance();
 		case 2:
 			return getThirdBalance();
+		default:
+			throw new RuntimeException("Maximum supported SIDS exceeded!");
+		}
+	}
+
+	default float getDelay(int sidNum) {
+		switch (sidNum) {
+		case 0:
+			return getMainDelay();
+		case 1:
+			return getSecondDelay();
+		case 2:
+			return getThirdDelay();
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}

@@ -187,6 +187,10 @@ public class SIDMixer implements Mixer {
 	 * SID audibility on the right speaker of all SIDs 0(silent)..1(loud).
 	 */
 	private final float[] positionR = new float[MAX_SIDS];
+	/**
+	 * Delay in samples of all SIDs.
+	 */
+	private final int[] delayInSamples = new int[MAX_SIDS];
 
 	/**
 	 * Fade-in/fade-out enabled.
@@ -235,8 +239,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Fade-in start time reached, audio volume should be increased to the max.
 	 * 
-	 * @param fadeIn
-	 *            Fade-in time in seconds
+	 * @param fadeIn Fade-in time in seconds
 	 */
 	public void fadeIn(int fadeIn) {
 		for (ReSIDBase sid : sids) {
@@ -248,8 +251,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Fade-out start time reached, audio volume should be lowered to zero.
 	 * 
-	 * @param fadeOut
-	 *            Fade-out time in seconds
+	 * @param fadeOut Fade-out time in seconds
 	 */
 	public void fadeOut(int fadeOut) {
 		for (ReSIDBase sid : sids) {
@@ -261,10 +263,8 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Add a SID to the mix.
 	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @param sid
-	 *            SID to add
+	 * @param sidNum SID chip number
+	 * @param sid    SID to add
 	 */
 	public void add(int sidNum, ReSIDBase sid) {
 		if (sidNum < sids.size()) {
@@ -272,16 +272,16 @@ public class SIDMixer implements Mixer {
 		} else {
 			sids.add(sid);
 		}
-		createSampleMixer(sid);
+		createSampleMixer(sid, sidNum);
 		setVolume(sidNum, config.getAudioSection().getVolume(sidNum));
 		setBalance(sidNum, config.getAudioSection().getBalance(sidNum));
+		setDelay(sidNum, config.getAudioSection().getDelay(sidNum));
 	}
 
 	/**
 	 * Remove SID from the mix.
 	 * 
-	 * @param sid
-	 *            SID to remove
+	 * @param sid SID to remove
 	 */
 	public void remove(ReSIDBase sid) {
 		sids.remove(sid);
@@ -292,10 +292,8 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Volume of the SID chip.
 	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @param volumeInDB
-	 *            volume in DB -6(-6db)..6(+6db)
+	 * @param sidNum     SID chip number
+	 * @param volumeInDB volume in DB -6(-6db)..6(+6db)
 	 */
 	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
@@ -307,8 +305,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * db-to-linear(x) = 10^(x / 20)
 	 * 
-	 * @param decibel
-	 *            decibel value to convert
+	 * @param decibel decibel value to convert
 	 * @return converted linear value
 	 */
 	private static double DECIBEL_TO_LINEAR(float decibel) {
@@ -318,10 +315,8 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Set left/right speaker balance for each SID.
 	 * 
-	 * @param sidNum
-	 *            SID chip number
-	 * @param balance
-	 *            balance 0(left speaker)..0.5(centered)..1(right speaker)
+	 * @param sidNum  SID chip number
+	 * @param balance balance 0(left speaker)..0.5(centered)..1(right speaker)
 	 */
 	public void setBalance(int sidNum, float balance) {
 		assert balance >= 0 && balance <= 1;
@@ -332,12 +327,25 @@ public class SIDMixer implements Mixer {
 	}
 
 	/**
+	 * Delay feature: Delaying SID chip sound samples by time in seconds
+	 * 
+	 * @param sidNum SID chip number
+	 * @param delay  delay in s
+	 */
+	public void setDelay(int sidNum, float delay) {
+		assert delay >= 0 && delay <= 1;
+
+		IAudioSection audioSection = config.getAudioSection();
+		delayInSamples[sidNum] = (int) (audioSection.getSamplingRate().getFrequency() * audioSection.getDelay(sidNum));
+		updateSampleMixerVolume();
+	}
+
+	/**
 	 * Create a new sample value mixer and assign to SID chip.
 	 * 
-	 * @param sid
-	 *            SID chip that requires a sample mixer.
+	 * @param sid SID chip that requires a sample mixer.
 	 */
-	private void createSampleMixer(ReSIDBase sid) {
+	private void createSampleMixer(ReSIDBase sid, int sidNum) {
 		IntBuffer intBufferL = audioBufferL.duplicate();
 		IntBuffer intBufferR = audioBufferR.duplicate();
 		if (fadeInFadeOutEnabled) {
@@ -359,12 +367,14 @@ public class SIDMixer implements Mixer {
 			SampleMixer sampler = (SampleMixer) sid.getSampler();
 			if (mono) {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
+				sampler.setDelay(0);
 			} else {
 				float leftFraction = positionL[sidNum];
 				float rightFraction = positionR[sidNum];
 				int volumeL = (int) (volume[sidNum] * leftFraction);
 				int volumeR = (int) (volume[sidNum] * rightFraction);
 				sampler.setVolume(volumeL, volumeR);
+				sampler.setDelay(delayInSamples[sidNum]);
 			}
 			sidNum++;
 		}

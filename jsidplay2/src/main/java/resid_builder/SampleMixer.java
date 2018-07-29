@@ -1,5 +1,7 @@
 package resid_builder;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.function.IntConsumer;
 
@@ -35,8 +37,8 @@ class SampleMixer implements IntConsumer {
 		private int maxVolL, maxVolR;
 
 		/**
-		 * Fade-in/fade-out clock steps until next volume change and current
-		 * fade-in and fade-out counters for left and right speaker.
+		 * Fade-in/fade-out clock steps until next volume change and current fade-in and
+		 * fade-out counters for left and right speaker.
 		 */
 		private long fadeInStepL, fadeInStepR, fadeOutStepL, fadeOutStepR, fadeInValL, fadeInValR, fadeOutValL,
 				fadeOutValR;
@@ -48,8 +50,7 @@ class SampleMixer implements IntConsumer {
 		/**
 		 * Set fade-in time. Increase volume from zero to the maximum.
 		 * 
-		 * @param fadeIn
-		 *            fade-in time in clock ticks
+		 * @param fadeIn fade-in time in clock ticks
 		 */
 		public void setFadeIn(long fadeIn) {
 			this.fadeInClocks = fadeIn;
@@ -61,8 +62,7 @@ class SampleMixer implements IntConsumer {
 		/**
 		 * Set fade-out time. Decrease volume from the maximum to zero.
 		 * 
-		 * @param fadeOut
-		 *            fade-out time in clock ticks
+		 * @param fadeOut fade-out time in clock ticks
 		 */
 		public void setFadeOut(long fadeOut) {
 			this.fadeOutClocks = fadeOut;
@@ -116,6 +116,11 @@ class SampleMixer implements IntConsumer {
 	 */
 	protected int volumeL, volumeR;
 
+	/**
+	 * Sample buffer for delay effect.
+	 */
+	private IntBuffer delayedSamples;
+
 	SampleMixer(IntBuffer audioBufferL, IntBuffer audioBufferR) {
 		this.bufferL = audioBufferL;
 		this.bufferR = audioBufferR;
@@ -126,8 +131,27 @@ class SampleMixer implements IntConsumer {
 		this.volumeR = volumeR;
 	}
 
+	public void setDelay(int delayedSamples) {
+		if (delayedSamples > 0) {
+			this.delayedSamples = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * delayedSamples)
+					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[delayedSamples]).flip();
+		} else {
+			this.delayedSamples = null;
+		}
+	}
+
 	@Override
 	public void accept(int sample) {
+		if (delayedSamples != null) {
+			if (!delayedSamples.put(sample).hasRemaining()) {
+				delayedSamples.flip();
+			}
+			if (delayedSamples.position() + 1 < delayedSamples.capacity()) {
+				sample = delayedSamples.get(delayedSamples.position() + 1);
+			} else {
+				sample = delayedSamples.get(0);
+			}
+		}
 		bufferL.put(bufferL.get(bufferL.position()) + sample * volumeL);
 		bufferR.put(bufferR.get(bufferR.position()) + sample * volumeR);
 	}

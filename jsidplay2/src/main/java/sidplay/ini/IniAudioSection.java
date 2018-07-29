@@ -4,14 +4,17 @@ import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_MP3_FILE;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 
 import com.beust.jcommander.Parameter;
@@ -232,6 +235,36 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Override
 	public void setThirdBalance(float balance) {
 		iniReader.setProperty("Audio", "ThirdBalance", balance);
+	}
+
+	@Override
+	public float getMainDelay() {
+		return iniReader.getPropertyFloat("Audio", "MainDelay", DEFAULT_MAIN_DELAY);
+	}
+
+	@Override
+	public void setMainDelay(float delay) {
+		iniReader.setProperty("Audio", "MainDelay", delay);
+	}
+
+	@Override
+	public float getSecondDelay() {
+		return iniReader.getPropertyFloat("Audio", "SecondDelay", DEFAULT_SECOND_DELAY);
+	}
+
+	@Override
+	public void setSecondDelay(float delay) {
+		iniReader.setProperty("Audio", "SecondDelay", delay);
+	}
+
+	@Override
+	public float getThirdDelay() {
+		return iniReader.getPropertyFloat("Audio", "ThirdDelay", DEFAULT_THIRD_DELAY);
+	}
+
+	@Override
+	public void setThirdDelay(float delay) {
+		iniReader.setProperty("Audio", "ThirdDelay", delay);
 	}
 
 	@Override

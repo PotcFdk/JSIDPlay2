@@ -82,7 +82,8 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private CheckBox boosted8580, fakeStereo, detectPSID64ChipModel;
 	@FXML
-	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance;
+	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance, mainDelay,
+			secondDelay, thirdDelay;
 	@FXML
 	private Label mainVolumeValue, secondVolumeValue, thirdVolumeValue;
 	@FXML
@@ -171,6 +172,22 @@ public class EmulationSettings extends C64Window {
 		thirdBalance.valueProperty().bindBidirectional(audioSection.thirdBalanceProperty());
 		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
+		});
+
+		mainDelay.setLabelFormatter(new NumberToString<Double>(1));
+		mainDelay.valueProperty().bindBidirectional(audioSection.mainDelayProperty());
+		mainDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
+			util.getPlayer().configureMixer(m -> m.setDelay(0, newValue.floatValue()));
+		});
+		secondDelay.setLabelFormatter(new NumberToString<Double>(1));
+		secondDelay.valueProperty().bindBidirectional(audioSection.secondDelayProperty());
+		secondDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
+			util.getPlayer().configureMixer(m -> m.setDelay(1, newValue.floatValue()));
+		});
+		thirdDelay.setLabelFormatter(new NumberToString<Double>(1));
+		thirdDelay.valueProperty().bindBidirectional(audioSection.thirdDelayProperty());
+		thirdDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
+			util.getPlayer().configureMixer(m -> m.setDelay(2, newValue.floatValue()));
 		});
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
@@ -277,8 +294,10 @@ public class EmulationSettings extends C64Window {
 		}
 		// stereo, only:
 		mainBalance.setDisable(!second);
+		mainDelay.setDisable(!second);
 		secondVolume.setDisable(!second);
 		secondBalance.setDisable(!second);
+		secondDelay.setDisable(!second);
 		sid2Emulation.setDisable(!second);
 		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second);
@@ -290,6 +309,7 @@ public class EmulationSettings extends C64Window {
 		// 3-SID, only:
 		thirdVolume.setDisable(!third);
 		thirdBalance.setDisable(!third);
+		thirdDelay.setDisable(!third);
 		sid3Emulation.setDisable(!third);
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
