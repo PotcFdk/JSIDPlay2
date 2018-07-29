@@ -64,14 +64,14 @@ public interface Mixer {
 	void setBalance(int sidNum, float balance);
 
 	/**
-	 * Delay feature: Delaying SID chip sound samples by time in seconds
+	 * Delay feature: Delaying SID chip sound samples by time in milliseconds
 	 * 
 	 * @param sidNum
 	 *            SID chip number
 	 * @param delay
-	 *            delay in s
+	 *            delay in ms
 	 */
-	void setDelay(int sidNum, float delay);
+	void setDelay(int sidNum, int delay);
 
 	/**
 	 * Pause player.

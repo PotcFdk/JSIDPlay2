@@ -242,51 +242,51 @@ public class AudioSection implements IAudioSection {
 		this.thirdBalance.set(third);
 	}
 
-	private FloatProperty mainDelay = new SimpleFloatProperty(DEFAULT_MAIN_DELAY);
+	private IntegerProperty mainDelay = new SimpleIntegerProperty(DEFAULT_MAIN_DELAY);
 
-	public FloatProperty mainDelayProperty() {
+	public IntegerProperty mainDelayProperty() {
 		return mainDelay;
 	}
 
 	@Override
-	public float getMainDelay() {
+	public int getMainDelay() {
 		return this.mainDelay.get();
 	}
 
 	@Override
-	public void setMainDelay(float delay) {
+	public void setMainDelay(int delay) {
 		this.mainDelay.set(delay);
 	}
 
-	private FloatProperty secondDelay = new SimpleFloatProperty(DEFAULT_SECOND_DELAY);
+	private IntegerProperty secondDelay = new SimpleIntegerProperty(DEFAULT_SECOND_DELAY);
 
-	public FloatProperty secondDelayProperty() {
+	public IntegerProperty secondDelayProperty() {
 		return secondDelay;
 	}
 
 	@Override
-	public float getSecondDelay() {
+	public int getSecondDelay() {
 		return this.secondDelay.get();
 	}
 
 	@Override
-	public void setSecondDelay(float delay) {
+	public void setSecondDelay(int delay) {
 		this.secondDelay.set(delay);
 	}
 
-	private FloatProperty thirdDelay = new SimpleFloatProperty(DEFAULT_THIRD_DELAY);
+	private IntegerProperty thirdDelay = new SimpleIntegerProperty(DEFAULT_THIRD_DELAY);
 
-	public FloatProperty thirdDelayProperty() {
+	public IntegerProperty thirdDelayProperty() {
 		return this.thirdDelay;
 	}
 
 	@Override
-	public float getThirdDelay() {
+	public int getThirdDelay() {
 		return this.thirdDelay.get();
 	}
 
 	@Override
-	public void setThirdDelay(float delay) {
+	public void setThirdDelay(int delay) {
 		this.thirdDelay.set(delay);
 	}
 

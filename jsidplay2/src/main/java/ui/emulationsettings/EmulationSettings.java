@@ -174,20 +174,17 @@ public class EmulationSettings extends C64Window {
 			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
 		});
 
-		mainDelay.setLabelFormatter(new NumberToString<Double>(1));
 		mainDelay.valueProperty().bindBidirectional(audioSection.mainDelayProperty());
 		mainDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(0, newValue.floatValue()));
+			util.getPlayer().configureMixer(m -> m.setDelay(0, newValue.intValue()));
 		});
-		secondDelay.setLabelFormatter(new NumberToString<Double>(1));
 		secondDelay.valueProperty().bindBidirectional(audioSection.secondDelayProperty());
 		secondDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(1, newValue.floatValue()));
+			util.getPlayer().configureMixer(m -> m.setDelay(1, newValue.intValue()));
 		});
-		thirdDelay.setLabelFormatter(new NumberToString<Double>(1));
 		thirdDelay.valueProperty().bindBidirectional(audioSection.thirdDelayProperty());
 		thirdDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(2, newValue.floatValue()));
+			util.getPlayer().configureMixer(m -> m.setDelay(2, newValue.intValue()));
 		});
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());

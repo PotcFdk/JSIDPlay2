@@ -91,9 +91,9 @@ public interface IniDefaults {
 	float DEFAULT_MAIN_BALANCE = AUDIO_SECTION.getMainBalance();
 	float DEFAULT_SECOND_BALANCE = AUDIO_SECTION.getSecondBalance();
 	float DEFAULT_THIRD_BALANCE = AUDIO_SECTION.getThirdBalance();
-	float DEFAULT_MAIN_DELAY = AUDIO_SECTION.getMainDelay();
-	float DEFAULT_SECOND_DELAY = AUDIO_SECTION.getSecondDelay();
-	float DEFAULT_THIRD_DELAY = AUDIO_SECTION.getThirdDelay();
+	int DEFAULT_MAIN_DELAY = AUDIO_SECTION.getMainDelay();
+	int DEFAULT_SECOND_DELAY = AUDIO_SECTION.getSecondDelay();
+	int DEFAULT_THIRD_DELAY = AUDIO_SECTION.getThirdDelay();
 	int DEFAULT_BUFFER_SIZE = AUDIO_SECTION.getBufferSize();
 
 	// Emulator Section

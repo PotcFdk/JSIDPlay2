@@ -176,49 +176,49 @@ public interface IAudioSection {
 	void setThirdBalance(float balance);
 
 	/**
-	 * Getter of the main SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Getter of the main SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @return the main SID delay setting
 	 */
-	float getMainDelay();
+	int getMainDelay();
 
 	/**
-	 * Setter of the main SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Setter of the main SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @param delay
 	 *            the main SID delay setting
 	 */
-	void setMainDelay(float delay);
+	void setMainDelay(int delay);
 
 	/**
-	 * Getter of the second SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Getter of the second SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @return the second SID delay setting
 	 */
-	float getSecondDelay();
+	int getSecondDelay();
 
 	/**
-	 * Setter of the second SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Setter of the second SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @param delay
 	 *            the second SID delay setting
 	 */
-	void setSecondDelay(float delay);
+	void setSecondDelay(int delay);
 
 	/**
-	 * Getter of the third SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Getter of the third SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @return the third SID delay setting
 	 */
-	float getThirdDelay();
+	int getThirdDelay();
 
 	/**
-	 * Setter of the third SID delay setting (0 - no delay, 1 - 1s delay).
+	 * Setter of the third SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
 	 * @param delay
 	 *            the third SID delay setting
 	 */
-	void setThirdDelay(float delay);
+	void setThirdDelay(int delay);
 
 	/**
 	 * Getter of the output buffer size.
@@ -261,7 +261,7 @@ public interface IAudioSection {
 		}
 	}
 
-	default float getDelay(int sidNum) {
+	default int getDelay(int sidNum) {
 		switch (sidNum) {
 		case 0:
 			return getMainDelay();

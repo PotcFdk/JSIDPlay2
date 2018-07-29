@@ -238,32 +238,32 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	public float getMainDelay() {
-		return iniReader.getPropertyFloat("Audio", "MainDelay", DEFAULT_MAIN_DELAY);
+	public int  getMainDelay() {
+		return iniReader.getPropertyInt("Audio", "MainDelay", DEFAULT_MAIN_DELAY);
 	}
 
 	@Override
-	public void setMainDelay(float delay) {
+	public void setMainDelay(int delay) {
 		iniReader.setProperty("Audio", "MainDelay", delay);
 	}
 
 	@Override
-	public float getSecondDelay() {
-		return iniReader.getPropertyFloat("Audio", "SecondDelay", DEFAULT_SECOND_DELAY);
+	public int getSecondDelay() {
+		return iniReader.getPropertyInt("Audio", "SecondDelay", DEFAULT_SECOND_DELAY);
 	}
 
 	@Override
-	public void setSecondDelay(float delay) {
+	public void setSecondDelay(int delay) {
 		iniReader.setProperty("Audio", "SecondDelay", delay);
 	}
 
 	@Override
-	public float getThirdDelay() {
-		return iniReader.getPropertyFloat("Audio", "ThirdDelay", DEFAULT_THIRD_DELAY);
+	public int getThirdDelay() {
+		return iniReader.getPropertyInt("Audio", "ThirdDelay", DEFAULT_THIRD_DELAY);
 	}
 
 	@Override
-	public void setThirdDelay(float delay) {
+	public void setThirdDelay(int delay) {
 		iniReader.setProperty("Audio", "ThirdDelay", delay);
 	}
 

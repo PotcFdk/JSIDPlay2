@@ -327,16 +327,15 @@ public class SIDMixer implements Mixer {
 	}
 
 	/**
-	 * Delay feature: Delaying SID chip sound samples by time in seconds
+	 * Delay feature: Delaying SID chip sound samples by time in milliseconds
 	 * 
 	 * @param sidNum SID chip number
-	 * @param delay  delay in s
+	 * @param delay  delay in ms
 	 */
-	public void setDelay(int sidNum, float delay) {
-		assert delay >= 0 && delay <= 1;
+	public void setDelay(int sidNum, int delay) {
+		assert delay >= 0 && delay <= 200;
 
-		IAudioSection audioSection = config.getAudioSection();
-		delayInSamples[sidNum] = (int) (audioSection.getSamplingRate().getFrequency() * audioSection.getDelay(sidNum));
+		delayInSamples[sidNum] = (int) (cpuClock.getCpuFrequency() / 1000. * delay);
 		updateSampleMixerVolume();
 	}
 
