@@ -80,7 +80,7 @@ Download a tune file of your music collection to the client.
 
 * Stream SID as MP3
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultPlayLength=180&enableDatabase=true&single=true&loop=false&bufferSize=65536&samplingMethod=RESAMPLE&frequency=48000&emulation=RESIDFP&defaultSidModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoost8580=true&cbr=64&vbr=0&isVbr=true[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultPlayLength=180&enableDatabase=true&single=true&loop=false&bufferSize=65536&samplingMethod=RESAMPLE&frequency=48000&emulation=RESIDFP&defaultSidModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoost8580=true&cbr=64&vbr=0&isVbr=true]
+link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
 
 Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
 All parameters are used to specify emulation settings that should be used.
@@ -95,15 +95,15 @@ Note: I will not take responsability for any costs or risks, that arise from str
 |===
 |  |  
 
-| defaultPlayLength | Play length in seconds, if tune length is unknown
-| enableDatabase | Enable song length database (true, false)
+| defaultLength | Play length in seconds, if tune length is unknown
+| enableSidDatabase | Enable song length database (true, false)
 | single | Play single song (true, false)
 | loop | Loop tune (true, false)
 | bufferSize | Emulation buffer size (default is 65536)
-| samplingMethod | Sampling method (DECIMATE, RESAMPLE)
+| sampling | Sampling method (DECIMATE, RESAMPLE)
 | frequency | Sampling frequency (44100, 48000, 96000)
-| emulation | Emulation type (RESID, RESIDFP)
-| defaultSidModel | SID model, if tune model is unknown
+| defaultEmulation | Emulation type (RESID, RESIDFP)
+| defaultModel | SID model, if tune model is unknown
 | filter6581 | RESID emulation: Filter name for 6581 mono SID
 | stereoFilter6581 | RESID emulation: Filter name for 6581 stereo SID
 | thirdFilter6581 | RESID emulation: Filter name for 6581 third SID
@@ -116,9 +116,9 @@ Note: I will not take responsability for any costs or risks, that arise from str
 | filter8580 | RESIDFP emulation: Filter name for 8580 mono SID
 | stereoFilter8580 | RESIDFP emulation: Filter name for 8580 stereo SID
 | thirdFilter8580 | RESIDFP emulation: Filter name for 8580 third SID
-| digiBoost8580 | Digi boost for SID model MOS8580 (true, false)
+| digiBoosted8580 | Digi boost for SID model MOS8580 (true, false)
 | cbr | MP3: constant bit rate in kbps (-1=auto, 32 40 48 56 64 80 96 112 128 160 192 224 256 320)
-| vbr | MP3: variable bit rate quality (0=best, 5=medium, 9=worst)
-| isVbr | MP3: use variable bit rate (true) or constant bit rate (false)
+| vbrQuality | MP3: variable bit rate quality (0=best, 5=medium, 9=worst)
+| vbr | MP3: use variable bit rate (true) or constant bit rate (false)
 
 |===
