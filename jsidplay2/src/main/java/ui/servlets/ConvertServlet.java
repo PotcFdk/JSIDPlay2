@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,10 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.URIUtil;
 
-import libsidplay.common.ChipModel;
-import libsidplay.common.Emulation;
-import libsidplay.common.SamplingMethod;
-import libsidplay.common.SamplingRate;
+import com.beust.jcommander.JCommander;
+
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -68,47 +69,19 @@ public class ConvertServlet extends HttpServlet {
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else {
-			IConfig cfg = new IniConfig(false, null);
-			cfg.getSidplay2Section().setDefaultPlayLength(Integer.parseInt(request.getParameter("defaultPlayLength")));
-			cfg.getSidplay2Section().setEnableDatabase(Boolean.parseBoolean(request.getParameter("enableDatabase")));
-			cfg.getSidplay2Section().setSingle(Boolean.parseBoolean(request.getParameter("single")));
-			cfg.getSidplay2Section().setLoop(Boolean.parseBoolean(request.getParameter("loop")));
-			cfg.getSidplay2Section().setFadeInTime(5);
-			cfg.getSidplay2Section().setFadeOutTime(5);
-			cfg.getAudioSection().setBufferSize(Integer.parseInt(request.getParameter("bufferSize")));
-			cfg.getAudioSection().setSampling(SamplingMethod.valueOf(request.getParameter("samplingMethod")));
-			Stream.of(SamplingRate.values())
-					.filter(rate -> rate.getFrequency() == Integer.parseInt(request.getParameter("frequency")))
-					.findFirst().ifPresent(freq -> cfg.getAudioSection().setSamplingRate(freq));
-			cfg.getAudioSection().setMainVolume(3f);
-			cfg.getAudioSection().setSecondVolume(3f);
-			cfg.getAudioSection().setThirdVolume(3f);
-			cfg.getAudioSection().setMainBalance(0.5f);
-			cfg.getAudioSection().setSecondBalance(0.5f);
-			cfg.getAudioSection().setThirdBalance(0.5f);
-			cfg.getEmulationSection().setDefaultEmulation(Emulation.valueOf(request.getParameter("emulation")));
-			cfg.getEmulationSection().setDefaultSidModel(ChipModel.valueOf(request.getParameter("defaultSidModel")));
-			cfg.getEmulationSection().setFilter6581(request.getParameter("filter6581"));
-			cfg.getEmulationSection().setStereoFilter6581(request.getParameter("stereoFilter6581"));
-			cfg.getEmulationSection().setThirdSIDFilter6581(request.getParameter("thirdFilter6581"));
-			cfg.getEmulationSection().setFilter8580(request.getParameter("filter8580"));
-			cfg.getEmulationSection().setStereoFilter8580(request.getParameter("stereoFilter8580"));
-			cfg.getEmulationSection().setThirdSIDFilter8580(request.getParameter("thirdFilter8580"));
-			cfg.getEmulationSection().setReSIDfpFilter6581(request.getParameter("reSIDfpFilter6581"));
-			cfg.getEmulationSection().setReSIDfpStereoFilter6581(request.getParameter("reSIDfpStereoFilter6581"));
-			cfg.getEmulationSection().setReSIDfpThirdSIDFilter6581(request.getParameter("reSIDfpThirdFilter6581"));
-			cfg.getEmulationSection().setReSIDfpFilter8580(request.getParameter("reSIDfpFilter8580"));
-			cfg.getEmulationSection().setReSIDfpStereoFilter8580(request.getParameter("reSIDfpStereoFilter8580"));
-			cfg.getEmulationSection().setReSIDfpThirdSIDFilter8580(request.getParameter("reSIDfpThirdFilter8580"));
-			cfg.getEmulationSection().setDigiBoosted8580(Boolean.parseBoolean(request.getParameter("digiBoosted8580")));
-
 			try {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
+				IConfig config = new IniConfig(false, null);
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
-				driver.setCbr(Integer.parseInt(request.getParameter("cbr")));
-				driver.setVbrQuality(Integer.parseInt(request.getParameter("vbr")));
-				driver.setVbr(Boolean.parseBoolean(request.getParameter("isVbr")));
-				convert(cfg, filePath, driver, request.getUserPrincipal());
+				JCommander commander = JCommander.newBuilder().addObject(this).addObject(config.getSidplay2Section())
+						.addObject(config.getAudioSection()).addObject(config.getEmulationSection())
+						.addObject(driver).programName(getClass().getName()).build();
+				List<String> args = Collections.list(request.getParameterNames()).stream()
+						.map(name -> Arrays.asList("--" + name,
+								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
+						.flatMap(List::stream).collect(Collectors.toList());
+				commander.parse(args.toArray(new String[0]));
+				convert(config, filePath, driver, request.getUserPrincipal());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));

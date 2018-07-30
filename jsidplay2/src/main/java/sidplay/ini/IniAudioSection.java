@@ -98,6 +98,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 *            the sampling method
 	 */
 	@Override
+	@Parameter(names = { "--sampling" }, descriptionKey = "SAMPLING")
 	public final void setSampling(final SamplingMethod method) {
 		iniReader.setProperty("Audio", "Sampling", method);
 	}
@@ -213,6 +214,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--mainBalance" }, descriptionKey = "MAIN_BALANCE")
 	public void setMainBalance(float balance) {
 		iniReader.setProperty("Audio", "MainBalance", balance);
 	}
@@ -223,6 +225,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--secondBalance" }, descriptionKey = "SECOND_BALANCE")
 	public void setSecondBalance(float balance) {
 		iniReader.setProperty("Audio", "SecondBalance", balance);
 	}
@@ -233,6 +236,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--thirdBalance" }, descriptionKey = "THIRD_BALANCE")
 	public void setThirdBalance(float balance) {
 		iniReader.setProperty("Audio", "ThirdBalance", balance);
 	}
@@ -243,6 +247,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--mainDelay" }, descriptionKey = "MAIN_DELAY")
 	public void setMainDelay(int delay) {
 		iniReader.setProperty("Audio", "MainDelay", delay);
 	}
@@ -253,6 +258,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--secondDelay" }, descriptionKey = "SECOND_DELAY")
 	public void setSecondDelay(int delay) {
 		iniReader.setProperty("Audio", "SecondDelay", delay);
 	}
@@ -263,6 +269,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--thirdDelay" }, descriptionKey = "THIRD_DELAY")
 	public void setThirdDelay(int delay) {
 		iniReader.setProperty("Audio", "ThirdDelay", delay);
 	}

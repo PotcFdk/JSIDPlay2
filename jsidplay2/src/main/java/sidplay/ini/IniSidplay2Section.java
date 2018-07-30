@@ -78,6 +78,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
+	@Parameter(names = { "--fadeIn" }, descriptionKey = "FADE_IN", converter = ParameterTimeConverter.class)
 	public void setFadeInTime(int fadeInTime) {
 		iniReader.setProperty("SIDPlay2", "Fade In Time",
 				String.format("%02d:%02d", (fadeInTime / 60), (fadeInTime % 60)));
@@ -89,6 +90,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
+	@Parameter(names = { "--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class)
 	public void setFadeOutTime(int fadeOutTime) {
 		iniReader.setProperty("SIDPlay2", "Fade Out Time",
 				String.format("%02d:%02d", (fadeOutTime / 60), (fadeOutTime % 60)));

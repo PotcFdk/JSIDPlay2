@@ -296,6 +296,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--digiBoosted8580" }, descriptionKey = "DIGIBOOSTED8580", arity=1)
 	public final void setDigiBoosted8580(final boolean boost) {
 		iniReader.setProperty("Emulation", "DigiBoosted8580", boost);
 	}
@@ -326,6 +327,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--fakeStereo" }, descriptionKey = "FAKE_STEREO", arity = 1)
 	public final void setFakeStereo(boolean fakeStereo) {
 		iniReader.setProperty("Emulation", "fakeStereo", fakeStereo);
 	}
@@ -549,6 +551,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--filter6581" }, descriptionKey = "FILTER_6581")
 	public final void setFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter6581", filterName);
 	}
@@ -559,6 +562,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--stereoFilter6581" }, descriptionKey = "STEREO_FILTER_6581")
 	public final void setStereoFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "Stereo_Filter6581", filterName);
 	}
@@ -569,6 +573,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--thirdFilter6581" }, descriptionKey = "THIRD_FILTER_6581")
 	public final void setThirdSIDFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "3rdSID_Filter6581", filterName);
 	}
@@ -579,6 +584,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--filter8580" }, descriptionKey = "FILTER_8580")
 	public final void setFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "Filter8580", filterName);
 	}
@@ -589,6 +595,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--stereoFilter8580" }, descriptionKey = "STEREO_FILTER_8580")
 	public final void setStereoFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "Stereo_Filter8580", filterName);
 	}
@@ -599,6 +606,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--thirdFilter8580" }, descriptionKey = "THIRD_FILTER_8580")
 	public final void setThirdSIDFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "3rdSID_Filter8580", filterName);
 	}
@@ -609,6 +617,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--reSIDfpFilter6581" }, descriptionKey = "RESIDFP_FILTER_6581")
 	public final void setReSIDfpFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter6581", filterName);
 	}
@@ -620,6 +629,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--reSIDfpStereoFilter6581" }, descriptionKey = "RESIDFP_STEREO_FILTER_6581")
 	public final void setReSIDfpStereoFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter6581", filterName);
 	}
@@ -630,6 +640,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--reSIDfpThirdFilter6581" }, descriptionKey = "RESIDFP_THIRD_FILTER_6581")
 	public final void setReSIDfpThirdSIDFilter6581(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter6581", filterName);
 	}
@@ -639,6 +650,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580", DEFAULT_ReSIDfp_FILTER_8580);
 	}
 
+	@Parameter(names = { "--reSIDfpFilter8580" }, descriptionKey = "RESIDFP_FILTER_8580")
 	public final void setReSIDfpFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter8580", filterName);
 	}
@@ -650,6 +662,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--reSIDfpStereoFilter8580" }, descriptionKey = "RESIDFP_STEREO_FILTER_8580")
 	public final void setReSIDfpStereoFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Stereo_Filter8580", filterName);
 	}
@@ -660,6 +673,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--reSIDfpThirdFilter8580" }, descriptionKey = "RESIDFP_THIRD_FILTER_8580")
 	public final void setReSIDfpThirdSIDFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_3rdSID_Filter8580", filterName);
 	}
