@@ -162,6 +162,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 *            the main SID volume setting
 	 */
 	@Override
+	@Parameter(names = { "--mainVolume" }, descriptionKey = "MAIN_VOLUME")
 	public final void setMainVolume(final float volume) {
 		iniReader.setProperty("Audio", "MainVolume", volume);
 	}
@@ -183,6 +184,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 *            the second SID volume setting
 	 */
 	@Override
+	@Parameter(names = { "--secondVolume" }, descriptionKey = "SECOND_VOLUME")
 	public void setSecondVolume(final float volume) {
 		iniReader.setProperty("Audio", "SecondVolume", volume);
 	}
@@ -204,6 +206,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	 *            the third SID volume setting
 	 */
 	@Override
+	@Parameter(names = { "--thirdVolume" }, descriptionKey = "THIRD_VOLUME")
 	public void setThirdVolume(final float volume) {
 		iniReader.setProperty("Audio", "ThirdVolume", volume);
 	}
