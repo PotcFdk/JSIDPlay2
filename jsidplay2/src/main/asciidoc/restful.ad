@@ -89,36 +89,8 @@ I have implemented an example android app as a client for the built-in App serve
 My android app uses constant bitrate of 64K for the internet and variable bitrate and highest quality for my private WLAN.
 This is according to my recommendation above.
 
-Note: I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
+*Note:* I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
 
-.Streaming parameters
-|===
-|  |  
+*Info:* All Parameter names match exactly the command line parameter names of the console player in gnu style (prepended by --).
+For example defaultLength=180 sets the default song length.
 
-| defaultLength | Play length in seconds, if tune length is unknown
-| enableSidDatabase | Enable song length database (true, false)
-| single | Play single song (true, false)
-| loop | Loop tune (true, false)
-| bufferSize | Emulation buffer size (default is 65536)
-| sampling | Sampling method (DECIMATE, RESAMPLE)
-| frequency | Sampling frequency (44100, 48000, 96000)
-| defaultEmulation | Emulation type (RESID, RESIDFP)
-| defaultModel | SID model, if tune model is unknown
-| filter6581 | RESID emulation: Filter name for 6581 mono SID
-| stereoFilter6581 | RESID emulation: Filter name for 6581 stereo SID
-| thirdFilter6581 | RESID emulation: Filter name for 6581 third SID
-| filter8580 | RESID emulation: Filter name for 8580 mono SID
-| stereoFilter8580 | RESID emulation: Filter name for 8580 stereo SID
-| thirdFilter8580 | RESID emulation: Filter name for 8580 third SID
-| reSIDfpFilter6581 | RESIDFP emulation: Filter name for 6581 mono SID
-| reSIDfpStereoFilter6581 | RESIDFP emulation: Filter name for 6581 stereo SID
-| reSIDfpThirdFilter6581 | RESIDFP emulation: Filter name for 6581 third SID
-| filter8580 | RESIDFP emulation: Filter name for 8580 mono SID
-| stereoFilter8580 | RESIDFP emulation: Filter name for 8580 stereo SID
-| thirdFilter8580 | RESIDFP emulation: Filter name for 8580 third SID
-| digiBoosted8580 | Digi boost for SID model MOS8580 (true, false)
-| cbr | MP3: constant bit rate in kbps (-1=auto, 32 40 48 56 64 80 96 112 128 160 192 224 256 320)
-| vbrQuality | MP3: variable bit rate quality (0=best, 5=medium, 9=worst)
-| vbr | MP3: use variable bit rate (true) or constant bit rate (false)
-
-|===
