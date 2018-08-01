@@ -66,7 +66,8 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--defaultLength", "-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
+	@Parameter(names = { "--defaultLength",
+			"-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
 	public final void setDefaultPlayLength(final int playLength) {
 		iniReader.setProperty("SIDPlay2", "Default Play Length",
 				String.format("%02d:%02d", (playLength / 60), (playLength % 60)));
@@ -83,7 +84,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Fade In Time",
 				String.format("%02d:%02d", (fadeInTime / 60), (fadeInTime % 60)));
 	}
-	
+
 	@Override
 	public int getFadeOutTime() {
 		return iniReader.getPropertyTime("SIDPlay2", "Fade Out Time", DEFAULT_FADE_OUT_TIME);
@@ -95,14 +96,14 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Fade Out Time",
 				String.format("%02d:%02d", (fadeOutTime / 60), (fadeOutTime % 60)));
 	}
-	
+
 	@Override
 	public boolean isLoop() {
 		return iniReader.getPropertyBool("SIDPlay2", "Loop", DEFAULT_LOOP);
 	}
 
 	@Override
-	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity=1)
+	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity = 1)
 	public void setLoop(boolean loop) {
 		iniReader.setProperty("SIDPlay2", "Loop", loop);
 	}
@@ -113,7 +114,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE", arity=1)
+	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE", arity = 1)
 	public final void setSingle(final boolean singleSong) {
 		iniReader.setProperty("SIDPlay2", "SingleTrack", singleSong);
 	}
@@ -231,4 +232,29 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "TurboTape", turboTape);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("version=").append(getVersion()).append(",");
+		result.append("enableDatabase=").append(isEnableDatabase()).append(",");
+		result.append("defaultPlayLength=").append(getDefaultPlayLength()).append(",");
+		result.append("fadeInTime=").append(getFadeInTime()).append(",");
+		result.append("fadeOutTime=").append(getFadeOutTime()).append(",");
+		result.append("loop=").append(isLoop()).append(",");
+		result.append("single=").append(isSingle()).append(",");
+		result.append("hvsc=").append(getHvsc()).append(",");
+		result.append("lastDirectory=").append(getLastDirectory()).append(",");
+		result.append("tmpDir=").append(getTmpDir()).append(",");
+		result.append("brightness=").append(getBrightness()).append(",");
+		result.append("contrast=").append(getContrast()).append(",");
+		result.append("gamma=").append(getGamma()).append(",");
+		result.append("saturation=").append(getSaturation()).append(",");
+		result.append("phaseShift=").append(getPhaseShift()).append(",");
+		result.append("offset=").append(getOffset()).append(",");
+		result.append("tint=").append(getTint()).append(",");
+		result.append("blur=").append(getBlur()).append(",");
+		result.append("bleed=").append(getBleed()).append(",");
+		result.append("turboTape=").append(isTurboTape());
+		return result.toString();
+	}
 }

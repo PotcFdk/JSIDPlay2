@@ -29,12 +29,18 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 	/**
 	 * Turn printer on.
 	 * 
-	 * @param on
-	 *            printer turned on?
+	 * @param on printer turned on?
 	 */
 	@Override
 	public final void setPrinterOn(final boolean on) {
 		iniReader.setProperty("Printer", "PrinterOn", on);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("printerOn=").append(isPrinterOn());
+		return result.toString();
 	}
 
 }

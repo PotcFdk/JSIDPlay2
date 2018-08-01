@@ -38,8 +38,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Turn drive on.
 	 * 
-	 * @param on
-	 *            drive turned on?
+	 * @param on drive turned on?
 	 */
 	@Override
 	public final void setDriveOn(final boolean on) {
@@ -59,8 +58,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Plug in parallel cable.
 	 * 
-	 * @param on
-	 *            parallel cable plugged in?
+	 * @param on parallel cable plugged in?
 	 */
 	@Override
 	public final void setParallelCable(final boolean on) {
@@ -90,14 +88,13 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Enable 8K Ram expansion.
 	 *
-	 * @param on
-	 *            enable 8K Ram expansion
+	 * @param on enable 8K Ram expansion
 	 */
 	@Override
 	public final void setRamExpansionEnabled0(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x2000", on);
 	}
-	
+
 	@Override
 	public final boolean isRamExpansionEnabled1() {
 		return iniReader.getPropertyBool("C1541", "RamExpand0x4000", DEFAULT_RAM_EXPAND_0X4000);
@@ -107,7 +104,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	public final void setRamExpansionEnabled1(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x4000", on);
 	}
-	
+
 	@Override
 	public final boolean isRamExpansionEnabled2() {
 		return iniReader.getPropertyBool("C1541", "RamExpand0x6000", DEFAULT_RAM_EXPAND_0X6000);
@@ -117,7 +114,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	public final void setRamExpansionEnabled2(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x6000", on);
 	}
-	
+
 	@Override
 	public final boolean isRamExpansionEnabled3() {
 		return iniReader.getPropertyBool("C1541", "RamExpand0x8000", DEFAULT_RAM_EXPAND_0X8000);
@@ -127,7 +124,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	public final void setRamExpansionEnabled3(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0x8000", on);
 	}
-	
+
 	@Override
 	public final boolean isRamExpansionEnabled4() {
 		return iniReader.getPropertyBool("C1541", "RamExpand0xA000", DEFAULT_RAM_EXPAND_0XA000);
@@ -137,7 +134,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	public final void setRamExpansionEnabled4(final boolean on) {
 		iniReader.setProperty("C1541", "RamExpand0xA000", on);
 	}
-	
+
 	/**
 	 * Get type of floppy.
 	 * 
@@ -151,11 +148,26 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	/**
 	 * Set type of floppy.
 	 * 
-	 * @param floppyType
-	 *            type of floppy
+	 * @param floppyType type of floppy
 	 */
 	@Override
 	public final void setFloppyType(final FloppyType floppyType) {
 		iniReader.setProperty("C1541", "FloppyType", floppyType);
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("driveOn=").append(isDriveOn()).append(",");
+		result.append("parallelCable=").append(isParallelCable()).append(",");
+		result.append("jiffyDosInstalled=").append(isJiffyDosInstalled()).append(",");
+		result.append("ramExpansionEnabled0=").append(isRamExpansionEnabled0()).append(",");
+		result.append("ramExpansionEnabled1=").append(isRamExpansionEnabled1()).append(",");
+		result.append("ramExpansionEnabled2=").append(isRamExpansionEnabled2()).append(",");
+		result.append("ramExpansionEnabled3=").append(isRamExpansionEnabled3()).append(",");
+		result.append("ramExpansionEnabled4=").append(isRamExpansionEnabled4()).append(",");
+		result.append("floppyType=").append(getFloppyType());
+		return result.toString();
+	}
+
 }

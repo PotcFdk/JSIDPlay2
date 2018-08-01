@@ -73,14 +73,14 @@ public class ConvertServlet extends HttpServlet {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
-				JCommander commander = JCommander.newBuilder().addObject(this).addObject(config.getSidplay2Section())
-						.addObject(config.getAudioSection()).addObject(config.getEmulationSection())
-						.addObject(driver).programName(getClass().getName()).build();
-				List<String> args = Collections.list(request.getParameterNames()).stream()
+				JCommander commander = JCommander.newBuilder().addObject(config.getSidplay2Section())
+						.addObject(config.getAudioSection()).addObject(config.getEmulationSection()).addObject(driver)
+						.programName(getClass().getName()).build();
+				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
-						.flatMap(List::stream).collect(Collectors.toList());
-				commander.parse(args.toArray(new String[0]));
+						.flatMap(List::stream).collect(Collectors.toList()).toArray(new String[0]);
+				commander.parse(args);
 				convert(config, filePath, driver, request.getUserPrincipal());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());

@@ -72,8 +72,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the Playback/Recording frequency.
 	 * 
-	 * @param samplingRate
-	 *            Playback/Recording frequency
+	 * @param samplingRate Playback/Recording frequency
 	 */
 	@Override
 	@Parameter(names = { "--frequency", "-f" }, descriptionKey = "FREQUENCY")
@@ -94,8 +93,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the sampling method.
 	 * 
-	 * @param method
-	 *            the sampling method
+	 * @param method the sampling method
 	 */
 	@Override
 	@Parameter(names = { "--sampling" }, descriptionKey = "SAMPLING")
@@ -116,8 +114,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter to play the recorded tune.
 	 * 
-	 * @param original
-	 *            Play recorded (original) or emulated tune
+	 * @param original Play recorded (original) or emulated tune
 	 */
 	@Override
 	public final void setPlayOriginal(final boolean original) {
@@ -137,8 +134,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the recorded tune filename.
 	 * 
-	 * @param recording
-	 *            the recorded tune filename
+	 * @param recording the recorded tune filename
 	 */
 	@Override
 	public final void setMp3File(final String recording) {
@@ -158,8 +154,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the main SID volume setting.
 	 * 
-	 * @param volume
-	 *            the main SID volume setting
+	 * @param volume the main SID volume setting
 	 */
 	@Override
 	@Parameter(names = { "--mainVolume" }, descriptionKey = "MAIN_VOLUME")
@@ -180,8 +175,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the second SID volume setting.
 	 * 
-	 * @param volume
-	 *            the second SID volume setting
+	 * @param volume the second SID volume setting
 	 */
 	@Override
 	@Parameter(names = { "--secondVolume" }, descriptionKey = "SECOND_VOLUME")
@@ -202,8 +196,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	/**
 	 * Setter of the third SID volume setting.
 	 * 
-	 * @param volume
-	 *            the third SID volume setting
+	 * @param volume the third SID volume setting
 	 */
 	@Override
 	@Parameter(names = { "--thirdVolume" }, descriptionKey = "THIRD_VOLUME")
@@ -245,7 +238,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	public int  getMainDelay() {
+	public int getMainDelay() {
 		return iniReader.getPropertyInt("Audio", "MainDelay", DEFAULT_MAIN_DELAY);
 	}
 
@@ -287,4 +280,27 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	public void setBufferSize(int bufferSize) {
 		iniReader.setProperty("Audio", "Buffer Size", bufferSize);
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("audio=").append(getAudio()).append(",");
+		result.append("device=").append(getDevice()).append(",");
+		result.append("samplingRate=").append(getSamplingRate()).append(",");
+		result.append("sampling=").append(getSampling()).append(",");
+		result.append("playOriginal=").append(isPlayOriginal()).append(",");
+		result.append("mp3File=").append(getMp3File()).append(",");
+		result.append("mainVolume=").append(getMainVolume()).append(",");
+		result.append("secondVolume=").append(getSecondVolume()).append(",");
+		result.append("thirdVolume=").append(getThirdVolume()).append(",");
+		result.append("mainBalance=").append(getMainBalance()).append(",");
+		result.append("secondBalance=").append(getSecondBalance()).append(",");
+		result.append("thirdBalance=").append(getThirdBalance()).append(",");
+		result.append("mainDelay=").append(getMainDelay()).append(",");
+		result.append("secondDelay=").append(getSecondDelay()).append(",");
+		result.append("thirdDelay=").append(getThirdDelay()).append(",");
+		result.append("bufferSize=").append(getBufferSize());
+		return result.toString();
+	}
+
 }

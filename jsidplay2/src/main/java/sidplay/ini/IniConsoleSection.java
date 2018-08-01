@@ -125,4 +125,17 @@ public class IniConsoleSection extends IniSection {
 		iniReader.setProperty("Console", "Char Junction Right", junctionRight);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("topLeft=").append(getTopLeft()).append(",");
+		result.append("topRight=").append(getTopRight()).append(",");
+		result.append("bottomLeft=").append(getBottomLeft()).append(",");
+		result.append("bottomRight=").append(getBottomRight()).append(",");
+		result.append("vertical=").append(getVertical()).append(",");
+		result.append("horizontal=").append(getHorizontal()).append(",");
+		result.append("junctionLeft=").append(getJunctionLeft()).append(",");
+		result.append("junctionRight=").append(getJunctionRight());
+		return result.toString();
+	}
 }
