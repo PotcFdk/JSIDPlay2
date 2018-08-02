@@ -55,8 +55,7 @@ final public class ConsolePlayer {
 	private ConsolePlayer(final String[] args) {
 		try {
 			final IniConfig config = new IniConfig(true);
-			JCommander commander = JCommander.newBuilder().addObject(this).addObject(config.getSidplay2Section())
-					.addObject(config.getAudioSection()).addObject(config.getEmulationSection())
+			JCommander commander = JCommander.newBuilder().addObject(this).addObject(config)
 					.addObject(Audio.MP3.getAudioDriver()).programName(getClass().getName()).build();
 			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();

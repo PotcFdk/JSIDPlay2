@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.beust.jcommander.ParametersDelegate;
+
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IConfig;
@@ -46,11 +48,14 @@ public class IniConfig implements IConfig {
 	/** INI configuration filename or null (use internal configuration) */
 	private final File iniPath;
 
+	@ParametersDelegate
 	private ISidPlay2Section sidplay2Section;
 	private IC1541Section c1541Section;
 	private IPrinterSection printerSection;
 	private IniConsoleSection consoleSection;
+	@ParametersDelegate
 	private IAudioSection audioSection;
+	@ParametersDelegate
 	private IEmulationSection emulationSection;
 
 	protected IniReader iniReader;
