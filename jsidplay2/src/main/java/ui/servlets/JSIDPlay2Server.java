@@ -3,6 +3,7 @@ package ui.servlets;
 import static ui.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
 import static ui.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
 import static ui.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
+import static ui.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
 import static ui.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
 import static ui.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
 import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
@@ -92,6 +93,7 @@ public class JSIDPlay2Server {
 		HttpServlet photoServlet = new PhotoServlet(configuration);
 		HttpServlet convertServlet = new ConvertServlet(configuration);
 		HttpServlet downloadServlet = new DownloadServlet(configuration);
+		HttpServlet favoritesServlet = new FavoritesServlet(configuration);
 
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath("/");
@@ -102,6 +104,7 @@ public class JSIDPlay2Server {
 		contextHandler.addServlet(new ServletHolder(photoServlet), CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
 		contextHandler.addServlet(new ServletHolder(convertServlet), CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
 		contextHandler.addServlet(new ServletHolder(downloadServlet), CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
+		contextHandler.addServlet(new ServletHolder(favoritesServlet), CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
 		return contextHandler;
 	}
 

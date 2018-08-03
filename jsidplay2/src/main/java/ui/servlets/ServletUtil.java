@@ -12,6 +12,7 @@ import java.util.Locale;
 import de.schlichtherle.truezip.file.TFile;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 
 public class ServletUtil {
@@ -115,6 +116,18 @@ public class ServletUtil {
 		return null;
 	}
 
+	public String getFavoriteFilename(HVSCEntry entry) {
+		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvscFile(), null).size() > 0) {
+			// HVSC
+			return C64_MUSIC + entry.getPath();
+		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgscFile(), null)
+				.size() > 0) {
+			// CGSC
+			return CGSC + entry.getPath();
+		}
+		return null;
+	}
+	
 	public Configuration getConfiguration() {
 		return configuration;
 	}

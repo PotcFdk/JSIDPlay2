@@ -66,6 +66,12 @@ link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSIC
 
 Return a list of information of the specified tune file.
 
+* Get contents of the first SID favorites tab
+
+link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites]
+
+Return a list of favorite tune files.
+
 * Get composer photo
 
 link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
