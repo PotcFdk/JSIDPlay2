@@ -333,7 +333,7 @@ public class SIDMixer implements Mixer {
 	 * @param delay  delay in ms
 	 */
 	public void setDelay(int sidNum, int delay) {
-		assert delay >= 0 && delay <= 200;
+		assert delay >= 0 && delay <= 100;
 
 		delayInSamples[sidNum] = (int) (cpuClock.getCpuFrequency() / 1000. * delay);
 		updateSampleMixerVolume();

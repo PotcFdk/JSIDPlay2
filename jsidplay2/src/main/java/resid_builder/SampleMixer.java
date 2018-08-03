@@ -132,26 +132,16 @@ class SampleMixer implements IntConsumer {
 	}
 
 	public void setDelay(int delayedSamples) {
-		if (delayedSamples > 0) {
-			this.delayedSamples = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
-					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]).flip();
-		} else {
-			this.delayedSamples = null;
-		}
+		this.delayedSamples = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
+				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]).flip();
 	}
 
 	@Override
 	public void accept(int sample) {
-		if (delayedSamples != null) {
-			if (!delayedSamples.put(sample).hasRemaining()) {
-				delayedSamples.flip();
-			}
-			if (delayedSamples.position() + 1 < delayedSamples.capacity()) {
-				sample = delayedSamples.get(delayedSamples.position() + 1);
-			} else {
-				sample = delayedSamples.get(0);
-			}
+		if (!delayedSamples.put(sample).hasRemaining()) {
+			delayedSamples.flip();
 		}
+		sample = delayedSamples.get(delayedSamples.position());
 		bufferL.put(bufferL.get(bufferL.position()) + sample * volumeL);
 		bufferR.put(bufferR.get(bufferR.position()) + sample * volumeR);
 	}
