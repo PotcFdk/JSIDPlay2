@@ -73,6 +73,10 @@ In every jar of the app in the META-INF/MANIFEST.MF the codebase must exactly ma
 6. Info: Debugging and fiddling out Java WebStart errors is awful, error messages appear in ugly dialog boxes and security warnings frightens users from installing it!
 Over and out!
 
+How to Create a HTTPS certificate easily:
+=========================================
+https://certbot.eff.org/lets-encrypt/ubuntutrusty-apache
+
 Tips:
 =====
 
@@ -91,7 +95,7 @@ find out available JavaFX style classes of a node in the scene graph:
 
 How to debug Java WebStart applications:
 set JAVAWS_VM_ARGS="-Xdebug -Dnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=8000"
-javaws http://haendel.ddns.net/~ken/online/webstart/JSIDPlay2.jnlp
+javaws https://haendel.ddns.net/~ken/online/webstart/JSIDPlay2.jnlp
 
 Chameleon Command-Line:
 =======================

@@ -35,7 +35,7 @@ To use your client from within your private local area network does not require 
 
 But, if you want to use a client from any location in the internet, that would require some additional preparations:
 
-. You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like http://freeddns.noip.com and configure dynamic DNS inside your router)
+. You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like https://freeddns.noip.com and configure dynamic DNS inside your router)
 . You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in App server in JSIDPlay2. This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server.
 
 Keep in mind, that opening ports in your firewall will raise the security risk. You will make yourself vulnerable to attacks from hackers.
