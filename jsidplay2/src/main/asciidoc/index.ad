@@ -3,12 +3,12 @@
 == Introduction
 
 I am a C64 fan since 1986 as many other people are. I played games, watched demos and read books, but when the time goes by, all activities stopped slowly in the beginning of the 90s. 
-But one thing from the past i actually do until today, that is listening the precious SID music of all the talented music artists and demo groups. So many thanks to all of you for your work collected in the link:http://www.hvsc.c64.org/[HVSC].
+But one thing from the past i actually do until today, that is listening the precious SID music of all the talented music artists and demo groups. So many thanks to all of you for your work collected in the link:https://www.hvsc.c64.org/[HVSC].
 
-To listen the new releases from the still active groups i often used link:http://sourceforge.net/projects/sidplay2/[sidplay2]  for windows or an emulator like link:http://www.ccs64.com/[CCS64] , because my commodore was on the attic.
+To listen the new releases from the still active groups i often used link:https://sourceforge.net/projects/sidplay2/[sidplay2]  for windows or an emulator like link:https://www.ccs64.com/[CCS64] , because my commodore was on the attic.
 
 I am a Java developer and wanted to have my very own java implementation to create a so called C64 Jukebox. 
-I decided to create a 1:1 conversion of link:http://sourceforge.net/projects/sidplay2/[sidplay2] from C++ to java. It should have all features of the original.
+I decided to create a 1:1 conversion of link:https://sourceforge.net/projects/sidplay2/[sidplay2] from C++ to java. It should have all features of the original.
 It was a long time work and when it was finished i decided to make it open source, that others can integrate into their java emulators. +
 Perhaps there will be plugins for many java apps some day or a version running even on a mobile.
 
@@ -20,14 +20,14 @@ The current version has been evolved toward a full featured and very compatible 
 Thank you!
 
 If you want to give feedback, please mailto:kschwiersch@yahoo.de?subject=JSIDPlay2[email me]. +
-If you want to know who i am, you can visit my link:http://haendel-junior.de/[homepage]. +
-If you want to visit my other open source project, please visit link:http://www.totalcmd.net/plugring/tc_java.html[Total Comander Plugin Interface] page.
+If you want to know who i am, you can visit my link:https://haendel-junior.de/[homepage]. +
+If you want to visit my other open source project, please visit link:https://www.totalcmd.net/plugring/tc_java.html[Total Comander Plugin Interface] page.
 
 == Features
 
 JSidplay2 is able to
 
-* load sound files with extensions: SID (PSID/RSID), MUS, DAT, P00, PRG, STR. You can find most of them in the link:http://www.hvsc.c64.org/[High Voltage SID Collection], the biggest music collecton on earth. 
+* load sound files with extensions: SID (PSID/RSID), MUS, DAT, P00, PRG, STR. You can find most of them in the link:https://www.hvsc.c64.org/[High Voltage SID Collection], the biggest music collecton on earth. 
 * play mono, stereo and 3-SID formats
 * play with custom sample rates (sample size is 16 bit)
 * load external SID Filter definition
@@ -59,8 +59,8 @@ Click link:https://sourceforge.net/projects/jsidplay2/[here] to download
 
 == Further possibilities
 
-* If you want to compare the quality of this emulation with the real thing and own a link:http://www.hardsid.com/[HardSID4U] soundcard,
-then just download and start link:http://www.acid64.com/[ACID64] (by Wilfred Bos) the recommended music player to play SID tunes on a real SID chip
+* If you want to compare the quality of this emulation with the real thing and own a link:http://www.hardsid.com/[HardSID4U] soundcard (no more available, please search on ebay),
+then just download and start link:https://www.acid64.com/[ACID64] (by Wilfred Bos) the recommended music player to play SID tunes on a real SID chip
 and additionally download the link:{codebase}jsiddevice-{version}.jar[Network SID Device] (part of JSIDPlay2).
 Now, using ACID64 you are able to switch between the real SID chip playback and the emulation on the fly.
 
@@ -70,12 +70,12 @@ Now, using ACID64 you are able to switch between the real SID chip playback and 
   <TABLE>
   <TR>
     <TD>
-	  <script type="text/javascript" src="http://www.ohloh.net/p/79813/widgets/project_partner_badge.js"></script>
+	  <script type="text/javascript" src="https://www.ohloh.net/p/79813/widgets/project_partner_badge.js"></script>
 	</TD>
 	</TR>
     <TR>
     <TD>
-	<script type="text/javascript" src="http://www.ohloh.net/p/79813/widgets/project_languages.js"></script>
+	<script type="text/javascript" src="https://www.ohloh.net/p/79813/widgets/project_languages.js"></script>
 	</TD>
 	</TR>
   </TABLE>
@@ -90,13 +90,13 @@ Now, using ACID64 you are able to switch between the real SID chip playback and 
 | link:http://www.softpedia.com/get/Multimedia/Audio/Audio-Players/Java-SIDPlay.shtml[image:sp100free.png[JSidplay2 2.0 - SOFTPEDIA &quot;100% FREE&quot; AWARD]]
 | link:http://download.famouswhy.com/jsidplay2/[image:http://download.famouswhy.com/awards/famouswhy_pickaward.gif[Famous Software Download]]
 link:http://download.famouswhy.com/publisher/kenchis/[image:http://download.famouswhy.com/account_images/public_profile/interview.gif[Short Interview]]
-| link:http://www.geardownload.com/multimedia/jsidplay2.html[image:http://www.geardownload.com/images/5starsc.jpg[JSIDPlay2 - 5 stars rated on GearDownload.com]]
-| link:http://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258[image:http://image.wareseeker.com/images_icon/editor_pick.gif[JSIDPlay2 - Editor's Pick at WareSeeker.com]]
+| link:https://www.geardownload.com/multimedia/jsidplay2.html[image:https://www.geardownload.com/images/5starsc.jpg[JSIDPlay2 - 5 stars rated on GearDownload.com]]
+| link:https://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258[image:http://image.wareseeker.com/images_icon/editor_pick.gif[JSIDPlay2 - Editor's Pick at WareSeeker.com]]
 
-| link:http://www.softpedia.com/get/Multimedia/Audio/Audio-Players/Java-SIDPlay.shtml[JSIDPlay2 3.9 at Softpedia]
-| link:http://download.famouswhy.com/jsidplay2/[JSidplay2 2.0 at FamousWhy]
-| link:http://www.geardownload.com/multimedia/jsidplay2.html[JSidplay2 2.0 at GearDownload.com]
-| link:http://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258[JSidplay2 2.0 at WareSeeker.com]
+| link:https://www.softpedia.com/get/Multimedia/Audio/Audio-Players/Java-SIDPlay.shtml[JSIDPlay2 3.9 at Softpedia]
+| link:https://download.famouswhy.com/jsidplay2/[JSidplay2 2.0 at FamousWhy]
+| link:https://www.geardownload.com/multimedia/jsidplay2.html[JSidplay2 2.0 at GearDownload.com]
+| link:https://mac.wareseeker.com/Utilities/jsidplay2-2.0.zip/c8c55e258[JSidplay2 2.0 at WareSeeker.com]
 
 |===
 
@@ -163,5 +163,5 @@ Credits go first to the original authors for doing such a great sidplay2 softwar
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   
-link:http://www.disclaimer.de/disclaimer.htm[image:disclaimer.gif[Disclaimer]]
+link:https://www.disclaimer.de/disclaimer.htm[image:disclaimer.gif[Disclaimer]]
   
