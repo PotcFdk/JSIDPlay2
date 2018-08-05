@@ -1,8 +1,11 @@
 package ui.servlets;
 
+import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,8 +27,8 @@ public class DownloadServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public DownloadServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public DownloadServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**
@@ -42,7 +45,7 @@ public class DownloadServlet extends HttpServlet {
 
 		try {
 			response.setContentType(ContentType.getContentType(PathUtils.getFilenameSuffix(filePath)).getContentType());
-			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()), response.getOutputStream());
+			ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 		} catch (Exception e) {
 			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());

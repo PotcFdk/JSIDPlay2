@@ -1,13 +1,15 @@
 package ui.servlets;
 
+import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -39,8 +41,8 @@ public class ConvertServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public ConvertServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public ConvertServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class ConvertServlet extends HttpServlet {
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			try {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
-				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.getUserPrincipal()),
+				ZipFileUtils.copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)),
 						response.getOutputStream());
 				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 			} catch (Exception e) {
@@ -80,7 +82,7 @@ public class ConvertServlet extends HttpServlet {
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
 						.flatMap(List::stream).collect(Collectors.toList()).toArray(new String[0]);
 				commander.parse(args);
-				convert(config, filePath, driver, request.getUserPrincipal());
+				convert(config, filePath, driver, request.isUserInRole(ROLE_ADMIN));
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
@@ -91,7 +93,7 @@ public class ConvertServlet extends HttpServlet {
 		}
 	}
 
-	private void convert(IConfig config, String resource, AudioDriver driver, Principal principal)
+	private void convert(IConfig config, String resource, AudioDriver driver, boolean adminRole)
 			throws IOException, SidTuneError {
 		Player player = new Player(config);
 		String root = util.getConfiguration().getSidplay2Section().getHvsc();
@@ -99,7 +101,7 @@ public class ConvertServlet extends HttpServlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
-		player.play(SidTune.load(util.getAbsoluteFile(resource, principal)));
+		player.play(SidTune.load(util.getAbsoluteFile(resource, adminRole)));
 		player.stopC64(false);
 	}
 

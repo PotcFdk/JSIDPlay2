@@ -3,6 +3,7 @@ package ui.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,8 +26,8 @@ public class FavoritesServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public FavoritesServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public FavoritesServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**

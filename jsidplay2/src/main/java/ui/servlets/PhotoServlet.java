@@ -1,10 +1,13 @@
 package ui.servlets;
 
+import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,8 +30,8 @@ public class PhotoServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public PhotoServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public PhotoServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**
@@ -44,7 +47,7 @@ public class PhotoServlet extends HttpServlet {
 
 		try {
 			response.setContentType(ContentType.MIME_TYPE_JPG.getContentType());
-			File absoluteFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
+			File absoluteFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
 				throw new FileNotFoundException(

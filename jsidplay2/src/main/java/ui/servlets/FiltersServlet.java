@@ -3,6 +3,7 @@ package ui.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,8 +25,8 @@ public class FiltersServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public FiltersServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public FiltersServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**

@@ -1,13 +1,13 @@
 package ui.servlets;
 
 import java.io.File;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import de.schlichtherle.truezip.file.TFile;
 import libsidutils.PathUtils;
@@ -19,10 +19,6 @@ public class ServletUtil {
 
 	private static final String C64_MUSIC = "/C64Music";
 	private static final String CGSC = "/CGSC";
-	private static final String MP3 = "/MP3";
-	private static final String IMAGES = "/Images";
-	private static final String MEDIA_NAS1_MUSIK_UND_HÖRSPIEL = "/media/nas1/Musik und Hörspiel";
-	private static final String MEDIA_NAS1_IMAGES = "/media/nas1/Chronik";
 
 	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = (file1, file2) -> {
 		if (file1.isDirectory() && file2.isFile()) {
@@ -35,36 +31,38 @@ public class ServletUtil {
 	};
 
 	private Configuration configuration;
+	
+	private Properties directoryProperties;
 
-	public ServletUtil(Configuration configuration) {
+	public ServletUtil(Configuration configuration, Properties directoryProperties) {
 		this.configuration = configuration;
+		this.directoryProperties = directoryProperties;
 	}
 
-	public List<String> getDirectory(String path, String filter, Principal principal) {
+	public List<String> getDirectory(String path, String filter, boolean adminRole) {
 		if (path.equals("/")) {
-			return getRoot(principal);
+			return getRoot(adminRole);
 		} else if (path.startsWith(C64_MUSIC)) {
 			String root = configuration.getSidplay2Section().getHvsc();
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
-			return getCollectionFiles(rootFile, root, path, filter, C64_MUSIC, principal);
+			return getCollectionFiles(rootFile, root, path, filter, C64_MUSIC, adminRole);
 		} else if (path.startsWith(CGSC)) {
 			String root = configuration.getSidplay2Section().getCgsc();
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
-			return getCollectionFiles(rootFile, root, path, filter, CGSC, principal);
-		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
-			String root = MEDIA_NAS1_MUSIK_UND_HÖRSPIEL;
-			File rootFile = new TFile(root);
-			return getCollectionFiles(rootFile, root, path, filter, MP3, principal);
-		} else if (principal.getName().equals("kenchis") && path.startsWith(IMAGES)) {
-			String root = MEDIA_NAS1_IMAGES;
-			File rootFile = new TFile(root);
-			return getCollectionFiles(rootFile, root, path, filter, IMAGES, principal);
+			return getCollectionFiles(rootFile, root, path, filter, CGSC, adminRole);
+		}
+		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
+			String directoryValue = directoryProperties.getProperty(directoryLogicalName);
+			if (adminRole && path.startsWith(directoryLogicalName)) {
+				File rootFile = new TFile(directoryValue);
+				return getCollectionFiles(rootFile, directoryValue, path, filter, directoryLogicalName, adminRole);
+			}
 		}
 		return null;
 	}
 
 	private List<String> getCollectionFiles(File rootFile, String root, String path, String filter,
-			String virtualCollectionRoot, Principal principal) {
+			String virtualCollectionRoot, boolean adminRole) {
 		ArrayList<String> result = new ArrayList<String>();
 		if (rootFile != null) {
 			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
@@ -84,7 +82,7 @@ public class ServletUtil {
 			}
 		}
 		if (result.isEmpty()) {
-			return getRoot(principal);
+			return getRoot(adminRole);
 		}
 		return result;
 	}
@@ -93,25 +91,28 @@ public class ServletUtil {
 		result.add(path + (f != null && f.isDirectory() ? "/" : ""));
 	}
 
-	private List<String> getRoot(Principal principal) {
-		if (principal.getName().equals("kenchis")) {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/", MP3 + "/", IMAGES + "/");
-		} else {
-			return Arrays.asList(C64_MUSIC + "/", CGSC + "/");
+	private List<String> getRoot(boolean adminRole) {
+		List<String> result = new ArrayList<>(Arrays.asList(C64_MUSIC + "/", CGSC + "/"));
+		if (adminRole) {
+			directoryProperties.stringPropertyNames()
+					.forEach(directoryLocalName -> result.add(directoryLocalName + "/"));
 		}
+		return result;
 	}
 
-	public File getAbsoluteFile(String path, Principal principal) {
+	public File getAbsoluteFile(String path, boolean adminRole) {
 		if (path.startsWith(C64_MUSIC)) {
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
 			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);
 		} else if (path.startsWith(CGSC)) {
 			File rootFile = configuration.getSidplay2Section().getCgscFile();
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
-		} else if (principal.getName().equals("kenchis") && path.startsWith(MP3)) {
-			return PathUtils.getFile(MEDIA_NAS1_MUSIK_UND_HÖRSPIEL + path.substring(MP3.length()), null, null);
-		} else if (principal.getName().equals("kenchis") && path.startsWith(IMAGES)) {
-			return PathUtils.getFile(MEDIA_NAS1_IMAGES + path.substring(IMAGES.length()), null, null);
+		}
+		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
+			String directoryValue = directoryProperties.getProperty(directoryLogicalName);
+			if (adminRole && path.startsWith(directoryLogicalName)) {
+				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), null, null);
+			}
 		}
 		return null;
 	}
@@ -127,7 +128,7 @@ public class ServletUtil {
 		}
 		return null;
 	}
-	
+
 	public Configuration getConfiguration() {
 		return configuration;
 	}

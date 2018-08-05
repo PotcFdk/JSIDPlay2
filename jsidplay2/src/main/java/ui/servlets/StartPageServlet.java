@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,8 +26,8 @@ public class StartPageServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public StartPageServlet(Configuration configuration) {
-		util = new ServletUtil(configuration);
+	public StartPageServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	@Override

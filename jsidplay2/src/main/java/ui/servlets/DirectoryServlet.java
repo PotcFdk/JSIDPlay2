@@ -1,7 +1,10 @@
 package ui.servlets;
 
+import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,8 +26,8 @@ public class DirectoryServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public DirectoryServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public DirectoryServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**
@@ -40,7 +43,7 @@ public class DirectoryServlet extends HttpServlet {
 				.substring(decodedPath.indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
 		String filter = request.getParameter("filter");
 
-		List<String> files = util.getDirectory(filePath, filter, request.getUserPrincipal());
+		List<String> files = util.getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
 
 		response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));

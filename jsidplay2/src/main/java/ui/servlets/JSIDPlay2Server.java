@@ -9,9 +9,14 @@ import static ui.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
 import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static ui.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 
@@ -50,13 +55,29 @@ public class JSIDPlay2Server {
 
 	private static final String[] ROLES = new String[] { "user", "admin" };
 
+	public static final String ROLE_ADMIN = "admin";
+
+	/**
+	 * Filename of the configuration file containing additional directories of admin
+	 * role. e.g. "/MP3=/media/nas1/mp3" (top-level logical directory name=real
+	 * directory name)
+	 */
+	public static final String CONFIG_FILE = "directoryServlet";
+
 	private static JSIDPlay2Server instance;
 
 	private Server server;
 
 	private Configuration configuration;
 
+	private Properties directoryProperties = new Properties();
+
 	private JSIDPlay2Server() {
+		try (InputStream is = new FileInputStream(getConfigPath())) {
+			directoryProperties.load(is);
+		} catch (IOException e) {
+			// ignore non-existing properties
+		}
 	}
 
 	public static JSIDPlay2Server getInstance() {
@@ -150,14 +171,14 @@ public class JSIDPlay2Server {
 	}
 
 	private ServletContextHandler createServletContextHandler() {
-		HttpServlet startPageServlet = new StartPageServlet(configuration);
-		HttpServlet filtersServlet = new FiltersServlet(configuration);
-		HttpServlet directoryServlet = new DirectoryServlet(configuration);
-		HttpServlet tuneInfoServlet = new TuneInfoServlet(configuration);
-		HttpServlet photoServlet = new PhotoServlet(configuration);
-		HttpServlet convertServlet = new ConvertServlet(configuration);
-		HttpServlet downloadServlet = new DownloadServlet(configuration);
-		HttpServlet favoritesServlet = new FavoritesServlet(configuration);
+		HttpServlet startPageServlet = new StartPageServlet(configuration, directoryProperties);
+		HttpServlet filtersServlet = new FiltersServlet(configuration, directoryProperties);
+		HttpServlet directoryServlet = new DirectoryServlet(configuration, directoryProperties);
+		HttpServlet tuneInfoServlet = new TuneInfoServlet(configuration, directoryProperties);
+		HttpServlet photoServlet = new PhotoServlet(configuration, directoryProperties);
+		HttpServlet convertServlet = new ConvertServlet(configuration, directoryProperties);
+		HttpServlet downloadServlet = new DownloadServlet(configuration, directoryProperties);
+		HttpServlet favoritesServlet = new FavoritesServlet(configuration, directoryProperties);
 
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath("/");
@@ -189,4 +210,22 @@ public class JSIDPlay2Server {
 		jsidplay2Server.setConfiguration(new ConfigService(ConfigurationType.XML).load());
 		jsidplay2Server.start();
 	}
+
+	/**
+	 * Search for optional configuration containing additional directories. Search
+	 * in CWD and in the HOME folder.
+	 * 
+	 * @return configuration file
+	 */
+	private File getConfigPath() {
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(s, CONFIG_FILE + ".properties");
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		// default directory
+		return new File(System.getProperty("user.home"), CONFIG_FILE + ".properties");
+	}
+
 }

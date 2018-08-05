@@ -1,9 +1,12 @@
 package ui.servlets;
 
+import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 
@@ -32,8 +35,8 @@ public class TuneInfoServlet extends HttpServlet {
 
 	private ServletUtil util;
 
-	public TuneInfoServlet(Configuration configuration) {
-		this.util = new ServletUtil(configuration);
+	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
+		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	/**
@@ -50,7 +53,7 @@ public class TuneInfoServlet extends HttpServlet {
 
 		try {
 			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
-			File tuneFile = util.getAbsoluteFile(filePath, request.getUserPrincipal());
+			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
 					.getAttributeValues(hvscEntry,
