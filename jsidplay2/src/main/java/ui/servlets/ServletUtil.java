@@ -31,7 +31,7 @@ public class ServletUtil {
 	};
 
 	private Configuration configuration;
-	
+
 	private Properties directoryProperties;
 
 	public ServletUtil(Configuration configuration, Properties directoryProperties) {
@@ -119,11 +119,9 @@ public class ServletUtil {
 
 	public String getFavoriteFilename(HVSCEntry entry) {
 		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvscFile(), null).size() > 0) {
-			// HVSC
 			return C64_MUSIC + entry.getPath();
 		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgscFile(), null)
 				.size() > 0) {
-			// CGSC
 			return CGSC + entry.getPath();
 		}
 		return null;

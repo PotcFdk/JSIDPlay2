@@ -49,12 +49,24 @@ public class JSIDPlay2Server {
 		DebugUtil.init();
 	}
 
+	/**
+	 * Context root of all servlets
+	 */
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
+	/**
+	 * Configuration of usernames, passwords and roles
+	 */
 	private static final URL SERVER_SECURITY_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
 
-	private static final String[] ROLES = new String[] { "user", "admin" };
+	/**
+	 * User role
+	 */
+	public static final String ROLE_USER = "user";
 
+	/**
+	 * Admin role
+	 */
 	public static final String ROLE_ADMIN = "admin";
 
 	/**
@@ -197,7 +209,7 @@ public class JSIDPlay2Server {
 		Constraint constraint = new Constraint();
 		constraint.setName("auth");
 		constraint.setAuthenticate(true);
-		constraint.setRoles(ROLES);
+		constraint.setRoles(new String[] { ROLE_USER, ROLE_ADMIN });
 
 		ConstraintMapping constrainedMapping = new ConstraintMapping();
 		constrainedMapping.setPathSpec(CONTEXT_ROOT + "/*");
