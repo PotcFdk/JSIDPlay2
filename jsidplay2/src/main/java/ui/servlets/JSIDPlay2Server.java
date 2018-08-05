@@ -50,11 +50,23 @@ public class JSIDPlay2Server {
 
 	private static final String[] ROLES = new String[] { "user", "admin" };
 
+	private static JSIDPlay2Server instance;
+
 	private Server server;
 
-	private final Configuration configuration;
+	private Configuration configuration;
 
-	public JSIDPlay2Server(Configuration configuration) {
+	private JSIDPlay2Server() {
+	}
+
+	public static JSIDPlay2Server getInstance() {
+		if (instance == null) {
+			instance = new JSIDPlay2Server();
+		}
+		return instance;
+	}
+
+	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -173,6 +185,8 @@ public class JSIDPlay2Server {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new JSIDPlay2Server(new ConfigService(ConfigurationType.XML).load()).start();
+		JSIDPlay2Server jsidplay2Server = JSIDPlay2Server.getInstance();
+		jsidplay2Server.setConfiguration(new ConfigService(ConfigurationType.XML).load());
+		jsidplay2Server.start();
 	}
 }

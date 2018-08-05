@@ -119,7 +119,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		final AudioSection audioSection = config.getAudioSection();
 		final EmulationSection emulationSection = config.getEmulationSection();
 
-		jsidplay2Server = new JSIDPlay2Server(config);
+		jsidplay2Server = JSIDPlay2Server.getInstance();
+		jsidplay2Server.setConfiguration(config);
 
 		audioBox.setConverter(new EnumToString<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
