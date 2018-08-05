@@ -4,7 +4,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_MODEL;
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
@@ -55,11 +54,15 @@ import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
+import static ui.servlets.Connectors.HTTP_ONLY;
+
+import java.io.File;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -73,12 +76,34 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.config.IEmulationSection;
+import ui.common.FileToStringConverter;
+import ui.servlets.Connectors;
 
 @Embeddable
 public class EmulationSection implements IEmulationSection {
 
 	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
-	
+
+	/**
+	 * Connection types of the built-in Android App Server providing REST-based
+	 * web-services to play SIDs on the mobile.
+	 */
+	public static final Connectors DEFAULT_CONNECTORS = HTTP_ONLY;
+	/**
+	 * Port of the built-in Android App Server providing REST-based web-services to
+	 * play SIDs on the mobile.
+	 */
+	public static final int DEFAULT_APP_SERVER_PORT = 8080;
+	/**
+	 * Secure port of the built-in Android App Server providing REST-based
+	 * web-services to play SIDs on the mobile.
+	 */
+	public static final int DEFAULT_APP_SERVER_SECURE_PORT = 8443;
+
+	public EmulationSection() {
+		Bindings.bindBidirectional(this.appServerKeystore, appServerKeystoreFile, new FileToStringConverter());
+	}
+
 	private ObjectProperty<Engine> engine = new SimpleObjectProperty<Engine>(DEFAULT_ENGINE);
 
 	public ObjectProperty<Engine> engineProperty() {
@@ -228,7 +253,7 @@ public class EmulationSection implements IEmulationSection {
 	public BooleanProperty detectPSID64ChipModelProperty() {
 		return detectPSID64ChipModel;
 	}
-	
+
 	private ObjectProperty<ChipModel> userSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_USER_MODEL);
 
 	public ObjectProperty<ChipModel> userSidModelProperty() {
@@ -344,20 +369,91 @@ public class EmulationSection implements IEmulationSection {
 		this.netSidDevPortProperty.set(port);
 	}
 
+	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<Connectors>(DEFAULT_CONNECTORS);
+
+	public ObjectProperty<Connectors> appServerConnectorsProperty() {
+		return appServerConnectors;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Connectors getAppServerConnectors() {
+		return this.appServerConnectors.get();
+	}
+
+	public void setAppServerConnectors(Connectors appServerConnectors) {
+		this.appServerConnectors.set(appServerConnectors);
+	}
+
 	private ObjectProperty<Integer> appServerPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_APP_SERVER_PORT);
 
 	public ObjectProperty<Integer> appServerPortProperty() {
 		return appServerPortProperty;
 	}
 
-	@Override
 	public int getAppServerPort() {
 		return appServerPortProperty.get();
 	}
 
-	@Override
 	public void setAppServerPort(int port) {
 		this.appServerPortProperty.set(port);
+	}
+
+	private ObjectProperty<Integer> appServerSecurePortProperty = new SimpleObjectProperty<Integer>(
+			DEFAULT_APP_SERVER_SECURE_PORT);
+
+	public ObjectProperty<Integer> appServerSecurePortProperty() {
+		return appServerSecurePortProperty;
+	}
+
+	public int getAppServerSecurePort() {
+		return appServerSecurePortProperty.get();
+	}
+
+	public void setAppServerSecurePort(int securePort) {
+		this.appServerSecurePortProperty.set(securePort);
+	}
+
+	private ObjectProperty<File> appServerKeystoreFile = new SimpleObjectProperty<File>();
+	private StringProperty appServerKeystore = new SimpleStringProperty();
+
+	public ObjectProperty<File> appServerKeystoreFileProperty() {
+		return appServerKeystoreFile;
+	}
+
+	public String getAppServerKeystoreFile() {
+		return this.appServerKeystore.get();
+	}
+
+	public void setAppServerKeystoreFile(String appServerKeystoreFile) {
+		this.appServerKeystore.set(appServerKeystoreFile);
+	}
+
+	private StringProperty appServerKeyManagerPasswordProperty = new SimpleStringProperty();
+
+	public StringProperty appServerKeyManagerPasswordProperty() {
+		return appServerKeyManagerPasswordProperty;
+	}
+
+	public String getAppServerKeyManagerPassword() {
+		return appServerKeyManagerPasswordProperty.get();
+	}
+
+	public void setAppServerKeyManagerPassword(String appServerKeyManagerPassword) {
+		this.appServerKeyManagerPasswordProperty.set(appServerKeyManagerPassword);
+	}
+
+	private StringProperty appServerKeyStorePasswordProperty = new SimpleStringProperty();
+
+	public StringProperty appServerKeyStorePasswordProperty() {
+		return appServerKeyStorePasswordProperty;
+	}
+
+	public String getAppServerKeyStorePassword() {
+		return appServerKeyStorePasswordProperty.get();
+	}
+
+	public void setAppServerKeyStorePassword(String appServerKeyStorePassword) {
+		this.appServerKeyStorePasswordProperty.set(appServerKeyStorePassword);
 	}
 
 	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);

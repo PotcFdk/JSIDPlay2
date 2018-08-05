@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -51,6 +53,7 @@ import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
+import ui.servlets.Connectors;
 import ui.servlets.JSIDPlay2Server;
 
 public class ToolBar extends C64VBox implements UIPart {
@@ -73,17 +76,21 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<Engine> engineBox;
 	@FXML
+	private ComboBox<Connectors> appServerConnectorsBox;
+	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private TextField defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort;
+	private TextField defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort, appServerSecurePort,
+			appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
 	ToggleGroup playSourceGroup, appServerGroup;
 	@FXML
-	protected Button volumeButton, mp3Browse;
+	protected Button volumeButton, mp3Browse, keystoreBrowse;
 	@FXML
-	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname;
+	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname,
+			appServerPortLbl, appServerSecurePortLbl, appServerKeyManagerPasswordLbl, appServerKeyStorePasswordLbl;
 	@FXML
 	private Hyperlink appServerUsage, downloadApp;
 
@@ -185,6 +192,55 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		Bindings.bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
 				new IntegerStringConverter());
+		Bindings.bindBidirectional(appServerSecurePort.textProperty(), emulationSection.appServerSecurePortProperty(),
+				new IntegerStringConverter());
+
+		appServerConnectorsBox.setConverter(new EnumToString<Connectors>(bundle));
+		appServerConnectorsBox.valueProperty().addListener((obj, o, n) -> {
+			switch (n) {
+			case HTTP_HTTPS:
+				for (Node node : Arrays.asList(appServerPortLbl, appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
+						appServerKeyStorePasswordLbl, appServerPort, appServerSecurePort, keystoreBrowse,
+						appServerKeyManagerPassword, appServerKeyStorePassword)) {
+					node.setVisible(true);
+					node.setManaged(true);
+				}
+				break;
+			case HTTPS:
+				for (Node node : Arrays.asList(appServerPortLbl, appServerPort)) {
+					node.setVisible(false);
+					node.setManaged(false);
+				}
+				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
+						appServerKeyStorePasswordLbl, appServerSecurePort, keystoreBrowse, appServerKeyManagerPassword,
+						appServerKeyStorePassword)) {
+					node.setVisible(true);
+					node.setManaged(true);
+				}
+				break;
+
+			case HTTP_ONLY:
+			default:
+				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
+						appServerKeyStorePasswordLbl, appServerSecurePort, keystoreBrowse, appServerKeyManagerPassword,
+						appServerKeyStorePassword)) {
+					node.setVisible(false);
+					node.setManaged(false);
+				}
+				for (Node node : Arrays.asList(appServerPortLbl, appServerPort)) {
+					node.setVisible(true);
+					node.setManaged(true);
+				}
+				break;
+			}
+		});
+		appServerConnectorsBox.setItems(FXCollections.<Connectors>observableArrayList(Connectors.HTTP_ONLY,
+				Connectors.HTTP_HTTPS, Connectors.HTTPS));
+		appServerConnectorsBox.valueProperty().bindBidirectional(emulationSection.appServerConnectorsProperty());
+		appServerKeyManagerPassword.textProperty()
+				.bindBidirectional(emulationSection.appServerKeyManagerPasswordProperty());
+		appServerKeyStorePassword.textProperty()
+				.bindBidirectional(emulationSection.appServerKeyStorePasswordProperty());
 
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
@@ -254,6 +310,17 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	private void doKeystoreBrowse() {
+		final FileChooser fileDialog = new FileChooser();
+		final FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Keystore file (*.jks)", "*.jks");
+		fileDialog.getExtensionFilters().add(extFilter);
+		final File file = fileDialog.showOpenDialog(getScene().getWindow());
+		if (file != null) {
+			util.getConfig().getEmulationSection().setAppServerKeystoreFile(file.getAbsolutePath());
+		}
+	}
+
+	@FXML
 	private void startAppServer() {
 		try {
 			jsidplay2Server.start();
@@ -270,25 +337,16 @@ public class ToolBar extends C64VBox implements UIPart {
 			openErrorDialog(e.getMessage());
 		}
 	}
-	
-	@FXML
-	private void setAppServerPort() {
-		if (startAppServer.isSelected()) {
-			try {
-				jsidplay2Server.stop();
-				jsidplay2Server.start();
-			} catch (Exception e) {
-				openErrorDialog(e.getMessage());
-			}
-		}
-	}
 
 	@FXML
 	private void gotoRestApiUsage() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		DesktopIntegration.browse("http://127.0.0.1:" + emulationSection.getAppServerPort());
+		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
+		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
+				: emulationSection.getAppServerSecurePort();
+		DesktopIntegration.browse(appServerConnectors.getPreferredProtocol() + "://127.0.0.1:" + port);
 	}
-	
+
 	@FXML
 	private void doEnableSldb() {
 		final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();

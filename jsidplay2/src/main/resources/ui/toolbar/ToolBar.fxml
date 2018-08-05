@@ -19,8 +19,10 @@
 <?import javafx.collections.FXCollections?> 
 <?import javafx.geometry.Insets?>
 <?import java.lang.Integer?>
+<?import java.lang.String?>
 <?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource ToolBar.properties?>
+<?import javafx.scene.control.PasswordField?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
@@ -151,13 +153,53 @@
 									selected="true" toggleGroup="$appServerGroup"
 									fx:id="stopAppServer" />
 							</HBox>
-							<Label text="%APP_SERVER_PORT" />
+							<Label text="%APP_SERVER_CONNECTORS" />
+							<ComboBox fx:id="appServerConnectorsBox">
+							</ComboBox>
+							<Label text="%APP_SERVER_PORT" fx:id="appServerPortLbl" />
 							<TypeTextField type="Integer" fx:id="appServerPort"
-								onAction="#setAppServerPort" prefWidth="60">
+								prefWidth="60">
 								<tooltip>
 									<Tooltip text="%APP_SERVER_PORT_TIP" />
 								</tooltip>
 							</TypeTextField>
+							<Label managed="false" visible="false"
+								text="%APP_SERVER_SECURE_PORT" fx:id="appServerSecurePortLbl" />
+							<TypeTextField managed="false" visible="false"
+								type="Integer" fx:id="appServerSecurePort" prefWidth="60">
+								<tooltip>
+									<Tooltip text="%APP_SERVER_SECURE_PORT_TIP" />
+								</tooltip>
+							</TypeTextField>
+							<Button managed="false" visible="false"
+								fx:id="keystoreBrowse" onAction="#doKeystoreBrowse"
+								text="Browse keystore...">
+								<graphic>
+									<ImageView>
+										<image>
+											<Image url="@/ui/icons/browse.png" />
+										</image>
+									</ImageView>
+								</graphic>
+							</Button>
+							<Label managed="false" visible="false"
+								text="%APP_SERVER_KEY_MANAGER_PASSWORD"
+								fx:id="appServerKeyManagerPasswordLbl" />
+							<PasswordField managed="false" visible="false"
+								fx:id="appServerKeyManagerPassword" prefWidth="60">
+								<tooltip>
+									<Tooltip text="%APP_SERVER_KEY_MANAGER_PASSWORD_TIP" />
+								</tooltip>
+							</PasswordField>
+							<Label managed="false" visible="false"
+								text="%APP_SERVER_KEY_STORE_PASSWORD"
+								fx:id="appServerKeyStorePasswordLbl" />
+							<PasswordField managed="false" visible="false"
+								fx:id="appServerKeyStorePassword" prefWidth="60">
+								<tooltip>
+									<Tooltip text="%APP_SERVER_KEY_STORE_PASSWORD_TIP" />
+								</tooltip>
+							</PasswordField>
 							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />
 							<Label text="%APP_SERVER_IP" fx:id="appIpAddress" />
 							<Hyperlink text="%APP_SERVER_USAGE" textFill="BLUE"

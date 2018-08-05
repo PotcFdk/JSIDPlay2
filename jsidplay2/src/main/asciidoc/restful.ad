@@ -46,13 +46,13 @@ Note: I will not take responsability for any risks or damages. Do this on your o
 
 * Get all SID filter names (required to stream SID as MP3 later)
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters]
 
 Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and appended by their name, e.g. RESID_MOS8580_FilterAverage8580, That way filters can be grouped or sorted on the client side.
 
 * Get music collection directory
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
 
 You can access any sub-directory of your music collection to navigate to the tunes you want to play on the client side.
 HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
@@ -62,31 +62,31 @@ Additionally cou can specify a file extension filter using the parameter filter,
 
 * Get tune infos
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a list of information of the specified tune file.
 
 * Get contents of the first SID favorites tab
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites]
 
 Return a list of favorite tune files.
 
 * Get composer photo
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a photo of a well-known tune composer to be displayed on the client side.
 
 * Download SID
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Download a tune file of your music collection to the client.
 
 * Stream SID as MP3
 
-link:http://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
+link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
 
 Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
 All parameters are used to specify emulation settings that should be used.

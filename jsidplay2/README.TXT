@@ -113,3 +113,21 @@ TODO:
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
+Install HTTPS for Apache (Homepage):
+====================================
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python-certbot-apache
+sudo certbot --apache
+
+Check Certification renewal (Homepage):
+=======================================
+sudo certbot renew --dry-run
+
+Create App-Server keystore (for https):
+=======================================
+keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048
+Warning: A self-signed certificate is only a temporary solution, since
+it creates a warning message in the browser window and is
+unaccepted by an android client, normally!

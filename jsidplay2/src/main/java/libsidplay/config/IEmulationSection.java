@@ -17,8 +17,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the SID engine to be used.
 	 * 
-	 * @param engine
-	 *            engine to be used
+	 * @param engine engine to be used
 	 */
 	void setEngine(Engine engine);
 
@@ -32,8 +31,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the first SIDs user emulation to be used.
 	 * 
-	 * @param emulation
-	 *            first SIDs user emulation to be used
+	 * @param emulation first SIDs user emulation to be used
 	 */
 	void setUserEmulation(Emulation emulation);
 
@@ -47,8 +45,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the second SIDs user emulation to be used.
 	 * 
-	 * @param emulation
-	 *            second SIDs user emulation to be used
+	 * @param emulation second SIDs user emulation to be used
 	 */
 	void setStereoEmulation(Emulation emulation);
 
@@ -62,8 +59,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the third SIDs user emulation to be used.
 	 * 
-	 * @param emulation
-	 *            third SIDs user emulation to be used
+	 * @param emulation third SIDs user emulation to be used
 	 */
 	void setThirdEmulation(Emulation emulation);
 
@@ -77,8 +73,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the default emulation to be used.
 	 * 
-	 * @param emulation
-	 *            default emulation to be used
+	 * @param emulation default emulation to be used
 	 */
 	void setDefaultEmulation(Emulation emulation);
 
@@ -92,8 +87,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the default clock speed.
 	 * 
-	 * @param speed
-	 *            default clock speed
+	 * @param speed default clock speed
 	 */
 	void setDefaultClockSpeed(CPUClock speed);
 
@@ -107,8 +101,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the user clock speed.
 	 * 
-	 * @param speed
-	 *            user clock speed
+	 * @param speed user clock speed
 	 */
 	void setUserClockSpeed(CPUClock speed);
 
@@ -122,8 +115,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the default SID model.
 	 * 
-	 * @param model
-	 *            the default SID model
+	 * @param model the default SID model
 	 */
 	void setDefaultSidModel(ChipModel model);
 
@@ -137,8 +129,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the user SID model.
 	 * 
-	 * @param model
-	 *            user SID model
+	 * @param model user SID model
 	 */
 	void setUserSidModel(ChipModel model);
 
@@ -152,8 +143,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the chip to be used for MOS6581.
 	 * 
-	 * @param chip
-	 *            the chip to be used for MOS6581
+	 * @param chip the chip to be used for MOS6581
 	 */
 	void setHardsid6581(int chip);
 
@@ -167,8 +157,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the chip to be used for CSG8580.
 	 * 
-	 * @param chip
-	 *            the chip to be used for CSG8580
+	 * @param chip the chip to be used for CSG8580
 	 */
 	void setHardsid8580(int chip);
 
@@ -182,8 +171,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the host name of a NetworkSIDDevice.
 	 * 
-	 * @param hostname
-	 *            host name of a NetworkSIDDevice
+	 * @param hostname host name of a NetworkSIDDevice
 	 */
 	void setNetSIDDevHost(String hostname);
 
@@ -197,25 +185,9 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the port address of a NetworkSIDDevice.
 	 * 
-	 * @param port
-	 *            port address of a NetworkSIDDevice
+	 * @param port port address of a NetworkSIDDevice
 	 */
 	void setNetSIDDevPort(int port);
-
-	/**
-	 * Getter of the port address of the built-in Android App Server.
-	 * 
-	 * @return port address of the built-in Android App Server
-	 */
-	int getAppServerPort();
-
-	/**
-	 * Setter of the port address of the built-in Android App Server.
-	 * 
-	 * @param port
-	 *            port address of the built-in Android App Server
-	 */
-	void setAppServerPort(int port);
 
 	/**
 	 * Is SID filter enabled?
@@ -241,24 +213,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter enable.
 	 * 
-	 * @param enable
-	 *            the filter enable
+	 * @param enable the filter enable
 	 */
 	void setFilter(boolean enable);
 
 	/**
 	 * Setter of the stereo filter enable.
 	 * 
-	 * @param enable
-	 *            the stereo filter enable
+	 * @param enable the stereo filter enable
 	 */
 	void setStereoFilter(boolean enable);
 
 	/**
 	 * Setter of the 3-SID filter enable.
 	 * 
-	 * @param enable
-	 *            the 3-SID filter enable
+	 * @param enable the 3-SID filter enable
 	 */
 	void setThirdSIDFilter(boolean enable);
 
@@ -286,24 +255,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of MOS6581 for NetSID.
 	 * 
-	 * @param filterName
-	 *            filter setting of MOS6581 for NetSID
+	 * @param filterName filter setting of MOS6581 for NetSID
 	 */
 	void setNetSIDFilter6581(String filterName);
 
 	/**
 	 * Setter of the stereo filter setting of MOS6581 for NetSID.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of MOS6581 for NetSID
+	 * @param filterName stereo filter setting of MOS6581 for NetSID
 	 */
 	void setNetSIDStereoFilter6581(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of MOS6581 for NetSID.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of MOS6581 for NetSID
+	 * @param filterName 3-SID filter setting of MOS6581 for NetSID
 	 */
 	void setNetSIDThirdSIDFilter6581(String filterName);
 
@@ -331,24 +297,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            filter setting of CSG8680
+	 * @param filterName filter setting of CSG8680
 	 */
 	void setNetSIDFilter8580(String filterName);
 
 	/**
 	 * Setter of the stereo filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of CSG8680
+	 * @param filterName stereo filter setting of CSG8680
 	 */
 	void setNetSIDStereoFilter8580(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of CSG8680
+	 * @param filterName 3-SID filter setting of CSG8680
 	 */
 	void setNetSIDThirdSIDFilter8580(String filterName);
 
@@ -376,24 +339,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of MOS6581.
 	 * 
-	 * @param filterName
-	 *            filter setting of MOS6581
+	 * @param filterName filter setting of MOS6581
 	 */
 	void setFilter6581(String filterName);
 
 	/**
 	 * Setter of the stereo filter setting of MOS6581.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of MOS6581
+	 * @param filterName stereo filter setting of MOS6581
 	 */
 	void setStereoFilter6581(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of MOS6581.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of MOS6581
+	 * @param filterName 3-SID filter setting of MOS6581
 	 */
 	void setThirdSIDFilter6581(String filterName);
 
@@ -421,24 +381,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            filter setting of CSG8680
+	 * @param filterName filter setting of CSG8680
 	 */
 	void setFilter8580(String filterName);
 
 	/**
 	 * Setter of stereo the filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of CSG8680
+	 * @param filterName stereo filter setting of CSG8680
 	 */
 	void setStereoFilter8580(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of CSG8680
+	 * @param filterName 3-SID filter setting of CSG8680
 	 */
 	void setThirdSIDFilter8580(String filterName);
 
@@ -466,24 +423,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of MOS6581 for ReSIDfp.
 	 * 
-	 * @param filterName
-	 *            filter setting of MOS6581 for ReSIDfp
+	 * @param filterName filter setting of MOS6581 for ReSIDfp
 	 */
 	void setReSIDfpFilter6581(String filterName);
 
 	/**
 	 * Setter of the stereo filter setting of MOS6581 for ReSIDfp.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of MOS6581 for ReSIDfp
+	 * @param filterName stereo filter setting of MOS6581 for ReSIDfp
 	 */
 	void setReSIDfpStereoFilter6581(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of MOS6581 for ReSIDfp.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of MOS6581 for ReSIDfp
+	 * @param filterName 3-SID filter setting of MOS6581 for ReSIDfp
 	 */
 	void setReSIDfpThirdSIDFilter6581(String filterName);
 
@@ -511,24 +465,21 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            filter setting of CSG8680
+	 * @param filterName filter setting of CSG8680
 	 */
 	void setReSIDfpFilter8580(String filterName);
 
 	/**
 	 * Setter of the stereo filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            stereo filter setting of CSG8680
+	 * @param filterName stereo filter setting of CSG8680
 	 */
 	void setReSIDfpStereoFilter8580(String filterName);
 
 	/**
 	 * Setter of the 3-SID filter setting of CSG8680.
 	 * 
-	 * @param filterName
-	 *            3-SID filter setting of CSG8680
+	 * @param filterName 3-SID filter setting of CSG8680
 	 */
 	void setReSIDfpThirdSIDFilter8580(String filterName);
 
@@ -542,8 +493,7 @@ public interface IEmulationSection {
 	/**
 	 * setter of the enable SID digi-boost.
 	 * 
-	 * @param boost
-	 *            the enable SID digi-boost
+	 * @param boost the enable SID digi-boost
 	 */
 	void setDigiBoosted8580(boolean boost);
 
@@ -559,16 +509,14 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the stereo SID base address.
 	 * 
-	 * @param base
-	 *            stereo SID base address
+	 * @param base stereo SID base address
 	 */
 	void setDualSidBase(int base);
 
 	/**
 	 * Setter of the 3-SID base address.
 	 * 
-	 * @param base
-	 *            3-SID base address
+	 * @param base 3-SID base address
 	 */
 	void setThirdSIDBase(int base);
 
@@ -580,8 +528,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the SID chip to read from (fake stereo).
 	 * 
-	 * @param sidNumToRead
-	 *            SID chip to read from (fake stereo)
+	 * @param sidNumToRead SID chip to read from (fake stereo)
 	 */
 	void setSidNumToRead(int sidNumToRead);
 
@@ -595,8 +542,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the fake stereo mode.
 	 * 
-	 * @param fakeStereo
-	 *            fake stereo mode
+	 * @param fakeStereo fake stereo mode
 	 */
 	void setFakeStereo(boolean fakeStereo);
 
@@ -617,16 +563,14 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the forced playback stereo mode.
 	 * 
-	 * @param force
-	 *            forced playback stereo mode
+	 * @param force forced playback stereo mode
 	 */
 	void setForceStereoTune(boolean force);
 
 	/**
 	 * Setter of the forced playback 3-SID mode.
 	 * 
-	 * @param force
-	 *            forced playback 3-SID mode
+	 * @param force forced playback 3-SID mode
 	 */
 	void setForce3SIDTune(boolean force);
 
@@ -640,8 +584,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of mute voice 1
 	 * 
-	 * @param mute
-	 *            mute voice 1
+	 * @param mute mute voice 1
 	 */
 	void setMuteVoice1(boolean mute);
 
@@ -655,8 +598,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of mute voice 2
 	 * 
-	 * @param mute
-	 *            mute voice 2
+	 * @param mute mute voice 2
 	 */
 	void setMuteVoice2(boolean mute);
 
@@ -670,8 +612,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of mute voice 3
 	 * 
-	 * @param mute
-	 *            mute voice 3
+	 * @param mute mute voice 3
 	 */
 	void setMuteVoice3(boolean mute);
 
@@ -685,8 +626,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of mute voice 4
 	 * 
-	 * @param mute
-	 *            mute voice 4
+	 * @param mute mute voice 4
 	 */
 	void setMuteVoice4(boolean mute);
 
@@ -700,8 +640,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of stereo mute voice 1
 	 * 
-	 * @param mute
-	 *            stereo mute voice 1
+	 * @param mute stereo mute voice 1
 	 */
 	void setMuteStereoVoice1(boolean mute);
 
@@ -715,8 +654,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of stereo mute voice 2
 	 * 
-	 * @param mute
-	 *            stereo mute voice 2
+	 * @param mute stereo mute voice 2
 	 */
 	void setMuteStereoVoice2(boolean mute);
 
@@ -730,8 +668,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of stereo mute voice 3
 	 * 
-	 * @param mute
-	 *            stereo mute voice 3
+	 * @param mute stereo mute voice 3
 	 */
 	void setMuteStereoVoice3(boolean mute);
 
@@ -745,8 +682,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of stereo mute voice 4
 	 * 
-	 * @param mute
-	 *            stereo mute voice 4
+	 * @param mute stereo mute voice 4
 	 */
 	void setMuteStereoVoice4(boolean mute);
 
@@ -760,8 +696,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of 3-SID mute voice 1
 	 * 
-	 * @param mute
-	 *            3-SID mute voice 1
+	 * @param mute 3-SID mute voice 1
 	 */
 	void setMuteThirdSIDVoice1(boolean mute);
 
@@ -775,8 +710,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of 3-SID mute voice 2
 	 * 
-	 * @param mute
-	 *            3-SID mute voice 2
+	 * @param mute 3-SID mute voice 2
 	 */
 	void setMuteThirdSIDVoice2(boolean mute);
 
@@ -790,8 +724,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of 3-SID mute voice 3
 	 * 
-	 * @param mute
-	 *            3-SID mute voice 3
+	 * @param mute 3-SID mute voice 3
 	 */
 	void setMuteThirdSIDVoice3(boolean mute);
 
@@ -805,8 +738,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of 3-SID mute voice 4
 	 * 
-	 * @param mute
-	 *            3-SID mute voice 4
+	 * @param mute 3-SID mute voice 4
 	 */
 	void setMuteThirdSIDVoice4(boolean mute);
 
@@ -820,8 +752,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the the stereo SID model.
 	 * 
-	 * @param model
-	 *            the the stereo SID model
+	 * @param model the the stereo SID model
 	 */
 	void setStereoSidModel(ChipModel model);
 
@@ -835,16 +766,14 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the the 3-SID model.
 	 * 
-	 * @param model
-	 *            the the 3-SID model
+	 * @param model the the 3-SID model
 	 */
 	void setThirdSIDModel(ChipModel model);
 
 	/**
 	 * Get filter enable depending of the SID number
 	 * 
-	 * @param sidNum
-	 *            SID number
+	 * @param sidNum SID number
 	 * @return filter enable
 	 */
 	default boolean isFilterEnable(int sidNum) {
@@ -864,10 +793,8 @@ public interface IEmulationSection {
 	/**
 	 * Set filter enable depending of the SID number
 	 * 
-	 * @param sidNum
-	 *            SID number
-	 * @param enable
-	 *            filter enable
+	 * @param sidNum SID number
+	 * @param enable filter enable
 	 */
 	default void setFilterEnable(int sidNum, boolean enable) {
 		switch (sidNum) {
@@ -887,18 +814,15 @@ public interface IEmulationSection {
 	}
 
 	/**
-	 * Get the current filter name depending of the SID number, emulation type
-	 * and chip model.
+	 * Get the current filter name depending of the SID number, emulation type and
+	 * chip model.
 	 * 
 	 * <B>Note:</B> HARDSID filters are not software controllable (we return
 	 * emulation settings here)!
 	 * 
-	 * @param sidNum
-	 *            SId number
-	 * @param emulation
-	 *            emulation type
-	 * @param chipModel
-	 *            SID chip model
+	 * @param sidNum    SId number
+	 * @param emulation emulation type
+	 * @param chipModel SID chip model
 	 * @return the current filter name
 	 */
 	default String getFilterName(int sidNum, Engine engine, Emulation emulation, ChipModel chipModel) {
@@ -1025,20 +949,16 @@ public interface IEmulationSection {
 	}
 
 	/**
-	 * Set the current filter name depending of the SID number, emulation type
-	 * and chip model.
+	 * Set the current filter name depending of the SID number, emulation type and
+	 * chip model.
 	 *
-	 * <B>Note:</B> HARDSID filters are not software controllable (we set
-	 * emulation settings here)!
+	 * <B>Note:</B> HARDSID filters are not software controllable (we set emulation
+	 * settings here)!
 	 * 
-	 * @param sidNum
-	 *            SId number
-	 * @param emulation
-	 *            emulation type
-	 * @param chipModel
-	 *            SID chip model
-	 * @param filterName
-	 *            filter name
+	 * @param sidNum     SId number
+	 * @param emulation  emulation type
+	 * @param chipModel  SID chip model
+	 * @param filterName filter name
 	 */
 	default void setFilterName(int sidNum, Engine engine, Emulation emulation, ChipModel chipModel, String filterName) {
 		switch (chipModel) {

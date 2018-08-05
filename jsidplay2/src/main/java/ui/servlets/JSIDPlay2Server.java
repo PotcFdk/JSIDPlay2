@@ -15,14 +15,22 @@ import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import libsidutils.DebugUtil;
 import ui.JSidPlay2;
@@ -72,10 +80,54 @@ public class JSIDPlay2Server {
 		securityHandler.setLoginService(loginService);
 		securityHandler.setHandler(createServletContextHandler());
 
-		Server server = new Server(configuration.getEmulationSection().getAppServerPort());
+		Server server = new Server();
+		server.setConnectors(getConnectors(server));
 		server.addBean(loginService);
 		server.setHandler(securityHandler);
 		return server;
+	}
+
+	private Connector[] getConnectors(Server server) {
+		switch (configuration.getEmulationSection().getAppServerConnectors()) {
+		case HTTP_HTTPS: {
+			ServerConnector httpConnector = new ServerConnector(server);
+			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
+
+			ServerConnector httpsSslConnector = getHttpsConnector(server);
+			httpsSslConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
+			return new Connector[] { httpConnector, httpsSslConnector };
+		}
+		case HTTPS: {
+			ServerConnector httpsSslConnector = getHttpsConnector(server);
+			httpsSslConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
+			return new Connector[] { httpsSslConnector };
+		}
+		case HTTP_ONLY:
+		default: {
+			ServerConnector httpConnector = new ServerConnector(server);
+			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
+			return new Connector[] { httpConnector };
+		}
+		}
+	}
+
+	private ServerConnector getHttpsConnector(Server server) {
+		HttpConfiguration https = new HttpConfiguration();
+		https.addCustomizer(new SecureRequestCustomizer());
+		SslContextFactory sslContextFactory = getSslContextFactory();
+
+		ServerConnector httpsSslConnector = new ServerConnector(server,
+				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+				new HttpConnectionFactory(https));
+		return httpsSslConnector;
+	}
+
+	private SslContextFactory getSslContextFactory() {
+		SslContextFactory sslContextFactory = new SslContextFactory();
+		sslContextFactory.setKeyStorePath(configuration.getEmulationSection().getAppServerKeystoreFile());
+		sslContextFactory.setKeyStorePassword(configuration.getEmulationSection().getAppServerKeyStorePassword());
+		sslContextFactory.setKeyManagerPassword(configuration.getEmulationSection().getAppServerKeyManagerPassword());
+		return sslContextFactory;
 	}
 
 	private ConstraintSecurityHandler createSecurity() {

@@ -32,10 +32,15 @@ public class StartPageServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		EmulationSection s = util.getConfiguration().getEmulationSection();
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put("${port}", String.valueOf(s.getAppServerPort()));
+		EmulationSection emulationSection = util.getConfiguration().getEmulationSection();
 		
+		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
+		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
+				: emulationSection.getAppServerSecurePort();
+		Map<String, String> replacements = new HashMap<>();
+		replacements.put("${port}", String.valueOf(port));
+		replacements.put("${protocol}", appServerConnectors.getPreferredProtocol());
+
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
 			response.getWriter()

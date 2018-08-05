@@ -4,7 +4,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_MODEL;
-import static sidplay.ini.IniDefaults.DEFAULT_APP_SERVER_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
@@ -232,16 +231,6 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public void setNetSIDDevPort(int port) {
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
-	}
-
-	@Override
-	public int getAppServerPort() {
-		return iniReader.getPropertyInt("Emulation", "AppServer Port", DEFAULT_APP_SERVER_PORT);
-	}
-
-	@Override
-	public void setAppServerPort(int port) {
-		iniReader.setProperty("Emulation", "AppServer Port", port);
 	}
 
 	@Override
@@ -696,7 +685,6 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		result.append("hardsid8580=").append(getHardsid8580()).append(",");
 		result.append("netSIDDevHost=").append(getNetSIDDevHost()).append(",");
 		result.append("netSIDDevPort=").append(getNetSIDDevPort()).append(",");
-		result.append("appServerPort=").append(getAppServerPort()).append(",");
 		result.append("filter=").append(isFilter()).append(",");
 		result.append("stereoFilter=").append(isStereoFilter()).append(",");
 		result.append("thirdSIDFilter=").append(isThirdSIDFilter()).append(",");
