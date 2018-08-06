@@ -52,13 +52,15 @@ public class ServletUtil {
 			return getCollectionFiles(rootFile, root, path, filter, CGSC, adminRole);
 		}
 		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
-			String directoryValue = directoryProperties.getProperty(directoryLogicalName);
-			if (adminRole && path.startsWith(directoryLogicalName)) {
+			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
+			String directoryValue = splitted.length > 0 ? splitted[0] : null;
+			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
+			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
 				File rootFile = new TFile(directoryValue);
 				return getCollectionFiles(rootFile, directoryValue, path, filter, directoryLogicalName, adminRole);
 			}
 		}
-		return null;
+		return getRoot(adminRole);
 	}
 
 	private List<String> getCollectionFiles(File rootFile, String root, String path, String filter,
@@ -93,9 +95,13 @@ public class ServletUtil {
 
 	private List<String> getRoot(boolean adminRole) {
 		List<String> result = new ArrayList<>(Arrays.asList(C64_MUSIC + "/", CGSC + "/"));
-		if (adminRole) {
-			directoryProperties.stringPropertyNames()
-					.forEach(directoryLocalName -> result.add(directoryLocalName + "/"));
+		
+		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
+			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
+			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
+			if (!needToBeAdmin || adminRole) {
+				result.add(directoryLogicalName + "/");
+			}
 		}
 		return result;
 	}
@@ -109,8 +115,10 @@ public class ServletUtil {
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
 		}
 		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
-			String directoryValue = directoryProperties.getProperty(directoryLogicalName);
-			if (adminRole && path.startsWith(directoryLogicalName)) {
+			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
+			String directoryValue = splitted.length > 0 ? splitted[0] : null;
+			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
+			if (adminRole == needToBeAdmin && path.startsWith(directoryLogicalName) && directoryValue != null) {
 				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), null, null);
 			}
 		}

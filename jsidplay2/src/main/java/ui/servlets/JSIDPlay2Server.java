@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -55,11 +56,6 @@ public class JSIDPlay2Server {
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
 	/**
-	 * Configuration of usernames, passwords and roles
-	 */
-	private static final URL SERVER_SECURITY_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
-
-	/**
 	 * User role
 	 */
 	public static final String ROLE_USER = "user";
@@ -70,11 +66,23 @@ public class JSIDPlay2Server {
 	public static final String ROLE_ADMIN = "admin";
 
 	/**
-	 * Filename of the configuration file containing additional directories of admin
-	 * role. e.g. "/MP3=/media/nas1/mp3" (top-level logical directory name=real
-	 * directory name)
+	 * Filename of the configuration file containing additional directories of
+	 * {@link DirectoryServlet}<BR>
+	 * e.g. "/MP3=/media/nas1/mp3,true" (top-level logical directory name=real
+	 * directory name, admin role required)
 	 */
-	public static final String CONFIG_FILE = "directoryServlet";
+	public static final String DIRECTORIES_CONFIG_FILE = "directoryServlet";
+
+	/**
+	 * Filename of the configuration file containing username, password and role
+	 * e.g. "jsidplay2: jsidplay2!,user" (user: password,role)
+	 */
+	public static final String REALM_CONFIG_FILE = "realm";
+
+	/**
+	 * Configuration of usernames, passwords and roles
+	 */
+	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
 
 	private static JSIDPlay2Server instance;
 
@@ -85,7 +93,7 @@ public class JSIDPlay2Server {
 	private Properties directoryProperties = new Properties();
 
 	private JSIDPlay2Server() {
-		try (InputStream is = new FileInputStream(getConfigPath())) {
+		try (InputStream is = new FileInputStream(getDirectoryConfigPath())) {
 			directoryProperties.load(is);
 		} catch (IOException e) {
 			// ignore non-existing properties
@@ -118,8 +126,8 @@ public class JSIDPlay2Server {
 	}
 
 	private Server createServer() {
-		String config = SERVER_SECURITY_CONFIG.toExternalForm();
-		HashLoginService loginService = new HashLoginService(JSidPlay2.class.getSimpleName(), config);
+		HashLoginService loginService = new HashLoginService(JSidPlay2.class.getSimpleName(),
+				getRealmConfigPath().toExternalForm());
 
 		ConstraintSecurityHandler securityHandler = createSecurity();
 		securityHandler.setLoginService(loginService);
@@ -229,15 +237,36 @@ public class JSIDPlay2Server {
 	 * 
 	 * @return configuration file
 	 */
-	private File getConfigPath() {
+	private File getDirectoryConfigPath() {
 		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, CONFIG_FILE + ".properties");
+			File configPlace = new File(s, DIRECTORIES_CONFIG_FILE + ".properties");
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
 		// default directory
-		return new File(System.getProperty("user.home"), CONFIG_FILE + ".properties");
+		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE + ".properties");
+	}
+
+	/**
+	 * Search for user, password and role configuration file.<BR>
+	 * <B>Note:</B>If no configuration file is found internal configuration is used
+	 * 
+	 * @return user, password and role configuration file
+	 */
+	private URL getRealmConfigPath() {
+		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(s, REALM_CONFIG_FILE + ".properties");
+			if (configPlace.exists()) {
+				try {
+					return configPlace.toURI().toURL();
+				} catch (MalformedURLException e) {
+					// ignore, use internal config instead!
+				}
+			}
+		}
+		// built-in default configuration
+		return INTERNAL_REALM_CONFIG;
 	}
 
 }
