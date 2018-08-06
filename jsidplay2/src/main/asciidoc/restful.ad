@@ -29,6 +29,39 @@ Basic authentication is used calling the following services with the following c
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
 
+You can add an administrative user by an external configuration file.
+The file must be named: "realm.properties" located in your home directory and be readable on startup of the server.
+
+Example:
+[source,subs="attributes+"]
+----
+#
+# This file defines users passwords and roles for a HashUserRealm
+#
+# The format is
+#  <username>: <password>[,<rolename> ...]
+#
+# Passwords may be clear text, obfuscated or checksummed.  The class
+# org.eclipse.jetty.util.security.Password should be used to generate obfuscated
+# passwords or password checksums
+#
+# If DIGEST Authentication is used, the password must be in a recoverable
+# format, either plain text or OBF:.
+#
+#jetty: MD5:164c88b302622e17050af52c89945d44,user
+#admin: CRYPT:adpexzg3FUZAk,server-administrator,content-administrator,admin,user
+#other: OBF:1xmk1w261u9r1w1c1xmq,user
+#plain: plain,user
+#user: password,user
+# This entry is for digest auth.  The credential is a MD5 hash of username:realmname:password
+#digest: MD5:6e120743ad67abfbc385bc2bb754e297,user
+
+jsidplay2: jsidplay2!,user
+administrator: MD5:0bd6506986ec42e732ffb866d33bb14e,admin <1>
+---- 
+<1> Syntax is: "<userName>" : "<password>" "," "<role>"
+Known roles are user and admin.
+
 ==== Access from the Internet
 
 To use your client from within your private local area network does not require additional preparations, you just need to know and reach the IP address, where JSIDPlay2 is running on.
@@ -58,7 +91,19 @@ You can access any sub-directory of your music collection to navigate to the tun
 HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
 Directory type entries are appended by a slash, whereas file type entries like tunes ends with their file extensions.
 To each directory contents a parent folder entry will be added appended by "../". Following that directory entry, you can easily navigate back to the parent directory.
-Additionally cou can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|mp3)$"
+Additionally you can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|mp3)$"
+
+You can add more collections by creating an external configuration file located in your home directory.
+The file must be named: "directoryServlet.properties" and be readable on startup of the server.
+
+Example:
+[source,subs="attributes+"]
+----
+/MP3=/media/nas1/mp3,true <1>
+---- 
+<1> Syntax is: "<localDirectoryNameInTheRequest>" = "<realDirectoryName>" "," "<adminRoleRequired>"
+In the request above simply replace "/jsidplay2service/JSIDPlay2REST/directory/C64Music/..."
+by "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
 
 * Get tune infos
 
