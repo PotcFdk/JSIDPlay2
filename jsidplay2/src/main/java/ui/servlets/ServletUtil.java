@@ -1,6 +1,7 @@
 package ui.servlets;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public class ServletUtil {
 		return result;
 	}
 
-	public File getAbsoluteFile(String path, boolean adminRole) {
+	public File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
 		if (path.startsWith(C64_MUSIC)) {
 			File rootFile = configuration.getSidplay2Section().getHvscFile();
 			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);
@@ -122,7 +123,7 @@ public class ServletUtil {
 				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), null, null);
 			}
 		}
-		return null;
+		throw new FileNotFoundException(path);
 	}
 
 	public String getFavoriteFilename(HVSCEntry entry) {
