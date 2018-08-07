@@ -73,7 +73,7 @@ JSIDPlay2 app server supports HTTP or HTTPS (and both at once).
 To configure the HTTPS certificate, please set the keystore, manager password and keystore password
 either within the user interface of JSIDPlay2 or refer to the command-line parameters of JSIDPlay2 app server mentioned above.
 
-*Warning:* These passwords will be stored as clear text in the XML configuration file of JSIDPlay2!
+*Warning:* These passwords will always be deleted after exit of JSIDPlay2 for security reasons!
 
 To create a self-signed certificate you must use the keytool command of the java installation
 
