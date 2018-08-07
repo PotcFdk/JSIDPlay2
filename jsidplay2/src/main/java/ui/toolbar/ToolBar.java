@@ -241,7 +241,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		appServerKeyManagerPassword.textProperty()
 				.bindBidirectional(emulationSection.appServerKeyManagerPasswordProperty());
 		appServerKeyStorePassword.textProperty()
-				.bindBidirectional(emulationSection.appServerKeyStorePasswordProperty());
+				.bindBidirectional(emulationSection.appServerKeystorePasswordProperty());
 
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());

@@ -4,15 +4,22 @@ You can implement your own client to access this emulator.
 You can access this emulator by using the following service methods to stream music or browse music collection directories.
 The service methods are available as soon as you click start in the built-in App Server in JSIDPlay2.
 
+=== Launch JSIDPlay2 app server
+
 Note: You can start the built-in App Server standalone using the following command in a console window, instead:
 
 [source,subs="attributes+"]
 ----
-java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server <1>
 ----
-<1> Launch the JSIDPlay2 server standalone
+<1> Launch the JSIDPlay2 app server standalone
 
-
+For all supported parameters, please type:
+[source,subs="attributes+"]
+----
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help <1>
+----
+<1> Show usage of the JSIDPlay2 app server standalone
 
 === Preparation
 
@@ -29,8 +36,9 @@ Basic authentication is used calling the following services with the following c
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
 
-You can add an administrative user by an external configuration file.
+You can change the settings of the user or add an administrative user by an external configuration file.
 The file must be named: "realm.properties" located in your home directory and be readable on startup of the server.
+The reason why you can add an administrative user is to grant access to additional private music collections for him.
 
 Example:
 [source,subs="attributes+"]
@@ -57,10 +65,25 @@ Example:
 #digest: MD5:6e120743ad67abfbc385bc2bb754e297,user
 
 jsidplay2: jsidplay2!,user
-administrator: MD5:0bd6506986ec42e732ffb866d33bb14e,admin <1>
+administrator: MD5:0bd6506986ec42e732ffb866d33bb14e,admin
 ---- 
-<1> Syntax is: "<userName>" : "<password>" "," "<role>"
-Known roles are user and admin.
+All known roles are user and admin.
+
+JSIDPlay2 app server supports HTTP or HTTPS (and both at once).
+To configure the HTTPS certificate, please set the keystore, manager password and keystore password
+either within the user interface of JSIDPlay2 or refer to the command-line parameters of JSIDPlay2 app server mentioned above.
+
+*Warning:* These passwords will be stored as clear text in the XML configuration file of JSIDPlay2!
+
+To create a self-signed certificate you must use the keytool command of the java installation
+
+[source,subs="attributes+"]
+----
+keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048 <1>
+----
+<1> *Warning:* A self-signed certificate is only a temporary solution, since
+it creates a warning message in the browser window and is
+unaccepted by an android client, normally!
 
 ==== Access from the Internet
 
@@ -75,7 +98,7 @@ Keep in mind, that opening ports in your firewall will raise the security risk. 
 
 Note: I will not take responsability for any risks or damages. Do this on your own risk!
 
-=== Usage
+=== Usage of the RESTful service message
 
 * Get all SID filter names (required to stream SID as MP3 later)
 

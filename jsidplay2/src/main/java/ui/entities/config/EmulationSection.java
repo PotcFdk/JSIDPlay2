@@ -62,6 +62,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -80,6 +83,7 @@ import ui.common.FileToStringConverter;
 import ui.servlets.Connectors;
 
 @Embeddable
+@Parameters(resourceBundle = "ui.entities.config.EmulationSection")
 public class EmulationSection implements IEmulationSection {
 
 	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
@@ -380,6 +384,7 @@ public class EmulationSection implements IEmulationSection {
 		return this.appServerConnectors.get();
 	}
 
+	@Parameter(names = { "--appServerConnectors" }, descriptionKey = "APP_SERVER_CONNECTORS")
 	public void setAppServerConnectors(Connectors appServerConnectors) {
 		this.appServerConnectors.set(appServerConnectors);
 	}
@@ -394,6 +399,7 @@ public class EmulationSection implements IEmulationSection {
 		return appServerPortProperty.get();
 	}
 
+	@Parameter(names = { "--appServerPort" }, descriptionKey = "APP_SERVER_PORT")
 	public void setAppServerPort(int port) {
 		this.appServerPortProperty.set(port);
 	}
@@ -409,6 +415,7 @@ public class EmulationSection implements IEmulationSection {
 		return appServerSecurePortProperty.get();
 	}
 
+	@Parameter(names = { "--appServerSecurePort" }, descriptionKey = "APP_SERVER_SECURE_PORT")
 	public void setAppServerSecurePort(int securePort) {
 		this.appServerSecurePortProperty.set(securePort);
 	}
@@ -424,6 +431,7 @@ public class EmulationSection implements IEmulationSection {
 		return this.appServerKeystore.get();
 	}
 
+	@Parameter(names = { "--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE")
 	public void setAppServerKeystoreFile(String appServerKeystoreFile) {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}
@@ -438,22 +446,24 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeyManagerPasswordProperty.get();
 	}
 
+	@Parameter(names = { "--appServerManagerPassword" }, descriptionKey = "APP_SERVER_MANAGER_PASSWORD")
 	public void setAppServerKeyManagerPassword(String appServerKeyManagerPassword) {
 		this.appServerKeyManagerPasswordProperty.set(appServerKeyManagerPassword);
 	}
 
-	private StringProperty appServerKeyStorePasswordProperty = new SimpleStringProperty();
+	private StringProperty appServerKeystorePasswordProperty = new SimpleStringProperty();
 
-	public StringProperty appServerKeyStorePasswordProperty() {
-		return appServerKeyStorePasswordProperty;
+	public StringProperty appServerKeystorePasswordProperty() {
+		return appServerKeystorePasswordProperty;
 	}
 
-	public String getAppServerKeyStorePassword() {
-		return appServerKeyStorePasswordProperty.get();
+	public String getAppServerKeystorePassword() {
+		return appServerKeystorePasswordProperty.get();
 	}
 
-	public void setAppServerKeyStorePassword(String appServerKeyStorePassword) {
-		this.appServerKeyStorePasswordProperty.set(appServerKeyStorePassword);
+	@Parameter(names = { "--appServerKeystorePassword" }, descriptionKey = "APP_SERVER_KEYSTORE_PASSWORD")
+	public void setAppServerKeystorePassword(String appServerKeyStorePassword) {
+		this.appServerKeystorePasswordProperty.set(appServerKeyStorePassword);
 	}
 
 	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);

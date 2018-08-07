@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.beust.jcommander.ParametersDelegate;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -236,6 +238,7 @@ public class Configuration implements IConfig {
 		return audioSection;
 	}
 
+	@ParametersDelegate
 	private EmulationSection emulationSection = new EmulationSection();
 
 	public void setEmulationSection(EmulationSection emulation) {

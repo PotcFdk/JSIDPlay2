@@ -38,6 +38,11 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
 import ui.JSidPlay2;
 import ui.entities.config.Configuration;
@@ -84,6 +89,9 @@ public class JSIDPlay2Server {
 	 */
 	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
 
+	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
+	private Boolean help = Boolean.FALSE;
+
 	private static JSIDPlay2Server instance;
 
 	private Server server;
@@ -112,6 +120,7 @@ public class JSIDPlay2Server {
 	}
 
 	public void start() throws Exception {
+		assert configuration != null;
 		if (server == null || server.isStopped()) {
 			server = createServer();
 			server.start();
@@ -178,7 +187,7 @@ public class JSIDPlay2Server {
 	private SslContextFactory getSslContextFactory() {
 		SslContextFactory sslContextFactory = new SslContextFactory();
 		sslContextFactory.setKeyStorePath(configuration.getEmulationSection().getAppServerKeystoreFile());
-		sslContextFactory.setKeyStorePassword(configuration.getEmulationSection().getAppServerKeyStorePassword());
+		sslContextFactory.setKeyStorePassword(configuration.getEmulationSection().getAppServerKeystorePassword());
 		sslContextFactory.setKeyManagerPassword(configuration.getEmulationSection().getAppServerKeyManagerPassword());
 		return sslContextFactory;
 	}
@@ -225,12 +234,6 @@ public class JSIDPlay2Server {
 		return Collections.singletonList(constrainedMapping);
 	}
 
-	public static void main(String[] args) throws Exception {
-		JSIDPlay2Server jsidplay2Server = JSIDPlay2Server.getInstance();
-		jsidplay2Server.setConfiguration(new ConfigService(ConfigurationType.XML).load());
-		jsidplay2Server.start();
-	}
-
 	/**
 	 * Search for optional configuration containing additional directories. Search
 	 * in CWD and in the HOME folder.
@@ -267,6 +270,36 @@ public class JSIDPlay2Server {
 		}
 		// built-in default configuration
 		return INTERNAL_REALM_CONFIG;
+	}
+
+	private static void exit(int rc) {
+		try {
+			System.out.println("Press <enter> to exit the player!");
+			System.in.read();
+			System.exit(rc);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		try {
+			JSIDPlay2Server jsidplay2Server = JSIDPlay2Server.getInstance();
+			Configuration config = new ConfigService(ConfigurationType.XML).load();
+			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server).addObject(config)
+					.programName(JSIDPlay2Server.class.getName()).build();
+			commander.parse(args);
+			if (jsidplay2Server.help) {
+				commander.usage();
+				exit(1);
+			}
+			jsidplay2Server.setConfiguration(config);
+			jsidplay2Server.start();
+		} catch (ParameterException | IOException | SidTuneError e) {
+			System.err.println(e.getMessage());
+			exit(1);
+		}
 	}
 
 }
