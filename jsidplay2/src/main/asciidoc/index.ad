@@ -42,6 +42,12 @@ JSidplay2 is able to
 
 Click here to link:{codebase}{artifactId}-{version}.zip[Download] JSIDPlay2
 
+=== Linux Installers
+
+link:{codebase}/{artifactId}-{version}-1.0.deb[Install JSIDPlay2 DEB installer]
+
+link:{codebase}/{artifactId}-{version}-1.0-1.x86_64.rpm[Install JSIDPlay2 RPM installer]
+
 == Android Client Version Demo (using my own Server running JSIDPlay2)
 
 Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +

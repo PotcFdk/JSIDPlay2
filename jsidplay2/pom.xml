@@ -877,7 +877,7 @@
 				<version>1.0</version>
 				<executions>
 					<execution>
-						<id>copy</id>
+						<id>upload</id>
 						<phase>deploy</phase>
 						<goals>
 							<goal>upload</goal>
@@ -885,6 +885,20 @@
 						<configuration>
 							<fromDir>${project.build.directory}/deploy</fromDir>
 							<includes>**/*</includes>
+							<serverId>${serverId}</serverId>
+							<url>${serverUrl}</url>
+							<toDir>${remoteDir}</toDir>
+						</configuration>
+					</execution>
+					<execution>
+						<id>upload-jfx-native</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<fromDir>${project.build.directory}/jfx/native</fromDir>
+							<includes>*.deb,*.rpm</includes>
 							<serverId>${serverId}</serverId>
 							<url>${serverUrl}</url>
 							<toDir>${remoteDir}</toDir>
