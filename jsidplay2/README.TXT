@@ -2,6 +2,7 @@ mvn clean install
 =================
 target/standalone	-	local PC version
 target/deploy		-	website version
+target/jfx/native	-	native launchers or installers
 
 mvn clean deploy
 =================
@@ -58,21 +59,6 @@ To use style sheets inside .fxml file use:
 To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment commented out alternative version)
 Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why some of the layouts need that.
 
-Java WebStart pitfalls:
-=======================
-Common:
-Java Control Panel:
-1. The server URL (starting with file:// or http://) must be configured in the Java Control Panel's security panel: exception list for local testing of the WebStart application
-2. Also the security settings must be lowered to medium. 
-see src/main/webstart/Java Control Panel.jpg
-3. In pom.xml change codebase to webservers URL, where the app is uploaded to. For local tests it must be the local file URL e.g. "/home/ken/workspace/jsidplay2/target/deploy/online/webstart" (Windows goes like "file:///d:/<path>")
-In every jar of the app in the META-INF/MANIFEST.MF the codebase must exactly match this server's URL.
-4. In every jar's META-INF/MANIFEST.MF there must be at least Implementation-Vendor, Implementation-Title, Codebase and Permissions
-5. Every jar MUST be signed with exactly ONE certificate. Self-made certificates expire after 6 month. If one JAR is already signed, signature should be removed to simplify things.
-   (Officially and as an alternative it is suggested to create different deployments for each certificate which is not the way i did it).
-6. Info: Debugging and fiddling out Java WebStart errors is awful, error messages appear in ugly dialog boxes and security warnings frightens users from installing it!
-Over and out!
-
 How to Create a HTTPS certificate easily:
 =========================================
 https://certbot.eff.org/lets-encrypt/ubuntutrusty-apache
@@ -92,10 +78,6 @@ find out available JavaFX style classes of a node in the scene graph:
 			for (Node c : ((Parent) n).getChildrenUnmodifiable())
 				dump(c, depth + 1);
 	}
-
-How to debug Java WebStart applications:
-set JAVAWS_VM_ARGS="-Xdebug -Dnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=8000"
-javaws https://haendel.ddns.net/~ken/online/webstart/JSIDPlay2.jnlp
 
 Chameleon Command-Line:
 =======================

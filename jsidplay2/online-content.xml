@@ -29,10 +29,8 @@
 	<property name="gamebase_zip" value="GameBase64.zip" />
 	<property name="gamebase_crc" value="GameBase64.crc" />
 	<property name="gamebase_name" value="GameBase64" />
-	<!-- webstart -->
-	<property name="webstart_dir" location="${result_dir}/webstart" />
 
-	<target name="all" depends="compress_jsiddevice_exe,zip_jsiddevice,webstart,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
+	<target name="all" depends="compress_jsiddevice_exe,zip_jsiddevice,demos,gb64_import,hvmec_import,cgsc_import,hvsc_import,updateVersion" />
 
 	<!-- ================================= 
           target: updateVersion
@@ -88,104 +86,6 @@
 		</zip>
 	</target>
 
-	<!-- ================================= 
-          target: webstart
-          Description:
-          Create Java WebStart Application.
-         ================================= -->
-	<target name="webstart">
-		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${java.home}/../lib/ant-javafx.jar" />
-		<taskdef resource="net/sf/antcontrib/antlib.xml">
-			<classpath>
-				<pathelement location="${ant-contrib-jar}" />
-			</classpath>
-		</taskdef>
-
-		<!-- Compile stylesheets -->
-		<fx:csstobin outdir="target/classes">
-			<fileset dir="target/classes" includes="**/*.css" excludes="javadoc/**/*.css" />
-		</fx:csstobin>
-		<delete>
-			<fileset dir="target/classes">
-				<include name="**/*.css" />
-				<exclude name="javadoc/**/*.css" />
-			</fileset>
-		</delete>
-		<!-- Create main jar -->
-		<fx:jar destfile="${webstart_dir}/${project.artifactId}-${project.version}.jar">
-			<fx:application name="${project.name}" mainClass="${javafx.main.class}" />
-			<fx:resources>
-				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
-			</fx:resources>
-			<fileset dir="target/classes" />
-			<fx:platform javafx="2.2+" j2se="1.8+">
-			</fx:platform>
-		</fx:jar>
-		<!-- Unsign already signed jar -->
-		<jar destfile="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar">
-			<zipfileset src="${webstart_dir}/bcprov-jdk15on-1.52.jar" excludes="META-INF/**/*" />
-		</jar>
-		<move file="${webstart_dir}/bcprov-jdk15on-stripped-1.52.jar" tofile="${webstart_dir}/bcprov-jdk15on-1.52.jar" />
-		<!-- Add required manifest attributes to ALL jars-->
-		<foreach target="manifest" param="jarToUpdate">
-			<path>
-				<fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
-			</path>
-		</foreach>
-		<!-- sign all jars using the SAME certificate -->
-		<exec executable="${java.home}/bin/keytool" dir="${webstart_dir}" failonerror="true">
-			<arg line="-selfcert -genkey -storetype pkcs12 -alias jsidplay2 -storepass jsidplay2 -keypass jsidplay2 -keystore jsidplay2.pfx" />
-			<arg value="-dname" />
-			<arg value="cn=${project.organization.name}, ou=${project.name}, o=Open Source, l=Berlin, st=Berlin, c=DE" />
-		</exec>
-		<signjar destdir="${webstart_dir}" keyStore="${webstart_dir}/jsidplay2.pfx" storePass="jsidplay2" alias="jsidplay2" keyPass="jsidplay2">
-			<fileset dir="${webstart_dir}" includes="*.jar" />
-		</signjar>
-		<delete file="${webstart_dir}/jsidplay2.pfx" />
-		<!-- create deployment types (webstart, native bundle, etc.) -->
-		<fx:deploy embeddedWidth="100%" embeddedHeight="100%" width="${javafx.run.width}" height="${javafx.run.height}" nativeBundles="none" outdir="${webstart_dir}" outfile="${project.name}" embedjnlp="true" updatemode="background">
-			<fx:application name="${project.name}" mainClass="${javafx.main.class}" />
-			<fx:resources>
-				<fx:fileset dir="${webstart_dir}" includes="*.jar" excludes="*-natives-*.jar" />
-				<fx:fileset dir="${webstart_dir}" type="native" os="Windows" arch="x86_64 x86" includes="*-natives-windows.jar" />
-				<fx:fileset dir="${webstart_dir}" type="native" os="Linux" arch="i386 ia64 x84_64 amd64" includes="*-natives-linux.jar" />
-				<fx:fileset dir="${webstart_dir}" type="native" os="Mac OS" includes="*-natives-osx.jar" />
-			</fx:resources>
-			<fx:info title="${project.name}" vendor="${project.organization.name}">
-				<fx:splash href="jsidplay2.jpg" />
-				<fx:icon href="jsidplay2.ico" kind="shortcut" width="32" height="32" depth="8" />
-			</fx:info>
-			<fx:permissions elevated="true" cachecertificates="true" />
-			<fx:platform javafx="2.2+" j2se="1.8+">
-				<!-- https://community.oracle.com/thread/3676876 - jp2launcher.exe exits when launching Java Web Start application -->
-				<!--fx:jvmarg value="-Xms${javafx.initialHeapSize}m" />
-				<fx:jvmarg value="-Xmx${javafx.maxHeapSize}m" /-->
-			</fx:platform>
-			<fx:preferences shortcut="true" install="true" menu="true" />
-		</fx:deploy>
-	</target>
-
-	<!-- ================================= 
-          target: manifest
-          Description:
-          Updates META-INF/MANIFEST.MF inside Jar
-         ================================= -->
-	<target name="manifest">
-		<jar update="true" file="${jarToUpdate}">
-			<manifest>
-				<attribute name="Application-Name" value="${project.name}" />
-				<attribute name="Permissions" value="all-permissions" />
-				<attribute name="Codebase" value="${codebase}" />
-				<attribute name="Specification-Title" value="${project.name}" />
-				<attribute name="Specification-Version" value="${project.version}" />
-				<attribute name="Specification-Vendor" value="${project.organization.name}" />
-				<attribute name="Implementation-Title" value="${project.name}" />
-				<attribute name="Implementation-Version" value="${project.version}" />
-				<attribute name="Implementation-Vendor" value="${project.organization.name}" />
-				<attribute name="Implementation-Vendor-Id" value="${project.artifactId}" />
-			</manifest>
-		</jar>
-	</target>
 	<!-- ================================= 
           target: gb64_import
           Description:

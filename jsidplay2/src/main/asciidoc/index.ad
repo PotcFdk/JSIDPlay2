@@ -42,12 +42,6 @@ JSidplay2 is able to
 
 Click here to link:{codebase}{artifactId}-{version}.zip[Download] JSIDPlay2
 
-== Java WebStart Live Demo - Latest Beta
-
-Preparation: Open Java Plugin Control Panel / Click Security High / Add site to Exception list +
-{codebase}online/webstart/{name}.jnlp +
-Then, click here to link:{codebase}online/webstart/{name}.html[Launch] JSIDPlay2
-
 == Android Client Version Demo (using my own Server running JSIDPlay2)
 
 Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +

@@ -22,8 +22,6 @@
 		<debuglevel>lines,vars,source</debuglevel>
 		<codebase>http://haendel.ddns.net/~ken/</codebase>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
-		<javafx.run.width>1024</javafx.run.width>
-		<javafx.run.height>768</javafx.run.height>
 		<javafx.initialHeapSize>1024</javafx.initialHeapSize>
 		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
 		<!-- Optional: FTP upload coordinates -->
@@ -357,6 +355,41 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>unpack-natives-jfx-additional</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<overWrite>true</overWrite>
+									<groupId>net.java.jinput</groupId>
+									<artifactId>jinput-platform</artifactId>
+									<version>2.0.6</version>
+									<classifier>natives-windows</classifier>
+									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<overWrite>true</overWrite>
+									<groupId>net.java.jinput</groupId>
+									<artifactId>jinput-platform</artifactId>
+									<version>2.0.6</version>
+									<classifier>natives-linux</classifier>
+									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<overWrite>true</overWrite>
+									<groupId>net.java.jinput</groupId>
+									<artifactId>jinput-platform</artifactId>
+									<version>2.0.6</version>
+									<classifier>natives-osx</classifier>
+									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
@@ -367,18 +400,6 @@
 							<includeScope>runtime</includeScope>
 							<excludeScope>provided</excludeScope>
 							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-webstart-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/deploy/online/webstart</outputDirectory>
-							<includeScope>runtime</includeScope>
-							<excludeScope>provided</excludeScope>
 						</configuration>
 					</execution>
 				</executions>
@@ -552,6 +573,22 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-resources-jfx-additional</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/jfx-native</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -629,19 +666,7 @@
 									<property name="upx.home" value="${upx.home}" />
 									<property name="result_dir"
 										location="${project.build.directory}/deploy/online" />
-									<property name="project.name" value="${project.name}" />
-									<property name="project.organization.name" value="${project.organization.name}" />
 									<property name="project.version" value="${project.version}" />
-									<property name="project.artifactId" value="${project.artifactId}" />
-									<property name="project.url" value="${project.url}" />
-									<property name="codebase" value="${codebase}online/webstart" />
-									<property name="javafx.main.class" value="${javafx.main.class}" />
-									<property name="javafx.initialHeapSize" value="${javafx.initialHeapSize}" />
-									<property name="javafx.maxHeapSize" value="${javafx.maxHeapSize}" />
-									<property name="javafx.run.width" value="${javafx.run.width}" />
-									<property name="javafx.run.height" value="${javafx.run.height}" />
-									<property name="ant-contrib-jar"
-										value="${project.basedir}/antcontrib/ant-contrib-1.0b3.jar" />
 								</ant>
 							</target>
 						</configuration>
@@ -772,6 +797,40 @@
 							<goal>single</goal>
 						</goals>
 					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>com.zenjava</groupId>
+			    <artifactId>javafx-maven-plugin</artifactId>
+			    <version>8.8.3</version>
+				<executions>
+				    <execution>
+				        <id>create-jfxjar</id>
+				        <phase>package</phase>
+				        <goals>
+				            <goal>build-jar</goal>
+				        </goals>
+					    <configuration>
+					        <mainClass>${javafx.main.class}</mainClass>
+					    </configuration>
+				    </execution>
+				    <execution>
+				        <id>create-native</id>
+				        <phase>package</phase>
+				        <goals>
+				            <goal>build-native</goal>
+				        </goals>
+					    <configuration>
+					        <mainClass>${javafx.main.class}</mainClass>
+					        <additionalAppResources>${project.build.directory}/jfx-additional</additionalAppResources>
+							<bundleArguments>
+								<!-- https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#Good_Licenses -->
+								<version>${project.version}</version>
+								<licenseType>LGPLv2</licenseType>
+							    <licenseFile>COPYING</licenseFile>
+							</bundleArguments>
+					    </configuration>
+				    </execution>
 				</executions>
 			</plugin>
 			<plugin>
