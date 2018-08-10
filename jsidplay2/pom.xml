@@ -20,7 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>true</debug>
 		<debuglevel>lines,vars,source</debuglevel>
-		<codebase>http://haendel.ddns.net/~ken/</codebase>
+		<codebase>https://haendel.ddns.net/~ken/</codebase>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.initialHeapSize>1024</javafx.initialHeapSize>
 		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
@@ -38,7 +38,7 @@
 	</properties>
 
 	<scm>
-		<url>http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2</url>
+		<url>https://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2</url>
 		<developerConnection>scm:svn:svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2</developerConnection>
 		<connection>scm:svn:http://svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2</connection>
 		<tag>HEAD</tag>
@@ -692,8 +692,8 @@
 							<errTitle>${project.name}</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
-							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<downloadUrl>https://java.com/download</downloadUrl>
+							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
@@ -733,8 +733,8 @@
 							<errTitle>${project.name}</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
-							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<downloadUrl>https://java.com/download</downloadUrl>
+							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
@@ -760,8 +760,8 @@
 							<outfile>${project.build.directory}/deploy/jsiddevice-${project.version}.exe</outfile>
 							<errTitle>NetworkSIDDevice</errTitle>
 							<chdir>.</chdir>
-							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl>http://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<downloadUrl>https://java.com/download</downloadUrl>
+							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsiddevice.ico</icon>
