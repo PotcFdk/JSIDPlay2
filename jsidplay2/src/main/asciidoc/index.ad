@@ -86,17 +86,17 @@ Now, using ACID64 you are able to switch between the real SID chip playback and 
 |===
 |  |  
 
-| image:HVSC.jpg[HVSC]
-| image:Settings.jpg[Settings]
+| image:{codebase}images/HVSC.jpg[HVSC]
+| image:{codebase}images/Settings.jpg[Settings]
 
-| image:Favorites.jpg[Favorites]
-| image:Graphics.jpg[Graphics]
+| image:{codebase}images/Favorites.jpg[Favorites]
+| image:{codebase}images/Graphics.jpg[Graphics]
 
-| image:Video.jpg[Video]
-| image:Video2.jpg[Video2]
+| image:{codebase}images/Video.jpg[Video]
+| image:{codebase}images/Video2.jpg[Video2]
 
-| image:Demos.jpg[Demos]
-| image:GameBase64.jpg[GameBase64]
+| image:{codebase}images/Demos.jpg[Demos]
+| image:{codebase}images/GameBase64.jpg[GameBase64]
 
 |===
 
