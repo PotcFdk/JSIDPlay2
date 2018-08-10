@@ -10,14 +10,14 @@ Note: You can start the built-in App Server standalone using the following comma
 
 [source,subs="attributes+"]
 ----
-java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server <1>
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
 ----
 <1> Launch the JSIDPlay2 app server standalone
 
 For all supported parameters, please type:
 [source,subs="attributes+"]
 ----
-java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help <1>
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help # <1>
 ----
 <1> Show usage of the JSIDPlay2 app server standalone
 
@@ -158,10 +158,21 @@ link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64M
 
 Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
 All parameters are used to specify emulation settings that should be used.
-Especially the MP3 parameters control the quality and size of the returned mp3 stream. Using these parameter gives you the control about mobile phone transfer data volume and especially the costs that arise, if you stream over the internet using your specific mobile phone provider contract (as nobody has an unlimited flat rate these days). It is recommended to use less data volume with less precision (lower quality) for connections over the internet and higher data volume with more precision (higher quality) inside your private local network, e.g. WLAN connection.
+Especially the MP3 parameters control the quality and size of the returned mp3 stream (vbr, cbr and vbrQuality).
+Using these parameter gives you the control about mobile phone transfer data volume and especially the costs that arise, if you stream over the internet using your specific mobile phone provider contract (as nobody has an unlimited flat rate these days). It is recommended to use less data volume with less precision (lower quality) for connections over the internet and higher data volume with more precision (higher quality) inside your private local network, e.g. WLAN connection.
 I have implemented an example android app as a client for the built-in App server of JSIDPlay2.
 My android app uses constant bitrate of 64K for the internet and variable bitrate and highest quality for my private WLAN.
 This is according to my recommendation above.
+
+For a description of all possible parameters please call console player's usage, because
+they are exactly the same. But keep in mind you must use the gnu-style parameter syntax and leave away "--":
+[source,subs="attributes+"]
+----
+cd Downloads/jsidplay2-{version}
+java -jar jsidplay2_console-{version}.jar --help # <2>
+---- 
+<1> Launch User interface version
+
 
 *Note:* I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
 
