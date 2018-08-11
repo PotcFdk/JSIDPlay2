@@ -9,7 +9,7 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 	private int minValue;
 
 	/**
-	 * @param decimalPlaces decimal places
+	 * @param minValue minimum number value
 	 */
 	public PositiveNumberToStringConverter(int minValue) {
 		this.minValue = minValue;
@@ -17,7 +17,7 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 
 	@Override
 	public String toString(T d) {
-		if (d.intValue() == -1) {
+		if (d.doubleValue() == -1) {
 			return "";
 		}
 		return String.format("%d", d.intValue());
@@ -28,7 +28,7 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 	public T fromString(String string) {
 		try {
 			Number number = NumberFormat.getInstance().parse(string);
-			if (number.intValue() < minValue) {
+			if (number.doubleValue() < minValue) {
 				throw new ParseException("number must be greater than", minValue);
 			}
 			return (T) number;

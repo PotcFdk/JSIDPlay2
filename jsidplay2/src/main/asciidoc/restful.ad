@@ -169,7 +169,7 @@ they are exactly the same. But keep in mind you must use the gnu-style parameter
 [source,subs="attributes+"]
 ----
 cd Downloads/jsidplay2-{version}
-java -jar jsidplay2_console-{version}.jar --help # <2>
+java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
 <1> Launch User interface version
 
