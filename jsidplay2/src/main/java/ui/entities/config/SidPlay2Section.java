@@ -50,7 +50,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1192;
 	public static final int DEFAULT_FRAME_HEIGHT = 975;
-	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 116;
+	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 153;
 	public static final boolean DEFAULT_FULL_SCREEN = false;
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2.5f;
