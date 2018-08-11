@@ -28,8 +28,7 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml"
 	type="javafx.scene.layout.VBox">
-	<!-- <Scene xmlns:fx="http://javafx.com/fxml" -->
-	<!-- fx:controller="ui.toolbar.ToolBar"> -->
+	<!-- Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.toolbar.ToolBar" -->
 	<VBox>
 		<AnchorPane>
 			<fx:define>
@@ -62,14 +61,6 @@
 						onAction="#doEnableSldb" />
 
 					<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
-				</VBox>
-				<VBox>
-					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-					<TextField fx:id="defaultTime" prefWidth="60">
-						<tooltip>
-							<Tooltip text="%DEFAULT_LENGTH_TIP" />
-						</tooltip>
-					</TextField>
 				</VBox>
 			</HBox>
 		</AnchorPane>
@@ -229,8 +220,24 @@
 						</TypeTextField>
 					</VBox>
 				</TitledPane>
+				<VBox>
+					<Label text="%BUFFER_SIZE" alignment="CENTER_RIGHT" />
+					<TextField fx:id="bufferSize" maxWidth="60">
+						<tooltip>
+							<Tooltip text="%BUFFER_SIZE_TIP" />
+						</tooltip>
+					</TextField>
+				</VBox>
+				<VBox>
+					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
+					<TextField fx:id="defaultTime" maxWidth="60">
+						<tooltip>
+							<Tooltip text="%DEFAULT_LENGTH_TIP" />
+						</tooltip>
+					</TextField>
+				</VBox>
 			</HBox>
 		</AnchorPane>
 	</VBox>
 </fx:root>
-<!-- </Scene> -->
+<!--/Scene -->

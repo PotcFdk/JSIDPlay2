@@ -38,9 +38,9 @@ import netsiddev_builder.commands.TrySetSidModel;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
-import ui.common.EnumToString;
-import ui.common.HexNumberToString;
-import ui.common.NumberToString;
+import ui.common.EnumToStringConverter;
+import ui.common.HexNumberToStringConverter;
+import ui.common.NumberToStringConverter;
 import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.FilterSection;
@@ -158,17 +158,17 @@ public class EmulationSettings extends C64Window {
 		thirdFilters = FXCollections.<String>observableArrayList();
 		thirdFilter.setItems(thirdFilters);
 
-		mainBalance.setLabelFormatter(new NumberToString<Double>(1));
+		mainBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		mainBalance.valueProperty().bindBidirectional(audioSection.mainBalanceProperty());
 		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(0, newValue.floatValue()));
 		});
-		secondBalance.setLabelFormatter(new NumberToString<Double>(1));
+		secondBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		secondBalance.valueProperty().bindBidirectional(audioSection.secondBalanceProperty());
 		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(1, newValue.floatValue()));
 		});
-		thirdBalance.setLabelFormatter(new NumberToString<Double>(1));
+		thirdBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		thirdBalance.valueProperty().bindBidirectional(audioSection.thirdBalanceProperty());
 		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
@@ -188,71 +188,71 @@ public class EmulationSettings extends C64Window {
 		});
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
-		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(), new NumberToString<>(2));
+		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(), new NumberToStringConverter<>(2));
 		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setVolume(0, newValue.floatValue()));
 		});
 		secondVolume.valueProperty().bindBidirectional(audioSection.secondVolumeProperty());
 		secondVolumeValue.textProperty().bindBidirectional(audioSection.secondVolumeProperty(),
-				new NumberToString<>(2));
+				new NumberToStringConverter<>(2));
 		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(b -> b.setVolume(1, newValue.floatValue()));
 		});
 		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
-		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(), new NumberToString<>(2));
+		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(), new NumberToStringConverter<>(2));
 		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(b -> b.setVolume(2, newValue.floatValue()));
 		});
 
 		stereoModes = FXCollections.<StereoMode>observableArrayList(StereoMode.values());
-		stereoMode.setConverter(new EnumToString<StereoMode>(bundle));
+		stereoMode.setConverter(new EnumToStringConverter<StereoMode>(bundle));
 		stereoMode.setItems(stereoModes);
 
-		baseAddress.textProperty().bindBidirectional(emulationSection.dualSidBaseProperty(), new HexNumberToString());
-		thirdAddress.textProperty().bindBidirectional(emulationSection.thirdSIDBaseProperty(), new HexNumberToString());
+		baseAddress.textProperty().bindBidirectional(emulationSection.dualSidBaseProperty(), new HexNumberToStringConverter());
+		thirdAddress.textProperty().bindBidirectional(emulationSection.thirdSIDBaseProperty(), new HexNumberToStringConverter());
 
 		sidReads = FXCollections.<SidReads>observableArrayList(SidReads.values());
-		sidToRead.setConverter(new EnumToString<SidReads>(bundle));
+		sidToRead.setConverter(new EnumToStringConverter<SidReads>(bundle));
 		sidToRead.setItems(sidReads);
 		sidToRead.getSelectionModel().select(emulationSection.getSidNumToRead());
 
 		sid1Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
-		sid1Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid1Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid1Emulation.valueProperty().bindBidirectional(emulationSection.userEmulationProperty());
 		sid1Emulation.setItems(sid1Emulations);
 
 		sid2Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
-		sid2Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid2Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid2Emulation.valueProperty().bindBidirectional(emulationSection.stereoEmulationProperty());
 		sid2Emulation.setItems(sid2Emulations);
 
 		sid3Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
-		sid3Emulation.setConverter(new EnumToString<Emulation>(bundle));
+		sid3Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid3Emulation.valueProperty().bindBidirectional(emulationSection.thirdEmulationProperty());
 		sid3Emulation.setItems(sid3Emulations);
 
 		sid1Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
-		sid1Model.setConverter(new EnumToString<ChipModel>(bundle));
+		sid1Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid1Model.valueProperty().bindBidirectional(emulationSection.userSidModelProperty());
 		sid1Model.setItems(sid1Models);
 
 		sid2Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
-		sid2Model.setConverter(new EnumToString<ChipModel>(bundle));
+		sid2Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid2Model.valueProperty().bindBidirectional(emulationSection.stereoSidModelProperty());
 		sid2Model.setItems(sid2Models);
 
 		sid3Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
-		sid3Model.setConverter(new EnumToString<ChipModel>(bundle));
+		sid3Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid3Model.valueProperty().bindBidirectional(emulationSection.thirdSIDModelProperty());
 		sid3Model.setItems(sid3Models);
 
 		defaultModels = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
-		defaultModel.setConverter(new EnumToString<ChipModel>(bundle));
+		defaultModel.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		defaultModel.valueProperty().bindBidirectional(emulationSection.defaultSidModelProperty());
 		defaultModel.setItems(defaultModels);
 
 		defaultEmulations = FXCollections.<Emulation>observableArrayList(RESID, RESIDFP);
-		defaultEmulation.setConverter(new EnumToString<Emulation>(bundle));
+		defaultEmulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		defaultEmulation.valueProperty().bindBidirectional(emulationSection.defaultEmulationProperty());
 		defaultEmulation.setItems(defaultEmulations);
 

@@ -87,3 +87,7 @@
 #background {
 	-fx-background: #000000;	
 }
+
+.label {
+	 -fx-font-size: 12;
+}

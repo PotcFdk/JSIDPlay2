@@ -75,7 +75,7 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.EnumToString;
+import ui.common.EnumToStringConverter;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.download.DownloadThread;
@@ -261,11 +261,11 @@ public class MusicCollection extends C64VBox implements UIPart {
 		nameColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.4));
 		valueColumn.prefWidthProperty().bind(tuneInfoTable.widthProperty().multiply(0.6));
 
-		searchScope.setConverter(new EnumToString<SearchScope>(util.getBundle()));
+		searchScope.setConverter(new EnumToStringConverter<SearchScope>(util.getBundle()));
 		searchScope.setItems(FXCollections.<SearchScope>observableArrayList(SearchScope.values()));
 		searchScope.getSelectionModel().select(SearchScope.FORWARD);
 
-		searchResult.setConverter(new EnumToString<SearchResult>(util.getBundle()));
+		searchResult.setConverter(new EnumToStringConverter<SearchResult>(util.getBundle()));
 		searchResult.setItems(FXCollections.<SearchResult>observableArrayList(SearchResult.values()));
 		searchResult.getSelectionModel().select(SearchResult.SHOW_NEXT_MATCH);
 

@@ -56,7 +56,7 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.NumberToString;
+import ui.common.NumberToStringConverter;
 import ui.common.UIPart;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
@@ -133,66 +133,66 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		};
 		util.getPlayer().stateProperty().addListener(stateListener);
 
-		scaling.setLabelFormatter(new NumberToString<>(2));
+		scaling.setLabelFormatter(new NumberToStringConverter<>(2));
 		scaling.valueProperty().bindBidirectional(sidplay2Section.videoScalingProperty());
-		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(), new NumberToString<>(2));
+		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(), new NumberToStringConverter<>(2));
 		scaling.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (applyImmediately.isSelected()) {
 				updateScaling();
 			}
 		});
 
-		brightness.setLabelFormatter(new NumberToString<>(2));
+		brightness.setLabelFormatter(new NumberToStringConverter<>(2));
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());
-		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), new NumberToString<>(2));
+		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), new NumberToStringConverter<>(2));
 		brightness.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setBrightness(newValue.floatValue()), applyImmediately.isSelected()));
 
-		contrast.setLabelFormatter(new NumberToString<>(2));
+		contrast.setLabelFormatter(new NumberToStringConverter<>(2));
 		contrast.valueProperty().bindBidirectional(sidplay2Section.contrastProperty());
-		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), new NumberToString<>(2));
+		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), new NumberToStringConverter<>(2));
 		contrast.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setContrast(newValue.floatValue()), applyImmediately.isSelected()));
 
-		gamma.setLabelFormatter(new NumberToString<>(2));
+		gamma.setLabelFormatter(new NumberToStringConverter<>(2));
 		gamma.valueProperty().bindBidirectional(sidplay2Section.gammaProperty());
-		gammaValue.textProperty().bindBidirectional(sidplay2Section.gammaProperty(), new NumberToString<>(2));
+		gammaValue.textProperty().bindBidirectional(sidplay2Section.gammaProperty(), new NumberToStringConverter<>(2));
 		gamma.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setGamma(newValue.floatValue()), applyImmediately.isSelected()));
 
-		saturation.setLabelFormatter(new NumberToString<>(2));
+		saturation.setLabelFormatter(new NumberToStringConverter<>(2));
 		saturation.valueProperty().bindBidirectional(sidplay2Section.saturationProperty());
-		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), new NumberToString<>(2));
+		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), new NumberToStringConverter<>(2));
 		saturation.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setSaturation(newValue.floatValue()), applyImmediately.isSelected()));
 
-		phaseShift.setLabelFormatter(new NumberToString<>(2));
+		phaseShift.setLabelFormatter(new NumberToStringConverter<>(2));
 		phaseShift.valueProperty().bindBidirectional(sidplay2Section.phaseShiftProperty());
-		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), new NumberToString<>(2));
+		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), new NumberToStringConverter<>(2));
 		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setPhaseShift(newValue.floatValue()), applyImmediately.isSelected()));
 
-		offset.setLabelFormatter(new NumberToString<>(2));
+		offset.setLabelFormatter(new NumberToStringConverter<>(2));
 		offset.valueProperty().bindBidirectional(sidplay2Section.offsetProperty());
-		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), new NumberToString<>(2));
+		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), new NumberToStringConverter<>(2));
 		offset.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setOffset(newValue.floatValue()), applyImmediately.isSelected()));
 
-		tint.setLabelFormatter(new NumberToString<>(2));
+		tint.setLabelFormatter(new NumberToStringConverter<>(2));
 		tint.valueProperty().bindBidirectional(sidplay2Section.tintProperty());
-		tintValue.textProperty().bindBidirectional(sidplay2Section.tintProperty(), new NumberToString<>(2));
+		tintValue.textProperty().bindBidirectional(sidplay2Section.tintProperty(), new NumberToStringConverter<>(2));
 		tint.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setTint(newValue.floatValue()), applyImmediately.isSelected()));
 
-		blur.setLabelFormatter(new NumberToString<>(2));
+		blur.setLabelFormatter(new NumberToStringConverter<>(2));
 		blur.valueProperty().bindBidirectional(sidplay2Section.blurProperty());
-		blurValue.textProperty().bindBidirectional(sidplay2Section.blurProperty(), new NumberToString<>(2));
+		blurValue.textProperty().bindBidirectional(sidplay2Section.blurProperty(), new NumberToStringConverter<>(2));
 		blur.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setLuminanceC(newValue.floatValue()), applyImmediately.isSelected()));
 
-		bleed.setLabelFormatter(new NumberToString<>(2));
+		bleed.setLabelFormatter(new NumberToStringConverter<>(2));
 		bleed.valueProperty().bindBidirectional(sidplay2Section.bleedProperty());
-		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), new NumberToString<>(2));
+		bleedValue.textProperty().bindBidirectional(sidplay2Section.bleedProperty(), new NumberToStringConverter<>(2));
 		bleed.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setDotCreep(newValue.floatValue()), applyImmediately.isSelected()));
 

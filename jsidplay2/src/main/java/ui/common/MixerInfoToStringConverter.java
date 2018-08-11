@@ -4,7 +4,7 @@ import javax.sound.sampled.Mixer.Info;
 
 import javafx.util.StringConverter;
 
-public class MixerInfoToString extends StringConverter<Info> {
+public class MixerInfoToStringConverter extends StringConverter<Info> {
 
 	@Override
 	public Info fromString(String string) {

@@ -4,11 +4,11 @@ import java.util.ResourceBundle;
 
 import javafx.util.StringConverter;
 
-public class EnumToString<T extends Enum<?>> extends StringConverter<T> {
+public class EnumToStringConverter<T extends Enum<?>> extends StringConverter<T> {
 
 	private final ResourceBundle bundle;
 
-	public EnumToString(ResourceBundle bundle) {
+	public EnumToStringConverter(ResourceBundle bundle) {
 		this.bundle = bundle;
 	}
 

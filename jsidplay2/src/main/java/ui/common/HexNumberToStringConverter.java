@@ -2,7 +2,7 @@ package ui.common;
 
 import javafx.util.StringConverter;
 
-public final class HexNumberToString extends StringConverter<Number> {
+public final class HexNumberToStringConverter extends StringConverter<Number> {
 
 	@Override
 	public String toString(Number d) {

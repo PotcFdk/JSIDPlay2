@@ -45,8 +45,9 @@ import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.EnumToString;
-import ui.common.MixerInfoToString;
+import ui.common.EnumToStringConverter;
+import ui.common.MixerInfoToStringConverter;
+import ui.common.PositiveNumberToStringConverter;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.entities.config.AudioSection;
@@ -80,7 +81,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private TextField defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort, appServerSecurePort,
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort, appServerSecurePort,
 			appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
@@ -122,7 +123,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		jsidplay2Server = JSIDPlay2Server.getInstance();
 		jsidplay2Server.setConfiguration(config);
 
-		audioBox.setConverter(new EnumToString<Audio>(bundle));
+		audioBox.setConverter(new EnumToStringConverter<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
 				Audio.COMPARE_MP3));
 		audioBox.valueProperty().addListener((obj, o, n) -> {
@@ -132,26 +133,26 @@ public class ToolBar extends C64VBox implements UIPart {
 		});
 		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
-		devicesBox.setConverter(new MixerInfoToString());
+		devicesBox.setConverter(new MixerInfoToStringConverter());
 		devicesBox.setItems(FXCollections.<Info>observableArrayList(JavaSound.getDevices()));
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 
-		samplingBox.setConverter(new EnumToString<SamplingMethod>(bundle));
+		samplingBox.setConverter(new EnumToStringConverter<SamplingMethod>(bundle));
 		samplingBox.setItems(FXCollections.<SamplingMethod>observableArrayList(SamplingMethod.values()));
 		samplingBox.valueProperty().bindBidirectional(audioSection.samplingProperty());
 
-		samplingRateBox.setConverter(new EnumToString<SamplingRate>(bundle));
+		samplingRateBox.setConverter(new EnumToStringConverter<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
 		samplingRateBox.valueProperty().bindBidirectional(audioSection.samplingRateProperty());
 
-		videoStandardBox.setConverter(new EnumToString<CPUClock>(bundle));
+		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
 
 		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());
 		hardsid8580Box.valueProperty().bindBidirectional(emulationSection.hardsid8580Property());
 
-		engineBox.setConverter(new EnumToString<Engine>(bundle));
+		engineBox.setConverter(new EnumToStringConverter<Engine>(bundle));
 		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
 		engineBox.valueProperty().addListener((obj, o, n) -> {
 			hardsid6581Box.setDisable(!Engine.HARDSID.equals(n));
@@ -181,6 +182,21 @@ public class ToolBar extends C64VBox implements UIPart {
 				defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 			}
 		});
+		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
+				new PositiveNumberToStringConverter<>(2048));
+		audioSection.bufferSizeProperty().addListener((obj, o, n) -> {
+			final Tooltip tooltip = new Tooltip();
+			bufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (n.intValue() >= 2048) {
+				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_TIP"));
+				bufferSize.setTooltip(tooltip);
+				bufferSize.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_FORMAT"));
+				bufferSize.setTooltip(tooltip);
+				bufferSize.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
 
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
@@ -196,7 +212,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		Bindings.bindBidirectional(appServerSecurePort.textProperty(), emulationSection.appServerSecurePortProperty(),
 				new IntegerStringConverter());
 
-		appServerConnectorsBox.setConverter(new EnumToString<Connectors>(bundle));
+		appServerConnectorsBox.setConverter(new EnumToStringConverter<Connectors>(bundle));
 		appServerConnectorsBox.valueProperty().addListener((obj, o, n) -> {
 			switch (n) {
 			case HTTP_HTTPS:
