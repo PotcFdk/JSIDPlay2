@@ -181,7 +181,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
-		if (fileBrowser.getRoot().getValue() instanceof TFile) {
+		if (fileBrowser.getRoot()!= null && fileBrowser.getRoot().getValue() instanceof TFile) {
 			TFile tf = (TFile) fileBrowser.getRoot().getValue();
 			try {
 				TVFS.umount(tf);

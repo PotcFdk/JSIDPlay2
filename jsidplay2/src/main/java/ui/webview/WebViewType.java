@@ -19,11 +19,11 @@ public enum WebViewType {
 	/**
 	 * Remix.Kwed.Org The Devinitive Guide To C64 Remakes
 	 */
-	REMIX_KWED_ORG("http://remix.kwed.org/"),
+	REMIX_KWED_ORG("https://remix.kwed.org/"),
 	/**
 	 * The SID 6581/8580 Recordings Archive
 	 */
-	SID_OTH4_COM("http://sid.oth4.com/"),
+	SID_OTH4_COM("https://sid.oth4.com/"),
 	/**
 	 * C-64 Portal
 	 */
@@ -35,7 +35,7 @@ public enum WebViewType {
 	/**
 	 * Lemon Retro Store
 	 */
-	LEMON64_COM("http://www.lemon64.com/"),
+	LEMON64_COM("https://www.lemon64.com/"),
 	/**
 	 * Stone Oakvalley's Authentic SID Collection (SOASC=)
 	 */

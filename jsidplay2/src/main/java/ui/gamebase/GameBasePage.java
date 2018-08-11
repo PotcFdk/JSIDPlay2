@@ -81,7 +81,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 							screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
 						}
 						if (screenshot != null) {
-							Platform.runLater(() -> screenshot.setImage(new Image(url.toString())));
+							Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
 						}
 					} catch (MalformedURLException e) {
 						System.err.println(e.getMessage());
