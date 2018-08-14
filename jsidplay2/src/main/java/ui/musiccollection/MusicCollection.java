@@ -72,6 +72,7 @@ import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
+import sidplay.audio.Audio;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -84,6 +85,8 @@ import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.service.VersionService;
+import ui.entities.config.AudioSection;
+import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 import ui.filefilter.TuneFileFilter;
@@ -383,19 +386,19 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private void startDownload6581R2() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R2();
-		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
 	private void startDownload6581R4() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R4();
-		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
 	private void startDownload8580R5() {
 		final String url = util.getConfig().getOnlineSection().getSoasc8580R5();
-		downloadStart(MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
 	}
 
 	@FXML
@@ -788,7 +791,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		util.getConfig().getFavorites().add(newFavorites);
 	}
 
-	private void downloadStart(String url) {
+	private void downloadStart(String hvscname, String url) {
 		System.out.println("Download URL: <" + url + ">");
 		try {
 			new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
@@ -797,7 +800,15 @@ public class MusicCollection extends C64VBox implements UIPart {
 				public void downloaded(final File downloadedFile) {
 					if (downloadedFile != null) {
 						downloadedFile.deleteOnExit();
-						Platform.runLater(() -> playTune(downloadedFile));
+						Platform.runLater(() -> {
+							Configuration config = util.getConfig();
+							SidPlay2Section sidplay2Section = config.getSidplay2Section();
+							AudioSection audioSection = config.getAudioSection();
+							audioSection.setMp3File(downloadedFile.getAbsolutePath());
+							audioSection.setPlayOriginal(true);
+							audioSection.setAudio(Audio.COMPARE_MP3);
+							playTune(PathUtils.getFile(hvscname + ".sid", sidplay2Section.getHvscFile(), null));
+						});
 					}
 				}
 			}, new URL(url)).start();
