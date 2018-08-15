@@ -50,8 +50,6 @@ public class DownloadServlet extends HttpServlet {
 		} catch (Exception e) {
 			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
-		} finally {
-			response.getOutputStream().flush();
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
