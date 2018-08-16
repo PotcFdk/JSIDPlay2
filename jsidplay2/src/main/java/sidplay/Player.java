@@ -790,7 +790,8 @@ public class Player extends HardwareEnsemble {
 	 * Quit player.
 	 */
 	public final void quit() {
-		executeInPlayerThread("Quit", () -> stateProperty.set(QUIT));
+		// dead-lock if paused and then quit, therefore immediately
+		stateProperty.set(QUIT);
 	}
 
 	/**
