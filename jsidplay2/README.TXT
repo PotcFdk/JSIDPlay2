@@ -95,21 +95,41 @@ TODO:
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
-Install HTTPS for Apache (Homepage):
-====================================
+Install HTTPS for Apache2 (letsencrypt):
+========================================
 sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
 sudo apt-get install python-certbot-apache
 sudo certbot --apache
 
-Check Certification renewal (Homepage):
-=======================================
+Check Certification renewal (letsencrypt):
+==========================================
 sudo certbot renew --dry-run
 
-Create App-Server keystore (for https):
-=======================================
-keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048
-Warning: A self-signed certificate is only a temporary solution, since
-it creates a warning message in the browser window and is
-unaccepted by an android client, normally!
+Re-use certificate of apache2 received by letsencrypt for JSIDPlay2 AppServer HTTPS connections:
+================================================================================================
+(source: https://www.wissel.net/blog/2018/03/letsencrypt-java-keystore.html)
+
+# create one big certificate file
+sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem,privkey.pem} > fullchain.pem
+
+# convert certificate file to PKCS12 required by keytool
+openssl pkcs12 -export -out fullchain.pkcs12 -in fullchain.pem
+
+# Create empty keystore
+keytool -genkey -keyalg RSA -alias sfdcsec -keystore sfdcsec.ks
+keytool -delete -alias sfdcsec -keystore sfdcsec.ks
+
+# Import certificate into keystore
+keytool -v -importkeystore -srckeystore fullchain.pkcs12 -destkeystore sfdcsec.ks -deststoretype JKS
+
+# Change alias name
+keytool -keystore sfdcsec.ks -changealias -alias 1 -destalias jsidplay2
+
+# Launch JSIDPlay2 AppServer with HTTPS enabled:
+java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server \
+		--appServerKeystore sfdcsec.jks \
+		--appServerManagerPassword jsidplay2 \
+		--appServerKeystorePassword jsidplay2 \
+		--appServerConnectors HTTPS
