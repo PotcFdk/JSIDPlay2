@@ -144,7 +144,7 @@ public class JSidPlay2Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// security reasons makes it necessary to the remove passwords!
+		// security reasons make it necessary to remove passwords!
 		EmulationSection emulationSection = jSidplay2.getUtil().getConfig().getEmulationSection();
 		emulationSection.setAppServerKeyManagerPassword(null);
 		emulationSection.setAppServerKeystorePassword(null);
