@@ -260,6 +260,19 @@ public final class EventScheduler {
 	}
 
 	/**
+	 * Process next thread-save event
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void clockThreadSafeEvents() throws InterruptedException {
+		synchronized (threadSafeQueue) {
+			if (!threadSafeQueue.isEmpty()) {
+				threadSafeQueue.remove(0).event();
+			}
+		}
+	}
+
+	/**
 	 * Is the event pending in this scheduler?
 	 * 
 	 * @param event

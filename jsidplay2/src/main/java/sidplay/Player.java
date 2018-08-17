@@ -665,6 +665,7 @@ public class Player extends HardwareEnsemble {
 			}
 		}
 		if (stateProperty.get() == PAUSE) {
+			c64.getEventScheduler().clockThreadSafeEvents();
 			Thread.sleep(PAUSE_SLEEP_TIME);
 		}
 		return stateProperty.get() == PLAY || stateProperty.get() == PAUSE;
@@ -790,8 +791,7 @@ public class Player extends HardwareEnsemble {
 	 * Quit player.
 	 */
 	public final void quit() {
-		// dead-lock if paused and then quit, therefore immediately
-		stateProperty.set(QUIT);
+		executeInPlayerThread("Quit", () -> stateProperty.set(QUIT));
 	}
 
 	/**
