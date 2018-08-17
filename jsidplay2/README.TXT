@@ -111,25 +111,27 @@ Re-use certificate of apache2 received by letsencrypt for JSIDPlay2 AppServer HT
 ================================================================================================
 (source: https://www.wissel.net/blog/2018/03/letsencrypt-java-keystore.html)
 
+Create file "server.sh"
+chmod +x server.sh
+
+server.sh:
+==========
+#!/bin/bash -x
 # create one big certificate file
 sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem,privkey.pem} > fullchain.pem
-
 # convert certificate file to PKCS12 required by keytool
-openssl pkcs12 -export -out fullchain.pkcs12 -in fullchain.pem
-
+openssl pkcs12 -export -out fullchain.pkcs12 -in fullchain.pem -password pass:jsidplay2
+sudo rm fullchain.pem
+sudo rm jsidplay2.ks
 # Create empty keystore
-keytool -genkey -keyalg RSA -alias sfdcsec -keystore sfdcsec.ks
-keytool -delete -alias sfdcsec -keystore sfdcsec.ks
-
+keytool -genkey -keyalg RSA -alias jsidplay2 -keystore jsidplay2.ks -storepass jsidplay2 -keypass jsidplay2 -dname 'cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c=DE'
+keytool -delete -alias jsidplay2 -keystore jsidplay2.ks -storepass jsidplay2
 # Import certificate into keystore
-keytool -v -importkeystore -srckeystore fullchain.pkcs12 -destkeystore sfdcsec.ks -deststoretype JKS
-
+keytool -v -importkeystore -srckeystore fullchain.pkcs12 -destkeystore jsidplay2.ks -deststoretype JKS -srcstorepass jsidplay2 -deststorepass jsidplay2
+sudo rm fullchain.pkcs12
 # Change alias name
-keytool -keystore sfdcsec.ks -changealias -alias 1 -destalias jsidplay2
+keytool -keystore jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 -storepass jsidplay2
 
 # Launch JSIDPlay2 AppServer with HTTPS enabled:
-java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server \
-		--appServerKeystore sfdcsec.jks \
-		--appServerManagerPassword jsidplay2 \
-		--appServerKeystorePassword jsidplay2 \
-		--appServerConnectors HTTPS
+cd ~/Downloads/jsidplay2-3.9 
+java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server --appServerKeystore ~/jsidplay2.ks --appServerManagerPassword jsidplay2 --appServerKeystorePassword jsidplay2 --appServerConnectors HTTP_HTTPS &
