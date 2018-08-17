@@ -25,7 +25,7 @@ java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help # <1>
 
 ==== Examples
 
-All the following service methods are using your configured music collections HVSC and CGSC.
+All the following RESTful service methods of JSIDPlay2 AppServer are using your configured music collections HVSC and CGSC.
 To make the following examples to work, first configure HVSC and CGSC music collection in JSIDPlay2, properly!
 If you can browse these music collections in JSIDPlay2 the service methods can browse and stream the contained tune files as well.
 
@@ -69,6 +69,8 @@ administrator: MD5:0bd6506986ec42e732ffb866d33bb14e,admin
 ---- 
 All known roles are user and admin.
 
+==== Use Self-signed certificate
+
 JSIDPlay2 app server supports HTTP or HTTPS (and both at once).
 To configure the HTTPS certificate, please set the keystore, manager password and keystore password
 either within the user interface of JSIDPlay2 or refer to the command-line parameters of JSIDPlay2 app server mentioned above.
@@ -76,7 +78,6 @@ either within the user interface of JSIDPlay2 or refer to the command-line param
 *Warning:* These passwords will always be deleted after exit of JSIDPlay2 for security reasons!
 
 To create a self-signed certificate you must use the keytool command of the java installation
-
 [source,subs="attributes+"]
 ----
 keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048 <1>
@@ -84,6 +85,71 @@ keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048
 <1> *Warning:* A self-signed certificate is only a temporary solution, since
 it creates a warning message in the browser window and is
 unaccepted by an android client, normally!
+
+==== Use trusted certificate
+This example is related to Let’s Encrypt and Apache2 installation on Linux.
+
+If your web-server and JSIDPlay2 server is both in the same domain, then you can use HTTPS using the same certificate for both:
+your web-server and JSIDPlay2 AppServer.
+
+But first lets make the Apache2 web-server secure, which is very easy with Let's Encrypt:
+[source,subs="attributes+"]
+----
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python-certbot-apache
+sudo certbot --apache
+----
+
+For automatic renewal we need a cron job:
+[source,subs="attributes+"]
+----
+sudo crontab -e
+
+# Add this to the crontab and save it:
+40 3 * * 0 certbot -q renew # <1>
+----
+
+*Note:* The certificate expires every 3 month. If the certificate is not expired, the renewal will not be done. Therefore we can use a shorter period of time.
+
+To re-use the created certificates for JSIDPlay2 AppServer, we will put them into a Java Keystore:
+[source,subs="attributes+"]
+----
+sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem	,privkey.pem} \
+	> fullchain.pem # <1>
+openssl pkcs12 -export -out fullchain.pkcs12 -in fullchain.pem -password pass:jsidplay2 # <2>
+keytool -genkey \
+	-keyalg RSA \
+	-alias jsidplay2 \
+	-keystore jsidplay2.ks \
+	-storepass jsidplay2 \
+	-keypass jsidplay2 \
+	-dname 'cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c=DE' # <3>
+keytool -delete -alias jsidplay2 -keystore jsidplay2.ks -storepass jsidplay2 # <4>
+keytool -v -importkeystore \
+	-srckeystore fullchain.pkcs12 \
+	-destkeystore jsidplay2.ks \
+	-deststoretype JKS \
+	-srcstorepass jsidplay2 \
+	-deststorepass jsidplay2 # <5>
+sudo rm fullchain.pkcs12
+keytool -keystore jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
+	-storepass jsidplay2 # <6>
+cd ~/Downloads/jsidplay2-3.9 
+java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server \
+	--appServerKeystore ~/jsidplay2.ks \
+	--appServerManagerPassword jsidplay2 \
+	--appServerKeystorePassword jsidplay2 \
+	--appServerConnectors HTTP_HTTPS & # <7>
+----
+<1> create one big certificate file
+<2> convert certificate file to PKCS12 required by keytool
+<3> Create empty keystore, first we create one...
+<4> ...then we remove contents again
+<5> Import certificate into keystore, first we import the certificates
+<6> ...then we need to change the alias name
+<7> Launch JSIDPlay2 AppServer with HTTPS enabled
 
 ==== Access from the Internet
 
@@ -98,15 +164,15 @@ Keep in mind, that opening ports in your firewall will raise the security risk. 
 
 Note: I will not take responsability for any risks or damages. Do this on your own risk!
 
-=== Usage of the RESTful service message
+=== JSIDPlay2 AppServer Usage of the RESTful services
 
-* Get all SID filter names (required to stream SID as MP3 later)
+==== Get all SID filter names (required to stream SID as MP3 later)
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters]
 
 Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and appended by their name, e.g. RESID_MOS8580_FilterAverage8580, That way filters can be grouped or sorted on the client side.
 
-* Get music collection directory
+==== Get music collection directory
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
 
@@ -128,31 +194,31 @@ Example:
 In the request above simply replace "/jsidplay2service/JSIDPlay2REST/directory/C64Music/..."
 by "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
 
-* Get tune infos
+==== Get tune infos
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a list of information of the specified tune file.
 
-* Get contents of the first SID favorites tab
+==== Get contents of the first SID favorites tab
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites]
 
 Return a list of favorite tune files.
 
-* Get composer photo
+==== Get composer photo
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a photo of a well-known tune composer to be displayed on the client side.
 
-* Download SID
+==== Download SID
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Download a tune file of your music collection to the client.
 
-* Stream SID as MP3
+==== Stream SID as MP3
 
 link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
 
