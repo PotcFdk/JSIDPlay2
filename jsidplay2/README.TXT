@@ -14,7 +14,7 @@ or at command line: using -D
 
 e.g. SSH copy
 -DserverId=
--DserverUrl=scp://ken:<password>@192.168.1.1/home/ken
+-DserverUrl=scp://ken:haendel@haendel.ddns.net/home/ken
 -DremoteDir=public_html
 
 Optional:
