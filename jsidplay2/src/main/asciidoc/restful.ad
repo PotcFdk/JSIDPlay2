@@ -247,7 +247,7 @@ they are exactly the same. But keep in mind you must use the gnu-style parameter
 cd Downloads/jsidplay2-{version}
 java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
-<1> Launch User interface version
+<1> Show ConsolePlayer's usage for a description of all parameters
 
 
 *Note:* I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
