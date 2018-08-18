@@ -36,7 +36,13 @@ JSidplay2 is able to
 * be integrated into Java enabled platforms
 * being used like a real C64 (watching demos, playing games etc.)
 
-== <<UserGuide.ad#UserGuide,JSIDPlay2 User Guide>>
+== User Guide
+Please read manual here:
+<<UserGuide.ad#UserGuide,JSIDPlay2 User Guide>>
+
+== Built-in AppServer
+Please read usage of the RESTful web-services, here:
+<<restful.ad#RESTful,RESTful Services Usage>>
 
 == Latest Beta
 

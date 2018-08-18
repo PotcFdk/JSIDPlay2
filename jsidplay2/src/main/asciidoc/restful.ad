@@ -1,4 +1,4 @@
-== RESTful web-services in JSIDPlay2
+== [[RESTful]]RESTful web-services in JSIDPlay2
 
 You can implement your own client to access this emulator.
 You can access this emulator by using the following service methods to stream music or browse music collection directories.
@@ -6,7 +6,7 @@ The service methods are available as soon as you click start in the built-in App
 
 === Launch JSIDPlay2 app server
 
-Note: You can start the built-in App Server standalone using the following command in a console window, instead:
+Note: You can start the built-in App Server standalone using the following command in a console window, instead of starting the UI version of JSIDPlay2:
 
 [source,subs="attributes+"]
 ----
@@ -31,7 +31,7 @@ If you can browse these music collections in JSIDPlay2 the service methods can b
 
 ==== Security
 
-Basic authentication is used calling the following services with the following credentials:
+Basic authentication is used calling the services with the following credentials:
 
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
@@ -75,7 +75,10 @@ JSIDPlay2 app server supports HTTP or HTTPS (and both at once).
 To configure the HTTPS certificate, please set the keystore, manager password and keystore password
 either within the user interface of JSIDPlay2 or refer to the command-line parameters of JSIDPlay2 app server mentioned above.
 
+*Info:* Some clients may forbid to use unencrypted HTTP connections by default e.g. Android9 based mobiles!
+
 *Warning:* These passwords will always be deleted after exit of JSIDPlay2 for security reasons!
+
 
 To create a self-signed certificate you must use the keytool command of the java installation
 [source,subs="attributes+"]
@@ -84,15 +87,15 @@ keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048
 ----
 <1> *Warning:* A self-signed certificate is only a temporary solution, since
 it creates a warning message in the browser window and is
-unaccepted by an android client, normally!
+unaccepted for example by an android client, normally!
 
 ==== Use trusted certificate
 This example is related to Let’s Encrypt and Apache2 installation on Linux.
 
-If your web-server and JSIDPlay2 server is both in the same domain, then you can use HTTPS using the same certificate for both:
-your web-server and JSIDPlay2 AppServer.
+If your web-server and JSIDPlay2 server is both in the same domain, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
+This is a step by step instruction of how it works.
 
-But first lets make the Apache2 web-server secure, which is very easy with Let's Encrypt:
+First lets make the Apache2 web-server secure, which is very easy with Let's Encrypt, these days:
 [source,subs="attributes+"]
 ----
 sudo apt-get install software-properties-common
@@ -116,9 +119,12 @@ sudo crontab -e
 To re-use the created certificates for JSIDPlay2 AppServer, we will put them into a Java Keystore:
 [source,subs="attributes+"]
 ----
-sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem	,privkey.pem} \
+sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem,privkey.pem} \
 	> fullchain.pem # <1>
-openssl pkcs12 -export -out fullchain.pkcs12 -in fullchain.pem -password pass:jsidplay2 # <2>
+openssl pkcs12 -export \
+	-out fullchain.pkcs12 \
+	-in fullchain.pem \
+	-password pass:jsidplay2 # <2>
 keytool -genkey \
 	-keyalg RSA \
 	-alias jsidplay2 \
@@ -126,29 +132,33 @@ keytool -genkey \
 	-storepass jsidplay2 \
 	-keypass jsidplay2 \
 	-dname 'cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c=DE' # <3>
-keytool -delete -alias jsidplay2 -keystore jsidplay2.ks -storepass jsidplay2 # <4>
+keytool -delete \
+	-alias jsidplay2 \
+	-keystore jsidplay2.ks \
+	-storepass jsidplay2 # <4>
 keytool -v -importkeystore \
 	-srckeystore fullchain.pkcs12 \
 	-destkeystore jsidplay2.ks \
 	-deststoretype JKS \
 	-srcstorepass jsidplay2 \
 	-deststorepass jsidplay2 # <5>
-sudo rm fullchain.pkcs12
-keytool -keystore jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
+keytool -keystore jsidplay2.ks \
+	-changealias \
+	-alias 1 \
+	-destalias jsidplay2 \
 	-storepass jsidplay2 # <6>
-cd ~/Downloads/jsidplay2-3.9 
 java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server \
-	--appServerKeystore ~/jsidplay2.ks \
+	--appServerKeystore jsidplay2.ks \
 	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS & # <7>
 ----
 <1> create one big certificate file
 <2> convert certificate file to PKCS12 required by keytool
-<3> Create empty keystore, first we create one...
+<3> Create empty keystore, first we create one, ...
 <4> ...then we remove contents again
-<5> Import certificate into keystore, first we import the certificates
-<6> ...then we need to change the alias name
+<5> Import certificate into keystore, first we import the certificates, ...
+<6> then we need to change the alias name
 <7> Launch JSIDPlay2 AppServer with HTTPS enabled
 
 ==== Access from the Internet
@@ -158,7 +168,7 @@ To use your client from within your private local area network does not require 
 But, if you want to use a client from any location in the internet, that would require some additional preparations:
 
 . You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like https://freeddns.noip.com and configure dynamic DNS inside your router)
-. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in App server in JSIDPlay2. This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server.
+. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in App server in JSIDPlay2 (8080 and 8443). This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server where JSIDPlay2 is running on.
 
 Keep in mind, that opening ports in your firewall will raise the security risk. You will make yourself vulnerable to attacks from hackers.
 
