@@ -39,8 +39,8 @@ public class StartPageServlet extends HttpServlet {
 		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
 				: emulationSection.getAppServerSecurePort();
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("${port}", String.valueOf(port));
-		replacements.put("${protocol}", appServerConnectors.getPreferredProtocol());
+		replacements.put("{port}", String.valueOf(port));
+		replacements.put("{protocol}", appServerConnectors.getPreferredProtocol());
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());

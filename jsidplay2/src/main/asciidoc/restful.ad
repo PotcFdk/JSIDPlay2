@@ -2,28 +2,11 @@
 
 You can implement your own client to access this emulator.
 You can access this emulator by using the following service methods to stream music or browse music collection directories.
-The service methods are available as soon as you click start in the built-in App Server in JSIDPlay2.
-
-=== Launch JSIDPlay2 app server
-
-Note: You can start the built-in App Server standalone using the following command in a console window, instead of starting the UI version of JSIDPlay2:
-
-[source,subs="attributes+"]
-----
-java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
-----
-<1> Launch the JSIDPlay2 app server standalone
-
-For all supported parameters, please type:
-[source,subs="attributes+"]
-----
-java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help # <1>
-----
-<1> Show usage of the JSIDPlay2 app server standalone
+The service methods are available as soon as you click start in the built-in AppServer in JSIDPlay2.
 
 === Preparation
 
-==== Examples
+==== General
 
 All the following RESTful service methods of JSIDPlay2 AppServer are using your configured music collections HVSC and CGSC.
 To make the following examples to work, first configure HVSC and CGSC music collection in JSIDPlay2, properly!
@@ -71,26 +54,17 @@ All known roles are user and admin.
 
 ==== Use Self-signed certificate
 
-JSIDPlay2 app server supports HTTP or HTTPS (and both at once).
-To configure the HTTPS certificate, please set the keystore, manager password and keystore password
-either within the user interface of JSIDPlay2 or refer to the command-line parameters of JSIDPlay2 app server mentioned above.
-
-*Info:* Some clients may forbid to use unencrypted HTTP connections by default e.g. Android9 based mobiles!
-
-*Warning:* These passwords will always be deleted after exit of JSIDPlay2 for security reasons!
-
-
 To create a self-signed certificate you must use the keytool command of the java installation
 [source,subs="attributes+"]
 ----
-keytool -genkey -alias sitename -keyalg RSA -keystore keystore.jks -keysize 2048 <1>
+keytool -genkey -alias sitename -keyalg RSA -keystore /etc/jsidplay2.ks -keysize 2048 <1>
 ----
 <1> *Warning:* A self-signed certificate is only a temporary solution, since
 it creates a warning message in the browser window and is
-unaccepted for example by an android client, normally!
+unaccepted by iPhones and mobiles running Android9!
 
 ==== Use trusted certificate
-This example is related to Let’s Encrypt and Apache2 installation on Linux.
+*Info*: This example is related to Let’s Encrypt and Apache2 installation on Linux.
 
 If your web-server and JSIDPlay2 server is both in the same domain, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
 This is a step by step instruction of how it works.
@@ -105,70 +79,141 @@ sudo apt-get install python-certbot-apache
 sudo certbot --apache
 ----
 
-For automatic renewal we need a cron job:
+For automatic renewal a cron job is created by Let's Encrypt.
+Let's Encrypt already adds the certbot script to renew certificates regularly.
+
+*Important:*
+In order to re-use these renewed certificates for JSIDPlay2 we add a cronjob as well (script /usr/bin/jsidplay2cert).
+Our cronjob creates the Java keystore (/etc/jsidplay2.ks) out of the certificates renewed by Let's Encrypt.
+
+To configure that cronjob type 'sudo crontab -e' and add the last line containing jsidplay2cert:
 [source,subs="attributes+"]
 ----
-sudo crontab -e
-
-# Add this to the crontab and save it:
-40 3 * * 0 certbot -q renew # <1>
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+40 3 * * 0 certbot -q renew
+@weekly root jsidplay2cert # <1>
 ----
+<1> jsidplay2cert is a script we have to execute in order to create our keystore (/etc/jsidplay2.ks), weekly
 
-*Note:* The certificate expires every 3 month. If the certificate is not expired, the renewal will not be done. Therefore we can use a shorter period of time.
-
-To re-use the created certificates for JSIDPlay2 AppServer, we will put them into a Java Keystore:
+Now create the script to be executed by cronjob typing 'sudo vi /usr/bin/jsidplay2cert':
 [source,subs="attributes+"]
 ----
-sudo cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem,privkey.pem} \
-	> fullchain.pem # <1>
-openssl pkcs12 -export \
-	-out fullchain.pkcs12 \
-	-in fullchain.pem \
-	-password pass:jsidplay2 # <2>
-keytool -genkey \
-	-keyalg RSA \
-	-alias jsidplay2 \
-	-keystore jsidplay2.ks \
-	-storepass jsidplay2 \
-	-keypass jsidplay2 \
-	-dname 'cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c=DE' # <3>
-keytool -delete \
-	-alias jsidplay2 \
-	-keystore jsidplay2.ks \
-	-storepass jsidplay2 # <4>
-keytool -v -importkeystore \
-	-srckeystore fullchain.pkcs12 \
-	-destkeystore jsidplay2.ks \
-	-deststoretype JKS \
-	-srcstorepass jsidplay2 \
-	-deststorepass jsidplay2 # <5>
-keytool -keystore jsidplay2.ks \
-	-changealias \
-	-alias 1 \
-	-destalias jsidplay2 \
-	-storepass jsidplay2 # <6>
-java -server -classpath jsidplay2-3.9.jar ui.servlets.JSIDPlay2Server \
-	--appServerKeystore jsidplay2.ks \
+#!/bin/bash
+
+# create one big certificate file PEM
+cat /etc/letsencrypt/live/haendel.ddns.net/{cert.pem,chain.pem,fullchain.pem,privkey.pem} \
+	> /tmp/fullchain.pem
+
+# convert certificate file PEM to PKCS12 required by keytool
+openssl pkcs12 -export -out /tmp/fullchain.pkcs12 -in /tmp/fullchain.pem \
+	-password pass:jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
+rm /tmp/fullchain.pem >> /var/log/jsidplay2cert.log 2>&1
+
+# Create empty keystore, first we create one, then we remove contents again
+rm /etc/jsidplay2.ks >> /var/log/jsidplay2cert.log 2>&1
+keytool -genkey -keyalg RSA -alias jsidplay2 -keystore /etc/jsidplay2.ks \
+	-storepass jsidplay2 -keypass jsidplay2 \
+	-dname 'cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c=DE' \
+	>> /var/log/jsidplay2cert.log 2>&1
+/usr/bin/keytool -delete -alias jsidplay2 -keystore /etc/jsidplay2.ks -storepass jsidplay2 \
+	>> /var/log/jsidplay2cert.log 2>&1
+
+# Import certificate into keystore, first we import the certificates, \
+	then we need to change the alias name
+keytool -v -importkeystore -srckeystore /tmp/fullchain.pkcs12 \
+	-destkeystore /etc/jsidplay2.ks -deststoretype JKS -srcstorepass jsidplay2 \
+	-deststorepass jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
+rm /tmp/fullchain.pkcs12 >> /var/log/jsidplay2cert.log 2>&1
+keytool -keystore /etc/jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
+	-storepass jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
+----
+
+Now, grant permission to execute that script by our cronjob:
+[source,subs="attributes+"]
+----
+sudo chmod 755 /usr/bin/jsidplay2cert
+----
+
+As a result we get weekly a fresh new keystore (/etc/jsidplay2.ks). A log file for troubleshooting is placed here (/var/log/jsidplay2cert)
+
+=== Launch JSIDPlay2 AppServer using HTTP
+
+First lets explain how to start JSIDPlay2 AppServer in general for unencrypted HTTP connections and without the created keystore above:
+
+*Info:* You can start the built-in AppServer standalone using the following command in a console window, instead of starting the UI version of JSIDPlay2:
+
+To start the JSIPlay2 AppServer without HTTPS, but only HTTP, please use the following command
+[source,subs="attributes+"]
+----
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server # <1>
+----
+<1> Launch the JSIDPlay2 AppServer standalone
+
+For all supported parameters, please type:
+[source,subs="attributes+"]
+----
+java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help # <1>
+----
+<1> Show usage of the JSIDPlay2 AppServer standalone
+
+=== Launch JSIDPlay2 AppServer using HTTPS
+
+Now lets explain how to start JSIDPlay2 AppServer using encrypted HTTPS connections with the keystore created above:
+
+To start the JSIPlay2 AppServer with HTTPS using the formerly created keystore, you can use the following script, please type 'vi ~/server.sh':
+[source,subs="attributes+"]
+----
+#!/bin/bash -x
+cd ~/Downloads/{artifactId}-{version}
+pkill -f ui.servlets.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar ui.servlets.JSIDPlay2Server \
+	--appServerKeystore /etc/jsidplay2.ks \
 	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \
-	--appServerConnectors HTTP_HTTPS & # <7>
+	--appServerConnectors HTTPS & # <1>
 ----
-<1> create one big certificate file
-<2> convert certificate file to PKCS12 required by keytool
-<3> Create empty keystore, first we create one, ...
-<4> ...then we remove contents again
-<5> Import certificate into keystore, first we import the certificates, ...
-<6> then we need to change the alias name
-<7> Launch JSIDPlay2 AppServer with HTTPS enabled
+<1> Launch the JSIDPlay2 AppServer using HTTPS standalone
 
-==== Access from the Internet
+*Note:* Parameter appServerConnectors controls if we want to support HTTP, HTTPS or both!
+
+*Warning:* The passwords will always be deleted after exit of JSIDPlay2 to not appear in the configuration file of JSIDPlay2 for security reasons!
+
+Now, grant permission to execute that script:
+[source,subs="attributes+"]
+----
+sudo chmod 755 ~/server.sh
+----
+
+Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
+
+=== Access from the Internet
 
 To use your client from within your private local area network does not require additional preparations, you just need to know and reach the IP address, where JSIDPlay2 is running on.
 
 But, if you want to use a client from any location in the internet, that would require some additional preparations:
 
 . You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like https://freeddns.noip.com and configure dynamic DNS inside your router)
-. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in App server in JSIDPlay2 (8080 and 8443). This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server where JSIDPlay2 is running on.
+. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in AppServer in JSIDPlay2 (8080 and 8443). This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server where JSIDPlay2 is running on.
 
 Keep in mind, that opening ports in your firewall will raise the security risk. You will make yourself vulnerable to attacks from hackers.
 
@@ -176,15 +221,17 @@ Note: I will not take responsability for any risks or damages. Do this on your o
 
 === JSIDPlay2 AppServer Usage of the RESTful services
 
+*Info:* Depending on the connection type of JSIDPlay2 AppServer you have to use HTTP or HTTPS as protocol and port 8080 (HTTP) or 8443 (HTPTS). Please refer the command-line parameters appServerConnectors!
+
 ==== Get all SID filter names (required to stream SID as MP3 later)
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/filters]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/filters[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/filters]
 
 Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and appended by their name, e.g. RESID_MOS8580_FilterAverage8580, That way filters can be grouped or sorted on the client side.
 
 ==== Get music collection directory
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
 
 You can access any sub-directory of your music collection to navigate to the tunes you want to play on the client side.
 HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
@@ -206,37 +253,37 @@ by "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
 
 ==== Get tune infos
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a list of information of the specified tune file.
 
 ==== Get contents of the first SID favorites tab
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/favorites]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/favorites[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/favorites]
 
 Return a list of favorite tune files.
 
 ==== Get composer photo
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Return a photo of a well-known tune composer to be displayed on the client side.
 
 ==== Download SID
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid[{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/download/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
 Download a tune file of your music collection to the client.
 
 ==== Stream SID as MP3
 
-link:${protocol}://127.0.0.1:${port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
+link:{protocol}://127.0.0.1:{port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
 
 Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
 All parameters are used to specify emulation settings that should be used.
 Especially the MP3 parameters control the quality and size of the returned mp3 stream (vbr, cbr and vbrQuality).
 Using these parameter gives you the control about mobile phone transfer data volume and especially the costs that arise, if you stream over the internet using your specific mobile phone provider contract (as nobody has an unlimited flat rate these days). It is recommended to use less data volume with less precision (lower quality) for connections over the internet and higher data volume with more precision (higher quality) inside your private local network, e.g. WLAN connection.
-I have implemented an example android app as a client for the built-in App server of JSIDPlay2.
+I have implemented an example android app as a client for the built-in AppServer of JSIDPlay2.
 My android app uses constant bitrate of 64K for the internet and variable bitrate and highest quality for my private WLAN.
 This is according to my recommendation above.
 
