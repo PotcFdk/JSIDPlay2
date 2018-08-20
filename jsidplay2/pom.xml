@@ -21,6 +21,9 @@
 		<debug>true</debug>
 		<debuglevel>lines,vars,source</debuglevel>
 		<codebase>https://haendel.ddns.net/~ken/</codebase>
+		<protocol>https</protocol>
+		<hostname>haendel.ddns.net</hostname>
+		<port>8443</port>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<javafx.initialHeapSize>1024</javafx.initialHeapSize>
 		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
@@ -246,9 +249,9 @@
 								<codebase>${codebase}</codebase>
 								<artifactId>${project.artifactId}</artifactId>
 								<version>${project.version}</version>
-								<protocol>https</protocol>
-								<hostname>haendel.ddns.net</hostname>
-								<port>8443</port>
+								<protocol>${protocol}</protocol>
+								<hostname>${hostname}</hostname>
+								<port>${port}</port>
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->
@@ -275,6 +278,9 @@
 								<codebase>${codebase}</codebase>
 								<artifactId>${project.artifactId}</artifactId>
 								<version>${project.version}</version>
+								<protocol>${protocol}</protocol>
+								<hostname>${hostname}</hostname>
+								<port>${port}</port>
 
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
@@ -561,7 +567,6 @@
 									<directory>src/main/deploy/jsidplay2</directory>
 									<filtering>true</filtering>
 									<includes>
-										<include>**/*.htm</include>
 										<include>**/*.txt</include>
 									</includes>
 								</resource>
@@ -569,7 +574,6 @@
 									<directory>src/main/deploy/jsidplay2</directory>
 									<filtering>false</filtering>
 									<excludes>
-										<exclude>**/*.htm</exclude>
 										<exclude>**/*.txt</exclude>
 									</excludes>
 								</resource>
