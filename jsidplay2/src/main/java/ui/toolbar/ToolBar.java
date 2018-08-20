@@ -329,7 +329,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void doKeystoreBrowse() {
 		final FileChooser fileDialog = new FileChooser();
-		final FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Keystore file (*.jks)", "*.jks");
+		final FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Keystore file (*.ks)", "*.ks");
 		fileDialog.getExtensionFilters().add(extFilter);
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {

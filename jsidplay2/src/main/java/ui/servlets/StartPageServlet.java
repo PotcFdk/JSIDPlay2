@@ -34,13 +34,13 @@ public class StartPageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		EmulationSection emulationSection = util.getConfiguration().getEmulationSection();
-		
+
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
-		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
-				: emulationSection.getAppServerSecurePort();
+		String preferredProtocol = appServerConnectors.getPreferredProtocol();
+		String hostname = "127.0.0.1";
+		String portNum = String.valueOf(appServerConnectors.getPortNum());
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("{port}", String.valueOf(port));
-		replacements.put("{protocol}", appServerConnectors.getPreferredProtocol());
+		replacements.put("http://127.0.0.1:8080", preferredProtocol + "://" + hostname + ":" + portNum);
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
