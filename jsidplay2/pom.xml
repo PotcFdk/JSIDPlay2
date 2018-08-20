@@ -246,8 +246,9 @@
 								<codebase>${codebase}</codebase>
 								<artifactId>${project.artifactId}</artifactId>
 								<version>${project.version}</version>
-								<protocol>http</protocol>
-								<port>8080</port>
+								<protocol>https</protocol>
+								<hostname>haendel.ddns.net</hostname>
+								<port>8443</port>
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->

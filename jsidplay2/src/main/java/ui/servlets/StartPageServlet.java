@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,10 +38,10 @@ public class StartPageServlet extends HttpServlet {
 
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
 		String preferredProtocol = appServerConnectors.getPreferredProtocol();
-		String hostname = "127.0.0.1";
+		String hostname = InetAddress.getLocalHost().getHostAddress();
 		String portNum = String.valueOf(appServerConnectors.getPortNum());
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("http://127.0.0.1:8080", preferredProtocol + "://" + hostname + ":" + portNum);
+		replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
