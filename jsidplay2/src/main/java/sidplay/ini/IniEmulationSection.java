@@ -219,6 +219,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--NetSIDDevHost" }, descriptionKey = "NET_SID_DEV_HOST")
 	public void setNetSIDDevHost(String hostname) {
 		iniReader.setProperty("Emulation", "NetSIDDev Host", hostname);
 	}
@@ -229,6 +230,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
+	@Parameter(names = { "--NetSIDDevPort" }, descriptionKey = "NET_SID_DEV_PORT")
 	public void setNetSIDDevPort(int port) {
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
 	}
