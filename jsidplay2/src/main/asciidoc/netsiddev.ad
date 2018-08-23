@@ -177,7 +177,18 @@ with a maximum of 255 characters excluding a null terminated byte
 
 === Make use of devices implementing the network SID device protocol (JSIDPlay2 as a Client)
 
-To use these SID implementations as a client for playback, you must choose NetSID as the emulation type in the user interface and provide a hostname and port for that. Default is to connect to (localhost:6581).
+To use these SID implementations as a client for playback, you must choose NetSID as the emulation type in the user interface and provide a hostname and port for that. Default is to connect to 127.0.0.1:6581.
+
+As an alternative you can use ConsolePlayer to use these SID implementations for playback.
+
+[source,subs="attributes+"]
+----
+java -jar {artifactId}_console-{version}.jar \
+	--engine NETSID \
+	--NetSIDDevHost 127.0.0.1 \
+	--NetSIDDevPort 6581 # <1>
+---- 
+<1> Start ConsolePlayer and use Network SID Device for sound output
 
 === Launch Network SID Device (JSIDPlay2 as a Server)
 
@@ -197,7 +208,6 @@ jsiddevice-{version}.exe # <1>
 
 [source,subs="attributes+"]
 ----
-cd Downloads/jsidplay2-{version}
 java -jar jsiddevice-{version}.jar # <1>
 java -classpath jsiddevice-{version}.jar netsiddev.NetworkSIDDevice # <2>
 ---- 
