@@ -175,11 +175,11 @@ with a maximum of 255 characters excluding a null terminated byte
 **** 8-bit unsigned value between 0 \<= value \<= max_config-1
 *** always returns OK.
 
-==== Make use of devices implementing the network SID device protocol (JSIDPlay2 as a Client)
+=== Make use of devices implementing the network SID device protocol (JSIDPlay2 as a Client)
 
 To use these SID implementations as a client for playback, you must choose NetSID as the emulation type in the user interface and provide a hostname and port for that. Default is to connect to (localhost:6581).
 
-==== Launch Network SID Device (JSIDPlay2 as a Server)
+=== Launch Network SID Device (JSIDPlay2 as a Server)
 
 It is possible to have JSIDPlay2 take over the duty of the SID playback for a C64 emulator/player.
 The Network SID Device tries to open port 6581 where it will listen to
