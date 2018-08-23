@@ -297,8 +297,15 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 <1> Show ConsolePlayer's usage for a description of all parameters
 
 
-*Note:* I will not take responsability for any costs or risks, that arise from streaming mp3 files from the internet. Do this on your own risk!
+*Note:* I will not take responsability for any costs, that arise from streaming mp3 files from the internet!
 
 *Info:* All Parameter names match exactly the command line parameter names of the console player in gnu style (prepended by --).
 For example defaultLength=180 sets the default song length.
+
+=== Android Client for JSIDPlay2 AppServer
+
+Source code of the example Android app using the RESTful web-service interface can be found link:https://github.com/kenchis/JSIDPlay2[here].
+
+Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +
+*Please note: Streaming music using your mobile can cause additional costs!*
 

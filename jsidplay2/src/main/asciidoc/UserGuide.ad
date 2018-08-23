@@ -475,9 +475,22 @@ If the song length is well-known, it is separated by a slash and printed as well
 
 |===
 
-== <<usecases.ad#Usecases,Example Usecases>>
+== Further possibilities
 
-== <<netsiddev.ad#NetSIDDev,Network SID Device>>
+=== Built-in AppServer
+Connect with any client to your instance of JSIDPlay2 running on a server.
+
+<<restful.ad#RESTful,RESTful Services Usage>>
+
+=== Record SID as MP3 by Command Line
+Record your favorite SID music to MP3 files.
+
+<<mp3recording.ad#RecordAsMp3,Record SID as MP3 by Command Line>>
+
+=== Network SID Device
+Create a software or hardware replacement for a SID by implementing the Network SID Device protocol, then control it by JSIDPlay2.
+
+<<netsiddev.ad#NetSIDDev,Network SID Device>>
 
 == Troubleshooting
 

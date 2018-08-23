@@ -35,6 +35,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -121,14 +122,14 @@ public class JSIDPlay2Server {
 
 	public void start() throws Exception {
 		assert configuration != null;
-		if (server == null || server.isStopped()) {
+		if (server == null || !(server.isStarting() || server.isStarted())) {
 			server = createServer();
 			server.start();
 		}
 	}
 
 	public void stop() throws Exception {
-		if (server != null && server.isRunning()) {
+		if (server != null) {
 			server.stop();
 			server.join();
 		}
@@ -187,8 +188,10 @@ public class JSIDPlay2Server {
 	private SslContextFactory getSslContextFactory() {
 		SslContextFactory sslContextFactory = new SslContextFactory();
 		sslContextFactory.setKeyStorePath(configuration.getEmulationSection().getAppServerKeystoreFile());
-		sslContextFactory.setKeyStorePassword(configuration.getEmulationSection().getAppServerKeystorePassword());
-		sslContextFactory.setKeyManagerPassword(configuration.getEmulationSection().getAppServerKeyManagerPassword());
+		sslContextFactory.setKeyStorePassword(
+				StringUtil.nonNull(configuration.getEmulationSection().getAppServerKeystorePassword()));
+		sslContextFactory.setKeyManagerPassword(
+				StringUtil.nonNull(configuration.getEmulationSection().getAppServerKeyManagerPassword()));
 		return sslContextFactory;
 	}
 

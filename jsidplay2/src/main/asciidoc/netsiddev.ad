@@ -5,10 +5,13 @@
 You can implement your own SID device (hardware or software based) and control it using JSIDPlay2.
 The network SID device protocol has been defined to communicate with these implementations.
 
-JSIDPlay2 SID-emulation integration protocol. It is possible to have
-JSIDPlay2 take over the duty of the SID playback for a C64 emulator/player.
-Every jsidplay2 instance tries to open port 6581 where they will listen to
-connections that describe SID activity with the following protocol.
+This protocol is called: Network SID device protocol.
+
+JSIDPlay2 can act as a client or as a server:
+
+. JSIDPlay2 is able to use these SID implementations as a client to playback SID on these devices.
+
+. JSIDPlay2 also provides such a device (Network SID Device) implementing the network SID device protocol to be used with other software (e.g. link:https://www.acid64.com/[ACID64])
 
 ==== General Overview
 
@@ -172,9 +175,17 @@ with a maximum of 255 characters excluding a null terminated byte
 **** 8-bit unsigned value between 0 \<= value \<= max_config-1
 *** always returns OK.
 
-==== Launch Network SID Device
+==== Make use of devices implementing the network SID device protocol (JSIDPlay2 as a Client)
 
-Note: Whereas *Windows* users get an executable (.EXE) to launch:
+To use these SID implementations as a client for playback, you must choose NetSID as the emulation type in the user interface and provide a hostname and port for that. Default is to connect to (localhost:6581).
+
+==== Launch Network SID Device (JSIDPlay2 as a Server)
+
+It is possible to have JSIDPlay2 take over the duty of the SID playback for a C64 emulator/player.
+The Network SID Device tries to open port 6581 where it will listen to
+connections that describe SID activity.
+
+Note: Whereas *Windows* users get an executable (.EXE) to launch...
 
 [source,subs="attributes+"]
 ----
@@ -182,7 +193,7 @@ jsiddevice-{version}.exe # <1>
 ----
 <1> Launch User interface version (console version is not available as an executable, see below)
 
-other operating systems launch Network SID Device using the following command:
+...other operating systems launch Network SID Device using the following command:
 
 [source,subs="attributes+"]
 ----

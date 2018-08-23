@@ -1,6 +1,4 @@
-== [[Usecases]]Example Usecases
-
-=== Record SID as MP3 by Command Line
+== [[RecordAsMp3]]Record SID as MP3 by Command Line
 
 You can record SID as MP3 by command line using the following minimum options:
 

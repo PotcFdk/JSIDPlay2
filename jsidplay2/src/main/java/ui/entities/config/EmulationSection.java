@@ -61,6 +61,8 @@ import java.io.File;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -442,6 +444,11 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeyManagerPasswordProperty;
 	}
 
+	/**
+	 * <b>Note:</b> security reasons make it necessary to remove passwords!
+	 */
+	@Transient
+	@XmlTransient
 	public String getAppServerKeyManagerPassword() {
 		return appServerKeyManagerPasswordProperty.get();
 	}
@@ -457,6 +464,11 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeystorePasswordProperty;
 	}
 
+	/**
+	 * <b>Note:</b> security reasons make it necessary to remove passwords!
+	 */
+	@Transient
+	@XmlTransient
 	public String getAppServerKeystorePassword() {
 		return appServerKeystorePasswordProperty.get();
 	}

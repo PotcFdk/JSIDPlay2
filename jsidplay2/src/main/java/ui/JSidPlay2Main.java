@@ -26,7 +26,6 @@ import libsidutils.DebugUtil;
 import sidplay.Player;
 import ui.common.Convenience;
 import ui.entities.config.Configuration;
-import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
@@ -144,11 +143,6 @@ public class JSidPlay2Main extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// security reasons make it necessary to remove passwords!
-		EmulationSection emulationSection = jSidplay2.getUtil().getConfig().getEmulationSection();
-		emulationSection.setAppServerKeyManagerPassword(null);
-		emulationSection.setAppServerKeystorePassword(null);
-
 		configService.save((Configuration) player.getConfig());
 		configService.close();
 	}
