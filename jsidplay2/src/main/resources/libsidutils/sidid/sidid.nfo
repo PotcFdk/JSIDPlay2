@@ -244,17 +244,17 @@ Cycleburner_Digi
 Dane
    AUTHOR: Stellan Andersson (Dane)
 
-DefleMask_v1
-   AUTHOR: Delek
+DefleMask_V1
+   AUTHOR: Leonardo Demartino (Delek)
  RELEASED: 2013
 
-DefleMask_v2
-   AUTHOR: Delek
+DefleMask_V2
+   AUTHOR: Leonardo Demartino (Delek)
  RELEASED: 2013
 REFERENCE: http://csdb.dk/release/?id=118363
 
-DefleMask_v12
-   AUTHOR: Delek
+DefleMask_V12
+   AUTHOR: Leonardo Demartino (Delek)
  RELEASED: 2016
 REFERENCE: http://www.deflemask.com/
 
@@ -319,6 +319,9 @@ DrumStudio
    AUTHOR: Mark Wilson
  RELEASED: 1990 Players Software
 REFERENCE: http://csdb.dk/release/?id=59864
+
+Drumtex
+   AUTHOR: Vidar Bang (Drumtex)
 
 Dutch-USA_Team/ProDrum
    AUTHOR: The Dutch USA-Team
@@ -1242,14 +1245,17 @@ Silas_Warner_1
 Silas_Warner_2
    AUTHOR: Silas S. Warner
 
-SkylineTech/Boogaloo
-   AUTHOR: Linus Nielsen (Boogaloo)
-
-SkylineTech/Danne
-     NAME: Skyline Editor
+SkyLine_Editor
+     NAME: SkyLine Editor
    AUTHOR: Daniel Stenberg (Danne)
  RELEASED: 1989 SkyLine Technics
 REFERENCE: http://csdb.dk/release/?id=22726
+
+SkyLine_Editor_V3.0
+     NAME: SkyLine Editor
+   AUTHOR: Daniel Stenberg (Danne)
+ RELEASED: 1990 SkyLine Technics
+REFERENCE: http://csdb.dk/release/?id=167080
 
 Slaygon
    AUTHOR: Kenneth Mutka (Slaygon)
