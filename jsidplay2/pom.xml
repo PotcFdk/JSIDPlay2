@@ -318,6 +318,7 @@
 							<goal>javadoc</goal>
 						</goals>
 						<configuration>
+							<doclint>none</doclint>
 							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
 							<destDir>javadoc</destDir>
 							<nonavbar>true</nonavbar>
@@ -683,7 +684,7 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.7.8</version>
+				<version>1.7.22</version>
 				<executions>
 					<execution>
 						<id>launch4j</id>
