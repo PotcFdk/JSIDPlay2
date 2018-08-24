@@ -20,6 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<debug>true</debug>
 		<debuglevel>lines,vars,source</debuglevel>
+		<doclint>none</doclint>
 		<codebase>https://haendel.ddns.net/~ken/</codebase>
 		<protocol>https</protocol>
 		<hostname>haendel.ddns.net</hostname>
@@ -318,7 +319,7 @@
 							<goal>javadoc</goal>
 						</goals>
 						<configuration>
-							<doclint>none</doclint>
+							<doclint>${doclint}</doclint>
 							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
 							<destDir>javadoc</destDir>
 							<nonavbar>true</nonavbar>

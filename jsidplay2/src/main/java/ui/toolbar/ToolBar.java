@@ -1,6 +1,9 @@
 package ui.toolbar;
 
 import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
+import static ui.servlets.Connectors.HTTP;
+import static ui.servlets.Connectors.HTTPS;
+import static ui.servlets.Connectors.HTTP_HTTPS;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,8 +84,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort, appServerSecurePort,
-			appServerKeyManagerPassword, appServerKeyStorePassword;
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort,
+			appServerSecurePort, appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -236,7 +239,7 @@ public class ToolBar extends C64VBox implements UIPart {
 				}
 				break;
 
-			case HTTP_ONLY:
+			case HTTP:
 			default:
 				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
 						appServerKeyStorePasswordLbl, appServerSecurePort, keystoreBrowse, appServerKeyManagerPassword,
@@ -251,8 +254,7 @@ public class ToolBar extends C64VBox implements UIPart {
 				break;
 			}
 		});
-		appServerConnectorsBox.setItems(FXCollections.<Connectors>observableArrayList(Connectors.HTTP_ONLY,
-				Connectors.HTTP_HTTPS, Connectors.HTTPS));
+		appServerConnectorsBox.setItems(FXCollections.<Connectors>observableArrayList(HTTP, HTTP_HTTPS, HTTPS));
 		appServerConnectorsBox.valueProperty().bindBidirectional(emulationSection.appServerConnectorsProperty());
 		appServerKeyManagerPassword.textProperty()
 				.bindBidirectional(emulationSection.appServerKeyManagerPasswordProperty());

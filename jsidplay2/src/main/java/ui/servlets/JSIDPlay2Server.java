@@ -165,7 +165,7 @@ public class JSIDPlay2Server {
 			httpsSslConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
 			return new Connector[] { httpsSslConnector };
 		}
-		case HTTP_ONLY:
+		case HTTP:
 		default: {
 			ServerConnector httpConnector = new ServerConnector(server);
 			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
@@ -227,7 +227,7 @@ public class JSIDPlay2Server {
 
 	private List<ConstraintMapping> createConstrainedMappings() {
 		Constraint constraint = new Constraint();
-		constraint.setName("auth");
+		constraint.setName(Constraint.__BASIC_AUTH);
 		constraint.setAuthenticate(true);
 		constraint.setRoles(new String[] { ROLE_USER, ROLE_ADMIN });
 

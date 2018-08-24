@@ -54,7 +54,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
-import static ui.servlets.Connectors.HTTP_ONLY;
+import static ui.servlets.Connectors.HTTP;
 
 import java.io.File;
 
@@ -94,7 +94,7 @@ public class EmulationSection implements IEmulationSection {
 	 * Connection types of the built-in Android App Server providing REST-based
 	 * web-services to play SIDs on the mobile.
 	 */
-	public static final Connectors DEFAULT_CONNECTORS = HTTP_ONLY;
+	public static final Connectors DEFAULT_CONNECTORS = HTTP;
 	/**
 	 * Port of the built-in Android App Server providing REST-based web-services to
 	 * play SIDs on the mobile.

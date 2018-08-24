@@ -2,6 +2,7 @@ package ui.servlets;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,10 +45,15 @@ public class StartPageServlet extends HttpServlet {
 		replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
-			response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
-			response.getWriter()
-					.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
-			response.setStatus(HttpServletResponse.SC_OK);
+			if (is != null) {
+				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
+				response.getWriter()
+				.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
+				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
+			} else {
+				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
+			}
 		}
 	}
 
