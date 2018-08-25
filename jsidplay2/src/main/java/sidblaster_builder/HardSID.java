@@ -1,6 +1,5 @@
 package sidblaster_builder;
 
-import static sidblaster_builder.SidBlasterSIDBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import libsidplay.common.ChipModel;
@@ -50,9 +49,9 @@ public class HardSID extends SIDEmu {
 	public void reset(final byte volume) {
 		hardSID.HardSID_Reset(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, reg, (byte) 0);
+			hardSID.HardSID_Write(deviceID, chipNum, (short) 3, reg, (byte) 0);
 		}
-		hardSID.HardSID_Write(deviceID, chipNum, SHORTEST_DELAY, (byte) 0xf, volume);
+		hardSID.HardSID_Write(deviceID, chipNum, (short) 3, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 	}
 
@@ -66,11 +65,12 @@ public class HardSID extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr, data);
+		hardSID.HardSID_Write(deviceID, chipNum, (short) 0, (byte) addr, data);
 	}
 
 	@Override
 	public void clock() {
+		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
 	}
 
 	protected void lock() {

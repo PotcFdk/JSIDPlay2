@@ -77,11 +77,12 @@ public class HardSID extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		hardSID.HardSID_Write(deviceID, chipNum, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr, data);
+		hardSID.HardSID_Write(deviceID, chipNum, (short) 0, (byte) addr, data);
 	}
 
 	@Override
 	public void clock() {
+		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
 	}
 
 	protected void lock() {

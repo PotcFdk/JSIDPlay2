@@ -25,9 +25,7 @@ import libsidplay.sidtune.SidTune;
  */
 public class SidBlasterSIDBuilder implements SIDBuilder {
 
-	private static final short REGULAR_DELAY = 256;
-
-	static final short SHORTEST_DELAY = 4;
+	private static final short REGULAR_DELAY = Short.MAX_VALUE;
 
 	/**
 	 * System event context.
@@ -135,13 +133,13 @@ public class SidBlasterSIDBuilder implements SIDBuilder {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return Math.max(SHORTEST_DELAY, diff);
+		return diff;
 	}
 
 	long eventuallyDelay() {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > REGULAR_DELAY << 1) {
+		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
 			hardSID.HardSID_Delay(deviceID, REGULAR_DELAY);
 		}
