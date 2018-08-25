@@ -296,7 +296,9 @@ __declspec(dllexport) JNIEXPORT jbyte JNICALL Java_sidblaster_1builder_SIDBlaste
 	//BYTE SidNum = sidNum;
 	BYTE Cycles = cycles;
 	BYTE SID_reg = reg;
-	(*pfnHardSID_Delay)(DeviceID, Cycles);
+	if (Cycles > 0) {
+		(*pfnHardSID_Delay)(DeviceID, Cycles);
+	}
 	BYTE result = (*pfnReadFromHardSID)(DeviceID, SID_reg);
 	return (jbyte) result;
 }
@@ -314,11 +316,12 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_sidblaster_1builder_SIDBlaster
 	BYTE Cycles = cycles;
 	BYTE SID_reg = reg;
 	BYTE Data = dat;
-	(*pfnHardSID_Delay)(DeviceID, Cycles);
 	//issues a write
  	//if the hardware buffer is full, sleeps the thread until there is some space for this write
-	while ((*pfnHardSID_Try_Write)(DeviceID, cycles, SID_reg, Data) == HSID_USB_WSTATE_BUSY)
+	while ((*pfnHardSID_Try_Write)(DeviceID, Cycles, SID_reg, Data) == HSID_USB_WSTATE_BUSY) {
+		Cycles = 0;
 		Sleep(0);
+	}
 }
 
 /*
