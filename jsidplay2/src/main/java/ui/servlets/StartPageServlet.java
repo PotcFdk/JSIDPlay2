@@ -48,13 +48,13 @@ public class StartPageServlet extends HttpServlet {
 			if (is != null) {
 				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
 				response.getWriter()
-				.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
-				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
+						.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
 			} else {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
 			}
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 }
