@@ -97,6 +97,26 @@ Sound output can be recorded as:
 * WAV (lossless)
 * MP3 at variable bit rate (lossy)
 
+== Supported Devices
+
+Just to name a few possibilities for SID output, this is the list of currently supported SID devices.
+
+1.
+JSIDPlay2 comes with two really good software emulation types.
+One created by Dag Lem (link:https://sourceforge.net/projects/sidplay2/[ReSID]) or as a really good alternative an enhanced version by Antti S. Lankila (link:https://sourceforge.net/projects/sidplay-residfp/[ReSID-fp]), that contains emulations of the combined waveforms and distortion emulation as well and is the default for our player.
+
+Beside these software emulation types we support some decent Hardware as well, where you can add the real SID chips inside.
+
+2.
+link:https://en.wikipedia.org/wiki/HardSID[HardSID 4U (USB Version)] can be used with up to 4 SID chips, but are hard to find on ebay these days and they are not produced anymore.
+
+3.
+Additionally we support a link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition]. It is small like a tic-tac box and contains exactly one chip.
+
+4.
+If you have created your own hardware device or a software-based implementation of the SID chip, you could choose Network SID Device to use the player with it.
+To make use of it you will have to implement the <<netsiddev.ad#NetSIDDev,Network SID device protocol>> either hardware or software wise and here you go.
+
 == Compatibility
 
 JSIDPlay2 is known to be a very accurate C64 emulator.

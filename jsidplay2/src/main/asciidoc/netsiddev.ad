@@ -6,6 +6,7 @@ You can implement your own SID device (hardware or software based) and control i
 The network SID device protocol has been defined to communicate with these implementations.
 
 This protocol is called: Network SID device protocol.
+Communication is done via socket connection and port 6581 by default.
 
 JSIDPlay2 can act as a client or as a server:
 
