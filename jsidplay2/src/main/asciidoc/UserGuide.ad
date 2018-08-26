@@ -86,13 +86,7 @@ and using configurable base addresses for the second and the third SID chip at:
 * 0xde00
 * 0xdf00
 
-JSIDPlay2 can emulate SID sound in many different ways:
-
-* Dag Lem's resid 1.0 beta re-implementation
-* Antti S. Lankila's resid-fp re-implementation (adding distortion simulation and calculation of the combined waveforms)
-* HardSID4U USB driver for Windows to make use of the real SID hardware
-
-Sound output can be recorded as:
+Sound output can be recorded optionally as:
 
 * WAV (lossless)
 * MP3 at variable bit rate (lossy)
