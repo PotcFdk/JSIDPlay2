@@ -146,7 +146,11 @@ keytool -v -importkeystore -srckeystore /tmp/fullchain.pkcs12 \
 rm /tmp/fullchain.pkcs12 >> /var/log/jsidplay2cert.log 2>&1
 keytool -keystore /etc/jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
 	-storepass jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
+	
+/home/ken/server.sh >> /var/log/jsidplay2cert.log 2>&1 # <1>
 ----
+<1> At last our server gets restarted with the renewed certificate, please refer to
+<<restful.ad#LaunchHttps,Launch JSIDPlay2 AppServer using HTTPS>>
 
 Now, grant permission to execute that script by our cronjob:
 [source,subs="attributes+"]
@@ -178,13 +182,15 @@ java -classpath jsidplay2-{version}.jar ui.servlets.JSIDPlay2Server --help # <1>
 
 === Launch JSIDPlay2 AppServer using HTTPS
 
+[[LaunchHttps]]
+
 Now lets explain how to start JSIDPlay2 AppServer using encrypted HTTPS connections with the keystore created above:
 
 To start the JSIPlay2 AppServer with HTTPS using the formerly created keystore, you can use the following script, please type 'vi ~/server.sh':
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
-cd ~/Downloads/{artifactId}-{version}
+cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f ui.servlets.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar ui.servlets.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
