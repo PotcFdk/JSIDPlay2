@@ -1,7 +1,5 @@
 package sidblaster_builder;
 
-import static libsidplay.common.SIDChip.REG_COUNT;
-
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -48,11 +46,6 @@ public class HardSID extends SIDEmu {
 	@Override
 	public void reset(final byte volume) {
 		hardSID.HardSID_Reset(deviceID);
-		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Write(deviceID, chipNum, (short) 3, reg, (byte) 0);
-		}
-		hardSID.HardSID_Write(deviceID, chipNum, (short) 3, (byte) 0xf, volume);
-		hardSID.HardSID_Flush(deviceID);
 	}
 
 	@Override
