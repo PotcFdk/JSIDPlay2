@@ -67,6 +67,7 @@ public class HardSID extends SIDEmu {
 	}
 
 	protected void lock() {
+		reset((byte) 0xf);
 		context.schedule(event, 0, Event.Phase.PHI2);
 	}
 
