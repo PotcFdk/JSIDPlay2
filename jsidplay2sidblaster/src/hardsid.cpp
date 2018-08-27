@@ -319,7 +319,6 @@ __declspec(dllexport) JNIEXPORT void JNICALL Java_sidblaster_1builder_SIDBlaster
 	//issues a write
  	//if the hardware buffer is full, sleeps the thread until there is some space for this write
 	while ((*pfnHardSID_Try_Write)(DeviceID, Cycles, SID_reg, Data) == HSID_USB_WSTATE_BUSY) {
-		Cycles = 0;
 		Sleep(0);
 	}
 }
