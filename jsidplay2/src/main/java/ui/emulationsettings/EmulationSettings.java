@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import builder.netsiddev.commands.TrySetSidModel;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +35,6 @@ import libsidplay.common.Engine;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
-import netsiddev_builder.commands.TrySetSidModel;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64Window;
@@ -570,10 +570,10 @@ public class EmulationSettings extends C64Window {
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
 				for (int fc = 0; fc < FC_MAX; fc++) {
 					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
-						double data = resid_builder.resid.FilterModelConfig.estimateFrequency(filter, fc);
+						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filter, fc);
 						dataList.add(new XYChart.Data<Number, Number>(fc, data));
 					} else if (filter.isReSIDfpFilter6581() || filter.isReSIDfpFilter8580()) {
-						double data = resid_builder.residfp.FilterModelConfig.estimateFrequency(filter, fc);
+						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filter, fc);
 						dataList.add(new XYChart.Data<Number, Number>(fc, data));
 					}
 				}

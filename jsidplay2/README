@@ -2,7 +2,6 @@ mvn clean install
 =================
 target/standalone	-	local PC version
 target/deploy		-	website version
-target/jfx/native	-	native launchers or installers
 
 mvn clean deploy
 =================

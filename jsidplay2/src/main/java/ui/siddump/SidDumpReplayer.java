@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
+import builder.resid.resid.SID;
 import javafx.collections.ObservableList;
 import libsidplay.config.IConfig;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
 import netsiddev.AudioGeneratorThread;
 import netsiddev.InvalidCommandException;
 import netsiddev.SIDWrite;
-import resid_builder.resid.SID;
 import sidplay.audio.AudioConfig;
 
 public class SidDumpReplayer {

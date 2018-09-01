@@ -18,7 +18,6 @@ SOASC downloads fixed (MP3 comparison)
 Configurable emulation buffer size added
 More compact main user interface
 Current track displayed on the main window
-Linux Packages added (DMG and deb)
 
 Documentation:
 RESTful services usage added
@@ -30,3 +29,4 @@ Internal:
 Support of JavaFX preview added in Eclipse
 Refactorings of the code
 Better control about debug configuration
+Use of JNA not JNI

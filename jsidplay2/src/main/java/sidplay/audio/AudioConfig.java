@@ -15,8 +15,8 @@
  */
 package sidplay.audio;
 
+import builder.resid.SIDMixer;
 import libsidplay.config.IAudioSection;
-import resid_builder.SIDMixer;
 
 /**
  * Audio configuration (frame rate, channels, etc.)

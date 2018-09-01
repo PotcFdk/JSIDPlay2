@@ -1,8 +1,7 @@
 HardSID driver wrapper:
 =======================
-This driver is a wrapper around the original USB driver functions contained in hardsid_usb.lib
+This is the HardSID4U USB driver containing functions of hardsid_usb.lib
 provided by www.hardsid.com
-It makes it possible to use the native HardSID driver via Java Native Interface (JNI).
 
 Note:
 HardSID4U USB driver (hardsid_usb.lib) is not available as a 64 bit version.
@@ -25,7 +24,7 @@ C/C++ Build
       /usr/lib/jvm/java-8-openjdk-amd64/include/linux
     GCC/C++ Linker/Settings/Command: i686-w64-mingw32-g++
 Click on Menu/Project/Build All
-Copy JHardSID.dll to JSIDPlay2 directory
+Copy hardsid_usb.dll to JSIDPlay2 directory
 src/main/resources/hardsid_builder/win32/Release
 
 Test:

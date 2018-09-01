@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer.Info;
 
+import builder.netsiddev.NetSIDDevConnection;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -42,7 +43,6 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
-import netsiddev_builder.NetSIDDevConnection;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;

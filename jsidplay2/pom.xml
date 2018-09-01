@@ -197,6 +197,11 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>net.java.dev.jna</groupId>
+		    <artifactId>jna</artifactId>
+		    <version>4.5.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -366,41 +371,6 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>unpack-natives-jfx-additional</id>
-						<phase>package</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<overWrite>true</overWrite>
-									<groupId>net.java.jinput</groupId>
-									<artifactId>jinput-platform</artifactId>
-									<version>2.0.6</version>
-									<classifier>natives-windows</classifier>
-									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<overWrite>true</overWrite>
-									<groupId>net.java.jinput</groupId>
-									<artifactId>jinput-platform</artifactId>
-									<version>2.0.6</version>
-									<classifier>natives-linux</classifier>
-									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<overWrite>true</overWrite>
-									<groupId>net.java.jinput</groupId>
-									<artifactId>jinput-platform</artifactId>
-									<version>2.0.6</version>
-									<classifier>natives-osx</classifier>
-									<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
@@ -473,9 +443,9 @@
 							<includes>
 								<include>netsiddev/*</include>
 								<include>netsiddev/ini/*</include>
-								<include>resid_builder/resample/*.class</include>
-								<include>resid_builder/resid/*.class</include>
-								<include>resid_builder/residfp/*.class</include>
+								<include>builder/resid/resample/*.class</include>
+								<include>builder/resid/resid/*.class</include>
+								<include>builder/resid/residfp/*.class</include>
 								<include>libsidplay/common/ChipModel.class</include>
 								<include>libsidplay/common/CPUClock.class</include>
 								<include>libsidplay/common/Potentiometer.class</include>
@@ -491,10 +461,10 @@
 								<include>sidplay/ini/IniFilterSection.class</include>
 							</includes>
 							<excludes>
-								<exclude>resid_builder/resid/ReSID.class</exclude>
-								<exclude>resid_builder/resid/ReSID$FakeStereo.class</exclude>
-								<exclude>resid_builder/residfp/ReSIDfp.class</exclude>
-								<exclude>resid_builder/residfp/ReSIDfp$FakeStereo.class</exclude>
+								<exclude>builder/resid/resid/ReSID.class</exclude>
+								<exclude>builder/resid/resid/ReSID$FakeStereo.class</exclude>
+								<exclude>builder/resid/residfp/ReSIDfp.class</exclude>
+								<exclude>builder/resid/residfp/ReSIDfp$FakeStereo.class</exclude>
 							</excludes>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>jsiddevice-${project.version}</finalName>
@@ -517,10 +487,10 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>netsiddev_builder/**/*.class</include>
-								<include>resid_builder/**/*.class</include>
-								<include>hardsid_builder/**/*.class</include>
-								<include>sidblaster_builder/**/*.class</include>
+								<include>builder/netsiddev/**/*.class</include>
+								<include>builder/resid/**/*.class</include>
+								<include>builder/hardsid/**/*.class</include>
+								<include>builder/sidblaster/**/*.class</include>
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
 								<include>libsidutils/*.class</include>
@@ -578,22 +548,6 @@
 									<excludes>
 										<exclude>**/*.txt</exclude>
 									</excludes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-resources-jfx-additional</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/jfx-additional</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/jfx-native</directory>
-									<filtering>true</filtering>
 								</resource>
 							</resources>
 						</configuration>
@@ -809,40 +763,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-			    <groupId>com.zenjava</groupId>
-			    <artifactId>javafx-maven-plugin</artifactId>
-			    <version>8.8.3</version>
-				<executions>
-				    <execution>
-				        <id>create-jfxjar</id>
-				        <phase>package</phase>
-				        <goals>
-				            <goal>build-jar</goal>
-				        </goals>
-					    <configuration>
-					        <mainClass>${javafx.main.class}</mainClass>
-					    </configuration>
-				    </execution>
-				    <execution>
-				        <id>create-native</id>
-				        <phase>package</phase>
-				        <goals>
-				            <goal>build-native</goal>
-				        </goals>
-					    <configuration>
-					        <mainClass>${javafx.main.class}</mainClass>
-					        <additionalAppResources>${project.build.directory}/jfx-additional</additionalAppResources>
-							<bundleArguments>
-								<!-- https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#Good_Licenses -->
-								<version>${project.version}</version>
-								<licenseType>LGPLv2</licenseType>
-							    <licenseFile>COPYING</licenseFile>
-							</bundleArguments>
-					    </configuration>
-				    </execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.5.2</version>
@@ -894,20 +814,6 @@
 						<configuration>
 							<fromDir>${project.build.directory}/deploy</fromDir>
 							<includes>**/*</includes>
-							<serverId>${serverId}</serverId>
-							<url>${serverUrl}</url>
-							<toDir>${remoteDir}</toDir>
-						</configuration>
-					</execution>
-					<execution>
-						<id>upload-jfx-native</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>upload</goal>
-						</goals>
-						<configuration>
-							<fromDir>${project.build.directory}/jfx/native</fromDir>
-							<includes>*.deb,*.rpm</includes>
 							<serverId>${serverId}</serverId>
 							<url>${serverUrl}</url>
 							<toDir>${remoteDir}</toDir>

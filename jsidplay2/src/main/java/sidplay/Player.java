@@ -35,7 +35,10 @@ import java.util.function.IntFunction;
 
 import javax.sound.sampled.LineUnavailableException;
 
-import hardsid_builder.HardSIDBuilder;
+import builder.hardsid.HardSIDBuilder;
+import builder.netsiddev.NetSIDDevBuilder;
+import builder.resid.ReSIDBuilder;
+import builder.sidblaster.SidBlasterBuilder;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -60,9 +63,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
-import netsiddev_builder.NetSIDDevBuilder;
-import resid_builder.ReSIDBuilder;
-import sidblaster_builder.SidBlasterSIDBuilder;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
@@ -330,7 +330,7 @@ public class Player extends HardwareEnsemble {
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case SIDBLASTER:
-			return new SidBlasterSIDBuilder(c64.getEventScheduler(), config, cpuClock);
+			return new SidBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}
@@ -911,9 +911,9 @@ public class Player extends HardwareEnsemble {
 		credits.append(MOS6510.credits());
 		credits.append(MOS6526.credits());
 		credits.append(VIC.credits());
-		credits.append(resid_builder.resid.ReSID.credits());
-		credits.append(resid_builder.residfp.ReSIDfp.credits());
-		credits.append(hardsid_builder.HardSID.credits());
+		credits.append(builder.resid.resid.ReSID.credits());
+		credits.append(builder.resid.residfp.ReSIDfp.credits());
+		credits.append(builder.hardsid.HardSIDEmu.credits());
 		return credits.toString();
 	}
 

@@ -14,10 +14,10 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 
+import builder.resid.resample.Resampler;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
-import resid_builder.resample.Resampler;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 

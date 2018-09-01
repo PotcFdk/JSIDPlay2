@@ -1,5 +1,4 @@
-#include "StdAfx.h"
-#include "hardsid_builder_HardSID4U.h"
+#include "hardsid.hpp"
 
 typedef enum {
 	HSID_USB_WSTATE_OK = 1,
@@ -56,107 +55,41 @@ BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD ul_reason_for_call,
 	return TRUE;
 }
 
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_DeviceCount
- * Signature: ()B
- */
-__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1DeviceCount(
-		JNIEnv *, jobject) {
-	BYTE erg = hardsid_usb_getdevcount();
-	return (jbyte) erg;
+__declspec(dllexport) BYTE HardSID_Devices() {
+	return hardsid_usb_getdevcount();
 }
 
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_SIDCount
- * Signature: (B)B
- */
-__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1SIDCount(
-		JNIEnv *, jobject, jbyte deviceId) {
-	BYTE DeviceID = deviceId;
-	BYTE Sids = hardsid_usb_getsidcount(DeviceID);
-	return (jbyte) Sids;
+__declspec(dllexport) BYTE HardSID_SIDCount(BYTE DeviceID) {
+	return hardsid_usb_getsidcount(DeviceID);
 }
 
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_Read
- * Signature: (BBSB)B
- */
-__declspec(dllexport) JNIEXPORT jbyte JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Read(
-		JNIEnv *, jobject, jbyte deviceId, jbyte sidNum, jshort cycles, jbyte reg) {
-	BYTE DeviceID = deviceId;
-	//BYTE SidNum = sidNum;
-	BYTE Cycles = cycles;
-	//BYTE SID_reg = reg;
-	if (Cycles > 0) {
-		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
-			Sleep(0);
+__declspec(dllexport) void HardSID_Flush(BYTE deviceID) {
+	while (hardsid_usb_flush(deviceID) == HSID_USB_WSTATE_BUSY)
+		Sleep(0);
+}
+
+__declspec(dllexport) void HardSID_Reset(BYTE deviceID) {
+	hardsid_usb_abortplay(deviceID);
+}
+
+__declspec(dllexport) void HardSID_Delay(BYTE deviceID, SHORT cycles) {
+	if (cycles > 0) {
+		while (cycles > 65535) {
+			while (hardsid_usb_delay(deviceID, 65535) == HSID_USB_WSTATE_BUSY)
+				Sleep(0);
+			cycles -= 65536;
+		}
+		if (cycles > 0) {
+			while (hardsid_usb_delay(deviceID, cycles) == HSID_USB_WSTATE_BUSY)
+				Sleep(0);
+		}
 	}
-	return (jbyte) 0xff;	//unsupported read!
 }
 
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_Write
- * Signature: (BBSBB)V
- */
-__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Write(
-		JNIEnv *, jobject, jbyte deviceIdx, jbyte sidNum, jshort cycles, jbyte reg,
-		jbyte dat) {
-	BYTE DeviceID = deviceIdx;
-	BYTE SidNum = sidNum;
-	BYTE Cycles = cycles;
-	BYTE SID_reg = reg;
-	BYTE Data = dat;
-	if (Cycles > 0) {
-		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
-			Sleep(0);
-	}
-	//issues a write
-	//if the hardware buffer is full, sleeps the thread until there is some space for this write
-	while (hardsid_usb_write(DeviceID, (SidNum << 5) | SID_reg, Data)
+__declspec(dllexport) void HardSID_Write(BYTE deviceID, BYTE sidNum, BYTE reg,
+		BYTE data) {
+	while (hardsid_usb_write(deviceID, (sidNum << 5) | reg, data)
 			== HSID_USB_WSTATE_BUSY)
 		Sleep(0);
 }
 
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_Reset
- * Signature: (B)V
- */
-__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Reset(
-		JNIEnv *, jobject, jbyte deviceIdx) {
-	BYTE DeviceID = deviceIdx;
-	while (hardsid_usb_flush(DeviceID) == HSID_USB_WSTATE_BUSY)
-		Sleep(0);
-	hardsid_usb_abortplay(DeviceID);
-}
-
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_Delay
- * Signature: (BS)V
- */
-__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Delay(
-		JNIEnv *, jobject, jbyte deviceIdx, jshort cycles) {
-	BYTE DeviceID = deviceIdx;
-	WORD Cycles = cycles;
-	if (Cycles > 0) {
-		while (hardsid_usb_delay(DeviceID, Cycles) == HSID_USB_WSTATE_BUSY)
-			Sleep(0);
-	}
-}
-
-/*
- * Class:     hardsid_builder_HardSID4U
- * Method:    HardSID_Flush
- * Signature: (B)V
- */
-__declspec(dllexport) JNIEXPORT void JNICALL Java_hardsid_1builder_HardSID4U_HardSID_1Flush(
-		JNIEnv *, jobject, jbyte deviceIdx) {
-	BYTE DeviceID = deviceIdx;
-	while (hardsid_usb_flush(DeviceID) == HSID_USB_WSTATE_BUSY)
-		Sleep(0);
-}

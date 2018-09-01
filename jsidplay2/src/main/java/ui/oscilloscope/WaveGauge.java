@@ -1,10 +1,10 @@
 package ui.oscilloscope;
 
+import builder.resid.ReSIDBase;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
 import libsidplay.common.SIDEmu;
-import resid_builder.ReSIDBase;
 import sidplay.Player;
 import ui.common.C64Window;
 
