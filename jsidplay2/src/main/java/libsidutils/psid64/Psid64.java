@@ -54,8 +54,8 @@ import sidplay.Player;
 //   effects when updating this code!
 public class Psid64 {
 	private static final String PSID64_BOOT_ASM = "/libsidutils/psid64/psid64_boot.asm";
-	private static final String PSID64_ASM = "/libsidutils/psid64.asm";
-	private static final String PSID64_NOSCREEN_ASM = "/libsidutils/psid64_noscreen.asm";
+	private static final String PSID64_ASM = "/libsidutils/psid64/psid64.asm";
+	private static final String PSID64_NOSCREEN_ASM = "/libsidutils/psid64/psid64_noscreen.asm";
 
 	/**
 	 * Maximum memory block count required for tune driver
