@@ -147,7 +147,7 @@ rm /tmp/fullchain.pkcs12 >> /var/log/jsidplay2cert.log 2>&1
 keytool -keystore /etc/jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
 	-storepass jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
 	
-/home/ken/server.sh >> /var/log/jsidplay2cert.log 2>&1 # <1>
+sudo -i -u ken /home/ken/server.sh >> /var/log/jsidplay2cert.log 2>&1 # <1>
 ----
 <1> At last our server gets restarted with the renewed certificate, please refer to
 <<restful.ad#LaunchHttps,Launch JSIDPlay2 AppServer using HTTPS>>
