@@ -53,7 +53,7 @@ public class SidBlasterBuilder implements SIDBuilder {
 			try {
 				hardSID = (HardSID) Native.loadLibrary("hardsid", HardSID.class);
 			} catch (UnsatisfiedLinkError e) {
-				System.err.println("Error: 64-bit Java for Windows is required to use " + SIDBLASTER + " soundcard!");
+				System.err.println("Error: Windows is required to use " + SIDBLASTER + " soundcard!");
 				throw e;
 			}
 		}
