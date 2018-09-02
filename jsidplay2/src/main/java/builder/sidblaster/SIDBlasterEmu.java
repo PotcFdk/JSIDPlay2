@@ -50,11 +50,13 @@ public class SIDBlasterEmu extends SIDEmu {
 		}
 		hardSID.HardSID_Try_Write(deviceID, (short) 4, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
+		hardSID.HardSID_Sync(deviceID);
 	}
 
 	@Override
 	public byte read(int addr) {
 		clock();
+		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
 		return hardSID.ReadFromHardSID(deviceID, (byte) addr);
 	}
 
@@ -62,23 +64,27 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, data) == HardSID.HSID_USB_WSTATE_BUSY)
+		while (hardSID.HardSID_Try_Write(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr, data) == HardSID.HSID_USB_WSTATE_BUSY)
 			Thread.yield();
 	}
 
 	@Override
 	public void clock() {
-		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
 	}
 
-	protected void lock() {
-		reset((byte) 0xf);
-		context.schedule(event, 0, Event.Phase.PHI2);
+	protected boolean lock() {
+		boolean locked = hardSID.HardSID_Lock(deviceID);
+		if (locked) {
+			reset((byte) 0xf);
+			context.schedule(event, 0, Event.Phase.PHI2);
+		}
+		return locked;
 	}
 
 	protected void unlock() {
 		reset((byte) 0x0);
 		context.cancel(event);
+		hardSID.HardSID_Unlock(deviceID);
 	}
 
 	@Override

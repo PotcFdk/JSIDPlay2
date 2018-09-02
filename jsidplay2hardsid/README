@@ -25,7 +25,7 @@ C/C++ Build
     GCC/C++ Linker/Settings/Command: i686-w64-mingw32-g++
 Click on Menu/Project/Build All
 Copy hardsid_usb.dll to JSIDPlay2 directory
-src/main/resources/hardsid_builder/win32/Release
+src/main/resources/win32-x86/
 
 Test:
 =====

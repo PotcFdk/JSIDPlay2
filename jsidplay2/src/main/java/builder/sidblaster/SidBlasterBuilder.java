@@ -72,8 +72,9 @@ public class SidBlasterBuilder implements SIDBuilder {
 			ChipModel chipModel = ChipModel.MOS6581;
 			SIDBlasterEmu hsid = new SIDBlasterEmu(context, this, hardSID, deviceID, chipNum, chipModel);
 			sids.add(hsid);
-			hsid.lock();
-			return hsid;
+			if (hsid.lock()) {
+				return hsid;
+			}
 		}
 		throw new RuntimeException(String.format(
 				"SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
@@ -103,5 +104,4 @@ public class SidBlasterBuilder implements SIDBuilder {
 		}
 		return REGULAR_DELAY;
 	}
-
 }
