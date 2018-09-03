@@ -298,7 +298,7 @@ public class Player extends HardwareEnsemble {
 
 	/**
 	 * Create temporary directory, if it does not exist.<BR>
-	 * E.g. Recordings, converted tapes and HardSID libraries are saved here!
+	 * E.g. Recordings and converted tapes are saved here!
 	 */
 	private void initializeTmpDir() {
 		File tmpDir = new File(config.getSidplay2Section().getTmpDir());
