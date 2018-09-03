@@ -12,8 +12,6 @@ We do cross-compilation here, therefore install:
 sudo apt-get install mingw-w64
 
 In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
-
-In Eclipse CDT change Project/Properties (add OpenJDK include paths to both compilers)
 C/C++ Build
   Settings
     GCC/C++ Compiler/Settings/Command: i686-w64-mingw32-g++
@@ -30,7 +28,7 @@ src/main/resources/win32-x86/
 Test:
 =====
 Windows is guest in Virtual Box, Ubuntu Linux is host:
-Launch Windows Vista
+Launch Windows
 Install Java 32-Bit
 Install USB Driver (hardsidusb.*) from directory resources/driver
 Press F8 on Windows boot
