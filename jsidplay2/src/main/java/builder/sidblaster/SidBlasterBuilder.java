@@ -25,6 +25,8 @@ public class SidBlasterBuilder implements SIDBuilder {
 
 	private static final short REGULAR_DELAY = Short.MAX_VALUE;
 
+	static final short SHORTEST_DELAY = 4;
+
 	/**
 	 * System event context.
 	 */

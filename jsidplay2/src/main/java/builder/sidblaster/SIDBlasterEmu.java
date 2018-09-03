@@ -1,5 +1,7 @@
 package builder.sidblaster;
 
+import static builder.sidblaster.HardSID.HSID_USB_WSTATE_BUSY;
+import static builder.sidblaster.SidBlasterBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import libsidplay.common.ChipModel;
@@ -46,9 +48,9 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void reset(final byte volume) {
 		hardSID.HardSID_Reset(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Try_Write(deviceID, (short) 4, reg, (byte) 0);
+			hardSID.HardSID_Try_Write(deviceID, SHORTEST_DELAY, reg, (byte) 0);
 		}
-		hardSID.HardSID_Try_Write(deviceID, (short) 4, (byte) 0xf, volume);
+		hardSID.HardSID_Try_Write(deviceID, SHORTEST_DELAY, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Sync(deviceID);
 	}
@@ -64,7 +66,8 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		while (hardSID.HardSID_Try_Write(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr, data) == HardSID.HSID_USB_WSTATE_BUSY)
+		while (hardSID.HardSID_Try_Write(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr,
+				data) == HSID_USB_WSTATE_BUSY)
 			Thread.yield();
 	}
 

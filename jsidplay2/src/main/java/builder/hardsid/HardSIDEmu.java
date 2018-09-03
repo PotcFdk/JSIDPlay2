@@ -1,5 +1,6 @@
 package builder.hardsid;
 
+import static builder.hardsid.HardSIDBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import libsidplay.common.ChipModel;
@@ -35,7 +36,7 @@ public class HardSIDEmu extends SIDEmu {
 	};
 
 	private EventScheduler context;
-	
+
 	private final HardSID hardSID;
 
 	private final byte deviceID;
@@ -46,9 +47,9 @@ public class HardSIDEmu extends SIDEmu {
 
 	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID, final byte sidNum,
-			final ChipModel model) {
-		this.context  = context;
+	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID,
+			final byte sidNum, final ChipModel model) {
+		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
@@ -60,10 +61,10 @@ public class HardSIDEmu extends SIDEmu {
 	public void reset(final byte volume) {
 		hardSID.HardSID_Reset(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Delay(deviceID, HardSIDBuilder.SHORTEST_DELAY);
+			hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
 			hardSID.HardSID_Write(deviceID, sidNum, reg, (byte) 0);
 		}
-		hardSID.HardSID_Delay(deviceID, HardSIDBuilder.SHORTEST_DELAY);
+		hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
 		hardSID.HardSID_Write(deviceID, sidNum, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 	}

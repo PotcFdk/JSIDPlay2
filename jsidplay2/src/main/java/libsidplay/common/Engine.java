@@ -1,12 +1,12 @@
 package libsidplay.common;
 
 public enum Engine {
-	/** Hardware (HardSID4U) */
-	HARDSID,
-	/** Hardware (SidBlaster) */
-	SIDBLASTER,
-	/** Software (NetSIDDevice) */
+	/** Software (emulation using RESID or RESIDfp) */
+	EMULATION,
+	/** Software (Network SID Device via socket connection) */
 	NETSID,
-	/** Software (RESID,RESIDfp) */
-	EMULATION;
+	/** Hardware (HardSID4U USB device) */
+	HARDSID,
+	/** Hardware (SidBlaster USB device) */
+	SIDBLASTER
 }
