@@ -81,9 +81,10 @@ public class HardSIDBuilder implements SIDBuilder {
 			hsid.lock();
 			return hsid;
 		}
-		throw new RuntimeException(
-				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)",
-						deviceID, chipNum));
+		System.err.println(/* throw new RuntimeException( */String.format(
+				"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
+				chipNum));
+		return SIDEmu.NONE;
 	}
 
 	@Override
