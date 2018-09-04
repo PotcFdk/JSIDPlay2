@@ -1,9 +1,9 @@
 package builder.sidblaster;
 
-import static builder.sidblaster.HardSID.HSID_USB_WSTATE_BUSY;
 import static builder.sidblaster.SidBlasterBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
+import builder.sidblaster.HardSID.HSID_USB_WSTATE;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -31,35 +31,32 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final byte deviceID;
 
-	private ChipModel chipModel;
-
 	private SidBlasterBuilder hardSIDBuilder;
 
 	public SIDBlasterEmu(EventScheduler context, SidBlasterBuilder hardSIDBuilder, final HardSID hardSID,
-			final byte deviceID, final byte sid, final ChipModel model) {
+			final int sidNum) {
 		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
-		this.deviceID = deviceID;
-		this.chipModel = model;
+		this.deviceID = (byte) sidNum;
 	}
 
 	@Override
 	public void reset(final byte volume) {
-		hardSID.HardSID_Reset(deviceID);
+		hardSID.HardSID_Flush(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
 			hardSID.HardSID_Try_Write(deviceID, SHORTEST_DELAY, reg, (byte) 0);
 		}
-		hardSID.HardSID_Try_Write(deviceID, SHORTEST_DELAY, (byte) 0xf, volume);
-		hardSID.HardSID_Flush(deviceID);
 		hardSID.HardSID_Sync(deviceID);
+		hardSID.HardSID_Reset2(deviceID, volume);
 	}
 
 	@Override
 	public byte read(int addr) {
 		clock();
 		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
-		return hardSID.ReadFromHardSID(deviceID, (byte) addr);
+		// unsupported by SIDBlaster
+		return (byte) 0xff;
 	}
 
 	@Override
@@ -67,8 +64,8 @@ public class SIDBlasterEmu extends SIDEmu {
 		clock();
 		super.write(addr, data);
 		while (hardSID.HardSID_Try_Write(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr,
-				data) == HSID_USB_WSTATE_BUSY)
-			Thread.yield();
+				data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc())
+			;
 	}
 
 	@Override
@@ -100,10 +97,6 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
-	}
-
-	protected ChipModel getChipModel() {
-		return chipModel;
 	}
 
 	@Override

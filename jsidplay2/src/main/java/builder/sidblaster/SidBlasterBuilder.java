@@ -8,7 +8,6 @@ import java.util.List;
 import com.sun.jna.Native;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDBuilder;
@@ -63,24 +62,21 @@ public class SidBlasterBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		final byte chipNum = 0;
-		if (deviceID < hardSID.HardSID_Devices() && chipNum < hardSID.GetHardSIDCount(deviceID)) {
+		if (sidNum < hardSID.HardSID_Devices()) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			// what chip model is plugged-in? We don't know
-			ChipModel chipModel = ChipModel.MOS6581;
-			SIDBlasterEmu hsid = new SIDBlasterEmu(context, this, hardSID, deviceID, chipNum, chipModel);
+			SIDBlasterEmu hsid = new SIDBlasterEmu(context, this, hardSID, sidNum);
 			sids.add(hsid);
 			if (hsid.lock()) {
 				return hsid;
 			}
 		}
-		throw new RuntimeException(String.format(
-				"SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
-				chipNum));
+		System.err.println(/* throw new RuntimeException( */String
+				.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)", sidNum));
+		return SIDEmu.NONE;
 	}
 
 	@Override
