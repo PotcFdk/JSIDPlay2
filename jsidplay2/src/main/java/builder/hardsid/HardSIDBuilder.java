@@ -1,4 +1,5 @@
 package builder.hardsid;
+
 import static libsidplay.common.Engine.HARDSID;
 
 import java.util.ArrayList;
@@ -68,14 +69,15 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		final ChipModel chipModel = getChipModel(tune, sidNum);
-		final byte chipNum = getModelDependantSidNum(chipModel, sidNum);
+		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
+		int chipNum = getModelDependantSidNum(chipModel, sidNum);
 		if (deviceID < hardSID.HardSID_Devices() && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
+			System.out.println("Use HardSID sidNum: " + chipNum);
 			HardSIDEmu hsid = new HardSIDEmu(context, this, hardSID, deviceID, chipNum, chipModel);
 			sids.add(hsid);
 			hsid.lock();
@@ -95,58 +97,33 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Choose desired chip model.
-	 * <OL>
-	 * <LI>Detect chip model of specific SID number
-	 * <LI>For the second SID (stereo) always use the other model
-	 * </OL>
-	 * Note: In mono mode we always want to use a SID depending on the correct
-	 * chip model. But, in stereo mode we need another SID. Therefore we change
-	 * the chip model to match the second configured SID.
-	 * 
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * @return desired chip model
-	 */
-	private ChipModel getChipModel(SidTune tune, int sidNum) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
-		if (sids.size() > 0) {
-			// Stereo SID? Use a HardSID SID different to the first SID
-			ChipModel modelAlreadyInUse = sids.get(0).getChipModel();
-			if (chipModel == modelAlreadyInUse) {
-				chipModel = (chipModel == ChipModel.MOS6581) ? ChipModel.MOS8580 : ChipModel.MOS6581;
-			}
-		}
-		return chipModel;
-	}
-
-	/**
 	 * Get SID index based on the desired chip model.
 	 * 
-	 * @param chipModel
-	 *            desired chip model
-	 * @param sidNum
-	 *            current SID number
+	 * @param chipModel desired chip model
+	 * @param sidNum    current SID number
 	 * @return SID index of the desired HardSID SID
 	 */
-	private byte getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
+	private int getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
-		if (sidNum == 2) {
-			// 3-SID: for now choose next available free slot
-			for (byte i = 0; i < hardSID.HardSID_SIDCount(deviceID); i++) {
-				if (i != sid6581 && i != sid8580) {
-					System.err.println("Use 1st:" + sid6581 + ", 2nd:" + sid8580 + ", 3rd:" + i);
-					return i;
+		if (sidNum == 0) {
+			// Mono SID: choose according to the chip model type
+			return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
+		} else {
+			// Stereo or 3-SID: use next free slot (prevent wrong type and already used one)
+			for (byte hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
+				final int theHardSIDIdx = hardSidIdx;
+				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getSidNum()).findFirst().isPresent()) {
+					continue;
+				}
+				if (hardSidIdx != sid6581 && hardSidIdx != sid8580) {
+					return hardSidIdx;
 				}
 			}
-			throw new RuntimeException(String.format(
-					"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)", deviceID,
-					hardSID.HardSID_SIDCount(deviceID)));
 		}
-		return (byte) (chipModel == ChipModel.MOS6581 ? sid6581 : sid8580);
+		throw new RuntimeException(
+				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)",
+						deviceID, hardSID.HardSID_SIDCount(deviceID)));
 	}
 
 	int clocksSinceLastAccess() {

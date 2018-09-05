@@ -48,12 +48,12 @@ public class HardSIDEmu extends SIDEmu {
 	private HardSIDBuilder hardSIDBuilder;
 
 	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID,
-			final byte sidNum, final ChipModel model) {
+			final int sidNum, final ChipModel model) {
 		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
-		this.sidNum = sidNum;
+		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
 	}
 
@@ -108,6 +108,10 @@ public class HardSIDEmu extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
+	}
+
+	public byte getSidNum() {
+		return sidNum;
 	}
 
 	protected ChipModel getChipModel() {
