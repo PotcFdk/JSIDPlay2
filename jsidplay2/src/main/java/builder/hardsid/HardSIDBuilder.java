@@ -23,9 +23,7 @@ import libsidplay.sidtune.SidTune;
  */
 public class HardSIDBuilder implements SIDBuilder {
 
-	private static final short REGULAR_DELAY = 256;
-
-	static final short SHORTEST_DELAY = 4;
+	private static final short REGULAR_DELAY = 128;
 
 	/**
 	 * System event context.
@@ -70,8 +68,8 @@ public class HardSIDBuilder implements SIDBuilder {
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
-		int chipNum = getModelDependantSidNum(chipModel, sidNum);
-		if (deviceID < hardSID.HardSID_Devices() && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
+		Integer chipNum = getModelDependantSidNum(chipModel, sidNum);
+		if (deviceID < hardSID.HardSID_Devices() && chipNum != null && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
@@ -83,9 +81,9 @@ public class HardSIDBuilder implements SIDBuilder {
 			hsid.lock();
 			return hsid;
 		}
-		System.err.println(/* throw new RuntimeException( */String.format(
-				"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SID=%d)", deviceID,
-				chipNum));
+		System.err.println(/* throw new RuntimeException( */
+				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)",
+						deviceID, hardSID.HardSID_SIDCount(deviceID)));
 		return SIDEmu.NONE;
 	}
 
@@ -103,7 +101,7 @@ public class HardSIDBuilder implements SIDBuilder {
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired HardSID SID
 	 */
-	private int getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
+	private Integer getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 0) {
@@ -111,7 +109,7 @@ public class HardSIDBuilder implements SIDBuilder {
 			return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
 		} else {
 			// Stereo or 3-SID: use next free slot (prevent wrong type and already used one)
-			for (byte hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
+			for (int hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
 				final int theHardSIDIdx = hardSidIdx;
 				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getSidNum()).findFirst().isPresent()) {
 					continue;
@@ -121,22 +119,20 @@ public class HardSIDBuilder implements SIDBuilder {
 				}
 			}
 		}
-		throw new RuntimeException(
-				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)",
-						deviceID, hardSID.HardSID_SIDCount(deviceID)));
+		return null;
 	}
 
 	int clocksSinceLastAccess() {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return Math.max(SHORTEST_DELAY, diff);
+		return diff;
 	}
 
 	long eventuallyDelay() {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
-		if (diff > REGULAR_DELAY << 1) {
+		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
 			hardSID.HardSID_Delay(deviceID, REGULAR_DELAY);
 		}

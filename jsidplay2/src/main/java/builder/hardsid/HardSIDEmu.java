@@ -1,6 +1,5 @@
 package builder.hardsid;
 
-import static builder.hardsid.HardSIDBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import libsidplay.common.ChipModel;
@@ -27,6 +26,8 @@ import libsidplay.config.IEmulationSection;
  * 
  */
 public class HardSIDEmu extends SIDEmu {
+
+	private static final short SHORTEST_DELAY = 4;
 
 	private final Event event = new Event("HardSID Delay") {
 		@Override
