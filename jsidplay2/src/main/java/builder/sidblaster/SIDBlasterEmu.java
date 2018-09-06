@@ -1,6 +1,5 @@
 package builder.sidblaster;
 
-import static builder.sidblaster.SidBlasterBuilder.SHORTEST_DELAY;
 import static libsidplay.common.SIDChip.REG_COUNT;
 
 import builder.sidblaster.HardSID.HSID_USB_WSTATE;
@@ -17,6 +16,8 @@ import libsidplay.config.IEmulationSection;
  * 
  */
 public class SIDBlasterEmu extends SIDEmu {
+
+	private static final short SHORTEST_DELAY = 4;
 
 	private final Event event = new Event("HardSID Delay") {
 		@Override
