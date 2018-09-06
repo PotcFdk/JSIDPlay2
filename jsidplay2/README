@@ -89,6 +89,12 @@ RESET (reset.txt consists of exactly one zero byte)
 SEND PROGRAM
 ./chacocmd  --addr  0x0801 --writemem radiantx_spiral_silicon_towers.mem 
 
+Hard-wire HardSID4U: connect mixed/out into the Microfone/in of your computer.
+==============================================================================
+In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
+Open a terminal and type:
+parec --latency-msec=1 | pacat --latency-msec=1
+
 TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
