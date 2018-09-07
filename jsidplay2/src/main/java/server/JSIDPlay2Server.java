@@ -1,4 +1,4 @@
-package server.servlets;
+package server;
 
 import static server.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
 import static server.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
@@ -45,6 +45,14 @@ import com.beust.jcommander.ParameterException;
 
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
+import server.servlets.ConvertServlet;
+import server.servlets.DirectoryServlet;
+import server.servlets.DownloadServlet;
+import server.servlets.FavoritesServlet;
+import server.servlets.FiltersServlet;
+import server.servlets.PhotoServlet;
+import server.servlets.StartPageServlet;
+import server.servlets.TuneInfoServlet;
 import ui.JSidPlay2;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;

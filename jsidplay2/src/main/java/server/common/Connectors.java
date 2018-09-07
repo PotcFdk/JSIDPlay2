@@ -1,4 +1,4 @@
-package server.servlets;
+package server.common;
 
 public enum Connectors {
 	HTTP("http", 8080), HTTP_HTTPS("https", 8443), HTTPS("https", 8443);

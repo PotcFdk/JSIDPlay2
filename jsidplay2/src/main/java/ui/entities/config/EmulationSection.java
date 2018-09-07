@@ -1,6 +1,6 @@
 package ui.entities.config;
 
-import static server.servlets.Connectors.HTTP;
+import static server.common.Connectors.HTTP;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
@@ -81,7 +81,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.config.IEmulationSection;
-import server.servlets.Connectors;
+import server.common.Connectors;
 import ui.common.FileToStringConverter;
 
 @Embeddable
