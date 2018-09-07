@@ -18,7 +18,6 @@
 #include <comdef.h>
 
 #include <windows.h>
-#include <winsock2.h>
 
 // stuff required to link against hardsid_usb.lib (that was built using MSVC)
 

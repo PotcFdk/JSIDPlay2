@@ -73,16 +73,14 @@ __declspec(dllexport) void HardSID_Reset(BYTE deviceID) {
 }
 
 __declspec(dllexport) void HardSID_Delay(BYTE deviceID, SHORT cycles) {
+	while (cycles > 65535) {
+		while (hardsid_usb_delay(deviceID, 65535) == HSID_USB_WSTATE_BUSY)
+			Sleep(0);
+		cycles -= 65536;
+	}
 	if (cycles > 0) {
-		while (cycles > 65535) {
-			while (hardsid_usb_delay(deviceID, 65535) == HSID_USB_WSTATE_BUSY)
-				Sleep(0);
-			cycles -= 65536;
-		}
-		if (cycles > 0) {
-			while (hardsid_usb_delay(deviceID, cycles) == HSID_USB_WSTATE_BUSY)
-				Sleep(0);
-		}
+		while (hardsid_usb_delay(deviceID, cycles) == HSID_USB_WSTATE_BUSY)
+			Sleep(0);
 	}
 }
 
