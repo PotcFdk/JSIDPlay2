@@ -206,6 +206,7 @@ public class SIDMixer implements Mixer {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
+		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		IAudioSection audioSection = config.getAudioSection();
 		SamplingMethod samplingMethod = audioSection.getSampling();
 		int samplingFrequency = audioSection.getSamplingRate().getFrequency();
@@ -213,7 +214,6 @@ public class SIDMixer implements Mixer {
 				20000);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
 				20000);
-		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 		normalSpeed();
 	}

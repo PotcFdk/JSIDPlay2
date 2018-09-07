@@ -95,11 +95,11 @@ public class HardSIDBuilder implements SIDBuilder {
 	}
 
 	/**
-	 * Get SID index based on the desired chip model.
+	 * Get HardSID device index based on the desired chip model.
 	 * 
 	 * @param chipModel desired chip model
 	 * @param sidNum    current SID number
-	 * @return SID index of the desired HardSID SID
+	 * @return SID index of the desired HardSID device
 	 */
 	private Integer getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
@@ -108,17 +108,17 @@ public class HardSIDBuilder implements SIDBuilder {
 			// Mono SID: choose according to the chip model type
 			return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
 		} else {
-			// Stereo or 3-SID: use next free slot (prevent wrong type and already used one)
+			// Stereo or 3-SID: use next free slot (prevent already used one and wrong type)
 			for (int hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
 				final int theHardSIDIdx = hardSidIdx;
-				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getSidNum()).findFirst().isPresent()) {
+				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getSidNum()).findFirst().isPresent()
+						|| hardSidIdx == sid6581 || hardSidIdx == sid8580) {
 					continue;
 				}
-				if (hardSidIdx != sid6581 && hardSidIdx != sid8580) {
-					return hardSidIdx;
-				}
+				return hardSidIdx;
 			}
 		}
+		// no slot left
 		return null;
 	}
 

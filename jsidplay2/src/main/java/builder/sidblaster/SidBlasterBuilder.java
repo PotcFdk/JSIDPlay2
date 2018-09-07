@@ -67,8 +67,8 @@ public class SidBlasterBuilder implements SIDBuilder {
 				return oldHardSID;
 			}
 			SIDBlasterEmu hsid = new SIDBlasterEmu(context, this, hardSID, sidNum);
-			sids.add(hsid);
 			if (hsid.lock()) {
+				sids.add(hsid);
 				return hsid;
 			}
 		}
