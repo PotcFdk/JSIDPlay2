@@ -1,5 +1,6 @@
 package ui.entities.config;
 
+import static server.servlets.Connectors.HTTP;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
@@ -54,7 +55,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
-import static ui.servlets.Connectors.HTTP;
 
 import java.io.File;
 
@@ -81,8 +81,8 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.config.IEmulationSection;
+import server.servlets.Connectors;
 import ui.common.FileToStringConverter;
-import ui.servlets.Connectors;
 
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.EmulationSection")

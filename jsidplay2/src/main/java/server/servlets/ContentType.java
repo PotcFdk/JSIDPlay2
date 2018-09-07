@@ -1,4 +1,4 @@
-package ui.servlets;
+package server.servlets;
 
 import java.util.Arrays;
 import java.util.Locale;

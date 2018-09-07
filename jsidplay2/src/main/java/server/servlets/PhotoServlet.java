@@ -1,6 +1,6 @@
-package ui.servlets;
+package server.servlets;
 
-import static ui.servlets.JSIDPlay2Server.ROLE_ADMIN;
+import static server.servlets.JSIDPlay2Server.ROLE_ADMIN;
 
 import java.io.File;
 import java.io.FileNotFoundException;

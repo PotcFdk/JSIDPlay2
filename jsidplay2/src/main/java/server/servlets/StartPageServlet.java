@@ -1,4 +1,4 @@
-package ui.servlets;
+package server.servlets;
 
 import java.io.IOException;
 import java.io.InputStream;

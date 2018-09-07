@@ -1,4 +1,4 @@
-package ui.servlets;
+package server.servlets;
 
 import java.io.File;
 import java.io.FileNotFoundException;

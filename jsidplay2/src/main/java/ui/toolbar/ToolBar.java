@@ -1,9 +1,9 @@
 package ui.toolbar;
 
+import static server.servlets.Connectors.HTTP;
+import static server.servlets.Connectors.HTTPS;
+import static server.servlets.Connectors.HTTP_HTTPS;
 import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
-import static ui.servlets.Connectors.HTTP;
-import static ui.servlets.Connectors.HTTPS;
-import static ui.servlets.Connectors.HTTP_HTTPS;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +43,8 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
+import server.servlets.Connectors;
+import server.servlets.JSIDPlay2Server;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
@@ -57,8 +59,6 @@ import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
-import ui.servlets.Connectors;
-import ui.servlets.JSIDPlay2Server;
 
 public class ToolBar extends C64VBox implements UIPart {
 

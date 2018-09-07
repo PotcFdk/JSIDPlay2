@@ -1,13 +1,13 @@
-package ui.servlets;
+package server.servlets;
 
-import static ui.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
-import static ui.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
-import static ui.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
-import static ui.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
-import static ui.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
-import static ui.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
-import static ui.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
-import static ui.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
+import static server.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
+import static server.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
+import static server.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
+import static server.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
+import static server.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
+import static server.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
+import static server.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
+import static server.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
 import java.io.File;
 import java.io.FileInputStream;
