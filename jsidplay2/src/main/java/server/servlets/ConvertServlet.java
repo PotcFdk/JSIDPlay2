@@ -27,6 +27,8 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
+import server.common.ContentType;
+import server.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;

@@ -1,4 +1,4 @@
-package server.servlets;
+package server.common;
 
 import java.util.Arrays;
 import java.util.Locale;

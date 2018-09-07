@@ -19,6 +19,8 @@ import org.eclipse.jetty.util.URIUtil;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import server.common.ContentType;
+import server.common.ServletUtil;
 import ui.entities.config.Configuration;
 import ui.musiccollection.SidAuthors;
 

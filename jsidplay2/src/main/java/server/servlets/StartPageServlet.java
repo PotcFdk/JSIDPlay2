@@ -18,6 +18,7 @@ import org.eclipse.jetty.http.MimeTypes;
 import libsidplay.sidtune.SidTune;
 import libsidutils.ZipFileUtils;
 import server.common.Connectors;
+import server.common.ServletUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 

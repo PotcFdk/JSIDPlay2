@@ -14,6 +14,7 @@ import org.eclipse.jetty.http.MimeTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import server.common.ServletUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.FilterSection;
 

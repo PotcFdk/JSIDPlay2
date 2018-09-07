@@ -17,6 +17,8 @@ import org.eclipse.jetty.util.URIUtil;
 
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import server.common.ContentType;
+import server.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 public class DownloadServlet extends HttpServlet {

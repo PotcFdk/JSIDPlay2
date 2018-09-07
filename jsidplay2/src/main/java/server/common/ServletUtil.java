@@ -1,4 +1,4 @@
-package server.servlets;
+package server.common;
 
 import java.io.File;
 import java.io.FileNotFoundException;
