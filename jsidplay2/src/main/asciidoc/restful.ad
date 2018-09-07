@@ -212,6 +212,37 @@ sudo chmod 755 ~/server.sh
 
 Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
+=== Autostart JSIDPlay2 AppServer on system startup
+
+To start JSIPlay2 AppServer on system startup, please type 'vi /etc/systemd/jsidplay2.service':
+[source,subs="attributes+"]
+----
+[Unit]
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+ExecStart=/usr/bin/java -server \
+	-classpath /home/ken/Downloads/jsidplay2-3.9/jsidplay2-3.9.jar \
+	server.JSIDPlay2Server \
+	--appServerKeystore /etc/jsidplay2.ks \
+	--appServerManagerPassword jsidplay2 \
+	--appServerKeystorePassword jsidplay2 \
+	--appServerConnectors HTTP_HTTPS
+User=ken
+
+[Install]
+WantedBy=default.target
+----
+
+Now, grant permission and enable jsidplay2.service to autostart:
+[source,subs="attributes+"]
+----
+chmod 644 /etc/systemd/jsidplay2.service
+sudo systemctl daemon-reload
+sudo systemctl enable /etc/systemd/jsidplay2.service
+----
+
 === Access from the Internet
 
 To use your client from within your private local area network does not require additional preparations, you just need to know and reach the IP address, where JSIDPlay2 is running on.
