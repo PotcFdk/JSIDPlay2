@@ -257,6 +257,8 @@
 							<MenuItem text="%INSERT_REU_(16MB)"
 								onAction="#insertREU16384" />
 						</Menu>
+						<MenuItem text="%ACTION_REPLAY_MKVI"
+							onAction="#insertARMKVI" />
 						<MenuItem text="%EJECT_CARTRIDGE"
 							onAction="#ejectCartridge" />
 						<MenuItem text="%FREEZE" onAction="#freezeCartridge" />

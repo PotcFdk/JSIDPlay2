@@ -3,8 +3,10 @@ package libsidplay;
 import static libsidplay.common.SIDEmu.NONE;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -652,6 +654,18 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	 */
 	public final void setCartridge(final CartridgeType type, final File file) throws IOException {
 		pla.setCartridge(Cartridge.read(pla, type, file));
+	}
+
+	/**
+	 * Insert a cartridge of type CRT loading an image.
+	 * 
+	 * @param is
+	 *            input stream to load the RAM contents
+	 * @throws IOException
+	 *             image read error
+	 */
+	public final void setCartridgeCRT(final InputStream is) throws IOException {
+		pla.setCartridge(Cartridge.readCRT(pla, new DataInputStream(is)));
 	}
 
 	/**

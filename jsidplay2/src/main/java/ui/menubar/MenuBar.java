@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
@@ -100,6 +101,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	/** Empty disk image */
 	private static final String EMPTY_D64 = "/libsidplay/components/c1541/empty.d64";
 	private static byte[] EMPTY_DISK;
+	
+	private static final String ACTION_REPLAY_MKVI = "/libsidplay/components/cart/AR_60PAL.CRT";
 
 	static {
 		try (DataInputStream is2 = new DataInputStream(MenuBar.class.getResourceAsStream(EMPTY_D64));
@@ -657,6 +660,11 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	private void insertARMKVI() {
+		insertCartridge(MenuBar.class.getResourceAsStream(ACTION_REPLAY_MKVI));
+	}
+	
+	@FXML
 	private void ejectCartridge() {
 		util.getPlayer().getC64().ejectCartridge();
 		reset();
@@ -1051,6 +1059,15 @@ public class MenuBar extends C64VBox implements UIPart {
 		} catch (IOException ex) {
 			System.err.println(
 					String.format("Cannot insert cartridge of type '%s' and size '%d'KB.", type.name(), sizeKB));
+		}
+	}
+
+	private void insertCartridge(InputStream is) {
+		try {
+			util.getPlayer().insertCartridgeCRT(is);
+			util.getPlayer().play(RESET);
+		} catch (IOException ex) {
+			System.err.println("Cannot insert cartridge of type 'CRT'.");
 		}
 	}
 

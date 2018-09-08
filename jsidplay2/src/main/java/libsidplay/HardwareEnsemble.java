@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -112,16 +113,14 @@ public class HardwareEnsemble {
 	private IExtendImageListener policy;
 
 	/**
-	 * Create a complete hardware setup (C64, tape/disk drive, printer and
-	 * more).
+	 * Create a complete hardware setup (C64, tape/disk drive, printer and more).
 	 */
 	public HardwareEnsemble(IConfig config) {
 		this(config, MOS6510.class);
 	}
 
 	/**
-	 * Create a complete hardware setup (C64, tape/disk drive, printer and
-	 * more).
+	 * Create a complete hardware setup (C64, tape/disk drive, printer and more).
 	 */
 	public HardwareEnsemble(IConfig config, Class<? extends MOS6510> cpuClass) {
 		this.config = config;
@@ -251,8 +250,7 @@ public class HardwareEnsemble {
 	/**
 	 * Set frequency (PAL/NTSC)
 	 * 
-	 * @param cpuFreq
-	 *            frequency (PAL/NTSC)
+	 * @param cpuFreq frequency (PAL/NTSC)
 	 */
 	protected void setClock(final CPUClock cpuFreq) {
 		c64.setClock(cpuFreq);
@@ -307,8 +305,7 @@ public class HardwareEnsemble {
 	/**
 	 * Enable floppy disk drives.
 	 * 
-	 * @param on
-	 *            floppy disk drives enable
+	 * @param on floppy disk drives enable
 	 */
 	public final void enableFloppyDiskDrives(final boolean on) {
 		c64.getEventScheduler().scheduleThreadSafe(new Event("C64-C1541 sync") {
@@ -327,11 +324,10 @@ public class HardwareEnsemble {
 	}
 
 	/**
-	 * Plug-in a parallel cable between the C64 user port and the C1541 floppy
-	 * disk drive.
+	 * Plug-in a parallel cable between the C64 user port and the C1541 floppy disk
+	 * drive.
 	 * 
-	 * @param connected
-	 *            connected enable
+	 * @param connected connected enable
 	 */
 	public final void connectC64AndC1541WithParallelCable(final boolean connected) {
 		final IParallelCable cable = connected ? makeCableBetweenC64AndC1541() : new DisconnectedParallelCable();
@@ -342,8 +338,8 @@ public class HardwareEnsemble {
 	}
 
 	/**
-	 * Create a parallel cable between the C64 user port and the C1541 floppy
-	 * disk drive.
+	 * Create a parallel cable between the C64 user port and the C1541 floppy disk
+	 * drive.
 	 * 
 	 * @return parallel cable
 	 */
@@ -410,8 +406,7 @@ public class HardwareEnsemble {
 	/**
 	 * Turn-on printer.
 	 * 
-	 * @param printerOn
-	 *            printer on/off
+	 * @param printerOn printer on/off
 	 */
 	public final void enablePrinter(boolean printerOn) {
 		printer.turnPrinterOnOff(printerOn);
@@ -420,8 +415,7 @@ public class HardwareEnsemble {
 	/**
 	 * Extend floppy disk strategy (> 35 tracks)
 	 * 
-	 * @param policy
-	 *            extension policy
+	 * @param policy extension policy
 	 */
 	public final void setExtendImagePolicy(IExtendImageListener policy) {
 		this.policy = policy;
@@ -430,10 +424,8 @@ public class HardwareEnsemble {
 	/**
 	 * Insert a disk into the first floppy disk drive.
 	 * 
-	 * @param file
-	 *            disk file to insert
-	 * @throws IOException
-	 *             image read error
+	 * @param file disk file to insert
+	 * @throws IOException image read error
 	 */
 	public final void insertDisk(final File file) throws IOException, SidTuneError {
 		// automatically turn drive on
@@ -471,10 +463,8 @@ public class HardwareEnsemble {
 	 * Insert a tape into the datasette.<BR>
 	 * Note: If the file is different to the TAP format, it will be converted.
 	 * 
-	 * @param file
-	 *            tape file to insert
-	 * @throws IOException
-	 *             image read error
+	 * @param file tape file to insert
+	 * @throws IOException image read error
 	 */
 	public final void insertTape(final File file) throws IOException, SidTuneError {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
@@ -502,12 +492,9 @@ public class HardwareEnsemble {
 	/**
 	 * Insert a cartridge of a given size with empty contents.
 	 * 
-	 * @param type
-	 *            cartridge type
-	 * @param sizeKB
-	 *            size in KB
-	 * @throws IOException
-	 *             never thrown here
+	 * @param type   cartridge type
+	 * @param sizeKB size in KB
+	 * @throws IOException never thrown here
 	 */
 	public final void insertCartridge(final CartridgeType type, final int sizeKB) throws IOException {
 		c64.ejectCartridge();
@@ -517,17 +504,26 @@ public class HardwareEnsemble {
 	/**
 	 * Insert a cartridge loading an image file.
 	 * 
-	 * @param type
-	 *            cartridge type
-	 * @param file
-	 *            file to load the RAM contents
-	 * @throws IOException
-	 *             image read error
+	 * @param type cartridge type
+	 * @param file file to load the RAM contents
+	 * @throws IOException image read error
 	 */
 	public final void insertCartridge(final CartridgeType type, final File file) throws IOException {
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		c64.ejectCartridge();
 		c64.setCartridge(type, file);
+	}
+
+	/**
+	 * Insert a cartridge of type CRT loading an image.
+	 * 
+	 * @param is input stream to load the RAM contents
+	 * @throws IOException image read error
+	 */
+	public final void insertCartridgeCRT(final InputStream is) throws IOException {
+		config.getC1541Section().setJiffyDosInstalled(false);
+		c64.ejectCartridge();
+		c64.setCartridgeCRT(is);
 	}
 
 }

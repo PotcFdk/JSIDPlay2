@@ -35,11 +35,14 @@ public class Cartridge {
 
 	/** CCS64 cartridge type map */
 	public enum CRTType {
-		NORMAL, ACTION_REPLAY, KCS_POWER_CARTRIDGE, FINAL_CARTRIDGE_III, SIMONS_BASIC, OCEAN_TYPE_1, EXPERT_CARTRIDGE, FUN_PLAY__POWER_PLAY,
+		NORMAL, ACTION_REPLAY, KCS_POWER_CARTRIDGE, FINAL_CARTRIDGE_III, SIMONS_BASIC, OCEAN_TYPE_1, EXPERT_CARTRIDGE,
+		FUN_PLAY__POWER_PLAY,
 
-		SUPER_GAMES, ATOMIC_POWER, EPYX_FASTLOAD, WESTERMANN_LEARNING, REX_UTILITY, FINAL_CARTRIDGE_I, MAGIC_FORMEL, C64_GAME_SYSTEM__SYSTEM_3,
+		SUPER_GAMES, ATOMIC_POWER, EPYX_FASTLOAD, WESTERMANN_LEARNING, REX_UTILITY, FINAL_CARTRIDGE_I, MAGIC_FORMEL,
+		C64_GAME_SYSTEM__SYSTEM_3,
 
-		WARPSPEED, DINAMIC, ZAXXON__SUPER_ZAXXON, MAGIC_DESK__DOMARK__HES_AUSTRALIA, SUPER_SNAPSHOT_5, COMAL_80, STRUCTURED_BASIC, ROSS,
+		WARPSPEED, DINAMIC, ZAXXON__SUPER_ZAXXON, MAGIC_DESK__DOMARK__HES_AUSTRALIA, SUPER_SNAPSHOT_5, COMAL_80,
+		STRUCTURED_BASIC, ROSS,
 
 		DELA_EP64, DELA_EP7X8, DELA_EP256, REX_EP256, MIKRO_ASSEMBLER, RESERVED, ACTION_REPLAY_4, STARDOS,
 
@@ -88,9 +91,9 @@ public class Cartridge {
 	}
 
 	/**
-	 * In Ultimax mode, the main memory between 0x1000-0xffff is disconnected.
-	 * This allows carts to export their own memory for those regions, excluding
-	 * the areas that will be mapped to ROML, IO and ROMH, though.
+	 * In Ultimax mode, the main memory between 0x1000-0xffff is disconnected. This
+	 * allows carts to export their own memory for those regions, excluding the
+	 * areas that will be mapped to ROML, IO and ROMH, though.
 	 * 
 	 * @return Memory bank for Ultimax mode
 	 */
@@ -119,12 +122,9 @@ public class Cartridge {
 	/**
 	 * Create a cartridge.
 	 * 
-	 * @param pla
-	 *            Instance of the system's PLA chip
-	 * @param cartType
-	 *            cartridge type
-	 * @param sizeKB
-	 *            size in KB
+	 * @param pla      Instance of the system's PLA chip
+	 * @param cartType cartridge type
+	 * @param sizeKB   size in KB
 	 * @return a cartridge instance
 	 */
 	public static final Cartridge create(final PLA pla, final CartridgeType cartType, final int sizeKB)
@@ -143,12 +143,9 @@ public class Cartridge {
 	/**
 	 * Load a cartridge.
 	 * 
-	 * @param pla
-	 *            Instance of the system's PLA chip
-	 * @param cartType
-	 *            cartridge type
-	 * @param file
-	 *            file to load from
+	 * @param pla      Instance of the system's PLA chip
+	 * @param cartType cartridge type
+	 * @param file     file to load from
 	 * @return a cartridge instance
 	 */
 	public static Cartridge read(final PLA pla, final CartridgeType cartType, final File file) throws IOException {
@@ -159,40 +156,7 @@ public class Cartridge {
 			case REU:
 				return new REU(dis, pla, (int) (file.length() >> 10));
 			case CRT:
-				final byte[] header = new byte[0x40];
-				dis.readFully(header);
-
-				final CRTType type = CRTType.getType(header);
-				switch (type) {
-				case ACTION_REPLAY:
-					return new ActionReplay(dis, pla);
-				case NORMAL:
-					return new Normal(dis, pla);
-				case FINAL_CARTRIDGE_III:
-					return new FinalV3(dis, pla);
-				case EXPERT_CARTRIDGE:
-					return new Expert(dis, pla);
-				case ATOMIC_POWER:
-					return new AtomicPower(dis, pla);
-				case EPYX_FASTLOAD:
-					return new EpyxFastLoad(dis, pla);
-				case REX_UTILITY:
-					return new Rex(dis, pla);
-				case FINAL_CARTRIDGE_I:
-					return new FinalV1(dis, pla);
-				case ZAXXON__SUPER_ZAXXON:
-					return new Zaxxon(dis, pla);
-				case COMAL_80:
-					return new Comal80(dis, pla);
-				case MIKRO_ASSEMBLER:
-					return new MikroAss(dis, pla);
-				case EASYFLASH:
-					return new EasyFlash(dis, pla);
-				case MAGIC_DESK__DOMARK__HES_AUSTRALIA:
-					return new MagicDesk(dis, pla);
-				default:
-					throw new RuntimeException("Cartridges of format: " + type + " unsupported");
-				}
+				return readCRT(pla, dis);
 			default:
 				throw new RuntimeException("Cartridge unsupported");
 			}
@@ -201,8 +165,53 @@ public class Cartridge {
 	}
 
 	/**
-	 * If the cartridge needs to listen to write activity on specific banks, it
-	 * can install the requisite hooks into the bank here.
+	 * Load a cartridge of type CRT.
+	 * 
+	 * @param pla      Instance of the system's PLA chip
+	 * @param cartType cartridge type
+	 * @param is       input stream to load from
+	 * @return a cartridge instance
+	 */
+	public static Cartridge readCRT(final PLA pla, final DataInputStream is) throws IOException {
+		final byte[] header = new byte[0x40];
+		is.readFully(header);
+
+		final CRTType type = CRTType.getType(header);
+		switch (type) {
+		case ACTION_REPLAY:
+			return new ActionReplay(is, pla);
+		case NORMAL:
+			return new Normal(is, pla);
+		case FINAL_CARTRIDGE_III:
+			return new FinalV3(is, pla);
+		case EXPERT_CARTRIDGE:
+			return new Expert(is, pla);
+		case ATOMIC_POWER:
+			return new AtomicPower(is, pla);
+		case EPYX_FASTLOAD:
+			return new EpyxFastLoad(is, pla);
+		case REX_UTILITY:
+			return new Rex(is, pla);
+		case FINAL_CARTRIDGE_I:
+			return new FinalV1(is, pla);
+		case ZAXXON__SUPER_ZAXXON:
+			return new Zaxxon(is, pla);
+		case COMAL_80:
+			return new Comal80(is, pla);
+		case MIKRO_ASSEMBLER:
+			return new MikroAss(is, pla);
+		case EASYFLASH:
+			return new EasyFlash(is, pla);
+		case MAGIC_DESK__DOMARK__HES_AUSTRALIA:
+			return new MagicDesk(is, pla);
+		default:
+			throw new RuntimeException("Cartridges of format: " + type + " unsupported");
+		}
+	}
+
+	/**
+	 * If the cartridge needs to listen to write activity on specific banks, it can
+	 * install the requisite hooks into the bank here.
 	 * 
 	 * @param cpuReadMap
 	 * @param cpuWriteMap
@@ -275,8 +284,8 @@ public class Cartridge {
 	}
 
 	/**
-	 * Callback to notify cartridge of current state of BA signal on the system
-	 * bus. The boolean value is active high.
+	 * Callback to notify cartridge of current state of BA signal on the system bus.
+	 * The boolean value is active high.
 	 *
 	 * @param state
 	 */
@@ -284,8 +293,8 @@ public class Cartridge {
 	}
 
 	/**
-	 * Assert NMI (= electrically pull NMI low) on the system bus. The boolean
-	 * value is active high. Method is meant for subclasses only.
+	 * Assert NMI (= electrically pull NMI low) on the system bus. The boolean value
+	 * is active high. Method is meant for subclasses only.
 	 * 
 	 * @param state
 	 */
@@ -297,8 +306,8 @@ public class Cartridge {
 	}
 
 	/**
-	 * Assert IRQ (= electrically pull IRQ low) on the system bus. The boolean
-	 * value is active high. Method is meant for subclasses only.
+	 * Assert IRQ (= electrically pull IRQ low) on the system bus. The boolean value
+	 * is active high. Method is meant for subclasses only.
 	 * 
 	 * @param state
 	 */
