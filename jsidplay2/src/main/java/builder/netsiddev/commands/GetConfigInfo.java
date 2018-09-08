@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.GET_CONFIG_INFO;
+import static server.netsiddev.Command.GET_CONFIG_INFO;
 
 public class GetConfigInfo implements NetSIDPkg {
 	private final byte sidNum;

@@ -1,7 +1,7 @@
 package builder.netsiddev.commands;
 
 import static libsidplay.common.CPUClock.PAL;
-import static netsiddev.Command.TRY_SET_CLOCKING;
+import static server.netsiddev.Command.TRY_SET_CLOCKING;
 
 public class SetClocking implements NetSIDPkg {
 	private final byte cpuFrequency;

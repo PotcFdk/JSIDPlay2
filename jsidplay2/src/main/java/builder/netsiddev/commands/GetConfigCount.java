@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.GET_CONFIG_COUNT;
+import static server.netsiddev.Command.GET_CONFIG_COUNT;
 
 public class GetConfigCount implements NetSIDPkg {
 

@@ -441,8 +441,8 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>netsiddev/*</include>
-								<include>netsiddev/ini/*</include>
+								<include>server/netsiddev/*</include>
+								<include>server/netsiddev/ini/*</include>
 								<include>builder/resid/resample/*.class</include>
 								<include>builder/resid/resid/*.class</include>
 								<include>builder/resid/residfp/*.class</include>
@@ -474,7 +474,7 @@
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addClasspath>false</addClasspath>
-									<mainClass>netsiddev.NetworkSIDDeviceMain</mainClass>
+									<mainClass>server.netsiddev.NetworkSIDDeviceMain</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
@@ -732,7 +732,7 @@
 								<mutexName>JSidDevice</mutexName>
 							</singleInstance>
 							<classPath>
-								<mainClass>netsiddev.NetworkSIDDeviceMain</mainClass>
+								<mainClass>server.netsiddev.NetworkSIDDeviceMain</mainClass>
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>

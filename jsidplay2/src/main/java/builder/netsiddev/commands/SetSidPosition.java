@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.SET_SID_POSITION;
+import static server.netsiddev.Command.SET_SID_POSITION;
 
 public class SetSidPosition implements NetSIDPkg {
 	private final byte sidNum;

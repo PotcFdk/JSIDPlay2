@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.MUTE;
+import static server.netsiddev.Command.MUTE;
 
 public class Mute implements NetSIDPkg {
 	private final byte sidNum;

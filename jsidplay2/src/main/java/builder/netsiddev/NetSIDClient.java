@@ -1,8 +1,8 @@
 package builder.netsiddev;
 
 import static libsidplay.components.pla.PLA.MAX_SIDS;
-import static netsiddev.Response.BUSY;
-import static netsiddev.Response.OK;
+import static server.netsiddev.Response.BUSY;
+import static server.netsiddev.Response.OK;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IEmulationSection;
-import netsiddev.Response;
+import server.netsiddev.Response;
 
 public class NetSIDClient {
 	private static final int CYCLES_TO_MILLIS = 1000;

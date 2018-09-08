@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_WRITE;
+import static server.netsiddev.Command.TRY_WRITE;
 
 import java.util.ArrayList;
 import java.util.List;

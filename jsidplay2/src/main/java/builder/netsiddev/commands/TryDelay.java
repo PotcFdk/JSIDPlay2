@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_DELAY;
+import static server.netsiddev.Command.TRY_DELAY;
 
 public class TryDelay implements NetSIDPkg {
 	private final byte sidNum;

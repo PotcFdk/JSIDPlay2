@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_SET_SID_COUNT;
+import static server.netsiddev.Command.TRY_SET_SID_COUNT;
 
 public class TrySetSidCount implements NetSIDPkg {
 	private final byte numSids;

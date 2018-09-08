@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_RESET;
+import static server.netsiddev.Command.TRY_RESET;
 
 public class TryReset implements NetSIDPkg {
 	private final byte volume;

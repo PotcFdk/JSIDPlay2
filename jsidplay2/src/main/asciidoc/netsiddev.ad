@@ -210,7 +210,7 @@ jsiddevice-{version}.exe # <1>
 [source,subs="attributes+"]
 ----
 java -jar jsiddevice-{version}.jar # <1>
-java -classpath jsiddevice-{version}.jar netsiddev.NetworkSIDDevice # <2>
+java -classpath jsiddevice-{version}.jar server.netsiddev.NetworkSIDDevice # <2>
 ---- 
 <1> Launch User interface version
 <2> Launch Console version

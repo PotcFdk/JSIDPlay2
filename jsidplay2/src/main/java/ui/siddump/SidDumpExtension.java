@@ -28,7 +28,7 @@ import javafx.collections.ObservableList;
 import libsidplay.common.SIDEmu;
 import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
-import netsiddev.InvalidCommandException;
+import server.netsiddev.InvalidCommandException;
 import sidplay.Player;
 import ui.entities.config.Configuration;
 

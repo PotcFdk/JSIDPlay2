@@ -1,8 +1,8 @@
 package ui.toolbar;
 
-import static server.common.Connectors.HTTP;
-import static server.common.Connectors.HTTPS;
-import static server.common.Connectors.HTTP_HTTPS;
+import static server.restful.common.Connectors.HTTP;
+import static server.restful.common.Connectors.HTTPS;
+import static server.restful.common.Connectors.HTTP_HTTPS;
 import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
 
 import java.io.File;
@@ -43,8 +43,8 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
-import server.JSIDPlay2Server;
-import server.common.Connectors;
+import server.restful.JSIDPlay2Server;
+import server.restful.common.Connectors;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;

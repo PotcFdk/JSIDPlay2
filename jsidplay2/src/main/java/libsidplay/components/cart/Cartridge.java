@@ -168,7 +168,6 @@ public class Cartridge {
 	 * Load a cartridge of type CRT.
 	 * 
 	 * @param pla      Instance of the system's PLA chip
-	 * @param cartType cartridge type
 	 * @param is       input stream to load from
 	 * @return a cartridge instance
 	 */

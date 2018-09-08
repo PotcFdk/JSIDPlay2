@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_READ;
+import static server.netsiddev.Command.TRY_READ;
 
 public class TryRead extends TryWrite {
 	private final byte sidNumToRead;

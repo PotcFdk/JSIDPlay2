@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_SET_SAMPLING;
+import static server.netsiddev.Command.TRY_SET_SAMPLING;
 
 import libsidplay.common.SamplingMethod;
 

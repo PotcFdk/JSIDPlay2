@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.FLUSH;
+import static server.netsiddev.Command.FLUSH;
 
 public class Flush implements NetSIDPkg {
 

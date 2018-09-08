@@ -10,9 +10,9 @@ import builder.resid.resid.SID;
 import javafx.collections.ObservableList;
 import libsidplay.config.IConfig;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
-import netsiddev.AudioGeneratorThread;
-import netsiddev.InvalidCommandException;
-import netsiddev.SIDWrite;
+import server.netsiddev.AudioGeneratorThread;
+import server.netsiddev.InvalidCommandException;
+import server.netsiddev.SIDWrite;
 import sidplay.audio.AudioConfig;
 
 public class SidDumpReplayer {

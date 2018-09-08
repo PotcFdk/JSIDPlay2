@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.TRY_SET_SID_MODEL;
+import static server.netsiddev.Command.TRY_SET_SID_MODEL;
 
 import java.util.HashMap;
 import java.util.List;

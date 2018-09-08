@@ -169,14 +169,14 @@ First lets explain how to start JSIDPlay2 AppServer in general for unencrypted H
 To start the JSIPlay2 AppServer without HTTPS, but only HTTP, please use the following command
 [source,subs="attributes+"]
 ----
-java -classpath jsidplay2-{version}.jar server.JSIDPlay2Server # <1>
+java -classpath jsidplay2-{version}.jar server.restful.JSIDPlay2Server # <1>
 ----
 <1> Launch the JSIDPlay2 AppServer standalone
 
 For all supported parameters, please type:
 [source,subs="attributes+"]
 ----
-java -classpath jsidplay2-{version}.jar server.JSIDPlay2Server --help # <1>
+java -classpath jsidplay2-{version}.jar server.restful.JSIDPlay2Server --help # <1>
 ----
 <1> Show usage of the JSIDPlay2 AppServer standalone
 
@@ -191,8 +191,8 @@ To start the JSIPlay2 AppServer with HTTPS using the formerly created keystore, 
 ----
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
-pkill -f server.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar server.JSIDPlay2Server \
+pkill -f server.restful.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
 	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \
@@ -224,7 +224,7 @@ After=network.target network-online.target
 [Service]
 ExecStart=/usr/bin/java -server \
 	-classpath /home/ken/Downloads/jsidplay2-3.9/jsidplay2-3.9.jar \
-	server.JSIDPlay2Server \
+	server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
 	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \

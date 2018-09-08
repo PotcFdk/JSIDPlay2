@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.SET_SID_LEVEL;
+import static server.netsiddev.Command.SET_SID_LEVEL;
 
 public class SetSidLevel implements NetSIDPkg {
 	private final byte sidNum;

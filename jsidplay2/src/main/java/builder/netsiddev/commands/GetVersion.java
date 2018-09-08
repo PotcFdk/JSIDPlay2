@@ -1,6 +1,6 @@
 package builder.netsiddev.commands;
 
-import static netsiddev.Command.GET_VERSION;
+import static server.netsiddev.Command.GET_VERSION;
 
 public class GetVersion implements NetSIDPkg {
 

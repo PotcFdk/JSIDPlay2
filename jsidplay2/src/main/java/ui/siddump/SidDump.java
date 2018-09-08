@@ -25,7 +25,7 @@ import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddump.SIDDumpConfiguration;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
-import netsiddev.InvalidCommandException;
+import server.netsiddev.InvalidCommandException;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
