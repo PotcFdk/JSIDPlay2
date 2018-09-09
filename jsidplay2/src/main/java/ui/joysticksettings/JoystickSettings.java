@@ -176,6 +176,7 @@ public class JoystickSettings extends C64Window {
 		if (controller1 != null) {
 			components1.setAll(controller1.getComponents());
 			util.getConfig().getJoystickSection().setDeviceName1(controller1.getName());
+			doActivateJoy1();
 		}
 	}
 
@@ -183,55 +184,65 @@ public class JoystickSettings extends C64Window {
 	private void chooseUp1() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameUp1(up1.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseUp1Value() {
 		util.getConfig().getJoystickSection().setComponentValueUp1((float) up1Value.getValue());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseDown1() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameDown1(down1.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseDown1Value() {
 		util.getConfig().getJoystickSection().setComponentValueDown1((float) down1Value.getValue());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseLeft1() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameLeft1(left1.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseLeft1Value() {
 		util.getConfig().getJoystickSection().setComponentValueLeft1((float) left1Value.getValue());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseRight1() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameRight1(right1.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseRight1Value() {
 		util.getConfig().getJoystickSection().setComponentValueRight1((float) right1Value.getValue());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseFire1() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameBtn1(fire1.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy1();
 	}
 
 	@FXML
 	private void chooseFire1Value() {
 		util.getConfig().getJoystickSection().setComponentValueBtn1((float) fire1Value.getValue());
+		doActivateJoy1();
 	}
 
 	@FXML
@@ -251,6 +262,7 @@ public class JoystickSettings extends C64Window {
 		if (controller2 != null) {
 			components2.setAll(controller2.getComponents());
 			util.getConfig().getJoystickSection().setDeviceName2(controller2.getName());
+			doActivateJoy2();
 		}
 	}
 
@@ -258,55 +270,65 @@ public class JoystickSettings extends C64Window {
 	private void chooseUp2() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameUp2(up2.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseUp2Value() {
 		util.getConfig().getJoystickSection().setComponentValueUp2((float) up2Value.getValue());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseDown2() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameDown2(down2.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseDown2Value() {
 		util.getConfig().getJoystickSection().setComponentValueDown2((float) down2Value.getValue());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseLeft2() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameLeft2(left2.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseLeft2Value() {
 		util.getConfig().getJoystickSection().setComponentValueLeft2((float) left2Value.getValue());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseRight2() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameRight2(right2.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseRight2Value() {
 		util.getConfig().getJoystickSection().setComponentValueRight2((float) right2Value.getValue());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseFire2() {
 		util.getConfig().getJoystickSection()
 				.setComponentNameBtn2(fire2.getSelectionModel().getSelectedItem().getIdentifier().getName());
+		doActivateJoy2();
 	}
 
 	@FXML
 	private void chooseFire2Value() {
 		util.getConfig().getJoystickSection().setComponentValueBtn2((float) fire2Value.getValue());
+		doActivateJoy2();
 	}
 
 }
