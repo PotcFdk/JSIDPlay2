@@ -24,20 +24,35 @@ Optional:
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
 -Dupx.home=<pathToUPX>
 
-Use OpenJDK For Linux Users:
-============================
+Use OpenJDK For Linux users and PulseAudio for sound output:
+============================================================
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
 sudo apt-get install openjfx
 sudo apt-get install pavucontrol
 
-For support of double click on the JAR to start JSIDPlay2:
-Right click on jsidplay-<version>.jar
-Open with...
-Choose a different one...
-/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar
-X Remember file type assignment
+Some soundcards don't work well with the default pulseaudio settings:
+read here: https://askubuntu.com/questions/371595/for-pulseaudio-what-does-tsched-do-and-what-are-the-defaults
+Therefore, if you have trouble with crackling sound, please enter in a terminal:
+"sudo vi /etc/pulse/default.pa"
+and replace line:
+"load-module module-udev-detect"
+with
+"load-module module-udev-detect tsched=0"
+Now stop and start pulseaudio again without root rights:
+"pulseaudio -k"
+"pulseaudio -D"
+
+Hard-wire HardSID4U: connect mixed/out into the Microfone/in of your computer:
+==============================================================================
+In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
+Open a terminal and type:
+parec --latency-msec=1 | pacat --latency-msec=1
+Lower your microphone volume level to prevent overdrive noise
+
+Java8 in Eclipse:
+=================
 
 In Eclipse Preferences/Java/Installed JREs
 Add:
@@ -51,21 +66,28 @@ Eclipse JavaFX support:
 Right click on your project -> properties -> Java build path -> libraries -> add library -> javaFX SDK
 To edit .fxml files with FXML Editor:
 Right click on .fxml file: Open With -> Other... -> FXML Editor (Check "Use it for all '*.fxml' files") -> OK
-To specify text resource inside .fxml file use:
+To specify text resource inside .fxml file use for example:
 <?scenebuilder-preview-i18n-resource GameBasePage.properties?>
-To use style sheets inside .fxml file use:
+To use style sheets inside .fxml file use for example:
 <Scene stylesheets="@JSidPlay2.css"> ...
 To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment commented out alternative version)
 Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why some of the layouts need that.
 
-How to Create a HTTPS certificate easily:
-=========================================
+How to Create a HTTPS certificate and install easily for your Apache web-server:
+================================================================================
 https://certbot.eff.org/lets-encrypt/ubuntutrusty-apache
 
-Tips:
-=====
+General tips:
+=============
 
-Shrink jsiddevice:
+For support of double click on the JAR to start JSIDPlay2:
+Right click on jsidplay-<version>.jar
+Open with...
+Choose a different one...
+/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar
+X Remember file type assignment
+
+Shrink jsiddevice using packer UPX:
 upx.exe --lzma --best --ultra-brute jsiddevice.exe
 
 find out available JavaFX style classes of a node in the scene graph:
@@ -78,8 +100,10 @@ find out available JavaFX style classes of a node in the scene graph:
 				dump(c, depth + 1);
 	}
 
-Chameleon Command-Line:
-=======================
+Off-Topic:
+==========
+
+Chameleon Command-Line to send programs:
 sudo gedit /lib/udev/rules.d/100-local-permissions.rules:
 SUBSYSTEMS=="usb" ATTRS{idVendor}=="18d8" ATTRS{idProduct}=="201d" MODE:="0777" SYMLINK+="Chameleon"
 
@@ -88,12 +112,6 @@ RESET (reset.txt consists of exactly one zero byte)
 
 SEND PROGRAM
 ./chacocmd  --addr  0x0801 --writemem radiantx_spiral_silicon_towers.mem 
-
-Hard-wire HardSID4U: connect mixed/out into the Microfone/in of your computer.
-==============================================================================
-In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
-Open a terminal and type:
-parec --latency-msec=1 | pacat --latency-msec=1
 
 TODO:
 =====
