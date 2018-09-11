@@ -272,7 +272,7 @@ image:StartScreen.jpg[JSidplay2 {version} - Start Screen]
 
 In the following image the general layout of the UI is shown.
   
-image:ScreenLayout.jpg[JSidplay2 {version} - Screen Layout]
+image:ScreenLayout.png[JSidplay2 {version} - Screen Layout]
 
 The main window is divided in several regions:
 

@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Priority;
 import libsidutils.directory.DirEntry;
 import sidplay.Player;
 import ui.common.C64VBox;
@@ -79,6 +80,7 @@ public class Directory extends C64VBox implements UIPart {
 			loadPreview(new File(directory.getUserData().toString()));
 			doSwitchFont();
 		}
+		setVgrow(directory, Priority.ALWAYS);
 	}
 
 	@FXML
