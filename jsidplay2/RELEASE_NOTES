@@ -13,12 +13,12 @@ Command line version of NetSIDDevice added
 Delayed SID output for better fake stereo experience added
 EmulationSettings enhanced (mute, delay)
 HTTPS used for all supporting online section sites
-Online Downloads fixed (redirects and better Integration in Java)
-SOASC downloads fixed (MP3 comparison)
+Online Downloads fixed (HTTP redirects and better Integration in Java)
+SOASC downloads fixed (MP3 comparison instead of naked playback)
 Configurable emulation buffer size added
 More compact main user interface
 Current track displayed on the main window
-Action Replay Cartridge added
+Action Replay Cartridge integrated
 
 Documentation:
 RESTful services usage added
@@ -28,6 +28,7 @@ MP3 recording documentation added
 
 Internal:
 Support of JavaFX preview added in Eclipse
-Refactorings of the code
+Tons of Refactorings of the code
 Better control about debug configuration
 Use of JNA not JNI
+Full Hardware support mono/stereo/3-SID better configurable
