@@ -264,7 +264,7 @@ q   - quit player
 * User interface version is the more complete C64 emulator with video screen output and access to additional tools.
  you can create and save favorite tunes and configure completely by keyboard or mouse.
 
-image:StartScreen.jpg[JSidplay2 {version} - Start Screen]
+image:StartScreen.png[JSidplay2 {version} - Start Screen]
 
 == JSIDPlay2 User Interface
 
