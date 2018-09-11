@@ -113,6 +113,9 @@ RESET (reset.txt consists of exactly one zero byte)
 SEND PROGRAM
 ./chacocmd  --addr  0x0801 --writemem radiantx_spiral_silicon_towers.mem 
 
+Shazam in java :-)
+http://royvanrijn.com/blog/2010/06/creating-shazam-in-java/
+
 TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
