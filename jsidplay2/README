@@ -8,15 +8,9 @@ mvn clean deploy
 does mvn clean install
 and uploads target/deploy to web-server
 
-Set the following properties in Eclipse: Preferences/Run/Debug StringSubstitution
-or at command line: using -D
+Set the following optional properties in Eclipse:
+Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 
-e.g. SSH copy
--DserverId=
--DserverUrl=scp://ken:haendel@haendel.ddns.net/home/ken
--DremoteDir=public_html
-
-Optional:
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
 -Dhvsc.7z=<pathToHVSC.7z>
 -Dzip7.home=<pathToPacker7zip>

@@ -18,7 +18,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<debug>true</debug>
+		<debug>false</debug>
 		<debuglevel>lines,vars,source</debuglevel>
 		<doclint>none</doclint>
 		<codebase>https://haendel.ddns.net/~ken/</codebase>
@@ -30,8 +30,8 @@
 		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
-		<serverUrl>ftp://JohnDoe:secret@rainbow.org</serverUrl>
-		<remoteDir></remoteDir>
+		<serverUrl>scp://ken:haendel@haendel.ddns.net/home/ken</serverUrl>
+		<remoteDir>public_html</remoteDir>
 		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
 		<zip7.home />
