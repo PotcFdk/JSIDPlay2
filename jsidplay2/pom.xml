@@ -26,8 +26,6 @@
 		<hostname>haendel.ddns.net</hostname>
 		<port>8443</port>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
-		<javafx.initialHeapSize>1024</javafx.initialHeapSize>
-		<javafx.maxHeapSize>1536</javafx.maxHeapSize>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>scp://ken:haendel@haendel.ddns.net/home/ken</serverUrl>
@@ -138,14 +136,14 @@
 		    <version>9.20-2.00beta</version>
 		</dependency>
 		<dependency>
-			<groupId>net.java.jinput</groupId>
-			<artifactId>jinput</artifactId>
-			<version>2.0.7</version>
-		</dependency>
-		<dependency>
 		    <groupId>net.java.dev.jna</groupId>
 		    <artifactId>jna</artifactId>
 		    <version>4.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.jinput</groupId>
+			<artifactId>jinput</artifactId>
+			<version>2.0.7</version>
 		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>
@@ -671,8 +669,6 @@
 							</classPath>
 							<jre>
 								<minVersion>1.8.0</minVersion>
-								<initialHeapSize>${javafx.initialHeapSize}</initialHeapSize>
-								<maxHeapSize>${javafx.maxHeapSize}</maxHeapSize>
 							</jre>
 							<splash>
 								<file>src/main/launch4j/jsidplay2.bmp</file>
