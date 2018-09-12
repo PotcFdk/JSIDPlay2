@@ -1,35 +1,36 @@
 Upcoming Version:
 =================
 Web-Site:
-Java WebStart version removed from web-site
-HTTPS used for WebSite
+Java WebStart version removed
+Migration to HTTPS
+Updated documentation and screenshots
 
 Features:
-SIDBlaster support added
-AppServer integrated (RESTful web services), Example Server provided
-Android App provided for AppServer Demo
-Tons of new command-line parameters added
-Command line version of NetSIDDevice added
-Delayed SID output for better fake stereo experience added
-EmulationSettings enhanced (mute, delay)
-HTTPS used for all supporting online section sites
-Online Downloads fixed (HTTP redirects and better Integration in Java)
-SOASC downloads fixed (MP3 comparison instead of naked playback)
-Configurable emulation buffer size added
-More compact main user interface
-Current track displayed on the main window
-Action Replay Cartridge integrated
-Music Collection auto-configuration includes a search index already
+SIDBlaster support added.
+AppServer integrated (RESTful web services), provided inside JSIDPlay2.
+Android Demo App provided as a client for AppServer.
+Tons of new command-line parameters added.
+Command line version of NetSIDDevice added.
+Delayed SID output for better fake stereo experience added.
+EmulationSettings enhanced (mute and delay up to 100ms added).
+HTTPS used for all online section web-sites, if available.
+Online Downloads fixed (HTTP redirects and better Integration in Java).
+SOASC downloads fixed (MP3 comparison instead of naked playback).
+Configurable emulation buffer size added.
+More compact main user interface.
+Current track displayed on the main window.
+Action Replay Cartridge integrated.
+Music Collection auto-configuration now includes an already pre-built search index.
 
 Documentation:
-RESTful services usage added
-JavaDoc added
-NetSIDDEV documentation added
-MP3 recording documentation added
+RESTful services usage added.
+JavaDoc added.
+NetSIDDEV documentation added.
+MP3 recording documentation added.
 
 Internal:
-Support of JavaFX preview added in Eclipse
-Tons of Refactorings of the code
-Better control about debug configuration
-Use of JNA not JNI
-Full Hardware support mono/stereo/3-SID better configurable
+Support of JavaFX preview added in Eclipse.
+Better control about debug configuration.
+Use of JNA not JNI.
+Full Hardware support mono/stereo/3-SID better configurable.
+Tons of Refactorings of the code.

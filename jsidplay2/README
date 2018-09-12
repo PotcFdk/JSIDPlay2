@@ -53,6 +53,9 @@ Add:
 /usr/lib/jvm/java-8-openjdk-amd64/jre
 X Use as default Java
 
+This project is compatible with newer Java versions as well, but since Java 11 you will
+have to install JavaFX separately. Thanks to Oracle :-(
+
 Eclipse JavaFX support:
 =======================
 1. Install e(fx)clipse
