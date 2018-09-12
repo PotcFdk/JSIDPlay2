@@ -214,3 +214,26 @@ java -classpath jsiddevice-{version}.jar server.netsiddev.NetworkSIDDevice # <2>
 ---- 
 <1> Launch User interface version
 <2> Launch Console version
+
+Since Java 11 you need to download link:https://jdk.java.net/openjfx/[openjfx] separately and
+launch Network SID Device using the following command:
+
+[source,subs="attributes+"]
+----
+cd Downloads/jsidplay2-{version}
+java --module-path <pathTo>/javafx-sdk-11/lib \
+	--add-modules java.desktop,javafx.controls,javafx.web,javafx.fxml \
+	-jar jsiddevice-{version}.jar # <1>
+----
+<1> Launch User interface version
+
+CAUTION: There is a bug in openjdk, therefore to prevent the following error message starting NetworkSIDDevice *java.lang.ClassNotFoundException: org.GNOME.Accessibility.AtkWrapper* please type the following command:
+
+[source,subs="attributes+"]
+----
+sudo vi /etc/java-11-openjdk/accessibility.properties
+
+ # and please comment out the line as follows
+
+#assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+----
