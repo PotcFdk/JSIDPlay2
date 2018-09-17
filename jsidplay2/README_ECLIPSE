@@ -1,0 +1,30 @@
+How to Setup Eclipse 4.9 and Java11:
+====================================
+
+JavaFX (http://jdk.java.net/openjfx/)
+https://download.java.net/java/early_access/openjfx11/25/binaries/openjfx-11-ea+25_linux-x64_bin-jmods.zip
+
+Eclipse Photon (http://download.eclipse.org/eclipse/downloads/)
+http://download.eclipse.org/mpc/photon
+
+Install Marketplace (Install New Software)
+http://download.eclipse.org/technology/m2e/releases
+
+Install Maven2Eclipse (Install New Software - Info from http://www.eclipse.org/m2e/m2e-downloads.html)
+http://download.eclipse.org/technology/m2e/releases/1.9/1.9.0.20180606-2036
+
+Install e(fx)clipse from Marketplace
+
+Install Eclipse CDT from Marketplace
+
+Install Eclipse Subversive (Install New Software)
+http://download.eclipse.org/technology/subversive/4.0/update-site/
+Select "SVN Team Provider Plugin/SVN Team Provider"
+
+After Eclipse Restart choose to install SVNKKit
+ 
+Checkout from SVN two projects:
+jsidplay2 (Maven Project):
+svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2
+hardsid (C-Project):
+svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2hardsid
