@@ -321,8 +321,9 @@ public class EmulationSettings extends C64Window {
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
-		// fake stereo does not work for HardSID4U
-		fakeStereo.setDisable(emulationSection.getEngine() == HARDSID);
+		// fake stereo does not work with HardSID4U or SIDBlaster hardware
+		fakeStereo.setDisable(
+				emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == Engine.SIDBLASTER);
 	}
 
 	@Override
