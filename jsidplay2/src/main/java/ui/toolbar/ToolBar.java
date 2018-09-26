@@ -128,7 +128,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		audioBox.setConverter(new EnumToStringConverter<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
-				Audio.COMPARE_MP3));
+				Audio.COMPARE_MP3, Audio.LIVE_MP4, Audio.MP4));
 		audioBox.valueProperty().addListener((obj, o, n) -> {
 			mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(n));
 			playMP3.setDisable(!Audio.COMPARE_MP3.equals(n));

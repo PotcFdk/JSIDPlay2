@@ -89,7 +89,8 @@ and using configurable base addresses for the second and the third SID chip at:
 Sound output can be recorded optionally as:
 
 * WAV (lossless)
-* MP3 at variable bit rate (lossy)
+* MP3 audio (lossy) at variable bit rate
+* MP4 video (lossy) using PCM audio - PCM audio is non standard and does not work in all video players!
 
 == Supported Devices
 
@@ -105,7 +106,7 @@ Beside these software emulation types we support some decent Hardware as well, w
 link:https://en.wikipedia.org/wiki/HardSID[HardSID 4U (USB Version)] can be used with up to 4 SID chips, but are hard to find on ebay these days and they are not produced anymore.
 
 3.
-Additionally we support a link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition]. It is small like a tic-tac box and contains exactly one chip.
+Additionally we support a link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition]. It is small like a tic-tac box and contains exactly one chip either MOS6581 or MOS8580 per device.
 
 4.
 If you have created your own hardware device or a software-based implementation of the SID chip, you could choose Network SID Device to use the player with it.
@@ -499,6 +500,7 @@ but only if more than one song is available.
 | "Floppy Track: 18" | Shows the the read/write head position of the floppy disk drive, if a disk has been inserted and the motor is on.
 | "Time: 00:01/04:37" | Shows the current playing time of a tune or song in minutes and seconds.
 If the song length is well-known, it is separated by a slash and printed as well.
+| "Recording: /path/to/filename" | Shows the currently recorded filename.
 
 |===
 

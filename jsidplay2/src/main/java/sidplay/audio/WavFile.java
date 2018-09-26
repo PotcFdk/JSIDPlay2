@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import libsidplay.common.CPUClock;
+
 /**
  * File based driver to create a WAV file.
  * 
@@ -62,7 +64,7 @@ public class WavFile implements AudioDriver {
 	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.getChannels();
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
@@ -76,8 +78,8 @@ public class WavFile implements AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		System.out.println("Recording, file=" + recordingFilename + ".wav");
-		file = new RandomAccessFile(recordingFilename + ".wav", "rw");
+		System.out.println("Recording, file=" + recordingFilename);
+		file = new RandomAccessFile(recordingFilename, "rw");
 		file.setLength(0);
 		file.write(wavHdr.getBytes());
 

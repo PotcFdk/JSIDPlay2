@@ -103,7 +103,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 */
 	private volatile Image lastFrame;
 
-	private int vicFrames;
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
 	private ScheduledService<Void> screenUpdateService;
@@ -231,8 +230,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}));
+		util.getPlayer().setPixelConsumer(null);
 		screenUpdateService.cancel();
 		timer.stop();
 	}
@@ -347,7 +345,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			marginBottom = NTSC_MARGIN_BOTTOM;
 		}
 
-		vicFrames = 0;
 		ScheduledExecutorService schdExctr = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
 			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
 
@@ -499,8 +496,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(pixels -> {
-		}));
+		util.getPlayer().setPixelConsumer(null);
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
@@ -521,7 +517,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			pc64.setVisible(false);
 			screen.setVisible(true);
 			monitorBorder.setVisible(showMonitorBorder.isSelected());
-			util.getPlayer().configureVICs(vic -> vic.setPixelConsumer(this));
+			util.getPlayer().setPixelConsumer(this);
 		}
 	}
 
@@ -542,13 +538,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 */
 	@Override
 	public void accept(int[] pixels) {
-		// skip frame(s) on fast forward
-		int fastForwardBitMask = util.getPlayer().getMixerInfo(m -> m.getFastForwardBitMask(), 0);
-		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
-			vicFrames = 0;
-			// create image with a copy of the pixels to prevent tearing
-			lastFrame = createImage(Arrays.copyOf(pixels, pixels.length));
-		}
+		// create image with a copy of the pixels to prevent tearing
+		lastFrame = createImage(Arrays.copyOf(pixels, pixels.length));
 	}
 
 	private Image createImage(int[] pixels) {

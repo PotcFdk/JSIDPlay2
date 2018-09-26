@@ -79,7 +79,7 @@ import sidplay.player.Timer;
  * @author Ken Händel
  * 
  */
-public class Player extends HardwareEnsemble {
+public class Player extends HardwareEnsemble implements Consumer<int[]> {
 
 	/** Build date calculated from our own modify time */
 	public static Calendar LAST_MODIFIED;
@@ -179,7 +179,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Create a base name of a filename to be used for recording.
 	 */
-	private Function<SidTune, String> recordingFilenameProvider = tune -> "jsidplay2";
+	private Function<SidTune, String> recordingFilenameProvider;
 	/**
 	 * Insert required SIDs. use SID builder to create/destroy SIDs.
 	 */
@@ -217,10 +217,19 @@ public class Player extends HardwareEnsemble {
 	};
 
 	/**
+	 * Consumer for VIC screen output as BGRA data
+	 */
+	protected Consumer<int[]> pixelConsumer;
+
+	/**
+	 * Fast forward: skipped VIC frames.
+	 */
+	private int vicFrames;
+
+	/**
 	 * Create a Music Player.
 	 * 
-	 * @param config
-	 *            configuration
+	 * @param config configuration
 	 */
 	public Player(final IConfig config) {
 		this(config, MOS6510.class);
@@ -229,10 +238,8 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Create a Music Player.
 	 * 
-	 * @param config
-	 *            configuration
-	 * @param cpuClass
-	 *            CPU class implementation
+	 * @param config   configuration
+	 * @param cpuClass CPU class implementation
 	 */
 	public Player(final IConfig config, final Class<? extends MOS6510> cpuClass) {
 		super(config, cpuClass);
@@ -294,6 +301,8 @@ public class Player extends HardwareEnsemble {
 
 		};
 		initializeTmpDir();
+		recordingFilenameProvider = tune -> new File(config.getSidplay2Section().getTmpDir(), "jsidplay2")
+				.getAbsolutePath();
 	}
 
 	/**
@@ -316,8 +325,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Create configured SID chip implementation (software/hardware).
 	 * 
-	 * @param cpuClock
-	 *            CPU clock frequency
+	 * @param cpuClock CPU clock frequency
 	 * @return SID builder
 	 */
 	private SIDBuilder createSIDBuilder(final CPUClock cpuClock) {
@@ -347,8 +355,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Call to configure VIC chips thread-safe.
 	 * 
-	 * @param action
-	 *            VIC configuration action
+	 * @param action VIC configuration action
 	 */
 	public final void configureVICs(Consumer<VIC> action) {
 		executeInPlayerThread("Configure VICs", () -> c64.configureVICs(action));
@@ -357,8 +364,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Configure all available SIDs.
 	 * 
-	 * @param action
-	 *            SID chip consumer
+	 * @param action SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		executeInPlayerThread("Configure SIDs", () -> c64.configureSIDs(action));
@@ -367,10 +373,8 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Configure one specific SID.
 	 * 
-	 * @param chipNum
-	 *            SID chip number
-	 * @param action
-	 *            SID chip consumer
+	 * @param chipNum SID chip number
+	 * @param action  SID chip consumer
 	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
 		executeInPlayerThread("Configure SID", () -> c64.configureSID(chipNum, action));
@@ -379,8 +383,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Configure the mixer, optionally implemented by SID builder.
 	 * 
-	 * @param action
-	 *            mixer consumer
+	 * @param action mixer consumer
 	 */
 	public final void configureMixer(final Consumer<Mixer> action) {
 		executeInPlayerThread("Configure Mixer", () -> {
@@ -394,10 +397,8 @@ public class Player extends HardwareEnsemble {
 	 * The runnable is executed immediately in player thread or scheduled
 	 * thread-safe.
 	 * 
-	 * @param eventName
-	 *            event name for scheduling
-	 * @param runnable
-	 *            runnable to execute in player thread
+	 * @param eventName event name for scheduling
+	 * @param runnable  runnable to execute in player thread
 	 */
 	private void executeInPlayerThread(String eventName, Runnable runnable) {
 		if (Thread.currentThread().equals(playerThread)) {
@@ -451,8 +452,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Simulate a user typed-in command.
 	 * 
-	 * @param command
-	 *            command to type-in
+	 * @param command command to type-in
 	 */
 	public final void typeInCommand(final String command) {
 		final int length = Math.min(command.length(), MAX_COMMAND_LEN);
@@ -463,8 +463,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Enter basic command after reset.
 	 * 
-	 * @param command
-	 *            basic command after reset
+	 * @param command basic command after reset
 	 */
 	private void setCommand(final String command) {
 		this.command = command;
@@ -510,8 +509,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Set a tune to play.
 	 * 
-	 * @param tune
-	 *            tune to play
+	 * @param tune tune to play
 	 */
 	public final void setTune(final SidTune tune) {
 		this.tune = tune;
@@ -538,8 +536,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Stop or wait for player thread.
 	 * 
-	 * @param quitOrWait
-	 *            quit player (true) or wait for termination, only (false)
+	 * @param quitOrWait quit player (true) or wait for termination, only (false)
 	 */
 	public final void stopC64(final boolean quitOrWait) {
 		try {
@@ -556,8 +553,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Set a hook to be called when the player has opened a tune.
 	 * 
-	 * @param menuHook
-	 *            menu hook
+	 * @param menuHook menu hook
 	 */
 	public final void setMenuHook(final Consumer<Player> menuHook) {
 		this.menuHook = menuHook;
@@ -612,27 +608,27 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * <B>Note:</B> Audio driver different to {@link Audio} members are on hold!
 	 * 
-	 * @throws LineUnavailableException
-	 *             audio line currently in use
-	 * @throws IOException
-	 *             audio output file cannot be written
+	 * @throws LineUnavailableException audio line currently in use
+	 * @throws IOException              audio output file cannot be written
 	 */
 	private void open() throws IOException, LineUnavailableException {
 		IAudioSection audioSection = config.getAudioSection();
 
 		playList = PlayList.getInstance(config, tune);
 
+		// PAL/NTSC
+		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
+
 		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
 			audioDriver = audioSection.getAudio().getAudioDriver(audioSection, tune);
 		}
 		// open audio driver
-		audioDriver.open(AudioConfig.getInstance(audioSection), recordingFilenameProvider.apply(tune));
-		stateProperty.addListener(pauseListener);
-
-		// PAL/NTSC
-		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
-		
+		audioDriver.open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
 		configureMixer(mixer -> mixer.setAudioDriver(audioDriver));
+		configureVICs(vic -> vic.setPixelConsumer(this));
+		vicFrames = 0;
+
+		stateProperty.addListener(pauseListener);
 
 		reset();
 	}
@@ -642,8 +638,7 @@ public class Player extends HardwareEnsemble {
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune (e.g. {@link MP3Stream})
 	 * 
-	 * @param driver
-	 *            for example {@link MP3Stream}
+	 * @param driver for example {@link MP3Stream}
 	 */
 	public final void setAudioDriver(final AudioDriver driver) {
 		this.audioDriver = driver;
@@ -655,8 +650,7 @@ public class Player extends HardwareEnsemble {
 	 * 
 	 * @return continue to play next time?
 	 * 
-	 * @throws InterruptedException
-	 *             audio production interrupted
+	 * @throws InterruptedException audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
 		if (stateProperty.get() == PLAY) {
@@ -683,8 +677,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Play tune.
 	 * 
-	 * @param tune
-	 *            tune to play (RESET means just reset C64)
+	 * @param tune tune to play (RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
 		play(tune, null);
@@ -693,8 +686,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Reset C64 and enter basic command.
 	 * 
-	 * @param command
-	 *            basic command to be entered after a normal reset
+	 * @param command basic command to be entered after a normal reset
 	 */
 	public final void resetC64(String command) {
 		play(RESET, command);
@@ -703,10 +695,8 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Turn C64 off and on, load a tune and enter basic command.
 	 * 
-	 * @param tune
-	 *            tune to play (RESET means just reset C64)
-	 * @param command
-	 *            basic command to be entered after a normal reset
+	 * @param tune    tune to play (RESET means just reset C64)
+	 * @param command basic command to be entered after a normal reset
 	 */
 	private void play(final SidTune tune, final String command) {
 		stopC64();
@@ -779,12 +769,9 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Get mixer info.
 	 * 
-	 * @param function
-	 *            mixer function to apply
-	 * @param <T>
-	 *            mixer info return type
-	 * @param defaultValue
-	 *            default value, if SIDBuilder does not implement a mixer
+	 * @param function     mixer function to apply
+	 * @param              <T> mixer info return type
+	 * @param defaultValue default value, if SIDBuilder does not implement a mixer
 	 * @return mixer info
 	 */
 	public final <T> T getMixerInfo(final Function<Mixer, T> function, final T defaultValue) {
@@ -801,8 +788,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Set song length database.
 	 * 
-	 * @param sidDatabase
-	 *            song length database
+	 * @param sidDatabase song length database
 	 */
 	public final void setSidDatabase(final SidDatabase sidDatabase) {
 		this.sidDatabase = sidDatabase;
@@ -811,12 +797,9 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Get song length database info.
 	 * 
-	 * @param function
-	 *            SidDatabase function to apply
-	 * @param <T>
-	 *            SidDatabase return type
-	 * @param defaultValue
-	 *            default value, if database is not set
+	 * @param function     SidDatabase function to apply
+	 * @param              <T> SidDatabase return type
+	 * @param defaultValue default value, if database is not set
 	 * @return song length database info
 	 */
 	public final <T> T getSidDatabaseInfo(final Function<SidDatabase, T> function, final T defaultValue) {
@@ -826,8 +809,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Set SID Tune Information List (STIL).
 	 * 
-	 * @param stil
-	 *            SID Tune Information List
+	 * @param stil SID Tune Information List
 	 */
 	public final void setSTIL(final STIL stil) {
 		this.stil = stil;
@@ -836,8 +818,7 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Get SID Tune Information List info.
 	 * 
-	 * @param collectionName
-	 *            entry path to get infos for
+	 * @param collectionName entry path to get infos for
 	 * @return SID Tune Information List info
 	 */
 	public final STILEntry getStilEntry(final String collectionName) {
@@ -845,20 +826,50 @@ public class Player extends HardwareEnsemble {
 	}
 
 	/**
+	 * Get recording filename.
+	 * 
+	 * @return recording filename
+	 */
+	public String getRecordingFilename() {
+		Audio audio = config.getAudioSection().getAudio();
+		return recordingFilenameProvider.apply(tune) + audio.getExtension();
+	}
+
+	/**
 	 * Set provider of recording filenames.
 	 * 
-	 * @param recordingFilenameProvider
-	 *            provider of recording filenames
+	 * @param recordingFilenameProvider provider of recording filenames
 	 */
 	public final void setRecordingFilenameProvider(final Function<SidTune, String> recordingFilenameProvider) {
 		this.recordingFilenameProvider = recordingFilenameProvider;
 	}
 
 	/**
+	 * Set consumer of VIC screen output as ARGB data
+	 * 
+	 * @param consumer consumer of C64 screen pixels as ARGB data
+	 */
+	public void setPixelConsumer(Consumer<int[]> consumer) {
+		pixelConsumer = consumer;
+	}
+
+	@Override
+	public void accept(int[] bgraData) {
+		// skip frame(s) on fast forward
+		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
+		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
+			vicFrames = 0;
+			audioDriver.accept(bgraData);
+			if (pixelConsumer != null) {
+				pixelConsumer.accept(bgraData);
+			}
+		}
+	}
+
+	/**
 	 * The credits for the authors of many parts of this emulator.
 	 * 
-	 * @param properties
-	 *            containing dynamic values for the credits (version)
+	 * @param properties containing dynamic values for the credits (version)
 	 * @return the credits
 	 */
 	public final String getCredits(final Properties properties) {
@@ -924,12 +935,9 @@ public class Player extends HardwareEnsemble {
 	/**
 	 * Test main: Play a tune.
 	 * 
-	 * @param args
-	 *            the filename of the tune is the first arg
-	 * @throws SidTuneError
-	 *             SID tune error
-	 * @throws IOException
-	 *             tune file cannot be read
+	 * @param args the filename of the tune is the first arg
+	 * @throws SidTuneError SID tune error
+	 * @throws IOException  tune file cannot be read
 	 */
 	public static void main(final String[] args) throws IOException, SidTuneError {
 		if (args.length < 1) {

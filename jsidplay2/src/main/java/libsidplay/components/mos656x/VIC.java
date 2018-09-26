@@ -54,6 +54,10 @@ import libsidplay.components.pla.PLA;
  * @author Antti S. Lankila (alankila@bel.fi)
  */
 public abstract class VIC extends Bank {
+	public static final int MAX_HEIGHT = 312;
+
+	public static final int MAX_WIDTH = 48 * 8;
+
 	/**
 	 * Alpha channel of ARGBA pixel data.
 	 */
@@ -216,7 +220,7 @@ public abstract class VIC extends Bank {
 	 * Output ARGB screen buffer as int32 array. MSB to LSB -> alpha, red,
 	 * green, blue
 	 */
-	protected final int[] pixels = new int[48 * 312 * 8];
+	protected final int[] pixels = new int[MAX_WIDTH * MAX_HEIGHT];
 	/** Index of next pixel to paint */
 	protected int nextPixel;
 	/** Current visible line */

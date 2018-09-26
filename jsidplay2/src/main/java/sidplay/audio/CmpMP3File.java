@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import libsidplay.common.CPUClock;
 import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
 
@@ -42,8 +43,8 @@ public class CmpMP3File extends JavaSound {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
-		super.open(cfg, recordingFilename);
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
+		super.open(cfg, recordingFilename, cpuClock);
 
 		jump3r = new LameDecoder(audioSection.getMp3File());
 
@@ -53,7 +54,7 @@ public class CmpMP3File extends JavaSound {
 				return jump3r.getFrameSize();
 			}
 
-		}, recordingFilename);
+		}, recordingFilename, cpuClock);
 	}
 
 	@Override

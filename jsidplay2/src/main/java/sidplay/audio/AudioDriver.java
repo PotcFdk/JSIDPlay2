@@ -17,10 +17,13 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.function.Consumer;
 
 import javax.sound.sampled.LineUnavailableException;
 
-public interface AudioDriver {
+import libsidplay.common.CPUClock;
+
+public interface AudioDriver extends Consumer<int[]> {
 
 	/**
 	 * Open audio interface.
@@ -34,7 +37,7 @@ public interface AudioDriver {
 	 * @throws IOException
 	 * @throws LineUnavailableException
 	 */
-	void open(AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException;
+	void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException;
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.
@@ -44,6 +47,12 @@ public interface AudioDriver {
 	void write() throws InterruptedException;
 
 	/**
+	 * VIC pixel consumer for video drivers.
+	 */
+	default void accept(int[] bgraData) {
+	}
+
+	/**
 	 * Temporarily cease audio production, for instance if user paused the
 	 * application. Some backends such as DirectSound end up looping the audio
 	 * unless explicitly told to pause.
@@ -51,7 +60,7 @@ public interface AudioDriver {
 	 * Audio will be resumed automatically on next write().
 	 */
 	default void pause() {
-	};
+	}
 
 	/**
 	 * Free the audio device. (Counterpart of open().)

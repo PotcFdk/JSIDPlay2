@@ -101,49 +101,54 @@
 			<version>2.3.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-server</artifactId>
-		    <version>9.4.10.v20180503</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>9.4.10.v20180503</version>
 		</dependency>
 		<dependency>
-        	<groupId>org.eclipse.jetty</groupId>
-    	    <artifactId>jetty-servlet</artifactId>
-		    <version>9.4.10.v20180503</version>
-	    </dependency>
-	    <dependency>
-		   <groupId>com.fasterxml.jackson.core</groupId>
-		   <artifactId>jackson-core</artifactId>
-		   <version>2.9.5</version>
-		 </dependency>
-		<dependency>
-		  <groupId>com.fasterxml.jackson.core</groupId>
-		  <artifactId>jackson-databind</artifactId>
-		  <version>2.9.5</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>9.4.10.v20180503</version>
 		</dependency>
-    	<dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.9.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.5</version>
+		</dependency>
+		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
 			<version>1.72</version>
 		</dependency>
 		<dependency>
-		    <groupId>net.sf.sevenzipjbinding</groupId>
-		    <artifactId>sevenzipjbinding</artifactId>
-		    <version>9.20-2.00beta</version>
+			<groupId>net.sf.sevenzipjbinding</groupId>
+			<artifactId>sevenzipjbinding</artifactId>
+			<version>9.20-2.00beta</version>
 		</dependency>
 		<dependency>
-		    <groupId>net.sf.sevenzipjbinding</groupId>
-		    <artifactId>sevenzipjbinding-all-platforms</artifactId>
-		    <version>9.20-2.00beta</version>
+			<groupId>net.sf.sevenzipjbinding</groupId>
+			<artifactId>sevenzipjbinding-all-platforms</artifactId>
+			<version>9.20-2.00beta</version>
 		</dependency>
 		<dependency>
-		    <groupId>net.java.dev.jna</groupId>
-		    <artifactId>jna</artifactId>
-		    <version>4.5.2</version>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>4.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.jinput</groupId>
 			<artifactId>jinput</artifactId>
 			<version>2.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jcodec</groupId>
+			<artifactId>jcodec</artifactId>
+			<version>0.2.3</version>
 		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>

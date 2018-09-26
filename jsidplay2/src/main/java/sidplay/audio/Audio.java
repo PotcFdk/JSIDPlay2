@@ -16,19 +16,24 @@ import sidplay.audio.MP3Driver.MP3File;
  */
 public enum Audio {
 	/** Java Sound API. */
-	SOUNDCARD(false, JavaSound.class),
+	SOUNDCARD(false, null, JavaSound.class),
 	/** WAV file write. */
-	WAV(true, WavFile.class),
+	WAV(true, ".wav", WavFile.class),
 	/** MP3 file write. */
-	MP3(true, MP3File.class),
+	MP3(true, ".mp3", MP3File.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(true, ProxyDriver.class, JavaSound.class, WavFile.class),
+	LIVE_WAV(true, ".wav", ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
-	LIVE_MP3(true, ProxyDriver.class, JavaSound.class, MP3File.class),
+	LIVE_MP3(true, ".mp3", ProxyDriver.class, JavaSound.class, MP3File.class),
+	/** MP4 file write. */
+	LIVE_MP4(true, ".mp4", ProxyDriver.class, JavaSound.class, MP4Driver.class),
+	/** MP4 file write. */
+	MP4(true, ".mp4", MP4Driver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(false, CmpMP3File.class);
+	COMPARE_MP3(false, null, CmpMP3File.class);
 
 	private boolean recording;
+	private String extension;
 	private final Class<? extends AudioDriver> audioDriverClass;
 	private final Class<? extends AudioDriver>[] parameterClasses;
 	private AudioDriver audioDriver, oldAudioDriver;
@@ -40,9 +45,10 @@ public enum Audio {
 	 *            audio driver
 	 */
 	@SafeVarargs
-	Audio(boolean recording, Class<? extends AudioDriver> audioDriverClass,
+	Audio(boolean recording, String extension, Class<? extends AudioDriver> audioDriverClass,
 			Class<? extends AudioDriver>... parameters) {
 		this.recording = recording;
+		this.extension = extension;
 		this.audioDriverClass = audioDriverClass;
 		this.parameterClasses = parameters;
 	}
@@ -54,6 +60,13 @@ public enum Audio {
 		return recording;
 	}
 
+	/**
+	 * @return file extension for recordings
+	 */
+	public String getExtension() {
+		return extension;
+	}
+	
 	/**
 	 * Get audio driver.
 	 * 

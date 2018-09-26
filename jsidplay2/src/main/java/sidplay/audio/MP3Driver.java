@@ -12,6 +12,7 @@ import javax.sound.sampled.LineUnavailableException;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import libsidplay.common.CPUClock;
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
 import sidplay.audio.CmpMP3File.MP3Termination;
@@ -34,8 +35,8 @@ public abstract class MP3Driver implements AudioDriver {
 	public static class MP3File extends MP3Driver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
-			System.out.println("Recording, file=" + recordingFilename + ".mp3");
-			return new FileOutputStream(recordingFilename + ".mp3");
+			System.out.println("Recording, file=" + recordingFilename);
+			return new FileOutputStream(recordingFilename);
 		}
 
 		@Override
@@ -118,7 +119,7 @@ public abstract class MP3Driver implements AudioDriver {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename) throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
