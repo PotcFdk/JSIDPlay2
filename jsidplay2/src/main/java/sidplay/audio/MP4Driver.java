@@ -22,9 +22,6 @@ import org.jcodec.api.transcode.VideoFrameWithPacket;
 import org.jcodec.common.AudioFormat;
 import org.jcodec.common.Codec;
 import org.jcodec.common.Format;
-import org.jcodec.common.io.FileChannelWrapper;
-import org.jcodec.common.io.NIOUtils;
-import org.jcodec.common.io.SeekableByteChannel;
 import org.jcodec.common.model.AudioBuffer;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Packet;
@@ -33,6 +30,9 @@ import org.jcodec.common.model.Picture;
 import org.jcodec.common.model.Rational;
 import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.Transform;
+import org.sheinbergon.aac.encoder.AACAudioEncoder;
+import org.sheinbergon.aac.encoder.AACAudioOutput;
+import org.sheinbergon.aac.encoder.WAVAudioInput;
 
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
@@ -47,15 +47,24 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		private Sink sink;
 		private PixelStore pixelStore;
 
-		public MP4SequenceEncoder(SeekableByteChannel out, Rational fps, Format outputFormat, Codec outputVideoCodec,
+		public MP4SequenceEncoder(String destName, Rational fps, Format outputFormat, Codec outputVideoCodec,
 				Codec outputAudioCodec) throws IOException {
 			this.fps = fps;
+			this.sink = new SinkImpl(destName, outputFormat, outputVideoCodec, outputAudioCodec) {
+				@Override
+				protected ByteBuffer encodeAudio(AudioBuffer audioBuffer) {
+					AudioFormat format = audioBuffer.getFormat();
+					AACAudioEncoder aacEncoder = AACAudioEncoder.builder().channels(format.getChannels())
+							.sampleRate(format.getSampleRate()).build();
+					WAVAudioInput input = WAVAudioInput.pcms16le(audioBuffer.getData().array(),
+							audioBuffer.getData().capacity());
+					AACAudioOutput output = aacEncoder.encode(input);
+					return ByteBuffer.wrap(output.data(), 0, output.length());
+				}
 
-			this.sink = SinkImpl.createWithStream(out, outputFormat, outputVideoCodec, outputAudioCodec);
+			};
 			this.sink.init();
-
 			this.transform = ColorUtil.getTransform(ColorSpace.RGB, sink.getInputColor());
-
 			this.pixelStore = new PixelStoreImpl();
 		}
 
@@ -75,7 +84,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		}
 
 		public void encodeAudioFrame(AudioBuffer audio) throws IOException {
-			Packet pkt = Packet.createPacket(null, 0, fps.getNum(), -1, 0, FrameType.KEY, null);
+			Packet pkt = Packet.createPacket(null, timestamp, fps.getNum(), fps.getDen(), frameNo, FrameType.KEY, null);
 			sink.outputAudioFrame(new AudioFrameWithPacket(audio, pkt));
 		}
 
@@ -84,7 +93,6 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		}
 	}
 
-	private FileChannelWrapper channel;
 	private MP4SequenceEncoder encoder;
 	private byte[][] pictureData;
 	private AudioFormat audioFormat;
@@ -97,8 +105,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			throws IOException, LineUnavailableException {
 		final Rational rational = Rational.R((int) cpuClock.getScreenRefresh(), 1);
 		System.out.println("Recording, file=" + recordingFilename);
-		this.channel = NIOUtils.writableChannel(new File(recordingFilename));
-		this.encoder = new MP4SequenceEncoder(this.channel, rational, Format.MOV, Codec.H264, Codec.PCM);
+		this.encoder = new MP4SequenceEncoder(recordingFilename, rational, Format.MOV, Codec.H264, Codec.AAC);
 
 		this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
 
@@ -134,20 +141,16 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	public void close() {
 		try {
 			if (encoder != null) {
-				if (audioDataFile.exists()) {
+				if (out != null) {
+					out.close();
 					byte[] data = Files.readAllBytes(Paths.get(audioDataFile.getAbsolutePath()));
 					if (data != null && data.length > 0) {
-						System.out.println("  embedding non-standard PCM audio (not supported by all video players)!");
 						encoder.encodeAudioFrame(getAudioBuffer(ByteBuffer.wrap(data)));
 					}
 					audioDataFile.delete();
 				}
 				encoder.finish();
 				encoder = null;
-				if (channel != null) {
-					this.channel.close();
-					this.channel = null;
-				}
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Error finishing encoder");

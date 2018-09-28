@@ -89,8 +89,8 @@ and using configurable base addresses for the second and the third SID chip at:
 Sound output can be recorded optionally as:
 
 * WAV (lossless)
-* MP3 audio (lossy) at variable bit rate
-* MP4 video (lossy) using PCM audio - PCM audio is non standard and does not work in all video players!
+* MP3 audio (lossy)
+* MP4 video (lossy)
 
 == Supported Devices
 
