@@ -33,6 +33,7 @@ import org.jcodec.scale.Transform;
 import org.sheinbergon.aac.encoder.AACAudioEncoder;
 import org.sheinbergon.aac.encoder.AACAudioOutput;
 import org.sheinbergon.aac.encoder.WAVAudioInput;
+import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
@@ -54,8 +55,8 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 				@Override
 				protected ByteBuffer encodeAudio(AudioBuffer audioBuffer) {
 					AudioFormat format = audioBuffer.getFormat();
-					AACAudioEncoder aacEncoder = AACAudioEncoder.builder().channels(format.getChannels())
-							.sampleRate(format.getSampleRate()).build();
+					AACAudioEncoder aacEncoder = AACAudioEncoder.builder().profile(AACEncodingProfile.HE_AAC_V2)
+							.channels(format.getChannels()).sampleRate(format.getSampleRate()).build();
 					WAVAudioInput input = WAVAudioInput.pcms16le(audioBuffer.getData().array(),
 							audioBuffer.getData().capacity());
 					AACAudioOutput output = aacEncoder.encode(input);
