@@ -21,14 +21,14 @@ public enum Audio {
 	WAV(true, ".wav", WavFile.class),
 	/** MP3 file write. */
 	MP3(true, ".mp3", MP3File.class),
+	/** MP4 file write. */
+	MP4(true, ".mp4", MP4Driver.class),
 	/** Java Sound API plus WAV file write. */
 	LIVE_WAV(true, ".wav", ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(true, ".mp3", ProxyDriver.class, JavaSound.class, MP3File.class),
 	/** MP4 file write. */
 	LIVE_MP4(true, ".mp4", ProxyDriver.class, JavaSound.class, MP4Driver.class),
-	/** MP4 file write. */
-	MP4(true, ".mp4", MP4Driver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
 	COMPARE_MP3(false, null, CmpMP3File.class);
 

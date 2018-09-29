@@ -40,7 +40,7 @@ import libsidplay.components.mos656x.VIC;
 
 public class MP4Driver implements AudioDriver, Consumer<int[]> {
 
-	public class MP4SequenceEncoder {
+	public class SequenceEncoder {
 		private Transform transform;
 		private int frameNo;
 		private int timestamp;
@@ -48,7 +48,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		private Sink sink;
 		private PixelStore pixelStore;
 
-		public MP4SequenceEncoder(String destName, Rational fps, Format outputFormat, Codec outputVideoCodec,
+		public SequenceEncoder(String destName, Rational fps, Format outputFormat, Codec outputVideoCodec,
 				Codec outputAudioCodec) throws IOException {
 			this.fps = fps;
 			this.sink = new SinkImpl(destName, outputFormat, outputVideoCodec, outputAudioCodec) {
@@ -94,11 +94,11 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		}
 	}
 
-	private MP4SequenceEncoder encoder;
+	private SequenceEncoder encoder;
 	private byte[][] pictureData;
-	private AudioFormat audioFormat;
+	private AudioFormat audioDataFormat;
 	private ByteBuffer sampleBuffer;
-	private OutputStream out;
+	private OutputStream audioDataStream;
 	private File audioDataFile;
 
 	@Override
@@ -106,26 +106,25 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			throws IOException, LineUnavailableException {
 		final Rational rational = Rational.R((int) cpuClock.getScreenRefresh(), 1);
 		System.out.println("Recording, file=" + recordingFilename);
-		this.encoder = new MP4SequenceEncoder(recordingFilename, rational, Format.MOV, Codec.H264, Codec.AAC);
+		this.encoder = new SequenceEncoder(recordingFilename, rational, Format.MOV, Codec.H264, Codec.AAC);
 
 		this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
 
-		this.audioFormat = getAudioFormat(cfg);
 		this.sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
 
 		this.audioDataFile = File.createTempFile("mp4audio", ".pcm", new File(recordingFilename).getParentFile());
 		this.audioDataFile.deleteOnExit();
-		this.out = new FileOutputStream(audioDataFile);
+		this.audioDataStream = new FileOutputStream(audioDataFile);
+		this.audioDataFormat = getAudioFormat(cfg);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
 		try {
-			out.write(buffer().array(), 0, buffer().capacity());
-			buffer().clear();
+			audioDataStream.write(buffer().array());
 		} catch (IOException e) {
-			throw new RuntimeException("Error during encodeAudioFrame");
+			throw new RuntimeException("Error writing audio data stream");
 		}
 	}
 
@@ -142,11 +141,11 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	public void close() {
 		try {
 			if (encoder != null) {
-				if (out != null) {
-					out.close();
+				if (audioDataStream != null) {
+					audioDataStream.close();
 					byte[] data = Files.readAllBytes(Paths.get(audioDataFile.getAbsolutePath()));
 					if (data != null && data.length > 0) {
-						encoder.encodeAudioFrame(getAudioBuffer(ByteBuffer.wrap(data)));
+						encoder.encodeAudioFrame(new AudioBuffer(ByteBuffer.wrap(data), audioDataFormat, 0));
 					}
 					audioDataFile.delete();
 				}
@@ -178,11 +177,6 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			rgbDataIdx += 3;
 		}
 		return Picture.createPicture(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, pictureData, ColorSpace.RGB);
-	}
-
-	private AudioBuffer getAudioBuffer(ByteBuffer sampleBuffer) {
-		buffer().clear();
-		return new AudioBuffer(sampleBuffer, audioFormat, 0);
 	}
 
 	@Override
