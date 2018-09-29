@@ -55,12 +55,14 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 				@Override
 				protected ByteBuffer encodeAudio(AudioBuffer audioBuffer) {
 					AudioFormat format = audioBuffer.getFormat();
-					AACAudioEncoder aacEncoder = AACAudioEncoder.builder().profile(AACEncodingProfile.HE_AAC_V2)
-							.channels(format.getChannels()).sampleRate(format.getSampleRate()).build();
+					AACAudioEncoder aacEncoder = AACAudioEncoder.builder().channels(format.getChannels())
+							.sampleRate(format.getSampleRate()).profile(AACEncodingProfile.AAC_LC).build();
 					WAVAudioInput input = WAVAudioInput.pcms16le(audioBuffer.getData().array(),
 							audioBuffer.getData().capacity());
 					AACAudioOutput output = aacEncoder.encode(input);
-					return ByteBuffer.wrap(output.data(), 0, output.length());
+					ByteBuffer result = ByteBuffer.wrap(output.data(), 0, output.length());
+//	                ADTSParser.read(result);
+					return result;
 				}
 
 			};
