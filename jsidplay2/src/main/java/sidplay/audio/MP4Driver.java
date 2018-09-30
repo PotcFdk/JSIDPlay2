@@ -1,9 +1,13 @@
 package sidplay.audio;
 
+import static sidplay.audio.Audio.MP4;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -17,8 +21,8 @@ import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
 import org.jcodec.common.model.Rational;
-import org.mp4parser.Container;
-import org.mp4parser.muxer.FileDataSourceImpl;
+import org.mp4parser.muxer.FileRandomAccessSourceImpl;
+import org.mp4parser.muxer.MemoryDataSourceImpl;
 import org.mp4parser.muxer.Movie;
 import org.mp4parser.muxer.builder.DefaultMp4Builder;
 import org.mp4parser.muxer.container.mp4.MovieCreator;
@@ -42,29 +46,32 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	private File pcmAudioFile;
 	private String recordingFilename;
 	private File h264VideoFile;
-	private File aacAudioFile;
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
 		System.out.println("Recording, file=" + recordingFilename);
 
-		String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
-		this.h264VideoFile = new File(recordingBaseName + ".h264");
-		this.aacAudioFile = new File(recordingBaseName + ".aac");
-		this.pcmAudioFile = new File(recordingBaseName + ".pcm");
-		this.pcmAudioStream = new FileOutputStream(pcmAudioFile);
-		this.recordingFilename = recordingFilename;
+		try {
+			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
+			this.h264VideoFile = new File(recordingBaseName + ".h264");
+			this.pcmAudioFile = new File(recordingBaseName + ".pcm");
+			this.pcmAudioStream = new FileOutputStream(pcmAudioFile);
+			this.recordingFilename = recordingFilename;
 
-		this.aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
-				.profile(AACEncodingProfile.AAC_LC).build();
-		this.sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(h264VideoFile),
-				Rational.R((int) cpuClock.getScreenRefresh(), 1));
+			this.aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
+					.profile(AACEncodingProfile.AAC_LC).build();
+			this.sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(h264VideoFile),
+					Rational.R((int) cpuClock.getScreenRefresh(), 1));
 
-		this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
+			this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
 
-		this.sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
-				.order(ByteOrder.LITTLE_ENDIAN);
+			this.sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
+					.order(ByteOrder.LITTLE_ENDIAN);
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println("Error: 64-bit Java for Windows or Linux is required to use " + MP4 + " video driver!");
+			throw e;
+		}
 	}
 
 	@Override
@@ -95,19 +102,23 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			if (pcmAudioStream != null) {
 				pcmAudioStream.close();
 				pcmAudioStream = null;
-				byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
-				try (OutputStream out = new FileOutputStream(aacAudioFile)) {
-					AACAudioOutput output = aacEncoder.encode(WAVAudioInput.pcms16le(data, data.length));
-					out.write(output.data(), 0, output.length());
+			}
+			if (h264VideoFile.exists() && h264VideoFile.canRead()) {
+				try (FileInputStream h264VideoInputStream = new FileInputStream(h264VideoFile);
+						FileRandomAccessSourceImpl h264VideoRandomAccessSource = new FileRandomAccessSourceImpl(
+								new RandomAccessFile(h264VideoFile, "r"));
+						FileOutputStream mp4VideoOutputStream = new FileOutputStream(new File(recordingFilename))) {
+					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264VideoRandomAccessSource,
+							h264VideoFile.getAbsolutePath());
+					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
+						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
+						AACAudioOutput output = aacEncoder.encode(WAVAudioInput.pcms16le(data, data.length));
+						movie.addTrack(new AACTrackImpl(
+								new MemoryDataSourceImpl(ByteBuffer.wrap(output.data(), 0, output.length()))));
+						pcmAudioFile.delete();
+					}
+					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
 				}
-				pcmAudioFile.delete();
-				Movie movie = MovieCreator.build(h264VideoFile.getAbsolutePath());
-				movie.addTrack(new AACTrackImpl(new FileDataSourceImpl(aacAudioFile)));
-				Container mp4file = new DefaultMp4Builder().build(movie);
-				try (FileOutputStream out = new FileOutputStream(new File(recordingFilename))) {
-					mp4file.writeContainer(out.getChannel());
-				}
-				aacAudioFile.delete();
 				h264VideoFile.delete();
 			}
 		} catch (IOException e) {
