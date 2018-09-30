@@ -44,8 +44,8 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	private ByteBuffer sampleBuffer;
 	private OutputStream pcmAudioStream;
 	private File pcmAudioFile;
-	private String recordingFilename;
 	private File h264VideoFile;
+	private String recordingFilename;
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -107,7 +107,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 				try (FileInputStream h264VideoInputStream = new FileInputStream(h264VideoFile);
 						FileRandomAccessSourceImpl h264VideoRandomAccessSource = new FileRandomAccessSourceImpl(
 								new RandomAccessFile(h264VideoFile, "r"));
-						FileOutputStream mp4VideoOutputStream = new FileOutputStream(new File(recordingFilename))) {
+						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename)) {
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264VideoRandomAccessSource,
 							h264VideoFile.getAbsolutePath());
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
