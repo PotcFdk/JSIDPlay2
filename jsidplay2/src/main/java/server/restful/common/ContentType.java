@@ -13,6 +13,10 @@ public enum ContentType {
 	 */
 	MIME_TYPE_MPEG("audio/mpeg", ".mpg", ".mpeg", ".mp3"),
 	/**
+	 * Video formats
+	 */
+	MIME_TYPE_MP4("video/mp4", ".mp4"),
+	/**
 	 * SID formats
 	 */
 	MIME_TYPE_SID("audio/prs.sid", ".sid"),

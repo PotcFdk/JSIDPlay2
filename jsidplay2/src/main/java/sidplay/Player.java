@@ -264,7 +264,8 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			 */
 			@Override
 			public void end() {
-				if (tune != RESET) {
+				boolean configuredByAudio = Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver));
+				if (tune != RESET || !configuredByAudio) {
 					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
 					} else if (config.getSidplay2Section().isLoop()) {
@@ -832,7 +833,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 */
 	public String getRecordingFilename() {
 		Audio audio = config.getAudioSection().getAudio();
-		return recordingFilenameProvider.apply(tune) + audio.getExtension();
+		return recordingFilenameProvider.apply(tune) + (audio.getExtension() != null ? audio.getExtension() : "");
 	}
 
 	/**

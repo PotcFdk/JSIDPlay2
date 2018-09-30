@@ -119,8 +119,8 @@ public class ServletUtil {
 			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
 			String directoryValue = splitted.length > 0 ? splitted[0] : null;
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
-			if (adminRole == needToBeAdmin && path.startsWith(directoryLogicalName) && directoryValue != null) {
-				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), null, null);
+			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
+				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), new TFile(directoryValue), null);
 			}
 		}
 		throw new FileNotFoundException(path);
