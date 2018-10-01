@@ -28,6 +28,7 @@ import org.mp4parser.muxer.Movie;
 import org.mp4parser.muxer.builder.DefaultMp4Builder;
 import org.mp4parser.muxer.container.mp4.MovieCreator;
 import org.mp4parser.muxer.tracks.AACTrackImpl;
+import org.mp4parser.muxer.tracks.TextTrackImpl;
 import org.sheinbergon.aac.encoder.AACAudioEncoder;
 import org.sheinbergon.aac.encoder.AACAudioOutput;
 import org.sheinbergon.aac.encoder.WAVAudioInput;
@@ -110,6 +111,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename)) {
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264VideoRandomAccessSource,
 							h264VideoFile.getAbsolutePath());
+					addSubtitles(movie);
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
 						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
 						AACAudioOutput output = aacEncoder.encode(WAVAudioInput.pcms16le(data, data.length));
@@ -129,6 +131,12 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		} catch (IOException e) {
 			throw new RuntimeException("Error creating MP4", e);
 		}
+	}
+
+	private void addSubtitles(Movie movie) {
+		TextTrackImpl textTrack = new TextTrackImpl();
+		textTrack.getSubs().add(new TextTrackImpl.Line(0, 3 * 1000 /* ms */, "Recorded by JSIDPlay2"));
+		movie.addTrack(textTrack);
 	}
 
 	private Picture createPicture(int[] bgraData) {
