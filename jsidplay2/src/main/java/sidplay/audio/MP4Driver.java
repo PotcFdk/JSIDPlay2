@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -22,7 +21,6 @@ import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
 import org.jcodec.common.model.Rational;
-import org.mp4parser.muxer.FileRandomAccessSourceImpl;
 import org.mp4parser.muxer.MemoryDataSourceImpl;
 import org.mp4parser.muxer.Movie;
 import org.mp4parser.muxer.builder.DefaultMp4Builder;
@@ -106,12 +104,9 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			}
 			if (h264VideoFile.exists() && h264VideoFile.canRead()) {
 				try (FileInputStream h264VideoInputStream = new FileInputStream(h264VideoFile);
-						FileRandomAccessSourceImpl h264VideoRandomAccessSource = new FileRandomAccessSourceImpl(
-								new RandomAccessFile(h264VideoFile, "r"));
 						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename)) {
-					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264VideoRandomAccessSource,
-							h264VideoFile.getAbsolutePath());
-					addSubtitles(movie);
+					Movie movie = MovieCreator.build(h264VideoFile.getAbsolutePath());
+					movie.addTrack(getSubtitles());
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
 						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
 						AACAudioOutput output = aacEncoder.encode(WAVAudioInput.pcms16le(data, data.length));
@@ -133,10 +128,10 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 		}
 	}
 
-	private void addSubtitles(Movie movie) {
+	private TextTrackImpl getSubtitles() {
 		TextTrackImpl textTrack = new TextTrackImpl();
 		textTrack.getSubs().add(new TextTrackImpl.Line(0, 3 * 1000 /* ms */, "Recorded by JSIDPlay2"));
-		movie.addTrack(textTrack);
+		return textTrack;
 	}
 
 	private Picture createPicture(int[] bgraData) {
