@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -50,9 +51,8 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
-		System.out.println("Recording, file=" + recordingFilename);
-
 		try {
+			System.out.println("Recording, file=" + recordingFilename);
 			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
 			this.h264VideoFile = new File(recordingBaseName + ".h264");
 			this.pcmAudioFile = new File(recordingBaseName + ".pcm");
@@ -118,6 +118,11 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 						pcmAudioFile.delete();
 					}
 					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
+					// remove remaining temporary files of mp4parser :-(
+					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
+							&& (System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000)))
+							.stream().forEach(name -> new File(tmpDir, name).delete());
 				}
 				h264VideoFile.delete();
 			}
