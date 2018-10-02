@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -21,6 +22,7 @@ import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
 import org.jcodec.common.model.Rational;
+import org.mp4parser.muxer.FileRandomAccessSourceImpl;
 import org.mp4parser.muxer.MemoryDataSourceImpl;
 import org.mp4parser.muxer.Movie;
 import org.mp4parser.muxer.builder.DefaultMp4Builder;
@@ -104,8 +106,11 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			}
 			if (h264VideoFile.exists() && h264VideoFile.canRead()) {
 				try (FileInputStream h264VideoInputStream = new FileInputStream(h264VideoFile);
-						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename)) {
-					Movie movie = MovieCreator.build(h264VideoFile.getAbsolutePath());
+						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename);
+						FileRandomAccessSourceImpl h264RandomAccessSource = new FileRandomAccessSourceImpl(
+								new RandomAccessFile(h264VideoFile, "r"))) {
+					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264RandomAccessSource,
+							h264VideoFile.getAbsolutePath());
 					movie.addTrack(getSubtitles());
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
 						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
@@ -120,8 +125,9 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
 							&& (System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000)))
 							.stream().forEach(name -> new File(tmpDir, name).delete());
+				} finally {
+					h264VideoFile.delete();
 				}
-				h264VideoFile.delete();
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Error creating MP4", e);
