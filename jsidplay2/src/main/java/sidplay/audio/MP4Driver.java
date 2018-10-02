@@ -110,7 +110,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 						FileRandomAccessSourceImpl h264RandomAccessSource = new FileRandomAccessSourceImpl(
 								new RandomAccessFile(h264VideoFile, "r"))) {
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264RandomAccessSource,
-							h264VideoFile.getAbsolutePath());
+							h264VideoFile.getName());
 					movie.addTrack(getSubtitles());
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
 						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
@@ -120,13 +120,13 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 						pcmAudioFile.delete();
 					}
 					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
-					// remove remaining temporary files of mp4parser :-(
+				} finally {
+					h264VideoFile.delete();
+					// hack: remove remaining temporary files of mp4parser :-(
 					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
 							&& (System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000)))
 							.stream().forEach(name -> new File(tmpDir, name).delete());
-				} finally {
-					h264VideoFile.delete();
 				}
 			}
 		} catch (IOException e) {
