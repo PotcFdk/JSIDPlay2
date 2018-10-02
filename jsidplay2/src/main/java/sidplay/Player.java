@@ -11,7 +11,7 @@ package sidplay;
 
 import static libsidplay.common.SIDEmu.NONE;
 import static libsidplay.sidtune.SidTune.RESET;
-import static sidplay.audio.Audio.SOUNDCARD;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.player.State.END;
 import static sidplay.player.State.PAUSE;
 import static sidplay.player.State.PLAY;
@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
@@ -43,6 +42,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.util.Pair;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -161,9 +161,12 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private Consumer<Player> interactivityHook = player -> {
 	};
 	/**
-	 * Currently used audio driver.
+	 * Currently used audio and corresponding audio driver.
+	 * 
+	 * <B>Note:</B> If audio driver has been set externally by
+	 * {@link Player#setAudioDriver(AudioDriver)}, audio is null!
 	 */
-	private AudioDriver audioDriver = SOUNDCARD.getAudioDriver();
+	private Pair<Audio, AudioDriver> audioAndDriver = new Pair<>(DEFAULT_AUDIO, DEFAULT_AUDIO.getAudioDriver());
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -210,7 +213,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 */
 	private ChangeListener<? super State> pauseListener = (s, oldValue, newValue) -> {
 		if (newValue == PAUSE) {
-			audioDriver.pause();
+			audioAndDriver.getValue().pause();
 			configureMixer(mixer -> mixer.pause());
 			// audio driver continues automatically, next call of write!
 		}
@@ -224,7 +227,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Fast forward: skipped VIC frames.
 	 */
-	private int vicFrames;
+	private int fastForwardVICFrames;
 
 	/**
 	 * Create a Music Player.
@@ -260,12 +263,14 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			 * <LI>End tune
 			 * </OL>
 			 * 
+			 * <B>Note:</B> Our streaming audio drivers must never play infinitely (e.g. MP4
+			 * recording)
+			 * 
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
 			public void end() {
-				boolean configuredByAudio = Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver));
-				if (tune != RESET || !configuredByAudio) {
+				if (tune != RESET || audioAndDriver.getKey() == null) {
 					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
 					} else if (config.getSidplay2Section().isLoop()) {
@@ -620,14 +625,17 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		// PAL/NTSC
 		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
 
-		if (Arrays.stream(Audio.values()).anyMatch(audio -> audio.getAudioDriver().equals(audioDriver))) {
-			audioDriver = audioSection.getAudio().getAudioDriver(audioSection, tune);
+		// Audio configuration, if audio driver has not been set by setAudioDriver()!
+		if (audioAndDriver.getKey() != null) {
+			Audio audio = audioSection.getAudio();
+			audioAndDriver = new Pair<>(audio, audio.getAudioDriver(audioSection, tune));
 		}
 		// open audio driver
-		audioDriver.open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
-		configureMixer(mixer -> mixer.setAudioDriver(audioDriver));
+		audioAndDriver.getValue().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
+
+		configureMixer(mixer -> mixer.setAudioDriver(audioAndDriver.getValue()));
 		configureVICs(vic -> vic.setPixelConsumer(this));
-		vicFrames = 0;
+		fastForwardVICFrames = 0;
 
 		stateProperty.addListener(pauseListener);
 
@@ -639,10 +647,10 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune (e.g. {@link MP3Stream})
 	 * 
-	 * @param driver for example {@link MP3Stream}
+	 * @param audioDriver for example {@link MP3Stream}
 	 */
-	public final void setAudioDriver(final AudioDriver driver) {
-		this.audioDriver = driver;
+	public final void setAudioDriver(final AudioDriver audioDriver) {
+		this.audioAndDriver = new Pair<>(null, audioDriver);
 	}
 
 	/**
@@ -672,7 +680,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private void close() {
 		stateProperty.removeListener(pauseListener);
 		c64.insertSIDChips(noSIDs, sidLocator);
-		audioDriver.close();
+		audioAndDriver.getValue().close();
 	}
 
 	/**
@@ -832,8 +840,12 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @return recording filename
 	 */
 	public String getRecordingFilename() {
-		Audio audio = config.getAudioSection().getAudio();
-		return recordingFilenameProvider.apply(tune) + (audio.getExtension() != null ? audio.getExtension() : "");
+		Audio audio = audioAndDriver.getKey();
+		if (audio != null && audio.getExtension() != null) {
+			return recordingFilenameProvider.apply(tune) + audio.getExtension();
+		} else {
+			return recordingFilenameProvider.apply(tune);
+		}
 	}
 
 	/**
@@ -858,9 +870,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	public void accept(int[] bgraData) {
 		// skip frame(s) on fast forward
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
-		if ((vicFrames++ & fastForwardBitMask) == fastForwardBitMask) {
-			vicFrames = 0;
-			audioDriver.accept(bgraData);
+		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
+			fastForwardVICFrames = 0;
+			audioAndDriver.getValue().accept(bgraData);
 			if (pixelConsumer != null) {
 				pixelConsumer.accept(bgraData);
 			}
