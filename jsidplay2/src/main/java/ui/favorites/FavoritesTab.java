@@ -187,7 +187,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 						|| tablePosition.getColumn() <= 0);
 				break;
 			}
-			if (selectedColumn > 0) {
+			if (selectedColumn > 0 && selectedColumn < favoritesTable.getColumns().size()) {
 				TableColumn tableColumn = favoritesTable.getColumns().get(selectedColumn);
 				removeColumn.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"), tableColumn.getText()));
 			}

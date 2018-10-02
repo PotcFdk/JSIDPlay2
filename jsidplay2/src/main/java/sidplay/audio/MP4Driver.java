@@ -2,6 +2,7 @@ package sidplay.audio;
 
 import static sidplay.audio.Audio.MP4;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,13 +41,18 @@ import libsidutils.PathUtils;
 
 public class MP4Driver implements AudioDriver, Consumer<int[]> {
 
+	/**
+	 * PCM sample data IO buffer until it gets saved to hard disk.
+	 */
+	private static final int PCM_BUFFER_SIZE = 1 << 20;
+
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;
 	private byte[][] pictureData;
 	private ByteBuffer sampleBuffer;
 	private OutputStream pcmAudioStream;
 	private File pcmAudioFile;
-	private File h264VideoFile;
+	private File videoFile;
 	private String recordingFilename;
 
 	@Override
@@ -54,15 +60,16 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			throws IOException, LineUnavailableException {
 		try {
 			System.out.println("Recording, file=" + recordingFilename);
+			new File(recordingFilename).delete();
 			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
-			this.h264VideoFile = new File(recordingBaseName + ".h264");
+			this.videoFile = new File(recordingBaseName + "_video.mp4");
 			this.pcmAudioFile = new File(recordingBaseName + ".pcm");
-			this.pcmAudioStream = new FileOutputStream(pcmAudioFile);
+			this.pcmAudioStream = new BufferedOutputStream(new FileOutputStream(pcmAudioFile), PCM_BUFFER_SIZE);
 			this.recordingFilename = recordingFilename;
 
 			this.aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
-			this.sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(h264VideoFile),
+			this.sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile),
 					Rational.R((int) cpuClock.getScreenRefresh(), 1));
 
 			this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
@@ -104,13 +111,13 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 				pcmAudioStream.close();
 				pcmAudioStream = null;
 			}
-			if (h264VideoFile.exists() && h264VideoFile.canRead()) {
-				try (FileInputStream h264VideoInputStream = new FileInputStream(h264VideoFile);
+			if (videoFile.exists() && videoFile.canRead()) {
+				try (FileInputStream h264VideoInputStream = new FileInputStream(videoFile);
 						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename);
 						FileRandomAccessSourceImpl h264RandomAccessSource = new FileRandomAccessSourceImpl(
-								new RandomAccessFile(h264VideoFile, "r"))) {
+								new RandomAccessFile(videoFile, "r"))) {
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264RandomAccessSource,
-							h264VideoFile.getName());
+							videoFile.getName());
 					movie.addTrack(getSubtitles());
 					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
 						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
@@ -121,7 +128,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 					}
 					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
 				} finally {
-					h264VideoFile.delete();
+					videoFile.delete();
 					// hack: remove remaining temporary files of mp4parser :-(
 					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
