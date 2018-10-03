@@ -13,13 +13,14 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 import libsidplay.common.CPUClock;
@@ -69,11 +70,10 @@ public class StatusBar extends C64VBox implements UIPart {
 
 	@FXML
 	private Label status;
-	@FXML
-	protected ProgressBar progress;
 
 	private StringBuilder playerId, playerinfos;
 	private Tooltip statusTooltip;
+	private Timeline scrollText;
 
 	private Timeline timer;
 	private int oldHalfTrack;
@@ -90,6 +90,7 @@ public class StatusBar extends C64VBox implements UIPart {
 			Platform.runLater(() -> {
 				if (newValue == State.START) {
 					setPlayerIdAndInfos(sidTune);
+					recalculateScrollText();
 				}
 			});
 		}
@@ -100,8 +101,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		 * 
 		 * e.g. player ID: Soedesoft, author: Jeroen Soede and Michiel Soede, etc.
 		 * 
-		 * @param sidTune
-		 *            tune containing player details
+		 * @param sidTune tune containing player details
 		 */
 		private void setPlayerIdAndInfos(SidTune sidTune) {
 			playerId.setLength(0);
@@ -181,7 +181,8 @@ public class StatusBar extends C64VBox implements UIPart {
 		final Datasette datasette = util.getPlayer().getDatasette();
 		// Datasette tape progress
 		if (datasette.getMotor()) {
-			progress.setProgress(datasette.getProgress());
+			DoubleProperty progressProperty = util.progressProperty(getScene());
+			progressProperty.setValue(datasette.getProgress());
 		}
 		// final status bar text
 		StringBuilder line = new StringBuilder();
@@ -207,7 +208,7 @@ public class StatusBar extends C64VBox implements UIPart {
 				(runtime.totalMemory() - runtime.freeMemory()) >> 20, runtime.maxMemory() >> 20));
 		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
-		if (audioSection.getAudio()!=null && audioSection.getAudio().isRecording()) {
+		if (audioSection.getAudio() != null && audioSection.getAudio().isRecording()) {
 			line.append(String.format(", %s: %s (%s)", util.getBundle().getString("RECORDING_FILENAME"),
 					util.getPlayer().getRecordingFilename(),
 					getFileSize(new File(util.getPlayer().getRecordingFilename()).length())));
@@ -221,6 +222,50 @@ public class StatusBar extends C64VBox implements UIPart {
 	public void doClose() {
 		closeClip(MOTORSOUND_AUDIOCLIP);
 		closeClip(TRACKSOUND_AUDIOCLIP);
+	}
+
+	private void recalculateScrollText() {
+		if (scrollText != null) {
+			scrollText.stop();
+		}
+		this.scrollText = createScrollTextTimeLine();
+	}
+
+	private Timeline createScrollTextTimeLine() {
+		status.setTranslateX(0);
+
+		double sceneWidth = getScene().getWidth() - 20 /* spacing */;
+		double statusWidth = status.getLayoutBounds().getWidth();
+
+		Timeline timeLine;
+		if (statusWidth > sceneWidth) {
+			double duration = (statusWidth - sceneWidth) / 40.;
+
+			// 1. wait a moment doing nothing
+			KeyValue initKeyValue = new KeyValue(status.translateXProperty(), 0);
+			KeyFrame initFrame = new KeyFrame(Duration.seconds(duration), initKeyValue);
+
+			// 2. move scroll text to the left
+			KeyValue leftKeyValue = new KeyValue(status.translateXProperty(), -1.0 * (statusWidth - sceneWidth));
+			KeyFrame leftFrame = new KeyFrame(Duration.seconds(duration + 5), leftKeyValue);
+
+			// 3. wait a moment doing nothing
+			KeyFrame stillLeftFrame = new KeyFrame(Duration.seconds(duration + 10), leftKeyValue);
+
+			// 4. move scroll text to the right again
+			KeyFrame rightFrame = new KeyFrame(Duration.seconds(duration + 15), initKeyValue);
+
+			timeLine = new Timeline(initFrame, leftFrame, stillLeftFrame, rightFrame);
+		} else {
+			KeyValue initKeyValue = new KeyValue(status.translateXProperty(), 0);
+			KeyFrame initFrame = new KeyFrame(Duration.seconds(5), initKeyValue);
+			timeLine = new Timeline(initFrame);
+		}
+		timeLine.setOnFinished(event -> {
+			recalculateScrollText();
+		});
+		timeLine.playFromStart();
+		return timeLine;
 	}
 
 	private void closeClip(Clip clip) {
@@ -417,9 +462,10 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	private String getFileSize(long size) {
-	    if(size <= 0) return "0";
-	    final String[] units = new String[] { "b", "kb", "Mb", "Gb", "Tb" };
-	    int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
-	    return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+		if (size <= 0)
+			return "0 b";
+		final String[] units = new String[] { "b", "kb", "Mb", "Gb", "Tb" };
+		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 }

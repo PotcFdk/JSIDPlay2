@@ -9,26 +9,25 @@
 <?import ui.toolbar.ToolBar?>
 <?import ui.statusbar.StatusBar?>
 <?scenebuilder-preview-i18n-resource JSidPlay2.properties?>
-
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@JSidPlay2.css" 
 	fx:controller="ui.JSidPlay2" > -->
 <Scene xmlns:fx="http://javafx.com/fxml"
 	stylesheets="@JSidPlay2.css">
-	<BorderPane xmlns:fx="http://javafx.com/fxml">
-		<top>
-			<VBox spacing="10">
-				<MenuBar />
-				<ToolBar />
-			</VBox>
-		</top>
-		<center>
-			<TabPane focusTraversable="false" fx:id="tabbedPane"
-				tabClosingPolicy="ALL_TABS" />
-		</center>
-		<bottom>
-			<StatusBar />
-		</bottom>
-	</BorderPane>
+	<VBox>
+		<BorderPane xmlns:fx="http://javafx.com/fxml">
+			<top>
+				<VBox spacing="10">
+					<MenuBar />
+					<ToolBar />
+				</VBox>
+			</top>
+			<center>
+				<TabPane focusTraversable="false" fx:id="tabbedPane"
+					tabClosingPolicy="ALL_TABS" />
+			</center>
+		</BorderPane>
+		<StatusBar HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+	</VBox>
 </Scene>

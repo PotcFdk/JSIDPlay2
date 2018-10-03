@@ -14,9 +14,7 @@
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" -->
 <!-- 	fx:controller="ui.statusbar.StatusBar"> -->
 	<AnchorPane>
-		<Label fx:id="status" AnchorPane.leftAnchor="10" />
-		<ProgressBar fx:id="progress" progress="0"
-			AnchorPane.rightAnchor="10" />
+		<Label fx:id="status" AnchorPane.leftAnchor="10"/>
 	</AnchorPane>
 	</fx:root>
 <!-- </Scene> -->

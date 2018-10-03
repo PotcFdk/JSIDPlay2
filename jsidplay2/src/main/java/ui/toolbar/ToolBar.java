@@ -29,6 +29,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -97,6 +98,9 @@ public class ToolBar extends C64VBox implements UIPart {
 			appServerPortLbl, appServerSecurePortLbl, appServerKeyManagerPasswordLbl, appServerKeyStorePasswordLbl;
 	@FXML
 	private Hyperlink appServerUsage, downloadApp;
+
+	@FXML
+	protected ProgressBar progress;
 
 	private boolean duringInitialization;
 
