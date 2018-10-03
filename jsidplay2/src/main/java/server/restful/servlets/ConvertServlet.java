@@ -93,7 +93,7 @@ public class ConvertServlet extends HttpServlet {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
-				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
+				JCommander commander = JCommander.newBuilder().addObject(this).addObject(config).addObject(driver)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
