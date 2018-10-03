@@ -2,7 +2,6 @@ package sidplay.audio;
 
 import static sidplay.audio.Audio.MP4;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,17 +40,12 @@ import libsidutils.PathUtils;
 
 public class MP4Driver implements AudioDriver, Consumer<int[]> {
 
-	/**
-	 * PCM sample data IO buffer until it gets saved to hard disk.
-	 */
-	private static final int PCM_BUFFER_SIZE = 1 << 20;
-
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;
 	private byte[][] pictureData;
 	private ByteBuffer sampleBuffer;
-	private OutputStream pcmAudioStream;
 	private File pcmAudioFile;
+	private OutputStream pcmAudioStream;
 	private File videoFile;
 	private String recordingFilename;
 
@@ -64,7 +58,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
 			this.videoFile = new File(recordingBaseName + "_video.mp4");
 			this.pcmAudioFile = new File(recordingBaseName + ".pcm");
-			this.pcmAudioStream = new BufferedOutputStream(new FileOutputStream(pcmAudioFile), PCM_BUFFER_SIZE);
+			this.pcmAudioStream = new FileOutputStream(pcmAudioFile);
 			this.recordingFilename = recordingFilename;
 
 			this.aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
