@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -222,7 +224,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Consumer for VIC screen output as BGRA data
 	 */
-	protected Consumer<int[]> pixelConsumer;
+	protected List<Consumer<int[]>> pixelConsumers = new ArrayList<>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -253,6 +255,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			public void start() {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
+				addPixelConsumer(audioAndDriver.getValue());
 			}
 
 			/**
@@ -680,6 +683,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private void close() {
 		stateProperty.removeListener(pauseListener);
 		c64.insertSIDChips(noSIDs, sidLocator);
+		removePixelConsumer(audioAndDriver.getValue());
 		audioAndDriver.getValue().close();
 	}
 
@@ -858,12 +862,25 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	}
 
 	/**
-	 * Set consumer of VIC screen output as ARGB data
+	 * Add consumer of VIC screen output as ARGB data
 	 * 
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
-	public void setPixelConsumer(Consumer<int[]> consumer) {
-		pixelConsumer = consumer;
+	public void addPixelConsumer(Consumer<int[]> consumer) {
+		synchronized (pixelConsumers) {
+			pixelConsumers.add(consumer);
+		}
+	}
+
+	/**
+	 * Remove consumer of VIC screen output as ARGB data
+	 * 
+	 * @param consumer consumer of C64 screen pixels as ARGB data
+	 */
+	public void removePixelConsumer(Consumer<int[]> consumer) {
+		synchronized (pixelConsumers) {
+			pixelConsumers.remove(consumer);
+		}
 	}
 
 	@Override
@@ -872,9 +889,10 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
-			audioAndDriver.getValue().accept(bgraData);
-			if (pixelConsumer != null) {
-				pixelConsumer.accept(bgraData);
+			synchronized(pixelConsumers) {
+				for (Consumer<int[]> pixelConsumer : pixelConsumers) {
+					pixelConsumer.accept(bgraData);
+				}
 			}
 		}
 	}

@@ -97,6 +97,7 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 	@Override
 	public void close() {
 		try {
+			boolean encoded = sequenceEncoder != null;
 			if (sequenceEncoder != null) {
 				sequenceEncoder.finish();
 				sequenceEncoder = null;
@@ -105,7 +106,8 @@ public class MP4Driver implements AudioDriver, Consumer<int[]> {
 				pcmAudioStream.close();
 				pcmAudioStream = null;
 			}
-			if (videoFile.exists() && videoFile.canRead()) {
+			if (encoded && videoFile.exists() && videoFile.canRead()
+					&& videoFile.length() > 56/* empty container size */) {
 				try (FileInputStream h264VideoInputStream = new FileInputStream(videoFile);
 						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename);
 						FileRandomAccessSourceImpl h264RandomAccessSource = new FileRandomAccessSourceImpl(
