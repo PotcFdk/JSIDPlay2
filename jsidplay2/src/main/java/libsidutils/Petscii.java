@@ -95,6 +95,9 @@ public class Petscii {
 	public static final String petsciiToIso88591(final byte[] petscii) {
 		StringBuilder result = new StringBuilder();
 		for (int idx = 0; idx < petscii.length; idx++) {
+			if (petscii[idx] == 0) {
+				break;
+			}
 			result.append(petsciiToIso88591(petscii[idx]));
 		}
 		return result.toString();
