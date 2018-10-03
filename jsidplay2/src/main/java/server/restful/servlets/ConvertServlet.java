@@ -146,8 +146,8 @@ public class ConvertServlet extends HttpServlet {
 		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));
 		try (OutputStream d64OutputStream = new FileOutputStream(extractedFile)) {
 			ZipFileUtils.copy(file, d64OutputStream);
-			new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		}
+		new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		extractedFile.delete();
 		player.stopC64(false);
 		return mp4File;
