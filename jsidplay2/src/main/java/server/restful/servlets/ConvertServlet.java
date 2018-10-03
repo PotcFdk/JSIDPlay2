@@ -140,6 +140,7 @@ public class ConvertServlet extends HttpServlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
+		player.getTimer().setStart(startTime);
 		player.play(SidTune.load(file));
 		player.stopC64(false);
 	}
