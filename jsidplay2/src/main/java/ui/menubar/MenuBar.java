@@ -4,6 +4,8 @@ import static libsidplay.sidtune.SidTune.RESET;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -21,8 +23,6 @@ import javax.imageio.ImageIO;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -138,13 +138,13 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	protected Label tracks;
 
-	private class StateChangeListener implements ChangeListener<State> {
+	private class StateChangeListener implements PropertyChangeListener {
 		@Override
-		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+		public void propertyChange(PropertyChangeEvent event) {
 			SidTune sidTune = util.getPlayer().getTune();
 			Platform.runLater(() -> {
-				nextFavoriteDisabledState.set(sidTune == RESET || newValue == State.QUIT);
-				if (newValue == State.START) {
+				nextFavoriteDisabledState.set(sidTune == RESET || event.getNewValue() == State.QUIT);
+				if (event.getNewValue() == State.START) {
 					setCurrentTrack(sidTune);
 					updatePlayerButtons(util.getPlayer().getPlayList());
 
@@ -156,7 +156,7 @@ public class MenuBar extends C64VBox implements UIPart {
 							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
 						video();
 					}
-				} else if (newValue.equals(State.END)) {
+				} else if (event.getNewValue().equals(State.END)) {
 					SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 					PlaybackType pt = sidplay2Section.getPlaybackType();
 
@@ -174,6 +174,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private JSidPlay2 jSidPlay2;
 	private BooleanProperty nextFavoriteDisabledState;
 	private int hardcopyCounter;
+	private StateChangeListener propertyChangeListener;
 
 	public MenuBar() {
 		super();
@@ -214,7 +215,8 @@ public class MenuBar extends C64VBox implements UIPart {
 		expand8000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled3Property());
 		expandA000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled4Property());
 
-		util.getPlayer().stateProperty().addListener(new StateChangeListener());
+		propertyChangeListener = new StateChangeListener();
+		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
 		updatePlayerButtons(util.getPlayer().getPlayList());
 
@@ -262,6 +264,11 @@ public class MenuBar extends C64VBox implements UIPart {
 		});
 	}
 
+	@Override
+	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
+	}
+	
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();

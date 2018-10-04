@@ -1,12 +1,12 @@
 package ui.disassembler;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Map;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -27,10 +27,10 @@ import ui.entities.config.SidPlay2Section;
 
 public class Disassembler extends C64VBox implements UIPart {
 
-	private final class DisassemblerRefresh implements ChangeListener<State> {
+	private final class DisassemblerRefresh implements PropertyChangeListener {
 		@Override
-		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-			if (newValue == State.START) {
+		public void propertyChange(PropertyChangeEvent event) {
+			if (event.getNewValue() == State.START) {
 				Platform.runLater(() -> setTune());
 			}
 		}

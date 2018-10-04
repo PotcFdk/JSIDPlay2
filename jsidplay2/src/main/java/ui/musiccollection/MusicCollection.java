@@ -1,5 +1,6 @@
 package ui.musiccollection;
 
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -73,7 +74,6 @@ import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.audio.Audio;
-import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.EnumToStringConverter;
@@ -181,7 +181,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private FavoritesSection favoritesToAddSearchResult;
 
-	private ChangeListener<? super State> tuneMatcherListener;
+	private PropertyChangeListener tuneMatcherListener;
 
 	private ChangeListener<? super TreeItem<File>> tuneInfoListener;
 
@@ -218,7 +218,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
-		tuneMatcherListener = (observable, oldValue, newValue) -> {
+		tuneMatcherListener = event -> {
 			Platform.runLater(() -> showCurrentTune());
 		};
 		tuneInfoListener = (observable, oldValue, newValue) -> {

@@ -8,6 +8,8 @@ import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.common.Engine.NETSID;
 import static libsidplay.common.SIDChip.FC_MAX;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +18,6 @@ import java.util.ResourceBundle;
 
 import builder.netsiddev.commands.TrySetSidModel;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -47,10 +47,10 @@ import ui.entities.config.FilterSection;
 
 public class EmulationSettings extends C64Window {
 
-	protected final class EmulationChange implements ChangeListener<State> {
+	protected final class EmulationChange implements PropertyChangeListener {
 		@Override
-		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-			if (newValue == State.START) {
+		public void propertyChange(PropertyChangeEvent event) {
+			if (event.getNewValue() == State.START) {
 				Platform.runLater(() -> updateSettingsForTune(util.getPlayer().getTune()));
 			}
 		}
@@ -95,7 +95,7 @@ public class EmulationSettings extends C64Window {
 	private ObservableList<SidReads> sidReads;
 	private ObservableList<StereoMode> stereoModes;
 
-	private ChangeListener<State> emulationChange;
+	private PropertyChangeListener emulationChange;
 
 	private boolean duringInitialization;
 

@@ -1,5 +1,6 @@
 package ui.favorites;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -67,7 +67,7 @@ public class Favorites extends C64VBox implements UIPart {
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
 
-	private ChangeListener<? super State> nextTuneListener;
+	private PropertyChangeListener nextTuneListener;
 
 	public Favorites() {
 	}
@@ -78,8 +78,8 @@ public class Favorites extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
-		nextTuneListener = (observable, oldValue, newValue) -> {
-			if (newValue == State.END) {
+		nextTuneListener = event -> {
+			if (event.getNewValue() == State.END) {
 				Platform.runLater(() -> playNextTune());
 			}
 		};

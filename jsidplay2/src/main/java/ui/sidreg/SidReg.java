@@ -1,11 +1,11 @@
 package ui.sidreg;
 
+import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -41,7 +41,7 @@ public class SidReg extends C64VBox implements UIPart {
 	private ObservableList<SidRegWrite> allSidRegWrites;
 	private Set<String> filters;
 
-	private ChangeListener<State> sidRegStop;
+	private PropertyChangeListener sidRegStop;
 
 	public SidReg() {
 	}
@@ -52,8 +52,8 @@ public class SidReg extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
-		sidRegStop = (observable, oldValue, newValue) -> {
-			if (newValue == State.END) {
+		sidRegStop = event -> {
+			if (event.getNewValue() == State.END) {
 				Platform.runLater(() -> recordSidWrites(false));
 			}
 		};

@@ -1,5 +1,7 @@
 package ui.statusbar;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -17,8 +19,6 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -82,13 +82,14 @@ public class StatusBar extends C64VBox implements UIPart {
 	private ChipModel rememberUserSidModel, rememberStereoSidModel;
 	private Boolean rememberForceStereoTune;
 	private Integer rememberDualSidBase;
+	private StateChangeListener propertyChangeListener;
 
-	private class StateChangeListener implements ChangeListener<State> {
+	private class StateChangeListener implements PropertyChangeListener {
 		@Override
-		public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+		public void propertyChange(PropertyChangeEvent event) {
 			SidTune sidTune = util.getPlayer().getTune();
 			Platform.runLater(() -> {
-				if (newValue == State.START) {
+				if (event.getNewValue() == State.START) {
 					setPlayerIdAndInfos(sidTune);
 					recalculateScrollText();
 				}
@@ -143,7 +144,8 @@ public class StatusBar extends C64VBox implements UIPart {
 			if (status.getUserData() != null)
 				DesktopIntegration.browse(status.getUserData().toString());
 		});
-		util.getPlayer().stateProperty().addListener(new StateChangeListener());
+		propertyChangeListener = new StateChangeListener();
+		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
 		final Duration duration = Duration.millis(1000);
 		final KeyFrame frame = new KeyFrame(duration, evt -> setStatusLine());
@@ -222,6 +224,7 @@ public class StatusBar extends C64VBox implements UIPart {
 	public void doClose() {
 		closeClip(MOTORSOUND_AUDIOCLIP);
 		closeClip(TRACKSOUND_AUDIOCLIP);
+		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 	}
 
 	private void recalculateScrollText() {

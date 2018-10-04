@@ -1,5 +1,6 @@
 package ui.siddump;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -8,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -63,7 +63,7 @@ public class SidDump extends C64VBox implements UIPart {
 
 	private Thread fPlayerThread;
 
-	private ChangeListener<State> changeListener;
+	private PropertyChangeListener changeListener;
 
 	public SidDump() {
 	}
@@ -74,11 +74,11 @@ public class SidDump extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
-		changeListener = (observable, oldValue, newValue) -> {
-			if (newValue == State.START) {
+		changeListener = event -> {
+			if (event.getNewValue() == State.START) {
 				Platform.runLater(() -> setTune(util.getPlayer().getTune()));
 			}
-			if (newValue == State.END) {
+			if (event.getNewValue() == State.END) {
 				Platform.runLater(() -> {
 					startStopRecording.setSelected(false);
 					replayAll.setDisable(false);

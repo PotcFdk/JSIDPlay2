@@ -11,6 +11,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,7 +24,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -107,7 +107,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 	private ScheduledService<Void> screenUpdateService;
 
-	private ChangeListener<? super State> stateListener;
+	private PropertyChangeListener stateListener;
 
 	public Video() {
 	}
@@ -121,8 +121,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		stateListener = (obj, oldValue, newValue) -> {
-			if (newValue == State.START) {
+		stateListener = event -> {
+			if (event.getNewValue() == State.START) {
 				Platform.runLater(() -> {
 					SidTune tune = util.getPlayer().getTune();
 					setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));

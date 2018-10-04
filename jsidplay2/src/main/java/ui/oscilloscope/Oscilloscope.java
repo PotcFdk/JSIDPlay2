@@ -2,13 +2,13 @@ package ui.oscilloscope;
 
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
+import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.util.Duration;
@@ -73,7 +73,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	protected HighResolutionEvent highResolutionEvent;
 
-	private ChangeListener<? super State> listener;
+	private PropertyChangeListener listener;
 
 	public Oscilloscope() {
 	}
@@ -87,16 +87,16 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		pt = new PauseTransition(Duration.millis(50));
 		st = new SequentialTransition(pt);
 		highResolutionEvent = new HighResolutionEvent();
-		listener = (observable, oldValue, newValue) -> {
+		listener = event -> {
 			final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
-			if (newValue == State.PLAY) {
+			if (event.getNewValue() == State.PLAY) {
 				if (!ctx.isPending(highResolutionEvent)) {
 					ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
 				}
 				Platform.runLater(() -> {
 					startOscilloscope();
 				});
-			} else if (newValue == State.PAUSE) {
+			} else if (event.getNewValue() == State.PAUSE) {
 				ctx.cancel(highResolutionEvent);
 				Platform.runLater(() -> {
 					stopOscilloscope();

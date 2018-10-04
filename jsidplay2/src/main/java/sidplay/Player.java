@@ -19,6 +19,7 @@ import static sidplay.player.State.QUIT;
 import static sidplay.player.State.RESTART;
 import static sidplay.player.State.START;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -41,10 +42,6 @@ import builder.hardsid.HardSIDBuilder;
 import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
 import builder.sidblaster.SidBlasterBuilder;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -71,6 +68,7 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.ini.IniConfig;
+import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
@@ -131,7 +129,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Music player state.
 	 */
-	private ObjectProperty<State> stateProperty = new SimpleObjectProperty<State>(QUIT);
+	private ObjectProperty<State> stateProperty = new ObjectProperty<State>(State.class.getSimpleName(), QUIT);
 	/**
 	 * Play timer.
 	 */
@@ -214,8 +212,8 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Player paused? Stop audio production.
 	 */
-	private ChangeListener<? super State> pauseListener = (s, oldValue, newValue) -> {
-		if (newValue == PAUSE) {
+	private PropertyChangeListener pauseListener = event -> {
+		if (event.getNewValue() == PAUSE) {
 			audioAndDriver.getValue().pause();
 			configureMixer(mixer -> mixer.pause());
 			// audio driver continues automatically, next call of write!
@@ -583,7 +581,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 
 	 * @return the player's state
 	 */
-	public final ReadOnlyObjectProperty<State> stateProperty() {
+	public final ObjectProperty<State> stateProperty() {
 		return stateProperty;
 	}
 
