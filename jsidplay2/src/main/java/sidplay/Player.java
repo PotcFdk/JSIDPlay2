@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +45,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.util.Pair;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -168,7 +168,8 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * <B>Note:</B> If audio driver has been set externally by
 	 * {@link Player#setAudioDriver(AudioDriver)}, audio is null!
 	 */
-	private Pair<Audio, AudioDriver> audioAndDriver = new Pair<>(DEFAULT_AUDIO, DEFAULT_AUDIO.getAudioDriver());
+	private SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = new SimpleImmutableEntry<>(DEFAULT_AUDIO,
+			DEFAULT_AUDIO.getAudioDriver());
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -631,7 +632,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
 		if (audioAndDriver.getKey() != null) {
 			Audio audio = audioSection.getAudio();
-			audioAndDriver = new Pair<>(audio, audio.getAudioDriver(audioSection, tune));
+			audioAndDriver = new SimpleImmutableEntry<>(audio, audio.getAudioDriver(audioSection, tune));
 		}
 		// open audio driver
 		audioAndDriver.getValue().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
@@ -653,7 +654,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @param audioDriver for example {@link MP3Stream}
 	 */
 	public final void setAudioDriver(final AudioDriver audioDriver) {
-		this.audioAndDriver = new Pair<>(null, audioDriver);
+		this.audioAndDriver = new SimpleImmutableEntry<>(null, audioDriver);
 	}
 
 	/**
@@ -889,7 +890,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
-			synchronized(pixelConsumers) {
+			synchronized (pixelConsumers) {
 				for (Consumer<int[]> pixelConsumer : pixelConsumers) {
 					pixelConsumer.accept(bgraData);
 				}

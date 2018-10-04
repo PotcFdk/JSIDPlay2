@@ -5,6 +5,7 @@ import static server.netsiddev.Response.BUSY;
 import static server.netsiddev.Response.OK;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ import builder.netsiddev.commands.TryReset;
 import builder.netsiddev.commands.TrySetSidCount;
 import builder.netsiddev.commands.TrySetSidModel;
 import builder.netsiddev.commands.TryWrite;
-import javafx.util.Pair;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -80,7 +80,7 @@ public class NetSIDClient {
 			version = sendReceive(new GetVersion());
 			TrySetSidModel.getFilterToSidModel().clear();
 			for (byte config = 0; config < sendReceive(new GetConfigCount()); config++) {
-				Pair<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
+				SimpleImmutableEntry<ChipModel, String> filter = sendReceiveConfig(new GetConfigInfo(config));
 				TrySetSidModel.getFilterToSidModel().put(filter, config);
 			}
 			addSetSidModels();
@@ -137,9 +137,9 @@ public class NetSIDClient {
 		}
 	}
 
-	private Pair<ChipModel, String> sendReceiveConfig(NetSIDPkg cmd) {
+	private SimpleImmutableEntry<ChipModel, String> sendReceiveConfig(NetSIDPkg cmd) {
 		addAndSend(cmd);
-		return new Pair<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
+		return new SimpleImmutableEntry<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
 	}
 
 	private byte sendReceive(NetSIDPkg cmd) {
