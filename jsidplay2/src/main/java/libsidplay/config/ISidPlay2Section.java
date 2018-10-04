@@ -12,8 +12,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set configuration version
 	 * 
-	 * @param version
-	 *            configuration version
+	 * @param version configuration version
 	 */
 	void setVersion(int version);
 
@@ -27,10 +26,23 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the enable of the Songlengths database.
 	 * 
-	 * @param enable
-	 *            the enable of the Songlengths database
+	 * @param enable the enable of the Songlengths database
 	 */
 	void setEnableDatabase(boolean enable);
+
+	/**
+	 * Getter of the start time.
+	 * 
+	 * @return start time
+	 */
+	int getStartTime();
+
+	/**
+	 * Setter of the start time.
+	 * 
+	 * @param startTime start time
+	 */
+	void setStartTime(int startTime);
 
 	/**
 	 * Getter of the default play length (if the song length is unknown).
@@ -42,8 +54,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the default play length (if the song length is unknown).
 	 * 
-	 * @param playLength
-	 *            default play length
+	 * @param playLength default play length
 	 */
 	void setDefaultPlayLength(int playLength);
 
@@ -61,8 +72,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the HVSC collection directory.
 	 * 
-	 * @param hvsc
-	 *            the HVSC collection directory
+	 * @param hvsc the HVSC collection directory
 	 */
 	void setHvsc(String hvsc);
 
@@ -76,8 +86,7 @@ public interface ISidPlay2Section {
 	/**
 	 * setter to play a single song per tune.
 	 * 
-	 * @param singleSong
-	 *            play a single song per tune
+	 * @param singleSong play a single song per tune
 	 */
 	void setSingle(boolean singleSong);
 
@@ -91,8 +100,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the last accessed directory in the file browser.
 	 * 
-	 * @param lastDir
-	 *            the last accessed directory in the file browser
+	 * @param lastDir the last accessed directory in the file browser
 	 */
 	void setLastDirectory(String lastDir);
 
@@ -108,8 +116,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Setter of the temporary directory for JSIDPlay2.
 	 * 
-	 * @param path
-	 *            the temporary directory for JSIDPlay2
+	 * @param path the temporary directory for JSIDPlay2
 	 */
 	void setTmpDir(String path);
 
@@ -123,8 +130,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting brightness
 	 * 
-	 * @param brightness
-	 *            brightness
+	 * @param brightness brightness
 	 */
 	public void setBrightness(float brightness);
 
@@ -138,8 +144,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting contrast
 	 * 
-	 * @param contrast
-	 *            contrast
+	 * @param contrast contrast
 	 */
 	public void setContrast(float contrast);
 
@@ -153,8 +158,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting gamma
 	 * 
-	 * @param gamma
-	 *            gamma
+	 * @param gamma gamma
 	 */
 	public void setGamma(float gamma);
 
@@ -168,8 +172,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting saturation
 	 * 
-	 * @param saturation
-	 *            saturation
+	 * @param saturation saturation
 	 */
 	public void setSaturation(float saturation);
 
@@ -183,8 +186,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting phaseShift
 	 * 
-	 * @param phaseShift
-	 *            phaseShift
+	 * @param phaseShift phaseShift
 	 */
 	public void setPhaseShift(float phaseShift);
 
@@ -198,8 +200,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting offset
 	 * 
-	 * @param offset
-	 *            offset
+	 * @param offset offset
 	 */
 	public void setOffset(float offset);
 
@@ -213,8 +214,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting tint
 	 * 
-	 * @param tint
-	 *            tint
+	 * @param tint tint
 	 */
 	public void setTint(float tint);
 
@@ -228,8 +228,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting blur
 	 * 
-	 * @param blur
-	 *            blur
+	 * @param blur blur
 	 */
 	public void setBlur(float blur);
 
@@ -243,8 +242,7 @@ public interface ISidPlay2Section {
 	/**
 	 * Set VIC palette setting bleed
 	 * 
-	 * @param bleed
-	 *            bleed
+	 * @param bleed bleed
 	 */
 	public void setBleed(float bleed);
 
@@ -261,24 +259,24 @@ public interface ISidPlay2Section {
 	void setTurboTape(boolean turboTape);
 
 	/**
-	 * Fade-in start time in seconds, audio volume should be increased to the
-	 * max.
+	 * Fade-in start time in seconds, audio volume should be increased to the max.
 	 */
 	int getFadeInTime();
 
 	/**
-	 * Setter of Fade-in start time in seconds, audio volume should be increased to the
-	 * max.
+	 * Setter of Fade-in start time in seconds, audio volume should be increased to
+	 * the max.
 	 */
 	void setFadeInTime(int fadeInTime);
-	
+
 	/**
 	 * Fade-out start time in seconds, audio volume should be lowered to zero.
 	 */
 	int getFadeOutTime();
 
 	/**
-	 * Setter of Fade-out start time in seconds, audio volume should be lowered to zero.
+	 * Setter of Fade-out start time in seconds, audio volume should be lowered to
+	 * zero.
 	 */
 	void setFadeOutTime(int fadeOutTime);
 

@@ -14,6 +14,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
 import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
+import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
@@ -91,6 +92,22 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public BooleanProperty enableDatabaseProperty() {
 		return enableDatabaseProperty;
+	}
+
+	private IntegerProperty startTimeProperty = new SimpleIntegerProperty(DEFAULT_START_TIME);
+
+	@Override
+	public int getStartTime() {
+		return startTimeProperty.get();
+	}
+
+	@Override
+	public void setStartTime(int startTime) {
+		startTimeProperty.set(startTime);
+	}
+
+	public IntegerProperty startTimeProperty() {
+		return startTimeProperty;
 	}
 
 	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(DEFAULT_PLAY_LENGTH);
@@ -195,7 +212,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public StringProperty hvmecProperty() {
 		return hvmec;
 	}
-	
+
 	private ObjectProperty<File> demosFile = new SimpleObjectProperty<File>();
 	private StringProperty demos = new SimpleStringProperty();
 
@@ -215,7 +232,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public StringProperty demosProperty() {
 		return demos;
 	}
-	
+
 	private ObjectProperty<File> magsFile = new SimpleObjectProperty<File>();
 	private StringProperty mags = new SimpleStringProperty();
 
@@ -235,7 +252,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public StringProperty magsProperty() {
 		return mags;
 	}
-	
+
 	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<File>();
 	private StringProperty cgsc = new SimpleStringProperty();
 
@@ -255,7 +272,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public StringProperty cgscProperty() {
 		return cgsc;
 	}
-	
+
 	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<File>();
 	private StringProperty hvsc = new SimpleStringProperty();
 
@@ -277,7 +294,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public StringProperty hvscProperty() {
 		return hvsc;
 	}
-	
+
 	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<File>();
 	private StringProperty gameBase64 = new SimpleStringProperty();
 
@@ -344,7 +361,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 			return Proxy.NO_PROXY;
 		}
 	}
-	
+
 	private String lastDirectory;
 
 	@Override

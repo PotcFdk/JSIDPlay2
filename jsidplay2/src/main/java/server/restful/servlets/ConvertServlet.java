@@ -24,7 +24,6 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.URIUtil;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 import libsidplay.config.IConfig;
@@ -38,7 +37,6 @@ import server.restful.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
-import sidplay.consoleplayer.ParameterTimeConverter;
 import sidplay.audio.MP4Driver;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
@@ -50,9 +48,6 @@ public class ConvertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public static final String SERVLET_PATH_CONVERT = "/convert";
-
-	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
-	private Integer startTime;
 
 	private ServletUtil util;
 
@@ -93,7 +88,7 @@ public class ConvertServlet extends HttpServlet {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
-				JCommander commander = JCommander.newBuilder().addObject(this).addObject(config).addObject(driver)
+				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
@@ -112,7 +107,7 @@ public class ConvertServlet extends HttpServlet {
 				response.setContentType(ContentType.MIME_TYPE_MP4.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP4Driver driver = new MP4Driver();
-				JCommander commander = JCommander.newBuilder().addObject(this).addObject(config).addObject(driver)
+				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
@@ -140,7 +135,6 @@ public class ConvertServlet extends HttpServlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
-		player.getTimer().setStart(startTime);
 		player.play(SidTune.load(file));
 		player.stopC64(false);
 	}
@@ -151,7 +145,6 @@ public class ConvertServlet extends HttpServlet {
 		File mp4File = File.createTempFile("jsidplay2video", ".mp4");
 		player.setRecordingFilenameProvider(tune -> mp4File.getAbsolutePath());
 		player.setAudioDriver(driver);
-		player.getTimer().setStart(startTime);
 		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));
 		try (OutputStream d64OutputStream = new FileOutputStream(extractedFile)) {
 			ZipFileUtils.copy(file, d64OutputStream);

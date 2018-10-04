@@ -22,7 +22,6 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import sidplay.consoleplayer.ConsoleIO;
-import sidplay.consoleplayer.ParameterTimeConverter;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
@@ -39,9 +38,6 @@ final public class ConsolePlayer {
 
 	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG")
 	private Integer song = null;
-
-	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
-	private Integer startTime = 0;
 
 	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
 	private Integer verbose = 0;
@@ -72,7 +68,6 @@ final public class ConsolePlayer {
 			tune.getInfo().setSelectedSong(song);
 			final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
 			player.setTune(tune);
-			player.getTimer().setStart(startTime);
 			final ConsoleIO consoleIO = new ConsoleIO(config, filename.get());
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));

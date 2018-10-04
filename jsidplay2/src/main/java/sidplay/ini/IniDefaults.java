@@ -27,6 +27,7 @@ public interface IniDefaults {
 
 	ISidPlay2Section SIDPLAY2_SECTION = DEFAULTS.getSidplay2Section();
 	boolean DEFAULT_ENABLE_DATABASE = SIDPLAY2_SECTION.isEnableDatabase();
+	int DEFAULT_START_TIME = SIDPLAY2_SECTION.getStartTime();
 	int DEFAULT_PLAY_LENGTH = SIDPLAY2_SECTION.getDefaultPlayLength();
 	int DEFAULT_FADE_IN_TIME = SIDPLAY2_SECTION.getFadeInTime();
 	int DEFAULT_FADE_OUT_TIME = SIDPLAY2_SECTION.getFadeOutTime();

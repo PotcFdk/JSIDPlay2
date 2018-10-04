@@ -57,6 +57,7 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
+import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.siddatabase.SidDatabase;
@@ -620,9 +621,11 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @throws IOException              audio output file cannot be written
 	 */
 	private void open() throws IOException, LineUnavailableException {
+		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		IAudioSection audioSection = config.getAudioSection();
 
 		playList = PlayList.getInstance(config, tune);
+		timer.setStart(sidplay2Section.getStartTime());
 
 		// PAL/NTSC
 		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));

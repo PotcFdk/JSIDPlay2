@@ -14,6 +14,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
 import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
 import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
+import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
@@ -58,6 +59,17 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
 	public final void setEnableDatabase(final boolean enable) {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
+	}
+
+	@Override
+	public final int getStartTime() {
+		return iniReader.getPropertyTime("SIDPlay2", "Start Time", DEFAULT_START_TIME);
+	}
+
+	@Override
+	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
+	public final void setStartTime(final int startTime) {
+		iniReader.setProperty("SIDPlay2", "Start Time", String.format("%02d:%02d", (startTime / 60), (startTime % 60)));
 	}
 
 	@Override
