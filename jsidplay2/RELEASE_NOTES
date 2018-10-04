@@ -35,3 +35,4 @@ Better control about debug configuration.
 Use of JNA not JNI.
 Full Hardware support mono/stereo/3-SID better configurable.
 Tons of Refactorings of the code.
+ConsolePlayer now runs in vanilla Java11 without javafx module dependencies
