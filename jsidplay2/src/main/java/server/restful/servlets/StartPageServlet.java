@@ -1,5 +1,7 @@
 package server.restful.servlets;
 
+import static libsidutils.ZipFileUtils.convertStreamToString;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -16,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.MimeTypes;
 
 import libsidplay.sidtune.SidTune;
-import libsidutils.ZipFileUtils;
 import server.restful.common.Connectors;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
@@ -49,8 +50,7 @@ public class StartPageServlet extends HttpServlet {
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			if (is != null) {
 				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
-				response.getWriter()
-						.println(is != null ? ZipFileUtils.convertStreamToString(is, "UTF-8", replacements) : "");
+				response.getWriter().println(is != null ? convertStreamToString(is, "UTF-8", replacements) : "");
 			} else {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");

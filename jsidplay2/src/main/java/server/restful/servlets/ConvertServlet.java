@@ -1,5 +1,7 @@
 package server.restful.servlets;
 
+import static libsidutils.PathUtils.getFilenameSuffix;
+import static libsidutils.ZipFileUtils.copy;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 
 import java.io.File;
@@ -30,7 +32,6 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
@@ -41,6 +42,10 @@ import sidplay.audio.MP4Driver;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
 import ui.entities.config.Configuration;
+import ui.filefilter.CartFileFilter;
+import ui.filefilter.DiskFileFilter;
+import ui.filefilter.TapeFileFilter;
+import ui.filefilter.TuneFileFilter;
 
 @Parameters(resourceBundle = "server.restful.servlets.ConvertServlet")
 public class ConvertServlet extends HttpServlet {
@@ -48,6 +53,11 @@ public class ConvertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public static final String SERVLET_PATH_CONVERT = "/convert";
+
+	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
+	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
+	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
+	private static final CartFileFilter cartFileFilter = new CartFileFilter();
 
 	private ServletUtil util;
 
@@ -71,10 +81,11 @@ public class ConvertServlet extends HttpServlet {
 				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 
-		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")
+				|| filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp4")) {
 			try {
-				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
-				ZipFileUtils.copy(file, response.getOutputStream());
+				response.setContentType(ContentType.getContentType(getFilenameSuffix(filePath)).getContentType());
+				copy(file, response.getOutputStream());
 				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
@@ -101,7 +112,8 @@ public class ConvertServlet extends HttpServlet {
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
-		} else {
+		} else if (cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
+				|| tapeFileFilter.accept(file)) {
 			File mp4File = null;
 			try {
 				response.setContentType(ContentType.MIME_TYPE_MP4.getContentType());
@@ -115,7 +127,7 @@ public class ConvertServlet extends HttpServlet {
 						.flatMap(List::stream).collect(Collectors.toList()).toArray(new String[0]);
 				commander.parse(args);
 				mp4File = convertVideo(config, file, driver);
-				ZipFileUtils.copy(mp4File, response.getOutputStream());
+				copy(mp4File, response.getOutputStream());
 			} catch (Exception e) {
 				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
@@ -146,8 +158,8 @@ public class ConvertServlet extends HttpServlet {
 		player.setRecordingFilenameProvider(tune -> mp4File.getAbsolutePath());
 		player.setAudioDriver(driver);
 		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));
-		try (OutputStream d64OutputStream = new FileOutputStream(extractedFile)) {
-			ZipFileUtils.copy(file, d64OutputStream);
+		try (OutputStream fileOutputStream = new FileOutputStream(extractedFile)) {
+			copy(file, fileOutputStream);
 		}
 		new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		extractedFile.delete();
