@@ -104,7 +104,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Timeout (in ms) for quitting the player.
 	 */
-	private static final int QUIT_TIME_MAX_WAIT = 1000;
+	private static final int QUIT_MAX_WAIT_TIME = 1000;
 
 	/**
 	 * Previous song select timeout (< 4 secs).
@@ -325,34 +325,6 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		}
 	}
 
-	@Override
-	protected final void setClock(final CPUClock cpuFreq) {
-		super.setClock(cpuFreq);
-		sidBuilder = createSIDBuilder(cpuFreq);
-	}
-
-	/**
-	 * Create configured SID chip implementation (software/hardware).
-	 * 
-	 * @param cpuClock CPU clock frequency
-	 * @return SID builder
-	 */
-	private SIDBuilder createSIDBuilder(final CPUClock cpuClock) {
-		final Engine engine = config.getEmulationSection().getEngine();
-		switch (engine) {
-		case EMULATION:
-			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock);
-		case NETSID:
-			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
-		case HARDSID:
-			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
-		case SIDBLASTER:
-			return new SidBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
-		default:
-			throw new RuntimeException("Unknown engine type: " + engine);
-		}
-	}
-
 	/**
 	 * Call to update SID chips each time SID configuration has been changed
 	 * thread-safe.
@@ -553,7 +525,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 				if (quitOrWait) {
 					quit();
 				}
-				playerThread.join(QUIT_TIME_MAX_WAIT);
+				playerThread.join(QUIT_MAX_WAIT_TIME);
 			}
 		} catch (InterruptedException e) {
 		}
@@ -638,6 +610,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		// open audio driver
 		audioAndDriver.getValue().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
 
+		sidBuilder = createSIDBuilder(c64.getClock());
 		configureMixer(mixer -> mixer.setAudioDriver(audioAndDriver.getValue()));
 		configureVICs(vic -> vic.setPixelConsumer(this));
 		fastForwardVICFrames = 0;
@@ -645,6 +618,28 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		stateProperty.addListener(pauseListener);
 
 		reset();
+	}
+
+	/**
+	 * Create configured SID chip implementation (software/hardware).
+	 * 
+	 * @param cpuClock CPU clock frequency
+	 * @return SID builder
+	 */
+	private SIDBuilder createSIDBuilder(final CPUClock cpuClock) {
+		final Engine engine = config.getEmulationSection().getEngine();
+		switch (engine) {
+		case EMULATION:
+			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock);
+		case NETSID:
+			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
+		case HARDSID:
+			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
+		case SIDBLASTER:
+			return new SidBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
+		default:
+			throw new RuntimeException("Unknown engine type: " + engine);
+		}
 	}
 
 	/**
@@ -841,7 +836,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	}
 
 	/**
-	 * Get recording filename.
+	 * Get recording filename, add audio related file extension (if known).
 	 * 
 	 * @return recording filename
 	 */
