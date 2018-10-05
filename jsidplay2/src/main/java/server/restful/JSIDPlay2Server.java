@@ -96,7 +96,8 @@ public class JSIDPlay2Server {
 	/**
 	 * Configuration of usernames, passwords and roles
 	 */
-	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/realm.properties");
+	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class
+			.getResource("/" + REALM_CONFIG_FILE + ".properties");
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -164,14 +165,14 @@ public class JSIDPlay2Server {
 			ServerConnector httpConnector = new ServerConnector(server);
 			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
 
-			ServerConnector httpsSslConnector = getHttpsConnector(server);
-			httpsSslConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
-			return new Connector[] { httpConnector, httpsSslConnector };
+			ServerConnector httpsConnector = getHttpsConnector(server);
+			httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
+			return new Connector[] { httpConnector, httpsConnector };
 		}
 		case HTTPS: {
-			ServerConnector httpsSslConnector = getHttpsConnector(server);
-			httpsSslConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
-			return new Connector[] { httpsSslConnector };
+			ServerConnector httpsConnector = getHttpsConnector(server);
+			httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
+			return new Connector[] { httpsConnector };
 		}
 		case HTTP:
 		default: {
