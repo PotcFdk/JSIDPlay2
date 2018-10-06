@@ -64,8 +64,7 @@ public class Petscii {
 	/**
 	 * Convert ISO-8859-1 to PETSCII characters.
 	 * 
-	 * @param c
-	 *            ISO-8859-1 character
+	 * @param c ISO-8859-1 character
 	 * @return PETSCII byte
 	 */
 	public static byte iso88591ToPetscii(char c) {
@@ -75,8 +74,7 @@ public class Petscii {
 	/**
 	 * Convert PETSCII to ISO-8859-1 characters.
 	 * 
-	 * @param c
-	 *            PETSCII byte
+	 * @param c PETSCII byte
 	 * @return ISO-8859-1 character (unmapped characters are converted to space)
 	 */
 	public static char petsciiToIso88591(byte c) {
@@ -87,8 +85,7 @@ public class Petscii {
 	/**
 	 * Converts PETSCII to ISO-8859-1 characters.
 	 * 
-	 * @param petscii
-	 *            PETSCII bytes.
+	 * @param petscii PETSCII bytes. (zero byte terminates the string)
 	 * 
 	 * @return ISO-8859-1 characters.
 	 */
