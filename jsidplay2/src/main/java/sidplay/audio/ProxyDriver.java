@@ -2,21 +2,20 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 
 /**
- * Proxy driver to use two different sound drivers at the same time.
+ * Proxy driver to use two different sound or video drivers at the same time.
  * 
  * <B>Note:</B> Both driver's sample buffer must be equal in size.
  * 
  * @author Ken Händel
  * 
  */
-public class ProxyDriver implements AudioDriver, Consumer<int[]> {
+public class ProxyDriver implements VideoDriver {
 	private final AudioDriver driverOne;
 	private final AudioDriver driverTwo;
 
@@ -54,8 +53,12 @@ public class ProxyDriver implements AudioDriver, Consumer<int[]> {
 
 	@Override
 	public void accept(int[] bgraData) {
-		driverOne.accept(bgraData);
-		driverTwo.accept(bgraData);
+		if (driverOne instanceof VideoDriver) {
+			((VideoDriver) driverOne).accept(bgraData);
+		}
+		if (driverTwo instanceof VideoDriver) {
+			((VideoDriver) driverTwo).accept(bgraData);
+		}
 	}
 
 	@Override

@@ -196,7 +196,7 @@ public class JSIDDeviceConfig {
 	}
 
 	private void readInternal() {
-		try (InputStream is = getClass().getClassLoader().getResourceAsStream("netsiddev/ini/" + FILE_NAME)) {
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream("server/netsiddev/ini/" + FILE_NAME)) {
 			iniReader = new IniReader(is);
 			clear();
 			/*

@@ -17,13 +17,12 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 
-public interface AudioDriver extends Consumer<int[]> {
+public interface AudioDriver {
 
 	/**
 	 * Open audio interface.
@@ -45,12 +44,6 @@ public interface AudioDriver extends Consumer<int[]> {
 	 * @throws InterruptedException
 	 */
 	void write() throws InterruptedException;
-
-	/**
-	 * VIC pixel consumer for video drivers.
-	 */
-	default void accept(int[] bgraData) {
-	}
 
 	/**
 	 * Temporarily cease audio production, for instance if user paused the

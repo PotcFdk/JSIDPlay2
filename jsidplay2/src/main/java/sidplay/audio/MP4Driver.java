@@ -13,7 +13,6 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -38,7 +37,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 import libsidutils.PathUtils;
 
-public class MP4Driver implements AudioDriver, Consumer<int[]> {
+public class MP4Driver implements VideoDriver {
 
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;

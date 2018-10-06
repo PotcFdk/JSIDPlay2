@@ -68,6 +68,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File;
 import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.VideoDriver;
 import sidplay.ini.IniConfig;
 import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
@@ -255,7 +256,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			public void start() {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
-				addPixelConsumer(audioAndDriver.getValue());
+				if (audioAndDriver.getValue() instanceof VideoDriver) {
+					addPixelConsumer((VideoDriver) audioAndDriver.getValue());
+				}
 			}
 
 			/**
@@ -680,7 +683,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private void close() {
 		stateProperty.removeListener(pauseListener);
 		c64.insertSIDChips(noSIDs, sidLocator);
-		removePixelConsumer(audioAndDriver.getValue());
+		if (audioAndDriver.getValue() instanceof VideoDriver) {
+			removePixelConsumer((VideoDriver) audioAndDriver.getValue());
+		}
 		audioAndDriver.getValue().close();
 	}
 
