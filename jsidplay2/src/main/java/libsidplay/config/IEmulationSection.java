@@ -162,6 +162,48 @@ public interface IEmulationSection {
 	void setHardsid8580(int chip);
 
 	/**
+	 * Getter of the chip model of the first connected SIDBlaster.
+	 * 
+	 * @return the chip model of the first connected SIDBlaster
+	 */
+	ChipModel getSidBlaster0Model();
+
+	/**
+	 * Setter of the the chip model of the first connected SIDBlaster.
+	 * 
+	 * @param the chip model of the first connected SIDBlaster
+	 */
+	void setSidBlaster0Model(ChipModel model);
+
+	/**
+	 * Getter of the chip model of the second connected SIDBlaster.
+	 * 
+	 * @return the chip model of the second connected SIDBlaster
+	 */
+	ChipModel getSidBlaster1Model();
+
+	/**
+	 * Setter of the the chip model of the second connected SIDBlaster.
+	 * 
+	 * @param the chip model of the second connected SIDBlaster
+	 */
+	void setSidBlaster1Model(ChipModel model);
+
+	/**
+	 * Getter of the device to be used for the third connected SIDBlaster.
+	 * 
+	 * @return the device to be used for the third connected SIDBlaster
+	 */
+	ChipModel getSidBlaster2Model();
+
+	/**
+	 * Setter of the the chip model of the third connected SIDBlaster.
+	 * 
+	 * @param the chip model of the third connected SIDBlaster
+	 */
+	void setSidBlaster2Model(ChipModel model);
+
+	/**
 	 * Getter of the host name of a NetworkSIDDevice.
 	 * 
 	 * @return host name of a NetworkSIDDevice

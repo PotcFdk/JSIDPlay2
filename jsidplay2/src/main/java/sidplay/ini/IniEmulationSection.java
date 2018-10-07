@@ -16,6 +16,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -211,6 +214,36 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public final void setHardsid8580(final int chip) {
 		iniReader.setProperty("Emulation", "HardSID8580", chip);
+	}
+
+	@Override
+	public final ChipModel getSidBlaster0Model() {
+		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_0", DEFAULT_SIDBLASTER_0, ChipModel.class);
+	}
+
+	@Override
+	public final void setSidBlaster0Model(final ChipModel model) {
+		iniReader.setProperty("Emulation", "SIDBlaster_1", model);
+	}
+
+	@Override
+	public final ChipModel getSidBlaster1Model() {
+		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_1", DEFAULT_SIDBLASTER_1, ChipModel.class);
+	}
+
+	@Override
+	public final void setSidBlaster1Model(final ChipModel model) {
+		iniReader.setProperty("Emulation", "SIDBlaster_1", model);
+	}
+
+	@Override
+	public final ChipModel getSidBlaster2Model() {
+		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_2", DEFAULT_SIDBLASTER_2, ChipModel.class);
+	}
+
+	@Override
+	public final void setSidBlaster2Model(final ChipModel model) {
+		iniReader.setProperty("Emulation", "SIDBlaster_2", model);
 	}
 
 	@Override

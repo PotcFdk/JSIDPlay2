@@ -114,6 +114,16 @@
 						</ComboBox>
 					</VBox>
 				</TitledPane>
+				<TitledPane text="%SIDBLASTER" expanded="false">
+					<VBox>
+						<Label text="%SIDBLASTER_0" fx:id="sidBlaster0Label" />
+						<ComboBox fx:id="sidBlaster0Box" onAction="#setSidBlaster0" />
+						<Label text="%SIDBLASTER_1" fx:id="sidBlaster1Label" />
+						<ComboBox fx:id="sidBlaster1Box" onAction="#setSidBlaster1" />
+						<Label text="%SIDBLASTER_2" fx:id="sidBlaster2Label" />
+						<ComboBox fx:id="sidBlaster2Box" onAction="#setSidBlaster2" />
+					</VBox>
+				</TitledPane>
 				<TitledPane text="%COMPARE_MP3" expanded="false">
 					<HBox spacing="5">
 						<VBox>

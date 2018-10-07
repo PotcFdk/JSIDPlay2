@@ -17,6 +17,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -341,6 +344,57 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setHardsid8580(int hardsid8580) {
 		this.hardsid8580.set(hardsid8580);
+	}
+
+	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_0);
+
+	public ObjectProperty<ChipModel> sidBlaster0ModelProperty() {
+		return sidBlaster0ModelProperty;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public ChipModel getSidBlaster0Model() {
+		return sidBlaster0ModelProperty.get();
+	}
+
+	@Override
+	public void setSidBlaster0Model(ChipModel sidBlaster0Model) {
+		this.sidBlaster0ModelProperty.set(sidBlaster0Model);
+	}
+
+	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_1);
+
+	public ObjectProperty<ChipModel> sidBlaster1ModelProperty() {
+		return sidBlaster1ModelProperty;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public ChipModel getSidBlaster1Model() {
+		return sidBlaster1ModelProperty.get();
+	}
+
+	@Override
+	public void setSidBlaster1Model(ChipModel sidBlaster1Model) {
+		this.sidBlaster1ModelProperty.set(sidBlaster1Model);
+	}
+
+	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_2);
+
+	public ObjectProperty<ChipModel> sidBlaster2ModelProperty() {
+		return sidBlaster2ModelProperty;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public ChipModel getSidBlaster2Model() {
+		return sidBlaster2ModelProperty.get();
+	}
+
+	@Override
+	public void setSidBlaster2Model(ChipModel sidBlaster2Model) {
+		this.sidBlaster2ModelProperty.set(sidBlaster2Model);
 	}
 
 	private StringProperty netSidDevHostProperty = new SimpleStringProperty(DEFAULT_NETSIDDEV_HOST);

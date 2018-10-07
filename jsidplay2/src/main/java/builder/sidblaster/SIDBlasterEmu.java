@@ -104,6 +104,10 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void setChipModel(final ChipModel model) {
 	}
 
+	public byte getDeviceId() {
+		return deviceID;
+	}
+
 	@Override
 	public void setClockFrequency(double cpuFrequency) {
 	}

@@ -1,5 +1,7 @@
 package ui.toolbar;
 
+import static libsidplay.common.ChipModel.MOS6581;
+import static libsidplay.common.ChipModel.MOS8580;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
@@ -20,6 +22,7 @@ import builder.netsiddev.NetSIDDevConnection;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -37,6 +40,7 @@ import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -83,6 +87,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<Connectors> appServerConnectorsBox;
 	@FXML
+	private ComboBox<ChipModel> sidBlaster0Box, sidBlaster1Box, sidBlaster2Box;
+	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
 	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort,
@@ -101,6 +107,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected ProgressBar progress;
+
+	private ObservableList<ChipModel> sidBlaster0Models, sidBlaster1Models, sidBlaster2Models;
 
 	private boolean duringInitialization;
 
@@ -205,6 +213,21 @@ public class ToolBar extends C64VBox implements UIPart {
 			}
 		});
 
+		sidBlaster0Models = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
+		sidBlaster0Box.setConverter(new EnumToStringConverter<ChipModel>(bundle));
+		sidBlaster0Box.valueProperty().bindBidirectional(emulationSection.sidBlaster0ModelProperty());
+		sidBlaster0Box.setItems(sidBlaster0Models);
+
+		sidBlaster1Models = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
+		sidBlaster1Box.setConverter(new EnumToStringConverter<ChipModel>(bundle));
+		sidBlaster1Box.valueProperty().bindBidirectional(emulationSection.sidBlaster1ModelProperty());
+		sidBlaster1Box.setItems(sidBlaster1Models);
+
+		sidBlaster2Models = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
+		sidBlaster2Box.setConverter(new EnumToStringConverter<ChipModel>(bundle));
+		sidBlaster2Box.valueProperty().bindBidirectional(emulationSection.sidBlaster2ModelProperty());
+		sidBlaster2Box.setItems(sidBlaster2Models);
+
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
 		Bindings.bindBidirectional(proxyPort.textProperty(), sidplay2Section.proxyPortProperty(),
@@ -307,6 +330,21 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void setEngine() {
+		restart();
+	}
+
+	@FXML
+	private void setSidBlaster0() {
+		restart();
+	}
+
+	@FXML
+	private void setSidBlaster1() {
+		restart();
+	}
+
+	@FXML
+	private void setSidBlaster2() {
 		restart();
 	}
 
