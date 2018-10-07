@@ -125,8 +125,7 @@ public abstract class SidTune {
 	/**
 	 * Loads a file as a SidTune (PSID, PRG, P00, T64, MUS, MP3).
 	 * 
-	 * @param file
-	 *            The file to load.
+	 * @param file The file to load.
 	 * 
 	 * @return A SidTune instance of the specified file to load.
 	 * 
@@ -153,15 +152,12 @@ public abstract class SidTune {
 	/**
 	 * Loads an InputStream as a SidTune (PSID, PRG, P00, T64).
 	 * 
-	 * @param url
-	 *            URL of the given stream
-	 * @param stream
-	 *            The InputStream to load.
+	 * @param url    URL of the given stream
+	 * @param stream The InputStream to load.
 	 * 
 	 * @return A SidTune of the specified InputStream.
 	 * 
-	 * @throws IOException
-	 *             If the stream cannot be read.
+	 * @throws IOException  If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
 	public static SidTune load(String url, final InputStream stream) throws IOException, SidTuneError {
@@ -171,15 +167,12 @@ public abstract class SidTune {
 	/**
 	 * Load tune (PSID, PRG, P00, T64).
 	 * 
-	 * @param name
-	 *            name of the file (for file extension check)
-	 * @param fileContents
-	 *            The tune data to load.
+	 * @param name         name of the file (for file extension check)
+	 * @param fileContents The tune data to load.
 	 * 
 	 * @return A SidTune of the specified contents.
 	 * 
-	 * @throws IOException
-	 *             If the stream cannot be read.
+	 * @throws IOException  If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
 	protected static SidTune load(String name, byte[] fileContents) throws SidTuneError {
@@ -205,13 +198,11 @@ public abstract class SidTune {
 	/**
 	 * Does not affect status of object, and therefore can be used to load files.
 	 * 
-	 * @param file
-	 *            The file to load.
+	 * @param file The file to load.
 	 * 
 	 * @return The data of the loaded file.
 	 * 
-	 * @throws IOException
-	 *             if the file could not be found.
+	 * @throws IOException if the file could not be found.
 	 */
 	protected static final byte[] getContents(final File file) throws IOException {
 		try (InputStream is = ZipFileUtils.newFileInputStream(file)) {
@@ -242,8 +233,7 @@ public abstract class SidTune {
 	/**
 	 * Gets the speed of the selected song.
 	 * 
-	 * @param selected
-	 *            The song to get the speed of.
+	 * @param selected The song to get the speed of.
 	 * 
 	 * @return The speed of the selected song.
 	 */
@@ -270,10 +260,8 @@ public abstract class SidTune {
 	/**
 	 * Detect fake-stereo SID (second SID at the same address).
 	 * 
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
+	 * @param tune   current tune
+	 * @param sidNum current SID number
 	 * @return fake-stereo SID has been detected
 	 */
 	public static boolean isFakeStereoSid(IEmulationSection emulation, SidTune tune, int sidNum) {
@@ -341,8 +329,7 @@ public abstract class SidTune {
 	public abstract Integer placeProgramInMemory(final byte[] c64buf);
 
 	/**
-	 * @param destFileName
-	 *            Destination for the file.
+	 * @param destFileName Destination for the file.
 	 * @throws IOException
 	 */
 	public abstract void save(final String destFileName) throws IOException;
@@ -357,8 +344,7 @@ public abstract class SidTune {
 	/**
 	 * Search player ID Info.
 	 * 
-	 * @param playerName
-	 *            player to get infos for
+	 * @param playerName player to get infos for
 	 * @return player infos (or null, if not found)
 	 */
 	public abstract PlayerInfoSection getPlayerInfo(String playerName);

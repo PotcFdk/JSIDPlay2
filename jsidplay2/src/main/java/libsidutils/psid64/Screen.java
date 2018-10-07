@@ -1,8 +1,9 @@
 package libsidutils.psid64;
 
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv1;
+
 import java.util.Iterator;
 
-import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.Petscii;
 
@@ -76,7 +77,7 @@ public class Screen {
 
 		boolean hasFlags = false;
 		write("\nFlags  : ");
-		if (tuneInfo.getCompatibility() == SidTune.Compatibility.PSIDv1) {
+		if (tuneInfo.getCompatibility() == PSIDv1) {
 			hasFlags = addFlag(hasFlags, "PlaySID");
 		}
 		hasFlags = addFlag(hasFlags, tuneInfo.getClockSpeed().toString());

@@ -17,6 +17,18 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.sidtune.SidTune.Clock.NTSC;
+import static libsidplay.sidtune.SidTune.Clock.PAL;
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv1;
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv2;
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv3;
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv4;
+import static libsidplay.sidtune.SidTune.Compatibility.RSID_BASIC;
+import static libsidplay.sidtune.SidTune.Compatibility.RSIDv2;
+import static libsidplay.sidtune.SidTune.Compatibility.RSIDv3;
+import static libsidplay.sidtune.SidTune.Speed.CIA_1A;
+import static libsidplay.sidtune.SidTune.Speed.VBI;
+
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -259,7 +271,7 @@ class PSid extends Prg {
 	@Override
 	public Integer placeProgramInMemory(final byte[] mem) {
 		super.placeProgramInMemory(mem);
-		if (info.compatibility == Compatibility.RSID_BASIC) {
+		if (info.compatibility == RSID_BASIC) {
 			mem[0x30c] = (byte) (info.currentSong - 1);
 			return null;
 		} else {
@@ -272,7 +284,8 @@ class PSid extends Prg {
 	}
 
 	/**
-	 * Linux ALSA is very sensible for timing: therefore we assemble before we open AudioLine
+	 * Linux ALSA is very sensible for timing: therefore we assemble before we open
+	 * AudioLine
 	 */
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
@@ -280,7 +293,7 @@ class PSid extends Prg {
 			globals.put("pc", String.valueOf(info.determinedDriverAddr));
 			globals.put("songNum", String.valueOf(info.currentSong));
 			globals.put("songs", String.valueOf(info.songs));
-			globals.put("songSpeed", String.valueOf(getSongSpeed(info.currentSong) == Speed.CIA_1A ? 1 : 0));
+			globals.put("songSpeed", String.valueOf(getSongSpeed(info.currentSong) == CIA_1A ? 1 : 0));
 			globals.put("speed", String.valueOf(getSongSpeedWord()));
 			globals.put("loadAddr", String.valueOf(info.loadAddr));
 			globals.put("initAddr", String.valueOf(info.initAddr));
@@ -288,8 +301,8 @@ class PSid extends Prg {
 			globals.put("powerOnDelay", String.valueOf((int) (0x100 + (System.currentTimeMillis() & 0x1ff))));
 			globals.put("initIOMap", String.valueOf(info.iomap(info.initAddr)));
 			globals.put("playIOMap", String.valueOf(info.iomap(info.playAddr)));
-			globals.put("videoMode", String.valueOf(info.clockSpeed == Clock.PAL ? 1 : 0));
-			if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
+			globals.put("videoMode", String.valueOf(info.clockSpeed == PAL ? 1 : 0));
+			if (info.compatibility == RSIDv2 || info.compatibility == RSIDv3) {
 				globals.put("flags", String.valueOf(1));
 			} else {
 				globals.put("flags", String.valueOf(1 << MOS6510.SR_INTERRUPT));
@@ -342,8 +355,7 @@ class PSid extends Prg {
 			 */
 			ram[0x0314] = reloc_driver[reloc_driverPos + 2]; /* IRQ */
 			ram[0x0315] = reloc_driver[reloc_driverPos + 2 + 1];
-			if (!(info.compatibility == SidTune.Compatibility.RSIDv2
-					|| info.compatibility == SidTune.Compatibility.RSIDv3)) {
+			if (!(info.compatibility == RSIDv2 || info.compatibility == RSIDv3)) {
 				ram[0x0316] = reloc_driver[reloc_driverPos + 2 + 2]; /* Break */
 				ram[0x0317] = reloc_driver[reloc_driverPos + 2 + 3];
 				ram[0x0318] = reloc_driver[reloc_driverPos + 2 + 4]; /* NMI */
@@ -357,7 +369,7 @@ class PSid extends Prg {
 
 		// Tell C64 about song
 		ram[pos++] = (byte) (info.currentSong - 1);
-		ram[pos++] = (byte) (songSpeed[info.currentSong - 1] == Speed.VBI ? 0 : 1);
+		ram[pos++] = (byte) (songSpeed[info.currentSong - 1] == VBI ? 0 : 1);
 		ram[pos++] = (byte) (info.initAddr & 0xff);
 		ram[pos++] = (byte) (info.initAddr >> 8);
 		ram[pos++] = (byte) (info.playAddr & 0xff);
@@ -384,7 +396,7 @@ class PSid extends Prg {
 		}
 
 		// Default processor register flags on calling init
-		if (info.compatibility == Compatibility.RSIDv2 || info.compatibility == Compatibility.RSIDv3) {
+		if (info.compatibility == RSIDv2 || info.compatibility == RSIDv3) {
 			ram[pos++] = 0;
 		} else {
 			ram[pos++] = 1 << MOS6510.SR_INTERRUPT;
@@ -413,7 +425,7 @@ class PSid extends Prg {
 			programOffset += 2;
 			info.c64dataLen -= 2;
 		}
-		if (info.compatibility == Compatibility.RSID_BASIC) {
+		if (info.compatibility == RSID_BASIC) {
 			if (info.initAddr != 0) {
 				throw new SidTuneError("PSID: Init address given for a RSID tune with BASIC flag");
 			}
@@ -521,33 +533,33 @@ class PSid extends Prg {
 		if (Arrays.equals(header.id, "PSID".getBytes(ISO_8859_1))) {
 			switch (header.version) {
 			case 1:
-				psid.info.compatibility = Compatibility.PSIDv1;
+				psid.info.compatibility = PSIDv1;
 				break;
 			case 2:
-				psid.info.compatibility = Compatibility.PSIDv2;
+				psid.info.compatibility = PSIDv2;
 				if ((header.flags & PSID_SPECIFIC) != 0) {
 					throw new SidTuneError("PSID: PSID-specific files are not supported by this player");
 				}
 				break;
 			case 3:
-				psid.info.compatibility = Compatibility.PSIDv3;
+				psid.info.compatibility = PSIDv3;
 				break;
 			case 4:
-				psid.info.compatibility = Compatibility.PSIDv4;
+				psid.info.compatibility = PSIDv4;
 				break;
 			default:
 				throw new SidTuneError("PSID: PSID version must be 1, 2, 3 or 4, now: " + header.version);
 			}
 		} else if (Arrays.equals(header.id, "RSID".getBytes(ISO_8859_1))) {
 			if ((header.flags & PSID_BASIC) != 0) {
-				psid.info.compatibility = Compatibility.RSID_BASIC;
+				psid.info.compatibility = RSID_BASIC;
 			} else {
 				switch (header.version) {
 				case 2:
-					psid.info.compatibility = Compatibility.RSIDv2;
+					psid.info.compatibility = RSIDv2;
 					break;
 				case 3:
-					psid.info.compatibility = Compatibility.RSIDv3;
+					psid.info.compatibility = RSIDv3;
 					break;
 				default:
 					throw new SidTuneError("PSID: RSID version must be 2 or 3, now: " + header.version);
@@ -621,16 +633,15 @@ class PSid extends Prg {
 	/**
 	 * Convert 32-bit PSID-style speed word to internal tables.
 	 * 
-	 * @param speed
-	 *            The speed to convert.
+	 * @param speed The speed to convert.
 	 */
 	private void convertOldStyleSpeedToTables(long speed) {
 		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {
 			int i = s > 31 ? 31 : s;
 			if ((speed & (1 << i)) != 0) {
-				songSpeed[s] = Speed.CIA_1A;
+				songSpeed[s] = CIA_1A;
 			} else {
-				songSpeed[s] = Speed.VBI;
+				songSpeed[s] = VBI;
 			}
 		}
 	}
@@ -639,7 +650,7 @@ class PSid extends Prg {
 	public int getSongSpeedWord() {
 		int speed = 0;
 		for (int i = 0; i < 32; ++i) {
-			if (songSpeed[i] != Speed.VBI) {
+			if (songSpeed[i] != VBI) {
 				speed |= 1 << i;
 			}
 		}
@@ -746,7 +757,7 @@ class PSid extends Prg {
 	@Override
 	public String getMD5Digest(MD5Method md5Method) {
 		if (md5Method == MD5Method.MD5_PSID_HEADER) {
-			final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs + (info.clockSpeed == Clock.NTSC ? 1 : 0)];
+			final byte[] myMD5 = new byte[info.c64dataLen + 6 + info.songs + (info.clockSpeed == NTSC ? 1 : 0)];
 			System.arraycopy(program, programOffset, myMD5, 0, info.c64dataLen);
 			int i = info.c64dataLen;
 			myMD5[i++] = (byte) (info.initAddr & 0xff);
@@ -762,7 +773,7 @@ class PSid extends Prg {
 			// clock speed change the MD5 fingerprint. That way the
 			// fingerprint of a PAL-speed sidtune in PSID v1, v2, and
 			// PSID v2NG format is the same.
-			if (info.clockSpeed == Clock.NTSC) {
+			if (info.clockSpeed == NTSC) {
 				myMD5[i++] = (byte) info.clockSpeed.ordinal();
 				// NB! If the fingerprint is used as an index into a
 				// song-lengths database or cache, modify above code to
@@ -789,8 +800,9 @@ class PSid extends Prg {
 	@Override
 	public long getInitDelay() {
 		// 2.5ms does not always work well (e.g. RSIDs like Synth_sample)!
-		return info.compatibility == Compatibility.RSID_BASIC || info.compatibility == Compatibility.RSIDv2
-				|| info.compatibility == Compatibility.RSIDv3 ? RESET_INIT_DELAY : 2500;
+		return info.compatibility == RSID_BASIC || info.compatibility == RSIDv2 || info.compatibility == RSIDv3
+				? RESET_INIT_DELAY
+				: 2500;
 	}
 
 }

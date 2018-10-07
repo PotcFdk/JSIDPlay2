@@ -1,5 +1,6 @@
 package libsidutils.psid64;
 
+import static libsidplay.sidtune.SidTune.Compatibility.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class Psid64 {
 	private byte[] convert() {
 		// handle special treatment of tunes programmed in BASIC
 		final SidTuneInfo tuneInfo = tune.getInfo();
-		if (tuneInfo.getCompatibility() == SidTune.Compatibility.RSID_BASIC) {
+		if (tuneInfo.getCompatibility() == RSID_BASIC) {
 			return convertBASIC();
 		}
 
@@ -501,16 +502,11 @@ public class Psid64 {
 	/**
 	 * Try to find free consecutive memory pages.
 	 * 
-	 * @param pages
-	 *            pages which are already marked as used
-	 * @param scr
-	 *            first screen page which is already used (not free)
-	 * @param chars
-	 *            first characters page which is already used (not free)
-	 * @param driver
-	 *            first driver page which is already used (not free)
-	 * @param size
-	 *            number of consecutive free memory pages to search for
+	 * @param pages  pages which are already marked as used
+	 * @param scr    first screen page which is already used (not free)
+	 * @param chars  first characters page which is already used (not free)
+	 * @param driver first driver page which is already used (not free)
+	 * @param size   number of consecutive free memory pages to search for
 	 * @return first page of free consecutive memory pages (null means not found)
 	 */
 	private Integer findSpace(boolean pages[], Integer scr, Integer chars, Integer driver, int size) {

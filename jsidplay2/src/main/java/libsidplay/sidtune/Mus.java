@@ -17,6 +17,8 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.sidtune.SidTune.Compatibility.PSIDv2;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,7 +147,7 @@ class Mus extends PSid {
 		}
 
 		info.loadAddr = MUS_DATA_ADDR;
-		info.compatibility = Compatibility.PSIDv2;
+		info.compatibility = PSIDv2;
 		info.infoString.add(PathUtils.getFilenameWithoutSuffix(musFile.getName()));
 		info.infoString.add("<?>");
 		info.infoString.add("<?>");
@@ -168,8 +170,7 @@ class Mus extends PSid {
 	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
 	 * *_a.mus/*_b.mus .
 	 * 
-	 * @param file
-	 *            file to get the stereo tune for (e.g. name.mus).
+	 * @param file file to get the stereo tune for (e.g. name.mus).
 	 * @return stereo file (e.g. name.str)
 	 */
 	private static File getStereoTune(final File file) {
@@ -196,7 +197,8 @@ class Mus extends PSid {
 	}
 
 	/**
-	 * Linux ALSA is very sensible for timing: therefore we assemble before we open AudioLine
+	 * Linux ALSA is very sensible for timing: therefore we assemble before we open
+	 * AudioLine
 	 */
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
@@ -215,7 +217,8 @@ class Mus extends PSid {
 				InputStream stereoAsm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
 				preparedStereoDriver = assembler.assemble(MUSDRIVER2_ASM, stereoAsm, new HashMap<String, String>());
 				// Install MUS player 2
-				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.getResolvedSymbols(), "data_low", "data_high", "init", "start");
+				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.getResolvedSymbols(), "data_low", "data_high", "init",
+						"start");
 				info.initAddr = preparedStereoDriver.getResolvedSymbols().get("init");
 				info.playAddr = preparedStereoDriver.getResolvedSymbols().get("start");
 			}

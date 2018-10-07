@@ -16,6 +16,8 @@
 package libsidplay.sidtune;
 
 import static libsidplay.components.pla.PLA.MAX_SIDS;
+import static libsidplay.sidtune.SidTune.Compatibility.RSID_BASIC;
+import static libsidplay.sidtune.SidTune.Model.UNKNOWN;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +43,7 @@ public class SidTuneInfo {
 	 * Total number of songs contained in a tune.
 	 */
 	protected int songs;
-	
+
 	/**
 	 * Start song number.
 	 */
@@ -76,11 +78,11 @@ public class SidTuneInfo {
 	 * intended speed, see top
 	 */
 	protected Clock clockSpeed = Clock.UNKNOWN;
-	
+
 	/**
 	 * compatibility requirements
 	 */
-	protected Compatibility compatibility = Compatibility.RSID_BASIC;
+	protected Compatibility compatibility = RSID_BASIC;
 
 	/**
 	 * Holds text info from the format headers etc. Song title, credits, ... 0 =
@@ -114,7 +116,7 @@ public class SidTuneInfo {
 		this.startSong = 1;
 		this.sidChipBase[0] = 0xd400;
 		for (int i = 0; i < sidModel.length; i++) {
-			this.sidModel[i] = Model.UNKNOWN;
+			this.sidModel[i] = UNKNOWN;
 		}
 	}
 
@@ -189,8 +191,7 @@ public class SidTuneInfo {
 	/**
 	 * Select sub-song number (null = default starting song).
 	 * 
-	 * @param song
-	 *            The chosen song.
+	 * @param song The chosen song.
 	 */
 	public final void setSelectedSong(final Integer song) {
 		currentSong = song == null || song > songs ? startSong : song;
@@ -206,8 +207,7 @@ public class SidTuneInfo {
 	/**
 	 * Temporary hack till real bank switching code added
 	 * 
-	 * @param addr
-	 *            A 16-bit effective address
+	 * @param addr A 16-bit effective address
 	 * @return A default bank-select value for $01.
 	 */
 	public int iomap(final int addr) {
