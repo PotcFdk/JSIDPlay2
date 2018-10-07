@@ -902,7 +902,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * The credits for the authors of many parts of this emulator.
 	 * 
-	 * @param properties containing dynamic values for the credits (version)
+	 * @param properties containing dynamic values for the credits (e.g. version)
 	 * @return the credits
 	 */
 	public final String getCredits(final Properties properties) {
