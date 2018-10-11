@@ -30,12 +30,12 @@ import javax.persistence.Transient;
 import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -94,65 +94,65 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return enableDatabaseProperty;
 	}
 
-	private IntegerProperty startTimeProperty = new SimpleIntegerProperty(DEFAULT_START_TIME);
+	private DoubleProperty startTimeProperty = new SimpleDoubleProperty(DEFAULT_START_TIME);
 
 	@Override
-	public int getStartTime() {
+	public double getStartTime() {
 		return startTimeProperty.get();
 	}
 
 	@Override
-	public void setStartTime(int startTime) {
+	public void setStartTime(double startTime) {
 		startTimeProperty.set(startTime);
 	}
 
-	public IntegerProperty startTimeProperty() {
+	public DoubleProperty startTimeProperty() {
 		return startTimeProperty;
 	}
 
-	private IntegerProperty defaultPlayLengthProperty = new SimpleIntegerProperty(DEFAULT_PLAY_LENGTH);
+	private DoubleProperty defaultPlayLengthProperty = new SimpleDoubleProperty(DEFAULT_PLAY_LENGTH);
 
 	@Override
-	public int getDefaultPlayLength() {
+	public double getDefaultPlayLength() {
 		return defaultPlayLengthProperty.get();
 	}
 
 	@Override
-	public void setDefaultPlayLength(int defaultPlayLength) {
+	public void setDefaultPlayLength(double defaultPlayLength) {
 		defaultPlayLengthProperty.set(defaultPlayLength);
 	}
 
-	public IntegerProperty defaultPlayLengthProperty() {
+	public DoubleProperty defaultPlayLengthProperty() {
 		return defaultPlayLengthProperty;
 	}
 
-	private IntegerProperty fadeInTimeProperty = new SimpleIntegerProperty(DEFAULT_FADE_IN_TIME);
+	private DoubleProperty fadeInTimeProperty = new SimpleDoubleProperty(DEFAULT_FADE_IN_TIME);
 
 	@Override
-	public int getFadeInTime() {
+	public double getFadeInTime() {
 		return fadeInTimeProperty.get();
 	}
 
-	public void setFadeInTime(int fadeInTime) {
+	public void setFadeInTime(double fadeInTime) {
 		fadeInTimeProperty.set(fadeInTime);
 	}
 
-	public IntegerProperty fadeInTimeProperty() {
+	public DoubleProperty fadeInTimeProperty() {
 		return fadeInTimeProperty;
 	}
 
-	private IntegerProperty fadeOutTimeProperty = new SimpleIntegerProperty(DEFAULT_FADE_OUT_TIME);
+	private DoubleProperty fadeOutTimeProperty = new SimpleDoubleProperty(DEFAULT_FADE_OUT_TIME);
 
 	@Override
-	public int getFadeOutTime() {
+	public double getFadeOutTime() {
 		return fadeOutTimeProperty.get();
 	}
 
-	public void setFadeOutTime(int fadeOutTime) {
+	public void setFadeOutTime(double fadeOutTime) {
 		fadeOutTimeProperty.set(fadeOutTime);
 	}
 
-	public IntegerProperty fadeOutTimeProperty() {
+	public DoubleProperty fadeOutTimeProperty() {
 		return fadeOutTimeProperty;
 	}
 

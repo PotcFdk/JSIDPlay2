@@ -3,6 +3,8 @@ package sidplay.consoleplayer;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -129,7 +131,7 @@ public class ConsoleIO {
 	private void printSongLength(PrintStream out, final IniConsoleSection console, final Timer timer) {
 		out.printf("%c %-12s : ", console.getVertical(), BUNDLE.getString("SONG_LENGTH"));
 		if (timer.getEnd() != 0) {
-			String time = String.format("%02d:%02d", (timer.getEnd() / 60 % 100), (timer.getEnd() % 60));
+			String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timer.getEnd() * 1000)));
 			out.printf("%37s %c\n", time, console.getVertical());
 		} else {
 			out.printf("%37s %c\n", BUNDLE.getString("UNLIMITED"), console.getVertical());

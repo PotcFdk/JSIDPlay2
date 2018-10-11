@@ -20,6 +20,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
@@ -62,51 +65,52 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public final int getStartTime() {
+	public final double getStartTime() {
 		return iniReader.getPropertyTime("SIDPlay2", "Start Time", DEFAULT_START_TIME);
 	}
 
 	@Override
 	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
-	public final void setStartTime(final int startTime) {
-		iniReader.setProperty("SIDPlay2", "Start Time", String.format("%02d:%02d", (startTime / 60), (startTime % 60)));
+	public final void setStartTime(final double startTime) {
+		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (startTime * 1000)));
+		iniReader.setProperty("SIDPlay2", "Start Time", time);
 	}
 
 	@Override
-	public final int getDefaultPlayLength() {
+	public final double getDefaultPlayLength() {
 		return iniReader.getPropertyTime("SIDPlay2", "Default Play Length", DEFAULT_PLAY_LENGTH);
 	}
 
 	@Override
 	@Parameter(names = { "--defaultLength",
 			"-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
-	public final void setDefaultPlayLength(final int playLength) {
-		iniReader.setProperty("SIDPlay2", "Default Play Length",
-				String.format("%02d:%02d", (playLength / 60), (playLength % 60)));
+	public final void setDefaultPlayLength(final double playLength) {
+		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (playLength * 1000)));
+		iniReader.setProperty("SIDPlay2", "Default Play Length", time);
 	}
 
 	@Override
-	public int getFadeInTime() {
+	public double getFadeInTime() {
 		return iniReader.getPropertyTime("SIDPlay2", "Fade In Time", DEFAULT_FADE_IN_TIME);
 	}
 
 	@Override
 	@Parameter(names = { "--fadeIn" }, descriptionKey = "FADE_IN", converter = ParameterTimeConverter.class)
-	public void setFadeInTime(int fadeInTime) {
-		iniReader.setProperty("SIDPlay2", "Fade In Time",
-				String.format("%02d:%02d", (fadeInTime / 60), (fadeInTime % 60)));
+	public void setFadeInTime(double fadeInTime) {
+		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeInTime * 1000)));
+		iniReader.setProperty("SIDPlay2", "Fade In Time", time);
 	}
 
 	@Override
-	public int getFadeOutTime() {
+	public double getFadeOutTime() {
 		return iniReader.getPropertyTime("SIDPlay2", "Fade Out Time", DEFAULT_FADE_OUT_TIME);
 	}
 
 	@Override
 	@Parameter(names = { "--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class)
-	public void setFadeOutTime(int fadeOutTime) {
-		iniReader.setProperty("SIDPlay2", "Fade Out Time",
-				String.format("%02d:%02d", (fadeOutTime / 60), (fadeOutTime % 60)));
+	public void setFadeOutTime(double fadeOutTime) {
+		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeOutTime * 1000)));
+		iniReader.setProperty("SIDPlay2", "Fade Out Time", time);
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.IntSupplier;
+import java.util.function.DoubleSupplier;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -33,7 +33,7 @@ public class HVSCEntry {
 	public HVSCEntry() {
 	}
 
-	public HVSCEntry(final IntSupplier lengthFnct, final String path, final File tuneFile, SidTune tune) {
+	public HVSCEntry(final DoubleSupplier lengthFnct, final String path, final File tuneFile, SidTune tune) {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
 		if (tune != null) {
@@ -61,7 +61,7 @@ public class HVSCEntry {
 			this.sidModel2 = info.getSIDModel(1);
 			this.sidModel3 = info.getSIDModel(2);
 			this.compatibility = info.getCompatibility();
-			this.tuneLength = Long.valueOf(lengthFnct.getAsInt());
+			this.tuneLength = Double.valueOf(lengthFnct.getAsDouble());
 			this.audio = info.getSIDChipBase(1) != 0 ? info.getSIDChipBase(2) != 0 ? "3-SID" : "Stereo" : "Mono";
 			this.sidChipBase1 = info.getSIDChipBase(0);
 			this.sidChipBase2 = info.getSIDChipBase(1);
@@ -249,13 +249,13 @@ public class HVSCEntry {
 		this.compatibility = compatibility;
 	}
 
-	private Long tuneLength;
+	private Double tuneLength;
 
-	public Long getTuneLength() {
+	public Double getTuneLength() {
 		return tuneLength;
 	}
 
-	public void setTuneLength(Long tuneLength) {
+	public void setTuneLength(Double tuneLength) {
 		this.tuneLength = tuneLength;
 	}
 

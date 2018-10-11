@@ -5,6 +5,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -438,7 +440,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		if (tune != null) {
 			SidTuneInfo info = tune.getInfo();
 			if (info.getSongs() > 1) {
-				return String.format("%s: %d/%d, ", util.getBundle().getString("SONG"), info.getCurrentSong(),
+				return String.format(", %s: %d/%d", util.getBundle().getString("SONG"), info.getCurrentSong(),
 						info.getSongs());
 			}
 		}
@@ -446,16 +448,16 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	private String determinePlayTime() {
-		int time = util.getPlayer().time();
-		return String.format("%02d:%02d", time / 60 % 100, time % 60);
+		double timeInSeconds = util.getPlayer().time();
+		return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timeInSeconds * 1000)));
 	}
 
 	private String determineSongLength() {
 		SidTune tune = util.getPlayer().getTune();
-		int songLength = tune != null ? util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0) : 0;
+		double songLength = tune != null ? util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) : 0;
 		if (songLength > 0) {
 			// song length well-known?
-			return String.format("/%02d:%02d", (songLength / 60 % 100), (songLength % 60));
+			return new SimpleDateFormat("/mm:ss.SSS").format(new Date((long) (songLength * 1000)));
 		}
 		return "";
 	}

@@ -20,7 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.MatchResult;
 
@@ -64,7 +66,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	/**
 	 * Frequency of player address calls in Hz
 	 */
-	private static final int TUNE_SPEED = 50;
+	private static final double TUNE_SPEED = 50;
 
 	protected static class Channel {
 		private int freq, pulse, adsr, wave, note;
@@ -147,11 +149,11 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		}
 	}
 
-	private String getTime(long time, boolean timeInSeconds) {
+	private String getTime(long timeInFrames, boolean timeInSeconds) {
 		if (!timeInSeconds) {
-			return String.format("%5d", time);
+			return String.format("%5d", timeInFrames);
 		} else {
-			return String.format("%01d:%02d.%02d", time / (TUNE_SPEED * 60), time / TUNE_SPEED % 60, time % TUNE_SPEED);
+			return new SimpleDateFormat("m:ss.SSS").format(new Date((long) (timeInFrames * 1000 / TUNE_SPEED)));
 		}
 	}
 
@@ -190,7 +192,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	/**
 	 * Total record duration
 	 */
-	private int fSeconds;
+	private double fSeconds;
 
 	/**
 	 * Total number of recorded frames
@@ -304,7 +306,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 		fFirstframe = firstFrame;
 	}
 
-	public void setRecordLength(final int seconds) {
+	public void setRecordLength(final double seconds) {
 		fSeconds = seconds;
 	}
 
@@ -436,7 +438,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 			return;
 		}
 
-		if (fFrames < fFirstframe + fSeconds * TUNE_SPEED) {
+		if (fFrames < (long) (fFirstframe + fSeconds * TUNE_SPEED)) {
 
 			// Get SID parameters from each channel and the filter
 			for (int channel = 0; channel < 3; channel++) {
@@ -962,7 +964,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 	public void stopRecording() {
 		// set total recorded frames
 		// update table
-		fFrames = fFirstframe + fSeconds * TUNE_SPEED;
+		fFrames = (long) (fFirstframe + fSeconds * TUNE_SPEED);
 	}
 
 	/**

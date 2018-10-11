@@ -489,7 +489,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		try {
 			tune = SidTune.load(file);
 			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
-			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 					collectionName, file, tune);
 			favoritesSection.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {

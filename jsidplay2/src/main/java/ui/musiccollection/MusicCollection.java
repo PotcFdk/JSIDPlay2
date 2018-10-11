@@ -844,7 +844,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private void showTuneInfos(File tuneFile, SidTune tune, MusicCollectionTreeItem treeItem) {
 		String collectionName = PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile);
-		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 				collectionName, tuneFile, tune);
 		tuneInfos.setAll(SearchCriteria
 				.getAttributeValues(entry, field -> searchCriteria.getConverter().toString(field)).stream()
@@ -872,7 +872,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			} else {
 				collectionName = PathUtils.getCollectionName(sidPlay2Section.getCgscFile(), file);
 			}
-			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 					collectionName, file, tune);
 			section.getFavorites().add(entry);
 		} catch (IOException | SidTuneError e) {

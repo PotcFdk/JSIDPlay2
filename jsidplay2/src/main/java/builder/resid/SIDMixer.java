@@ -241,7 +241,7 @@ public class SIDMixer implements Mixer {
 	 * 
 	 * @param fadeIn Fade-in time in seconds
 	 */
-	public void fadeIn(int fadeIn) {
+	public void fadeIn(double fadeIn) {
 		for (ReSIDBase sid : sids) {
 			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeIn((long) (fadeIn * cpuClock.getCpuFrequency()));
@@ -253,7 +253,7 @@ public class SIDMixer implements Mixer {
 	 * 
 	 * @param fadeOut Fade-out time in seconds
 	 */
-	public void fadeOut(int fadeOut) {
+	public void fadeOut(double fadeOut) {
 		for (ReSIDBase sid : sids) {
 			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
 			sampler.setFadeOut((long) (fadeOut * cpuClock.getCpuFrequency()));

@@ -55,8 +55,8 @@ public class SidDatabase {
 	 *            tune to get the length for
 	 * @return tune length in seconds
 	 */
-	public int getTuneLength(final SidTune tune) {
-		int length = 0;
+	public double getTuneLength(final SidTune tune) {
+		double length = 0;
 		final String md5 = tune.getMD5Digest(version);
 		for (int songNum = 1; songNum <= tune.getInfo().getSongs(); songNum++) {
 			length += getLength(md5, songNum);
@@ -71,7 +71,7 @@ public class SidDatabase {
 	 *            tune to determine the current song
 	 * @return song length of the current song of the tune
 	 */
-	public int getSongLength(final SidTune tune) {
+	public double getSongLength(final SidTune tune) {
 		final int songNum = tune.getInfo().getCurrentSong();
 		final String md5 = tune.getMD5Digest(version);
 		return songNum == 0 || md5 == null ? 0 : getLength(md5, songNum);
@@ -116,7 +116,7 @@ public class SidDatabase {
 	 *            song number
 	 * @return song length of the song number
 	 */
-	private int getLength(final String md5, final int songNum) {
+	private double getLength(final String md5, final int songNum) {
 		final String times = database.getPropertyString("Database", md5, null);
 		return times != null ? new TimeConverter().fromString(times.split(" ")[songNum - 1]) : 0;
 	}

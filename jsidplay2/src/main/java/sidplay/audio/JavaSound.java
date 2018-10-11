@@ -74,7 +74,7 @@ public class JavaSound implements AudioDriver {
 		if (!dataLine.isActive()) {
 			dataLine.start();
 		}
-		dataLine.write(sampleBuffer.array(), 0, sampleBuffer.capacity());
+		dataLine.write(sampleBuffer.array(), 0, sampleBuffer.position());
 	}
 
 	/**
@@ -103,6 +103,7 @@ public class JavaSound implements AudioDriver {
 			return;
 		}
 		if (dataLine.isActive()) {
+			dataLine.write(sampleBuffer.array(), 0, sampleBuffer.position());
 			dataLine.stop();
 			dataLine.flush();
 		}

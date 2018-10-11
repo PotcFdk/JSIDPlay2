@@ -105,13 +105,13 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	}
 
 	@Override
-	public void fadeIn(int fadeIn) {
+	public void fadeIn(double fadeIn) {
 		System.err.println("Fade-in unsupported by network SID client");
 		// XXX unsupported by JSIDDevice
 	}
 
 	@Override
-	public void fadeOut(int fadeOut) {
+	public void fadeOut(double fadeOut) {
 		System.err.println("Fade-out unsupported by network SID client");
 		// XXX unsupported by JSIDDevice
 	}

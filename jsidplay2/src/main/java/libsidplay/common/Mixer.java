@@ -32,7 +32,7 @@ public interface Mixer {
 	 * @param fadeIn
 	 *            Fade-in time in seconds
 	 */
-	void fadeIn(int fadeIn);
+	void fadeIn(double fadeIn);
 
 	/**
 	 * Fade-out start time reached, audio volume should be lowered to zero.
@@ -40,7 +40,7 @@ public interface Mixer {
 	 * @param fadeOut
 	 *            Fade-out time in seconds
 	 */
-	void fadeOut(int fadeOut);
+	void fadeOut(double fadeOut);
 
 	/**
 	 * Volume of the SID chip

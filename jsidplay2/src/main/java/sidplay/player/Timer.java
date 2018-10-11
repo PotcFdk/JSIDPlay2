@@ -57,22 +57,22 @@ public abstract class Timer {
 	/**
 	 * Timer start time in seconds.
 	 */
-	private long start;
+	private double start;
 
 	/**
 	 * Timer end in seconds
 	 */
-	private long end;
+	private double end;
 
 	/**
 	 * Fade-in time in seconds (0 means no fade-in).
 	 */
-	private int fadeIn;
+	private double fadeIn;
 
 	/**
 	 * Fade-out time in seconds (0 means no fade-out).
 	 */
-	private int fadeOut;
+	private double fadeOut;
 
 	/**
 	 * The player.
@@ -95,7 +95,7 @@ public abstract class Timer {
 	 * @param start
 	 *            start time
 	 */
-	public final void setStart(final int start) {
+	public final void setStart(final double start) {
 		this.start = start;
 	}
 
@@ -106,9 +106,9 @@ public abstract class Timer {
 		final IConfig config = player.getConfig();
 		fadeIn = config.getSidplay2Section().getFadeInTime();
 		fadeOut = config.getSidplay2Section().getFadeOutTime();
-		schedule(start, startTimeEvent);
+		schedule(start, startTimeEvent, false);
 		if (fadeIn != 0) {
-			schedule(start, fadeInStartTimeEvent);
+			schedule(start, fadeInStartTimeEvent, false);
 		}
 		updateEnd();
 	}
@@ -136,12 +136,12 @@ public abstract class Timer {
 		}
 		// Only for tunes: check song length
 		if (tune != SidTune.RESET && config.getSidplay2Section().isEnableDatabase()) {
-			int songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
+			double songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0.);
 			if (songLength > 0) {
 				// use song length of song length database ...
-				end = schedule(songLength, endTimeEvent);
+				end = schedule(songLength, endTimeEvent, true);
 				if (fadeOut != 0) {
-					schedule(end - fadeOut, fadeOutStartTimeEvent);
+					schedule(end - fadeOut, fadeOutStartTimeEvent, true);
 				}
 				return;
 			}
@@ -150,9 +150,9 @@ public abstract class Timer {
 		end = config.getSidplay2Section().getDefaultPlayLength();
 		if (end > 0) {
 			// use default length (is meant to be relative to start)
-			end = schedule(start + end, endTimeEvent);
+			end = schedule(start + end, endTimeEvent, true);
 			if (fadeOut != 0) {
-				schedule(start + end - fadeOut, fadeOutStartTimeEvent);
+				schedule(start + end - fadeOut, fadeOutStartTimeEvent, true);
 			}
 		}
 	}
@@ -166,10 +166,11 @@ public abstract class Timer {
 	 * @param event
 	 *            timer event to schedule
 	 */
-	private long schedule(final long seconds, final Event event) {
+	private double schedule(final double seconds, final Event event, final boolean includeEndpoint) {
+		double maxSeconds = seconds + (includeEndpoint ? .001 : 0);
 		EventScheduler eventScheduler = player.getC64().getEventScheduler();
 		double cyclesPerSecond = eventScheduler.getCyclesPerSecond();
-		long absoluteCycles = (long) (seconds * cyclesPerSecond);
+		long absoluteCycles = (long) (maxSeconds * cyclesPerSecond);
 		if (absoluteCycles < eventScheduler.getTime(Phase.PHI1)) {
 			// event is in the past? Trigger immediately!
 			eventScheduler.scheduleAbsolute(event, 0, Phase.PHI1);
@@ -177,7 +178,7 @@ public abstract class Timer {
 			// event is in the future
 			eventScheduler.scheduleAbsolute(event, absoluteCycles, Phase.PHI1);
 		}
-		return seconds;
+		return maxSeconds;
 	}
 
 	/**
@@ -195,7 +196,7 @@ public abstract class Timer {
 	 * 
 	 * @return tune end time
 	 */
-	public final long getEnd() {
+	public final double getEnd() {
 		return end;
 	}
 
@@ -212,10 +213,10 @@ public abstract class Timer {
 	/**
 	 * Notification of tune fade-in start
 	 */
-	public abstract void fadeInStart(int fadeIn);
+	public abstract void fadeInStart(double fadeIn);
 
 	/**
 	 * Notification of tune fade-out start
 	 */
-	public abstract void fadeOutStart(int fadeOut);
+	public abstract void fadeOutStart(double fadeOut);
 }

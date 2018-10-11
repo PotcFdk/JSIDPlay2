@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.IntSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -75,7 +75,7 @@ public class TuneInfoServlet extends HttpServlet {
 		}
 		SidTune tune = SidTune.load(tuneFile);
 		String root = util.getConfiguration().getSidplay2Section().getHvsc();
-		IntSupplier songLengthFnct = () -> 0;
+		DoubleSupplier songLengthFnct = () -> 0;
 		if (root != null) {
 			SidDatabase db = new SidDatabase(root);
 			songLengthFnct = () -> db.getTuneLength(tune);

@@ -171,7 +171,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the the chip model of the first connected SIDBlaster.
 	 * 
-	 * @param the chip model of the first connected SIDBlaster
+	 * @param model the chip model of the first connected SIDBlaster
 	 */
 	void setSidBlaster0Model(ChipModel model);
 
@@ -185,7 +185,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the the chip model of the second connected SIDBlaster.
 	 * 
-	 * @param the chip model of the second connected SIDBlaster
+	 * @param model the chip model of the second connected SIDBlaster
 	 */
 	void setSidBlaster1Model(ChipModel model);
 
@@ -199,7 +199,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the the chip model of the third connected SIDBlaster.
 	 * 
-	 * @param the chip model of the third connected SIDBlaster
+	 * @param model the chip model of the third connected SIDBlaster
 	 */
 	void setSidBlaster2Model(ChipModel model);
 

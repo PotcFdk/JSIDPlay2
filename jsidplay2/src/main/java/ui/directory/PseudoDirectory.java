@@ -65,7 +65,7 @@ public class PseudoDirectory {
 		}
 		SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig().getSidplay2Section();
 		String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
-		HVSCEntry entry = new HVSCEntry(() -> player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0),
+		HVSCEntry entry = new HVSCEntry(() -> player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 				collectionName, file, tune);
 		final String title = entry.getTitle() != null ? entry.getTitle() : entry.getName();
 

@@ -38,7 +38,7 @@ public class TuneInfos extends C64Window {
 	}
 
 	public void showTuneInfos(File tuneFile, SidTune tune) {
-		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0), "",
+		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.), "",
 				tuneFile, tune);
 		tuneInfos
 				.setAll(SearchCriteria

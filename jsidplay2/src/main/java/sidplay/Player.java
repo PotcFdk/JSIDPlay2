@@ -293,7 +293,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			 * @see sidplay.player.Timer#fadeInStart(int)
 			 */
 			@Override
-			public void fadeInStart(final int fadeIn) {
+			public void fadeInStart(final double fadeIn) {
 				if (tune != RESET) {
 					configureMixer(mixer -> mixer.fadeIn(fadeIn));
 				}
@@ -305,7 +305,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			 * @see sidplay.player.Timer#fadeOutStart(int)
 			 */
 			@Override
-			public void fadeOutStart(final int fadeOut) {
+			public void fadeOutStart(final double fadeOut) {
 				if (tune != RESET) {
 					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
@@ -458,9 +458,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 
 	 * @return the current playing time in secs
 	 */
-	public final int time() {
+	public final double time() {
 		final EventScheduler c = c64.getEventScheduler();
-		return (int) (c.getTime(Phase.PHI2) / c.getCyclesPerSecond());
+		return c.getTime(Phase.PHI2) / c.getCyclesPerSecond();
 	}
 
 	/**
@@ -665,8 +665,8 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @throws InterruptedException audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		if (stateProperty.get() == PLAY) {
-			for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
+		for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
+			if (stateProperty.get() == PLAY) {
 				c64.getEventScheduler().clock();
 			}
 		}

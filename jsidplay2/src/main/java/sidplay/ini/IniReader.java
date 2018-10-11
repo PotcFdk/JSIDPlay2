@@ -212,7 +212,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyTime(final String section, final String key, final int defaultValue) {
+	public double getPropertyTime(final String section, final String key, final double defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return parseTime(s);
@@ -260,10 +260,10 @@ public class IniReader {
 		}
 	}
 
-	private int parseTime(final String time) {
-		int seconds = new TimeConverter().fromString(time).intValue();
+	private double parseTime(final String time) {
+		double seconds = new TimeConverter().fromString(time).doubleValue();
 		if (seconds == -1) {
-			System.err.println("Invalid time, expected mm:ss (found " + time + ")");
+			System.err.println("Invalid time, expected mm:ss.SSS (found " + time + ")");
 		}
 		return seconds;
 	}

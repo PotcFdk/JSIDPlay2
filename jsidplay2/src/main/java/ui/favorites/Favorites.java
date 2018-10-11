@@ -116,7 +116,7 @@ public class Favorites extends C64VBox implements UIPart {
 		sidplay2Section.fadeOutTimeProperty().addListener((obj, o, n) -> {
 			final Tooltip tooltip = new Tooltip();
 			fadeOutTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (n.intValue() != -1) {
+			if (n.doubleValue() != -1) {
 				util.getPlayer().getTimer().updateEnd();
 				tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_TIP"));
 				fadeOutTime.setTooltip(tooltip);

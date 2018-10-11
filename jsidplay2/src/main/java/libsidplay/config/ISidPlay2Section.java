@@ -35,28 +35,28 @@ public interface ISidPlay2Section {
 	 * 
 	 * @return start time
 	 */
-	int getStartTime();
+	double getStartTime();
 
 	/**
 	 * Setter of the start time.
 	 * 
 	 * @param startTime start time
 	 */
-	void setStartTime(int startTime);
+	void setStartTime(double startTime);
 
 	/**
 	 * Getter of the default play length (if the song length is unknown).
 	 * 
 	 * @return default play length
 	 */
-	int getDefaultPlayLength();
+	double getDefaultPlayLength();
 
 	/**
 	 * Setter of the default play length (if the song length is unknown).
 	 * 
 	 * @param playLength default play length
 	 */
-	void setDefaultPlayLength(int playLength);
+	void setDefaultPlayLength(double playLength);
 
 	boolean isLoop();
 
@@ -261,23 +261,23 @@ public interface ISidPlay2Section {
 	/**
 	 * Fade-in start time in seconds, audio volume should be increased to the max.
 	 */
-	int getFadeInTime();
+	double getFadeInTime();
 
 	/**
 	 * Setter of Fade-in start time in seconds, audio volume should be increased to
 	 * the max.
 	 */
-	void setFadeInTime(int fadeInTime);
+	void setFadeInTime(double fadeInTime);
 
 	/**
 	 * Fade-out start time in seconds, audio volume should be lowered to zero.
 	 */
-	int getFadeOutTime();
+	double getFadeOutTime();
 
 	/**
 	 * Setter of Fade-out start time in seconds, audio volume should be lowered to
 	 * zero.
 	 */
-	void setFadeOutTime(int fadeOutTime);
+	void setFadeOutTime(double fadeOutTime);
 
 }

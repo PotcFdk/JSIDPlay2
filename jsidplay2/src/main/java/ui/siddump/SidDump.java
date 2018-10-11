@@ -59,7 +59,9 @@ public class SidDump extends C64VBox implements UIPart {
 
 	protected SidDumpExtension sidDumpExtension;
 
-	private int loadAddress, initAddress, playerAddress, subTune, seconds;
+	private int loadAddress, initAddress, playerAddress, subTune;
+	
+	private double seconds;
 
 	private Thread fPlayerThread;
 
@@ -103,7 +105,7 @@ public class SidDump extends C64VBox implements UIPart {
 		maxRecordLength.textProperty().addListener((obj,o,n)-> {
 			final Tooltip tooltip = new Tooltip();
 			maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).intValue();
+			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
 			if (seconds != -1) {
 				sidDumpExtension.setRecordLength(seconds);
 
@@ -397,7 +399,7 @@ public class SidDump extends C64VBox implements UIPart {
 		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
-			int length = util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0);
+			double length = util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0.);
 			if (length == 0) {
 				length = util.getConfig().getSidplay2Section().getDefaultPlayLength();
 				if (length <= 0) {
