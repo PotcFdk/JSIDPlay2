@@ -6,6 +6,7 @@ Migration to HTTPS
 Updated documentation and screenshots
 
 Features:
+SLDB songlength, play time, startTime, fadeIn and fadeOut is from now on millisecond exact
 SIDBlaster support added.
 MP4 recording added.
 AppServer integrated (RESTful web services), provided inside JSIDPlay2.
