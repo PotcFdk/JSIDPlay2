@@ -1,42 +1,102 @@
 package server.netsiddev;
 
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Collections;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
+import java.util.Vector;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 
 public class Settings extends SIDDeviceStage {
 
-	@FXML
-	private ComboBox<AudioDevice> audioDevice;
-	@FXML
-	private CheckBox allowExternalConnections;
-	@FXML
-	private CheckBox digiBoost;
-	@FXML
-	private Button okButton;
+	private static final long serialVersionUID = 1L;
 
-	private ObservableList<AudioDevice> audioDevices;
+	private JComboBox<AudioDevice> audioDevice;
+
+	private JCheckBox allowExternalConnections;
+
+	private JCheckBox digiBoost;
+
+	private JButton okButton;
+
+	private Vector<AudioDevice> audioDevices;
 
 	private SIDDeviceSettings settings;
 
-	@FXML
-	private void initialize() {
-		audioDevices = FXCollections.<AudioDevice> observableArrayList();
-		audioDevice.setItems(audioDevices);
+	public Settings() {
+		getContentPane().setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		gbc.insets.set(10, 10, 0, 10);
 
+		JPanel audioPane = new JPanel();
+		audioPane.setLayout(new BoxLayout(audioPane, BoxLayout.X_AXIS));
+		audioPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		TitledBorder audioBorder = new TitledBorder(util.getBundle().getString("AUDIO_SETTINGS"));
+		audioPane.setBorder(audioBorder);
+
+		audioPane.add(new JLabel(util.getBundle().getString("DEVICE")));
+		audioDevices = new Vector<>();
+		audioDevice = new JComboBox<AudioDevice>(audioDevices);
+		audioDevice.addActionListener(event -> setAudioDevice());
+		audioPane.add(audioDevice);
+
+		getContentPane().add(audioPane, gbc);
+
+		JPanel connectionPane = new JPanel();
+		connectionPane.setLayout(new BoxLayout(connectionPane, BoxLayout.X_AXIS));
+		connectionPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		TitledBorder connectionBorder = new TitledBorder(util.getBundle().getString("CONNECTION_SETTINGS"));
+		connectionPane.setBorder(connectionBorder);
+
+		connectionPane.add(new JLabel(util.getBundle().getString("ALLOW_EXTERNAL_CONNECTIONS")));
+		allowExternalConnections = new JCheckBox();
+		allowExternalConnections.addActionListener(event -> setAllowExternalConnections());
+		connectionPane.add(allowExternalConnections);
+
+		getContentPane().add(connectionPane, gbc);
+
+		JPanel emulationPane = new JPanel();
+		emulationPane.setLayout(new BoxLayout(emulationPane, BoxLayout.LINE_AXIS));
+		emulationPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		TitledBorder emulationBorder = new TitledBorder(util.getBundle().getString("EMULATION_SETTINGS"));
+		emulationPane.setBorder(emulationBorder);
+
+		emulationPane.add(new JLabel(util.getBundle().getString("DIGI_BOOST")));
+		digiBoost = new JCheckBox();
+		digiBoost.addActionListener(event -> setDigiBoost());
+		emulationPane.add(digiBoost);
+
+		getContentPane().add(emulationPane, gbc);
+
+		okButton = new JButton(util.getBundle().getString("OK"));
+		okButton.addActionListener(event -> okPressed());
+
+		getContentPane().add(okButton, gbc);
+
+		initialize();
+	}
+
+	private void initialize() {
 		settings = SIDDeviceSettings.getInstance();
 		AudioDeviceCompare cmp = new AudioDeviceCompare();
 		AudioDevice selectedAudioDeviceItem = null;
@@ -59,7 +119,7 @@ public class Settings extends SIDDeviceStage {
 			deviceIndex++;
 		}
 		Collections.sort(audioDevices, cmp);
-		audioDevice.getSelectionModel().select(selectedAudioDeviceItem);
+		audioDevice.setSelectedItem(selectedAudioDeviceItem);
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
 	}
@@ -69,31 +129,29 @@ public class Settings extends SIDDeviceStage {
 		super.open();
 	}
 
-	@FXML
 	private void setAudioDevice() {
-		AudioDevice device = audioDevice.getSelectionModel().getSelectedItem();
-		ClientContext.changeDevice(device.getInfo());
-		settings.saveDeviceIndex(device.getIndex());
+		AudioDevice device = (AudioDevice) audioDevice.getSelectedItem();
+		if (device != null) {
+			ClientContext.changeDevice(device.getInfo());
+			settings.saveDeviceIndex(device.getIndex());
+		}
 	}
 
-	@FXML
 	private void setAllowExternalConnections() {
 		boolean isAllowExternalConnections = allowExternalConnections.isSelected();
 		settings.saveAllowExternalConnections(isAllowExternalConnections);
 		ClientContext.applyConnectionConfigChanges();
 	}
 
-	@FXML
 	private void setDigiBoost() {
 		boolean isDigiBoost = digiBoost.isSelected();
 		ClientContext.setDigiBoost(isDigiBoost);
 		settings.saveDigiBoost(isDigiBoost);
 	}
 
-	@FXML
 	private void okPressed() {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
-		((Stage) audioDevice.getScene().getWindow()).close();
+		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
 }

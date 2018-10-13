@@ -11,11 +11,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.stage.Stage;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  * Documentation of the protocol is contained here: netsiddev.ad
@@ -24,7 +21,7 @@ import javafx.stage.Stage;
  * @author Antti S. Lankila
  * @author Wilfred Bos
  */
-public class NetworkSIDDeviceMain extends Application {
+public class NetworkSIDDeviceMain {
 	private static final String TRAY_ICON = "jsidplay2.png";
 	private static final String TRAY_TOOLTIP = "SID Network Device";
 	private static final String MENU_ABOUT = "About";
@@ -33,9 +30,7 @@ public class NetworkSIDDeviceMain extends Application {
 
 	private NetworkSIDDevice networkSIDDeviceHeadless = new NetworkSIDDevice() {
 		protected void printErrorAndExit(Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, "");
-			alert.getDialogPane().setHeaderText(exceptionToString(e));
-			alert.showAndWait();
+			JOptionPane.showMessageDialog(null, exceptionToString(e), "Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
 
@@ -53,27 +48,24 @@ public class NetworkSIDDeviceMain extends Application {
 	/**
 	 * Main method. Create an application frame and start emulation.
 	 * 
-	 * @param args
-	 *            command line arguments
+	 * @param args command line arguments
+	 * @throws Exception
 	 */
-	public static final void main(final String[] args) {
-		launch(args);
+	public static final void main(final String[] args) throws Exception {
+		new NetworkSIDDeviceMain().start();
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start() throws Exception {
 		if (!SystemTray.isSupported()) {
 			networkSIDDeviceHeadless
 					.printErrorAndExit(new Exception("Sorry, System Tray is not yet supported on your platform!"));
 		}
 
-		Platform.setImplicitExit(false);
 		createSystemTrayMenu();
 		networkSIDDeviceHeadless.start(false);
 	}
 
 	private void createSystemTrayMenu() {
-		// XXX unfortunately system tray is not directly supported by JavaFX!
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		PopupMenu popup = new PopupMenu();
@@ -83,7 +75,7 @@ public class NetworkSIDDeviceMain extends Application {
 		trayIcon.setImageAutoSize(true);
 
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
-		aboutItem.addActionListener(e -> Platform.runLater(() -> {
+		aboutItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
 			try {
 				if (aboutDialog == null) {
 					aboutDialog = new About();
@@ -99,7 +91,7 @@ public class NetworkSIDDeviceMain extends Application {
 		popup.add(aboutItem);
 
 		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
-		settingsItem.addActionListener(e -> Platform.runLater(() -> {
+		settingsItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
 			try {
 				if (settingsDialog == null) {
 					settingsDialog = new Settings();

@@ -1,8 +1,9 @@
 package server.netsiddev;
 
+import javax.swing.SwingUtilities;
+
 import builder.resid.residfp.Filter6581;
 import builder.resid.residfp.Filter8580;
-import javafx.application.Platform;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.config.IFilterSection;
@@ -76,7 +77,7 @@ public class NetworkSIDDevice {
 			try {
 				ClientContext.listenForClients(config);
 			} catch (Exception e) {
-				Platform.runLater(() -> printErrorAndExit(e));
+				SwingUtilities.invokeLater(() -> printErrorAndExit(e));
 			}
 		}).start();
 	}
