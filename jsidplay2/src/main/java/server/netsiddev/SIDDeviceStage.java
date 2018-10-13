@@ -1,5 +1,8 @@
 package server.netsiddev;
 
+import static java.awt.Dialog.ModalityType.APPLICATION_MODAL;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
+
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -10,67 +13,47 @@ import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
 public abstract class SIDDeviceStage extends JDialog implements SIDDeviceUIPart {
-
 	private static final long serialVersionUID = 1L;
-	private static final KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-	private static final String dispatchWindowClosingActionMapKey = "WINDOW_CLOSING";
+	
+	private static final KeyStroke ESCAPE_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+	private static final String DISPATCH_WINDOW_CLOSING_ACTION_MAP_KEY = "WINDOW_CLOSING";
+	private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+
+	private final Action dispatchClosing = new AbstractAction() {
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent event) {
+			SIDDeviceStage.this.dispatchEvent(new WindowEvent(SIDDeviceStage.this, WindowEvent.WINDOW_CLOSING));
+		}
+	};
 
 	protected SIDDeviceUIUtil util;
-	private boolean wait;
 
 	public SIDDeviceStage() {
 		util = new SIDDeviceUIUtil();
 		util.parse(this);
 
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		installEscapeCloseOperation(this);
-		setResizable(false);
-		setAlwaysOnTop(true);
-
 		setTitle(util.getBundle().getString("TITLE"));
-
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		getRootPane().getInputMap(WHEN_IN_FOCUSED_WINDOW).put(ESCAPE_STROKE, DISPATCH_WINDOW_CLOSING_ACTION_MAP_KEY);
+		getRootPane().getActionMap().put(DISPATCH_WINDOW_CLOSING_ACTION_MAP_KEY, dispatchClosing);
+		setResizable(false);
 	}
 
 	public void open() throws IOException {
-		if (wait) {
-			setModal(true);
-		}
+		setModalityType(APPLICATION_MODAL);
 		pack();
+		setLocation((SCREEN_SIZE.width >> 1) - (getSize().width >> 1),
+				(SCREEN_SIZE.height >> 1) - (getSize().height >> 1));
 		setVisible(true);
-	}
-
-	public boolean isWait() {
-		return wait;
-	}
-
-	public void setWait(boolean wait) {
-		this.wait = wait;
 	}
 
 	public ResourceBundle getBundle() {
 		return util.getBundle();
-	}
-
-	private void installEscapeCloseOperation(final JDialog dialog) {
-		Action dispatchClosing = new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-
-			public void actionPerformed(ActionEvent event) {
-				dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
-			}
-		};
-		JRootPane root = dialog.getRootPane();
-		root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeStroke, dispatchWindowClosingActionMapKey);
-		root.getActionMap().put(dispatchWindowClosingActionMapKey, dispatchClosing);
 	}
 
 }

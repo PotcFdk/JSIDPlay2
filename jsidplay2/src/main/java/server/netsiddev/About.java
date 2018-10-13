@@ -42,7 +42,7 @@ public class About extends SIDDeviceStage {
 
 		getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.DARK_GRAY));
 		setBackground(Color.WHITE);
-		
+
 		initialize();
 	}
 
@@ -52,6 +52,5 @@ public class About extends SIDDeviceStage {
 
 	private void initialize() {
 		credits.setText(String.format(getBundle().getString("CREDITS"), LAST_MODIFIED.get(Calendar.YEAR)));
-		setWait(true);
 	}
 }

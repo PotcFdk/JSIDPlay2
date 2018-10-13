@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 public class Settings extends SIDDeviceStage {
-
 	private static final long serialVersionUID = 1L;
 
 	private JComboBox<AudioDevice> audioDevice;
@@ -39,11 +38,11 @@ public class Settings extends SIDDeviceStage {
 
 	public Settings() {
 		getContentPane().setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.insets.set(10, 10, 0, 10);
+		GridBagConstraints gridBagConstants = new GridBagConstraints();
+		gridBagConstants.weightx = 1;
+		gridBagConstants.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstants.gridwidth = GridBagConstraints.REMAINDER;
+		gridBagConstants.insets.set(10, 10, 10, 10);
 
 		JPanel audioPane = new JPanel();
 		audioPane.setLayout(new BoxLayout(audioPane, BoxLayout.X_AXIS));
@@ -58,7 +57,7 @@ public class Settings extends SIDDeviceStage {
 		audioDevice.addActionListener(event -> setAudioDevice());
 		audioPane.add(audioDevice);
 
-		getContentPane().add(audioPane, gbc);
+		getContentPane().add(audioPane, gridBagConstants);
 
 		JPanel connectionPane = new JPanel();
 		connectionPane.setLayout(new BoxLayout(connectionPane, BoxLayout.X_AXIS));
@@ -72,7 +71,7 @@ public class Settings extends SIDDeviceStage {
 		allowExternalConnections.addActionListener(event -> setAllowExternalConnections());
 		connectionPane.add(allowExternalConnections);
 
-		getContentPane().add(connectionPane, gbc);
+		getContentPane().add(connectionPane, gridBagConstants);
 
 		JPanel emulationPane = new JPanel();
 		emulationPane.setLayout(new BoxLayout(emulationPane, BoxLayout.LINE_AXIS));
@@ -86,12 +85,12 @@ public class Settings extends SIDDeviceStage {
 		digiBoost.addActionListener(event -> setDigiBoost());
 		emulationPane.add(digiBoost);
 
-		getContentPane().add(emulationPane, gbc);
+		getContentPane().add(emulationPane, gridBagConstants);
 
 		okButton = new JButton(util.getBundle().getString("OK"));
 		okButton.addActionListener(event -> okPressed());
 
-		getContentPane().add(okButton, gbc);
+		getContentPane().add(okButton, gridBagConstants);
 
 		initialize();
 	}
