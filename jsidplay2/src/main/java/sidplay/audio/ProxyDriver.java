@@ -47,7 +47,10 @@ public class ProxyDriver implements VideoDriver {
 	public void write() throws InterruptedException {
 		driverOne.write();
 		// Driver two's buffer gets the content of driver one's buffer
-		System.arraycopy(buffer().array(), 0, driverTwo.buffer().array(), 0, driverTwo.buffer().capacity());
+		ByteBuffer readOnlyCopy = buffer().asReadOnlyBuffer();
+		readOnlyCopy.flip();
+		driverTwo.buffer().clear();
+		driverTwo.buffer().put(readOnlyCopy);
 		driverTwo.write();
 	}
 

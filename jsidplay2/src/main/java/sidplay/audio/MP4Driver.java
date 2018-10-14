@@ -78,7 +78,7 @@ public class MP4Driver implements VideoDriver {
 	@Override
 	public void write() throws InterruptedException {
 		try {
-			this.pcmAudioStream.write(buffer().array());
+			this.pcmAudioStream.write(sampleBuffer.array(), 0, sampleBuffer.position());
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing PCM audio stream", e);
 		}

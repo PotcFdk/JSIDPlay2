@@ -103,7 +103,9 @@ public class JavaSound implements AudioDriver {
 			return;
 		}
 		if (dataLine.isActive()) {
-			dataLine.write(sampleBuffer.array(), 0, sampleBuffer.position());
+			if (dataLine.isRunning()) {
+				dataLine.drain();
+			}
 			dataLine.stop();
 			dataLine.flush();
 		}

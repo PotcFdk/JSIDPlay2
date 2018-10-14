@@ -89,7 +89,7 @@ public class WavFile implements AudioDriver {
 	@Override
 	public void write() throws InterruptedException {
 		try {
-			int len = sampleBuffer.capacity();
+			int len = sampleBuffer.position();
 			file.write(sampleBuffer.array(), 0, len);
 			samplesWritten += len;
 		} catch (final IOException e) {

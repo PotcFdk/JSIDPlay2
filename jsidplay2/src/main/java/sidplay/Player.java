@@ -581,7 +581,11 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
-				close();
+				try {
+					close();
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
 			}
 			// "Play it once, Sam. For old times' sake."
 		} while (stateProperty.get() == RESTART);
@@ -679,13 +683,17 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 
 	/**
 	 * Close player.
+	 * 
+	 * @throws InterruptedException audio production interrupted
 	 */
-	private void close() {
+	private void close() throws InterruptedException {
 		stateProperty.removeListener(pauseListener);
 		c64.insertSIDChips(noSIDs, sidLocator);
 		if (audioAndDriver.getValue() instanceof VideoDriver) {
 			removePixelConsumer((VideoDriver) audioAndDriver.getValue());
 		}
+		// save still unwritten sound data
+		audioAndDriver.getValue().write();
 		audioAndDriver.getValue().close();
 	}
 
