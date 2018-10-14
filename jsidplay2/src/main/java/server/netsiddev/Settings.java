@@ -26,9 +26,7 @@ public class Settings extends SIDDeviceStage {
 
 	private JComboBox<AudioDevice> audioDevice;
 
-	private JCheckBox allowExternalConnections;
-
-	private JCheckBox digiBoost;
+	private JCheckBox allowExternalConnections, digiBoost;
 
 	private JButton okButton;
 
