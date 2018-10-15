@@ -217,7 +217,7 @@ public abstract class VIC extends Bank {
 	/** masks for the IRQ flags */
 	private byte irqMask;
 	/**
-	 * Output ARGB screen buffer as int32 array. MSB to LSB -> alpha, red,
+	 * Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha, red,
 	 * green, blue
 	 */
 	protected final int[] pixels = new int[MAX_WIDTH * MAX_HEIGHT];

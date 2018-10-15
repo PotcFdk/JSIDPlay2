@@ -15,7 +15,7 @@ import libsidutils.assembler.KickAssemblerResult;
 
 /**
  * <PRE>
- * 	-------->
+ * 	--------&gt;
  * 	    z..zx.....x						     normal (zz != ee)
  * 	    e..e	value(LEN)	value(POSHI+1)	8+b(POSLO)   LZ77
  * 	    e..e	0    (2)	0 (2-256)	8b(POSLO)    LZ77
@@ -35,7 +35,7 @@ import libsidutils.assembler.KickAssemblerResult;
  * 	e..e011 0 11 110xxxx xxxx	RLE=2, not ranked
  * 
  * 
- * 	LZ77, len=2 (pos<=256) saves 4 bits (2-bit escape)
+ * 	LZ77, len=2 (pos&lt;=256) saves 4 bits (2-bit escape)
  * 	LZ77, len=3 saves 10..1 bits (pos 2..15616)
  * 	LZ77, len=4 saves 18..9 bits
  * 	LZ77, len=5 saves 24..15 bits
@@ -45,10 +45,10 @@ import libsidutils.assembler.KickAssemblerResult;
  * 	RLE, len=4 saves 23..10 bits
  * 	RLE, len=5 saves 29..16 bits
  * 
- * 	bs: 3505 LZ reference points, 41535 bytes -> 11.85, i.e. 8.4% referenced
+ * 	bs: 3505 LZ reference points, 41535 bytes -&gt; 11.85, i.e. 8.4% referenced
  * 
  * 
- * 	 1) Short RLE -> gamma + 1 linear bit -> ivanova.run -29 bytes
+ * 	 1) Short RLE -&gt; gamma + 1 linear bit -&gt; ivanova.run -29 bytes
  * 
  * 	 2) ?? .. no
  * 	    esc = RLE, with value 1

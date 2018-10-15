@@ -12,7 +12,7 @@ import sidplay.audio.AudioDriver;
 public interface Mixer {
 
 	/**
-	 * Maximum fast forward factor (1 << 5 = 32x).
+	 * Maximum fast forward factor (1 &lt;&lt; 5 = 32x).
 	 */
 	public static final int MAX_FAST_FORWARD = 5;
 
@@ -95,7 +95,7 @@ public interface Mixer {
 	boolean isFastForward();
 
 	/**
-	 * @return bit mask of current speed factor (1 << 0 = 1x, 1 << 1 = 2x, ... , 1 << 5 = 32x) - 1
+	 * @return bit mask of current speed factor (1 &lt;&lt; 0 = 1x, 1 &lt;&lt; 1 = 2x, ... , 1 &lt;&lt; 5 = 32x) - 1
 	 */
 	int getFastForwardBitMask();
 

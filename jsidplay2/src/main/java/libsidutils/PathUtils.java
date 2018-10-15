@@ -22,7 +22,7 @@ public class PathUtils {
 	/**
 	 * Create a filename of the given path relative to the collection root dir.
 	 * <BR>
-	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" ->
+	 * e.g. "&lt;root&gt;/MUSICIANS/D/Daglish_Ben/Bombo.sid" -&gt;
 	 * "/MUSICIANS/D/Daglish_Ben/Bombo.sid"
 	 * 
 	 * @param collectionRoot
@@ -57,7 +57,7 @@ public class PathUtils {
 	/**
 	 * Get file for a given path. The path can be relative to HVSC or CGSC or
 	 * even absolute.<BR>
-	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" ->
+	 * e.g. "&lt;root&gt;/MUSICIANS/D/Daglish_Ben/Bombo.sid" -&gt;
 	 * File(/MUSICIANS/D/Daglish_Ben/Bombo.sid)
 	 * 
 	 * @param path
@@ -87,7 +87,7 @@ public class PathUtils {
 	/**
 	 * Get the file list of the given file path. Each entry corresponds to a
 	 * path segment. It is sorted from parent to child.<BR>
-	 * e.g. "&lt;root>/MUSICIANS/D/Daglish_Ben/Bombo.sid" -> [File(MUSICIANS),
+	 * e.g. "&lt;root&gt;/MUSICIANS/D/Daglish_Ben/Bombo.sid" -&gt; [File(MUSICIANS),
 	 * File(D), File(Daglish_Ben), File(Bombo.sid)]
 	 * 
 	 * @param path
@@ -139,7 +139,7 @@ public class PathUtils {
 	 * 
 	 * @param filename
 	 *            filename to get the suffix for
-	 * @return filename without suffix (e.g. "Bombo.sid" -> "Bombo")
+	 * @return filename without suffix (e.g. "Bombo.sid" -&gt; "Bombo")
 	 */
 	public static final String getFilenameWithoutSuffix(final String filename) {
 		return filename.substring(0, filename.length() - getFilenameSuffix(filename).length());
@@ -150,7 +150,7 @@ public class PathUtils {
 	 * 
 	 * @param filename
 	 *            filename to get the suffix for
-	 * @return suffix of a filename (e.g. "Bombo.sid" -> ".sid")
+	 * @return suffix of a filename (e.g. "Bombo.sid" -&gt; ".sid")
 	 */
 	public static final String getFilenameSuffix(final String filename) {
 		int lastIndexOf = filename.lastIndexOf('.');

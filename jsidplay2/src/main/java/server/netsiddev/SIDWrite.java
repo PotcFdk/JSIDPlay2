@@ -13,7 +13,7 @@ public final class SIDWrite {
 
 	/**
 	 * This command is a general write command to SID. Reg must be between 0 ..
-	 * 0x1f and cycles > 0.
+	 * 0x1f and cycles &gt; 0.
 	 *
 	 * @param chip
 	 *            The specified SID chip to write to.
@@ -58,7 +58,7 @@ public final class SIDWrite {
 
 	/**
 	 * This command instructs AudioGeneratorThread about the need to execute a
-	 * pure delay on specified SID. Throws if cycles < 0.
+	 * pure delay on specified SID. Throws if cycles &lt; 0.
 	 *
 	 * @param sid
 	 *            The SID to execute a pure delay on.

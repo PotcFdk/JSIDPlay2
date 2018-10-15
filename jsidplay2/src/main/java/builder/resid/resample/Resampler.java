@@ -40,12 +40,12 @@ public interface Resampler {
 	 * frequencies.
 	 * <P>
 	 * For resampling, the ratio between the clock frequency and the sample
-	 * frequency is limited as follows: 125*clock_freq/sample_freq < 16384 E.g.
+	 * frequency is limited as follows: 125*clock_freq/sample_freq &lt; 16384 E.g.
 	 * provided a clock frequency of ~ 1MHz, the sample frequency can not be set
 	 * lower than ~ 8kHz. A lower sample frequency would make the resampling
 	 * code overfill its 16k sample ring buffer.
 	 * <P>
-	 * The end of passband frequency is also limited: pass_freq <=
+	 * The end of passband frequency is also limited: pass_freq &lt;=
 	 * 0.9*sample_freq/2
 	 * <P>
 	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited

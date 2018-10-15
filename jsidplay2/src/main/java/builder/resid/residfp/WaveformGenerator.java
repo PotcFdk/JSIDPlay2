@@ -187,9 +187,9 @@ public final class WaveformGenerator {
 	/**
 	 * Register functions.
 	 * 
-	 * The original form was (acc >> 12) >= pw, where truth value is not
+	 * The original form was (acc &gt;&gt; 12) &gt;= pw, where truth value is not
 	 * affected by the contents of the low 12 bits. Therefore the lowest bits
-	 * must be zero in the new formulation acc >= (pw << 12).
+	 * must be zero in the new formulation acc &gt;= (pw &lt;&lt; 12).
 	 * 
 	 * @param pw_lo
 	 *            low 8 bits of pulse width
@@ -264,7 +264,7 @@ public final class WaveformGenerator {
 	/**
 	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and
 	 * above are not appropriately delayed by 1 clock. It should not be
-	 * noticeable for 0 and > 8, but noise is not correctly delayed.
+	 * noticeable for 0 and &gt; 8, but noise is not correctly delayed.
 	 * 
 	 * @param ring_modulator
 	 *            The ring modulating partner of this waveform

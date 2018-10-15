@@ -116,12 +116,12 @@ public enum DOSErrorCodes {
 	 * 50 RECORD NOT PRESENT: A REL file marker was positioned behind the last
 	 * record. This can safely be ignored, if the next access is a write and if
 	 * so, the REL file is extended automatically. An additional meaning during
-	 * the use of &-files indicates a wrong checksum.
+	 * the use of &amp;-files indicates a wrong checksum.
 	 */
 	CBMDOS_IPE_RECORD_NOT_PRESENT(50),
 	/**
 	 * 51 OVERFLOW IN RECORD: There was an attempt to write more than the
-	 * expected count of characters into a record. During the use of '&' files
+	 * expected count of characters into a record. During the use of '&amp;' files
 	 * it means an unexpected byte count in the next section.
 	 */
 	CBMDOS_IPE_OVERFLOW_IN_RECORD(51),

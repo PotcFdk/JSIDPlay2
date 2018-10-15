@@ -413,7 +413,7 @@ public class HardwareEnsemble {
 	}
 
 	/**
-	 * Extend floppy disk strategy (> 35 tracks)
+	 * Extend floppy disk strategy (&gt; 35 tracks)
 	 * 
 	 * @param policy extension policy
 	 */

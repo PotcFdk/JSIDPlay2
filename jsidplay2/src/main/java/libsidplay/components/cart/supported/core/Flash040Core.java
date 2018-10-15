@@ -10,7 +10,7 @@ import libsidplay.common.EventScheduler;
 /**
  * flash040core.c - (AM)29F0[14]0(B) Flash emulation.
  * 
- * Written by Hannu Nuotio <hannu.nuotio@tut.fi>
+ * Written by Hannu Nuotio &lt;hannu.nuotio@tut.fi&gt;
  * 
  * This file is part of VICE, the Versatile Commodore Emulator. See README for
  * copyright notice.

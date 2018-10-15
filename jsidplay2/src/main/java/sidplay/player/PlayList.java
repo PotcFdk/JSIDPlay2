@@ -8,7 +8,7 @@ import libsidplay.sidtune.SidTune;
  * which is the marker to detect a wrap-around. The current entry is the
  * currently selected song.<BR>
  * e.g. 5 songs in a tune using start song number 3 will result in<BR>
- * [3],4,5,1,2 -> first = 3, length=5, current song is within range 1..5
+ * [3],4,5,1,2 -&gt; first = 3, length=5, current song is within range 1..5
  * 
  * @author Ken Händel
  *
