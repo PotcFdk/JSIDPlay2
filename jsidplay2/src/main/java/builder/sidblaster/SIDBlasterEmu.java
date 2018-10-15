@@ -98,6 +98,7 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
+		hardSID.HardSID_Mute(deviceID, (byte) num, mute);
 	}
 
 	@Override
