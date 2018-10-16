@@ -232,6 +232,48 @@ public interface IEmulationSection {
 	void setNetSIDDevPort(int port);
 
 	/**
+	 * Do we play a tune on Ultimate64?
+	 * 
+	 * @return play a tune on Ultimate64
+	 */
+	boolean isEnableUltimate64();
+
+	/**
+	 * Setter to play a tune on Ultimate64.
+	 * 
+	 * @param enableUltimate64 play a tune on Ultimate64
+	 */
+	void setEnableUltimate64(boolean enableUltimate64);
+
+	/**
+	 * Getter of the host name of a Ultimate64.
+	 * 
+	 * @return host name of a Ultimate64
+	 */
+	String getUltimate64Host();
+
+	/**
+	 * Setter of the host name of a Ultimate64.
+	 * 
+	 * @param hostname host name of a Ultimate64
+	 */
+	void setUltimate64Host(String hostname);
+
+	/**
+	 * Getter of the port address of a Ultimate64.
+	 * 
+	 * @return port address of a Ultimate64
+	 */
+	int getUltimate64Port();
+
+	/**
+	 * Setter of the port address of a Ultimate64.
+	 * 
+	 * @param port port address of a Ultimate64
+	 */
+	void setUltimate64Port(int port);
+
+	/**
 	 * Is SID filter enabled?
 	 * 
 	 * @return filter enabled

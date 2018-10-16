@@ -63,6 +63,10 @@
 
 					<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
 				</VBox>
+				<VBox>
+					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
+					<ProgressBar fx:id="progress" progress="0"/>
+				</VBox>
 			</HBox>
 		</AnchorPane>
 		<AnchorPane>
@@ -122,6 +126,25 @@
 						<ComboBox fx:id="sidBlaster1Box" onAction="#setSidBlaster1" />
 						<Label text="%SIDBLASTER_2" fx:id="sidBlaster2Label" />
 						<ComboBox fx:id="sidBlaster2Box" onAction="#setSidBlaster2" />
+					</VBox>
+				</TitledPane>
+				<TitledPane text="%ULTIMATE64" expanded="false">
+					<VBox>
+						<CheckBox text="%ENABLE_ULTIMATE64" fx:id="enableUltimate64" />
+						<Label text="%HOSTNAME" fx:id="hostnameLabel" />
+						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname"
+							prefWidth="80">
+							<tooltip>
+								<Tooltip text="%HOSTNAME_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%PORT" fx:id="portLabel" />
+						<TypeTextField type="Integer" fx:id="ultimate64Port"
+							onAction="#setUltimate64Port" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%COMPARE_MP3" expanded="false">
@@ -246,10 +269,6 @@
 							<Tooltip text="%DEFAULT_LENGTH_TIP" />
 						</tooltip>
 					</TextField>
-				</VBox>
-				<VBox>
-					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
-					<ProgressBar fx:id="progress" progress="0"/>
 				</VBox>
 			</HBox>
 		</AnchorPane>

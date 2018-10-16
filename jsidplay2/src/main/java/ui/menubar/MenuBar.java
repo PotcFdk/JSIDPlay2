@@ -221,7 +221,10 @@ public class MenuBar extends C64VBox implements UIPart {
 		updatePlayerButtons(util.getPlayer().getPlayList());
 
 		for (ViewEntity view : config.getViews()) {
-			Platform.runLater(() -> addView(view.getFxId()));
+			Platform.runLater(() -> {
+				if (jSidPlay2.getTabbedPane() != null)
+					addView(view.getFxId());
+			});
 		}
 
 		Platform.runLater(() -> {
@@ -232,34 +235,36 @@ public class MenuBar extends C64VBox implements UIPart {
 				});
 			});
 			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
-			getScene().setOnDragOver(event -> {
-				Dragboard db = event.getDragboard();
-				if (db.hasFiles()) {
-					event.acceptTransferModes(TransferMode.COPY);
-				} else {
-					event.consume();
-				}
-			});
-			getScene().setOnDragDropped(event -> {
-				Dragboard db = event.getDragboard();
-				boolean success = false;
-				if (db.hasFiles()) {
-					success = true;
-					List<File> files = db.getFiles();
-					try {
-						video();
-						util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-								.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get());
-						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
-								null);
-					} catch (IOException | SidTuneError | URISyntaxException e) {
-						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
+			if (getScene() != null) {
+				getScene().setOnDragOver(event -> {
+					Dragboard db = event.getDragboard();
+					if (db.hasFiles()) {
+						event.acceptTransferModes(TransferMode.COPY);
+					} else {
+						event.consume();
 					}
-				}
-				event.setDropCompleted(success);
-				event.consume();
-			});
-			jSidPlay2.getTabbedPane().requestFocus();
+				});
+				getScene().setOnDragDropped(event -> {
+					Dragboard db = event.getDragboard();
+					boolean success = false;
+					if (db.hasFiles()) {
+						success = true;
+						List<File> files = db.getFiles();
+						try {
+							video();
+							util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
+									.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get());
+							new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
+									null);
+						} catch (IOException | SidTuneError | URISyntaxException e) {
+							openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
+						}
+					}
+					event.setDropCompleted(success);
+					event.consume();
+				});
+				jSidPlay2.getTabbedPane().requestFocus();
+			}
 			util.getPlayer().startC64();
 		});
 	}

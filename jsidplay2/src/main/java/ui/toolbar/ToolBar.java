@@ -89,9 +89,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<ChipModel> sidBlaster0Box, sidBlaster1Box, sidBlaster2Box;
 	@FXML
-	private CheckBox enableSldb, singleSong, proxyEnable;
+	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, appServerPort,
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname, ultimate64Port, appServerPort,
 			appServerSecurePort, appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
@@ -237,6 +237,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
 				new IntegerStringConverter());
 
+		enableUltimate64.selectedProperty().bindBidirectional(emulationSection.enableUltimate64Property());
+		ultimate64Hostname.textProperty().bindBidirectional(emulationSection.ultimate64HostProperty());
+		Bindings.bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
+				new IntegerStringConverter());
+
 		Bindings.bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
 				new IntegerStringConverter());
 		Bindings.bindBidirectional(appServerSecurePort.textProperty(), emulationSection.appServerSecurePortProperty(),
@@ -367,6 +372,16 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void setPort() {
 		NetSIDDevConnection.getInstance().invalidate();
+		restart();
+	}
+
+	@FXML
+	private void setUltimate64Hostname() {
+		restart();
+	}
+
+	@FXML
+	private void setUltimate64Port() {
 		restart();
 	}
 

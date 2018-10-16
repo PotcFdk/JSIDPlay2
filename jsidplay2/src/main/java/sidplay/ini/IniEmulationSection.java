@@ -33,6 +33,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -267,6 +270,41 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public void setNetSIDDevPort(int port) {
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
 	}
+
+
+	@Override
+	public final boolean isEnableUltimate64() {
+		return iniReader.getPropertyBool("Emulation", "Enable Ultimate64", DEFAULT_ENABLE_ULTIMATE64);
+	}
+
+	@Override
+	@Parameter(names = { "--enableUltimate64" }, descriptionKey = "ENABLE_ULTIMATE64", arity = 1)
+	public final void setEnableUltimate64(final boolean enableUltimate64) {
+		iniReader.setProperty("Emulation", "Enable Ultimate64", enableUltimate64);
+	}
+
+	@Override
+	public String getUltimate64Host() {
+		return iniReader.getPropertyString("Emulation", "Ultimate64 Host", DEFAULT_ULTIMATE64_HOST);
+	}
+
+	@Override
+	@Parameter(names = { "--Ultimate64Host" }, descriptionKey = "ULTIMATE64_HOST")
+	public void setUltimate64Host(String hostname) {
+		iniReader.setProperty("Emulation", "Ultimate64 Host", hostname);
+	}
+
+	@Override
+	public int getUltimate64Port() {
+		return iniReader.getPropertyInt("Emulation", "Ultimate64 Port", DEFAULT_ULTIMATE64_PORT);
+	}
+
+	@Override
+	@Parameter(names = { "--Ultimate64Port" }, descriptionKey = "ULTIMATE64_PORT")
+	public void setUltimate64Port(int port) {
+		iniReader.setProperty("Emulation", "Ultimate64 Port", port);
+	}
+
 
 	@Override
 	public final boolean isFilter() {
@@ -720,6 +758,8 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		result.append("hardsid8580=").append(getHardsid8580()).append(",");
 		result.append("netSIDDevHost=").append(getNetSIDDevHost()).append(",");
 		result.append("netSIDDevPort=").append(getNetSIDDevPort()).append(",");
+		result.append("ultimate64Host=").append(getUltimate64Host()).append(",");
+		result.append("ultimate64Port=").append(getUltimate64Port()).append(",");
 		result.append("filter=").append(isFilter()).append(",");
 		result.append("stereoFilter=").append(isStereoFilter()).append(",");
 		result.append("thirdSIDFilter=").append(isThirdSIDFilter()).append(",");

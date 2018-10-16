@@ -22,6 +22,8 @@ import static sidplay.player.State.START;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -127,6 +129,11 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * Auto-start commands.
 	 */
 	private static final String RUN = "RUN\r", SYS = "SYS%d\r", LOAD = "LOAD\r";
+
+	/**
+	 * Ultimate64 socket connection timeout.
+	 */
+	private static final int SOCKET_CONNECT_TIMEOUT = 5000;
 
 	/**
 	 * Music player state.
@@ -397,6 +404,66 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		}
 	}
 
+	public void sendReset() throws IOException, InterruptedException {
+		String hostname = config.getEmulationSection().getUltimate64Host();
+		int port = config.getEmulationSection().getUltimate64Port();
+		try (Socket connectedSocket = new Socket()) {
+			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+			connectedSocket.getOutputStream().write(new byte[] { 0x04, (byte) 0xff, 0, 0 });
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		Thread.sleep(1500);
+	}
+
+	public void sendFileSys(int startAddr) throws IOException, InterruptedException {
+		Thread.sleep(1500);
+		String hostname = config.getEmulationSection().getUltimate64Host();
+		int port = config.getEmulationSection().getUltimate64Port();
+		try (Socket connectedSocket = new Socket()) {
+			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+			int ramStart = 0x0400;
+			int ramEnd = 0x10000;
+			byte[] ram = new byte[ramEnd - ramStart + 8];
+			ram[0] = 0x09;
+			ram[1] = (byte) 0xff;
+			ram[2] = (byte) (ram.length & 0xff);
+			ram[3] = (byte) ((ram.length >> 8) & 0xff);
+			ram[4] = (byte) (startAddr & 0xff);
+			ram[5] = (byte) ((startAddr >> 8) & 0xff);
+			ram[6] = (byte) (ramStart & 0xff);
+			ram[7] = (byte) ((ramStart >> 8) & 0xff);
+			System.arraycopy(c64.getRAM(), ramStart, ram, 8, ramEnd - ramStart);
+			connectedSocket.getOutputStream().write(ram);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		Thread.sleep(500);
+	}
+
+	public void sendFileRun() throws IOException, InterruptedException {
+		Thread.sleep(1500);
+		String hostname = config.getEmulationSection().getUltimate64Host();
+		int port = config.getEmulationSection().getUltimate64Port();
+		try (Socket connectedSocket = new Socket()) {
+			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+			int ramStart = 0x0800;
+			int ramEnd = 0x10000;
+			byte[] ram = new byte[ramEnd - ramStart + 6];
+			ram[0] = 0x02;
+			ram[1] = (byte) 0xff;
+			ram[2] = (byte) (ram.length & 0xff);
+			ram[3] = (byte) ((ram.length >> 8) & 0xff);
+			ram[4] = (byte) (ramStart & 0xff);
+			ram[5] = (byte) ((ramStart >> 8) & 0xff);
+			System.arraycopy(c64.getRAM(), ramStart, ram, 6, ramEnd - ramStart);
+			connectedSocket.getOutputStream().write(ram);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		Thread.sleep(500);
+	}
+
 	/**
 	 * Power-on C64 system.
 	 */
@@ -404,12 +471,31 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		super.reset();
 		timer.reset();
 
+		if (config.getEmulationSection().isEnableUltimate64()) {
+			try {
+				sendReset();
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
+		}
+
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
 			public void event() throws InterruptedException {
 				if (tune != RESET) {
 					// for tunes: Install player into RAM
 					Integer driverAddress = tune.placeProgramInMemory(c64.getRAM());
+					if (config.getEmulationSection().isEnableUltimate64()) {
+						try {
+							if (driverAddress != null) {
+								sendFileSys(driverAddress);
+							} else {
+								sendFileRun();
+							}
+						} catch (IOException e) {
+							throw new RuntimeException(e.getMessage(), e);
+						}
+					}
 					if (driverAddress != null) {
 						// Set play address to feedback call frames counter.
 						c64.setPlayAddr(tune.getInfo().getPlayAddr());

@@ -34,6 +34,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -428,6 +431,56 @@ public class EmulationSection implements IEmulationSection {
 	public void setNetSIDDevPort(int port) {
 		this.netSidDevPortProperty.set(port);
 	}
+
+
+	private BooleanProperty enableUltimate64Property = new SimpleBooleanProperty(DEFAULT_ENABLE_ULTIMATE64);
+
+	@Override
+	public boolean isEnableUltimate64() {
+		return enableUltimate64Property.get();
+	}
+
+	@Override
+	public void setEnableUltimate64(boolean isEnableUltimate64) {
+		enableUltimate64Property.set(isEnableUltimate64);
+	}
+
+	public BooleanProperty enableUltimate64Property() {
+		return enableUltimate64Property;
+	}
+
+	private StringProperty ultimate64HostProperty = new SimpleStringProperty(DEFAULT_ULTIMATE64_HOST);
+
+	public StringProperty ultimate64HostProperty() {
+		return ultimate64HostProperty;
+	}
+
+	@Override
+	public String getUltimate64Host() {
+		return ultimate64HostProperty.get();
+	}
+
+	@Override
+	public void setUltimate64Host(String hostname) {
+		this.ultimate64HostProperty.set(hostname);
+	}
+
+	private ObjectProperty<Integer> ultimate64PortProperty = new SimpleObjectProperty<Integer>(DEFAULT_ULTIMATE64_PORT);
+
+	public ObjectProperty<Integer> ultimate64PortProperty() {
+		return ultimate64PortProperty;
+	}
+
+	@Override
+	public int getUltimate64Port() {
+		return ultimate64PortProperty.get();
+	}
+
+	@Override
+	public void setUltimate64Port(int port) {
+		this.ultimate64PortProperty.set(port);
+	}
+
 
 	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<Connectors>(DEFAULT_CONNECTORS);
 
