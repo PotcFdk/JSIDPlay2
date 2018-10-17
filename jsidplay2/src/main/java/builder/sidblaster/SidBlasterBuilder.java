@@ -70,7 +70,7 @@ public class SidBlasterBuilder implements SIDBuilder {
 		System.out.println("Devices: " + hardSID.HardSID_Devices());
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		Integer chipNum = getModelDependantSidNum(chipModel, sidNum);
-		System.out.println("Use device Idx: " + chipNum + " for " + chipModel);
+		System.out.println("Use device Idx: " + chipNum + " for sidNum=" + sidNum + " and model " + chipModel);
 		if (chipNum != null && chipNum < hardSID.HardSID_Devices()) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
@@ -117,15 +117,24 @@ public class SidBlasterBuilder implements SIDBuilder {
 				if (sids.stream().filter(sid -> theSidBlasterIdx == sid.getDeviceId()).findFirst().isPresent()) {
 					continue;
 				}
-				if (theSidBlasterIdx==0 && device0Model == chipModel) {
+				if (theSidBlasterIdx == 0 && device0Model == chipModel) {
 					return 0;
 				}
-				if (theSidBlasterIdx==1 && device1Model == chipModel) {
+				if (theSidBlasterIdx == 1 && device1Model == chipModel) {
 					return 1;
 				}
-				if (theSidBlasterIdx==2 && device2Model == chipModel) {
+				if (theSidBlasterIdx == 2 && device2Model == chipModel) {
 					return 2;
 				}
+			}
+			// Stereo or 3-SID: nothing matched? Use next free slot (prevent already used
+			// one)
+			for (int sidBlasterIdx = 0; sidBlasterIdx < hardSID.HardSID_Devices(); sidBlasterIdx++) {
+				final int theSidBlasterIdx = sidBlasterIdx;
+				if (sids.stream().filter(sid -> theSidBlasterIdx == sid.getDeviceId()).findFirst().isPresent()) {
+					continue;
+				}
+				return sidBlasterIdx;
 			}
 		}
 		// no slot left
