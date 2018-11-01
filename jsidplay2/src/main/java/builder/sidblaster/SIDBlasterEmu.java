@@ -2,11 +2,15 @@ package builder.sidblaster;
 
 import static libsidplay.common.SIDChip.REG_COUNT;
 
+import java.util.List;
+
 import builder.sidblaster.HardSID.HSID_USB_WSTATE;
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -17,6 +21,51 @@ import libsidplay.config.IEmulationSection;
  */
 public class SIDBlasterEmu extends SIDEmu {
 
+	/**
+	 * FakeStereo mode uses two chips using the same base address. Write commands
+	 * are routed two both SIDs, while read command can be configured to be
+	 * processed by a specific SID chip.
+	 * 
+	 * @author ken
+	 *
+	 */
+	public static class FakeStereo extends SIDBlasterEmu {
+		private final IEmulationSection emulationSection;
+		private final int prevNum;
+		private final List<SIDBlasterEmu> sids;
+
+		public FakeStereo(final EventScheduler context, final IConfig config, CPUClock cpuClock,
+				SidBlasterBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceId, final int sidNum,
+				final List<SIDBlasterEmu> sids) {
+			super(context, config, cpuClock, hardSIDBuilder, hardSID, sidNum, deviceId);
+			this.emulationSection = config.getEmulationSection();
+			this.prevNum = sidNum - 1;
+			this.sids = sids;
+		}
+
+		@Override
+		public byte read(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).read(addr);
+			}
+			return super.read(addr);
+		}
+
+		@Override
+		public byte readInternalRegister(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).readInternalRegister(addr);
+			}
+			return super.readInternalRegister(addr);
+		}
+
+		@Override
+		public void write(int addr, byte data) {
+			super.write(addr, data);
+			sids.get(prevNum).write(addr, data);
+		}
+	}
+
 	private static final short SHORTEST_DELAY = 4;
 
 	private final Event event = new Event("HardSID Delay") {
@@ -26,20 +75,31 @@ public class SIDBlasterEmu extends SIDEmu {
 		}
 	};
 
-	private EventScheduler context;
+	private final EventScheduler context;
 
 	private final HardSID hardSID;
 
 	private final byte deviceID;
 
-	private SidBlasterBuilder hardSIDBuilder;
+	private final SidBlasterBuilder hardSIDBuilder;
 
-	public SIDBlasterEmu(EventScheduler context, SidBlasterBuilder hardSIDBuilder, final HardSID hardSID,
-			final int sidNum) {
+	private final CPUClock cpuClock;
+
+	private final IAudioSection audioSection;
+
+	private final int sidNum;
+
+	private boolean doReadWriteDelayed;
+
+	public SIDBlasterEmu(EventScheduler context, IConfig config, CPUClock cpuClock, SidBlasterBuilder hardSIDBuilder,
+			final HardSID hardSID, final int sidNum, final byte deviceId) {
 		this.context = context;
+		this.audioSection = config.getAudioSection();
+		this.cpuClock = cpuClock;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
-		this.deviceID = (byte) sidNum;
+		this.sidNum = sidNum;
+		this.deviceID = deviceId;
 	}
 
 	@Override
@@ -55,7 +115,9 @@ public class SIDBlasterEmu extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+		doWriteDelayed(() -> {
+			hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+		});
 		// unsupported by SIDBlaster
 		return (byte) 0xff;
 	}
@@ -64,9 +126,30 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		while (hardSID.HardSID_Try_Write(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess(), (byte) addr,
-				data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc())
-			;
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
+
+		doReadWriteDelayed = true;
+		doWriteDelayed(() -> {
+			while (hardSID.HardSID_Try_Write(deviceID, clocksSinceLastAccess, (byte) addr,
+					data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc())
+				;
+		});
+	}
+
+	private void doWriteDelayed(Runnable runnable) {
+		int delay = (int) (cpuClock.getCpuFrequency() / 1000. * audioSection.getDelay(sidNum));
+		if (delay > 0) {
+			context.schedule(new Event("Delayed SID output") {
+				@Override
+				public void event() throws InterruptedException {
+					if (doReadWriteDelayed) {
+						runnable.run();
+					}
+				}
+			}, delay);
+		} else {
+			runnable.run();
+		}
 	}
 
 	@Override
@@ -86,6 +169,7 @@ public class SIDBlasterEmu extends SIDEmu {
 		reset((byte) 0x0);
 		context.cancel(event);
 		hardSID.HardSID_Unlock(deviceID);
+		doReadWriteDelayed = false;
 	}
 
 	@Override

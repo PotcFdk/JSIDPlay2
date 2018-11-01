@@ -5,6 +5,7 @@ import static libsidplay.common.ChipModel.MOS8580;
 import static libsidplay.common.Emulation.RESID;
 import static libsidplay.common.Emulation.RESIDFP;
 import static libsidplay.common.Engine.HARDSID;
+import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.common.Engine.NETSID;
 import static libsidplay.common.SIDChip.FC_MAX;
 
@@ -188,7 +189,8 @@ public class EmulationSettings extends C64Window {
 		});
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
-		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(), new NumberToStringConverter<>(2));
+		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(),
+				new NumberToStringConverter<>(2));
 		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(m -> m.setVolume(0, newValue.floatValue()));
 		});
@@ -199,7 +201,8 @@ public class EmulationSettings extends C64Window {
 			util.getPlayer().configureMixer(b -> b.setVolume(1, newValue.floatValue()));
 		});
 		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
-		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(), new NumberToStringConverter<>(2));
+		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(),
+				new NumberToStringConverter<>(2));
 		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
 			util.getPlayer().configureMixer(b -> b.setVolume(2, newValue.floatValue()));
 		});
@@ -208,8 +211,10 @@ public class EmulationSettings extends C64Window {
 		stereoMode.setConverter(new EnumToStringConverter<StereoMode>(bundle));
 		stereoMode.setItems(stereoModes);
 
-		baseAddress.textProperty().bindBidirectional(emulationSection.dualSidBaseProperty(), new HexNumberToStringConverter());
-		thirdAddress.textProperty().bindBidirectional(emulationSection.thirdSIDBaseProperty(), new HexNumberToStringConverter());
+		baseAddress.textProperty().bindBidirectional(emulationSection.dualSidBaseProperty(),
+				new HexNumberToStringConverter());
+		thirdAddress.textProperty().bindBidirectional(emulationSection.thirdSIDBaseProperty(),
+				new HexNumberToStringConverter());
 
 		sidReads = FXCollections.<SidReads>observableArrayList(SidReads.values());
 		sidToRead.setConverter(new EnumToStringConverter<SidReads>(bundle));
@@ -289,12 +294,16 @@ public class EmulationSettings extends C64Window {
 		} else {
 			stereoMode.getSelectionModel().select(StereoMode.AUTO);
 		}
+		mainVolume.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		// stereo, only:
-		mainBalance.setDisable(!second);
-		mainDelay.setDisable(!second);
-		secondVolume.setDisable(!second);
-		secondBalance.setDisable(!second);
-		secondDelay.setDisable(!second);
+		mainBalance.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		mainDelay.setDisable(!second || emulationSection.getEngine() == HARDSID);
+		secondVolume.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		secondBalance.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		secondDelay.setDisable(!second || emulationSection.getEngine() == HARDSID);
 		sid2Emulation.setDisable(!second);
 		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second);
@@ -304,9 +313,11 @@ public class EmulationSettings extends C64Window {
 		muteVoice7.setDisable(!second);
 		muteVoice8.setDisable(!second);
 		// 3-SID, only:
-		thirdVolume.setDisable(!third);
-		thirdBalance.setDisable(!third);
-		thirdDelay.setDisable(!third);
+		thirdVolume.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		thirdBalance.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		thirdDelay.setDisable(!third || emulationSection.getEngine() == HARDSID);
 		sid3Emulation.setDisable(!third);
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
@@ -321,9 +332,8 @@ public class EmulationSettings extends C64Window {
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
-		// fake stereo does not work with HardSID4U or SIDBlaster hardware
-		fakeStereo.setDisable(
-				emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == Engine.SIDBLASTER);
+		// fake stereo does not work with HardSID4U hardware
+		fakeStereo.setDisable(emulationSection.getEngine() == HARDSID);
 	}
 
 	@Override
