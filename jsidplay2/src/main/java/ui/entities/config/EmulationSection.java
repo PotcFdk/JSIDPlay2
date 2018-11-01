@@ -37,6 +37,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -481,6 +482,21 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64PortProperty.set(port);
 	}
 
+	private ObjectProperty<Integer> ultimate64SyncDelayProperty = new SimpleObjectProperty<Integer>(DEFAULT_ULTIMATE64_SYNC_DELAY);
+
+	public ObjectProperty<Integer> ultimate64SyncDelayProperty() {
+		return ultimate64SyncDelayProperty;
+	}
+
+	@Override
+	public int getUltimate64SyncDelay() {
+		return ultimate64SyncDelayProperty.get();
+	}
+
+	@Override
+	public void setUltimate64SyncDelay(int syncDelay) {
+		this.ultimate64SyncDelayProperty.set(syncDelay);
+	}
 
 	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<Connectors>(DEFAULT_CONNECTORS);
 

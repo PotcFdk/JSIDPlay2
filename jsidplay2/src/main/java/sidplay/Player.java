@@ -131,6 +131,11 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private static final String RUN = "RUN\r", SYS = "SYS%d\r", LOAD = "LOAD\r";
 
 	/**
+	 * Software reset routine start address.
+	 */
+	private static final int ADDR_RESET = 0xfce2;
+
+	/**
 	 * Ultimate64 socket connection timeout.
 	 */
 	private static final int SOCKET_CONNECT_TIMEOUT = 5000;
@@ -404,28 +409,16 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		}
 	}
 
-	public void sendReset() throws IOException, InterruptedException {
+	public void sendRamAndSys(int startAddr) throws InterruptedException {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
-		try (Socket connectedSocket = new Socket()) {
-			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			connectedSocket.getOutputStream().write(new byte[] { 0x04, (byte) 0xff, 0, 0 });
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-		Thread.sleep(1500);
-	}
-
-	public void sendFileSys(int startAddr) throws IOException, InterruptedException {
-		Thread.sleep(1500);
-		String hostname = config.getEmulationSection().getUltimate64Host();
-		int port = config.getEmulationSection().getUltimate64Port();
+		int syncDelay = config.getEmulationSection().getUltimate64SyncDelay();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			int ramStart = 0x0400;
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 8];
-			ram[0] = 0x09;
+			ram[0] = (byte) 0x09;
 			ram[1] = (byte) 0xff;
 			ram[2] = (byte) (ram.length & 0xff);
 			ram[3] = (byte) ((ram.length >> 8) & 0xff);
@@ -436,21 +429,21 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			System.arraycopy(c64.getRAM(), ramStart, ram, 8, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
 		}
-		Thread.sleep(500);
+		Thread.sleep(syncDelay);
 	}
 
-	public void sendFileRun() throws IOException, InterruptedException {
-		Thread.sleep(1500);
+	public void sendRamAndRun() throws InterruptedException {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
+		int syncDelay = config.getEmulationSection().getUltimate64SyncDelay();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			int ramStart = 0x0800;
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 6];
-			ram[0] = 0x02;
+			ram[0] = (byte) 0x02;
 			ram[1] = (byte) 0xff;
 			ram[2] = (byte) (ram.length & 0xff);
 			ram[3] = (byte) ((ram.length >> 8) & 0xff);
@@ -459,9 +452,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			System.arraycopy(c64.getRAM(), ramStart, ram, 6, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
 		}
-		Thread.sleep(500);
+		Thread.sleep(syncDelay);
 	}
 
 	/**
@@ -470,41 +463,35 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	protected final void reset() {
 		super.reset();
 		timer.reset();
-
-		if (config.getEmulationSection().isEnableUltimate64()) {
-			try {
-				sendReset();
-			} catch (IOException | InterruptedException e) {
-				throw new RuntimeException(e.getMessage(), e);
-			}
-		}
-
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
 			public void event() throws InterruptedException {
 				if (tune != RESET) {
 					// for tunes: Install player into RAM
 					Integer driverAddress = tune.placeProgramInMemory(c64.getRAM());
-					if (config.getEmulationSection().isEnableUltimate64()) {
-						try {
-							if (driverAddress != null) {
-								sendFileSys(driverAddress);
-							} else {
-								sendFileRun();
-							}
-						} catch (IOException e) {
-							throw new RuntimeException(e.getMessage(), e);
-						}
-					}
 					if (driverAddress != null) {
 						// Set play address to feedback call frames counter.
 						c64.setPlayAddr(tune.getInfo().getPlayAddr());
 						// Start SID player driver
 						c64.getCPU().forcedJump(driverAddress);
+						if (config.getEmulationSection().isEnableUltimate64()) {
+							sendRamAndSys(driverAddress);
+						}
 					} else {
 						// No player: Start basic program or assembler code
 						final int loadAddr = tune.getInfo().getLoadAddr();
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
+						if (config.getEmulationSection().isEnableUltimate64()) {
+							if (loadAddr == 0x0801) {
+								sendRamAndRun();
+							} else {
+								sendRamAndSys(loadAddr);
+							}
+						}
+					}
+				} else {
+					if (config.getEmulationSection().isEnableUltimate64()) {
+						sendRamAndSys(ADDR_RESET);
 					}
 				}
 				if (command != null) {

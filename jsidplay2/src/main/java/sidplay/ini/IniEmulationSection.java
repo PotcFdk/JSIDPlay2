@@ -36,6 +36,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -303,6 +304,17 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Parameter(names = { "--Ultimate64Port" }, descriptionKey = "ULTIMATE64_PORT")
 	public void setUltimate64Port(int port) {
 		iniReader.setProperty("Emulation", "Ultimate64 Port", port);
+	}
+
+	@Override
+	public int getUltimate64SyncDelay() {
+		return iniReader.getPropertyInt("Emulation", "Ultimate64 Sync Delay", DEFAULT_ULTIMATE64_SYNC_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--Ultimate64SyncDelay" }, descriptionKey = "ULTIMATE64_SYNC_DELAY")
+	public void setUltimate64SyncDelay(int syncDelay) {
+		iniReader.setProperty("Emulation", "Ultimate64 Sync Delay", syncDelay);
 	}
 
 

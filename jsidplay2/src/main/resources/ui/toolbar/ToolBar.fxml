@@ -74,18 +74,18 @@
 				spacing="10">
 				<TitledPane text="%NETSID" expanded="false">
 					<VBox>
-						<Label text="%HOSTNAME" fx:id="hostnameLabel" />
+						<Label text="%NETSID_HOSTNAME" fx:id="hostnameLabel" />
 						<TextField fx:id="hostname" onAction="#setHostname"
 							prefWidth="80">
 							<tooltip>
-								<Tooltip text="%HOSTNAME_TIP" />
+								<Tooltip text="%NETSID_HOSTNAME_TIP" />
 							</tooltip>
 						</TextField>
-						<Label text="%PORT" fx:id="portLabel" />
+						<Label text="%NETSID_PORT" fx:id="portLabel" />
 						<TypeTextField type="Integer" fx:id="port"
 							onAction="#setPort" prefWidth="60">
 							<tooltip>
-								<Tooltip text="%PORT_TIP" />
+								<Tooltip text="%NETSID_PORT_TIP" />
 							</tooltip>
 						</TypeTextField>
 					</VBox>
@@ -131,18 +131,25 @@
 				<TitledPane text="%ULTIMATE64" expanded="false">
 					<VBox>
 						<CheckBox text="%ENABLE_ULTIMATE64" fx:id="enableUltimate64" />
-						<Label text="%HOSTNAME" fx:id="hostnameLabel" />
+						<Label text="%ULTIMATE64_HOSTNAME" fx:id="hostnameLabel" />
 						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname"
 							prefWidth="80">
 							<tooltip>
-								<Tooltip text="%HOSTNAME_TIP" />
+								<Tooltip text="%ULTIMATE64_HOSTNAME_TIP" />
 							</tooltip>
 						</TextField>
-						<Label text="%PORT" fx:id="portLabel" />
+						<Label text="%ULTIMATE64_PORT" fx:id="portLabel" />
 						<TypeTextField type="Integer" fx:id="ultimate64Port"
 							onAction="#setUltimate64Port" prefWidth="60">
 							<tooltip>
-								<Tooltip text="%PORT_TIP" />
+								<Tooltip text="%ULTIMATE64_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_SYNC_DELAY" fx:id="syncDelayLabel" />
+						<TypeTextField type="Integer" fx:id="ultimate64SyncDelay"
+							onAction="#setUltimate64SyncDelay" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_SYNC_DELAY_TIP" />
 							</tooltip>
 						</TypeTextField>
 					</VBox>

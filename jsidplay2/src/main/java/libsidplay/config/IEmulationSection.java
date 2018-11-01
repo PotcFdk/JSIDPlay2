@@ -274,6 +274,20 @@ public interface IEmulationSection {
 	void setUltimate64Port(int port);
 
 	/**
+	 * Getter of the synchronization delay with the Ultimate64.
+	 * 
+	 * @return synchronization delay with the Ultimate64
+	 */
+	int getUltimate64SyncDelay();
+
+	/**
+	 * Setter of the synchronization delay with the Ultimate64.
+	 * 
+	 * @param syncDelay synchronization delay with the Ultimate64
+	 */
+	void setUltimate64SyncDelay(int syncDelay);
+
+	/**
 	 * Is SID filter enabled?
 	 * 
 	 * @return filter enabled

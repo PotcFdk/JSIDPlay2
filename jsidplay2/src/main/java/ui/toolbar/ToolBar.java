@@ -91,8 +91,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname, ultimate64Port, appServerPort,
-			appServerSecurePort, appServerKeyManagerPassword, appServerKeyStorePassword;
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
+			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyManagerPassword,
+			appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -241,6 +242,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		ultimate64Hostname.textProperty().bindBidirectional(emulationSection.ultimate64HostProperty());
 		Bindings.bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
 				new IntegerStringConverter());
+		Bindings.bindBidirectional(ultimate64SyncDelay.textProperty(), emulationSection.ultimate64SyncDelayProperty(),
+				new IntegerStringConverter());
 
 		Bindings.bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
 				new IntegerStringConverter());
@@ -382,6 +385,11 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void setUltimate64Port() {
+		restart();
+	}
+
+	@FXML
+	private void setUltimate64SyncDelay() {
 		restart();
 	}
 
