@@ -295,45 +295,57 @@ public class EmulationSettings extends C64Window {
 			stereoMode.getSelectionModel().select(StereoMode.AUTO);
 		}
 		mainVolume.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice1.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice2.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice3.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice4.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		// stereo, only:
 		mainBalance.setDisable(
 				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		mainDelay.setDisable(!second || emulationSection.getEngine() == HARDSID);
+		mainDelay.setDisable(!second);
 		secondVolume.setDisable(
 				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		secondBalance.setDisable(
 				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		secondDelay.setDisable(!second || emulationSection.getEngine() == HARDSID);
+		secondDelay.setDisable(!second);
 		sid2Emulation.setDisable(!second);
 		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second);
 		secondFilterCurve.setDisable(!second);
-		muteVoice5.setDisable(!second);
-		muteVoice6.setDisable(!second);
-		muteVoice7.setDisable(!second);
-		muteVoice8.setDisable(!second);
+		muteVoice5.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice6.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice7.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice8.setDisable(
+				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		// 3-SID, only:
 		thirdVolume.setDisable(
 				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		thirdBalance.setDisable(
 				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		thirdDelay.setDisable(!third || emulationSection.getEngine() == HARDSID);
+		thirdDelay.setDisable(!third);
 		sid3Emulation.setDisable(!third);
 		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third);
 		thirdFilterCurve.setDisable(!third);
-		muteVoice9.setDisable(!third);
-		muteVoice10.setDisable(!third);
-		muteVoice11.setDisable(!third);
-		muteVoice12.setDisable(!third);
+		muteVoice9.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice10.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice11.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		muteVoice12.setDisable(
+				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 		// fake stereo, only:
 		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:
 		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
-		// fake stereo does not work with HardSID4U hardware
-		fakeStereo.setDisable(emulationSection.getEngine() == HARDSID);
+		// no SID boost for hardware SIDs
+		boosted8580.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
 	}
 
 	@Override

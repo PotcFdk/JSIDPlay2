@@ -132,9 +132,3 @@ TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
-
-SIDBlaster:
-- option to use or not use 6581 for 8580 playback
-- Fakestereo and delay support
-Ultimate64:
-- Play tunes on U64

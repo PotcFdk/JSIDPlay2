@@ -2,10 +2,14 @@ package builder.hardsid;
 
 import static libsidplay.common.SIDChip.REG_COUNT;
 
+import java.util.List;
+
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -27,6 +31,51 @@ import libsidplay.config.IEmulationSection;
  */
 public class HardSIDEmu extends SIDEmu {
 
+	/**
+	 * FakeStereo mode uses two chips using the same base address. Write commands
+	 * are routed two both SIDs, while read command can be configured to be
+	 * processed by a specific SID chip.
+	 * 
+	 * @author ken
+	 *
+	 */
+	public static class FakeStereo extends HardSIDEmu {
+		private final IEmulationSection emulationSection;
+		private final int prevNum;
+		private final List<HardSIDEmu> sids;
+
+		public FakeStereo(final EventScheduler context, final IConfig config, CPUClock cpuClock,
+				HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceId, final int chipNum,
+				final int sidNum, ChipModel chipModel, final List<HardSIDEmu> sids) {
+			super(context, config, cpuClock, hardSIDBuilder, hardSID, deviceId, chipNum, sidNum, chipModel);
+			this.emulationSection = config.getEmulationSection();
+			this.prevNum = sidNum - 1;
+			this.sids = sids;
+		}
+
+		@Override
+		public byte read(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).read(addr);
+			}
+			return super.read(addr);
+		}
+
+		@Override
+		public byte readInternalRegister(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).readInternalRegister(addr);
+			}
+			return super.readInternalRegister(addr);
+		}
+
+		@Override
+		public void write(int addr, byte data) {
+			super.write(addr, data);
+			sids.get(prevNum).write(addr, data);
+		}
+	}
+
 	private static final short SHORTEST_DELAY = 4;
 
 	private final Event event = new Event("HardSID Delay") {
@@ -42,18 +91,29 @@ public class HardSIDEmu extends SIDEmu {
 
 	private final byte deviceID;
 
+	private final byte chipNum;
+
 	private final byte sidNum;
 
 	private ChipModel chipModel;
 
 	private HardSIDBuilder hardSIDBuilder;
 
-	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID,
-			final int sidNum, final ChipModel model) {
+	private final CPUClock cpuClock;
+
+	private final IAudioSection audioSection;
+
+	private boolean doReadWriteDelayed;
+
+	public HardSIDEmu(EventScheduler context, IConfig config, CPUClock cpuClock, HardSIDBuilder hardSIDBuilder,
+			final HardSID hardSID, final byte deviceID, final int chipNum, int sidNum, final ChipModel model) {
 		this.context = context;
+		this.audioSection = config.getAudioSection();
+		this.cpuClock = cpuClock;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
+		this.chipNum = (byte) chipNum;
 		this.sidNum = (byte) sidNum;
 		this.chipModel = model;
 	}
@@ -63,10 +123,10 @@ public class HardSIDEmu extends SIDEmu {
 		hardSID.HardSID_Reset(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
 			hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
-			hardSID.HardSID_Write(deviceID, sidNum, reg, (byte) 0);
+			hardSID.HardSID_Write(deviceID, chipNum, reg, (byte) 0);
 		}
 		hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
-		hardSID.HardSID_Write(deviceID, sidNum, (byte) 0xf, volume);
+		hardSID.HardSID_Write(deviceID, chipNum, (byte) 0xf, volume);
 		hardSID.HardSID_Flush(deviceID);
 	}
 
@@ -81,12 +141,35 @@ public class HardSIDEmu extends SIDEmu {
 	public void write(int addr, final byte data) {
 		clock();
 		super.write(addr, data);
-		hardSID.HardSID_Write(deviceID, sidNum, (byte) addr, data);
+
+		doReadWriteDelayed = true;
+		doWriteDelayed(() -> {
+			hardSID.HardSID_Write(deviceID, chipNum, (byte) addr, data);
+		});
 	}
 
 	@Override
 	public void clock() {
-		hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+		doReadWriteDelayed = true;
+		doWriteDelayed(() -> {
+			hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+		});
+	}
+
+	private void doWriteDelayed(Runnable runnable) {
+		int delay = (int) (cpuClock.getCpuFrequency() / 1000. * audioSection.getDelay(sidNum));
+		if (delay > 0) {
+			context.schedule(new Event("Delayed SID output") {
+				@Override
+				public void event() throws InterruptedException {
+					if (doReadWriteDelayed) {
+						runnable.run();
+					}
+				}
+			}, delay);
+		} else {
+			runnable.run();
+		}
 	}
 
 	protected void lock() {
@@ -97,6 +180,7 @@ public class HardSIDEmu extends SIDEmu {
 	protected void unlock() {
 		reset((byte) 0x0);
 		context.cancel(event);
+		doReadWriteDelayed = false;
 	}
 
 	@Override
@@ -111,8 +195,8 @@ public class HardSIDEmu extends SIDEmu {
 	public void setVoiceMute(final int num, final boolean mute) {
 	}
 
-	public byte getSidNum() {
-		return sidNum;
+	public byte getChipNum() {
+		return chipNum;
 	}
 
 	protected ChipModel getChipModel() {

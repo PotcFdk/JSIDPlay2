@@ -52,9 +52,12 @@ public class HardSIDBuilder implements SIDBuilder {
 
 	protected long lastSIDWriteTime;
 
+	private CPUClock cpuClock;
+
 	public HardSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
+		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
 				hardSID = (HardSID) Native.loadLibrary("hardsid_usb", HardSID.class);
@@ -75,8 +78,8 @@ public class HardSIDBuilder implements SIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			System.out.println("Use HardSID sidNum: " + chipNum);
-			HardSIDEmu hsid = new HardSIDEmu(context, this, hardSID, deviceID, chipNum, chipModel);
+			System.out.println("Use device Idx: " + chipNum + " for sidNum=" + sidNum + " and model " + chipModel);
+			HardSIDEmu hsid = createSID(deviceID, chipNum, sidNum, tune, chipModel);
 			sids.add(hsid);
 			hsid.lock();
 			return hsid;
@@ -84,7 +87,20 @@ public class HardSIDBuilder implements SIDBuilder {
 		System.err.println(/* throw new RuntimeException( */
 				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)",
 						deviceID, hardSID.HardSID_SIDCount(deviceID)));
+		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
+			// Fake stereo chip not available? Re-use original chip
+			return oldHardSID;
+		}
 		return SIDEmu.NONE;
+	}
+
+	private HardSIDEmu createSID(byte deviceId, int chipNum, int sidNum, SidTune tune, ChipModel chipModel) {
+		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
+			return new HardSIDEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId, chipNum, sidNum,
+					chipModel, sids);
+		} else {
+			return new HardSIDEmu(context, config, cpuClock, this, hardSID, deviceId, chipNum, sidNum, chipModel);
+		}
 	}
 
 	@Override
@@ -105,13 +121,15 @@ public class HardSIDBuilder implements SIDBuilder {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 0) {
-			// Mono SID: choose according to the chip model type
-			return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
+			if (0 < hardSID.HardSID_SIDCount(deviceID)) {
+				// Mono SID: choose according to the chip model type
+				return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
+			}
 		} else {
 			// Stereo or 3-SID: use next free slot (prevent already used one and wrong type)
 			for (int hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
 				final int theHardSIDIdx = hardSidIdx;
-				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getSidNum()).findFirst().isPresent()
+				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getChipNum()).findFirst().isPresent()
 						|| hardSidIdx == sid6581 || hardSidIdx == sid8580) {
 					continue;
 				}
