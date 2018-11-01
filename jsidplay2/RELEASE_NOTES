@@ -6,21 +6,23 @@ Migration to HTTPS
 Updated documentation and screenshots
 
 Features:
-SLDB songlength, play time, startTime, fadeIn and fadeOut is from now on millisecond exact
+Delayed SID output for better fake stereo experience added.
+EmulationSettings enhanced (mute and delay up to 100ms added).
 SIDBlaster support added.
 Ultimate64 SID playback added
+Fake stereo mode and delayed SID output for HardSID4U and SIDBlaster USB added
+SLDB songlength, play time, startTime, fadeIn and fadeOut is from now on millisecond exact
 MP4 recording added.
 AppServer integrated (RESTful web services), provided inside JSIDPlay2.
 Android Demo App provided as a client for AppServer.
 Tons of new command-line parameters added.
 Command line version of NetSIDDevice added.
-Delayed SID output for better fake stereo experience added.
-EmulationSettings enhanced (mute and delay up to 100ms added).
 HTTPS used for all online section web-sites, if available.
 Online Downloads fixed (HTTP redirects and better Integration in Java).
 SOASC downloads fixed (MP3 comparison instead of naked playback).
 Configurable emulation buffer size added.
 More compact main user interface.
+Scrollling status line, if too long
 Current track displayed on the main window.
 Action Replay Cartridge integrated.
 Music Collection auto-configuration now includes an already pre-built search index.
@@ -37,4 +39,4 @@ Better control about debug configuration.
 Use of JNA not JNI.
 Full Hardware support mono/stereo/3-SID better configurable.
 Tons of Refactorings of the code.
-ConsolePlayer now runs in vanilla Java11 without javafx module dependencies
+ConsolePlayer now runs in vanilla Java 11 without javafx module dependencies
