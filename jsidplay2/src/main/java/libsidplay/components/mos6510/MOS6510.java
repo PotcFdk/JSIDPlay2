@@ -1089,7 +1089,8 @@ public class MOS6510 {
 							Register_Accumulator = (byte) (Register_Accumulator & 0xf0
 									| Register_Accumulator + 6 & 0x0f);
 						}
-						flagC = (data + (data & 0x10) & 0x1f0) > 0x50;
+						// simplified: flagC = (data + (data & 0x10) & 0x1f0) > 0x50;
+						flagC = data >= 0x50;
 						if (flagC) {
 							Register_Accumulator = (byte) (Register_Accumulator + 0x60 & 0xff);
 						}
