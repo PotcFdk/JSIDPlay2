@@ -23,7 +23,7 @@ import libsidplay.sidtune.SidTune;
  */
 public class SidBlasterBuilder implements SIDBuilder {
 
-	private static final short REGULAR_DELAY = Short.MAX_VALUE;
+	private static final short REGULAR_DELAY = 128;
 
 	/**
 	 * System event context.
@@ -70,17 +70,16 @@ public class SidBlasterBuilder implements SIDBuilder {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		System.out.println("Devices: " + hardSID.HardSID_Devices());
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		Integer deviceId = getModelDependantDeviceId(chipModel, sidNum);
 		if (deviceId != null && deviceId < hardSID.HardSID_Devices()) {
-			System.out.println("Use device Idx: " + deviceId + " for sidNum=" + sidNum + " and model " + chipModel);
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId, sidNum, tune);
+			System.out.println("Use device Idx: " + deviceId + " for sidNum=" + sidNum + " and model " + chipModel);
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune);
 			if (hsid.lock()) {
 				sids.add(hsid);
 				return hsid;
@@ -95,12 +94,12 @@ public class SidBlasterBuilder implements SIDBuilder {
 		return SIDEmu.NONE;
 	}
 
-	private SIDBlasterEmu createSID(Integer deviceId, int sidNum, SidTune tune) {
+	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune) {
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new SIDBlasterEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId.byteValue(), sidNum,
+			return new SIDBlasterEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId, sidNum,
 					sids);
 		} else {
-			return new SIDBlasterEmu(context, config, cpuClock, this, hardSID, sidNum, deviceId.byteValue());
+			return new SIDBlasterEmu(context, config, cpuClock, this, hardSID, sidNum, deviceId);
 		}
 	}
 
@@ -111,6 +110,13 @@ public class SidBlasterBuilder implements SIDBuilder {
 		sids.remove(sidEmu);
 	}
 
+	/**
+	 * Get SIDBlaster device index based on the desired chip model.
+	 * 
+	 * @param chipModel desired chip model
+	 * @param sidNum    current SID number
+	 * @return SID index of the desired SIDBlaster device
+	 */
 	private Integer getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
 		ChipModel device0Model = config.getEmulationSection().getSidBlaster0Model();
 		ChipModel device1Model = config.getEmulationSection().getSidBlaster1Model();

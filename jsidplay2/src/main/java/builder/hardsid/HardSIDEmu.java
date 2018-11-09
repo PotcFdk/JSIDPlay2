@@ -14,21 +14,10 @@ import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
 /**
- * <pre>
- * *************************************************************************
- *           hardsid.cpp  -  Hardsid support interface.
- *                           Created from Jarnos original
- *                           Sidplay2 patch
- *                           -------------------
- *  begin                : Fri Dec 15 2000
- *  copyright            : (C) 2000-2002 by Simon White
- *  email                : s_a_white@email.com
- * *************************************************************************
- * </pre>
- * 
- * @author Ken Händel
- * 
- */
+*
+* @author Ken Händel
+* 
+*/
 public class HardSIDEmu extends SIDEmu {
 
 	/**
@@ -85,7 +74,7 @@ public class HardSIDEmu extends SIDEmu {
 		}
 	};
 
-	private EventScheduler context;
+	private final EventScheduler context;
 
 	private final HardSID hardSID;
 
@@ -93,11 +82,11 @@ public class HardSIDEmu extends SIDEmu {
 
 	private final byte chipNum;
 
-	private final byte sidNum;
+	private final int sidNum;
 
-	private ChipModel chipModel;
+	private final ChipModel chipModel;
 
-	private HardSIDBuilder hardSIDBuilder;
+	private final HardSIDBuilder hardSIDBuilder;
 
 	private final CPUClock cpuClock;
 
@@ -114,7 +103,7 @@ public class HardSIDEmu extends SIDEmu {
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
 		this.chipNum = (byte) chipNum;
-		this.sidNum = (byte) sidNum;
+		this.sidNum = sidNum;
 		this.chipModel = model;
 	}
 
@@ -150,9 +139,10 @@ public class HardSIDEmu extends SIDEmu {
 
 	@Override
 	public void clock() {
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
-			hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
 		});
 	}
 

@@ -80,8 +80,8 @@ public class HardSIDBuilder implements SIDBuilder {
 			}
 			System.out.println("Use device Idx: " + chipNum + " for sidNum=" + sidNum + " and model " + chipModel);
 			HardSIDEmu hsid = createSID(deviceID, chipNum, sidNum, tune, chipModel);
-			sids.add(hsid);
 			hsid.lock();
+			sids.add(hsid);
 			return hsid;
 		}
 		System.err.println(/* throw new RuntimeException( */

@@ -98,8 +98,8 @@ public class SIDBlasterEmu extends SIDEmu {
 		this.cpuClock = cpuClock;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
-		this.sidNum = sidNum;
 		this.deviceID = deviceId;
+		this.sidNum = sidNum;
 	}
 
 	@Override
@@ -115,10 +115,11 @@ public class SIDBlasterEmu extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 		doWriteDelayed(() -> {
-			hardSID.HardSID_Delay(deviceID, (short) hardSIDBuilder.clocksSinceLastAccess());
+			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
 		});
-		// unsupported by SIDBlaster
+		// not supported by SIDBlaster
 		return (byte) 0xff;
 	}
 
@@ -136,6 +137,10 @@ public class SIDBlasterEmu extends SIDEmu {
 		});
 	}
 
+	@Override
+	public void clock() {
+	}
+
 	private void doWriteDelayed(Runnable runnable) {
 		int delay = (int) (cpuClock.getCpuFrequency() / 1000. * audioSection.getDelay(sidNum));
 		if (delay > 0) {
@@ -150,10 +155,6 @@ public class SIDBlasterEmu extends SIDEmu {
 		} else {
 			runnable.run();
 		}
-	}
-
-	@Override
-	public void clock() {
 	}
 
 	protected boolean lock() {
@@ -182,7 +183,6 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
-		// seems not to work: hardSID.HardSID_Mute(deviceID, (byte) num, mute);
 	}
 
 	@Override
