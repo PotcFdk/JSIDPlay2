@@ -81,13 +81,13 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final byte deviceID;
 
+	private final int sidNum;
+
 	private final SidBlasterBuilder hardSIDBuilder;
 
 	private final CPUClock cpuClock;
 
 	private final IAudioSection audioSection;
-
-	private final int sidNum;
 
 	private boolean doReadWriteDelayed;
 
