@@ -78,7 +78,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, chipModel);
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, getChipModel(deviceId));
 			if (hsid.lock()) {
 				sids.add(hsid);
 				return hsid;
@@ -175,6 +175,19 @@ public class SidBlasterBuilder implements HardwareSIDBuilder {
 		}
 		// no slot left
 		return null;
+	}
+
+	private ChipModel getChipModel(Integer deviceId) {
+		switch (deviceId) {
+		case 0:
+			return config.getEmulationSection().getSidBlaster0Model();
+		case 1:
+			return config.getEmulationSection().getSidBlaster1Model();
+		case 2:
+			return config.getEmulationSection().getSidBlaster2Model();
+		default:
+			return null;
+		}
 	}
 
 	int clocksSinceLastAccess() {
