@@ -41,7 +41,9 @@ public class MP4Driver implements VideoDriver {
 
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;
-	private byte[][] pictureData;
+	private ByteBuffer vicPixelBuffer;
+	private Picture picture;
+	private ByteBuffer pictureBuffer;
 	private ByteBuffer sampleBuffer;
 	private File pcmAudioFile;
 	private OutputStream pcmAudioStream;
@@ -65,7 +67,11 @@ public class MP4Driver implements VideoDriver {
 			this.sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile),
 					Rational.R((int) cpuClock.getScreenRefresh(), 1));
 
-			this.pictureData = new byte[1][3 * VIC.MAX_WIDTH * VIC.MAX_HEIGHT];
+			this.vicPixelBuffer = ByteBuffer.allocateDirect(VIC.MAX_WIDTH * VIC.MAX_HEIGHT * Integer.BYTES)
+					.order(ByteOrder.BIG_ENDIAN);
+			this.picture = Picture.createPicture(VIC.MAX_WIDTH, VIC.MAX_HEIGHT,
+					new byte[1][3/* RGB */ * VIC.MAX_WIDTH * VIC.MAX_HEIGHT], ColorSpace.RGB);
+			this.pictureBuffer = ByteBuffer.wrap(picture.getData()[0]);
 
 			this.sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 					.order(ByteOrder.LITTLE_ENDIAN);
@@ -87,7 +93,8 @@ public class MP4Driver implements VideoDriver {
 	@Override
 	public void accept(int[] bgraData) {
 		try {
-			this.sequenceEncoder.encodeNativeFrame(createPicture(bgraData));
+			setPictureData(bgraData);
+			this.sequenceEncoder.encodeNativeFrame(picture);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing H264 video stream", e);
 		}
@@ -142,15 +149,18 @@ public class MP4Driver implements VideoDriver {
 		return textTrack;
 	}
 
-	private Picture createPicture(int[] bgraData) {
-		byte[] rgbData = pictureData[0];
-		for (int bgraDataIdx = 0, rgbDataIdx = 0; bgraDataIdx < bgraData.length; bgraDataIdx++) {
-			rgbData[rgbDataIdx] = (byte) (((bgraData[bgraDataIdx] >> 16) & 0xff) - 128);
-			rgbData[rgbDataIdx + 1] = (byte) (((bgraData[bgraDataIdx] >> 8) & 0xff) - 128);
-			rgbData[rgbDataIdx + 2] = (byte) (((bgraData[bgraDataIdx]) & 0xff) - 128);
-			rgbDataIdx += 3;
+	private void setPictureData(int[] bgraData) {
+		vicPixelBuffer.clear();
+		vicPixelBuffer.asIntBuffer().put(bgraData);
+		pictureBuffer.clear();
+		for (int channelIndex = 0; channelIndex < vicPixelBuffer.capacity(); channelIndex++) {
+			byte pixelData = vicPixelBuffer.get();
+			// ignore ALPHA channel (ARGB channel order)
+			if (channelIndex % 4 != 0) {
+				// picture data is -128 shifted!
+				pictureBuffer.put((byte) (pixelData - 128));
+			}
 		}
-		return Picture.createPicture(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, pictureData, ColorSpace.RGB);
 	}
 
 	@Override
