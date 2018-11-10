@@ -484,9 +484,10 @@ Status bar infos are comma separated.
 
 | "PAL" or "NTSC" | Shows the currently chosen video norm.
 PAL region clock frequency is 985248.4 whereas NTSC region clock frequency is 1022727.14.
-| "RESID" or "RESIDFP" | Shows the currently used SID emulation engine.
+| "RESID" or "RESIDFP" or HardSID4U(Device 0 as MOS6581)/ 2 Devices | Shows the currently used SID emulation engine.
 RESID is ReSID 1.0 beta by Dag Lem whereas RESIDFP is Antti S. Lankila's resid-fp (distortion simulation).
 If multiple SIDs are used, each SIDs emulation type is printed separated by a plus sign.
+In case of hardware SIDs e.g. HARDSID4U each device number and configured chip model is printed in brackets altogether with the total device count.
 | "MOS6581" or "MOS8580" | Shows the currently plugged-in SID chip type, that is emulated.
 If multiple SIDs are used, each SIDs SID chip type is printed separated by a plus sign and
 each additional SIDs base address is printed hexadecimal in brackets, eg. "MOS6581(at 0xd420)".

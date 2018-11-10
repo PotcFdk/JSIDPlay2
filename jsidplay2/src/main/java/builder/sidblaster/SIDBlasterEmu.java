@@ -36,8 +36,8 @@ public class SIDBlasterEmu extends SIDEmu {
 
 		public FakeStereo(final EventScheduler context, final IConfig config, CPUClock cpuClock,
 				SidBlasterBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceId, final int sidNum,
-				final List<SIDBlasterEmu> sids) {
-			super(context, config, cpuClock, hardSIDBuilder, hardSID, sidNum, deviceId);
+				ChipModel model, final List<SIDBlasterEmu> sids) {
+			super(context, config, cpuClock, hardSIDBuilder, hardSID, sidNum, deviceId, model);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -83,6 +83,8 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final int sidNum;
 
+	private final ChipModel chipModel;
+
 	private final SidBlasterBuilder hardSIDBuilder;
 
 	private final CPUClock cpuClock;
@@ -92,7 +94,7 @@ public class SIDBlasterEmu extends SIDEmu {
 	private boolean doReadWriteDelayed;
 
 	public SIDBlasterEmu(EventScheduler context, IConfig config, CPUClock cpuClock, SidBlasterBuilder hardSIDBuilder,
-			final HardSID hardSID, final int sidNum, final byte deviceId) {
+			final HardSID hardSID, final int sidNum, final byte deviceId, ChipModel model) {
 		this.context = context;
 		this.audioSection = config.getAudioSection();
 		this.cpuClock = cpuClock;
@@ -100,6 +102,7 @@ public class SIDBlasterEmu extends SIDEmu {
 		this.hardSID = hardSID;
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
+		this.chipModel = model;
 	}
 
 	@Override
@@ -183,6 +186,10 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void setVoiceMute(final int num, final boolean mute) {
+	}
+
+	protected ChipModel getChipModel() {
+		return chipModel;
 	}
 
 	@Override

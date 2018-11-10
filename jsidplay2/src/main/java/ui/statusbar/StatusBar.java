@@ -191,8 +191,8 @@ public class StatusBar extends C64VBox implements UIPart {
 		// final status bar text
 		StringBuilder line = new StringBuilder();
 		line.append(determineVideoNorm());
-		line.append(determineEmulation());
 		line.append(determineChipModel());
+		line.append(determineEmulation());
 		line.append(detectPSID64ChipModel());
 		line.append(playerId);
 		double tuneSpeed = util.getPlayer().getC64().determineTuneSpeed();
@@ -413,9 +413,54 @@ public class StatusBar extends C64VBox implements UIPart {
 				}
 			}
 			break;
-		case NETSID:
 		case HARDSID:
 		case SIDBLASTER:
+			Integer deviceCount = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(),
+					null);
+			if (deviceCount != null) {
+				Integer deviceId0 = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(0),
+						null);
+				ChipModel deviceChipModel0 = util.getPlayer()
+						.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(0), null);
+				if (deviceId0 != null && deviceChipModel0 != null) {
+					line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
+							deviceId0, deviceChipModel0));
+				} else {
+					line.append(String.format(util.getBundle().getString("NO_DEVICE"), emulation.getEngine().name()));
+				}
+				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+					line.append("+");
+					Integer deviceId1 = util.getPlayer()
+							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(1), null);
+					ChipModel deviceChipModel1 = util.getPlayer()
+							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(1), null);
+					if (deviceId1 != null && deviceChipModel1 != null) {
+						line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
+								deviceId1, deviceChipModel1));
+					} else {
+						line.append(
+								String.format(util.getBundle().getString("NO_DEVICE"), emulation.getEngine().name()));
+					}
+					if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+						line.append("+");
+						Integer deviceId2 = util.getPlayer()
+								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(2), null);
+						ChipModel deviceChipModel2 = util.getPlayer()
+								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(2), null);
+						if (deviceId2 != null && deviceChipModel2 != null) {
+							line.append(String.format(util.getBundle().getString("DEVICE"),
+									emulation.getEngine().name(), deviceId2, deviceChipModel2));
+						} else {
+							line.append(String.format(util.getBundle().getString("NO_DEVICE"),
+									emulation.getEngine().name()));
+						}
+					}
+				}
+				line.append(String.format(util.getBundle().getString("DEVICES"), deviceCount));
+				break;
+			}
+			// $FALL-THROUGH$
+		case NETSID:
 			line.append(String.format("%s", emulation.getEngine().name()));
 			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 				line.append(String.format("+%s", emulation.getEngine().name()));

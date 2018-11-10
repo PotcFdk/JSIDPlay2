@@ -11,7 +11,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDBuilder;
+import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -21,7 +21,7 @@ import libsidplay.sidtune.SidTune;
  * @author Ken Händel
  * 
  */
-public class HardSIDBuilder implements SIDBuilder {
+public class HardSIDBuilder implements HardwareSIDBuilder {
 
 	private static final short REGULAR_DELAY = 128;
 
@@ -78,15 +78,15 @@ public class HardSIDBuilder implements SIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			System.out.println("Use device Idx: " + chipNum + " for sidNum=" + sidNum + " and model " + chipModel);
 			HardSIDEmu hsid = createSID(deviceID, chipNum, sidNum, tune, chipModel);
 			hsid.lock();
 			sids.add(hsid);
 			return hsid;
 		}
 		System.err.println(/* throw new RuntimeException( */
-				String.format("HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, SIDs=%d)",
-						deviceID, hardSID.HardSID_SIDCount(deviceID)));
+				String.format(
+						"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, sidNum=%d)",
+						deviceID, sidNum));
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
 			// Fake stereo chip not available? Re-use original chip
 			return oldHardSID;
@@ -108,6 +108,21 @@ public class HardSIDBuilder implements SIDBuilder {
 		HardSIDEmu hardSid = (HardSIDEmu) sidEmu;
 		hardSid.unlock();
 		sids.remove(sidEmu);
+	}
+
+	@Override
+	public int getDeviceCount() {
+		return hardSID != null ? hardSID.HardSID_SIDCount(deviceID) : null;
+	}
+
+	@Override
+	public Integer getDeviceId(int sidNum) {
+		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getChipNum()) : null;
+	}
+
+	@Override
+	public ChipModel getDeviceChipModel(int sidNum) {
+		return sidNum < sids.size() ? sids.get(sidNum).getChipModel() : null;
 	}
 
 	/**

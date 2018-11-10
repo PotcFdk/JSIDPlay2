@@ -50,6 +50,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
@@ -866,12 +867,24 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * Get mixer info.
 	 * 
 	 * @param function     mixer function to apply
-	 * @param              <T> mixer info return type
 	 * @param defaultValue default value, if SIDBuilder does not implement a mixer
 	 * @return mixer info
 	 */
 	public final <T> T getMixerInfo(final Function<Mixer, T> function, final T defaultValue) {
 		return sidBuilder instanceof Mixer ? function.apply((Mixer) sidBuilder) : defaultValue;
+	}
+
+	/**
+	 * Get hardware SID builder info.
+	 * 
+	 * @param function     hardware SID builder function to apply
+	 * @param defaultValue default value, if SIDBuilder does not implement a
+	 *                     hardware SID builder
+	 * @return hardware SID builder info
+	 */
+	public final <T> T getHardwareSIDBuilderInfo(final Function<HardwareSIDBuilder, T> function, final T defaultValue) {
+		return sidBuilder instanceof HardwareSIDBuilder ? function.apply((HardwareSIDBuilder) sidBuilder)
+				: defaultValue;
 	}
 
 	/**

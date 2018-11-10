@@ -11,7 +11,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDBuilder;
+import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -21,7 +21,7 @@ import libsidplay.sidtune.SidTune;
  * @author Ken Händel
  * 
  */
-public class SidBlasterBuilder implements SIDBuilder {
+public class SidBlasterBuilder implements HardwareSIDBuilder {
 
 	private static final short REGULAR_DELAY = 128;
 
@@ -78,15 +78,15 @@ public class SidBlasterBuilder implements SIDBuilder {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			System.out.println("Use device Idx: " + deviceId + " for sidNum=" + sidNum + " and model " + chipModel);
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune);
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, chipModel);
 			if (hsid.lock()) {
 				sids.add(hsid);
 				return hsid;
 			}
 		}
-		System.err.println(/* throw new RuntimeException( */String
-				.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)", sidNum));
+		System.err.println(/* throw new RuntimeException( */
+				String.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)",
+						sidNum));
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
 			// Fake stereo chip not available? Re-use original chip
 			return oldHardSID;
@@ -94,12 +94,12 @@ public class SidBlasterBuilder implements SIDBuilder {
 		return SIDEmu.NONE;
 	}
 
-	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune) {
+	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel) {
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new SIDBlasterEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId, sidNum,
+			return new SIDBlasterEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId, sidNum, chipModel,
 					sids);
 		} else {
-			return new SIDBlasterEmu(context, config, cpuClock, this, hardSID, sidNum, deviceId);
+			return new SIDBlasterEmu(context, config, cpuClock, this, hardSID, sidNum, deviceId, chipModel);
 		}
 	}
 
@@ -108,6 +108,21 @@ public class SidBlasterBuilder implements SIDBuilder {
 		SIDBlasterEmu hardSid = (SIDBlasterEmu) sidEmu;
 		hardSid.unlock();
 		sids.remove(sidEmu);
+	}
+
+	@Override
+	public int getDeviceCount() {
+		return hardSID != null ? hardSID.HardSID_Devices() : null;
+	}
+
+	@Override
+	public Integer getDeviceId(int deviceNum) {
+		return deviceNum < sids.size() ? Integer.valueOf(sids.get(deviceNum).getDeviceId()) : null;
+	}
+
+	@Override
+	public ChipModel getDeviceChipModel(int deviceNum) {
+		return deviceNum < sids.size() ? sids.get(deviceNum).getChipModel() : null;
 	}
 
 	/**
