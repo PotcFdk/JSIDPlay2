@@ -27,11 +27,12 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -238,7 +239,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Consumer for VIC screen output as BGRA data
 	 */
-	protected List<Consumer<int[]>> pixelConsumers = new ArrayList<>();
+	protected List<Consumer<int[]>> pixelConsumers = new CopyOnWriteArrayList<Consumer<int[]>>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -963,9 +964,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
 	public void addPixelConsumer(Consumer<int[]> consumer) {
-		synchronized (pixelConsumers) {
-			pixelConsumers.add(consumer);
-		}
+		pixelConsumers.add(consumer);
 	}
 
 	/**
@@ -974,9 +973,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
 	public void removePixelConsumer(Consumer<int[]> consumer) {
-		synchronized (pixelConsumers) {
-			pixelConsumers.remove(consumer);
-		}
+		pixelConsumers.remove(consumer);
 	}
 
 	@Override
@@ -985,10 +982,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
-			synchronized (pixelConsumers) {
-				for (Consumer<int[]> pixelConsumer : pixelConsumers) {
-					pixelConsumer.accept(bgraData);
-				}
+			Iterator<Consumer<int[]>> iterator = pixelConsumers.iterator();
+			while (iterator.hasNext()) {
+				iterator.next().accept(bgraData);
 			}
 		}
 	}
