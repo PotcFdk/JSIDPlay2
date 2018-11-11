@@ -1,6 +1,7 @@
 package builder.hardsid;
 
 import static libsidplay.common.Engine.HARDSID;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +13,18 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.HardwareSIDBuilder;
+import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
+import sidplay.audio.AudioDriver;
 
 /**
  * 
  * @author Ken Händel
  * 
  */
-public class HardSIDBuilder implements HardwareSIDBuilder {
+public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	private static final short REGULAR_DELAY = 128;
 
@@ -34,6 +37,11 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 	 * Configuration
 	 */
 	private IConfig config;
+
+	/**
+	 * CPU clock.
+	 */
+	private CPUClock cpuClock;
 
 	/**
 	 * Native library wrapper.
@@ -52,7 +60,9 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 
 	protected long lastSIDWriteTime;
 
-	private CPUClock cpuClock;
+	private int fastForwardFactor;
+
+	private int[] delayInCycles = new int[MAX_SIDS];
 
 	public HardSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
@@ -68,10 +78,14 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 		}
 	}
 
+	public int getDelayInCycles(int sidNum) {
+		return delayInCycles[sidNum];
+	}
+
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
-		Integer chipNum = getModelDependantSidNum(chipModel, sidNum);
+		Integer chipNum = getModelDependantChipNum(chipModel, sidNum);
 		if (deviceID < hardSID.HardSID_Devices() && chipNum != null && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
@@ -96,10 +110,10 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 
 	private HardSIDEmu createSID(byte deviceId, int chipNum, int sidNum, SidTune tune, ChipModel chipModel) {
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new HardSIDEmu.FakeStereo(context, config, cpuClock, this, hardSID, deviceId, chipNum, sidNum,
-					chipModel, sids);
+			return new HardSIDEmu.FakeStereo(context, config, this, hardSID, deviceId, chipNum, sidNum, chipModel,
+					sids);
 		} else {
-			return new HardSIDEmu(context, config, cpuClock, this, hardSID, deviceId, chipNum, sidNum, chipModel);
+			return new HardSIDEmu(context, this, hardSID, deviceId, chipNum, sidNum, chipModel);
 		}
 	}
 
@@ -125,6 +139,68 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 		return sidNum < sids.size() ? sids.get(sidNum).getChipModel() : null;
 	}
 
+	@Override
+	public void setAudioDriver(AudioDriver audioDriver) {
+	}
+
+	@Override
+	public void start() {
+	}
+
+	@Override
+	public void fadeIn(double fadeIn) {
+		System.err.println("Fade-in unsupported by HardSID4U");
+		// XXX unsupported by HardSID4U
+	}
+
+	@Override
+	public void fadeOut(double fadeOut) {
+		System.err.println("Fade-out unsupported by HardSID4U");
+		// XXX unsupported by HardSID4U
+	}
+
+	@Override
+	public void setVolume(int sidNum, float volume) {
+		System.err.println("Volume unsupported by HardSID4U");
+		// XXX unsupported by HardSID4U
+	}
+
+	@Override
+	public void setBalance(int sidNum, float balance) {
+		System.err.println("Balance unsupported by HardSID4U");
+		// XXX unsupported by HardSID4U
+	}
+
+	@Override
+	public void setDelay(int sidNum, int delay) {
+		delayInCycles[sidNum] = (int) (cpuClock.getCpuFrequency() / 1000. * delay);
+	}
+
+	@Override
+	public void fastForward() {
+		fastForwardFactor++;
+	}
+
+	@Override
+	public void normalSpeed() {
+		fastForwardFactor = 0;
+	}
+
+	@Override
+	public boolean isFastForward() {
+		return fastForwardFactor != 0;
+	}
+
+	@Override
+	public int getFastForwardBitMask() {
+		return (1 << fastForwardFactor) - 1;
+	}
+
+	@Override
+	public void pause() {
+		hardSID.HardSID_Flush(deviceID);
+	}
+
 	/**
 	 * Get HardSID device index based on the desired chip model.
 	 * 
@@ -132,7 +208,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired HardSID device
 	 */
-	private Integer getModelDependantSidNum(final ChipModel chipModel, int sidNum) {
+	private Integer getModelDependantChipNum(final ChipModel chipModel, int sidNum) {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 0) {
@@ -159,7 +235,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 		final long now = context.getTime(Event.Phase.PHI2);
 		int diff = (int) (now - lastSIDWriteTime);
 		lastSIDWriteTime = now;
-		return diff;
+		return diff >> fastForwardFactor;
 	}
 
 	long eventuallyDelay() {
@@ -167,7 +243,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder {
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			hardSID.HardSID_Delay(deviceID, REGULAR_DELAY);
+			hardSID.HardSID_Delay(deviceID, (short) (REGULAR_DELAY >> fastForwardFactor));
 		}
 		return REGULAR_DELAY;
 	}

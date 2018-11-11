@@ -4,20 +4,18 @@ import static libsidplay.common.SIDChip.REG_COUNT;
 
 import java.util.List;
 
-import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
 /**
-*
-* @author Ken Händel
-* 
-*/
+ *
+ * @author Ken Händel
+ * 
+ */
 public class HardSIDEmu extends SIDEmu {
 
 	/**
@@ -33,10 +31,10 @@ public class HardSIDEmu extends SIDEmu {
 		private final int prevNum;
 		private final List<HardSIDEmu> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config, CPUClock cpuClock,
-				HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceId, final int chipNum,
-				final int sidNum, ChipModel chipModel, final List<HardSIDEmu> sids) {
-			super(context, config, cpuClock, hardSIDBuilder, hardSID, deviceId, chipNum, sidNum, chipModel);
+		public FakeStereo(final EventScheduler context, final IConfig config, HardSIDBuilder hardSIDBuilder,
+				final HardSID hardSID, final byte deviceId, final int chipNum, final int sidNum, ChipModel chipModel,
+				final List<HardSIDEmu> sids) {
+			super(context, hardSIDBuilder, hardSID, deviceId, chipNum, sidNum, chipModel);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -76,29 +74,23 @@ public class HardSIDEmu extends SIDEmu {
 
 	private final EventScheduler context;
 
+	private final HardSIDBuilder hardSIDBuilder;
+	
 	private final HardSID hardSID;
 
 	private final byte deviceID;
 
 	private final byte chipNum;
 
-	private final int sidNum;
-
+	private int sidNum;
+	
 	private final ChipModel chipModel;
-
-	private final HardSIDBuilder hardSIDBuilder;
-
-	private final CPUClock cpuClock;
-
-	private final IAudioSection audioSection;
 
 	private boolean doReadWriteDelayed;
 
-	public HardSIDEmu(EventScheduler context, IConfig config, CPUClock cpuClock, HardSIDBuilder hardSIDBuilder,
-			final HardSID hardSID, final byte deviceID, final int chipNum, int sidNum, final ChipModel model) {
+	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID,
+			final int chipNum, final int sidNum, final ChipModel model) {
 		this.context = context;
-		this.audioSection = config.getAudioSection();
-		this.cpuClock = cpuClock;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
@@ -139,16 +131,14 @@ public class HardSIDEmu extends SIDEmu {
 
 	@Override
 	public void clock() {
-		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
-		doReadWriteDelayed = true;
+		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
 		doWriteDelayed(() -> {
 			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
 		});
 	}
 
 	private void doWriteDelayed(Runnable runnable) {
-		int delay = (int) (cpuClock.getCpuFrequency() / 1000. * audioSection.getDelay(sidNum));
-		if (delay > 0) {
+		if (hardSIDBuilder.getDelayInCycles(sidNum) > 0) {
 			context.schedule(new Event("Delayed SID output") {
 				@Override
 				public void event() throws InterruptedException {
@@ -156,7 +146,7 @@ public class HardSIDEmu extends SIDEmu {
 						runnable.run();
 					}
 				}
-			}, delay);
+			}, hardSIDBuilder.getDelayInCycles(sidNum));
 		} else {
 			runnable.run();
 		}

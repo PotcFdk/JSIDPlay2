@@ -5,12 +5,10 @@ import static libsidplay.common.SIDChip.REG_COUNT;
 import java.util.List;
 
 import builder.sidblaster.HardSID.HSID_USB_WSTATE;
-import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDEmu;
-import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -34,10 +32,10 @@ public class SIDBlasterEmu extends SIDEmu {
 		private final int prevNum;
 		private final List<SIDBlasterEmu> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config, CPUClock cpuClock,
-				SidBlasterBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceId, final int sidNum,
-				ChipModel model, final List<SIDBlasterEmu> sids) {
-			super(context, config, cpuClock, hardSIDBuilder, hardSID, sidNum, deviceId, model);
+		public FakeStereo(final EventScheduler context, final IConfig config, SidBlasterBuilder hardSIDBuilder,
+				final HardSID hardSID, final byte deviceId, final int sidNum, final ChipModel model,
+				final List<SIDBlasterEmu> sids) {
+			super(context, hardSIDBuilder, hardSID, deviceId, sidNum, model);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -77,27 +75,21 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final EventScheduler context;
 
+	private final SidBlasterBuilder hardSIDBuilder;
+	
 	private final HardSID hardSID;
 
 	private final byte deviceID;
 
-	private final int sidNum;
-
+	private int sidNum;
+	
 	private final ChipModel chipModel;
-
-	private final SidBlasterBuilder hardSIDBuilder;
-
-	private final CPUClock cpuClock;
-
-	private final IAudioSection audioSection;
 
 	private boolean doReadWriteDelayed;
 
-	public SIDBlasterEmu(EventScheduler context, IConfig config, CPUClock cpuClock, SidBlasterBuilder hardSIDBuilder,
-			final HardSID hardSID, final int sidNum, final byte deviceId, ChipModel model) {
+	public SIDBlasterEmu(EventScheduler context, SidBlasterBuilder hardSIDBuilder, final HardSID hardSID,
+			final byte deviceId, int sidNum, ChipModel model) {
 		this.context = context;
-		this.audioSection = config.getAudioSection();
-		this.cpuClock = cpuClock;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceId;
@@ -118,19 +110,15 @@ public class SIDBlasterEmu extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
-		doWriteDelayed(() -> {
-			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
-		});
 		// not supported by SIDBlaster
 		return (byte) 0xff;
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
-		clock();
+		// clock();
 		super.write(addr, data);
-		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
+		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
 
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
@@ -142,11 +130,14 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void clock() {
+		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
+		doWriteDelayed(() -> {
+			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
+		});
 	}
 
 	private void doWriteDelayed(Runnable runnable) {
-		int delay = (int) (cpuClock.getCpuFrequency() / 1000. * audioSection.getDelay(sidNum));
-		if (delay > 0) {
+		if (hardSIDBuilder.getDelayInCycles(sidNum) > 0) {
 			context.schedule(new Event("Delayed SID output") {
 				@Override
 				public void event() throws InterruptedException {
@@ -154,7 +145,7 @@ public class SIDBlasterEmu extends SIDEmu {
 						runnable.run();
 					}
 				}
-			}, delay);
+			}, hardSIDBuilder.getDelayInCycles(sidNum));
 		} else {
 			runnable.run();
 		}
@@ -188,16 +179,16 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void setVoiceMute(final int num, final boolean mute) {
 	}
 
+	public byte getDeviceId() {
+		return deviceID;
+	}
+
 	protected ChipModel getChipModel() {
 		return chipModel;
 	}
 
 	@Override
 	public void setChipModel(final ChipModel model) {
-	}
-
-	public byte getDeviceId() {
-		return deviceID;
 	}
 
 	@Override
