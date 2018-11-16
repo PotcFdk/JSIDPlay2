@@ -531,9 +531,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	/**
 	 * Create an image per frame of VIC screen output.
 	 * 
-	 * Fast forward skips frames and produces output for each Xth frame (X = 1x, 2x,
-	 * 4x, ... , 32x).
-	 * 
 	 * @see java.util.function.Consumer#accept(java.lang.Object)
 	 */
 	@Override

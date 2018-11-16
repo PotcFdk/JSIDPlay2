@@ -117,40 +117,40 @@ public class EmulationSettings extends C64Window {
 
 		muteVoice1.selectedProperty().bindBidirectional(emulationSection.muteVoice1Property());
 		muteVoice1.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, muteVoice1.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(0, n.booleanValue())));
 		muteVoice2.selectedProperty().bindBidirectional(emulationSection.muteVoice2Property());
 		muteVoice2.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, muteVoice2.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(1, n.booleanValue())));
 		muteVoice3.selectedProperty().bindBidirectional(emulationSection.muteVoice3Property());
 		muteVoice3.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, muteVoice3.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(2, n.booleanValue())));
 		muteVoice4.selectedProperty().bindBidirectional(emulationSection.muteVoice4Property());
 		muteVoice4.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(3, muteVoice4.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setVoiceMute(3, n.booleanValue())));
 		muteVoice5.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice1Property());
 		muteVoice5.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, muteVoice5.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(0, n.booleanValue())));
 		muteVoice6.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice2Property());
 		muteVoice6.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, muteVoice6.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(1, n.booleanValue())));
 		muteVoice7.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice3Property());
 		muteVoice7.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, muteVoice7.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(2, n.booleanValue())));
 		muteVoice8.selectedProperty().bindBidirectional(emulationSection.muteStereoVoice4Property());
 		muteVoice8.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(3, muteVoice8.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setVoiceMute(3, n.booleanValue())));
 		muteVoice9.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice1Property());
 		muteVoice9.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, muteVoice9.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(0, n.booleanValue())));
 		muteVoice10.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice2Property());
 		muteVoice10.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, muteVoice10.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(1, n.booleanValue())));
 		muteVoice11.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice3Property());
 		muteVoice11.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice11.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, n.booleanValue())));
 		muteVoice12.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice4Property());
 		muteVoice12.selectedProperty().addListener(
-				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(2, muteVoice12.isSelected())));
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(3, n.booleanValue())));
 
 		mainFilters = FXCollections.<String>observableArrayList();
 		mainFilter.setItems(mainFilters);
@@ -161,32 +161,26 @@ public class EmulationSettings extends C64Window {
 
 		mainBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		mainBalance.valueProperty().bindBidirectional(audioSection.mainBalanceProperty());
-		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setBalance(0, newValue.floatValue()));
-		});
+		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setBalance(0, newValue.floatValue())));
 		secondBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		secondBalance.valueProperty().bindBidirectional(audioSection.secondBalanceProperty());
-		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setBalance(1, newValue.floatValue()));
-		});
+		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setBalance(1, newValue.floatValue())));
 		thirdBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		thirdBalance.valueProperty().bindBidirectional(audioSection.thirdBalanceProperty());
-		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setBalance(2, newValue.floatValue()));
-		});
+		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setBalance(2, newValue.floatValue())));
 
 		mainDelay.valueProperty().bindBidirectional(audioSection.mainDelayProperty());
-		mainDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(0, newValue.intValue()));
-		});
+		mainDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setDelay(0, newValue.intValue())));
 		secondDelay.valueProperty().bindBidirectional(audioSection.secondDelayProperty());
-		secondDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(1, newValue.intValue()));
-		});
+		secondDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setDelay(1, newValue.intValue())));
 		thirdDelay.valueProperty().bindBidirectional(audioSection.thirdDelayProperty());
-		thirdDelay.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setDelay(2, newValue.intValue()));
-		});
+		thirdDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setDelay(2, newValue.intValue())));
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
 		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(),
@@ -283,6 +277,8 @@ public class EmulationSettings extends C64Window {
 
 	private void enableStereoSettings(SidTune tune) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		boolean hardwareBasedSid = emulationSection.getEngine() == HARDSID
+				|| emulationSection.getEngine() == SIDBLASTER;
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
 		boolean isForcedStereo = emulationSection.isForceStereoTune();
@@ -294,58 +290,49 @@ public class EmulationSettings extends C64Window {
 		} else {
 			stereoMode.getSelectionModel().select(StereoMode.AUTO);
 		}
-		mainVolume.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice1.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice2.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice3.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice4.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		mainVolume.setDisable(hardwareBasedSid);
+		sid1Emulation.setDisable(hardwareBasedSid);
+		sid1Model.setDisable(hardwareBasedSid);
+		mainFilter.setDisable(hardwareBasedSid);
+		mainFilterCurve.setDisable(hardwareBasedSid);
+		muteVoice1.setDisable(hardwareBasedSid);
+		muteVoice2.setDisable(hardwareBasedSid);
+		muteVoice3.setDisable(hardwareBasedSid);
+		muteVoice4.setDisable(hardwareBasedSid);
 		// stereo, only:
-		mainBalance.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		mainBalance.setDisable(!second || hardwareBasedSid);
 		mainDelay.setDisable(!second);
-		secondVolume.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		secondBalance.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		secondVolume.setDisable(!second || hardwareBasedSid);
+		secondBalance.setDisable(!second || hardwareBasedSid);
 		secondDelay.setDisable(!second);
-		sid2Emulation.setDisable(!second);
-		sid2Model.setDisable(!second);
-		secondFilter.setDisable(!second);
-		secondFilterCurve.setDisable(!second);
-		muteVoice5.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice6.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice7.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice8.setDisable(
-				!second || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		sid2Emulation.setDisable(!second || hardwareBasedSid);
+		sid2Model.setDisable(!second || hardwareBasedSid);
+		secondFilter.setDisable(!second || hardwareBasedSid);
+		secondFilterCurve.setDisable(!second || hardwareBasedSid);
+		muteVoice5.setDisable(!second || hardwareBasedSid);
+		muteVoice6.setDisable(!second || hardwareBasedSid);
+		muteVoice7.setDisable(!second || hardwareBasedSid);
+		muteVoice8.setDisable(!second || hardwareBasedSid);
 		// 3-SID, only:
-		thirdVolume.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		thirdBalance.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		thirdVolume.setDisable(!third || hardwareBasedSid);
+		thirdBalance.setDisable(!third || hardwareBasedSid);
 		thirdDelay.setDisable(!third);
-		sid3Emulation.setDisable(!third);
-		sid3Model.setDisable(!third);
-		thirdFilter.setDisable(!third);
-		thirdFilterCurve.setDisable(!third);
-		muteVoice9.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice10.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice11.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
-		muteVoice12.setDisable(
-				!third || emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		sid3Emulation.setDisable(!third || hardwareBasedSid);
+		sid3Model.setDisable(!third || hardwareBasedSid);
+		thirdFilter.setDisable(!third || hardwareBasedSid);
+		thirdFilterCurve.setDisable(!third || hardwareBasedSid);
+		muteVoice9.setDisable(!third || hardwareBasedSid);
+		muteVoice10.setDisable(!third || hardwareBasedSid);
+		muteVoice11.setDisable(!third || hardwareBasedSid);
+		muteVoice12.setDisable(!third || hardwareBasedSid);
 		// fake stereo, only:
 		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:
-		baseAddress.setDisable(!(isForcedStereo || isForced3Sid));
+		baseAddress.setDisable(!isForcedStereo && !isForced3Sid);
 		// forced 3-SID, only:
 		thirdAddress.setDisable(!isForced3Sid);
 		// no SID boost for hardware SIDs
-		boosted8580.setDisable(emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER);
+		boosted8580.setDisable(hardwareBasedSid);
 	}
 
 	@Override
@@ -543,7 +530,7 @@ public class EmulationSettings extends C64Window {
 		if (engine == NETSID) {
 			filters.addAll(TrySetSidModel.getFilterNames(model));
 		} else {
-			filters.add("");
+			filters.add(""/* filter disabled */);
 			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
 				switch (model) {
 				case MOS6581:
@@ -594,15 +581,15 @@ public class EmulationSettings extends C64Window {
 				for (int fc = 0; fc < FC_MAX; fc++) {
 					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
 						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filter, fc);
-						dataList.add(new XYChart.Data<Number, Number>(fc, data));
+						dataList.add(new XYChart.Data<>(fc, data));
 					} else if (filter.isReSIDfpFilter6581() || filter.isReSIDfpFilter8580()) {
 						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filter, fc);
-						dataList.add(new XYChart.Data<Number, Number>(fc, data));
+						dataList.add(new XYChart.Data<>(fc, data));
 					}
 				}
 			}
 		}
-		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> series = new XYChart.Series<>();
 		series.setData(FXCollections.observableArrayList(dataList));
 
 		List<XYChart.Series<Number, Number>> seriesList = Arrays.asList(series);

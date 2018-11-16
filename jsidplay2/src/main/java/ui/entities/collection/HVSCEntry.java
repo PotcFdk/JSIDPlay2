@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.DoubleSupplier;
+import java.util.stream.Collectors;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -50,9 +51,7 @@ public class HVSCEntry {
 				this.released = descriptionIt.next();
 			}
 			this.format = tune.getClass().getSimpleName();
-			StringBuilder ids = new StringBuilder();
-			tune.identify().stream().forEach(id -> ids.append(',').append(id));
-			this.playerId = ids.length() > 0 ? ids.substring(1) : ids.toString();
+			this.playerId = tune.identify().stream().collect(Collectors.joining(","));
 			this.noOfSongs = info.getSongs();
 			this.startSong = info.getStartSong();
 			this.clockFreq = info.getClockSpeed();
@@ -61,7 +60,7 @@ public class HVSCEntry {
 			this.sidModel2 = info.getSIDModel(1);
 			this.sidModel3 = info.getSIDModel(2);
 			this.compatibility = info.getCompatibility();
-			this.tuneLength = Double.valueOf(lengthFnct.getAsDouble());
+			this.tuneLength = lengthFnct.getAsDouble();
 			this.audio = info.getSIDChipBase(1) != 0 ? info.getSIDChipBase(2) != 0 ? "3-SID" : "Stereo" : "Mono";
 			this.sidChipBase1 = info.getSIDChipBase(0);
 			this.sidChipBase2 = info.getSIDChipBase(1);

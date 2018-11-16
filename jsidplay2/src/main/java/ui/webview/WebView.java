@@ -178,9 +178,7 @@ public class WebView extends C64VBox implements UIPart {
 				progressProperty.setValue(newValue);
 			});
 		};
-		locationListener = (observable, oldValue, newValue) -> {
-			urlField.setText(newValue);
-		};
+		locationListener = (observable, oldValue, newValue) -> urlField.setText(newValue);
 		hyperlinkRedirectListener = new HyperlinkRedirectListener();
 		historyListener = (observable, oldValue, newValue) -> {
 			backward.setDisable(newValue.intValue() <= 0);

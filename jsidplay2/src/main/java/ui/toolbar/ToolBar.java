@@ -97,7 +97,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
-	ToggleGroup playSourceGroup, appServerGroup;
+	protected ToggleGroup playSourceGroup, appServerGroup;
 	@FXML
 	protected Button volumeButton, mp3Browse, keystoreBrowse;
 	@FXML

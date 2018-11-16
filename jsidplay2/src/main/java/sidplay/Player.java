@@ -976,6 +976,10 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		pixelConsumers.remove(consumer);
 	}
 
+	/**
+	 * Fast forward skips frames and produces output for each Xth frame (X = 1x, 2x,
+	 * 4x, ... , 32x).
+	 */
 	@Override
 	public void accept(int[] bgraData) {
 		// skip frame(s) on fast forward
