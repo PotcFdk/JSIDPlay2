@@ -163,7 +163,7 @@ java -jar jsidplay2_console-{version}.jar # <2>
 <1> Launch User interface version
 <2> Launch Console version
 
-Since Java 11 you need to download link:https://jdk.java.net/openjfx/[openjfx] separately and
+Since Java 11 you need to download link:https://openjfx.io/[JavaFX Linux/Windows/MacOSX SDK] separately, extract and
 launch JSIDPlay2 using the following command:
 
 [source,subs="attributes+"]
