@@ -145,6 +145,7 @@ public class JSidPlay2Main extends Application {
 		}
 		configService.save((Configuration) player.getConfig());
 		configService.close();
+		System.exit(0);
 	}
 
 	//
