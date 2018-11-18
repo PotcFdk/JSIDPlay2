@@ -64,6 +64,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
+import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -347,7 +348,6 @@ public class MusicCollection extends C64VBox implements UIPart {
 		}
 		if (em != null && em.isOpen()) {
 			em.close();
-			em.getEntityManagerFactory().close();
 		}
 	}
 

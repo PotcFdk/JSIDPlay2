@@ -173,7 +173,6 @@ public class ConfigService {
 	 */
 	public void close() {
 		em.close();
-		em.getEntityManagerFactory().close();
 		// Really persist the databases
 		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
 	}

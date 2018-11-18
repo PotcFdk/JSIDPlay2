@@ -74,7 +74,11 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void unlock(SIDEmu device) {
 		client.init((byte) 0x0);
 		sids.remove(device);
-		updateMixer(config.getAudioSection());
+		try {
+			updateMixer(config.getAudioSection());
+		} catch (RuntimeException e) {
+			// socket closed? Ignore, because don't prevent unlocking other SIDs
+		}
 	}
 
 	private NetSIDDev createSID(IEmulationSection emulationSection, ChipModel chipModel, SIDEmu sidEmu, SidTune tune,

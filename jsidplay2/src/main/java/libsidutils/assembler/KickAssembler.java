@@ -1,6 +1,7 @@
 package libsidutils.assembler;
 
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class KickAssembler {
 			data.asShortBuffer().put((short) start);
 			for (MemoryBlock memoryBlock : memBlocks) {
 				int offset = Short.BYTES + memoryBlock.getStartAdress() - start;
-				data.position(offset);
+				((Buffer) data).position(offset);
 				data.put(memoryBlock.getMemory(), 0, memoryblock.getMemory().length);
 			}
 		}

@@ -1,5 +1,6 @@
 package builder.resid;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -133,13 +134,14 @@ class SampleMixer implements IntConsumer {
 
 	public void setDelay(int delayedSamples) {
 		this.delayedSamples = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
-				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]).flip();
+				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
+		((Buffer) this.delayedSamples).flip();
 	}
 
 	@Override
 	public void accept(int sample) {
 		if (!delayedSamples.put(sample).hasRemaining()) {
-			delayedSamples.flip();
+			((Buffer) this.delayedSamples).flip();
 		}
 		sample = delayedSamples.get(delayedSamples.position());
 		bufferL.put(bufferL.get(bufferL.position()) + sample * volumeL);
@@ -147,8 +149,8 @@ class SampleMixer implements IntConsumer {
 	}
 
 	void clear() {
-		bufferL.clear();
-		bufferR.clear();
+		((Buffer) bufferL).clear();
+		((Buffer) bufferR).clear();
 	}
 
 }

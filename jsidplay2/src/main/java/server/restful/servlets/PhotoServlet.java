@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.URIUtil;
 
+import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
-import ui.musiccollection.SidAuthors;
 
 public class PhotoServlet extends HttpServlet {
 

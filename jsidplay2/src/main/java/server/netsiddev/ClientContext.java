@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -101,10 +102,10 @@ class ClientContext {
 	/** Construct a new audio player for connected client */
 	private ClientContext(AudioConfig config, int latency) {
 		this.latency = latency;
-		dataWrite.position(dataWrite.capacity());
+		((Buffer) dataWrite).position(dataWrite.capacity());
 		eventConsumerThread = new AudioGeneratorThread(config);
 		eventConsumerThread.start();
-		dataRead.limit(4);
+		((Buffer) dataRead).limit(4);
 	}
 
 	/**
@@ -128,7 +129,7 @@ class ClientContext {
 			sidNumber = dataRead.get(1) & 0xff;
 			dataLength = dataRead.getShort(2) & 0xffff;
 
-			dataRead.limit(4 + dataLength);
+			((Buffer) dataRead).limit(4 + dataLength);
 			if (dataRead.position() < dataRead.limit()) {
 				return;
 			}
@@ -141,7 +142,7 @@ class ClientContext {
 		/* Handle data packet. */
 		final BlockingQueue<SIDWrite> sidCommandQueue = eventConsumerThread.getSidCommandQueue();
 
-		dataWrite.clear();
+		((Buffer) dataWrite).clear();
 
 		switch (command) {
 		case FLUSH:
@@ -385,16 +386,16 @@ class ClientContext {
 			throw new InvalidCommandException("Unsupported command: " + command);
 		}
 
-		dataWrite.limit(dataWrite.position());
-		dataWrite.rewind();
+		((Buffer) dataWrite).limit(dataWrite.position());
+		((Buffer) dataWrite).rewind();
 
 		/* Move rest of the junk to beginning of bytebuffer */
-		dataRead.position(4 + dataLength);
+		((Buffer) dataRead).position(4 + dataLength);
 		dataRead.compact();
 
 		/* Mark that we need to read a new command. */
 		command = null;
-		dataRead.limit(4);
+		((Buffer) dataRead).limit(4);
 	}
 
 	private void handleDelayPacket(int sidNumber, int cycles) throws InvalidCommandException {

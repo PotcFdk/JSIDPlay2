@@ -1,6 +1,7 @@
 package sidplay.audio;
 
 import java.io.IOException;
+import java.nio.Buffer;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -62,7 +63,7 @@ public class CmpMP3File extends JavaSound {
 		if (!jump3r.decode(mp3JavaSound.buffer())) {
 			throw new MP3Termination();
 		}
-		mp3JavaSound.buffer().position(mp3JavaSound.buffer().limit());
+		((Buffer) mp3JavaSound.buffer()).position(mp3JavaSound.buffer().limit());
 		if (audioSection.isPlayOriginal()) {
 			mp3JavaSound.write();
 		} else {

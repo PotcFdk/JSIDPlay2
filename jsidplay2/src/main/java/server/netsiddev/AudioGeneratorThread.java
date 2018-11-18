@@ -1,6 +1,7 @@
 package server.netsiddev;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -218,7 +219,7 @@ public class AudioGeneratorThread extends Thread {
 
 						if (!output.hasRemaining()) {
 							driver.write();
-							output.clear();
+							((Buffer) output).clear();
 						}
 					}
 

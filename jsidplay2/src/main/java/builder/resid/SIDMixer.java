@@ -2,6 +2,7 @@ package builder.resid;
 
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -101,7 +102,7 @@ public class SIDMixer implements Mixer {
 						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE)).hasRemaining()) {
 							audioDriver.write();
-							buffer.clear();
+							((Buffer) buffer).clear();
 						}
 					}
 					// zero accumulator
@@ -109,10 +110,10 @@ public class SIDMixer implements Mixer {
 				}
 			}
 			// Erase audio buffers
-			audioBufferL.flip();
-			audioBufferR.flip();
-			audioBufferL.put(new int[bufferSize]).clear();
-			audioBufferR.put(new int[bufferSize]).clear();
+			((Buffer) audioBufferL).flip();
+			((Buffer) audioBufferR).flip();
+			((Buffer) audioBufferL.put(new int[bufferSize])).clear();
+			((Buffer) audioBufferR.put(new int[bufferSize])).clear();
 			context.schedule(this, bufferSize);
 		}
 

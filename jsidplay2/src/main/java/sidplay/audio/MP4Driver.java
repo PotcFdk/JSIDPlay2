@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -150,9 +151,9 @@ public class MP4Driver implements VideoDriver {
 	}
 
 	private void setPictureData(int[] bgraData) {
-		vicPixelBuffer.clear();
+		((Buffer) vicPixelBuffer).clear();
 		vicPixelBuffer.asIntBuffer().put(bgraData);
-		pictureBuffer.clear();
+		((Buffer) pictureBuffer).clear();
 		for (int channelIndex = 0; channelIndex < vicPixelBuffer.capacity(); channelIndex++) {
 			byte pixelData = vicPixelBuffer.get();
 			// ignore ALPHA channel (ARGB channel order)

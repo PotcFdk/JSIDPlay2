@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -62,11 +63,11 @@ public class ZipFileUtils {
 		final ByteBuffer buffer = ByteBuffer.allocateDirect(COPY_BUFFER_CHUNK_SIZE);
 
 		while (inputChannel.read(buffer) != -1) {
-			buffer.flip();
+			((Buffer) buffer).flip();
 			outputChannel.write(buffer);
 			buffer.compact();
 		}
-		buffer.flip();
+		((Buffer) buffer).flip();
 		while (buffer.hasRemaining()) {
 			outputChannel.write(buffer);
 		}

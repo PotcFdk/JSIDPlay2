@@ -1,6 +1,7 @@
 package sidplay.audio;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -50,8 +51,8 @@ public class ProxyDriver implements VideoDriver {
 		if (driverTwoBuffer != null) {
 			// Driver two's buffer gets the content of driver one's buffer
 			ByteBuffer readOnlyCopy = driverOne.buffer().asReadOnlyBuffer();
-			readOnlyCopy.flip();
-			driverTwoBuffer.clear();
+			((Buffer) readOnlyCopy).flip();
+			((Buffer) driverTwoBuffer).clear();
 			driverTwoBuffer.put(readOnlyCopy);
 			driverTwo.write();
 		}
