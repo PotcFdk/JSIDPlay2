@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=JSIDPlay2
+Name[de_DE]=JSIDPlay2
+Path=/home/ken/workspace/jsidplay2/target/standalone
+Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/workspace/jsidplay2/target/standalone ; /usr/bin/java -jar jsidplay2-3.9.jar'
+Terminal=false
+Type=Application
+Icon=/home/ken/workspace/jsidplay2/target/deploy/jsidplay2.png
+Categories=
