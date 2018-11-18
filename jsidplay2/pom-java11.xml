@@ -56,6 +56,26 @@
 	<dependencies>
 		<!-- compile time dependencies -->
 		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
 			<groupId>jsidplay2</groupId>
 			<artifactId>jump3r</artifactId>
 			<version>1.0</version>
@@ -71,24 +91,19 @@
 			<version>4.19</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.0</version>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.4.0-b180830.0438</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.0.2</version>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-xjc</artifactId>
+			<version>2.4.0-b180830.0438</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-core</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.3.0</version>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-jxc</artifactId>
+			<version>2.4.0-b180830.0438</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
@@ -98,7 +113,17 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.2.11.Final</version>
+			<version>5.4.0.CR1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -144,6 +169,12 @@
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
 			<version>0.2.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.sheinbergon</groupId>
@@ -151,14 +182,14 @@
 			<version>0.1.3</version>
 		</dependency>
 		<dependency>
-            <groupId>org.mp4parser</groupId>
-            <artifactId>muxer</artifactId>
-            <version>1.9.34</version>
+			<groupId>org.mp4parser</groupId>
+			<artifactId>muxer</artifactId>
+			<version>1.9.34</version>
 		</dependency>
 		<dependency>
-            <groupId>org.mp4parser</groupId>
-            <artifactId>streaming</artifactId>
-            <version>1.9.34</version>
+			<groupId>org.mp4parser</groupId>
+			<artifactId>streaming</artifactId>
+			<version>1.9.34</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
@@ -172,21 +203,33 @@
 		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-jdk14</artifactId>
-		    <version>1.7.25</version>
-		    <scope>runtime</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.25</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-file</artifactId>
 			<version>7.7.10</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-zip</artifactId>
 			<version>7.7.10</version>
 			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
@@ -347,8 +390,8 @@
 							<goal>javadoc</goal>
 						</goals>
 						<configuration>
-							<!-- additionalOptions>-html5</additionalOptions-->
-							<!-- javadocExecutable>${java.home}/bin/javadoc</javadocExecutable-->
+							<additionalOptions>-html5</additionalOptions>
+							<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 							<doclint>${doclint}</doclint>
 							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
 							<destDir>javadoc</destDir>
@@ -492,7 +535,7 @@
 								<exclude>builder/resid/residfp/ReSIDfp$FakeStereo.class</exclude>
 							</excludes>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-							<finalName>jsiddevice-${project.version}</finalName>
+							<finalName>jsiddevice-${project.version}-proguard</finalName>
 							<archive>
 								<addMavenDescriptor>false</addMavenDescriptor>
 								<manifest>
@@ -532,7 +575,7 @@
 							<excludes>
 								<exclude>sidplay/ConsolePlayer*.class</exclude>
 							</excludes>
-							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<outputDirectory>${project.build.directory}/libsidplay</outputDirectory>
 							<finalName>libsidplay-${project.version}</finalName>
 							<archive>
 								<addMavenDescriptor>false</addMavenDescriptor>
@@ -579,7 +622,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
 				<version>2.0.14</version>
@@ -611,7 +654,7 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -666,6 +709,51 @@
 				<artifactId>launch4j-maven-plugin</artifactId>
 				<version>1.7.22</version>
 				<executions>
+					<execution>
+						<id>launch4j-java11</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>gui</headerType>
+							<jar>${project.artifactId}-${project.version}.jar</jar>
+							<outfile>${project.build.directory}/standalone/${project.artifactId}_java9-${project.version}.exe</outfile>
+							<errTitle>${project.name}</errTitle>
+							<chdir>.</chdir>
+							<priority>high</priority>
+							<downloadUrl>https://java.com/download</downloadUrl>
+							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<singleInstance>
+								<mutexName>${project.artifactId}</mutexName>
+								<windowTitle>Error</windowTitle>
+							</singleInstance>
+							<classPath>
+								<mainClass>${javafx.main.class}</mainClass>
+								<jarLocation>.</jarLocation>
+								<addDependencies>true</addDependencies>
+							</classPath>
+							<jre>
+								<minVersion>1.8.0</minVersion>
+								<opts>
+									<opt>--module-path</opt>
+									<opt>.</opt>
+									<opt>--add-modules</opt>
+									<opt>javafx.controls,javafx.web,javafx.fxml</opt>
+								</opts>
+							</jre>
+							<splash>
+								<file>src/main/launch4j/jsidplay2.bmp</file>
+								<waitForWindow>true</waitForWindow>
+								<timeout>240</timeout>
+								<timeoutErr>true</timeoutErr>
+							</splash>
+						</configuration>
+					</execution>
 					<execution>
 						<id>launch4j</id>
 						<phase>package</phase>

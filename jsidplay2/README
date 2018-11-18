@@ -1,5 +1,6 @@
 mvn clean install
 =================
+target/libsidplay	-	library w/o dependencies
 target/standalone	-	local PC version
 target/deploy		-	website version
 
@@ -7,6 +8,9 @@ mvn clean deploy
 =================
 does mvn clean install
 and uploads target/deploy to web-server
+
+Set the following required properties for pom-java11.xml:
+-Djavafx.platform=<win|linux|mac>			(JavaFX is included platform dependent!)
 
 Set the following optional properties in Eclipse:
 Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
