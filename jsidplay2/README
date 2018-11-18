@@ -67,7 +67,8 @@ mvn clean install
 Java9 and successor versions require the configured required modules and since Java11
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
-However to use this new launch in Eclipse you are forced to rename pom-java11.xml to pom.xml unfortunately.
+However to use this new launch in Eclipse you must 1st: rename pom-java11.xml to pom.xml
+and 2nd to launch "mvn clean install (Java11)". Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
 
 Eclipse JavaFX support:
 =======================
