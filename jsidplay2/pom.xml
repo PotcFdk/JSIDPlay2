@@ -532,7 +532,7 @@
 							<excludes>
 								<exclude>sidplay/ConsolePlayer*.class</exclude>
 							</excludes>
-							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<outputDirectory>${project.build.directory}/libsidplay</outputDirectory>
 							<finalName>libsidplay-${project.version}</finalName>
 							<archive>
 								<addMavenDescriptor>false</addMavenDescriptor>
