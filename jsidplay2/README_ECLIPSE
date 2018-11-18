@@ -28,14 +28,3 @@ jsidplay2 (Maven Project):
 svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2
 hardsid (C-Project):
 svn+ssh://kenchis@svn.code.sf.net/p/jsidplay2/code/trunk/jsidplay2hardsid
-
-TODO:
-=====
-
-hardware support geht noch?
-Wie deployen von 3 Versionen für Web-site?
-
-doku: launch java11 update (exe)
-doku: location libsidplay update
-
-proguard für Java11 umstellen

@@ -9,9 +9,6 @@ mvn clean deploy
 does mvn clean install
 and uploads target/deploy to web-server
 
-Set the following required properties for pom-java11.xml:
--Djavafx.platform=<win|linux|mac>			(JavaFX is included platform dependent!)
-
 Set the following optional properties in Eclipse:
 Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 
@@ -57,23 +54,20 @@ Add:
 /usr/lib/jvm/java-8-openjdk-amd64/jre
 X Use as default Java
 
-This project is compatible with newer Java versions as well, but since Java 11 you will
-have to install JavaFX separately. Thanks to Oracle :-(
+Java 9,10,11:
+=============
+Since Java11 JavaFX is no longer bundled with Java!
+You will have to use a separate POM for JSIDPlay2 to include JavaFX. Thanks to Oracle :-(
 
-Java 11 specialities:
-=====================
-Since Java11 JavaFX is no longer bundled with Java, therefore
-you must download [[https://jdk.java.net/openjfx/][openjfx]] separately.
-I have added additional launches in Eclipse to launch using Java9 up to the current Java11:
-Sidplay2Frame (Since Java9)
-NetworkSIDDevice (Since Java9)
-CAUTION: There is a bug in openjdk, therefore to prevent
-the following error message starting NetworkSIDDevice
-*java.lang.ClassNotFoundException: org.GNOME.Accessibility.AtkWrapper*
-please type the following command:
-"sudo vi /etc/java-11-openjdk/accessibility.properties"
-please comment out the line as follows:
-"#assistive_technologies=org.GNOME.Accessibility.AtkWrapper"
+Therefore, use the following command:
+mvn -Djavafx.platform=win -f pom-java11.xml clean install			(Use [win|linux|mac])
+instead of:
+mvn clean install
+
+Java9 and successor versions require the configured required modules and since Java11
+the module path to JavaFX at startup of JSIDPlay2.
+I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
+However to use this new launch in Eclipse you are forced to rename pom-java11.xml to pom.xml unfortunately.
 
 Eclipse JavaFX support:
 =======================
@@ -136,3 +130,10 @@ TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
+
+Test hardware support (hardsid) with Java11.
+How to deploy win, linux and mac for the Web-site? (Additionally with a Java8 Version?)
+
+Docs: How to launch using java11 (new exe file)
+
+Wait for proguard to support Java11 and adopt changes

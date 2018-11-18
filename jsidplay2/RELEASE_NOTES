@@ -39,4 +39,5 @@ Better control about debug configuration.
 Use of JNA not JNI.
 Full Hardware support mono/stereo/3-SID better configurable.
 Tons of Refactorings of the code.
-ConsolePlayer now runs in vanilla Java 11 without javafx module dependencies
+ConsolePlayer now runs in vanilla Java 11 without javafx module dependencies as well as jsiddevice does.
+JSIDPlay2 supports Java11 now. Java11 and operating system dependent releases have been build.
