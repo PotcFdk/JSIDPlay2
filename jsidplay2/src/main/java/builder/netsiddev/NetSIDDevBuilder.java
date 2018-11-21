@@ -9,6 +9,7 @@ import java.util.List;
 import builder.netsiddev.commands.Flush;
 import builder.netsiddev.commands.Mute;
 import builder.netsiddev.commands.SetClocking;
+import builder.netsiddev.commands.SetDelay;
 import builder.netsiddev.commands.SetSidLevel;
 import builder.netsiddev.commands.SetSidPosition;
 import builder.netsiddev.commands.TrySetSampling;
@@ -94,6 +95,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		for (int sidNum = 0; sidNum < sids.size(); sidNum++) {
 			setVolume(sidNum, audioSection.getVolume(sidNum));
 			setBalance(sidNum, audioSection.getBalance(sidNum));
+			setDelay(sidNum, audioSection.getDelay(sidNum));
 		}
 		client.softFlush();
 	}
@@ -102,7 +104,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void setAudioDriver(AudioDriver audioDriver) {
 		// unused, since mixing is done on the server side
 	}
-	
+
 	@Override
 	public void start() {
 		client.start();
@@ -143,10 +145,11 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void setDelay(int sidNum, int delay) {
-		System.err.println("Delay unsupported by network SID client");
-		// XXX unsupported by JSIDDevice
+		if (client.getVersion() > 3) {
+			client.add(new SetDelay((byte) sidNum, (byte) delay));
+		}
 	}
-	
+
 	@Override
 	public void fastForward() {
 		client.fastForward();

@@ -78,10 +78,6 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		}
 	}
 
-	public int getDelayInCycles(int sidNum) {
-		return delayInCycles[sidNum];
-	}
-
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
@@ -95,6 +91,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 			HardSIDEmu hsid = createSID(deviceID, chipNum, sidNum, tune, chipModel);
 			hsid.lock();
 			sids.add(hsid);
+			setDelay(sidNum, config.getAudioSection().getDelay(sidNum));
 			return hsid;
 		}
 		System.err.println(/* throw new RuntimeException( */
@@ -169,6 +166,10 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	public void setBalance(int sidNum, float balance) {
 		System.err.println("Balance unsupported by HardSID4U");
 		// XXX unsupported by HardSID4U
+	}
+
+	public int getDelayInCycles(int sidNum) {
+		return delayInCycles[sidNum];
 	}
 
 	@Override

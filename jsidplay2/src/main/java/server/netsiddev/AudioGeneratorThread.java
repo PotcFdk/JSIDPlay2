@@ -3,6 +3,8 @@ package server.netsiddev;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -71,6 +73,8 @@ public class AudioGeneratorThread extends Thread {
 	private int[] sidPositionR;
 
 	private int[] audioBufferPos;
+
+	private IntBuffer[] delayedSamples;
 
 	private Mixer.Info mixerInfo;
 	private boolean deviceChanged = false;
@@ -172,6 +176,13 @@ public class AudioGeneratorThread extends Thread {
 						final int sid = sidNum;
 						audioBufferPos[sid] = 0;
 						sids[sidNum].clock(piece, sample -> {
+							synchronized (this.delayedSamples) {
+								IntBuffer delayedSamples = this.delayedSamples[sid];
+								if (!delayedSamples.put(sample).hasRemaining()) {
+									((Buffer) delayedSamples).flip();
+								}
+								sample = delayedSamples.get(delayedSamples.position());
+							}
 							sample = sample * sidLevel[sid] >> 10;
 							outAudioBuffer[audioBufferPos[sid] << 1 | 0] += sample * sidPositionL[sid] >> 10;
 							outAudioBuffer[audioBufferPos[sid]++ << 1 | 1] += sample * sidPositionR[sid] >> 10;
@@ -348,6 +359,15 @@ public class AudioGeneratorThread extends Thread {
 		sidLevel[sid] = (int) (1024 * Math.pow(10.0, level / 100.0));
 	}
 
+	public void setDelay(int sid, int delay) {
+		synchronized (this.delayedSamples) {
+			int delayedSamples = (int) (sidClocking.getCpuFrequency() / 1000. * delay);
+			this.delayedSamples[sid] = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
+					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
+			((Buffer) this.delayedSamples[sid]).flip();
+		}
+	}
+
 	/**
 	 * Acquire command queue handle.
 	 *
@@ -411,6 +431,7 @@ public class AudioGeneratorThread extends Thread {
 		sidLevel = new int[sid.length];
 		sidPositionL = new int[sid.length];
 		sidPositionR = new int[sid.length];
+		delayedSamples = new IntBuffer[sid.length];
 
 		audioBufferPos = new int[sid.length];
 
@@ -421,6 +442,7 @@ public class AudioGeneratorThread extends Thread {
 			} else {
 				setPosition(i, 0);
 			}
+			setDelay(i, 0);
 		}
 	}
 
