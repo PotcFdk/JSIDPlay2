@@ -1,5 +1,6 @@
 package builder.netsiddev;
 
+import static libsidplay.sidtune.SidTune.RESET;
 import static libsidplay.common.SIDChip.REG_COUNT;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
@@ -12,6 +13,7 @@ import builder.netsiddev.commands.SetClocking;
 import builder.netsiddev.commands.SetDelay;
 import builder.netsiddev.commands.SetSidLevel;
 import builder.netsiddev.commands.SetSidPosition;
+import builder.netsiddev.commands.SetTuneHeader;
 import builder.netsiddev.commands.TrySetSampling;
 import builder.netsiddev.commands.TrySetSidModel;
 import libsidplay.common.CPUClock;
@@ -51,6 +53,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
 		client.init((byte) 0xf);
+		if (client.getVersion() > 3 && tune != RESET && tune.getTuneHeader() != null) {
+			client.add(new SetTuneHeader(tune.getTuneHeader()));
+		}
 		client.add(new TrySetSampling(audioSection.getSampling()));
 		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
 		client.add(new SetClocking(cpuClock.getCpuFrequency()));

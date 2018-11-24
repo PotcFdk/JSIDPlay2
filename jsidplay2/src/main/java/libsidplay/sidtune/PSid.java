@@ -17,6 +17,7 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.sidtune.PSidHeader.getString;
 import static libsidplay.sidtune.SidTune.Clock.NTSC;
 import static libsidplay.sidtune.SidTune.Clock.PAL;
 import static libsidplay.sidtune.SidTune.Compatibility.PSIDv1;
@@ -39,8 +40,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 import libsidplay.components.mos6510.MOS6510;
 import libsidutils.assembler.KickAssembler;
@@ -49,192 +48,7 @@ import libsidutils.reloc65.Reloc65;
 
 class PSid extends Prg {
 
-	private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
-
-	/**
-	 * Header has been extended for 'RSID' format<BR>
-	 * 
-	 * The following changes are present:
-	 * <UL>
-	 * <LI>id = 'RSID'
-	 * <LI>version = 2 or 3 only
-	 * <LI>play, load and speed reserved 0
-	 * <LI>psid specific flag reserved 0
-	 * <LI>init cannot be under ROMS/IO
-	 * <LI>load cannot be less than 0x0801 (start of basic)
-	 * </UL>
-	 * all values big-endian
-	 * 
-	 * @author Ken Händel
-	 * 
-	 */
-	private static class PHeader {
-		private static final int SIZE = 124;
-
-		private PHeader(final byte[] header) {
-			final ByteBuffer buffer = ByteBuffer.wrap(header);
-
-			buffer.get(id);
-			version = buffer.getShort();
-			data = buffer.getShort();
-			load = buffer.getShort();
-			init = buffer.getShort();
-			play = buffer.getShort();
-			songs = buffer.getShort();
-			start = buffer.getShort();
-			speed = buffer.getInt();
-			buffer.get(name);
-			buffer.get(author);
-			buffer.get(released);
-			if (version >= 2) {
-				flags = buffer.getShort();
-				/* 2B */
-				relocStartPage = buffer.get();
-				relocPages = buffer.get();
-			}
-			if (version >= 3) {
-				/* 2SID */
-				sidChip2MiddleNybbles = buffer.get();
-			}
-			if (version >= 4) {
-				/* 3SID */
-				sidChip3MiddleNybbles = buffer.get();
-			}
-		}
-
-		private PHeader() {
-		}
-
-		private byte[] getArray() {
-			final ByteBuffer buffer = ByteBuffer.allocate(SIZE);
-			buffer.put(id);
-			buffer.putShort(version);
-			buffer.putShort(data);
-			buffer.putShort(load);
-			buffer.putShort(init);
-			buffer.putShort(play);
-			buffer.putShort(songs);
-			buffer.putShort(start);
-			buffer.putInt(speed);
-			buffer.put(name);
-			buffer.put(author);
-			buffer.put(released);
-			if (version >= 2) {
-				buffer.putShort(flags);
-				buffer.put(relocStartPage);
-				buffer.put(relocPages);
-			}
-			if (version >= 3) {
-				buffer.put(sidChip2MiddleNybbles);
-			}
-			if (version >= 4) {
-				buffer.put(sidChip3MiddleNybbles);
-			}
-			return buffer.array();
-		}
-
-		/**
-		 * Magic (PSID or RSID)
-		 */
-		private byte[] id = new byte[4];
-
-		/**
-		 * 0x0001, 0x0002, 0x0003 or 0x0004
-		 */
-		private short version;
-
-		/**
-		 * 16-bit offset to binary data in file
-		 */
-		private short data;
-
-		/**
-		 * 16-bit C64 address to load file to
-		 */
-		private short load;
-
-		/**
-		 * 16-bit C64 address of init subroutine
-		 */
-		private short init;
-
-		/**
-		 * 16-bit C64 address of play subroutine
-		 */
-		private short play;
-
-		/**
-		 * number of songs
-		 */
-		private short songs;
-
-		/**
-		 * start song out of [1..256]
-		 */
-		private short start;
-
-		/**
-		 * 32-bit speed info:<BR>
-		 * 
-		 * bit: 0=50 Hz, 1=CIA 1 Timer A (default: 60 Hz)
-		 */
-		private int speed;
-
-		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero For
-		 * version 0x0003, all 32 chars can be used without zero termination. if less
-		 * than 32 chars are used then it should be terminated with a trailing zero
-		 */
-		private byte name[] = new byte[32];
-
-		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero For
-		 * version 0x0003, all 32 chars can be used without zero termination. if less
-		 * than 32 chars are used then it should be terminated with a trailing zero
-		 */
-		private byte author[] = new byte[32];
-
-		/**
-		 * ASCII strings, 31 characters long and terminated by a trailing zero For
-		 * version 0x0003, all 32 chars can be used without zero termination. if less
-		 * than 32 chars are used then it should be terminated with a trailing zero
-		 */
-		private byte released[] = new byte[32];
-
-		/**
-		 * only version 0x0002+
-		 */
-		private short flags;
-
-		/**
-		 * only version 0x0002+
-		 */
-		private byte relocStartPage;
-
-		/**
-		 * only version 0x0002+
-		 */
-		private byte relocPages;
-
-		/**
-		 * only version 0x0003 to indicate second SID chip address
-		 */
-		private byte sidChip2MiddleNybbles;
-
-		/**
-		 * only version 0x0004 to indicate third SID chip address
-		 */
-		private byte sidChip3MiddleNybbles;
-
-		private String getString(byte[] info) {
-			try (Scanner sc = new Scanner(new String(info, ISO_8859_1))) {
-				return sc.useDelimiter("\0").next();
-			} catch (NoSuchElementException e) {
-				return "<?>";
-			}
-		}
-
-	}
+	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
 	private static final String PSID_DRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
 
@@ -264,6 +78,8 @@ class PSid extends Prg {
 	 */
 	private static final int SIDTUNE_MAX_SONGS = 256;
 
+	private PSidHeader header;
+	
 	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
 	private KickAssemblerResult preparedDriver;
@@ -496,48 +312,48 @@ class PSid extends Prg {
 	}
 
 	protected static SidTune load(final String name, final byte[] dataBuf) throws SidTuneError {
-		if (dataBuf.length < PHeader.SIZE) {
+		if (dataBuf.length < PSidHeader.SIZE) {
 			throw new SidTuneError(
-					String.format("PSID: Header too short: %d, expected (%d)", dataBuf.length, PHeader.SIZE));
+					String.format("PSID: Header too short: %d, expected (%d)", dataBuf.length, PSidHeader.SIZE));
 		}
-		final PHeader header = new PHeader(dataBuf);
-		if ((header.flags & PSID_MUS) != 0) {
+		final PSid psid = new PSid();
+		psid.header = new PSidHeader(dataBuf);
+		if ((psid.header.flags & PSID_MUS) != 0) {
 			throw new SidTuneError("PSID: MUS-specific PSIDs are not supported by this player");
 		}
 
-		final PSid psid = new PSid();
 		psid.program = dataBuf;
-		psid.programOffset = header.data;
+		psid.programOffset = psid.header.data;
 
 		psid.info.c64dataLen = dataBuf.length - psid.programOffset;
-		psid.info.loadAddr = header.load & 0xffff;
-		psid.info.initAddr = header.init & 0xffff;
-		psid.info.playAddr = header.play & 0xffff;
+		psid.info.loadAddr = psid.header.load & 0xffff;
+		psid.info.initAddr = psid.header.init & 0xffff;
+		psid.info.playAddr = psid.header.play & 0xffff;
 
-		psid.info.songs = header.songs & 0xffff;
+		psid.info.songs = psid.header.songs & 0xffff;
 		if (psid.info.songs == 0) {
 			psid.info.songs++;
 		}
 		if (psid.info.songs > SIDTUNE_MAX_SONGS) {
 			psid.info.songs = SIDTUNE_MAX_SONGS;
 		}
-		psid.info.startSong = header.start & 0xffff;
+		psid.info.startSong = psid.header.start & 0xffff;
 		if (psid.info.startSong > psid.info.songs) {
 			psid.info.startSong = 1;
 		} else if (psid.info.startSong == 0) {
 			psid.info.startSong++;
 		}
 
-		int speed = header.speed;
+		int speed = psid.header.speed;
 
-		if (Arrays.equals(header.id, "PSID".getBytes(ISO_8859_1))) {
-			switch (header.version) {
+		if (Arrays.equals(psid.header.id, "PSID".getBytes(ISO_8859_1))) {
+			switch (psid.header.version) {
 			case 1:
 				psid.info.compatibility = PSIDv1;
 				break;
 			case 2:
 				psid.info.compatibility = PSIDv2;
-				if ((header.flags & PSID_SPECIFIC) != 0) {
+				if ((psid.header.flags & PSID_SPECIFIC) != 0) {
 					throw new SidTuneError("PSID: PSID-specific files are not supported by this player");
 				}
 				break;
@@ -548,13 +364,13 @@ class PSid extends Prg {
 				psid.info.compatibility = PSIDv4;
 				break;
 			default:
-				throw new SidTuneError("PSID: PSID version must be 1, 2, 3 or 4, now: " + header.version);
+				throw new SidTuneError("PSID: PSID version must be 1, 2, 3 or 4, now: " + psid.header.version);
 			}
-		} else if (Arrays.equals(header.id, "RSID".getBytes(ISO_8859_1))) {
-			if ((header.flags & PSID_BASIC) != 0) {
+		} else if (Arrays.equals(psid.header.id, "RSID".getBytes(ISO_8859_1))) {
+			if ((psid.header.flags & PSID_BASIC) != 0) {
 				psid.info.compatibility = RSID_BASIC;
 			} else {
-				switch (header.version) {
+				switch (psid.header.version) {
 				case 2:
 					psid.info.compatibility = RSIDv2;
 					break;
@@ -562,7 +378,7 @@ class PSid extends Prg {
 					psid.info.compatibility = RSIDv3;
 					break;
 				default:
-					throw new SidTuneError("PSID: RSID version must be 2 or 3, now: " + header.version);
+					throw new SidTuneError("PSID: RSID version must be 2 or 3, now: " + psid.header.version);
 				}
 			}
 			if (psid.info.loadAddr != 0 || psid.info.playAddr != 0 || speed != 0) {
@@ -577,19 +393,19 @@ class PSid extends Prg {
 		int model1 = 0;
 		int model2 = 0;
 		int model3 = 0;
-		if (header.version >= 2) {
-			clock = (header.flags >> 2) & 3;
-			model1 = (header.flags >> 4) & 3;
+		if (psid.header.version >= 2) {
+			clock = (psid.header.flags >> 2) & 3;
+			model1 = (psid.header.flags >> 4) & 3;
 
-			psid.info.relocStartPage = (short) (header.relocStartPage & 0xff);
-			psid.info.relocPages = (short) (header.relocPages & 0xff);
+			psid.info.relocStartPage = (short) (psid.header.relocStartPage & 0xff);
+			psid.info.relocPages = (short) (psid.header.relocPages & 0xff);
 
 		}
-		if (header.version >= 3) {
-			model2 = (header.flags >> 6) & 3;
+		if (psid.header.version >= 3) {
+			model2 = (psid.header.flags >> 6) & 3;
 
 			/* Handle 2nd SID chip location */
-			int sid2loc = 0xd000 | (header.sidChip2MiddleNybbles & 0xff) << 4;
+			int sid2loc = 0xd000 | (psid.header.sidChip2MiddleNybbles & 0xff) << 4;
 			if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
 				psid.info.sidChipBase[1] = sid2loc;
 				if (model2 == 0) {
@@ -598,11 +414,11 @@ class PSid extends Prg {
 				}
 			}
 		}
-		if (header.version >= 4) {
-			model3 = (header.flags >> 8) & 3;
+		if (psid.header.version >= 4) {
+			model3 = (psid.header.flags >> 8) & 3;
 
 			/* Handle 3rd SID chip location */
-			int sid3loc = 0xd000 | (header.sidChip3MiddleNybbles & 0xff) << 4;
+			int sid3loc = 0xd000 | (psid.header.sidChip3MiddleNybbles & 0xff) << 4;
 			if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
 				psid.info.sidChipBase[2] = sid3loc;
 				if (model3 == 0) {
@@ -620,9 +436,9 @@ class PSid extends Prg {
 		psid.convertOldStyleSpeedToTables(speed);
 
 		// Name
-		psid.info.infoString.add(header.getString(header.name));
-		psid.info.infoString.add(header.getString(header.author));
-		psid.info.infoString.add(header.getString(header.released));
+		psid.info.infoString.add(getString(psid.header.name));
+		psid.info.infoString.add(getString(psid.header.author));
+		psid.info.infoString.add(getString(psid.header.released));
 
 		psid.resolveAddrs();
 		psid.findPlaceForDriver();
@@ -630,6 +446,11 @@ class PSid extends Prg {
 		return psid;
 	}
 
+	@Override
+	public byte[] getTuneHeader() {
+		return header.getArray();
+	}
+	
 	/**
 	 * Convert 32-bit PSID-style speed word to internal tables.
 	 * 
@@ -665,7 +486,7 @@ class PSid extends Prg {
 	@Override
 	public void save(final String name) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(name)) {
-			final PHeader header = new PHeader();
+			final PSidHeader header = new PSidHeader();
 			header.id = "PSID".getBytes(ISO_8859_1);
 			if (info.sidChipBase[2] != 0) {
 				header.version = 4;
@@ -675,7 +496,7 @@ class PSid extends Prg {
 				header.version = 2;
 			}
 
-			header.data = PHeader.SIZE;
+			header.data = PSidHeader.SIZE;
 			header.songs = (short) info.songs;
 			header.start = (short) info.startSong;
 			header.speed = getSongSpeedWord();

@@ -12,6 +12,9 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -25,6 +28,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
+import libsidplay.sidtune.PSidHeader;
 import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
@@ -61,14 +65,13 @@ class ClientContext {
 	private SIDChip[] sidRead;
 
 	/**
-	 * Allocate read buffer. Maximum command + maximum socket buffer size
-	 * (assumed to be per request 16K)
+	 * Allocate read buffer. Maximum command + maximum socket buffer size (assumed
+	 * to be per request 16K)
 	 */
 	private final ByteBuffer dataRead = ByteBuffer.allocateDirect(65536 + 4 + 16384);
 
 	/**
-	 * Allocate write buffer. Maximum supported writes are currently 260 bytes
-	 * long.
+	 * Allocate write buffer. Maximum supported writes are currently 260 bytes long.
 	 */
 	private final ByteBuffer dataWrite = ByteBuffer.allocateDirect(260);
 
@@ -90,9 +93,11 @@ class ClientContext {
 	/** Current clock value in input. */
 	private long inputClock;
 
+	private PSidHeader tuneHeader;
+
 	/**
-	 * Indicates if a new connection should be opened in case of connection
-	 * settings changes.
+	 * Indicates if a new connection should be opened in case of connection settings
+	 * changes.
 	 */
 	private static boolean openNewConnection = true;
 
@@ -152,9 +157,9 @@ class ClientContext {
 
 			sidCommandQueue.clear();
 			/*
-			 * The playbackclock may still increase for a while, because audio
-			 * generation may still be ongoing. We aren't allowed to wait for
-			 * it, either, so this is the best we can do.
+			 * The playbackclock may still increase for a while, because audio generation
+			 * may still be ongoing. We aren't allowed to wait for it, either, so this is
+			 * the best we can do.
 			 */
 			inputClock = eventConsumerThread.getPlaybackClock();
 			dataWrite.put((byte) Response.OK.ordinal());
@@ -200,9 +205,10 @@ class ClientContext {
 
 			final byte volume = dataRead.get(4);
 
+			tuneHeader = null;
 			/*
-			 * The read-side SID reset is more profound, it actually fully
-			 * initializes the SID.
+			 * The read-side SID reset is more profound, it actually fully initializes the
+			 * SID.
 			 */
 			for (int i = 0; i < sidRead.length; i++) {
 				eventConsumerThread.reset(i, volume);
@@ -283,7 +289,7 @@ class ClientContext {
 			break;
 		}
 
-			/* Metdata method section */
+		/* Metdata method section */
 		case GET_VERSION:
 			if (dataLength != 0) {
 				throw new InvalidCommandException("GET_VERSION needs no data", dataLength);
@@ -393,6 +399,26 @@ class ClientContext {
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
+		case SET_SID_HEADER:
+			if (dataLength < 2) {
+				throw new InvalidCommandException(
+						"SET_SID_HEADER needs more than 2 bytes (length of header and header contents)", dataLength);
+			}
+
+			int tuneHeaderLength = ((dataRead.get(4) & 0xff) << 8) | (dataRead.get(5) & 0xff);
+			byte[] tuneHeaderBytes = new byte[tuneHeaderLength];
+			for (int i = 0; i < tuneHeaderLength; i++) {
+				tuneHeaderBytes[i] = dataRead.get(6 + i);
+			}
+
+			String tuneHeaderString = PSidHeader.getString(tuneHeaderBytes);
+			if (tuneHeaderString.startsWith("PSID") || tuneHeaderString.startsWith("RSID")) {
+				tuneHeader = new PSidHeader(tuneHeaderBytes);
+			}
+
+			dataWrite.put((byte) Response.OK.ordinal());
+			break;
+
 		default:
 			throw new InvalidCommandException("Unsupported command: " + command);
 		}
@@ -459,12 +485,15 @@ class ClientContext {
 		return dataWrite;
 	}
 
+	public PSidHeader getTuneHeader() {
+		return tuneHeader;
+	}
+
 	/**
-	 * changeDevice will change the device to the specified device for all
-	 * connected client contexts
+	 * changeDevice will change the device to the specified device for all connected
+	 * client contexts
 	 * 
-	 * @param deviceInfo
-	 *            the device that should be used
+	 * @param deviceInfo the device that should be used
 	 */
 	public static void changeDevice(final Mixer.Info deviceInfo) {
 		for (ClientContext clientContext : clientContextMap.values()) {
@@ -473,11 +502,10 @@ class ClientContext {
 	}
 
 	/**
-	 * setDigiBoost will change the digiboost setting for each 8580 device for
-	 * all connected client contexts
+	 * setDigiBoost will change the digiboost setting for each 8580 device for all
+	 * connected client contexts
 	 * 
-	 * @param enabled
-	 *            specifies if the digiboost feature is turned on
+	 * @param enabled specifies if the digiboost feature is turned on
 	 */
 	public static void setDigiBoost(final boolean enabled) {
 		for (ClientContext clientContext : clientContextMap.values()) {
@@ -485,9 +513,17 @@ class ClientContext {
 		}
 	}
 
+	public static Collection<PSidHeader> getTuneHeaders() {
+		List<PSidHeader> result = new ArrayList<>();
+		for (ClientContext clientContext : clientContextMap.values()) {
+			result.add(clientContext.getTuneHeader());
+		}
+		return result;
+	}
+
 	/**
-	 * applyConnectionConfigChanges will close all current connections and apply
-	 * the new configuration which is stored in the SIDDeviceSettings.
+	 * applyConnectionConfigChanges will close all current connections and apply the
+	 * new configuration which is stored in the SIDDeviceSettings.
 	 */
 	public static void applyConnectionConfigChanges() {
 		openNewConnection = true;
@@ -533,9 +569,9 @@ class ClientContext {
 
 							sc.register(selector, SelectionKey.OP_READ);
 							IniJSIDDeviceAudioSection audio = config.audio();
-							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice());
-							ClientContext cc = new ClientContext(audioConfig,
-									config.jsiddevice().getLatency());
+							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2,
+									audio.getDevice());
+							ClientContext cc = new ClientContext(audioConfig, config.jsiddevice().getLatency());
 							clientContextMap.put(sc, cc);
 							System.out.println("New client: " + cc);
 						}
@@ -560,10 +596,9 @@ class ClientContext {
 								sc.close();
 
 								/*
-								 * IOExceptions are probably not worth bothering
-								 * user about, they could be normal stuff like
-								 * apps exiting or closing connection. Other
-								 * stuff is important, though.
+								 * IOExceptions are probably not worth bothering user about, they could be
+								 * normal stuff like apps exiting or closing connection. Other stuff is
+								 * important, though.
 								 */
 								if (!(e instanceof IOException)) {
 									StringWriter sw = new StringWriter();

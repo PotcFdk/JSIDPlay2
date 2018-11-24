@@ -1,5 +1,7 @@
 package server.netsiddev;
 
+import static libsidplay.sidtune.PSidHeader.getString;
+
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -10,9 +12,13 @@ import java.awt.TrayIcon;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  * Documentation of the protocol is contained here: netsiddev.ad
@@ -117,6 +123,14 @@ public class NetworkSIDDeviceMain {
 		} catch (AWTException e) {
 			networkSIDDeviceHeadless.printErrorAndExit(e);
 		}
+
+		new Timer(1000, event -> {
+			String toolTip = ClientContext.getTuneHeaders().stream().filter(Objects::nonNull)
+					.map(header -> Arrays.asList(getString(header.getName()), getString(header.getAuthor()),
+							getString(header.getReleased())).stream().collect(Collectors.joining(", ")))
+					.collect(Collectors.joining("\n"));
+			trayIcon.setToolTip(toolTip.isEmpty() ? null : toolTip);
+		}).start();
 	}
 
 }

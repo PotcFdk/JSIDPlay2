@@ -195,6 +195,10 @@ public abstract class SidTune {
 		}
 	}
 
+	public byte[] getTuneHeader() {
+		return null;
+	}
+	
 	/**
 	 * Does not affect status of object, and therefore can be used to load files.
 	 * 
