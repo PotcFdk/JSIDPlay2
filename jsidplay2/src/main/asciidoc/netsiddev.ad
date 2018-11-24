@@ -181,7 +181,7 @@ with a maximum of 255 characters excluding a null terminated byte
 **** 8-bit unsigned ms delay, 0 means no delay
 *** always returns OK.
 
-** SET_HEADER (16): set SID header bytes
+** SET_SID_HEADER (16): set SID header bytes
 *** data packet is at least 2 byte long and contains:
 **** 16-bit unsigned value interpreted as length of the following SID header.
 **** N bytes containing identifiable SID header to display tune info on the tray icon. Currently, PSID header bytes are expected.
