@@ -1,6 +1,7 @@
 package libsidplay.sidtune;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -22,6 +23,8 @@ import java.util.Scanner;
  * 
  */
 public class PSidHeader {
+	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+
 	static final int SIZE = 124;
 
 	public PSidHeader(final byte[] header) {
@@ -180,7 +183,7 @@ public class PSidHeader {
 	byte sidChip3MiddleNybbles;
 
 	public static String getString(byte[] info) {
-		try (Scanner sc = new Scanner(new String(info, PSid.ISO_8859_1))) {
+		try (Scanner sc = new Scanner(new String(info, ISO_8859_1))) {
 			return sc.useDelimiter("\0").next();
 		} catch (NoSuchElementException e) {
 			return "<?>";

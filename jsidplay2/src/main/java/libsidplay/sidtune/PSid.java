@@ -17,6 +17,7 @@
  */
 package libsidplay.sidtune;
 
+import static libsidplay.sidtune.PSidHeader.ISO_8859_1;
 import static libsidplay.sidtune.PSidHeader.getString;
 import static libsidplay.sidtune.SidTune.Clock.NTSC;
 import static libsidplay.sidtune.SidTune.Clock.PAL;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +47,6 @@ import libsidutils.assembler.KickAssemblerResult;
 import libsidutils.reloc65.Reloc65;
 
 class PSid extends Prg {
-
-	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
 	private static final String PSID_DRIVER_ASM = "/libsidplay/sidtune/psiddriver.asm";
 
