@@ -38,8 +38,8 @@ public class AudioGeneratorThread extends Thread {
 	private final AtomicLong playbackClock = new AtomicLong(0);
 
 	/**
-	 * Queue with SID writes from client. We reserve a space assuming writes
-	 * come at most one every 10 cpu clocks.
+	 * Queue with SID writes from client. We reserve a space assuming writes come at
+	 * most one every 10 cpu clocks.
 	 */
 	private final BlockingQueue<SIDWrite> sidCommandQueue;
 
@@ -76,6 +76,17 @@ public class AudioGeneratorThread extends Thread {
 
 	private IntBuffer[] delayedSamples;
 
+	/**
+	 * Fade-in/fade-out time in clock ticks.
+	 */
+	private long[] fadeInClocks, fadeOutClocks;
+
+	/**
+	 * Fade-in/fade-out clock steps until next volume change and current fade-in and
+	 * fade-out counters.
+	 */
+	private long[] fadeInStep, fadeOutStep, fadeInVal, fadeOutVal;
+
 	private Mixer.Info mixerInfo;
 	private boolean deviceChanged = false;
 
@@ -86,8 +97,8 @@ public class AudioGeneratorThread extends Thread {
 	private final AtomicBoolean quicklyDiscardAudio = new AtomicBoolean(false);
 
 	/**
-	 * Triangularly shaped noise source for audio applications. Output of this
-	 * PRNG is between ]-1, 1[.
+	 * Triangularly shaped noise source for audio applications. Output of this PRNG
+	 * is between ]-1, 1[.
 	 *
 	 * @return triangular noise sample
 	 */
@@ -142,8 +153,7 @@ public class AudioGeneratorThread extends Thread {
 					long predictedExhaustionTime = System.currentTimeMillis() + driver.getRemainingPlayTime();
 					while (!quicklyDiscardAudio.get() && System.currentTimeMillis() < predictedExhaustionTime) {
 						/*
-						 * Sleep for 1 ms, then re-check quicklyDiscardAudio
-						 * flag.
+						 * Sleep for 1 ms, then re-check quicklyDiscardAudio flag.
 						 */
 						write = sidCommandQueue.poll(1, TimeUnit.MILLISECONDS);
 						if (write != null) {
@@ -183,6 +193,21 @@ public class AudioGeneratorThread extends Thread {
 								}
 								sample = delayedSamples.get(delayedSamples.position());
 							}
+							synchronized (fadeInClocks) {
+								if (fadeInClocks[sid] > 0) {
+									fadeInClocks[sid]--;
+									if (--fadeInVal[sid] == 0) {
+										fadeInVal[sid] = fadeInStep[sid];
+										sidLevel[sid]++;
+									}
+								} else if (fadeOutClocks[sid] > 0) {
+									fadeOutClocks[sid]--;
+									if (--fadeOutVal[sid] == 0) {
+										fadeOutVal[sid] = fadeOutStep[sid];
+										sidLevel[sid]--;
+									}
+								}
+							}
 							sample = sample * sidLevel[sid] >> 10;
 							outAudioBuffer[audioBufferPos[sid] << 1 | 0] += sample * sidPositionL[sid] >> 10;
 							outAudioBuffer[audioBufferPos[sid]++ << 1 | 1] += sample * sidPositionR[sid] >> 10;
@@ -190,9 +215,9 @@ public class AudioGeneratorThread extends Thread {
 					}
 
 					/*
-					 * XXX Note: We might define stereo sinc resampler to do
-					 * both passes at once. This should be a win because the FIR
-					 * table would only have to be fetched once.
+					 * XXX Note: We might define stereo sinc resampler to do both passes at once.
+					 * This should be a win because the FIR table would only have to be fetched
+					 * once.
 					 */
 
 					/* Generate triangularly dithered stereo audio output. */
@@ -273,10 +298,8 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Reset the specified SID and sets the volume afterwards.
 	 *
-	 * @param sidNumber
-	 *            The specified SID to reset.
-	 * @param volume
-	 *            The volume of the specified SID after resetting it.
+	 * @param sidNumber The specified SID to reset.
+	 * @param volume    The volume of the specified SID after resetting it.
 	 */
 	public void reset(final int sidNumber, final byte volume) {
 		sids[sidNumber].reset();
@@ -286,12 +309,9 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Mute a SID's voice.
 	 *
-	 * @param sidNumber
-	 *            The specified SID to mute the voice of.
-	 * @param voiceNo
-	 *            The specific voice of the SID to mute.
-	 * @param mute
-	 *            Mute/Unmute the SID voice.
+	 * @param sidNumber The specified SID to mute the voice of.
+	 * @param voiceNo   The specific voice of the SID to mute.
+	 * @param mute      Mute/Unmute the SID voice.
 	 */
 	public void mute(final int sidNumber, final int voiceNo, final boolean mute) {
 		sids[sidNumber].mute(voiceNo, mute);
@@ -310,8 +330,7 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Set NTSC/PAL time source.
 	 *
-	 * @param clock
-	 *            The specified clock value to set.
+	 * @param clock The specified clock value to set.
 	 */
 	public void setClocking(CPUClock clock) {
 		sidClocking = clock;
@@ -321,8 +340,7 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Set quality of audio output.
 	 *
-	 * @param samplingMethod
-	 *            The desired sampling method to use.
+	 * @param samplingMethod The desired sampling method to use.
 	 */
 	public void setSampling(SamplingMethod samplingMethod) {
 		sidSampling = samplingMethod;
@@ -330,8 +348,8 @@ public class AudioGeneratorThread extends Thread {
 	}
 
 	/**
-	 * Update SID parameters to new settings based on given clocking, sampling
-	 * and output frequency.
+	 * Update SID parameters to new settings based on given clocking, sampling and
+	 * output frequency.
 	 */
 	private void refreshParams() {
 		for (int i = 0; i < sids.length; i++) {
@@ -365,6 +383,25 @@ public class AudioGeneratorThread extends Thread {
 			this.delayedSamples[sid] = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
 					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
 			((Buffer) this.delayedSamples[sid]).flip();
+		}
+	}
+
+	public void setFadeIn(float fadeIn) {
+		synchronized (fadeInClocks) {
+			for (int sid = 0; sid < sids.length; sid++) {
+				this.fadeInClocks[sid] = (long) (fadeIn * sidClocking.getCpuFrequency());
+				fadeInVal[sid] = fadeInStep[sid] = sidLevel[sid] != 0 ? fadeInClocks[sid] / sidLevel[sid] : 0;
+				sidLevel[sid] = 0;
+			}
+		}
+	}
+
+	public void setFadeOut(float fadeOut) {
+		synchronized (fadeInClocks) {
+			for (int sid = 0; sid < sids.length; sid++) {
+				this.fadeOutClocks[sid] = (long) (fadeOut * sidClocking.getCpuFrequency());
+				fadeOutVal[sid] = fadeOutStep[sid] = sidLevel[sid] != 0 ? fadeOutClocks[sid] / sidLevel[sid] : 0;
+			}
 		}
 	}
 
@@ -432,6 +469,12 @@ public class AudioGeneratorThread extends Thread {
 		sidPositionL = new int[sid.length];
 		sidPositionR = new int[sid.length];
 		delayedSamples = new IntBuffer[sid.length];
+		fadeInClocks = new long[sid.length];
+		fadeOutClocks = new long[sid.length];
+		fadeInStep = new long[sid.length];
+		fadeOutStep = new long[sid.length];
+		fadeInVal = new long[sid.length];
+		fadeOutVal = new long[sid.length];
 
 		audioBufferPos = new int[sid.length];
 
@@ -454,8 +497,7 @@ public class AudioGeneratorThread extends Thread {
 	/**
 	 * Whether or not to enable Digiboost for all SID chips of model 8580.
 	 *
-	 * @param selected
-	 *            Whether or not to enable Digiboost.
+	 * @param selected Whether or not to enable Digiboost.
 	 */
 	public void setDigiBoost(final boolean selected) {
 		digiBoostEnabled = selected;

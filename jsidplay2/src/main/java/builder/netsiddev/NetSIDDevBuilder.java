@@ -1,8 +1,8 @@
 package builder.netsiddev;
 
-import static libsidplay.sidtune.SidTune.RESET;
 import static libsidplay.common.SIDChip.REG_COUNT;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
+import static libsidplay.sidtune.SidTune.RESET;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,8 @@ import builder.netsiddev.commands.Flush;
 import builder.netsiddev.commands.Mute;
 import builder.netsiddev.commands.SetClocking;
 import builder.netsiddev.commands.SetDelay;
+import builder.netsiddev.commands.SetFadeIn;
+import builder.netsiddev.commands.SetFadeOut;
 import builder.netsiddev.commands.SetSidLevel;
 import builder.netsiddev.commands.SetSidPosition;
 import builder.netsiddev.commands.SetTuneHeader;
@@ -117,14 +119,16 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	@Override
 	public void fadeIn(double fadeIn) {
-		System.err.println("Fade-in unsupported by network SID client");
-		// XXX unsupported by JSIDDevice
+		if (client.getVersion() > 3) {
+			client.add(new SetFadeIn((byte) fadeIn));
+		}
 	}
 
 	@Override
 	public void fadeOut(double fadeOut) {
-		System.err.println("Fade-out unsupported by network SID client");
-		// XXX unsupported by JSIDDevice
+		if (client.getVersion() > 3) {
+			client.add(new SetFadeOut((byte) fadeOut));
+		}
 	}
 
 	@Override

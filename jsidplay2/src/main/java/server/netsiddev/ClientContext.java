@@ -399,6 +399,42 @@ class ClientContext {
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
+		case SET_FADE_IN:
+			if (dataLength != 4) {
+				throw new InvalidCommandException(
+						"SET_FADE_IN needs 4 bytes (float value according to the IEEE 754 floating-point \"single format\" bit layout)",
+						dataLength);
+			}
+
+			if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {
+				dataWrite.put((byte) Response.BUSY.ordinal());
+				break;
+			}
+
+			float fadeIn = Float.intBitsToFloat(dataRead.getInt(4));
+
+			eventConsumerThread.setFadeIn(fadeIn);
+			dataWrite.put((byte) Response.OK.ordinal());
+			break;
+
+		case SET_FADE_OUT:
+			if (dataLength != 4) {
+				throw new InvalidCommandException(
+						"SET_FADE_OUT needs 4 bytes (float value according to the IEEE 754 floating-point \"single format\" bit layout)",
+						dataLength);
+			}
+
+			if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {
+				dataWrite.put((byte) Response.BUSY.ordinal());
+				break;
+			}
+
+			float fadeOut = Float.intBitsToFloat(dataRead.getInt(4));
+
+			eventConsumerThread.setFadeOut(fadeOut);
+			dataWrite.put((byte) Response.OK.ordinal());
+			break;
+
 		case SET_SID_HEADER:
 			if (dataLength < 2) {
 				throw new InvalidCommandException(

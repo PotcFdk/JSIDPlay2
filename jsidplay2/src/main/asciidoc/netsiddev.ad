@@ -181,7 +181,25 @@ with a maximum of 255 characters excluding a null terminated byte
 **** 8-bit unsigned ms delay, 0 means no delay
 *** always returns OK.
 
-** SET_SID_HEADER (16): set SID header bytes
+** SET_FADE_IN (16): set fade-in time in seconds.
+
+*** sid number is ignored.
+*** data packet is 4 bytes long and contains:
+**** int representation of the specified floating-point value according to the IEEE 754 floating-point "single format" bit layout). Fade-in time in seconds.
+**** Note: Since only the client knows the song length, you must send this command, when the fade-in time is reached (at the start of the tune).
+*** returns BUSY until audio quiescent, otherwise OK.
+
+
+** SET_FADE_OUT (17): set fade-out time in seconds.
+
+*** sid number is ignored.
+*** data packet is 4 bytes long and contains:
+**** int representation of the specified floating-point value according to the IEEE 754 floating-point "single format" bit layout). Fade-out time in seconds.
+**** Note: Since only the client knows the song length, you must send this command, when the fade-out time is reached (near the end of the tune).
+*** returns BUSY until audio quiescent, otherwise OK.
+
+
+** SET_SID_HEADER (18): set SID header bytes
 *** data packet is at least 2 byte long and contains:
 **** 16-bit unsigned value interpreted as length of the following SID header.
 **** N bytes containing identifiable SID header to display tune info on the tray icon. Currently, PSID header bytes are expected.
