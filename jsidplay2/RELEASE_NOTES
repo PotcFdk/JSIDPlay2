@@ -6,6 +6,7 @@ Migration to HTTPS
 Updated documentation and screenshots
 
 Features:
+New commands implemented in protocol version 4 of Network SID device: SET_DELAY, SET_FADE_IN, SET_FADE_OUT, SET_SID_HEADER
 Delayed SID output for better fake stereo experience added.
 EmulationSettings enhanced (mute and delay up to 100ms added).
 SIDBlaster support added.
