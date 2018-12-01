@@ -6,7 +6,7 @@ Migration to HTTPS
 Updated documentation and screenshots
 
 Features:
-New commands implemented in protocol version 4 of Network SID device: SET_DELAY, SET_FADE_IN, SET_FADE_OUT, SET_SID_HEADER
+New commands implemented in protocol version 4 of Network SID device: SET_DELAY, SET_FADE_IN, SET_FADE_OUT, SET_PSID_HEADER
 Delayed SID output for better fake stereo experience added.
 EmulationSettings enhanced (mute and delay up to 100ms added).
 SIDBlaster support added.
@@ -38,7 +38,6 @@ Internal:
 Support of JavaFX preview added in Eclipse.
 Better control about debug configuration.
 Use of JNA not JNI.
-Full Hardware support mono/stereo/3-SID better configurable.
-Tons of Refactorings of the code.
+Better configuration and assignment of chips for SIDBlaster and HardSID4U and mono/stereo/3-SID tunes.
 ConsolePlayer now runs in vanilla Java 11 without javafx module dependencies as well as jsiddevice does.
-JSIDPlay2 supports Java11 now. Java11 and operating system dependent releases have been build.
+JSIDPlay2 supports Java11 now. Java11 and operating system dependent releases can be build.

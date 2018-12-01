@@ -133,8 +133,8 @@ libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
 Test hardware support (hardsid) with Java11.
-How to deploy win, linux and mac for the Web-site? (Additionally with a Java8 Version?)
+How to deploy win, linux and mac version with Java11 for the Web-site?
 
-Docs: How to launch using java11 (new exe file)
+Docs: How to launch using java11 (new exe file), using JavaFX11 bundled dependencies
 
 Wait for proguard to support Java11 and adopt changes
