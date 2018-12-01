@@ -96,6 +96,9 @@ public class AudioGeneratorThread extends Thread {
 	/** Is audio thread requested to stop rapidly? */
 	private final AtomicBoolean quicklyDiscardAudio = new AtomicBoolean(false);
 
+	/** Audio output driver. */
+	JavaSound driver = new JavaSound();
+
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.
@@ -121,9 +124,6 @@ public class AudioGeneratorThread extends Thread {
 
 	@Override
 	public void run() {
-		/** Audio output driver. */
-		JavaSound driver = new JavaSound();
-
 		Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
 		try {
 			if (deviceIndex >= 0 && deviceIndex < aInfos.length) {
@@ -414,6 +414,10 @@ public class AudioGeneratorThread extends Thread {
 		return sidCommandQueue;
 	}
 
+	public JavaSound getDriver() {
+		return driver;
+	}
+	
 	/**
 	 * Return the current clock in the SID stream.
 	 *

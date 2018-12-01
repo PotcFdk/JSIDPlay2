@@ -32,6 +32,7 @@ import libsidplay.sidtune.PSidHeader;
 import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
+import sidplay.audio.JavaSound;
 
 /**
  * Container for client-specific data.
@@ -146,7 +147,8 @@ class ClientContext {
 
 		/* Handle data packet. */
 		final BlockingQueue<SIDWrite> sidCommandQueue = eventConsumerThread.getSidCommandQueue();
-
+		final JavaSound audioDriver = eventConsumerThread.getDriver();
+		
 		((Buffer) dataWrite).clear();
 
 		switch (command) {
@@ -156,8 +158,10 @@ class ClientContext {
 			}
 
 			sidCommandQueue.clear();
+			audioDriver.flush();
+			
 			/*
-			 * The playbackclock may still increase for a while, because audio generation
+			 * The playback clock may still increase for a while, because audio generation
 			 * may still be ongoing. We aren't allowed to wait for it, either, so this is
 			 * the best we can do.
 			 */
