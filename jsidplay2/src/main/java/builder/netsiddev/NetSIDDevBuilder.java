@@ -15,7 +15,7 @@ import builder.netsiddev.commands.SetFadeIn;
 import builder.netsiddev.commands.SetFadeOut;
 import builder.netsiddev.commands.SetSidLevel;
 import builder.netsiddev.commands.SetSidPosition;
-import builder.netsiddev.commands.SetTuneHeader;
+import builder.netsiddev.commands.SetPSidHeader;
 import builder.netsiddev.commands.TrySetSampling;
 import builder.netsiddev.commands.TrySetSidModel;
 import libsidplay.common.CPUClock;
@@ -55,8 +55,8 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 		final NetSIDDev sid = createSID(emulationSection, chipModel, sidEmu, tune, sidNum);
 		client.init((byte) 0xf);
-		if (client.getVersion() > 3 && tune != RESET && tune.getTuneHeader() != null) {
-			client.add(new SetTuneHeader(tune.getTuneHeader()));
+		if (client.getVersion() > 3 && tune != RESET && tune.getPSidHeader() != null) {
+			client.add(new SetPSidHeader(tune.getPSidHeader()));
 		}
 		client.add(new TrySetSampling(audioSection.getSampling()));
 		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));

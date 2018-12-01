@@ -25,7 +25,7 @@ import java.util.Scanner;
 public class PSidHeader {
 	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
-	static final int SIZE = 124;
+	public static final int SIZE = 124;
 
 	public PSidHeader(final byte[] header) {
 		final ByteBuffer buffer = ByteBuffer.wrap(header);
@@ -182,7 +182,7 @@ public class PSidHeader {
 	 */
 	byte sidChip3MiddleNybbles;
 
-	public static String getString(byte[] info) {
+	static String getString(byte[] info) {
 		try (Scanner sc = new Scanner(new String(info, ISO_8859_1))) {
 			return sc.useDelimiter("\0").next();
 		} catch (NoSuchElementException e) {
@@ -190,19 +190,15 @@ public class PSidHeader {
 		}
 	}
 
-	public byte[] getId() {
-		return id;
+	public String getName() {
+		return getString(name);
 	}
 	
-	public byte[] getName() {
-		return name;
+	public String getAuthor() {
+		return getString(author);
 	}
 	
-	public byte[] getAuthor() {
-		return author;
-	}
-	
-	public byte[] getReleased() {
-		return released;
+	public String getReleased() {
+		return getString(released);
 	}
 }

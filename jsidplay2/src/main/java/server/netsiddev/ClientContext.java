@@ -12,13 +12,12 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer;
 import javax.swing.JOptionPane;
@@ -148,7 +147,7 @@ class ClientContext {
 		/* Handle data packet. */
 		final BlockingQueue<SIDWrite> sidCommandQueue = eventConsumerThread.getSidCommandQueue();
 		final JavaSound audioDriver = eventConsumerThread.getDriver();
-		
+
 		((Buffer) dataWrite).clear();
 
 		switch (command) {
@@ -159,7 +158,7 @@ class ClientContext {
 
 			sidCommandQueue.clear();
 			audioDriver.flush();
-			
+
 			/*
 			 * The playback clock may still increase for a while, because audio generation
 			 * may still be ongoing. We aren't allowed to wait for it, either, so this is
@@ -439,22 +438,18 @@ class ClientContext {
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
-		case SET_SID_HEADER:
-			if (dataLength < 2) {
+		case SET_PSID_HEADER:
+			if (dataLength < PSidHeader.SIZE) {
 				throw new InvalidCommandException(
-						"SET_SID_HEADER needs more than 2 bytes (length of header and header contents)", dataLength);
+						"SET_PSID_HEADER needs " + PSidHeader.SIZE + " bytes", dataLength);
 			}
 
-			int tuneHeaderLength = ((dataRead.get(4) & 0xff) << 8) | (dataRead.get(5) & 0xff);
-			byte[] tuneHeaderBytes = new byte[tuneHeaderLength];
-			for (int i = 0; i < tuneHeaderLength; i++) {
-				tuneHeaderBytes[i] = dataRead.get(6 + i);
+			byte[] tuneHeaderBytes = new byte[PSidHeader.SIZE];
+			for (int i = 0; i < PSidHeader.SIZE; i++) {
+				tuneHeaderBytes[i] = dataRead.get(4 + i);
 			}
 
-			String tuneHeaderString = PSidHeader.getString(tuneHeaderBytes);
-			if (tuneHeaderString.startsWith("PSID") || tuneHeaderString.startsWith("RSID")) {
-				tuneHeader = new PSidHeader(tuneHeaderBytes);
-			}
+			tuneHeader = new PSidHeader(tuneHeaderBytes);
 
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
@@ -554,11 +549,8 @@ class ClientContext {
 	}
 
 	public static Collection<PSidHeader> getTuneHeaders() {
-		List<PSidHeader> result = new ArrayList<>();
-		for (ClientContext clientContext : clientContextMap.values()) {
-			result.add(clientContext.getTuneHeader());
-		}
-		return result;
+		return clientContextMap.values().stream().map(clientContext -> clientContext.getTuneHeader())
+				.collect(Collectors.toList());
 	}
 
 	/**

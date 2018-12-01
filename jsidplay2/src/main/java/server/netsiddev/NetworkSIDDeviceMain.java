@@ -1,7 +1,5 @@
 package server.netsiddev;
 
-import static libsidplay.sidtune.PSidHeader.getString;
-
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -126,8 +124,8 @@ public class NetworkSIDDeviceMain {
 
 		new Timer(1000, event -> {
 			String toolTip = ClientContext.getTuneHeaders().stream().filter(Objects::nonNull)
-					.map(header -> Arrays.asList(getString(header.getName()), getString(header.getAuthor()),
-							getString(header.getReleased())).stream().collect(Collectors.joining(", ")))
+					.map(header -> Arrays.asList(header.getName(), header.getAuthor(), header.getReleased()).stream()
+							.collect(Collectors.joining(", ")))
 					.collect(Collectors.joining("\n"));
 			trayIcon.setToolTip(toolTip.isEmpty() ? null : toolTip);
 		}).start();

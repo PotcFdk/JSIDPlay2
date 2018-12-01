@@ -195,7 +195,7 @@ public abstract class SidTune {
 		}
 	}
 
-	public byte[] getTuneHeader() {
+	public byte[] getPSidHeader() {
 		return null;
 	}
 	

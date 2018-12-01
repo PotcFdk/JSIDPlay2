@@ -445,7 +445,7 @@ class PSid extends Prg {
 	}
 
 	@Override
-	public byte[] getTuneHeader() {
+	public byte[] getPSidHeader() {
 		return header.getArray();
 	}
 	
