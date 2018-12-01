@@ -520,6 +520,7 @@
 								<include>libsidplay/common/SamplingMethod.class</include>
 								<include>libsidplay/common/SamplingRate.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
+								<include>libsidplay/sidtune/PSidHeader.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
