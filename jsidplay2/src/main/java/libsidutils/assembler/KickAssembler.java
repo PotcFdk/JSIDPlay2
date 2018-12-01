@@ -1,11 +1,7 @@
 package libsidutils.assembler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,7 +9,6 @@ import kickass.AssemblerToolbox;
 import kickass.common.errors.AsmError;
 import kickass.common.errors.printers.OneLineErrorPrinter;
 import kickass.common.exceptions.AsmErrorException;
-import kickass.nonasm.tools.tuples.Pair;
 import kickass.parsing.sourcelocation.SourceRange;
 import kickass.pass.asmnode.AsmNode;
 import kickass.pass.asmnode.metanodes.AsmNodeList;
@@ -24,47 +19,8 @@ import kickass.pass.valueholder.ConstantValueHolder;
 import kickass.pass.values.HashtableValue;
 import kickass.state.EvaluationState;
 import kickass.state.scope.symboltable.SymbolStatus;
-import kickass.state.segments.MemoryBlock;
 
 public class KickAssembler {
-
-	private static class Assembly {
-
-		private ByteBuffer data;
-
-		public Assembly(List<MemoryBlock> memBlocks) throws AsmErrorException {
-			memBlocks.removeIf(mem -> mem.isVirtual());
-			Collections.sort(memBlocks, (mem1, mem2) -> mem1.getStartAdress() - mem2.getStartAdress());
-			if (memBlocks.isEmpty()) {
-				throw new AsmErrorException("Error: No data in memory!", null);
-			}
-			MemoryBlock memoryblock = (MemoryBlock) memBlocks.get(0);
-			int start = memoryblock.getStartAdress();
-			int end = start + memoryblock.getSize();
-			for (int curBlock = 1; curBlock < memBlocks.size(); curBlock++) {
-				memoryblock = (MemoryBlock) memBlocks.get(curBlock);
-				if (memoryblock.getStartAdress() < end) {
-					throw new AsmErrorException("Error: Memoryblock starting at $"
-							+ Integer.toHexString(memoryblock.getStartAdress()) + " overlaps the previous block", null);
-				}
-				int nextEnd = memoryblock.getStartAdress() + memoryblock.getSize();
-				if (nextEnd > end)
-					end = nextEnd;
-			}
-			data = ByteBuffer.allocate(Short.BYTES + end - start).order(ByteOrder.LITTLE_ENDIAN);
-			data.asShortBuffer().put((short) start);
-			for (MemoryBlock memoryBlock : memBlocks) {
-				int offset = Short.BYTES + memoryBlock.getStartAdress() - start;
-				((Buffer) data).position(offset);
-				data.put(memoryBlock.getMemory(), 0, memoryblock.getMemory().length);
-			}
-		}
-
-		public byte[] getData() {
-			return data.array();
-		}
-
-	}
 
 	private EvaluationState evaluationState;
 
@@ -73,15 +29,17 @@ public class KickAssembler {
 	 */
 	public KickAssemblerResult assemble(String resource, InputStream asm, final Map<String, String> globals) {
 		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			evaluationState = new EvaluationState();
+			evaluationState.outputMgr = (var1, var2) -> os;
 			HashtableValue hashtableValue = new HashtableValue().addStringValues(globals);
-			hashtableValue.lock(null);
+			hashtableValue.lock((SourceRange) null);
 			evaluationState.namespaceMgr.getSystemNamespace().getScope()
 					.defineErrorIfExist("cmdLineVars", arrReferenceValue -> new ConstantValueHolder(hashtableValue),
-							evaluationState, "ERROR! cmdLineVars is already defined", null)
+							evaluationState, "ERROR! cmdLineVars is already defined", (SourceRange) null)
 					.setStatus(SymbolStatus.defined);
 
-			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, evaluationState, null);
+			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, evaluationState, (SourceRange) null);
 			if (asmNode == null) {
 				throw new RuntimeException("Parse error for assembler resource: " + resource);
 			}
@@ -96,7 +54,7 @@ public class KickAssembler {
 			do {
 				evaluationState.prepareNewPass();
 				asmNode2 = asmNode2.executePass(evaluationState);
-				evaluationState.segmentMgr.postPass();
+				evaluationState.segmentMgr.postPassExecution();
 				if (!evaluationState.getMadeMetaProgress() && !asmNode2.isFinished()) {
 					evaluationState.prepareNewPass();
 					evaluationState.setFailOnInvalidValue(true);
@@ -106,15 +64,19 @@ public class KickAssembler {
 							(SourceRange) null);
 				}
 			} while (!asmNode2.isFinished());
-
-			MainOutputReciever mainOutputReciever = new MainOutputReciever(8192, 65536, null, null,
+			MainOutputReciever mainOutputReciever = new MainOutputReciever(evaluationState.outputMgr,
 					evaluationState.log);
 			asmNode2.deliverOutput(mainOutputReciever);
 			mainOutputReciever.finish();
-			byte[] data = new Assembly(mainOutputReciever.getSegments().get("Default")).getData();
+			evaluationState.segmentMgr.postPassesExecution();
+			printErrorsAndTerminate(evaluationState);
+			evaluationState.c64OutputMgr.postPassExecution();
+			printErrorsAndTerminate(evaluationState);
+			evaluationState.segmentMgr.doOutputAfterPasses();
+
 			Map<String, Integer> resolvedSymbols = evaluationState.scopeMgr.getResolvedSymbols().stream()
-					.collect(Collectors.toMap(Pair::getA, entry -> entry.getB(), (entry1, entry2) -> entry2));
-			return new KickAssemblerResult(data, resolvedSymbols);
+					.collect(Collectors.toMap(res -> res.name, res -> res.address, (entry1, entry2) -> entry2));
+			return new KickAssemblerResult(os.toByteArray(), resolvedSymbols);
 		} catch (AsmErrorException e) {
 			AsmError asmError = e.getError();
 			asmError.setCallStack(evaluationState.callStack);

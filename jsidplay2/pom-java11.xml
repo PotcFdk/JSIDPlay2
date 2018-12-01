@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>4.19</version>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
