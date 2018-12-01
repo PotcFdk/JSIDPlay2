@@ -97,7 +97,7 @@ public class JavaSound implements AudioDriver {
 		}
 	}
 
-	public void flush() {
+	public synchronized void flush() {
 		if (dataLine.isActive()) {
 			dataLine.flush();
 		}
