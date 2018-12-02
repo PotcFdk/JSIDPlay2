@@ -426,7 +426,7 @@ public class StatusBar extends C64VBox implements UIPart {
 					line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
 							deviceId0, deviceChipModel0));
 				} else {
-					line.append(String.format(util.getBundle().getString("NO_DEVICE"), emulation.getEngine().name()));
+					line.append(emulation.getEngine().name());
 				}
 				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 					line.append("+");
@@ -438,8 +438,7 @@ public class StatusBar extends C64VBox implements UIPart {
 						line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
 								deviceId1, deviceChipModel1));
 					} else {
-						line.append(
-								String.format(util.getBundle().getString("NO_DEVICE"), emulation.getEngine().name()));
+						line.append(emulation.getEngine().name());
 					}
 					if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
 						line.append("+");
@@ -451,12 +450,11 @@ public class StatusBar extends C64VBox implements UIPart {
 							line.append(String.format(util.getBundle().getString("DEVICE"),
 									emulation.getEngine().name(), deviceId2, deviceChipModel2));
 						} else {
-							line.append(String.format(util.getBundle().getString("NO_DEVICE"),
-									emulation.getEngine().name()));
+							line.append(emulation.getEngine().name());
 						}
 					}
 				}
-				line.append(String.format(util.getBundle().getString("DEVICES"), deviceCount));
+				line.append(" ").append(String.format(util.getBundle().getString("DEVICES"), deviceCount));
 				break;
 			}
 			// $FALL-THROUGH$
