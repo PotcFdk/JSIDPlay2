@@ -2,7 +2,7 @@
 Name=JSIDPlay2 (Java11)
 Name[de_DE]=JSIDPlay2 (Java11)
 Path=/home/ken/workspace/jsidplay2/target/standalone
-Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/workspace/jsidplay2/target/standalone ; /home/ken/Downloads/jdk-11/bin/java  --module-path /home/ken/workspace/jsidplay2/target/standalone --add-modules javafx.controls,javafx.web,javafx.fxml -jar jsidplay2-3.9.jar'
+Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/workspace/jsidplay2/target/standalone ; /home/ken/Downloads/jdk-11/bin/java  --module-path /home/ken/workspace/jsidplay2/target/standalone --add-modules javafx.controls,javafx.web,javafx.fxml -jar jsidplay2-4.0.jar'
 Terminal=false
 Type=Application
 Icon=/home/ken/workspace/jsidplay2/target/deploy/jsidplay2.png

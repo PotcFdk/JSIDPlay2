@@ -225,7 +225,7 @@ After=network.target network-online.target
 
 [Service]
 ExecStart=/usr/bin/java -server \
-	-classpath /home/ken/Downloads/jsidplay2-3.9/jsidplay2-3.9.jar \
+	-classpath /home/ken/Downloads/jsidplay2-{version}/jsidplay2-{version}.jar \
 	server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
 	--appServerManagerPassword jsidplay2 \

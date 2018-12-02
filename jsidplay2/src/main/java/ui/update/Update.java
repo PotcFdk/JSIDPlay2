@@ -5,6 +5,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,7 +30,7 @@ public class Update extends C64Window {
 
 	public Update() {
 	}
-	
+
 	public Update(Player player) {
 		super(player);
 	}
@@ -36,25 +38,25 @@ public class Update extends C64Window {
 	@FXML
 	protected void initialize() {
 		// check our version
-		float currentVersion = Integer.MAX_VALUE;
+		int[] currentVersion = null;
 		try {
 			Properties currentProperties = new Properties();
 			URL resource = JSidPlay2Main.class.getResource(LOCAL_VERSION_RES);
 			currentProperties.load(resource.openConnection().getInputStream());
-			currentVersion = Float.parseFloat(currentProperties.getProperty("version"));
+			currentVersion = getVersionNumbers(currentProperties.getProperty("version"));
 		} catch (NullPointerException | IOException e) {
 		}
 		// check latest version
-		float latestVersion = Integer.MIN_VALUE;
+		int[] latestVersion = null;
 		try {
 			Properties latestProperties = new Properties();
 			Proxy proxy = util.getConfig().getSidplay2Section().getProxy();
 			URLConnection connection = InternetUtils.openConnection(new URL(ONLINE_VERSION_RES), proxy);
 			latestProperties.load(connection.getInputStream());
-			latestVersion = Float.parseFloat(latestProperties.getProperty("version"));
+			latestVersion = getVersionNumbers(latestProperties.getProperty("version"));
 		} catch (NullPointerException | IOException e) {
 		}
-		final boolean updateAvailable = latestVersion > currentVersion;
+		final boolean updateAvailable = isUpdateAvailableNewer(currentVersion, latestVersion);
 		latestVersionLink.setVisible(updateAvailable);
 		update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
 	}
@@ -67,6 +69,30 @@ public class Update extends C64Window {
 	@FXML
 	private void okPressed(ActionEvent event) {
 		close();
+	}
+
+	private boolean isUpdateAvailableNewer(int[] currentVersion, int[] latestVersion) {
+		if (currentVersion == null || latestVersion == null) {
+			// undetermined local or remote version? Do not flag an update
+			return false;
+		}
+		for (int i = 0; i < currentVersion.length; i++)
+			if (currentVersion[i] != latestVersion[i]) {
+				// current version is outdated
+				return currentVersion[i] < latestVersion[i];
+			}
+		// version is equal
+		return false;
+	}
+
+	private int[] getVersionNumbers(String ver) {
+		Matcher m = Pattern.compile("(\\d+)\\.(\\d+)").matcher(ver);
+		if (!m.matches())
+			throw new IllegalArgumentException("Malformed FW version");
+
+		return new int[] { Integer.parseInt(m.group(1)), // major
+				Integer.parseInt(m.group(2)), // minor
+		};
 	}
 
 }
