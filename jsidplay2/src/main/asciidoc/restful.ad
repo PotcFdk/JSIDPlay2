@@ -6,6 +6,8 @@ The service methods are available as soon as you click start in the built-in App
 
 === Preparation
 
+*Info*: All commands showed here have been verified on Ubuntu 18.
+
 ==== General
 
 All the following RESTful service methods of JSIDPlay2 AppServer are using your configured music collections HVSC and CGSC.
@@ -258,7 +260,7 @@ But, if you want to use a client from any location in the internet, that would r
 
 === JSIDPlay2 AppServer Usage of the RESTful services
 
-*Info:* Depending on the connection type of JSIDPlay2 AppServer you have to use HTTP or HTTPS as protocol and port 8080 (HTTP) or 8443 (HTPTS). Please refer the command-line parameters appServerConnectors, appServerPort and appServerSecurePort!
+*Info:* Depending on the connection type of JSIDPlay2 AppServer you have to use HTTP or HTTPS as protocol and port 8080 (HTTP) or 8443 (HTTPS). Please refer the command-line parameters appServerConnectors, appServerPort and appServerSecurePort!
 
 ==== Get all SID filter names (required to stream SID as MP3 later)
 
@@ -274,7 +276,7 @@ You can access any sub-directory of your music collection to navigate to the tun
 HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
 Directory type entries are appended by a slash, whereas file type entries like tunes ends with their file extensions.
 To each directory contents a parent folder entry will be added appended by "../". Following that directory entry, you can easily navigate back to the parent directory.
-Additionally you can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|mp3)$"
+Additionally you can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|p00|prg|d64|mp3|mp4)$"
 
 You can add more collections by creating an external configuration file located in your home directory.
 The file must be named: "directoryServlet.properties" and be readable on startup of the server.
@@ -285,7 +287,7 @@ Example:
 /MP3=/media/nas1/mp3,true <1>
 /Demos=/home/ken/.jsidplay2/Demos.zip,false
 ---- 
-<1> Syntax is: "<localDirectoryNameInTheRequest>" = "<realDirectoryName>" "," "<adminRoleRequired>"
+<1> Syntax is: "<localDirectoryNameInTheRequest>" = "<realDirectoryName>", "<adminRoleRequired>"
 In the request above simply replace "/jsidplay2service/JSIDPlay2REST/directory/C64Music/..."
 by "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
 

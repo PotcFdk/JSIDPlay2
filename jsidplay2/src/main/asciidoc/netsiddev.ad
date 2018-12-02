@@ -201,14 +201,14 @@ with a maximum of 255 characters excluding a null terminated byte
 
 ** SET_PSID_HEADER (18): set PSID header bytes
 *** data packet is 124 byte long and contains:
-**** PSID header bytes. Can be used to show information of what is currently being played.
+**** PSID header bytes. This optional command can be used to show information of what is currently being played.
 *** always returns OK.
 
 === Make use of devices implementing the network SID device protocol (JSIDPlay2 as a Client)
 
 To use these SID implementations as a client for playback, you must choose NetSID as the emulation type in the user interface and provide a hostname and port for that. Default is to connect to 127.0.0.1:6581.
 
-As an alternative you can use ConsolePlayer to use these SID implementations for playback.
+E.g you can use ConsolePlayer to use these SID implementations for playback.
 
 [source,subs="attributes+"]
 ----

@@ -89,15 +89,15 @@
 						<MenuItem text="%DISASSEMBLER" onAction="#disassembler" />
 					</Menu>
 					<Menu text="%ONLINE">
-						<MenuItem text="%GAMEBASE" onAction="#gamebase" />
 						<MenuItem text="%CSDB" onAction="#csdb" />
-						<MenuItem text="%CODEBASE64" onAction="#codebase64" />
 						<MenuItem text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
 						<MenuItem text="%SID_OTH4_COM" onAction="#sidOth4Com" />
-						<MenuItem text="%C64_SK" onAction="#c64" />
-						<MenuItem text="%FORUM64_DE" onAction="#forum64" />
 						<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
+						<MenuItem text="%FORUM64_DE" onAction="#forum64" />
+						<MenuItem text="%C64_SK" onAction="#c64" />
 						<MenuItem text="%SOASC" onAction="#soasc" />
+						<MenuItem text="%CODEBASE64" onAction="#codebase64" />
+						<MenuItem text="%GAMEBASE" onAction="#gamebase" />
 						<MenuItem text="%JSIDPLAY2_SRC" onAction="#jsidplay2" />
 					</Menu>
 					<MenuItem text="%PRINTER" onAction="#printer" />

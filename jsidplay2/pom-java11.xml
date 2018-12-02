@@ -720,7 +720,7 @@
 							<dontWrapJar>true</dontWrapJar>
 							<headerType>gui</headerType>
 							<jar>${project.artifactId}-${project.version}.jar</jar>
-							<outfile>${project.build.directory}/standalone/${project.artifactId}_java9-${project.version}.exe</outfile>
+							<outfile>${project.build.directory}/standalone/${project.artifactId}_java11-${project.version}.exe</outfile>
 							<errTitle>${project.name}</errTitle>
 							<chdir>.</chdir>
 							<priority>high</priority>
