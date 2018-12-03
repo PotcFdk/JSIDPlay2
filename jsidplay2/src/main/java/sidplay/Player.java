@@ -70,7 +70,7 @@ import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.CmpMP3File;
+import sidplay.audio.CmpMP3File.MP3Termination;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
 import sidplay.ini.IniConfig;
@@ -651,7 +651,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 				while (play()) {
 					interactivityHook.accept(Player.this);
 				}
-			} catch (CmpMP3File.MP3Termination e) {
+			} catch (MP3Termination e) {
 				stateProperty.set(END);
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
@@ -768,7 +768,11 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			removePixelConsumer((VideoDriver) audioAndDriver.getValue());
 		}
 		// save still unwritten sound data
-		audioAndDriver.getValue().write();
+		try {
+			audioAndDriver.getValue().write();
+		} catch (InterruptedException e) {
+			// ignore interruptions near close
+		}
 		audioAndDriver.getValue().close();
 	}
 
@@ -1029,8 +1033,8 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		credits.append("\thttp://jcommander.org/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n");
 		credits.append("\thttp://www.6581-8580.com/\n");
-		credits.append("6510 cross assembler (Kickassembler V4.14):\n");
-		credits.append("\tCopyright (©) 2006-2014 Mads Nielsen\n");
+		credits.append("6510 cross assembler (Kickassembler V5.2):\n");
+		credits.append("\tCopyright (©) 2006-2018 Mads Nielsen\n");
 		credits.append("\thttp://www.theweb.dk/KickAssembler/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n");
 		credits.append("\tCopyright (©) 2001-2007 Roland Hermans\n");
