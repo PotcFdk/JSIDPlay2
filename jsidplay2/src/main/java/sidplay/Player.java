@@ -656,11 +656,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
-				try {
-					close();
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e.getMessage(), e);
-				}
+				close();
 			}
 			// "Play it once, Sam. For old times' sake."
 		} while (stateProperty.get() == RESTART);
@@ -757,23 +753,25 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	}
 
 	/**
-	 * Close player.
-	 * 
-	 * @throws InterruptedException audio production interrupted
+	 * Close player, that means basically plugging out SID chips and close audio
+	 * driver.
 	 */
-	private void close() throws InterruptedException {
-		stateProperty.removeListener(pauseListener);
-		c64.insertSIDChips(noSIDs, sidLocator);
-		if (audioAndDriver.getValue() instanceof VideoDriver) {
-			removePixelConsumer((VideoDriver) audioAndDriver.getValue());
-		}
-		// save still unwritten sound data
+	private void close() {
 		try {
-			audioAndDriver.getValue().write();
+			stateProperty.removeListener(pauseListener);
+			c64.insertSIDChips(noSIDs, sidLocator);
+			if (audioAndDriver.getValue() instanceof VideoDriver) {
+				removePixelConsumer((VideoDriver) audioAndDriver.getValue());
+			}
+			// save still unwritten sound data
+			if (audioAndDriver.getValue().buffer() != null) {
+				audioAndDriver.getValue().write();
+			}
 		} catch (InterruptedException e) {
 			// ignore interruptions near close
+		} finally {
+			audioAndDriver.getValue().close();
 		}
-		audioAndDriver.getValue().close();
 	}
 
 	/**

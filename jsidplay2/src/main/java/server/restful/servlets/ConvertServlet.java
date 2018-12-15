@@ -26,7 +26,6 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.URIUtil;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
 
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -47,7 +46,6 @@ import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TapeFileFilter;
 import ui.filefilter.TuneFileFilter;
 
-@Parameters(resourceBundle = "server.restful.servlets.ConvertServlet")
 public class ConvertServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;

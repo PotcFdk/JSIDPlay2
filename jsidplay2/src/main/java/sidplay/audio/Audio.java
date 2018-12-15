@@ -34,15 +34,13 @@ public enum Audio {
 
 	private boolean recording;
 	private String extension;
-	private final Class<? extends AudioDriver> audioDriverClass;
-	private final Class<? extends AudioDriver>[] parameterClasses;
+	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver, oldAudioDriver;
 
 	/**
 	 * Create audio output using the audio driver
 	 * 
-	 * @param audioDriver
-	 *            audio driver
+	 * @param audioDriver audio driver
 	 */
 	@SafeVarargs
 	Audio(boolean recording, String extension, Class<? extends AudioDriver> audioDriverClass,
@@ -66,7 +64,7 @@ public enum Audio {
 	public String getExtension() {
 		return extension;
 	}
-	
+
 	/**
 	 * Get audio driver.
 	 * 
@@ -104,10 +102,8 @@ public enum Audio {
 	/**
 	 * Get audio driver for tune.
 	 * 
-	 * @param audioSection
-	 *            configuration
-	 * @param tune
-	 *            SID tune
+	 * @param audioSection configuration
+	 * @param tune         SID tune
 	 * @return audio driver to use
 	 */
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {

@@ -42,13 +42,10 @@ public class MP4Driver implements VideoDriver {
 
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;
-	private ByteBuffer vicPixelBuffer;
+	private ByteBuffer vicPixelBuffer, pictureBuffer, sampleBuffer;
 	private Picture picture;
-	private ByteBuffer pictureBuffer;
-	private ByteBuffer sampleBuffer;
-	private File pcmAudioFile;
 	private OutputStream pcmAudioStream;
-	private File videoFile;
+	private File pcmAudioFile, videoFile;
 	private String recordingFilename;
 
 	@Override
