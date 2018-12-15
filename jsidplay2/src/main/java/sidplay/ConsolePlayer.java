@@ -25,7 +25,7 @@ import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.VerboseValidator;
 import sidplay.ini.IniConfig;
 
-@Parameters(resourceBundle = "sidplay.consoleplayer.ConsolePlayer")
+@Parameters(resourceBundle = "sidplay.ConsolePlayer")
 final public class ConsolePlayer {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;

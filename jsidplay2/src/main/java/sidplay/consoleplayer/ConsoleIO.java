@@ -19,7 +19,7 @@ import sidplay.player.Timer;
 
 public class ConsoleIO {
 
-	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.consoleplayer.ConsolePlayer");
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.consoleplayer.ConsoleIO");
 
 	private IniConfig config;
 
