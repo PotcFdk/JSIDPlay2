@@ -35,7 +35,7 @@ public enum Audio {
 	private boolean recording;
 	private String extension;
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
-	private AudioDriver audioDriver, oldAudioDriver;
+	private AudioDriver audioDriver;
 
 	/**
 	 * Create audio output using the audio driver
@@ -111,29 +111,21 @@ public enum Audio {
 	}
 
 	/**
-	 * MP3 play-back is using the COMPARE audio driver. Old settings are saved
-	 * (playing mp3) and restored (next time normal tune is played).
+	 * MP3 play-back is using the COMPARE audio driver.
 	 */
 	private AudioDriver handleMP3(final IAudioSection audioSection, final SidTune tune, final AudioDriver audioDriver) {
-		AudioDriver newAudioDriver = audioDriver;
-		if (oldAudioDriver == null && tune instanceof MP3Tune) {
-			// save settings before MP3 gets played
-			oldAudioDriver = audioDriver;
-		} else if (oldAudioDriver != null && !(tune instanceof MP3Tune)) {
-			// restore settings after MP3 has been played last time
-			newAudioDriver = oldAudioDriver;
-			oldAudioDriver = null;
-		}
 		if (tune instanceof MP3Tune) {
 			// Change driver settings to use comparison driver for MP3 play-back
+			CmpMP3File cmpMp3File = (CmpMP3File) COMPARE_MP3.getAudioDriver();
 			audioSection.setPlayOriginal(true);
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
-			newAudioDriver = COMPARE_MP3.getAudioDriver();
+			cmpMp3File.setAudioSection(audioSection);
+			return cmpMp3File;
 		}
-		if (COMPARE_MP3.audioDriver == newAudioDriver) {
-			((CmpMP3File) newAudioDriver).setAudioSection(audioSection);
+		if (COMPARE_MP3.audioDriver == audioDriver) {
+			((CmpMP3File) audioDriver).setAudioSection(audioSection);
 		}
-		return newAudioDriver;
+		return audioDriver;
 	}
 
 }
