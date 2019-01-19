@@ -15,7 +15,9 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
@@ -80,7 +82,10 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
+		IAudioSection audioSection = config.getAudioSection();
+		IEmulationSection emulationSection = config.getEmulationSection();
+		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+
 		Integer deviceId = getModelDependantDeviceId(chipModel, sidNum);
 		if (deviceId != null && deviceId < hardSID.HardSID_Devices()) {
 			if (oldHardSID != null) {
@@ -88,17 +93,18 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, getConfiguredChipModel(deviceId));
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune,
+					emulationSection.getSidBlasterModel(deviceId));
 			if (hsid.lock()) {
 				sids.add(hsid);
-				setDelay(sidNum, config.getAudioSection().getDelay(sidNum));
+				setDelay(sidNum, audioSection.getDelay(sidNum));
 				return hsid;
 			}
 		}
 		System.err.println(/* throw new RuntimeException( */
 				String.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)",
 						sidNum));
-		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
 			// Fake stereo chip not available? Re-use original chip
 			return oldHardSID;
 		}
@@ -251,19 +257,6 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 		// no slot left
 		return null;
-	}
-
-	private ChipModel getConfiguredChipModel(Integer deviceId) {
-		switch (deviceId) {
-		case 0:
-			return config.getEmulationSection().getSidBlaster0Model();
-		case 1:
-			return config.getEmulationSection().getSidBlaster1Model();
-		case 2:
-			return config.getEmulationSection().getSidBlaster2Model();
-		default:
-			return null;
-		}
 	}
 
 	int clocksSinceLastAccess() {

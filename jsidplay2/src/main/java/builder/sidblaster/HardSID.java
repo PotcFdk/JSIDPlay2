@@ -116,7 +116,7 @@ public interface HardSID extends Library {
 
 	/**
 	 * Support whether the channel change was a request from the user or the program
-	 * (auto or manual respectively). External mixers can use this to prioritise
+	 * (auto or manual respectively). External mixers can use this to prioritize
 	 * requests
 	 * 
 	 * @since 2.07

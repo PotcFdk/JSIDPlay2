@@ -869,6 +869,25 @@ public interface IEmulationSection {
 	void setThirdSIDModel(ChipModel model);
 
 	/**
+	 * Get chip model depending of the SIDBlaster device ID
+	 * 
+	 * @param deviceId SIDBlaster device ID
+	 * @return chip model
+	 */
+	default ChipModel getSidBlasterModel(Integer deviceId) {
+		switch (deviceId) {
+		case 0:
+			return getSidBlaster0Model();
+		case 1:
+			return getSidBlaster1Model();
+		case 2:
+			return getSidBlaster2Model();
+		default:
+			return null;
+		}
+	}
+
+	/**
 	 * Get filter enable depending of the SID number
 	 * 
 	 * @param sidNum SID number
