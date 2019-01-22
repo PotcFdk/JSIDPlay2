@@ -100,27 +100,18 @@ public enum Audio {
 	}
 
 	/**
-	 * Get audio driver for tune.
+	 * Get audio driver for tune.<BR>
+	 * <B>Note:</B>Use MP3 comparison driver for MP3 play-back.
 	 * 
 	 * @param audioSection configuration
 	 * @param tune         SID tune
-	 * @return audio driver to use
 	 */
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {
-		return handleMP3(audioSection, tune, getAudioDriver());
-	}
-
-	/**
-	 * MP3 play-back is using the COMPARE audio driver.
-	 */
-	private AudioDriver handleMP3(final IAudioSection audioSection, final SidTune tune, final AudioDriver audioDriver) {
+		AudioDriver audioDriver = getAudioDriver();
 		if (tune instanceof MP3Tune) {
-			// Change driver settings to use comparison driver for MP3 play-back
-			CmpMP3File cmpMp3File = (CmpMP3File) COMPARE_MP3.getAudioDriver();
-			audioSection.setPlayOriginal(true);
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
-			cmpMp3File.setAudioSection(audioSection);
-			return cmpMp3File;
+			audioSection.setPlayOriginal(true);
+			audioDriver = COMPARE_MP3.getAudioDriver();
 		}
 		if (COMPARE_MP3.audioDriver == audioDriver) {
 			((CmpMP3File) audioDriver).setAudioSection(audioSection);
