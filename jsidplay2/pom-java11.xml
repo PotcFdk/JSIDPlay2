@@ -514,6 +514,7 @@
 								<include>builder/resid/resample/*.class</include>
 								<include>builder/resid/resid/*.class</include>
 								<include>builder/resid/residfp/*.class</include>
+								<include>builder/resid/SIDMixer/*.class</include>
 								<include>libsidplay/common/ChipModel.class</include>
 								<include>libsidplay/common/CPUClock.class</include>
 								<include>libsidplay/common/Potentiometer.class</include>
@@ -522,6 +523,7 @@
 								<include>libsidplay/common/SIDChip.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
+								<include>libsidutils/siddatabase/TimeConverter.class</include>
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
 								<include>sidplay/audio/JavaSound.class</include>
@@ -623,10 +625,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.14</version>
+			<!--plugin>
+				<groupId>com.github.dingxin</groupId>
+			    <artifactId>proguard-maven-plugin</artifactId>
+			    <version>1.0.3</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -642,16 +644,91 @@
 					<outputDirectory>${project.build.directory}</outputDirectory>
 					<proguardInclude>${basedir}/src/main/proguard/proguard.conf</proguardInclude>
 					<includeDependency>false</includeDependency>
+					
 					<libs>
-						<lib>${java.home}/lib/rt.jar</lib>
-						<lib>${java.home}/lib/ext/jfxrt.jar</lib>
+                    <lib>${java.home}/lib/jrt-fs.jar</lib>
+                    <lib>${java.home}/jmods/java.base.jmod(!.jar;!module-info.class)</lib>
+                    <lib>${java.home}/jmods/java.compiler.jmod</lib>
+                    <lib>${java.home}/jmods/java.corba.jmod</lib>
+                    <lib>${java.home}/jmods/java.datatransfer.jmod</lib>
+                    <lib>${java.home}/jmods/java.desktop.jmod</lib>
+                    <lib>${java.home}/jmods/java.instrument.jmod</lib>
+                    <lib>${java.home}/jmods/java.logging.jmod</lib>
+                    <lib>${java.home}/jmods/java.management.jmod</lib>
+                    <lib>${java.home}/jmods/java.management.rmi.jmod</lib>
+                    <lib>${java.home}/jmods/java.naming.jmod</lib>
+                    <lib>${java.home}/jmods/java.prefs.jmod</lib>
+                    <lib>${java.home}/jmods/java.rmi.jmod</lib>
+                    <lib>${java.home}/jmods/java.scripting.jmod</lib>
+                    <lib>${java.home}/jmods/java.se.ee.jmod</lib>
+                    <lib>${java.home}/jmods/java.se.jmod</lib>
+                    <lib>${java.home}/jmods/java.security.jgss.jmod</lib>
+                    <lib>${java.home}/jmods/java.security.sasl.jmod</lib>
+                    <lib>${java.home}/jmods/java.smartcardio.jmod</lib>
+                    <lib>${java.home}/jmods/java.sql.jmod</lib>
+                    <lib>${java.home}/jmods/java.sql.rowset.jmod</lib>
+                    <lib>${java.home}/jmods/java.transaction.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.bind.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.crypto.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.ws.annotation.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.ws.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.accessibility.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.aot.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.attach.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.charsets.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.compiler.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.crypto.cryptoki.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.crypto.ec.jmod</lib>
+                    <!- - lib>${java.home}/jmods/jdk.crypto.mscapi.jmod</lib- ->
+                    <lib>${java.home}/jmods/jdk.dynalink.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.editpad.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.hotspot.agent.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.httpserver.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.incubator.httpclient.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.ed.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.jvmstat.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.le.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.opt.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.vm.ci.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.vm.compiler.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.internal.vm.compiler.management.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jartool.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.javadoc.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jcmd.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jconsole.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jdeps.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jdi.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jdwp.agent.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jlink.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jshell.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jsobject.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.jstatd.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.localedata.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.management.agent.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.management.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.naming.dns.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.naming.rmi.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.net.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.pack.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.rmic.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.scripting.nashorn.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.scripting.nashorn.shell.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.sctp.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.security.auth.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.security.jgss.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.unsupported.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.xml.bind.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.xml.dom.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.xml.ws.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.zipfs.jmod</lib>
 					</libs>
 				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>net.sf.proguard</groupId>
 						<artifactId>proguard-base</artifactId>
-						<version>5.2</version>
+						<version>6.1.0beta2</version>
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
