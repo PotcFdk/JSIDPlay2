@@ -16,8 +16,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the audio to be used.
 	 * 
-	 * @param audio
-	 *            audio to be used
+	 * @param audio audio to be used
 	 */
 	void setAudio(Audio audio);
 
@@ -35,8 +34,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the sampling rate.
 	 * 
-	 * @param sampligRate
-	 *            sampling rate
+	 * @param sampligRate sampling rate
 	 */
 	void setSamplingRate(SamplingRate sampligRate);
 
@@ -50,8 +48,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the sampling method.
 	 * 
-	 * @param method
-	 *            the sampling method
+	 * @param method the sampling method
 	 */
 	void setSampling(SamplingMethod method);
 
@@ -65,8 +62,7 @@ public interface IAudioSection {
 	/**
 	 * Setter to play the recorded tune.
 	 * 
-	 * @param original
-	 *            Play recorded (original) or emulated tune
+	 * @param original Play recorded (original) or emulated tune
 	 */
 	void setPlayOriginal(boolean original);
 
@@ -80,8 +76,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the recorded tune filename.
 	 * 
-	 * @param recording
-	 *            the recorded tune filename
+	 * @param recording the recorded tune filename
 	 */
 	void setMp3File(String recording);
 
@@ -95,8 +90,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the main SID volume setting.
 	 * 
-	 * @param volume
-	 *            the main SID volume setting
+	 * @param volume the main SID volume setting
 	 */
 	void setMainVolume(float volume);
 
@@ -110,8 +104,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the second SID volume setting.
 	 * 
-	 * @param volume
-	 *            the second SID volume setting
+	 * @param volume the second SID volume setting
 	 */
 	void setSecondVolume(float volume);
 
@@ -125,8 +118,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the third SID setting.
 	 * 
-	 * @param volume
-	 *            the third SID volume setting
+	 * @param volume the third SID volume setting
 	 */
 	void setThirdVolume(float volume);
 
@@ -140,8 +132,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the main SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param balance
-	 *            the main SID balance setting
+	 * @param balance the main SID balance setting
 	 */
 	void setMainBalance(float balance);
 
@@ -155,8 +146,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the second SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param balance
-	 *            the second SID balance setting
+	 * @param balance the second SID balance setting
 	 */
 	void setSecondBalance(float balance);
 
@@ -170,8 +160,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the third SID balance setting (0 - left, 1 - right speaker).
 	 * 
-	 * @param balance
-	 *            the third SID balance setting
+	 * @param balance the third SID balance setting
 	 */
 	void setThirdBalance(float balance);
 
@@ -185,8 +174,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the main SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
-	 * @param delay
-	 *            the main SID delay setting
+	 * @param delay the main SID delay setting
 	 */
 	void setMainDelay(int delay);
 
@@ -200,8 +188,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the second SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
-	 * @param delay
-	 *            the second SID delay setting
+	 * @param delay the second SID delay setting
 	 */
 	void setSecondDelay(int delay);
 
@@ -215,8 +202,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the third SID delay setting (0 - no delay, 200 - 200ms delay).
 	 * 
-	 * @param delay
-	 *            the third SID delay setting
+	 * @param delay the third SID delay setting
 	 */
 	void setThirdDelay(int delay);
 
@@ -230,8 +216,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the output buffer size.
 	 * 
-	 * @param bufferSize
-	 *            output buffer size
+	 * @param bufferSize output buffer size
 	 */
 	void setBufferSize(int bufferSize);
 
@@ -244,7 +229,7 @@ public interface IAudioSection {
 		case 2:
 			return getThirdVolume();
 		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
+			throw new RuntimeException(String.format("Maximum supported SIDS exceeded: %d!", sidNum));
 		}
 	}
 
@@ -257,7 +242,7 @@ public interface IAudioSection {
 		case 2:
 			return getThirdBalance();
 		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
+			throw new RuntimeException(String.format("Maximum supported SIDS exceeded: %d!", sidNum));
 		}
 	}
 
@@ -270,7 +255,7 @@ public interface IAudioSection {
 		case 2:
 			return getThirdDelay();
 		default:
-			throw new RuntimeException("Maximum supported SIDS exceeded!");
+			throw new RuntimeException(String.format("Maximum supported SIDS exceeded: %d!", sidNum));
 		}
 	}
 }

@@ -1,7 +1,5 @@
 package libsidplay.config;
 
-import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
-
 import libsidplay.components.c1541.FloppyType;
 
 public interface IC1541Section {
@@ -16,8 +14,7 @@ public interface IC1541Section {
 	/**
 	 * Turn drive on.
 	 * 
-	 * @param on
-	 *            drive turned on?
+	 * @param on drive turned on?
 	 */
 	void setDriveOn(boolean on);
 
@@ -31,8 +28,7 @@ public interface IC1541Section {
 	/**
 	 * Plug in parallel cable.
 	 * 
-	 * @param on
-	 *            parallel cable plugged in?
+	 * @param on parallel cable plugged in?
 	 */
 	void setParallelCable(boolean on);
 
@@ -46,8 +42,7 @@ public interface IC1541Section {
 	/**
 	 * Install floppy speeder Jiffydos.
 	 * 
-	 * @param on
-	 *            Floppy speeder Jiffydos installed?
+	 * @param on Floppy speeder Jiffydos installed?
 	 */
 	void setJiffyDosInstalled(boolean on);
 
@@ -69,8 +64,7 @@ public interface IC1541Section {
 	/**
 	 * Enable 8K Ram expansion.
 	 *
-	 * @param on
-	 *            enable 8K Ram expansion
+	 * @param on enable 8K Ram expansion
 	 */
 	void setRamExpansionEnabled0(boolean on);
 
@@ -85,8 +79,7 @@ public interface IC1541Section {
 	/**
 	 * Set type of floppy.
 	 * 
-	 * @param floppyType
-	 *            type of floppy
+	 * @param floppyType type of floppy
 	 */
 	void setFloppyType(FloppyType floppyType);
 
@@ -98,7 +91,6 @@ public interface IC1541Section {
 	FloppyType getFloppyType();
 
 	default boolean isRamExpansion(int selector) {
-		assert (selector >= 0 && selector < MAX_RAM_EXPANSIONS);
 		switch (selector) {
 		case 0:
 			return isRamExpansionEnabled0();
@@ -110,9 +102,9 @@ public interface IC1541Section {
 			return isRamExpansionEnabled3();
 		case 4:
 			return isRamExpansionEnabled4();
+
 		default:
-			throw new RuntimeException(
-					String.format("Unsupported Ram Expansion: %d (max=%d)", selector, MAX_RAM_EXPANSIONS));
+			throw new RuntimeException(String.format("Maximum Ram Expansions exceeded: %d!", selector));
 		}
 	}
 

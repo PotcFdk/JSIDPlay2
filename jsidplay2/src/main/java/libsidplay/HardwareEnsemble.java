@@ -1,7 +1,5 @@
 package libsidplay;
 
-import static sidplay.ini.IniDefaults.MAX_RAM_EXPANSIONS;
-
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -285,9 +283,11 @@ public class HardwareEnsemble {
 		// Reset Floppies
 		for (final C1541 floppy : floppies) {
 			floppy.setFloppyType(c1541Section.getFloppyType());
-			for (int selector = 0; selector < MAX_RAM_EXPANSIONS; selector++) {
-				floppy.setRamExpansion(selector, c1541Section.isRamExpansion(selector));
-			}
+			floppy.setRamExpansion(0, c1541Section.isRamExpansion(0));
+			floppy.setRamExpansion(1, c1541Section.isRamExpansion(1));
+			floppy.setRamExpansion(2, c1541Section.isRamExpansion(2));
+			floppy.setRamExpansion(3, c1541Section.isRamExpansion(3));
+			floppy.setRamExpansion(4, c1541Section.isRamExpansion(4));
 			floppy.setCustomKernalRom(c1541Section.isJiffyDosInstalled() ? JIFFYDOS_C1541 : null);
 			floppy.reset();
 		}

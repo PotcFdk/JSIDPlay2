@@ -882,8 +882,9 @@ public interface IEmulationSection {
 			return getSidBlaster1Model();
 		case 2:
 			return getSidBlaster2Model();
+
 		default:
-			return null;
+			throw new RuntimeException(String.format("Maximum SID Blaster devices exceeded: %d!", deviceId));
 		}
 	}
 
@@ -903,7 +904,7 @@ public interface IEmulationSection {
 			return isThirdSIDFilter();
 
 		default:
-			throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+			throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 		}
 	}
 
@@ -926,7 +927,7 @@ public interface IEmulationSection {
 			break;
 
 		default:
-			throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+			throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 		}
 	}
 
@@ -962,7 +963,7 @@ public interface IEmulationSection {
 						return getThirdSIDFilter6581();
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 				case RESIDFP:
@@ -977,11 +978,11 @@ public interface IEmulationSection {
 						return getReSIDfpThirdSIDFilter6581();
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 				default:
-					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+					throw new RuntimeException(String.format("Unknown emulation type: %s!", emulation));
 				}
 			case NETSID:
 				switch (sidNum) {
@@ -995,11 +996,11 @@ public interface IEmulationSection {
 					return getNetSIDThirdSIDFilter6581();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+					throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 				}
 			default:
-				throw new RuntimeException("Unknown engine: " + engine + "!");
+				throw new RuntimeException(String.format("Unknown engine: %s", engine));
 			}
 
 		case MOS8580:
@@ -1020,7 +1021,7 @@ public interface IEmulationSection {
 						return getThirdSIDFilter8580();
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 				case RESIDFP:
@@ -1035,11 +1036,11 @@ public interface IEmulationSection {
 						return getReSIDfpThirdSIDFilter8580();
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 				default:
-					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+					throw new RuntimeException(String.format("Unknown emulation type: %s!", emulation));
 				}
 			case NETSID:
 				switch (sidNum) {
@@ -1053,15 +1054,15 @@ public interface IEmulationSection {
 					return getNetSIDThirdSIDFilter8580();
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+					throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 				}
 			default:
-				throw new RuntimeException("Unknown engine: " + engine + "!");
+				throw new RuntimeException(String.format("Unknown engine: %s!", engine));
 			}
 
 		default:
-			throw new RuntimeException("Unknown chip model: " + chipModel + "!");
+			throw new RuntimeException(String.format("Unknown chip model: %s!", chipModel));
 		}
 	}
 
@@ -1099,7 +1100,7 @@ public interface IEmulationSection {
 						break;
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 					break;
@@ -1118,12 +1119,12 @@ public interface IEmulationSection {
 						break;
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 					break;
 				default:
-					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+					throw new RuntimeException(String.format("Unknown emulation type: %s!", emulation));
 				}
 				break;
 			case NETSID:
@@ -1141,12 +1142,12 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+					throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown engine: " + engine + "!");
+				throw new RuntimeException(String.format("Unknown engine: %s!", engine));
 			}
 			break;
 		case MOS8580:
@@ -1170,7 +1171,7 @@ public interface IEmulationSection {
 						break;
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 					break;
@@ -1189,12 +1190,12 @@ public interface IEmulationSection {
 						break;
 
 					default:
-						throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+						throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 					}
 					break;
 				default:
-					throw new RuntimeException("Unknown emulation type: " + emulation + "!");
+					throw new RuntimeException(String.format("Unknown emulation type: %s!", emulation));
 				}
 				break;
 			case NETSID:
@@ -1212,16 +1213,16 @@ public interface IEmulationSection {
 					break;
 
 				default:
-					throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+					throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 
 				}
 				break;
 			default:
-				throw new RuntimeException("Unknown engine: " + engine + "!");
+				throw new RuntimeException(String.format("Unknown engine: %s!", engine));
 			}
 			break;
 		default:
-			throw new RuntimeException("Unknown chip model: " + chipModel + "!");
+			throw new RuntimeException(String.format("Unknown chip model: %s!", chipModel));
 		}
 	}
 
@@ -1238,7 +1239,7 @@ public interface IEmulationSection {
 			case 3:
 				return isMuteVoice4();
 			default:
-				throw new RuntimeException("Unknown voice: " + voice + "!");
+				throw new RuntimeException(String.format("Unknown voice: %d!", voice));
 			}
 		case 1:
 			switch (voice) {
@@ -1251,7 +1252,7 @@ public interface IEmulationSection {
 			case 3:
 				return isMuteStereoVoice4();
 			default:
-				throw new RuntimeException("Unknown voice: " + voice + "!");
+				throw new RuntimeException(String.format("Unknown voice: %d!", voice));
 			}
 		case 2:
 			switch (voice) {
@@ -1264,10 +1265,10 @@ public interface IEmulationSection {
 			case 3:
 				return isMuteThirdSIDVoice4();
 			default:
-				throw new RuntimeException("Unknown voice: " + voice + "!");
+				throw new RuntimeException(String.format("Unknown voice: %d!", voice));
 			}
 		default:
-			throw new RuntimeException("Maximum SIDs exceeded: " + sidNum + "!");
+			throw new RuntimeException(String.format("Maximum SIDs exceeded: %d!", sidNum));
 		}
 	}
 }
