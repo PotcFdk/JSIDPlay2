@@ -111,6 +111,15 @@ class ClientContext {
 		eventConsumerThread = new AudioGeneratorThread(config);
 		eventConsumerThread.start();
 		((Buffer) dataRead).limit(4);
+		
+		setDefaultSidConfiguration();		
+	}
+
+	private void setDefaultSidConfiguration() {
+		sidRead = new SIDChip[1];
+		sidRead[sidNumber] = NetworkSIDDevice.getSidConfig(0);
+		eventConsumerThread.setSidArray(new SIDChip[1]);
+		eventConsumerThread.setSID(sidNumber, NetworkSIDDevice.getSidConfig(0));
 	}
 
 	/**
@@ -375,7 +384,7 @@ class ClientContext {
 
 		case TRY_SET_SID_MODEL:
 			if (dataLength != 1) {
-				throw new InvalidCommandException("SET_SID_LEVEL needs 1 byte", dataLength);
+				throw new InvalidCommandException("SET_SID_MODEL needs 1 byte", dataLength);
 			}
 
 			if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {

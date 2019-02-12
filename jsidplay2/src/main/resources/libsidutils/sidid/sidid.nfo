@@ -226,7 +226,7 @@ Cyberlogic_SoundStudio
      NAME: Cyberlogic Sound Studio
    AUTHOR: Oliver Klee & Sascha Nagie
  RELEASED: 1991
-REFERENCE: http://csdb.dk/release/?id=97286
+REFERENCE: https://csdb.dk/release/?id=170632
 
 CyberTracker
    AUTHOR: Bjarke Nørgaard Laustsen (CyberBrain)
@@ -243,6 +243,9 @@ Cycleburner_Digi
 
 Dane
    AUTHOR: Stellan Andersson (Dane)
+
+Daw_Digi
+   AUTHOR: David Fahlander (Daw)
 
 DefleMask_V1
    AUTHOR: Leonardo Demartino (Delek)
@@ -645,7 +648,7 @@ JCH_Protracker
  RELEASED: 2011
 REFERENCE: http://csdb.dk/release/?id=100406
 
-JITT_1.x
+JITT64_1.x
    AUTHOR: Stefano Tognon (Ice00)
  RELEASED: 2008 Ice Team
 REFERENCE: http://csdb.dk/release/?id=74136
