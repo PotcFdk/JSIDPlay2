@@ -61,6 +61,7 @@ import ui.JSidPlay2;
 import ui.JSidPlay2Main;
 import ui.about.About;
 import ui.asm.Asm;
+import ui.assembly64.Assembly64;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
@@ -832,6 +833,15 @@ public class MenuBar extends C64VBox implements UIPart {
 			Tab tab = new Tab(util.getBundle().getString(Disassembler.ID),
 					new Disassembler(util.getWindow(), util.getPlayer()));
 			tab.setId(Disassembler.ID);
+			addTab(tab);
+		}
+	}
+
+	@FXML
+	private void assembly64() {
+		if (!tabAlreadyOpen(Assembly64.ID)) {
+			Tab tab = new Tab(util.getBundle().getString(Assembly64.ID), new Assembly64(util.getWindow(), util.getPlayer()));
+			tab.setId(Assembly64.ID);
 			addTab(tab);
 		}
 	}
