@@ -1008,6 +1008,8 @@ public class MenuBar extends C64VBox implements UIPart {
 			sidRegisters();
 		} else if (Disassembler.ID.equals(id)) {
 			disassembler();
+		} else if (Assembly64.ID.equals(id)) {
+			assembly64();
 		} else if (WebViewType.CSDB.name().equals(id)) {
 			csdb();
 		} else if (WebViewType.CODEBASE64.name().equals(id)) {

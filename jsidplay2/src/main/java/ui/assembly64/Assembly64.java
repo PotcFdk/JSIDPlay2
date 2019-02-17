@@ -34,6 +34,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import sidplay.Player;
@@ -50,6 +51,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 	public static final String ID = "ASSEMBLY64";
 
 	private static final int MAX_ROWS = 500;
+
+	@FXML
+	GridPane parent;
 
 	@FXML
 	Button prev, next;
@@ -86,10 +90,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private CheckBox d64Field, t64Field, d81Field, d71Field, prgField, tapField, crtField, sidField, binField, g64Field;
 
 	@FXML
-	private ContextMenu contextMenu, contentEntryContextMenu;
+	private ContextMenu contentEntryContextMenu;
 
 	@FXML
-	private MenuItem getProgramEntriesMenu, attachDiskMenu;
+	private MenuItem attachDiskMenu;
 
 	private ObservableList<SearchResult> searchResults;
 
@@ -119,13 +123,19 @@ public class Assembly64 extends C64VBox implements UIPart {
 		searchResults = FXCollections.<SearchResult>observableArrayList();
 		SortedList<SearchResult> sortedList = new SortedList<>(searchResults);
 		sortedList.comparatorProperty().bind(assembly64Table.comparatorProperty());
-		assembly64Table.setItems(searchResults);
-		assembly64Table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		assembly64Table.setItems(sortedList);
+		assembly64Table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		assembly64Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
+			if (searchResult != null) {
+				listFiles(searchResult.getId(), searchResult.getCategory());
+			}
+		});
 
 		contentEntries = FXCollections.<ContentEntry>observableArrayList();
 		SortedList<ContentEntry> sortedProgramEntryList = new SortedList<>(contentEntries);
 		sortedProgramEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
-		contentEntryTable.setItems(contentEntries);
+		contentEntryTable.setItems(sortedProgramEntryList);
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		contentEntryTable.setOnMousePressed(event -> {
 			final ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
@@ -139,7 +149,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 			attachDiskMenu.setDisable(disable);
 		});
 		contentEntryColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
-
 		nameColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		groupColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		yearColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
@@ -288,15 +297,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void getProgramEntries() {
-		SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItems().stream().findFirst()
-				.orElse(null);
-		if (searchResult != null) {
-			listFiles(searchResult.getId(), searchResult.getCategory());
-		}
-	}
-
-	@FXML
 	private void start() {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream().findFirst()
 				.orElse(null);
@@ -313,9 +313,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 						fos.write(byteArray);
 					}
 					if (convenience.autostart(tempFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
-//					util.setPlayingTab(this);
+						util.setPlayingTab(this);
 					}
 				}
+
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 			}
@@ -361,18 +362,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
 					.queryParam("offset", searchOffset).build(getName(nameField), get(groupField), get(yearField),
 							get(handleField), get(eventField), get(ratingField), get(categoryField),
-							get(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
+							getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
 							get(prgField), get(tapField), get(crtField), get(sidField), get(binField), get(g64Field),
-							"n", -1);
+							"n", getAge(ageField));
 
 			Response response = null;
 			try {
 				Client client = ClientBuilder.newClient();
 				WebTarget target = client.target(uri);
 				response = target.request().get();
-
-				System.out.println("start=" + response.getHeaders().get("start"));
-				System.out.println("stop=" + response.getHeaders().get("stop"));
 
 				Object start = response.getHeaders().getFirst("start");
 				searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
@@ -403,10 +401,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 			try {
 				Client client = ClientBuilder.newClient();
 				WebTarget target = client.target(uri);
-				System.out.println(uri);
 				response = target.request().get();
 				String result = response.readEntity(String.class);
-				System.out.println(result);
 				ProgramSearchResult contentEntry = (ProgramSearchResult) objectMapper.readValue(result,
 						ProgramSearchResult.class);
 				contentEntries.setAll(contentEntry.getContentEntry());
@@ -430,7 +426,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try {
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(uri);
-			System.out.println(uri);
 			response = target.request().get();
 			return response.readEntity(byte[].class);
 		} finally {
@@ -445,6 +440,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return value.intValue() != 0 ? value.toString() : "***";
 	}
 
+	private int getAge(ComboBox<Age> field) {
+		Age value = field.getSelectionModel().getSelectedItem();
+		return value != null ? value.getDays() : -1;
+	}
+
 	private String get(TextField field) {
 		String value = field.getText();
 		return !value.isEmpty() ? value : "***";
@@ -455,7 +455,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return value.length() > 2 ? value : " ";
 	}
 
-	private Object get(CheckBox field) {
+	private String get(CheckBox field) {
 		return field.isSelected() ? "Y" : "N";
 	}
+
+	private String getSearchFromStart(CheckBox field) {
+		return field.isSelected() ? "n" : "y";
+	}
+	
 }
