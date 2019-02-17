@@ -13,13 +13,18 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 public class Settings extends SIDDeviceStage {
 	private static final long serialVersionUID = 1L;
@@ -34,6 +39,7 @@ public class Settings extends SIDDeviceStage {
 
 	private SIDDeviceSettings settings;
 
+	@SuppressWarnings("unchecked")
 	public Settings() {
 		getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints gridBagConstants = new GridBagConstraints();
@@ -49,10 +55,15 @@ public class Settings extends SIDDeviceStage {
 		TitledBorder audioBorder = new TitledBorder(util.getBundle().getString("AUDIO_SETTINGS"));
 		audioPane.setBorder(audioBorder);
 
-		audioPane.add(new JLabel(util.getBundle().getString("DEVICE")));
+		JLabel deviceLabel = new JLabel(util.getBundle().getString("DEVICE"));
+		deviceLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		audioPane.add(deviceLabel);
+
 		audioDevices = new Vector<>();
 		audioDevice = new JComboBox<AudioDevice>(audioDevices);
+		audioDevice.setRenderer(new ItemRenderer());
 		audioDevice.addActionListener(event -> setAudioDevice());
+		audioDevice.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		audioPane.add(audioDevice);
 
 		getContentPane().add(audioPane, gridBagConstants);
@@ -64,7 +75,9 @@ public class Settings extends SIDDeviceStage {
 		TitledBorder connectionBorder = new TitledBorder(util.getBundle().getString("CONNECTION_SETTINGS"));
 		connectionPane.setBorder(connectionBorder);
 
-		connectionPane.add(new JLabel(util.getBundle().getString("ALLOW_EXTERNAL_CONNECTIONS")));
+		JLabel allowExternalConnectionsLabal = new JLabel(util.getBundle().getString("ALLOW_EXTERNAL_CONNECTIONS"));
+		allowExternalConnectionsLabal.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		connectionPane.add(allowExternalConnectionsLabal);
 		allowExternalConnections = new JCheckBox();
 		allowExternalConnections.addActionListener(event -> setAllowExternalConnections());
 		connectionPane.add(allowExternalConnections);
@@ -78,7 +91,9 @@ public class Settings extends SIDDeviceStage {
 		TitledBorder emulationBorder = new TitledBorder(util.getBundle().getString("EMULATION_SETTINGS"));
 		emulationPane.setBorder(emulationBorder);
 
-		emulationPane.add(new JLabel(util.getBundle().getString("DIGI_BOOST")));
+		JLabel digiBoostLabal = new JLabel(util.getBundle().getString("DIGI_BOOST"));
+		digiBoostLabal.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		emulationPane.add(digiBoostLabal);
 		digiBoost = new JCheckBox();
 		digiBoost.addActionListener(event -> setDigiBoost());
 		emulationPane.add(digiBoost);
@@ -92,7 +107,7 @@ public class Settings extends SIDDeviceStage {
 
 		initialize();
 	}
-
+	
 	private void initialize() {
 		settings = SIDDeviceSettings.getInstance();
 		AudioDeviceCompare cmp = new AudioDeviceCompare();
@@ -120,9 +135,14 @@ public class Settings extends SIDDeviceStage {
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
 	}
-
+	
 	public void open() throws IOException {
-		okButton.requestFocus();
+        SwingUtilities.invokeLater(new Runnable() {
+           public void run() {
+        	   okButton.requestFocusInWindow(); 
+           }
+        }); 
+
 		super.open();
 	}
 
@@ -150,5 +170,16 @@ public class Settings extends SIDDeviceStage {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
+	
+	private class ItemRenderer extends BasicComboBoxRenderer {
+		private static final long serialVersionUID = 1L;
 
+		@SuppressWarnings("rawtypes")
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+			comp.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+			return this;
+		}
+	}
 }

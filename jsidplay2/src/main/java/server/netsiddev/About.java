@@ -2,6 +2,7 @@ package server.netsiddev;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -34,15 +35,20 @@ public class About extends SIDDeviceStage {
 
 	public About() {
 		credits = new JTextArea();
+		credits.setEditable(false);
+		credits.setLineWrap(false);
+		credits.setHighlighter(null);
+		credits.setMargin(new Insets(0, 0, 10, 0));
+
 		getContentPane().add(credits, BorderLayout.CENTER);
 
 		ok = new JButton(util.getBundle().getString("OK"));
 		ok.addActionListener(event -> okPressed(event));
 		getContentPane().add(ok, BorderLayout.PAGE_END);
 
-		getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.DARK_GRAY));
 		setBackground(Color.WHITE);
-
+		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
 		initialize();
 	}
 
