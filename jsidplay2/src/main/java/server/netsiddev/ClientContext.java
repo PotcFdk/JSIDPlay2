@@ -46,7 +46,7 @@ class ClientContext {
 	/** String encoding */
 	private static final Charset ISO_8859 = Charset.forName("ISO-8859-1");
 
-	/** See class comment for definition of version 2. */
+	/** See netsiddev.ad for version info of the protocol. */
 	private static final byte SID_NETWORK_PROTOCOL_VERSION = 4;
 
 	/** Maximum time to wait for queue in milliseconds. */
@@ -58,7 +58,7 @@ class ClientContext {
 	/** Cached commands because values() returns new array each time. */
 	private final Command[] commands = Command.values();
 
-	/** Our backend thread */
+	/** Our back-end thread */
 	private final AudioGeneratorThread eventConsumerThread;
 
 	/** Shadow SID clocked with client to read from */

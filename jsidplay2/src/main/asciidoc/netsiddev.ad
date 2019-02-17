@@ -16,7 +16,7 @@ JSIDPlay2 can act as a client or as a server:
 
 ==== General Overview
 
-Version 2,3 and 4 of the protocol is structured as a request-response protocol:
+Since version 2, the protocol is structured as a request-response protocol:
 
 * Requests are variable length, with minimum packet size 4 bytes. There are
 3 fields and an amorphous data blob:
@@ -49,6 +49,17 @@ packets are transmitted, in the order of 1k and containing no more than about
 may have unpleasant consequences. At the limit it's possible to simply send a
 fixed header that describes a single write with each packet, but this is
 probably measurably less efficient.
+
+==== Protocol version information
+
+* Version 1
+** contains commands FLUSH, TRY_SET_SID_COUNT, MUTE, TRY_RESET, TRY_DELAY, TRY_WRITE, TRY_READ and GET_VERSION. There are 8 SID devices where bit 0 sets 6581/8580, bit 1 sets PAL/NTSC and bit 2 sets RESAMPLE/DECIMATE mode of operation.
+* Version 2
+** contains commands SAMPLING, CLOCKING, SID_POSITION and SID_LEVEL. There are multiple SID devices of type 6581 and 8580. The commands SAMPLING and CLOCKING can be used to set particular SID kind.
+* Version 3
+** supports muting of voice number 3 (digi channel).
+* Version 4
+** contains commands SET_FADE_IN, SET_FADE_OUT and SET_PSID_HEADER
 
 ==== Command Overview
 
@@ -216,7 +227,7 @@ java -jar {artifactId}_console-{version}.jar \
 	--engine NETSID \
 	--NetSIDDevHost 127.0.0.1 \
 	--NetSIDDevPort 6581 # <1>
----- 
+----
 <1> Start ConsolePlayer and use Network SID Device for sound output
 
 === Launch Network SID Device (JSIDPlay2 as a Server)
@@ -239,6 +250,6 @@ jsiddevice-{version}.exe # <1>
 ----
 java -jar jsiddevice-{version}.jar # <1>
 java -classpath jsiddevice-{version}.jar server.netsiddev.NetworkSIDDevice # <2>
----- 
+----
 <1> Launch User interface version
 <2> Launch Console version
