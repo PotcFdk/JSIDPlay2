@@ -1,5 +1,7 @@
 package ui.assembly64;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -13,7 +15,7 @@ public class SearchResult {
 	private StringProperty eventProperty = new SimpleStringProperty();
 	private StringProperty ratingProperty = new SimpleStringProperty();
 	private StringProperty updatedProperty = new SimpleStringProperty();
-	private StringProperty categoryProperty = new SimpleStringProperty();
+	private ObjectProperty<Category> categoryProperty = new SimpleObjectProperty<Category>();
 
 	public SearchResult() {
 	}
@@ -82,11 +84,11 @@ public class SearchResult {
 		updatedProperty.set(updated);
 	}
 
-	public String getCategory() {
+	public Category getCategory() {
 		return categoryProperty.get();
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(Category category) {
 		categoryProperty.set(category);
 	}
 }

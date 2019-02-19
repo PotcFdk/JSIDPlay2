@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Year;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -69,7 +71,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private TableColumn<SearchResult, String> nameColumn, groupColumn, yearColumn, handleColumn, eventColumn,
-			ratingColumn, updatedColumn, categoryColumn;
+			ratingColumn, updatedColumn;
+
+	@FXML
+	private TableColumn<SearchResult, Category> categoryColumn;
 
 	@FXML
 	private TableColumn<ContentEntry, String> contentEntryColumn;
@@ -101,10 +106,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private int searchOffset, searchStop;
 
-	private ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
-			false);
+	private ObjectMapper objectMapper;
 
-	private String id, category;
+	private Category[] categories;
+
+	private String id;
+
+	private Category category;
 
 	private Convenience convenience;
 
@@ -118,6 +126,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
+		objectMapper = createObjectMapper();
+
 		convenience = new Convenience(util.getPlayer());
 
 		searchResults = FXCollections.<SearchResult>observableArrayList();
@@ -187,6 +197,17 @@ public class Assembly64 extends C64VBox implements UIPart {
 		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
 		ageField.getSelectionModel().select(null);
 		ageField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+	}
+
+	private ObjectMapper createObjectMapper() {
+		categories = getCategories();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		JodaModule module = new JodaModule();
+		module.addDeserializer(Category.class, new CategoryDeserializer(categories));
+		objectMapper.registerModule(module);
+		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		return objectMapper;
 	}
 
 	@FXML
@@ -361,10 +382,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
 					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
 					.queryParam("offset", searchOffset).build(getName(nameField), get(groupField), get(yearField),
-							get(handleField), get(eventField), get(ratingField), get(categoryField),
-							getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
-							get(prgField), get(tapField), get(crtField), get(sidField), get(binField), get(g64Field),
-							"n", getAge(ageField));
+							get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
+							getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
+							get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField), get(binField),
+							get(g64Field), "n", getAge(ageField));
 
 			Response response = null;
 			try {
@@ -392,10 +413,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 		});
 	}
 
-	private void listFiles(String id, String category) {
+	private void listFiles(String id, Category category) {
 		Platform.runLater(() -> {
 			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/entry")
-					.path("/{id}/{category}").build(id, category);
+					.path("/{id}/{category}").build(id, category.getId());
 
 			Response response = null;
 			try {
@@ -418,9 +439,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 		});
 	}
 
-	private byte[] download(String id, String category, String contentEntryId) {
+	private byte[] download(String id, Category category, String contentEntryId) {
 		URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/binary")
-				.path("/{id}/{category}/{contentEntryId}").build(id, category, contentEntryId);
+				.path("/{id}/{category}/{contentEntryId}").build(id, category.getId(), contentEntryId);
 
 		Response response = null;
 		try {
@@ -428,6 +449,26 @@ public class Assembly64 extends C64VBox implements UIPart {
 			WebTarget target = client.target(uri);
 			response = target.request().get();
 			return response.readEntity(byte[].class);
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+		}
+	}
+
+	private Category[] getCategories() {
+		URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/categories").build();
+
+		Response response = null;
+		try {
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target(uri);
+			response = target.request().get();
+			String result = response.readEntity(String.class);
+			return (Category[]) new ObjectMapper().readValue(result, Category[].class);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new Category[0];
 		} finally {
 			if (response != null) {
 				response.close();
@@ -450,6 +491,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return !value.isEmpty() ? value : "***";
 	}
 
+	private String getCategory(TextField field) {
+		String value = field.getText();
+		if (value.isEmpty()) {
+			return "***";
+		}
+		return Arrays.asList(categories).stream().filter(category -> category.getDescription().contains(value))
+				.map(category -> String.valueOf(category.getId())).findFirst().orElse("***");
+	}
+
 	private String getName(TextField field) {
 		String value = field.getText();
 		return value.length() > 2 ? value : " ";
@@ -462,5 +512,5 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private String getSearchFromStart(CheckBox field) {
 		return field.isSelected() ? "n" : "y";
 	}
-	
+
 }
