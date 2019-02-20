@@ -36,7 +36,9 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import libsidplay.common.Event;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import sidplay.Player;
@@ -48,6 +50,8 @@ import ui.common.NumberToStringConverter;
 import ui.common.UIPart;
 
 public class Assembly64 extends C64VBox implements UIPart {
+	private static final int KEY_DELAY = 500000;
+
 	private static final String HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 = "http://hackerswithstyle.ddns.net:8080";
 
 	public static final String ID = "ASSEMBLY64";
@@ -58,7 +62,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	GridPane parent;
 
 	@FXML
-	Button prev, next;
+	Button prevBtn, nextBtn;
 
 	@FXML
 	private TableView<SearchResult> assembly64Table;
@@ -116,6 +120,72 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private Convenience convenience;
 
+	private Event searchEvent = new Event("REST-Request: Search") {
+		@Override
+		public void event() throws InterruptedException {
+			Platform.runLater(() -> {
+				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
+						"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
+						.queryParam("offset", searchOffset).build(getName(nameField), get(groupField), get(yearField),
+								get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
+								getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
+								get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField),
+								get(binField), get(g64Field), "n", getAge(ageField));
+
+				Response response = null;
+				try {
+					Client client = ClientBuilder.newClient();
+					WebTarget target = client.target(uri);
+					response = target.request().get();
+
+					Object start = response.getHeaders().getFirst("start");
+					searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
+					prevBtn.setDisable(start == null || searchOffset == 0);
+
+					Object stop = response.getHeaders().getFirst("stop");
+					searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
+					nextBtn.setDisable(stop == null);
+
+					String result = response.readEntity(String.class);
+					searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (response != null) {
+						response.close();
+					}
+				}
+			});
+		}
+	};
+
+	private Event listFilesEvent = new Event("REST-Request: Search") {
+		@Override
+		public void event() throws InterruptedException {
+			Platform.runLater(() -> {
+				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/entry")
+						.path("/{id}/{category}").build(id, category.getId());
+
+				Response response = null;
+				try {
+					Client client = ClientBuilder.newClient();
+					WebTarget target = client.target(uri);
+					response = target.request().get();
+					String result = response.readEntity(String.class);
+					ProgramSearchResult contentEntry = (ProgramSearchResult) objectMapper.readValue(result,
+							ProgramSearchResult.class);
+					contentEntries.setAll(contentEntry.getContentEntry());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (response != null) {
+						response.close();
+					}
+				}
+			});
+		}
+	};
+	
 	public Assembly64() {
 	}
 
@@ -126,8 +196,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		objectMapper = createObjectMapper();
-
+		categories = getCategories();
+		objectMapper = createObjectMapper(categories);
 		convenience = new Convenience(util.getPlayer());
 
 		searchResults = FXCollections.<SearchResult>observableArrayList();
@@ -141,7 +211,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 				listFiles(searchResult.getId(), searchResult.getCategory());
 			}
 		});
-
 		contentEntries = FXCollections.<ContentEntry>observableArrayList();
 		SortedList<ContentEntry> sortedProgramEntryList = new SortedList<>(contentEntries);
 		sortedProgramEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
@@ -151,6 +220,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 			final ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 			if (contentEntry != null && event.isPrimaryButtonDown() && event.getClickCount() > 1) {
 				start();
+			}
+		});
+		contentEntryTable.setOnKeyPressed(event -> {
+			if (event.getCode() == KeyCode.ENTER) {
+				final ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
+				if (contentEntry != null) {
+					start();
+				}
 			}
 		});
 		contentEntryContextMenu.setOnShown(event -> {
@@ -195,19 +272,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		ageField.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
 		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
-		ageField.getSelectionModel().select(null);
+		ageField.getSelectionModel().select(Age.ALL);
 		ageField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-	}
-
-	private ObjectMapper createObjectMapper() {
-		categories = getCategories();
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		JodaModule module = new JodaModule();
-		module.addDeserializer(Category.class, new CategoryDeserializer(categories));
-		objectMapper.registerModule(module);
-		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		return objectMapper;
 	}
 
 	@FXML
@@ -368,6 +434,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
+	private ObjectMapper createObjectMapper(Category[] categories) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		JodaModule module = new JodaModule();
+		module.addDeserializer(Category.class, new CategoryDeserializer(categories));
+		objectMapper.registerModule(module);
+		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		return objectMapper;
+	}
+
 	private void newSearch() {
 		searchOffset = 0;
 		search();
@@ -378,65 +453,24 @@ public class Assembly64 extends C64VBox implements UIPart {
 			return;
 		}
 		searchResults.clear();
-		Platform.runLater(() -> {
-			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
-					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
-					.queryParam("offset", searchOffset).build(getName(nameField), get(groupField), get(yearField),
-							get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
-							getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
-							get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField), get(binField),
-							get(g64Field), "n", getAge(ageField));
-
-			Response response = null;
-			try {
-				Client client = ClientBuilder.newClient();
-				WebTarget target = client.target(uri);
-				response = target.request().get();
-
-				Object start = response.getHeaders().getFirst("start");
-				searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
-				prev.setDisable(start == null || searchOffset == 0);
-
-				Object stop = response.getHeaders().getFirst("stop");
-				searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
-				next.setDisable(stop == null);
-
-				String result = response.readEntity(String.class);
-				searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (response != null) {
-					response.close();
-				}
+		synchronized (searchEvent) {
+			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
+				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
 			}
-		});
+			util.getPlayer().getC64().getEventScheduler().schedule(searchEvent, KEY_DELAY);
+		}
 	}
 
 	private void listFiles(String id, Category category) {
-		Platform.runLater(() -> {
-			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/entry")
-					.path("/{id}/{category}").build(id, category.getId());
-
-			Response response = null;
-			try {
-				Client client = ClientBuilder.newClient();
-				WebTarget target = client.target(uri);
-				response = target.request().get();
-				String result = response.readEntity(String.class);
-				ProgramSearchResult contentEntry = (ProgramSearchResult) objectMapper.readValue(result,
-						ProgramSearchResult.class);
-				contentEntries.setAll(contentEntry.getContentEntry());
-				this.id = id;
-				this.category = category;
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (response != null) {
-					response.close();
-				}
+		this.id = id;
+		this.category = category;
+		contentEntries.clear();
+		synchronized (listFilesEvent) {
+			if (util.getPlayer().getC64().getEventScheduler().isPending(listFilesEvent)) {
+				util.getPlayer().getC64().getEventScheduler().cancel(listFilesEvent);
 			}
-		});
+			util.getPlayer().getC64().getEventScheduler().schedule(listFilesEvent, KEY_DELAY);
+		}
 	}
 
 	private byte[] download(String id, Category category, String contentEntryId) {

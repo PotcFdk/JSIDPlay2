@@ -77,7 +77,7 @@
 				</VBox>
 				<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
 					<Label text="%NAME" />
-					<TextField fx:id="nameField" onAction="#searchName" />
+					<TextField fx:id="nameField" onAction="#searchName" promptText="%PROMPT_NAME"/>
 				</VBox>
 				<VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
 					<Label text="%GROUP" />
@@ -155,7 +155,7 @@
 					</columns>
 				</TableView>
 				<Button focusTraversable="false" onAction="#prevPage"
-					fx:id="prev" GridPane.rowIndex="4" GridPane.columnIndex="0">
+					fx:id="prevBtn" GridPane.rowIndex="4" GridPane.columnIndex="0">
 					<tooltip>
 						<Tooltip text="%PREV" />
 					</tooltip>
@@ -168,7 +168,7 @@
 					</graphic>
 				</Button>
 				<Button focusTraversable="false" onAction="#nextPage"
-					fx:id="next" GridPane.rowIndex="4" GridPane.columnIndex="1"
+					fx:id="nextBtn" GridPane.rowIndex="4" GridPane.columnIndex="1"
 					GridPane.columnSpan="8" GridPane.halignment="RIGHT">
 					<tooltip>
 						<Tooltip text="%NEXT" />
