@@ -185,7 +185,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			});
 		}
 	};
-	
+
 	public Assembly64() {
 	}
 
@@ -388,25 +388,26 @@ public class Assembly64 extends C64VBox implements UIPart {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream().findFirst()
 				.orElse(null);
 		if (contentEntry != null) {
-			try {
-				byte[] byteArray = download(id, category, contentEntry.getId());
-				if (byteArray != null) {
-					String filename = contentEntry.getName();
-					File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
-							PathUtils.getFilenameSuffix(filename),
-							new File(util.getConfig().getSidplay2Section().getTmpDir()));
-					tempFile.deleteOnExit();
-					try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-						fos.write(byteArray);
+			Platform.runLater(() -> {
+				try {
+					byte[] byteArray = download(id, category, contentEntry.getId());
+					if (byteArray != null) {
+						String filename = contentEntry.getName();
+						File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
+								PathUtils.getFilenameSuffix(filename),
+								new File(util.getConfig().getSidplay2Section().getTmpDir()));
+						tempFile.deleteOnExit();
+						try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+							fos.write(byteArray);
+						}
+						if (convenience.autostart(tempFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
+							util.setPlayingTab(this);
+						}
 					}
-					if (convenience.autostart(tempFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
-						util.setPlayingTab(this);
-					}
+				} catch (IOException | SidTuneError | URISyntaxException e) {
+					System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 				}
-
-			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
-			}
+			});
 		}
 	}
 
@@ -415,22 +416,24 @@ public class Assembly64 extends C64VBox implements UIPart {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream().findFirst()
 				.orElse(null);
 		if (contentEntry != null) {
-			try {
-				byte[] byteArray = download(id, category, contentEntry.getId());
-				if (byteArray != null) {
-					String filename = contentEntry.getName();
-					File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
-							PathUtils.getFilenameSuffix(filename),
-							new File(util.getConfig().getSidplay2Section().getTmpDir()));
-					tempFile.deleteOnExit();
-					try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-						fos.write(byteArray);
+			Platform.runLater(() -> {
+				try {
+					byte[] byteArray = download(id, category, contentEntry.getId());
+					if (byteArray != null) {
+						String filename = contentEntry.getName();
+						File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
+								PathUtils.getFilenameSuffix(filename),
+								new File(util.getConfig().getSidplay2Section().getTmpDir()));
+						tempFile.deleteOnExit();
+						try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+							fos.write(byteArray);
+						}
+						util.getPlayer().insertDisk(tempFile);
 					}
-					util.getPlayer().insertDisk(tempFile);
+				} catch (IOException | SidTuneError e) {
+					System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 				}
-			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
-			}
+			});
 		}
 	}
 
@@ -449,10 +452,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void search() {
+		searchResults.clear();
 		if (nameField.getText().length() < 3) {
 			return;
 		}
-		searchResults.clear();
 		synchronized (searchEvent) {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
