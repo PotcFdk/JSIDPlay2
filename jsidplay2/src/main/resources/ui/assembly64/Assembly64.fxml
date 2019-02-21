@@ -3,6 +3,7 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TableView?>
@@ -20,172 +21,178 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.geometry.Insets?>
-<?import ui.assembly64.Assembly64RowFactory?>
-<?import ui.assembly64.ContentEntryRowFactory?>
 <?scenebuilder-preview-i18n-resource Assembly64.properties?>
+<?import javafx.scene.layout.ColumnConstraints?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
 <!-- Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.assembly64.Assembly64" -->
 <fx:root xmlns:fx="http://javafx.com/fxml"
 	type="javafx.scene.layout.VBox">
-	<AnchorPane>
-		<GridPane fx:id="parent" AnchorPane.bottomAnchor="10"
+	<AnchorPane VBox.vgrow="ALWAYS">
+		<BorderPane fx:id="parent" AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-			AnchorPane.topAnchor="10" vgap="1">
-			<children>
-				<CheckBox text="%D64" fx:id="d64Field"
-					GridPane.rowIndex="0" GridPane.columnIndex="0"
-					onAction="#searchD64" selected="true" />
-				<CheckBox text="%T64" fx:id="t64Field"
-					GridPane.rowIndex="0" GridPane.columnIndex="1"
-					onAction="#searchT64" selected="true" />
-				<CheckBox text="%D81" fx:id="d81Field"
-					GridPane.rowIndex="0" GridPane.columnIndex="2"
-					onAction="#searchD81" selected="true" />
-				<CheckBox text="%D71" fx:id="d71Field"
-					GridPane.rowIndex="0" GridPane.columnIndex="3"
-					onAction="#searchD71" selected="true" />
-				<CheckBox text="%PRG" fx:id="prgField"
-					GridPane.rowIndex="0" GridPane.columnIndex="4"
-					onAction="#searchPrg" selected="true" />
-				<CheckBox text="%TAP" fx:id="tapField"
-					GridPane.rowIndex="1" GridPane.columnIndex="0"
-					onAction="#searchTap" selected="true" />
-				<CheckBox text="%CRT" fx:id="crtField"
-					GridPane.rowIndex="1" GridPane.columnIndex="1"
-					onAction="#searchCrt" selected="true" />
-				<CheckBox text="%SID" fx:id="sidField"
-					GridPane.rowIndex="1" GridPane.columnIndex="2"
-					onAction="#searchSid" selected="true" />
-				<CheckBox text="%BIN" fx:id="binField"
-					GridPane.rowIndex="1" GridPane.columnIndex="3"
-					onAction="#searchBin" selected="true" />
-				<CheckBox text="%G64" fx:id="g64Field"
-					GridPane.rowIndex="1" GridPane.columnIndex="4"
-					onAction="#searchG64" selected="true" />
-				<VBox GridPane.rowIndex="0" GridPane.columnIndex="5"
-					GridPane.columnSpan="4">
-					<Label text="%AGE" />
-					<ComboBox fx:id="ageField" onAction="#searchAge" />
-				</VBox>
-				<VBox GridPane.rowIndex="1" GridPane.columnIndex="5"
-					GridPane.columnSpan="4">
-					<Label text="" />
-					<CheckBox text="%SEARCH_FROM_START_OF_FIELDS"
-						fx:id="searchFromStartField" selected="true" onAction="#searchFromStart" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
-					<Label text="%NAME" />
-					<TextField fx:id="nameField" onAction="#searchName" promptText="%PROMPT_NAME"/>
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
-					<Label text="%GROUP" />
-					<TextField fx:id="groupField" onAction="#searchGroup" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="2"
-					GridPane.hgrow="ALWAYS">
-					<Label text="%YEAR" />
-					<ComboBox fx:id="yearField" onAction="#searchYear" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="3">
-					<Label text="%HANDLE" />
-					<TextField fx:id="handleField" onAction="#searchHandle" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="4">
-					<Label text="%EVENT" />
-					<TextField fx:id="eventField" onAction="#searchEvent" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="5"
-					GridPane.hgrow="ALWAYS">
-					<Label text="%RATING" />
-					<ComboBox fx:id="ratingField" onAction="#searchRating" />
-				</VBox>
-				<VBox GridPane.rowIndex="2" GridPane.columnIndex="7">
-					<Label text="%CATEGORY" />
-					<TextField fx:id="categoryField"
-						onAction="#searchCategory" />
-				</VBox>
-				<TableView fx:id="assembly64Table" GridPane.rowIndex="3"
-					GridPane.columnIndex="0" GridPane.columnSpan="8">
-					<rowFactory>
-						<Assembly64RowFactory />
-					</rowFactory>
-					<columns>
-						<TableColumn text="%NAME" fx:id="nameColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="name" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%GROUP" fx:id="groupColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="group" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%YEAR" fx:id="yearColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="year" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%HANDLE" fx:id="handleColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="handle" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%EVENT" fx:id="eventColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="event" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%RATING" fx:id="ratingColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="rating" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%UPDATED" fx:id="updatedColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="updated" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn text="%CATEGORY" fx:id="categoryColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="category" />
-							</cellValueFactory>
-						</TableColumn>
-					</columns>
-				</TableView>
-				<Button focusTraversable="false" onAction="#prevPage"
-					fx:id="prevBtn" GridPane.rowIndex="4" GridPane.columnIndex="0">
-					<tooltip>
-						<Tooltip text="%PREV" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_prev.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<Button focusTraversable="false" onAction="#nextPage"
-					fx:id="nextBtn" GridPane.rowIndex="4" GridPane.columnIndex="1"
-					GridPane.columnSpan="8" GridPane.halignment="RIGHT">
-					<tooltip>
-						<Tooltip text="%NEXT" />
-					</tooltip>
-					<graphic>
-						<ImageView>
-							<image>
-								<Image url="@/ui/icons/playback_next.png" />
-							</image>
-						</ImageView>
-					</graphic>
-				</Button>
-				<TableView fx:id="contentEntryTable" GridPane.rowIndex="6"
-					GridPane.columnIndex="0" GridPane.columnSpan="8">
-					<rowFactory>
-						<ContentEntryRowFactory />
-					</rowFactory>
+			AnchorPane.topAnchor="10">
+			<center>
+				<GridPane fx:id="searchArea" vgap="1">
+					<children>
+						<CheckBox text="%D64" fx:id="d64Field"
+							GridPane.rowIndex="0" GridPane.columnIndex="0"
+							onAction="#searchD64" selected="true" />
+						<CheckBox text="%T64" fx:id="t64Field"
+							GridPane.rowIndex="0" GridPane.columnIndex="1"
+							onAction="#searchT64" selected="true" />
+						<CheckBox text="%D81" fx:id="d81Field"
+							GridPane.rowIndex="0" GridPane.columnIndex="2"
+							onAction="#searchD81" selected="true" />
+						<CheckBox text="%D71" fx:id="d71Field"
+							GridPane.rowIndex="0" GridPane.columnIndex="3"
+							onAction="#searchD71" selected="true" />
+						<CheckBox text="%PRG" fx:id="prgField"
+							GridPane.rowIndex="0" GridPane.columnIndex="4"
+							onAction="#searchPrg" selected="true" />
+						<CheckBox text="%TAP" fx:id="tapField"
+							GridPane.rowIndex="1" GridPane.columnIndex="0"
+							onAction="#searchTap" selected="true" />
+						<CheckBox text="%CRT" fx:id="crtField"
+							GridPane.rowIndex="1" GridPane.columnIndex="1"
+							onAction="#searchCrt" selected="true" />
+						<CheckBox text="%SID" fx:id="sidField"
+							GridPane.rowIndex="1" GridPane.columnIndex="2"
+							onAction="#searchSid" selected="true" />
+						<CheckBox text="%BIN" fx:id="binField"
+							GridPane.rowIndex="1" GridPane.columnIndex="3"
+							onAction="#searchBin" selected="true" />
+						<CheckBox text="%G64" fx:id="g64Field"
+							GridPane.rowIndex="1" GridPane.columnIndex="4"
+							onAction="#searchG64" selected="true" />
+						<VBox GridPane.rowIndex="0" GridPane.columnIndex="5"
+							GridPane.columnSpan="4">
+							<Label text="%AGE" />
+							<ComboBox fx:id="ageField" onAction="#searchAge" />
+						</VBox>
+						<VBox GridPane.rowIndex="1" GridPane.columnIndex="5"
+							GridPane.columnSpan="4">
+							<Label text="" />
+							<CheckBox text="%SEARCH_FROM_START_OF_FIELDS"
+								fx:id="searchFromStartField" selected="true"
+								onAction="#searchFromStart" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
+							<Label text="%NAME" />
+							<TextField fx:id="nameField" onAction="#searchName"
+								promptText="%PROMPT_NAME" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+							<Label text="%GROUP" />
+							<TextField fx:id="groupField" onAction="#searchGroup" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="2"
+							GridPane.hgrow="ALWAYS">
+							<Label text="%YEAR" />
+							<ComboBox fx:id="yearField" onAction="#searchYear" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="3">
+							<Label text="%HANDLE" />
+							<TextField fx:id="handleField" onAction="#searchHandle" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="4">
+							<Label text="%EVENT" />
+							<TextField fx:id="eventField" onAction="#searchEvent" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="5"
+							GridPane.hgrow="ALWAYS">
+							<Label text="%RATING" />
+							<ComboBox fx:id="ratingField" onAction="#searchRating" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="6"
+							GridPane.hgrow="ALWAYS">
+							<Label text="%UPDATED" />
+							<TextField fx:id="updatedField" disable="true" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="7">
+							<Label text="%CATEGORY" />
+							<TextField fx:id="categoryField"
+								onAction="#searchCategory" />
+						</VBox>
+						<TableView fx:id="assembly64Table" GridPane.rowIndex="3"
+							GridPane.columnIndex="0" GridPane.columnSpan="8"
+							GridPane.vgrow="ALWAYS" GridPane.fillHeight="true">
+							<columns>
+								<TableColumn text="%NAME" fx:id="nameColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="name" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%GROUP" fx:id="groupColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="group" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%YEAR" fx:id="yearColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="year" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%HANDLE" fx:id="handleColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="handle" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%EVENT" fx:id="eventColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="event" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%RATING" fx:id="ratingColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="rating" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%UPDATED" fx:id="updatedColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="updated" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%CATEGORY" fx:id="categoryColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="category" />
+									</cellValueFactory>
+								</TableColumn>
+							</columns>
+						</TableView>
+						<Button focusTraversable="false" onAction="#prevPage"
+							fx:id="prevBtn" GridPane.rowIndex="4" GridPane.columnIndex="0">
+							<tooltip>
+								<Tooltip text="%PREV" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_prev.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+						<Button focusTraversable="false" onAction="#nextPage"
+							fx:id="nextBtn" GridPane.rowIndex="4" GridPane.columnIndex="1"
+							GridPane.columnSpan="8" GridPane.halignment="RIGHT">
+							<tooltip>
+								<Tooltip text="%NEXT" />
+							</tooltip>
+							<graphic>
+								<ImageView>
+									<image>
+										<Image url="@/ui/icons/playback_next.png" />
+									</image>
+								</ImageView>
+							</graphic>
+						</Button>
+					</children>
+				</GridPane>
+			</center>
+			<bottom>
+				<TableView fx:id="contentEntryTable">
 					<columns>
 						<TableColumn text="%FILENAME"
 							fx:id="contentEntryColumn">
@@ -205,8 +212,8 @@
 						</ContextMenu>
 					</contextMenu>
 				</TableView>
-			</children>
-		</GridPane>
+			</bottom>
+		</BorderPane>
 	</AnchorPane>
 </fx:root>
 <!-- /Scene --> 

@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -37,7 +39,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import libsidplay.common.Event;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -59,10 +64,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private static final int MAX_ROWS = 500;
 
 	@FXML
-	GridPane parent;
+	private BorderPane parent;
 
 	@FXML
-	Button prevBtn, nextBtn;
+	private GridPane searchArea;
+
+	@FXML
+	private Button prevBtn, nextBtn;
 
 	@FXML
 	private TableView<SearchResult> assembly64Table;
@@ -84,7 +92,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private TableColumn<ContentEntry, String> contentEntryColumn;
 
 	@FXML
-	private TextField nameField, groupField, handleField, eventField, categoryField;
+	private TextField nameField, groupField, handleField, eventField, updatedField, categoryField;
 
 	@FXML
 	private ComboBox<Integer> yearField, ratingField;
@@ -108,21 +116,25 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private ObservableList<ContentEntry> contentEntries;
 
+	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
+	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
+
 	private int searchOffset, searchStop;
 
 	private ObjectMapper objectMapper;
 
 	private Category[] categories;
 
-	private String id;
-
-	private Category category;
+	private SearchResult searchResult;
 
 	private Convenience convenience;
 
 	private Event searchEvent = new Event("REST-Request: Search") {
 		@Override
 		public void event() throws InterruptedException {
+			if (nameField.getText().length() < 3) {
+				return;
+			}
 			Platform.runLater(() -> {
 				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
 						"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
@@ -164,7 +176,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		public void event() throws InterruptedException {
 			Platform.runLater(() -> {
 				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/entry")
-						.path("/{id}/{category}").build(id, category.getId());
+						.path("/{id}/{category}").build(searchResult.getId(), searchResult.getCategory().getId());
 
 				Response response = null;
 				try {
@@ -196,6 +208,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
+		ColumnConstraints columnConstrained = new ColumnConstraints(Double.MIN_VALUE, 200, Double.MAX_VALUE);
+		columnConstrained.setHgrow(Priority.ALWAYS);
+		searchArea.getColumnConstraints().addAll(columnConstrained, columnConstrained, columnConstrained,
+				columnConstrained, columnConstrained, columnConstrained, columnConstrained, columnConstrained);
+
 		categories = getCategories();
 		objectMapper = createObjectMapper(categories);
 		convenience = new Convenience(util.getPlayer());
@@ -208,14 +225,20 @@ public class Assembly64 extends C64VBox implements UIPart {
 		assembly64Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
 			if (searchResult != null) {
-				listFiles(searchResult.getId(), searchResult.getCategory());
+				listFiles(searchResult);
 			}
 		});
+		currentlyPlayedRowProperty = new SimpleObjectProperty<SearchResult>();
+		Assembly64RowFactory assembly64RowFactory = new Assembly64RowFactory();
+		assembly64RowFactory.setCurrentlyPlayedRowProperty(currentlyPlayedRowProperty);
+		assembly64Table.setRowFactory(assembly64RowFactory);
+
 		contentEntries = FXCollections.<ContentEntry>observableArrayList();
 		SortedList<ContentEntry> sortedProgramEntryList = new SortedList<>(contentEntries);
 		sortedProgramEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
 		contentEntryTable.setItems(sortedProgramEntryList);
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.2));
 		contentEntryTable.setOnMousePressed(event -> {
 			final ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 			if (contentEntry != null && event.isPrimaryButtonDown() && event.getClickCount() > 1) {
@@ -230,6 +253,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 				}
 			}
 		});
+
+		currentlyPlayedContentEntryProperty = new SimpleObjectProperty<ContentEntry>();
+		ContentEntryRowFactory contentEntryRowFactory = new ContentEntryRowFactory();
+		contentEntryRowFactory.setCurrentlyPlayedContentEntryProperty(currentlyPlayedContentEntryProperty);
+		contentEntryTable.setRowFactory(contentEntryRowFactory);
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 			boolean disable = contentEntry == null || !contentEntry.getName().toLowerCase(Locale.US).endsWith(".d64");
@@ -239,9 +267,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 		nameColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		groupColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		yearColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+		yearColumn.setCellFactory(new ZeroIgnoringCellFactory());
 		handleColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		eventColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		ratingColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+		ratingColumn.setCellFactory(new ZeroIgnoringCellFactory());
 		updatedColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		categoryColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 
@@ -254,9 +284,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 				IntStream.concat(IntStream.of(0), IntStream.rangeClosed(1980, Year.now().getValue())).boxed()
 						.collect(Collectors.toList())));
 		yearField.setOnKeyReleased(event -> newSearch());
-
 		yearField.getSelectionModel().select(0);
 		yearField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+		yearField.setConverter(new ZeroContainingRatingConverter());
 
 		handleField.setOnKeyReleased(event -> newSearch());
 
@@ -267,13 +297,20 @@ public class Assembly64 extends C64VBox implements UIPart {
 				IntStream.concat(IntStream.of(0), IntStream.rangeClosed(1, 9)).boxed().collect(Collectors.toList())));
 		ratingField.getSelectionModel().select(0);
 		ratingField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+		ratingField.setConverter(new ZeroContainingRatingConverter());
 
 		categoryField.setOnKeyReleased(event -> newSearch());
+		categoryField.maxWidthProperty().bind(categoryColumn.widthProperty());
 
 		ageField.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
 		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
 		ageField.getSelectionModel().select(Age.ALL);
 		ageField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
+
+		Platform.runLater(() -> {
+			searchArea.requestLayout();
+			searchArea.layout();
+		});
 	}
 
 	@FXML
@@ -390,7 +427,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (contentEntry != null) {
 			Platform.runLater(() -> {
 				try {
-					byte[] byteArray = download(id, category, contentEntry.getId());
+					byte[] byteArray = download(searchResult.getId(), searchResult.getCategory(), contentEntry.getId());
 					if (byteArray != null) {
 						String filename = contentEntry.getName();
 						File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
@@ -402,6 +439,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 						}
 						if (convenience.autostart(tempFile, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
 							util.setPlayingTab(this);
+							currentlyPlayedRowProperty.set(searchResult);
+							currentlyPlayedContentEntryProperty.set(contentEntry);
 						}
 					}
 				} catch (IOException | SidTuneError | URISyntaxException e) {
@@ -418,7 +457,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (contentEntry != null) {
 			Platform.runLater(() -> {
 				try {
-					byte[] byteArray = download(id, category, contentEntry.getId());
+					byte[] byteArray = download(searchResult.getId(), searchResult.getCategory(), contentEntry.getId());
 					if (byteArray != null) {
 						String filename = contentEntry.getName();
 						File tempFile = File.createTempFile(PathUtils.getFilenameWithoutSuffix(filename),
@@ -453,9 +492,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void search() {
 		searchResults.clear();
-		if (nameField.getText().length() < 3) {
-			return;
-		}
 		synchronized (searchEvent) {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
@@ -464,9 +500,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private void listFiles(String id, Category category) {
-		this.id = id;
-		this.category = category;
+	private void listFiles(SearchResult searchResult) {
+		this.searchResult = searchResult;
 		contentEntries.clear();
 		synchronized (listFilesEvent) {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(listFilesEvent)) {
@@ -515,7 +550,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private String get(ComboBox<Integer> field) {
 		Integer value = field.getSelectionModel().getSelectedItem();
-		return value.intValue() != 0 ? value.toString() : "***";
+		if (value == 0) {
+			return "***";
+		}
+		return value.toString();
 	}
 
 	private int getAge(ComboBox<Age> field) {
