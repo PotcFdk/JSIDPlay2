@@ -55,8 +55,6 @@ import ui.common.NumberToStringConverter;
 import ui.common.UIPart;
 
 public class Assembly64 extends C64VBox implements UIPart {
-	private static final int KEY_DELAY = 500000;
-
 	private static final String HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 = "http://hackerswithstyle.ddns.net:8080";
 
 	public static final String ID = "ASSEMBLY64";
@@ -496,7 +494,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
 			}
-			util.getPlayer().getC64().getEventScheduler().schedule(searchEvent, KEY_DELAY);
+			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafeKeyEvent(searchEvent);
 		}
 	}
 
@@ -507,7 +505,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(listFilesEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(listFilesEvent);
 			}
-			util.getPlayer().getC64().getEventScheduler().schedule(listFilesEvent, KEY_DELAY);
+			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafeKeyEvent(listFilesEvent);
 		}
 	}
 
