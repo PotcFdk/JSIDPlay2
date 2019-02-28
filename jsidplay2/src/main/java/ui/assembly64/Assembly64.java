@@ -17,7 +17,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
@@ -37,6 +39,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -110,6 +113,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	private MenuItem attachDiskMenu;
 
+	@FXML
+	private TextArea errorMessageTextArea;
+
 	private ObservableList<SearchResult> searchResults;
 
 	private ObservableList<ContentEntry> contentEntries;
@@ -130,23 +136,20 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private Event searchEvent = new Event("REST-Request: Search") {
 		@Override
 		public void event() throws InterruptedException {
-			if (nameField.getText().length() < 3) {
-				return;
-			}
 			Platform.runLater(() -> {
 				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
 						"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
-						.queryParam("offset", searchOffset).build(getName(nameField), get(groupField), get(yearField),
+						.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
 								get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
 								getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
 								get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField),
 								get(binField), get(g64Field), "n", getAge(ageField));
 
-				Response response = null;
+				String result = null;
 				try {
 					Client client = ClientBuilder.newClient();
 					WebTarget target = client.target(uri);
-					response = target.request().get();
+					Response response = target.request().get();
 
 					Object start = response.getHeaders().getFirst("start");
 					searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
@@ -156,14 +159,19 @@ public class Assembly64 extends C64VBox implements UIPart {
 					searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
 					nextBtn.setDisable(stop == null);
 
-					String result = response.readEntity(String.class);
+					result = response.readEntity(String.class);
+
 					searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
+				} catch (JsonParseException | JsonMappingException e) {
+					try {
+						ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
+						errorMessageTextArea.setText(String.join("\n",
+								errorMessage.getStatus() + ": " + errorMessage.getError(), errorMessage.getMessage()));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
-				} finally {
-					if (response != null) {
-						response.close();
-					}
 				}
 			});
 		}
@@ -490,6 +498,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void search() {
 		searchResults.clear();
+		errorMessageTextArea.clear();
 		synchronized (searchEvent) {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
@@ -561,7 +570,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private String get(TextField field) {
 		String value = field.getText();
-		return !value.isEmpty() ? value : "***";
+		if (value.isEmpty()) {
+			return "***";
+		}
+		return value;
 	}
 
 	private String getCategory(TextField field) {
@@ -571,11 +583,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		return Arrays.asList(categories).stream().filter(category -> category.getDescription().contains(value))
 				.map(category -> String.valueOf(category.getId())).findFirst().orElse("***");
-	}
-
-	private String getName(TextField field) {
-		String value = field.getText();
-		return value.length() > 2 ? value : " ";
 	}
 
 	private String get(CheckBox field) {

@@ -6,10 +6,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.CheckBox?>
@@ -22,7 +24,6 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.geometry.Insets?>
 <?scenebuilder-preview-i18n-resource Assembly64.properties?>
-<?import javafx.scene.layout.ColumnConstraints?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
@@ -192,26 +193,31 @@
 				</GridPane>
 			</center>
 			<bottom>
-				<TableView fx:id="contentEntryTable">
-					<columns>
-						<TableColumn text="%FILENAME"
-							fx:id="contentEntryColumn">
-							<cellValueFactory>
-								<PropertyValueFactory property="name" />
-							</cellValueFactory>
-						</TableColumn>
-					</columns>
-					<contextMenu>
-						<ContextMenu fx:id="contentEntryContextMenu">
-							<items>
-								<MenuItem fx:id="startMenu" text="%START"
-									onAction="#start" />
-								<MenuItem fx:id="attachDiskMenu" text="%ATTACH_DISK"
-									onAction="#attachDisk" />
-							</items>
-						</ContextMenu>
-					</contextMenu>
-				</TableView>
+				<VBox>
+					<TableView fx:id="contentEntryTable">
+						<columns>
+							<TableColumn text="%FILENAME"
+								fx:id="contentEntryColumn">
+								<cellValueFactory>
+									<PropertyValueFactory property="name" />
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+						<contextMenu>
+							<ContextMenu fx:id="contentEntryContextMenu">
+								<items>
+									<MenuItem fx:id="startMenu" text="%START"
+										onAction="#start" />
+									<MenuItem fx:id="attachDiskMenu" text="%ATTACH_DISK"
+										onAction="#attachDisk" />
+								</items>
+							</ContextMenu>
+						</contextMenu>
+					</TableView>
+					<Label text="%STATUS" />
+					<TextArea fx:id="errorMessageTextArea" prefHeight="60"
+						editable="false" />
+				</VBox>
 			</bottom>
 		</BorderPane>
 	</AnchorPane>
