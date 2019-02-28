@@ -1024,6 +1024,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n");
 		credits.append("\tCopyright (©) 2010-2011 Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
+		credits.append("Assembly64:\n");
+		credits.append("\tCopyright (©) 2019 Fredrik Åberg\n");
+		credits.append("\thttp://hackerswithstyle.ddns.net/assembly/\n");
 		credits.append("This product uses the database of Game Base 64 (GB64)\n");
 		credits.append("\thttp://www.gb64.com/\n");
 		credits.append("Command Line Parser (JCommander):\n");
