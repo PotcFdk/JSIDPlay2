@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -46,6 +48,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.util.Duration;
 import libsidplay.common.Event;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -133,49 +136,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private Convenience convenience;
 
-	private Event searchEvent = new Event("REST-Request: Search") {
-		@Override
-		public void event() throws InterruptedException {
-			Platform.runLater(() -> {
-				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
-						"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
-						.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
-								get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
-								getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
-								get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField),
-								get(binField), get(g64Field), "n", getAge(ageField));
-
-				String result = null;
-				try {
-					Client client = ClientBuilder.newClient();
-					WebTarget target = client.target(uri);
-					Response response = target.request().get();
-
-					Object start = response.getHeaders().getFirst("start");
-					searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
-					prevBtn.setDisable(start == null || searchOffset == 0);
-
-					Object stop = response.getHeaders().getFirst("stop");
-					searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
-					nextBtn.setDisable(stop == null);
-
-					result = response.readEntity(String.class);
-
-					searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
-				} catch (JsonParseException | JsonMappingException e) {
-					try {
-						ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
-						errorMessageTextArea.setText(String.join("\n",
-								errorMessage.getStatus() + ": " + errorMessage.getError(), errorMessage.getMessage()));
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		}
-	};
+	private PauseTransition pauseTransition;
+	private SequentialTransition sequentialTransition;
 
 	private Event listFilesEvent = new Event("REST-Request: Search") {
 		@Override
@@ -300,7 +262,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		ratingField.setConverter(new NumberToStringConverter<Integer>(0));
 		ratingField.setItems(FXCollections.<Integer>observableArrayList(
-				IntStream.concat(IntStream.of(0), IntStream.rangeClosed(1, 9)).boxed().collect(Collectors.toList())));
+				IntStream.concat(IntStream.of(0), IntStream.rangeClosed(1, 10)).boxed().collect(Collectors.toList())));
 		ratingField.getSelectionModel().select(0);
 		ratingField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 		ratingField.setConverter(new ZeroContainingRatingConverter());
@@ -316,6 +278,51 @@ public class Assembly64 extends C64VBox implements UIPart {
 		Platform.runLater(() -> {
 			searchArea.requestLayout();
 			searchArea.layout();
+		});
+
+		pauseTransition = new PauseTransition(Duration.millis(1000));
+		sequentialTransition = new SequentialTransition(pauseTransition);
+		sequentialTransition.setCycleCount(1);
+		pauseTransition.setOnFinished(evt -> {
+			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
+					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
+					.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
+							get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
+							getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
+							get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField), get(binField),
+							get(g64Field), "n", getAge(ageField));
+
+			String result = null;
+			try {
+				if (uri.getPath().contains("***/***/***/***/***/***/***")) {
+					return;
+				}
+				Client client = ClientBuilder.newClient();
+				WebTarget target = client.target(uri);
+				Response response = target.request().get();
+
+				Object start = response.getHeaders().getFirst("start");
+				searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
+				prevBtn.setDisable(start == null || searchOffset == 0);
+
+				Object stop = response.getHeaders().getFirst("stop");
+				searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
+				nextBtn.setDisable(stop == null);
+
+				result = response.readEntity(String.class);
+
+				searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
+			} catch (JsonParseException | JsonMappingException e) {
+				try {
+					ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
+					errorMessageTextArea.setText(String.join("\n",
+							errorMessage.getStatus() + ": " + errorMessage.getError(), errorMessage.getMessage()));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		});
 	}
 
@@ -499,12 +506,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void search() {
 		searchResults.clear();
 		errorMessageTextArea.clear();
-		synchronized (searchEvent) {
-			if (util.getPlayer().getC64().getEventScheduler().isPending(searchEvent)) {
-				util.getPlayer().getC64().getEventScheduler().cancel(searchEvent);
-			}
-			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafeKeyEvent(searchEvent);
-		}
+		sequentialTransition.playFromStart();
 	}
 
 	private void listFiles(SearchResult searchResult) {
@@ -514,7 +516,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			if (util.getPlayer().getC64().getEventScheduler().isPending(listFilesEvent)) {
 				util.getPlayer().getC64().getEventScheduler().cancel(listFilesEvent);
 			}
-			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafeKeyEvent(listFilesEvent);
+			util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(listFilesEvent);
 		}
 	}
 
