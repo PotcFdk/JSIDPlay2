@@ -81,8 +81,7 @@
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
 							<Label text="%NAME" />
-							<TextField fx:id="nameField" onAction="#searchName"
-								promptText="%PROMPT_NAME" />
+							<TextField fx:id="nameField" onAction="#searchName" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
 							<Label text="%GROUP" />
