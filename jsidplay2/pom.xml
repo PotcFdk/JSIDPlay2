@@ -53,7 +53,25 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
+	<profiles>
+		<profile>
+			<id>development</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>release</id>
+			<properties>
+				<maven.test.skip>false</maven.test.skip>
+			</properties>
+		</profile>
+	</profiles>
+    
+    <dependencies>
 		<!-- compile time dependencies -->
 		<dependency>
 			<groupId>jsidplay2</groupId>

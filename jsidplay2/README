@@ -9,6 +9,10 @@ mvn clean deploy
 does mvn clean install
 and uploads target/deploy to web-server
 
+mvn clean deploy and run UI-tests
+=================================
+mvn clean install -P release
+
 Set the following optional properties in Eclipse:
 Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 
