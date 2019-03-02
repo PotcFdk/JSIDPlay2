@@ -68,8 +68,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	@FXML
 	private FilterGauge filterMono, filterStereo, filter3Sid;
 
-	private PauseTransition pt;
-	private SequentialTransition st;
+	private PauseTransition pauseTransition;
+	private SequentialTransition sequentialTransition;
 
 	protected HighResolutionEvent highResolutionEvent;
 
@@ -84,8 +84,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
-		pt = new PauseTransition(Duration.millis(50));
-		st = new SequentialTransition(pt);
+		pauseTransition = new PauseTransition(Duration.millis(50));
+		sequentialTransition = new SequentialTransition(pauseTransition);
 		highResolutionEvent = new HighResolutionEvent();
 		listener = event -> {
 			final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
@@ -141,16 +141,16 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
-		pt.setOnFinished(evt -> {
+		pauseTransition.setOnFinished(evt -> {
 			util.getPlayer().getC64()
 					.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid)));
 		});
-		st.setCycleCount(Timeline.INDEFINITE);
-		st.playFromStart();
+		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
+		sequentialTransition.playFromStart();
 	}
 
 	private void stopOscilloscope() {
-		st.stop();
+		sequentialTransition.stop();
 	}
 
 	@Override

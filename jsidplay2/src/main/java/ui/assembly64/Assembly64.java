@@ -61,8 +61,6 @@ import ui.common.NumberToStringConverter;
 import ui.common.UIPart;
 
 public class Assembly64 extends C64VBox implements UIPart {
-	private static final String HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 = "http://hackerswithstyle.ddns.net:8080";
-
 	public static final String ID = "ASSEMBLY64";
 
 	private static final int MAX_ROWS = 500;
@@ -143,8 +141,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 		@Override
 		public void event() throws InterruptedException {
 			Platform.runLater(() -> {
-				URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/entry")
-						.path("/{id}/{category}").build(searchResult.getId(), searchResult.getCategory().getId());
+				String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+				URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
+						.build(searchResult.getId(), searchResult.getCategory().getId());
 
 				Response response = null;
 				try {
@@ -284,7 +283,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		sequentialTransition.setCycleCount(1);
 		pauseTransition.setOnFinished(evt -> {
-			URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/find2").path(
+			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/find2").path(
 					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
 					.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
 							get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
@@ -324,6 +324,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	@Override
+	public void doClose() {
+		sequentialTransition.stop();
 	}
 
 	@FXML
@@ -521,8 +526,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private byte[] download(String id, Category category, String contentEntryId) {
-		URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/u64/binary")
-				.path("/{id}/{category}/{contentEntryId}").build(id, category.getId(), contentEntryId);
+		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{category}/{contentEntryId}")
+				.build(id, category.getId(), contentEntryId);
 
 		Response response = null;
 		try {
@@ -538,7 +544,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private Category[] getCategories() {
-		URI uri = UriBuilder.fromPath(HTTP_HACKERSWITHSTYLE_DDNS_NET_8080 + "/leet/search2/categories").build();
+		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/categories").build();
 
 		Response response = null;
 		try {

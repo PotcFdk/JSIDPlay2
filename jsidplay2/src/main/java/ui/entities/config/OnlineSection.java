@@ -5,7 +5,8 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class OnlineSection {
 
-	private static final double DEF_ZOOM = 1.5;
+	private static final double DEFAULT_ZOOM = 1.5;
+	public static final String DEFAULT_ASSEMBLY64_URL = "http://hackerswithstyle.ddns.net:8080";
 
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
@@ -175,7 +176,7 @@ public class OnlineSection {
 		this.gb64GamesUrl = gb64GamesUrl;
 	}
 	
-	private double zoom = DEF_ZOOM;
+	private double zoom = DEFAULT_ZOOM;
 
 	public double getZoom() {
 		return zoom;
@@ -184,4 +185,15 @@ public class OnlineSection {
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
 	}
+	
+	private String assembly64Url = DEFAULT_ASSEMBLY64_URL;
+	
+	public String getAssembly64Url() {
+		return assembly64Url;
+	}
+	
+	public void setAssembly64Url(String assembly64Url) {
+		this.assembly64Url = assembly64Url;
+	}
+	
 }
