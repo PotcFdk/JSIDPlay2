@@ -65,7 +65,7 @@
 				</VBox>
 				<VBox>
 					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
-					<ProgressBar fx:id="progress" progress="0"/>
+					<ProgressBar fx:id="progress" progress="0" prefWidth="120"/>
 				</VBox>
 			</HBox>
 		</AnchorPane>
@@ -271,7 +271,7 @@
 				</VBox>
 				<VBox>
 					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-					<TextField fx:id="defaultTime" maxWidth="60">
+					<TextField fx:id="defaultTime" maxWidth="85">
 						<tooltip>
 							<Tooltip text="%DEFAULT_LENGTH_TIP" />
 						</tooltip>
