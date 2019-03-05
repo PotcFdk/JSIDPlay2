@@ -134,6 +134,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private Convenience convenience;
 
+	private boolean autostart;
+
 	private PauseTransition pauseTransition;
 	private SequentialTransition sequentialTransition;
 
@@ -154,6 +156,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 					ProgramSearchResult contentEntry = (ProgramSearchResult) objectMapper.readValue(result,
 							ProgramSearchResult.class);
 					contentEntries.setAll(contentEntry.getContentEntry());
+					if (autostart) {
+						autostart = false;
+						contentEntryTable.getSelectionModel().select(contentEntries.stream().findFirst().orElse(null));
+						start();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
@@ -189,10 +196,20 @@ public class Assembly64 extends C64VBox implements UIPart {
 		sortedList.comparatorProperty().bind(assembly64Table.comparatorProperty());
 		assembly64Table.setItems(sortedList);
 		assembly64Table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		assembly64Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+		assembly64Table.setOnMousePressed(event -> {
 			final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
 			if (searchResult != null) {
 				listFiles(searchResult);
+			}
+			autostart = event.isPrimaryButtonDown() && event.getClickCount() > 1;
+		});
+		assembly64Table.setOnKeyPressed(event -> {
+			if (event.getCode() == KeyCode.ENTER) {
+				final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
+				if (searchResult != null) {
+					listFiles(searchResult);
+				}
+				autostart = true;
 			}
 		});
 		currentlyPlayedRowProperty = new SimpleObjectProperty<SearchResult>();
