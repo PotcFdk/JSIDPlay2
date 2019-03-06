@@ -212,6 +212,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 				autostart = true;
 			}
 		});
+		assembly64Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
+			if (searchResult != null) {
+				listFiles(searchResult);
+			}
+		});
 		currentlyPlayedRowProperty = new SimpleObjectProperty<SearchResult>();
 		Assembly64RowFactory assembly64RowFactory = new Assembly64RowFactory();
 		assembly64RowFactory.setCurrentlyPlayedRowProperty(currentlyPlayedRowProperty);
