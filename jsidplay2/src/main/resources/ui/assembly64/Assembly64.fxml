@@ -46,7 +46,7 @@
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
 			AnchorPane.topAnchor="10">
 			<center>
-				<GridPane fx:id="searchArea" vgap="1">
+				<GridPane vgap="1">
 					<columnConstraints>
 						<fx:reference source="equalColumnWidth" />
 						<fx:reference source="equalColumnWidth" />

@@ -2,12 +2,12 @@ package ui.assembly64;
 
 import java.util.List;
 
-public class ProgramSearchResult {
+public class ContentEntrySearchResult {
 
 	private List<ContentEntry> contentEntry;
 	private Boolean isContentByItself;
 
-	public ProgramSearchResult() {
+	public ContentEntrySearchResult() {
 	}
 
 	public List<ContentEntry> getContentEntry() {

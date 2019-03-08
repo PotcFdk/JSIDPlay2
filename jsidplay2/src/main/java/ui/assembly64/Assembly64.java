@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Year;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -39,7 +38,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -48,7 +46,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
@@ -57,6 +54,7 @@ import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
 import ui.common.UIPart;
+import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 	public static final String ID = "ASSEMBLY64";
@@ -65,37 +63,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private BorderPane parent;
-
-	@FXML
-	private GridPane searchArea;
-
-	@FXML
-	private Button prevBtn, nextBtn;
-
-	@FXML
-	private TableView<SearchResult> assembly64Table;
-
-	@FXML
-	private TableView<ContentEntry> contentEntryTable;
-
-	@FXML
-	private Menu programMenu;
-
-	@FXML
-	private TableColumn<SearchResult, String> nameColumn, groupColumn, yearColumn, handleColumn, eventColumn,
-			ratingColumn, updatedColumn;
-
-	@FXML
-	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
-
-	@FXML
-	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
-
-	@FXML
-	private TableColumn<SearchResult, Category> categoryColumn;
-
-	@FXML
-	private TableColumn<ContentEntry, String> contentEntryColumn;
 
 	@FXML
 	private TextField nameField, groupField, handleField, eventField, updatedField, categoryField;
@@ -111,6 +78,31 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private CheckBox d64Field, t64Field, d81Field, d71Field, prgField, tapField, crtField, sidField, binField, g64Field;
+
+	@FXML
+	private TableView<SearchResult> assembly64Table;
+
+	@FXML
+	private TableView<ContentEntry> contentEntryTable;
+
+	@FXML
+	private TableColumn<SearchResult, String> nameColumn, groupColumn, yearColumn, handleColumn, eventColumn,
+			ratingColumn, updatedColumn;
+
+	@FXML
+	private TableColumn<SearchResult, Category> categoryColumn;
+
+	@FXML
+	private TableColumn<ContentEntry, String> contentEntryColumn;
+
+	@FXML
+	private Button prevBtn, nextBtn;
+
+	@FXML
+	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
+
+	@FXML
+	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
 
 	@FXML
 	private ContextMenu contentEntryContextMenu;
@@ -136,6 +128,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private AtomicBoolean autostart;
 
+	private DiskFileFilter diskFileFilter;
+
 	private PauseTransition pauseTransition, pauseTransitionContentEntry;
 	private SequentialTransition sequentialTransition, sequentialTransitionContentEntry;
 
@@ -151,6 +145,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	protected void initialize() {
 		autostart = new AtomicBoolean();
 		convenience = new Convenience(util.getPlayer());
+		diskFileFilter = new DiskFileFilter();
 
 		categories = requestCategories();
 		objectMapper = createObjectMapper();
@@ -174,8 +169,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-			attachDiskMenu.setDisable(
-					contentEntry == null || !contentEntry.getName().toLowerCase(Locale.US).endsWith(".d64"));
+			attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
 		});
 
 		yearField.setItems(FXCollections.<Integer>observableArrayList(
@@ -365,7 +359,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (optionalContentEntry.isPresent()) {
 			ContentEntry contentEntry = optionalContentEntry.get();
 			try {
-				File file = requestContentEntry(searchResult, contentEntry);
+				File file = requestContentEntry(contentEntry);
 				if (convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
 					util.setPlayingTab(this);
 					currentlyPlayedRowProperty.set(searchResult);
@@ -384,7 +378,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (optionalContentEntry.isPresent()) {
 			ContentEntry contentEntry = optionalContentEntry.get();
 			try {
-				File file = requestContentEntry(searchResult, contentEntry);
+				File file = requestContentEntry(contentEntry);
 				util.getPlayer().insertDisk(file);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
@@ -471,8 +465,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			ProgramSearchResult contentEntry = (ProgramSearchResult) objectMapper
-					.readValue(response.readEntity(String.class), ProgramSearchResult.class);
+			ContentEntrySearchResult contentEntry = (ContentEntrySearchResult) objectMapper
+					.readValue(response.readEntity(String.class), ContentEntrySearchResult.class);
 			contentEntries.setAll(contentEntry.getContentEntry());
 			if (autostart.getAndSet(false)) {
 				contentEntryTable.getSelectionModel().select(contentEntries.stream().findFirst().orElse(null));
@@ -483,8 +477,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private File requestContentEntry(SearchResult searchResult, ContentEntry contentEntry)
-			throws FileNotFoundException, IOException {
+	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{category}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
