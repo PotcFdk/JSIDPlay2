@@ -11,6 +11,10 @@ public class ContentEntryRowFactory implements Callback<TableView<ContentEntry>,
 
 	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
 
+	public ObjectProperty<ContentEntry> getCurrentlyPlayedContentEntryProperty() {
+		return currentlyPlayedContentEntryProperty;
+	}
+	
 	public void setCurrentlyPlayedContentEntryProperty(ObjectProperty<ContentEntry> currentlyPlayedHVSCEntryProperty) {
 		this.currentlyPlayedContentEntryProperty = currentlyPlayedHVSCEntryProperty;
 	}

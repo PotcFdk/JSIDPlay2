@@ -11,6 +11,10 @@ public class Assembly64RowFactory implements Callback<TableView<SearchResult>, T
 
 	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
 
+	public ObjectProperty<SearchResult> getCurrentlyPlayedRowProperty() {
+		return currentlyPlayedRowProperty;
+	}
+	
 	public void setCurrentlyPlayedRowProperty(ObjectProperty<SearchResult> currentlyPlayedRowProperty) {
 		this.currentlyPlayedRowProperty = currentlyPlayedRowProperty;
 	}

@@ -274,11 +274,11 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	private void closeClip(Clip clip) {
-		if (clip.isActive()) {
-			clip.stop();
-			clip.flush();
-		}
 		if (clip.isOpen()) {
+			if (clip.isActive()) {
+				clip.stop();
+				clip.flush();
+			}
 			clip.close();
 		}
 	}
