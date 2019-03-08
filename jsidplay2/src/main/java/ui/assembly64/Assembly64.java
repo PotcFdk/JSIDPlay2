@@ -236,6 +236,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@Override
 	public void doClose() {
 		sequentialTransition.stop();
+		sequentialTransitionContentEntry.stop();
 	}
 
 	@FXML
