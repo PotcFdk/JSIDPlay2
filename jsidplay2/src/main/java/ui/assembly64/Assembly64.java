@@ -334,6 +334,18 @@ public class Assembly64 extends C64VBox implements UIPart {
 		newSearch();
 	}
 
+	private void newSearch() {
+		searchOffset = 0;
+		search();
+	}
+
+	private void search() {
+		searchResults.clear();
+		contentEntries.clear();
+		errorMessageTextArea.clear();
+		sequentialTransition.playFromStart();
+	}
+
 	@FXML
 	private void prevPage() {
 		searchOffset -= MAX_ROWS;
@@ -494,24 +506,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private void newSearch() {
-		searchOffset = 0;
-		search();
-	}
-
-	private void search() {
-		searchResults.clear();
-		contentEntries.clear();
-		errorMessageTextArea.clear();
-		sequentialTransition.playFromStart();
-	}
-
 	private String get(ComboBox<Integer> field) {
 		Integer value = field.getSelectionModel().getSelectedItem();
 		if (value == 0) {
 			return "***";
 		}
-		return value.toString();
+		return String.valueOf(value);
 	}
 
 	private int getAge(ComboBox<Age> field) {
