@@ -11,6 +11,13 @@ import java.util.Locale;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
+/**
+ * Makes use of the Ultimate64 (FPGA-C64) debug interface to use JSIDPlay2 and
+ * Ultimate64 simultaneously.
+ * 
+ * @author ken
+ *
+ */
 public interface Ultimate64 {
 
 	/**
@@ -25,6 +32,13 @@ public interface Ultimate64 {
 
 	Charset US_ASCII = Charset.forName("US-ASCII");
 
+	/**
+	 * Insert D64 image into Ultimate64 floppy disk drive.
+	 * 
+	 * @param config configuration
+	 * @param file   d64 file
+	 * @throws IOException I/O error
+	 */
 	default void sendInsertDisk(IConfig config, final File file) throws IOException {
 		RandomAccessFile fd = new RandomAccessFile(file, file.canWrite() ? "rw" : "r");
 		// Try to detect image type
@@ -48,6 +62,18 @@ public interface Ultimate64 {
 		}
 	}
 
+	/**
+	 * Send RAM to Ultimate64 C64-RAM and start machine code.<BR>
+	 * 
+	 * <B>Note:</B> whole RAM is currently transfered, no matter how long the
+	 * program is.
+	 * 
+	 * @param config    configuration
+	 * @param tune      tune to play
+	 * @param c64Ram    C64 emulator RAM
+	 * @param startAddr start address of machine code to execute
+	 * @throws InterruptedException
+	 */
 	default void sendRamAndSys(IConfig config, SidTune tune, byte[] c64Ram, int startAddr) throws InterruptedException {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
@@ -74,6 +100,17 @@ public interface Ultimate64 {
 		Thread.sleep(syncDelay);
 	}
 
+	/**
+	 * Send RAM to Ultimate64 C64-RAM and type Run.<BR>
+	 * 
+	 * <B>Note:</B> whole RAM is currently transfered, no matter how long the
+	 * program is.
+	 * 
+	 * @param config configuration
+	 * @param tune   tune to play
+	 * @param c64Ram C64 emulator RAM
+	 * @throws InterruptedException
+	 */
 	default void sendRamAndRun(IConfig config, SidTune tune, byte[] c64Ram) throws InterruptedException {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
@@ -98,6 +135,18 @@ public interface Ultimate64 {
 		Thread.sleep(syncDelay);
 	}
 
+	/**
+	 * Send a keyboard command, as if a user pressed these keys.<BR>
+	 * 
+	 * <B>Note:</B> command length is limited to max. 16 characters. You can
+	 * simulate a return press by sending carriage return (e.g.
+	 * "LOAD\"*\",8,1\rRUN\r"). Sending special characters or pressing additional
+	 * keys like shift is not supported.
+	 * 
+	 * @param config  configuration
+	 * @param command command to send
+	 * @throws InterruptedException
+	 */
 	default void sendCommand(IConfig config, String command) throws InterruptedException {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
