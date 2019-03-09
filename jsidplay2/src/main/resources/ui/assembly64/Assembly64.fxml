@@ -38,8 +38,9 @@
 			fx:id="currentlyPlayedRowProperty" />
 		<SimpleObjectProperty
 			fx:id="currentlyPlayedContentEntryProperty" />
-		<ColumnConstraints fx:id="equalColumnWidth" minWidth="-Infinity"
-			prefWidth="200" maxWidth="Infinity" hgrow="ALWAYS" />
+		<ColumnConstraints fx:id="equalColumnWidth"
+			minWidth="-Infinity" prefWidth="200" maxWidth="Infinity"
+			hgrow="ALWAYS" />
 	</fx:define>
 	<AnchorPane VBox.vgrow="ALWAYS">
 		<BorderPane fx:id="parent" AnchorPane.bottomAnchor="10"
@@ -96,9 +97,8 @@
 						<VBox GridPane.rowIndex="1" GridPane.columnIndex="5"
 							GridPane.columnSpan="4">
 							<Label text="" />
-							<CheckBox text="%SEARCH_FROM_START_OF_FIELDS"
-								fx:id="searchFromStartField" selected="true"
-								onAction="#searchFromStart" />
+							<CheckBox text="%SEARCH_FROM_START"
+								fx:id="searchFromStartField" onAction="#searchFromStart" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
 							<Label text="%NAME" />
@@ -133,7 +133,7 @@
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="7">
 							<Label text="%CATEGORY" />
-							<TextField fx:id="categoryField"
+							<ComboBox fx:id="categoryField"
 								onAction="#searchCategory" />
 						</VBox>
 						<TableView fx:id="assembly64Table" GridPane.rowIndex="3"

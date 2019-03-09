@@ -7,6 +7,13 @@ import javafx.beans.property.StringProperty;
 
 public class Category {
 
+	public static final Category ALL = new Category() {
+		@Override
+		public Integer getId() {
+			return Integer.valueOf(-1);
+		}
+	};
+
 	private IntegerProperty idProperty = new SimpleIntegerProperty();
 	private StringProperty nameProperty = new SimpleStringProperty();
 	private StringProperty typeProperty = new SimpleStringProperty();

@@ -1,7 +1,6 @@
 package ui.assembly64;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -13,16 +12,15 @@ public class CategoryDeserializer extends JsonDeserializer<Category> {
 
 	private List<Category> categories;
 
-	public CategoryDeserializer(Category[] categories) {
-		this.categories = Arrays.asList(categories);
+	public CategoryDeserializer(List<Category> categories) {
+		this.categories = categories;
 	}
 
 	@Override
 	public Category deserialize(JsonParser parser, DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
-		final int categoryId = parser.getValueAsInt();
-		return categories.stream().filter(category -> category != null && category.getId().intValue() == categoryId)
-				.findFirst().orElse(null);
+		Integer categoryId = Integer.valueOf(parser.getValueAsInt());
+		return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().orElse(null);
 	}
 
 }

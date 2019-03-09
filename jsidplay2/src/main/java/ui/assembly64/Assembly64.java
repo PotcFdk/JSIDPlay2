@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Year;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -20,9 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
@@ -65,10 +65,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private BorderPane parent;
 
 	@FXML
-	private TextField nameField, groupField, handleField, eventField, updatedField, categoryField;
+	private TextField nameField, groupField, handleField, eventField, updatedField;
 
 	@FXML
 	private ComboBox<Integer> yearField, ratingField;
+
+	@FXML
+	private ComboBox<Category> categoryField;
 
 	@FXML
 	private ComboBox<Age> ageField;
@@ -120,7 +123,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private int searchOffset, searchStop;
 
-	private Category[] categories;
+	private List<Category> categories;
 
 	private SearchResult searchResult;
 
@@ -186,12 +189,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
 		ageField.getSelectionModel().select(Age.ALL);
 
+		categoryField.setConverter(new CategoryToStringConverter<Category>());
+		categoryField.setItems(FXCollections.<Category>observableArrayList(categories));
+		categoryField.getSelectionModel().select(Category.ALL);
+
 		nameField.setOnKeyReleased(event -> newSearch());
 		groupField.setOnKeyReleased(event -> newSearch());
 		yearField.setOnKeyReleased(event -> newSearch());
 		handleField.setOnKeyReleased(event -> newSearch());
 		eventField.setOnKeyReleased(event -> newSearch());
-		categoryField.setOnKeyReleased(event -> newSearch());
 
 		Platform.runLater(() -> {
 			yearField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
@@ -395,16 +401,18 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return objectMapper;
 	}
 
-	private Category[] requestCategories() {
+	private List<Category> requestCategories() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/categories").build();
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			String result = response.readEntity(String.class);
-			return (Category[]) new ObjectMapper().readValue(result, Category[].class);
+			List<Category> asList = Arrays.asList((Category[]) new ObjectMapper().readValue(result, Category[].class));
+			asList.set(0, Category.ALL);
+			return asList;
 		} catch (IOException e) {
-			e.printStackTrace();
-			return new Category[0];
+			errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
+			return Collections.emptyList();
 		}
 	}
 
@@ -414,9 +422,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
 				.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
 						get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
-						getSearchFromStart(searchFromStartField), get(d64Field), get(t64Field), get(d71Field),
-						get(d81Field), get(prgField), get(tapField), get(crtField), get(sidField), get(binField),
-						get(g64Field), "n", getAge(ageField));
+						get(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
+						get(prgField), get(tapField), get(crtField), get(sidField), get(binField), get(g64Field), "n",
+						getAge(ageField));
 
 		if (uri.getPath().contains("***/***/***/***/***/***/***")) {
 			return;
@@ -426,24 +434,22 @@ public class Assembly64 extends C64VBox implements UIPart {
 			result = response.readEntity(String.class);
 
 			Object start = response.getHeaderString("start");
-			searchOffset = start != null ? Integer.parseInt(start.toString()) : 0;
+			searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
 			prevBtn.setDisable(start == null || searchOffset == 0);
 
 			Object stop = response.getHeaderString("stop");
-			searchStop = stop != null ? Integer.parseInt(stop.toString()) : searchOffset + MAX_ROWS;
+			searchStop = stop != null ? Integer.parseInt(String.valueOf(stop)) : searchOffset + MAX_ROWS;
 			nextBtn.setDisable(stop == null);
 
 			searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
-		} catch (JsonParseException | JsonMappingException e) {
+		} catch (IOException e) {
 			try {
 				ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
 				errorMessageTextArea.setText(String.join("\n",
 						errorMessage.getStatus() + ": " + errorMessage.getError(), errorMessage.getMessage()));
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -473,7 +479,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 				autostart();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
 		}
 	}
 
@@ -499,6 +505,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
+	private String getCategory(ComboBox<Category> field) {
+		Category category = field.getValue();
+		if (category.equals(Category.ALL)) {
+			return "***";
+		}
+		return String.valueOf(category.getId());
+	}
+
 	private String get(ComboBox<Integer> field) {
 		Integer value = field.getSelectionModel().getSelectedItem();
 		if (value == 0) {
@@ -520,21 +534,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return value;
 	}
 
-	private String getCategory(TextField field) {
-		String value = field.getText().trim();
-		if (value.isEmpty()) {
-			return "***";
-		}
-		return Arrays.asList(categories).stream().filter(category -> category.getDescription().contains(value))
-				.map(category -> String.valueOf(category.getId())).findFirst().orElse("***");
-	}
-
 	private String get(CheckBox field) {
 		return field.isSelected() ? "Y" : "N";
-	}
-
-	private String getSearchFromStart(CheckBox field) {
-		return field.isSelected() ? "n" : "y";
 	}
 
 }
