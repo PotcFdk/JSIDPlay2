@@ -1,8 +1,16 @@
 package ui.assembly64;
 
+import java.util.ResourceBundle;
+
 import javafx.util.StringConverter;
 
 public class ZeroContainingRatingConverter extends StringConverter<Integer> {
+
+	private ResourceBundle bundle;
+
+	public ZeroContainingRatingConverter(ResourceBundle bundle) {
+		this.bundle = bundle;
+	}
 
 	@Override
 	public Integer fromString(String rating) {
@@ -12,7 +20,7 @@ public class ZeroContainingRatingConverter extends StringConverter<Integer> {
 	@Override
 	public String toString(Integer rating) {
 		if (rating == 0) {
-			return "All Content";
+			return bundle.getString("ALL_CONTENT");
 		}
 		return String.valueOf(rating);
 	}

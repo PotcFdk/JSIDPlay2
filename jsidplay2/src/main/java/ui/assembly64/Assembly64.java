@@ -178,18 +178,18 @@ public class Assembly64 extends C64VBox implements UIPart {
 		yearField.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
 		yearField.getSelectionModel().select(0);
-		yearField.setConverter(new ZeroContainingRatingConverter());
+		yearField.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
 
 		ratingField.setItems(FXCollections
 				.<Integer>observableArrayList(concat(of(0), rangeClosed(1, 10)).boxed().collect(Collectors.toList())));
 		ratingField.getSelectionModel().select(0);
-		ratingField.setConverter(new ZeroContainingRatingConverter());
+		ratingField.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
 
 		ageField.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
 		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
 		ageField.getSelectionModel().select(Age.ALL);
 
-		categoryField.setConverter(new CategoryToStringConverter<Category>());
+		categoryField.setConverter(new CategoryToStringConverter<Category>(util.getBundle()));
 		categoryField.setItems(FXCollections.<Category>observableArrayList(categories));
 		categoryField.getSelectionModel().select(Category.ALL);
 

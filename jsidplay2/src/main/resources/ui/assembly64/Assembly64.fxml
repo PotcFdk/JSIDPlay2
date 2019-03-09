@@ -126,15 +126,15 @@
 							<Label text="%RATING" />
 							<ComboBox fx:id="ratingField" onAction="#searchRating" />
 						</VBox>
-						<VBox GridPane.rowIndex="2" GridPane.columnIndex="6"
-							GridPane.hgrow="ALWAYS">
-							<Label text="%UPDATED" />
-							<TextField fx:id="updatedField" disable="true" />
-						</VBox>
-						<VBox GridPane.rowIndex="2" GridPane.columnIndex="7">
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="6">
 							<Label text="%CATEGORY" />
 							<ComboBox fx:id="categoryField"
 								onAction="#searchCategory" />
+						</VBox>
+						<VBox GridPane.rowIndex="2" GridPane.columnIndex="7"
+							GridPane.hgrow="ALWAYS">
+							<Label text="%UPDATED" />
+							<TextField fx:id="updatedField" disable="true" />
 						</VBox>
 						<TableView fx:id="assembly64Table" GridPane.rowIndex="3"
 							GridPane.columnIndex="0" GridPane.columnSpan="8"
@@ -183,14 +183,14 @@
 										<ZeroIgnoringCellFactory />
 									</cellFactory>
 								</TableColumn>
-								<TableColumn text="%UPDATED" fx:id="updatedColumn">
-									<cellValueFactory>
-										<PropertyValueFactory property="updated" />
-									</cellValueFactory>
-								</TableColumn>
 								<TableColumn text="%CATEGORY" fx:id="categoryColumn">
 									<cellValueFactory>
 										<PropertyValueFactory property="category" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="%UPDATED" fx:id="updatedColumn">
+									<cellValueFactory>
+										<PropertyValueFactory property="updated" />
 									</cellValueFactory>
 								</TableColumn>
 							</columns>
