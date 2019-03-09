@@ -373,7 +373,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 					currentlyPlayedContentEntryProperty.set(contentEntry);
 				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
 			}
 		}
 	}
@@ -494,7 +494,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), contentEntry.getName());
+			// name without embedded sub-folder (sid/name.sid -> name.sid):
+			String name = new File(contentEntry.getName()).getName();
+			File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
 			tempFile.deleteOnExit();
 			try (FileOutputStream fos = new FileOutputStream(tempFile)) {
 				fos.write(response.readEntity(byte[].class));

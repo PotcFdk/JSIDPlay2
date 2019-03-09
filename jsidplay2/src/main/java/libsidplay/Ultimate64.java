@@ -2,10 +2,10 @@ package libsidplay;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import libsidplay.config.IConfig;
@@ -40,11 +40,7 @@ public interface Ultimate64 {
 	 * @throws IOException I/O error
 	 */
 	default void sendInsertDisk(IConfig config, final File file) throws IOException {
-		RandomAccessFile fd = new RandomAccessFile(file, file.canWrite() ? "rw" : "r");
-		// Try to detect image type
-		final byte diskContents[] = new byte[(int) file.length()];
-		fd.readFully(diskContents, 0, diskContents.length);
-		fd.close();
+		byte diskContents[] = Files.readAllBytes(file.toPath());
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
@@ -58,7 +54,7 @@ public interface Ultimate64 {
 			System.arraycopy(diskContents, 0, ram, 5, diskContents.length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
+			System.err.println("Ultimate64: cannot insert disk: " + e.getMessage());
 		}
 	}
 
@@ -131,7 +127,6 @@ public interface Ultimate64 {
 		} catch (IOException e) {
 			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
 		}
-		Thread.sleep(SidTune.getInitDelay(tune) / 1000);
 		Thread.sleep(syncDelay);
 	}
 
@@ -161,7 +156,7 @@ public interface Ultimate64 {
 			System.arraycopy(command.toUpperCase(Locale.US).getBytes(US_ASCII), 0, ram, 4, length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send command: " + e.getMessage());
 		}
 	}
 }
