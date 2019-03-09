@@ -3,6 +3,7 @@ package ui.virtualKeyboard;
 import java.util.HashSet;
 import java.util.Set;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
@@ -17,12 +18,12 @@ public class Keyboard extends C64Window {
 
 	@FXML
 	private ToggleButton shiftLocked;
-	
+
 	private final Set<KeyTableEntry> keysPressed = new HashSet<KeyTableEntry>();
-	
+
 	public Keyboard() {
 	}
-	
+
 	public Keyboard(Player player) {
 		super(player);
 	}
@@ -59,6 +60,16 @@ public class Keyboard extends C64Window {
 	private void keyReleased(MouseEvent mouseEvent) {
 		ToggleButton button = (ToggleButton) mouseEvent.getSource();
 		KeyTableEntry keyTableEntry = Enum.valueOf(KeyTableEntry.class, button.getUserData().toString());
+
+		if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
+			Platform.runLater(() -> {
+				try {
+					util.getPlayer().sendCommand(util.getConfig(), String.valueOf(button.getUserData().toString()));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			});
+		}
 
 		if (!shiftLocked.equals(button) && mouseEvent.getButton() == MouseButton.PRIMARY) {
 			button.setSelected(false);

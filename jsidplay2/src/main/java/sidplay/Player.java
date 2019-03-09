@@ -22,8 +22,6 @@ import static sidplay.player.State.START;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -136,11 +134,6 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * Software reset routine start address.
 	 */
 	private static final int ADDR_RESET = 0xfce2;
-
-	/**
-	 * Ultimate64 socket connection timeout.
-	 */
-	private static final int SOCKET_CONNECT_TIMEOUT = 5000;
 
 	/**
 	 * Music player state.
@@ -411,54 +404,6 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 		}
 	}
 
-	public void sendRamAndSys(int startAddr) throws InterruptedException {
-		String hostname = config.getEmulationSection().getUltimate64Host();
-		int port = config.getEmulationSection().getUltimate64Port();
-		int syncDelay = config.getEmulationSection().getUltimate64SyncDelay();
-		try (Socket connectedSocket = new Socket()) {
-			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			int ramStart = 0x0400;
-			int ramEnd = 0x10000;
-			byte[] ram = new byte[ramEnd - ramStart + 8];
-			ram[0] = (byte) 0x09;
-			ram[1] = (byte) 0xff;
-			ram[2] = (byte) (ram.length & 0xff);
-			ram[3] = (byte) ((ram.length >> 8) & 0xff);
-			ram[4] = (byte) (startAddr & 0xff);
-			ram[5] = (byte) ((startAddr >> 8) & 0xff);
-			ram[6] = (byte) (ramStart & 0xff);
-			ram[7] = (byte) ((ramStart >> 8) & 0xff);
-			System.arraycopy(c64.getRAM(), ramStart, ram, 8, ramEnd - ramStart);
-			connectedSocket.getOutputStream().write(ram);
-		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
-		}
-		Thread.sleep(syncDelay);
-	}
-
-	public void sendRamAndRun() throws InterruptedException {
-		String hostname = config.getEmulationSection().getUltimate64Host();
-		int port = config.getEmulationSection().getUltimate64Port();
-		int syncDelay = config.getEmulationSection().getUltimate64SyncDelay();
-		try (Socket connectedSocket = new Socket()) {
-			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			int ramStart = 0x0800;
-			int ramEnd = 0x10000;
-			byte[] ram = new byte[ramEnd - ramStart + 6];
-			ram[0] = (byte) 0x02;
-			ram[1] = (byte) 0xff;
-			ram[2] = (byte) (ram.length & 0xff);
-			ram[3] = (byte) ((ram.length >> 8) & 0xff);
-			ram[4] = (byte) (ramStart & 0xff);
-			ram[5] = (byte) ((ramStart >> 8) & 0xff);
-			System.arraycopy(c64.getRAM(), ramStart, ram, 6, ramEnd - ramStart);
-			connectedSocket.getOutputStream().write(ram);
-		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
-		}
-		Thread.sleep(syncDelay);
-	}
-
 	/**
 	 * Power-on C64 system.
 	 */
@@ -477,7 +422,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 						// Start SID player driver
 						c64.getCPU().forcedJump(driverAddress);
 						if (config.getEmulationSection().isEnableUltimate64()) {
-							sendRamAndSys(driverAddress);
+							sendRamAndSys(config, tune, c64.getRAM(), driverAddress);
 						}
 					} else {
 						// No player: Start basic program or assembler code
@@ -485,15 +430,15 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
 						if (config.getEmulationSection().isEnableUltimate64()) {
 							if (loadAddr == 0x0801) {
-								sendRamAndRun();
+								sendRamAndRun(config, tune, c64.getRAM());
 							} else {
-								sendRamAndSys(loadAddr);
+								sendRamAndSys(config, tune, c64.getRAM(), loadAddr);
 							}
 						}
 					}
 				} else {
 					if (config.getEmulationSection().isEnableUltimate64()) {
-						sendRamAndSys(ADDR_RESET);
+						sendRamAndSys(config, tune, c64.getRAM(), ADDR_RESET);
 					}
 				}
 				if (command != null) {
@@ -503,6 +448,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 					}
 					// Enter basic command
 					typeInCommand(command);
+					if (config.getEmulationSection().isEnableUltimate64()) {
+						sendCommand(config, command);
+					}
 				}
 			}
 		}, SidTune.getInitDelay(tune));

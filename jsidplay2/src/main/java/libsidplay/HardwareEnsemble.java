@@ -47,7 +47,7 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  * @author Ken Händel
  * 
  */
-public class HardwareEnsemble {
+public class HardwareEnsemble implements Ultimate64 {
 	private static final String JIFFYDOS_C64_ROM = "/libsidplay/roms/JiffyDOS C64 Kernal 6.01.bin";
 	private static final String JIFFYDOS_C1541_ROM = "/libsidplay/roms/JiffyDOS 1541 5.0.bin";
 	private static final int JIFFYDOS_C64_ROM_SIZE = 0x2000;
@@ -428,6 +428,9 @@ public class HardwareEnsemble {
 	 * @throws IOException image read error
 	 */
 	public final void insertDisk(final File file) throws IOException, SidTuneError {
+		if (config.getEmulationSection().isEnableUltimate64()) {
+			sendInsertDisk(config, file);
+		}
 		// automatically turn drive on
 		config.getSidplay2Section().setLastDirectory(file.getParent());
 		config.getC1541Section().setDriveOn(true);

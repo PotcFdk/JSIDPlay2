@@ -134,7 +134,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 		scaling.setLabelFormatter(new NumberToStringConverter<>(2));
 		scaling.valueProperty().bindBidirectional(sidplay2Section.videoScalingProperty());
-		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(), new NumberToStringConverter<>(2));
+		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(),
+				new NumberToStringConverter<>(2));
 		scaling.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (applyImmediately.isSelected()) {
 				updateScaling();
@@ -143,13 +144,15 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 		brightness.setLabelFormatter(new NumberToStringConverter<>(2));
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());
-		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(), new NumberToStringConverter<>(2));
+		brightnessValue.textProperty().bindBidirectional(sidplay2Section.brightnessProperty(),
+				new NumberToStringConverter<>(2));
 		brightness.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setBrightness(newValue.floatValue()), applyImmediately.isSelected()));
 
 		contrast.setLabelFormatter(new NumberToStringConverter<>(2));
 		contrast.valueProperty().bindBidirectional(sidplay2Section.contrastProperty());
-		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(), new NumberToStringConverter<>(2));
+		contrastValue.textProperty().bindBidirectional(sidplay2Section.contrastProperty(),
+				new NumberToStringConverter<>(2));
 		contrast.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setContrast(newValue.floatValue()), applyImmediately.isSelected()));
 
@@ -161,19 +164,22 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 		saturation.setLabelFormatter(new NumberToStringConverter<>(2));
 		saturation.valueProperty().bindBidirectional(sidplay2Section.saturationProperty());
-		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(), new NumberToStringConverter<>(2));
+		saturationValue.textProperty().bindBidirectional(sidplay2Section.saturationProperty(),
+				new NumberToStringConverter<>(2));
 		saturation.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setSaturation(newValue.floatValue()), applyImmediately.isSelected()));
 
 		phaseShift.setLabelFormatter(new NumberToStringConverter<>(2));
 		phaseShift.valueProperty().bindBidirectional(sidplay2Section.phaseShiftProperty());
-		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(), new NumberToStringConverter<>(2));
+		phaseShiftValue.textProperty().bindBidirectional(sidplay2Section.phaseShiftProperty(),
+				new NumberToStringConverter<>(2));
 		phaseShift.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setPhaseShift(newValue.floatValue()), applyImmediately.isSelected()));
 
 		offset.setLabelFormatter(new NumberToStringConverter<>(2));
 		offset.valueProperty().bindBidirectional(sidplay2Section.offsetProperty());
-		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(), new NumberToStringConverter<>(2));
+		offsetValue.textProperty().bindBidirectional(sidplay2Section.offsetProperty(),
+				new NumberToStringConverter<>(2));
 		offset.valueProperty().addListener((observable, oldValue, newValue) -> updateVICChipConfiguration(
 				vic -> vic.getPalette().setOffset(newValue.floatValue()), applyImmediately.isSelected()));
 
@@ -397,6 +403,16 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				pressC64Key(keyTableEntry);
 				releaseC64Key(keyTableEntry);
 				event.consume();
+
+				if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
+					Platform.runLater(() -> {
+						try {
+							util.getPlayer().sendCommand(util.getConfig(), String.valueOf(event.getText()));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					});
+				}
 			}
 
 			if (event.isShiftDown()) {
