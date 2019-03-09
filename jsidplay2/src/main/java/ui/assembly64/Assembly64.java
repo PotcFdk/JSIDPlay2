@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -408,6 +409,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			String result = response.readEntity(String.class);
 			List<Category> asList = Arrays.asList((Category[]) new ObjectMapper().readValue(result, Category[].class));
+			asList.sort(Comparator.comparing(Category::getDescription));
 			asList.set(0, Category.ALL);
 			return asList;
 		} catch (IOException e) {
@@ -467,6 +469,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void requestFileList() {
+		if (searchResult == null) {
+			return;
+		}
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());

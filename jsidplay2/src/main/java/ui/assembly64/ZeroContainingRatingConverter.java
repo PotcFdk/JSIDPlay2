@@ -19,7 +19,7 @@ public class ZeroContainingRatingConverter extends StringConverter<Integer> {
 
 	@Override
 	public String toString(Integer rating) {
-		if (rating == 0) {
+		if (rating.intValue() == 0) {
 			return bundle.getString("ALL_CONTENT");
 		}
 		return String.valueOf(rating);
