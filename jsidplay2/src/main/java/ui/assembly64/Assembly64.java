@@ -55,6 +55,7 @@ import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
 import ui.common.UIPart;
+import ui.directory.Directory;
 import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
@@ -101,6 +102,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private Button prevBtn, nextBtn;
+
+	@FXML
+	private Directory directory;
 
 	@FXML
 	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
@@ -169,12 +173,27 @@ public class Assembly64 extends C64VBox implements UIPart {
 		contentEntryTable.setItems(sortedContentEntryList);
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		contentEntryTable.setOnMousePressed(e -> startContentEntry(e.isPrimaryButtonDown() && e.getClickCount() > 1));
-		contentEntryTable.setOnKeyPressed(event -> startContentEntry(event.getCode() == KeyCode.ENTER));
+		contentEntryTable.setOnKeyReleased(event -> startContentEntry(event.getCode() == KeyCode.ENTER));
+
+		contentEntryTable.getSelectionModel().selectedItemProperty().addListener((s, oldValue, newValue) -> {
+			if (newValue == null) {
+				return;
+			}
+			try {
+				File file = requestContentEntry(newValue);
+				directory.loadPreview(file);
+			} catch (Exception e) {
+				System.err.println(String.format("Cannot insert media file '%s'.", newValue.getName()));
+			}
+		});
 
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 			attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
 		});
+
+		directory.getAutoStartFileProperty()
+				.addListener(observable -> autostart(directory.getAutoStartFileProperty().get()));
 
 		yearField.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
@@ -220,7 +239,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 			ratingColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 			updatedColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 			categoryColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.2));
+
+			contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
+			contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
+			directory.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
+			directory.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
 		});
 
 		pauseTransition = new PauseTransition(Duration.millis(1000));
@@ -361,13 +384,17 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private void autostart() {
+		autostart(null);
+	}
+
+	private void autostart(File autostartFile) {
 		Optional<ContentEntry> optionalContentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream()
 				.findFirst();
 		if (optionalContentEntry.isPresent()) {
 			ContentEntry contentEntry = optionalContentEntry.get();
 			try {
 				File file = requestContentEntry(contentEntry);
-				if (convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null)) {
+				if (convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, autostartFile)) {
 					util.setPlayingTab(this);
 					currentlyPlayedRowProperty.set(searchResult);
 					currentlyPlayedContentEntryProperty.set(contentEntry);
@@ -492,7 +519,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{category}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
-
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			// name without embedded sub-folder (sid/name.sid -> name.sid):
 			String name = new File(contentEntry.getName()).getName();

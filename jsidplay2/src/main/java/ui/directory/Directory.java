@@ -119,7 +119,6 @@ public class Directory extends C64VBox implements UIPart {
 			return;
 		}
 		this.previewFile = previewFile;
-		dirColumn.setText(previewFile.getName());
 		directoryEntries.clear();
 		try {
 			libsidutils.directory.Directory dir = PseudoDirectory.getDirectory(util.getPlayer(), previewFile,

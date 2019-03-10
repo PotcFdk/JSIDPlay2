@@ -231,7 +231,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 						enableSOASC(sidTune.getInfo(), tuneFile);
 						showPhoto(sidTune.getInfo());
 					}
-					showTuneInfos(tuneFile, sidTune, (MusicCollectionTreeItem) newValue);
+					showTuneInfos(tuneFile, sidTune);
 				} catch (IOException | SidTuneError e) {
 					openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()),
 							getType());
@@ -842,7 +842,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		}
 	}
 
-	private void showTuneInfos(File tuneFile, SidTune tune, MusicCollectionTreeItem treeItem) {
+	private void showTuneInfos(File tuneFile, SidTune tune) {
 		String collectionName = PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile);
 		HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 				collectionName, tuneFile, tune);

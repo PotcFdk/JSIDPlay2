@@ -14,11 +14,10 @@
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.directory.Directory"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
-	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
 	<TableView fx:id="directory">
 <!-- 	<TableView fx:id="directory"  userData="/home/ken/workspace/jsidplay2/src/test/resources/floppy/DISCY__A.D64"> -->
 		<columns>
-			<TableColumn fx:id="dirColumn" text="" editable="false"
+			<TableColumn fx:id="dirColumn" text="%DIRECTORY" editable="false"
 				sortable="false">
 				<cellValueFactory>
 					<PropertyValueFactory property="text" />
@@ -29,5 +28,6 @@
 			</TableColumn>
 		</columns>
 	</TableView>
+	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
 </fx:root>
 <!-- </Scene> -->
