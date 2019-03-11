@@ -91,12 +91,12 @@
 							GridPane.rowIndex="1" GridPane.columnIndex="4"
 							onAction="#searchG64" selected="true" />
 						<VBox GridPane.rowIndex="0" GridPane.columnIndex="5"
-							GridPane.columnSpan="4">
+							GridPane.columnSpan="3">
 							<Label text="%AGE" />
 							<ComboBox fx:id="ageField" onAction="#searchAge" />
 						</VBox>
 						<VBox GridPane.rowIndex="1" GridPane.columnIndex="5"
-							GridPane.columnSpan="4">
+							GridPane.columnSpan="3">
 							<Label text="" />
 							<CheckBox text="%SEARCH_FROM_START"
 								fx:id="searchFromStartField" onAction="#searchFromStart" />
@@ -211,7 +211,7 @@
 						</Button>
 						<Button focusTraversable="false" onAction="#nextPage"
 							fx:id="nextBtn" GridPane.rowIndex="4" GridPane.columnIndex="1"
-							GridPane.columnSpan="8" GridPane.halignment="RIGHT">
+							GridPane.columnSpan="7" GridPane.halignment="RIGHT">
 							<tooltip>
 								<Tooltip text="%NEXT" />
 							</tooltip>

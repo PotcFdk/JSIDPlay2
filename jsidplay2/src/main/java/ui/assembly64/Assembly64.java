@@ -219,6 +219,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 		handleField.setOnKeyReleased(event -> newSearch());
 		eventField.setOnKeyReleased(event -> newSearch());
 
+		nameColumn.setResizable(false);
+		groupColumn.setResizable(false);
+		yearColumn.setResizable(false);
+		handleColumn.setResizable(false);
+		eventColumn.setResizable(false);
+		ratingColumn.setResizable(false);
+		categoryColumn.setResizable(false);
+		updatedColumn.setResizable(false);
+
 		Platform.runLater(() -> {
 			yearField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
 			ratingField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
