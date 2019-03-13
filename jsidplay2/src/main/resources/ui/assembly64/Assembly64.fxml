@@ -197,7 +197,8 @@
 							</columns>
 						</TableView>
 						<Button focusTraversable="false" onAction="#prevPage"
-							fx:id="prevBtn" GridPane.rowIndex="4" GridPane.columnIndex="0">
+							disable="true" fx:id="prevBtn" GridPane.rowIndex="4"
+							GridPane.columnIndex="0">
 							<tooltip>
 								<Tooltip text="%PREV" />
 							</tooltip>
@@ -210,8 +211,9 @@
 							</graphic>
 						</Button>
 						<Button focusTraversable="false" onAction="#nextPage"
-							fx:id="nextBtn" GridPane.rowIndex="4" GridPane.columnIndex="1"
-							GridPane.columnSpan="7" GridPane.halignment="RIGHT">
+							disable="true" fx:id="nextBtn" GridPane.rowIndex="4"
+							GridPane.columnIndex="1" GridPane.columnSpan="7"
+							GridPane.halignment="RIGHT">
 							<tooltip>
 								<Tooltip text="%NEXT" />
 							</tooltip>

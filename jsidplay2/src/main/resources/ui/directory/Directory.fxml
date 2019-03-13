@@ -6,19 +6,22 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
-<?import ui.directory.DirectoryCellFactory?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import ui.directory.DirectoryCellFactory?>
 <?scenebuilder-preview-i18n-resource Directory.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.directory.Directory"> -->
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+<fx:root xmlns:fx="http://javafx.com/fxml"
+	type="javafx.scene.layout.VBox">
 	<TableView fx:id="directory">
-<!-- 	<TableView fx:id="directory"  userData="/home/ken/workspace/jsidplay2/src/test/resources/floppy/DISCY__A.D64"> -->
+		<!-- <TableView fx:id="directory" userData="/home/ken/workspace/jsidplay2/src/test/resources/floppy/DISCY__A.D64"> -->
 		<columns>
-			<TableColumn fx:id="dirColumn" text="%DIRECTORY" editable="false"
-				sortable="false">
+			<TableColumn fx:id="dirColumn" text="%DIRECTORY"
+				editable="false" sortable="false">
 				<cellValueFactory>
 					<PropertyValueFactory property="text" />
 				</cellValueFactory>
@@ -27,7 +30,16 @@
 				</cellFactory>
 			</TableColumn>
 		</columns>
+		<contextMenu>
+			<ContextMenu  fx:id="contentEntryContextMenu">
+				<items>
+					<MenuItem fx:id="startMenu" text="%START"
+						onAction="#autoStartProgram" />
+					<MenuItem  fx:id="switchFont" text="%SWITCH_FONT"
+						onAction="#doSwitchFont" />
+				</items>
+			</ContextMenu>
+		</contextMenu>
 	</TableView>
-	<Button text="%SWITCH_FONT" focusTraversable="false" onAction="#doSwitchFont" />
 </fx:root>
 <!-- </Scene> -->

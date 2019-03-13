@@ -9,6 +9,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
@@ -40,8 +42,15 @@ public class Directory extends C64VBox implements UIPart {
 
 	@FXML
 	protected TableView<DirectoryItem> directory;
+
 	@FXML
 	private TableColumn<DirectoryItem, String> dirColumn;
+
+	@FXML
+	private ContextMenu contentEntryContextMenu;
+
+	@FXML
+	private MenuItem startMenu;
 
 	private ObservableList<DirectoryItem> directoryEntries;
 
@@ -54,7 +63,7 @@ public class Directory extends C64VBox implements UIPart {
 
 	public Directory() {
 	}
-	
+
 	public Directory(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -62,7 +71,7 @@ public class Directory extends C64VBox implements UIPart {
 	@FXML
 	protected void initialize() {
 		dirColumn.prefWidthProperty().bind(directory.widthProperty());
-		directoryEntries = FXCollections.<DirectoryItem> observableArrayList();
+		directoryEntries = FXCollections.<DirectoryItem>observableArrayList();
 		directory.setItems(directoryEntries);
 		directory.setOnKeyPressed(event -> {
 			DirectoryItem selectedItem = directory.getSelectionModel().getSelectedItem();
@@ -74,6 +83,10 @@ public class Directory extends C64VBox implements UIPart {
 			if (event.isPrimaryButtonDown() && event.getClickCount() > 1) {
 				autoStartProgram();
 			}
+		});
+		contentEntryContextMenu.setOnShown(event -> {
+			DirectoryItem directoryItem = directory.getSelectionModel().getSelectedItem();
+			startMenu.setDisable(directoryItem == null || directoryItem.getDirEntry() == null);
 		});
 		if (directory.getUserData() != null) {
 			// JavaFX Preview, only
@@ -95,7 +108,8 @@ public class Directory extends C64VBox implements UIPart {
 		return autoStartFileProperty;
 	}
 
-	protected void autoStartProgram() {
+	@FXML
+	private void autoStartProgram() {
 		try {
 			DirectoryItem dirItem = directory.getSelectionModel().getSelectedItem();
 			if (dirItem == null) {
@@ -169,6 +183,11 @@ public class Directory extends C64VBox implements UIPart {
 		} else {
 			return String.valueOf((char) (c | fontSet));
 		}
+	}
+
+	public void clear() {
+		directoryEntries.clear();
+		
 	}
 
 }

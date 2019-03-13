@@ -116,7 +116,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private ContextMenu contentEntryContextMenu;
 
 	@FXML
-	private MenuItem attachDiskMenu;
+	private MenuItem attachDiskMenu, startMenu;
 
 	@FXML
 	private TextArea errorMessageTextArea;
@@ -190,6 +190,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 			attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
+			startMenu.setDisable(contentEntry == null);
 		});
 
 		directory.getAutoStartFileProperty()
@@ -508,6 +509,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (searchResult == null) {
 			return;
 		}
+		directory.clear();
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
