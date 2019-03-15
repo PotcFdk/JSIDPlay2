@@ -50,7 +50,7 @@ class ClientContext {
 	private static final byte SID_NETWORK_PROTOCOL_VERSION = 4;
 
 	/** Maximum time to wait for queue in milliseconds. */
-	private static final long MAX_TIME_TO_WAIT_FOR_QUEUE = 20;
+	private static final long MAX_TIME_TO_WAIT_FOR_QUEUE = 50;
 
 	/** Expected buffer fill rate */
 	private final int latency;
