@@ -131,11 +131,6 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	private static final String RUN = "RUN\r", SYS = "SYS%d\r", LOAD = "LOAD\r";
 
 	/**
-	 * Software reset routine start address.
-	 */
-	private static final int ADDR_RESET = 0xfce2;
-
-	/**
 	 * Music player state.
 	 */
 	private ObjectProperty<State> stateProperty = new ObjectProperty<State>(State.class.getSimpleName(), QUIT);
@@ -410,6 +405,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	protected final void reset() {
 		super.reset();
 		timer.reset();
+		if (config.getEmulationSection().isEnableUltimate64() && tune == RESET) {
+			sendReset(config, tune);
+		}
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
 			@Override
 			public void event() throws InterruptedException {
@@ -436,10 +434,6 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 							}
 						}
 					}
-				} else {
-					if (config.getEmulationSection().isEnableUltimate64()) {
-						sendRamAndSys(config, tune, c64.getRAM(), ADDR_RESET);
-					}
 				}
 				if (command != null) {
 					if (command.startsWith(LOAD)) {
@@ -449,6 +443,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 					// Enter basic command
 					typeInCommand(command);
 					if (config.getEmulationSection().isEnableUltimate64()) {
+						sendWait(config, 300);
 						sendCommand(config, command);
 					}
 				}

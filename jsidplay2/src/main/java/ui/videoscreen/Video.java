@@ -406,11 +406,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 				if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
 					Platform.runLater(() -> {
-						try {
-							util.getPlayer().sendCommand(util.getConfig(), String.valueOf(event.getText()));
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+						util.getPlayer().sendCommand(util.getConfig(), String.valueOf(event.getText()));
 					});
 				}
 			}

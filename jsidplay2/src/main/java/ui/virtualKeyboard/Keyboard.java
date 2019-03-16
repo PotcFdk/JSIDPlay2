@@ -63,11 +63,7 @@ public class Keyboard extends C64Window {
 
 		if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
 			Platform.runLater(() -> {
-				try {
-					util.getPlayer().sendCommand(util.getConfig(), String.valueOf(button.getUserData().toString()));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				util.getPlayer().sendCommand(util.getConfig(), String.valueOf(button.getUserData().toString()));
 			});
 		}
 
