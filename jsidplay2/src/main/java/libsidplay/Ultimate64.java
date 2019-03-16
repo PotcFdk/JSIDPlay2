@@ -15,6 +15,10 @@ import libsidplay.sidtune.SidTune;
  * Makes use of the Ultimate64 (FPGA-C64) debug interface to use JSIDPlay2 and
  * Ultimate64 simultaneously.
  * 
+ * https://github.com/GideonZ/1541ultimate/blob/master/software/network/socket_dma.cc
+ * 
+ * https://github.com/GideonZ/1541ultimate/blob/master/python/sock.py
+ * 
  * @author ken
  *
  */
