@@ -57,9 +57,8 @@ public class HardwareEnsemble implements Ultimate64 {
 	private static final MessageDigest MD5_DIGEST;
 	private static final byte[] EOD_HACK = new byte[] { (byte) 0xEE, (byte) 0xAD, 0x56, 0x30, (byte) 0x90, 0x46, 0x37,
 			(byte) 0xCD, 0x3D, 0x4C, (byte) 0x85, (byte) 0x8F, 0x50, (byte) 0x86, 0x51, (byte) 0x92, };
-	private static final byte[] EOD_HACK2 = new byte[] { (byte) 0xD4, 0x1D, (byte) 0x8C, (byte) 0xD9, (byte) 0x8F, 0x00,
-			(byte) 0xB2, 0x04, (byte) 0xE9, (byte) 0x80, 0x09, (byte) 0x98, (byte) 0xEC, (byte) 0xF8, 0x42,
-			(byte) 0x7E, };
+	private static final byte[] EOD_HACK2 = new byte[] { 0x49, (byte) 0xB1, (byte) 0xAD, 0x2D, 0x1A, 0x01, 0x26,
+			(byte) 0xFF, 0x25, (byte) 0xDB, (byte) 0xD3, 0x5E, 0x77, 0x3B, (byte) 0x93, (byte) 0xB2, };
 
 	static {
 		try (DataInputStream isJiffyDosC64 = new DataInputStream(
@@ -454,8 +453,8 @@ public class HardwareEnsemble implements Ultimate64 {
 				while (dis.read() != -1)
 					;
 				// get the hash value as byte array
-				boolean hack = Arrays.equals(MD5_DIGEST.digest(), EOD_HACK)
-						|| Arrays.equals(MD5_DIGEST.digest(), EOD_HACK2);
+				byte[] digest = MD5_DIGEST.digest();
+				boolean hack = Arrays.equals(digest, EOD_HACK) || Arrays.equals(digest, EOD_HACK2);
 				if (hack) {
 					System.err.println("Edge of Disgrace hack has been installed!");
 				}

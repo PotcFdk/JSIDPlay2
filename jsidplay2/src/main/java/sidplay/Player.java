@@ -442,7 +442,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 					}
 					// Enter basic command
 					typeInCommand(command);
-					if (config.getEmulationSection().isEnableUltimate64()) {
+					if (config.getEmulationSection().isEnableUltimate64() && tune == RESET) {
 						sendWait(config, 300);
 						sendCommand(config, command);
 					}
@@ -838,6 +838,9 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 */
 	public final void quit() {
 		executeInPlayerThread("Quit", () -> stateProperty.set(QUIT));
+		if (config.getEmulationSection().isEnableUltimate64()) {
+			sendReset(config, tune);
+		}
 	}
 
 	/**
