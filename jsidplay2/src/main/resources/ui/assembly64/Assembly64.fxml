@@ -62,75 +62,75 @@
 					<children>
 						<CheckBox text="%D64" fx:id="d64Field"
 							GridPane.rowIndex="0" GridPane.columnIndex="0"
-							onAction="#searchD64" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%T64" fx:id="t64Field"
 							GridPane.rowIndex="0" GridPane.columnIndex="1"
-							onAction="#searchT64" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%D81" fx:id="d81Field"
 							GridPane.rowIndex="0" GridPane.columnIndex="2"
-							onAction="#searchD81" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%D71" fx:id="d71Field"
 							GridPane.rowIndex="0" GridPane.columnIndex="3"
-							onAction="#searchD71" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%PRG" fx:id="prgField"
 							GridPane.rowIndex="0" GridPane.columnIndex="4"
-							onAction="#searchPrg" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%TAP" fx:id="tapField"
 							GridPane.rowIndex="1" GridPane.columnIndex="0"
-							onAction="#searchTap" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%CRT" fx:id="crtField"
 							GridPane.rowIndex="1" GridPane.columnIndex="1"
-							onAction="#searchCrt" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%SID" fx:id="sidField"
 							GridPane.rowIndex="1" GridPane.columnIndex="2"
-							onAction="#searchSid" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%BIN" fx:id="binField"
 							GridPane.rowIndex="1" GridPane.columnIndex="3"
-							onAction="#searchBin" selected="true" />
+							onAction="#search" selected="true" />
 						<CheckBox text="%G64" fx:id="g64Field"
 							GridPane.rowIndex="1" GridPane.columnIndex="4"
-							onAction="#searchG64" selected="true" />
+							onAction="#search" selected="true" />
 						<VBox GridPane.rowIndex="0" GridPane.columnIndex="5"
 							GridPane.columnSpan="3">
 							<Label text="%AGE" />
-							<ComboBox fx:id="ageField" onAction="#searchAge" />
+							<ComboBox fx:id="ageField" onAction="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="1" GridPane.columnIndex="5"
 							GridPane.columnSpan="3">
 							<Label text="" />
 							<CheckBox text="%SEARCH_FROM_START"
-								fx:id="searchFromStartField" onAction="#searchFromStart" />
+								fx:id="searchFromStartField" onAction="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="0">
 							<Label text="%NAME" />
-							<TextField fx:id="nameField" onAction="#searchName" />
+							<TextField fx:id="nameField" onAction="#search" onKeyReleased="#search"/>
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
 							<Label text="%GROUP" />
-							<TextField fx:id="groupField" onAction="#searchGroup" />
+							<TextField fx:id="groupField" onAction="#search" onKeyReleased="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="2"
 							GridPane.hgrow="ALWAYS">
 							<Label text="%YEAR" />
-							<ComboBox fx:id="yearField" onAction="#searchYear" />
+							<ComboBox fx:id="yearField" onAction="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="3">
 							<Label text="%HANDLE" />
-							<TextField fx:id="handleField" onAction="#searchHandle" />
+							<TextField fx:id="handleField" onAction="#search" onKeyReleased="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="4">
 							<Label text="%EVENT" />
-							<TextField fx:id="eventField" onAction="#searchEvent" />
+							<TextField fx:id="eventField" onAction="#search" onKeyReleased="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="5"
 							GridPane.hgrow="ALWAYS">
 							<Label text="%RATING" />
-							<ComboBox fx:id="ratingField" onAction="#searchRating" />
+							<ComboBox fx:id="ratingField" onAction="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="6">
 							<Label text="%CATEGORY" />
 							<ComboBox fx:id="categoryField"
-								onAction="#searchCategory" />
+								onAction="#search" />
 						</VBox>
 						<VBox GridPane.rowIndex="2" GridPane.columnIndex="7"
 							GridPane.hgrow="ALWAYS">
@@ -148,17 +148,17 @@
 								</Assembly64RowFactory>
 							</rowFactory>
 							<columns>
-								<TableColumn text="%NAME" fx:id="nameColumn">
+								<TableColumn text="%NAME" fx:id="nameColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="name" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn text="%GROUP" fx:id="groupColumn">
+								<TableColumn text="%GROUP" fx:id="groupColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="group" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn text="%YEAR" fx:id="yearColumn">
+								<TableColumn text="%YEAR" fx:id="yearColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="year" />
 									</cellValueFactory>
@@ -166,17 +166,17 @@
 										<ZeroIgnoringCellFactory />
 									</cellFactory>
 								</TableColumn>
-								<TableColumn text="%HANDLE" fx:id="handleColumn">
+								<TableColumn text="%HANDLE" fx:id="handleColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="handle" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn text="%EVENT" fx:id="eventColumn">
+								<TableColumn text="%EVENT" fx:id="eventColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="event" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn text="%RATING" fx:id="ratingColumn">
+								<TableColumn text="%RATING" fx:id="ratingColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="rating" />
 									</cellValueFactory>
@@ -184,12 +184,12 @@
 										<ZeroIgnoringCellFactory />
 									</cellFactory>
 								</TableColumn>
-								<TableColumn text="%CATEGORY" fx:id="categoryColumn">
+								<TableColumn text="%CATEGORY" fx:id="categoryColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="category" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn text="%UPDATED" fx:id="updatedColumn">
+								<TableColumn text="%UPDATED" fx:id="updatedColumn" resizable="false">
 									<cellValueFactory>
 										<PropertyValueFactory property="updated" />
 									</cellValueFactory>
@@ -261,9 +261,6 @@
 						</TableView>
 						<Directory fx:id="directory" />
 					</HBox>
-					<Label text="%STATUS" />
-					<TextArea fx:id="errorMessageTextArea" prefHeight="60"
-						editable="false" />
 				</VBox>
 			</bottom>
 		</BorderPane>

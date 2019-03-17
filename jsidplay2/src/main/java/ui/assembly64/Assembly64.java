@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -39,11 +38,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -60,6 +59,8 @@ import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 	public static final String ID = "ASSEMBLY64";
+
+	private float FIELD_WIDTH = 1 / 8f;
 
 	private static final int MAX_ROWS = 500;
 
@@ -118,25 +119,25 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	private MenuItem attachDiskMenu, startMenu;
 
-	@FXML
-	private TextArea errorMessageTextArea;
-
-	private ObjectMapper objectMapper;
-
+	private ObservableList<Category> categoryItems;
 	private ObservableList<SearchResult> searchResults;
 	private ObservableList<ContentEntry> contentEntries;
 
+	private SearchResult searchResult;
+
+	private ContentEntry contentEntry;
+
+	private File contentEntryFile;
+
 	private int searchOffset, searchStop;
 
-	private List<Category> categories;
+	private DiskFileFilter diskFileFilter;
 
-	private SearchResult searchResult;
+	private ObjectMapper objectMapper;
 
 	private Convenience convenience;
 
 	private AtomicBoolean autostart;
-
-	private DiskFileFilter diskFileFilter;
 
 	private PauseTransition pauseTransition, pauseTransitionContentEntry;
 	private SequentialTransition sequentialTransition, sequentialTransitionContentEntry;
@@ -155,37 +156,27 @@ public class Assembly64 extends C64VBox implements UIPart {
 		convenience = new Convenience(util.getPlayer());
 		diskFileFilter = new DiskFileFilter();
 
-		categories = requestCategories();
+		categoryItems = FXCollections.observableArrayList(requestCategories());
 		objectMapper = createObjectMapper();
 
 		searchResults = FXCollections.<SearchResult>observableArrayList();
 		SortedList<SearchResult> sortedSearchResultList = new SortedList<>(searchResults);
 		sortedSearchResultList.comparatorProperty().bind(assembly64Table.comparatorProperty());
 		assembly64Table.setItems(sortedSearchResultList);
-		assembly64Table.getSelectionModel().selectedItemProperty().addListener((s, o, n) -> requestFileList(false));
+		assembly64Table.getSelectionModel().selectedItemProperty().addListener((s, o, n) -> getContentEntries(false));
 		assembly64Table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		assembly64Table.setOnMousePressed(e -> requestFileList(e.isPrimaryButtonDown() && e.getClickCount() > 1));
-		assembly64Table.setOnKeyPressed(event -> requestFileList(event.getCode() == KeyCode.ENTER));
+		assembly64Table.setOnMousePressed(e -> getContentEntries(e.isPrimaryButtonDown() && e.getClickCount() > 1));
+		assembly64Table.setOnKeyPressed(event -> getContentEntries(event.getCode() == KeyCode.ENTER));
 
 		contentEntries = FXCollections.<ContentEntry>observableArrayList();
 		SortedList<ContentEntry> sortedContentEntryList = new SortedList<>(contentEntries);
 		sortedContentEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
 		contentEntryTable.setItems(sortedContentEntryList);
+		contentEntryTable.getSelectionModel().selectedItemProperty()
+				.addListener((s, o, n) -> getContentEntryFile(false));
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		contentEntryTable.setOnMousePressed(e -> startContentEntry(e.isPrimaryButtonDown() && e.getClickCount() > 1));
-		contentEntryTable.setOnKeyReleased(event -> startContentEntry(event.getCode() == KeyCode.ENTER));
-
-		contentEntryTable.getSelectionModel().selectedItemProperty().addListener((s, oldValue, newValue) -> {
-			if (newValue == null) {
-				return;
-			}
-			try {
-				File file = requestContentEntry(newValue);
-				directory.loadPreview(file);
-			} catch (Exception e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", newValue.getName()));
-			}
-		});
+		contentEntryTable.setOnMousePressed(e -> getContentEntryFile(e.isPrimaryButtonDown() && e.getClickCount() > 1));
+		contentEntryTable.setOnKeyReleased(event -> getContentEntryFile(event.getCode() == KeyCode.ENTER));
 
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
@@ -193,8 +184,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 			startMenu.setDisable(contentEntry == null);
 		});
 
-		directory.getAutoStartFileProperty()
-				.addListener(observable -> autostart(directory.getAutoStartFileProperty().get()));
+		contentEntryColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
+		directory.getAutoStartFileProperty().addListener((s, o, n) -> autostart(n));
 
 		yearField.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
@@ -211,60 +202,34 @@ public class Assembly64 extends C64VBox implements UIPart {
 		ageField.getSelectionModel().select(Age.ALL);
 
 		categoryField.setConverter(new CategoryToStringConverter<Category>(util.getBundle()));
-		categoryField.setItems(FXCollections.<Category>observableArrayList(categories));
+		categoryField.setItems(categoryItems);
 		categoryField.getSelectionModel().select(Category.ALL);
 
-		nameField.setOnKeyReleased(event -> newSearch());
-		groupField.setOnKeyReleased(event -> newSearch());
-		yearField.setOnKeyReleased(event -> newSearch());
-		handleField.setOnKeyReleased(event -> newSearch());
-		eventField.setOnKeyReleased(event -> newSearch());
-
-		nameColumn.setResizable(false);
-		groupColumn.setResizable(false);
-		yearColumn.setResizable(false);
-		handleColumn.setResizable(false);
-		eventColumn.setResizable(false);
-		ratingColumn.setResizable(false);
-		categoryColumn.setResizable(false);
-		updatedColumn.setResizable(false);
-
 		Platform.runLater(() -> {
-			yearField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			ratingField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			ageField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			nameField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			groupField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			handleField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			eventField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			updatedField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			categoryField.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-
-			contentEntryColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
-			nameColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			groupColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			yearColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			handleColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			eventColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			ratingColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			updatedColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-			categoryColumn.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.125));
-
-			contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
+			for (Control field : new Control[] { yearField, ratingField, ageField, nameField, groupField, handleField,
+					eventField, updatedField, categoryField }) {
+				field.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(FIELD_WIDTH));
+			}
+			for (TableColumn<?, ?> column : new TableColumn[] { nameColumn, groupColumn, yearColumn, handleColumn,
+					eventColumn, ratingColumn, updatedColumn, categoryColumn }) {
+				column.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(FIELD_WIDTH));
+			}
 			contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
 			directory.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
+
+			contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
 			directory.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
 		});
 
 		pauseTransition = new PauseTransition(Duration.millis(1000));
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		sequentialTransition.setCycleCount(1);
-		pauseTransition.setOnFinished(evt -> requestRelease());
+		pauseTransition.setOnFinished(evt -> requestSearchResults());
 
 		pauseTransitionContentEntry = new PauseTransition(Duration.millis(500));
 		sequentialTransitionContentEntry = new SequentialTransition(pauseTransitionContentEntry);
 		sequentialTransitionContentEntry.setCycleCount(1);
-		pauseTransitionContentEntry.setOnFinished(evt -> requestFileList());
+		pauseTransitionContentEntry.setOnFinished(evt -> requestContentEntries());
 	}
 
 	@Override
@@ -274,122 +239,21 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void searchYear() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchRating() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchFromStart() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchAge() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchName() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchGroup() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchHandle() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchEvent() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchCategory() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchD64() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchT64() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchD81() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchD71() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchPrg() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchTap() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchCrt() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchSid() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchBin() {
-		newSearch();
-	}
-
-	@FXML
-	private void searchG64() {
-		newSearch();
-	}
-
-	private void newSearch() {
-		searchOffset = 0;
-		search();
-	}
-
 	private void search() {
-		searchResults.clear();
-		contentEntries.clear();
-		errorMessageTextArea.clear();
-		sequentialTransition.playFromStart();
+		searchOffset = 0;
+		searchAgain();
 	}
 
 	@FXML
 	private void prevPage() {
 		searchOffset -= MAX_ROWS;
-		search();
+		searchAgain();
 	}
 
 	@FXML
 	private void nextPage() {
 		searchOffset = searchStop;
-		search();
+		searchAgain();
 	}
 
 	@FXML
@@ -397,33 +261,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 		autostart(null);
 	}
 
-	private void autostart(File autostartFile) {
-		Optional<ContentEntry> optionalContentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream()
-				.findFirst();
-		if (optionalContentEntry.isPresent()) {
-			ContentEntry contentEntry = optionalContentEntry.get();
-			try {
-				File file = requestContentEntry(contentEntry);
-				if (convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, autostartFile)) {
-					util.setPlayingTab(this);
-					currentlyPlayedRowProperty.set(searchResult);
-					currentlyPlayedContentEntryProperty.set(contentEntry);
-				}
-			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
-			}
-		}
-	}
-
 	@FXML
 	private void attachDisk() {
-		Optional<ContentEntry> optionalContentEntry = contentEntryTable.getSelectionModel().getSelectedItems().stream()
-				.findFirst();
-		if (optionalContentEntry.isPresent()) {
-			ContentEntry contentEntry = optionalContentEntry.get();
+		if (contentEntryFile != null) {
 			try {
-				File file = requestContentEntry(contentEntry);
-				util.getPlayer().insertDisk(file);
+				util.getPlayer().insertDisk(contentEntryFile);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 			}
@@ -433,7 +275,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private ObjectMapper createObjectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JodaModule module = new JodaModule();
-		module.addDeserializer(Category.class, new CategoryDeserializer(categories));
+		module.addDeserializer(Category.class, new CategoryDeserializer(categoryItems));
 		objectMapper.registerModule(module);
 		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		return objectMapper;
@@ -448,14 +290,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 			List<Category> asList = Arrays.asList((Category[]) new ObjectMapper().readValue(result, Category[].class));
 			asList.sort(Comparator.comparing(Category::getDescription));
 			asList.set(0, Category.ALL);
-			return asList;
+			return FXCollections.<Category>observableArrayList(asList);
 		} catch (IOException e) {
-			errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
+			System.err.println("Unexpected result: " + e.getMessage());
 			return Collections.emptyList();
 		}
 	}
 
-	private void requestRelease() {
+	private void requestSearchResults() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/find2").path(
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
@@ -484,28 +326,21 @@ public class Assembly64 extends C64VBox implements UIPart {
 		} catch (IOException e) {
 			try {
 				ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
-				errorMessageTextArea.setText(String.join("\n",
-						errorMessage.getStatus() + ": " + errorMessage.getError(), errorMessage.getMessage()));
+				System.err.println(String.join("\n", errorMessage.getStatus() + ": " + errorMessage.getError(),
+						errorMessage.getMessage()));
 			} catch (IOException e1) {
-				errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
+				System.err.println("Unexpected result: " + e.getMessage());
 			}
 		}
 	}
 
-	private void requestFileList(SearchResult searchResult) {
-		this.searchResult = searchResult;
+	private void getContentEntries(boolean doAutostart) {
+		this.searchResult = assembly64Table.getSelectionModel().getSelectedItem();
 		sequentialTransitionContentEntry.playFromStart();
-	}
-
-	private void requestFileList(boolean doAutostart) {
-		final SearchResult searchResult = assembly64Table.getSelectionModel().getSelectedItem();
-		if (searchResult != null) {
-			requestFileList(searchResult);
-		}
 		autostart.set(doAutostart);
 	}
 
-	private void requestFileList() {
+	private void requestContentEntries() {
 		if (searchResult == null) {
 			return;
 		}
@@ -513,16 +348,33 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
+
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			ContentEntrySearchResult contentEntry = (ContentEntrySearchResult) objectMapper
 					.readValue(response.readEntity(String.class), ContentEntrySearchResult.class);
 			contentEntries.setAll(contentEntry.getContentEntry());
+			contentEntryTable.getSelectionModel().select(contentEntries.stream().findFirst().orElse(null));
 			if (autostart.getAndSet(false)) {
-				contentEntryTable.getSelectionModel().select(contentEntries.stream().findFirst().orElse(null));
 				autostart();
 			}
 		} catch (IOException e) {
-			errorMessageTextArea.setText("Unexpected result: " + e.getMessage());
+			System.err.println("Unexpected result: " + e.getMessage());
+		}
+	}
+
+	private void getContentEntryFile(boolean doAutostart) {
+		this.contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
+		if (contentEntry == null) {
+			return;
+		}
+		try {
+			contentEntryFile = requestContentEntry(contentEntry);
+		} catch (IOException e) {
+			System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+		}
+		directory.loadPreview(contentEntryFile);
+		if (doAutostart) {
+			autostart();
 		}
 	}
 
@@ -530,6 +382,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{category}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
+
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			// name without embedded sub-folder (sid/name.sid -> name.sid):
 			String name = new File(contentEntry.getName()).getName();
@@ -539,13 +392,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 				fos.write(response.readEntity(byte[].class));
 			}
 			return tempFile;
-		}
-	}
-
-	private void startContentEntry(boolean doAutostart) {
-		final ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-		if (contentEntry != null && doAutostart) {
-			autostart();
 		}
 	}
 
@@ -580,6 +426,26 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private String get(CheckBox field) {
 		return field.isSelected() ? "Y" : "N";
+	}
+
+	private void searchAgain() {
+		searchResults.clear();
+		contentEntries.clear();
+		sequentialTransition.playFromStart();
+	}
+
+	private void autostart(File autostartFile) {
+		if (contentEntry != null && contentEntryFile != null) {
+			try {
+				if (convenience.autostart(contentEntryFile, Convenience.LEXICALLY_FIRST_MEDIA, autostartFile)) {
+					util.setPlayingTab(this);
+					currentlyPlayedRowProperty.set(searchResult);
+					currentlyPlayedContentEntryProperty.set(contentEntry);
+				}
+			} catch (IOException | SidTuneError | URISyntaxException e) {
+				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
+			}
+		}
 	}
 
 }
