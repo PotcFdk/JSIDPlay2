@@ -286,6 +286,17 @@ public class Configuration implements IConfig {
 		return observableFavorites;
 	}
 
+	private Assembly64Section assembly64Section = new Assembly64Section();
+
+	public void setAssembly64Section(Assembly64Section assembly64Section) {
+		this.assembly64Section = assembly64Section;
+	}
+
+	@Embedded
+	public Assembly64Section getAssembly64Section() {
+		return assembly64Section;
+	}
+
 	protected List<ViewEntity> views = INITIAL_VIEWS;
 
 	private ObservableList<ViewEntity> observableViews;

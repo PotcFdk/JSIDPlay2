@@ -11,13 +11,17 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -28,9 +32,9 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -38,14 +42,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
@@ -55,17 +63,25 @@ import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
 import ui.common.UIPart;
 import ui.directory.Directory;
+import ui.entities.config.Column;
+import ui.entities.config.ColumnType;
 import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 	public static final String ID = "ASSEMBLY64";
 
-	private float FIELD_WIDTH = 1 / 8f;
-
 	private static final int MAX_ROWS = 500;
+
+	private static final int DEFAULT_WIDTH = 150;
 
 	@FXML
 	private BorderPane parent;
+
+	@FXML
+	private HBox parentHBox;
+
+	@FXML
+	private VBox nameVBox, groupVBox, yearVBox, handleVBox, eventVBox, ratingVBox, categoryVBox, updatedVBox;
 
 	@FXML
 	private TextField nameField, groupField, handleField, eventField, updatedField;
@@ -80,10 +96,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private ComboBox<Age> ageField;
 
 	@FXML
-	private CheckBox searchFromStartField;
-
-	@FXML
-	private CheckBox d64Field, t64Field, d81Field, d71Field, prgField, tapField, crtField, sidField, binField, g64Field;
+	private CheckBox searchFromStartField, d64Field, t64Field, d81Field, d71Field, prgField, tapField, crtField,
+			sidField, binField, g64Field;
 
 	@FXML
 	private TableView<SearchResult> assembly64Table;
@@ -94,6 +108,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 	@FXML
 	private TableColumn<SearchResult, String> nameColumn, groupColumn, yearColumn, handleColumn, eventColumn,
 			ratingColumn, updatedColumn;
+
+	@FXML
+	private Menu addColumnMenu;
+
+	@FXML
+	private MenuItem removeColumn;
 
 	@FXML
 	private TableColumn<SearchResult, Category> categoryColumn;
@@ -114,7 +134,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
 
 	@FXML
-	private ContextMenu contentEntryContextMenu;
+	private ContextMenu assembly64ContextMenu, contentEntryContextMenu;
 
 	@FXML
 	private MenuItem attachDiskMenu, startMenu;
@@ -130,6 +150,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private File contentEntryFile;
 
 	private int searchOffset, searchStop;
+
+	private int selectedColumn;
 
 	private DiskFileFilter diskFileFilter;
 
@@ -167,6 +189,38 @@ public class Assembly64 extends C64VBox implements UIPart {
 		assembly64Table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		assembly64Table.setOnMousePressed(e -> getContentEntries(e.isPrimaryButtonDown() && e.getClickCount() > 1));
 		assembly64Table.setOnKeyPressed(event -> getContentEntries(event.getCode() == KeyCode.ENTER));
+		assembly64Table.getColumns().addListener((Change<? extends TableColumn<SearchResult, ?>> change) -> {
+			while (change.next()) {
+				if (change.wasReplaced()) {
+					moveColumn();
+				}
+			}
+		});
+		restoreColumns();
+
+		assembly64ContextMenu.setOnShown(event -> {
+			// never remove the first column
+			removeColumn.setDisable(true);
+			for (TablePosition<?, ?> tablePosition : assembly64Table.getSelectionModel().getSelectedCells()) {
+				selectedColumn = tablePosition.getColumn();
+				removeColumn.setDisable(assembly64Table.getSelectionModel().getSelectedCells().size() != 1
+						|| tablePosition.getColumn() <= 0);
+				break;
+			}
+			if (selectedColumn > 0 && selectedColumn < assembly64Table.getColumns().size()) {
+				TableColumn<?, ?> tableColumn = assembly64Table.getColumns().get(selectedColumn);
+				removeColumn.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"), tableColumn.getText()));
+			}
+			List<ColumnType> columnTypes = new ArrayList<>(Arrays.asList(ColumnType.values()));
+			columnTypes.removeIf(columnType -> assembly64Table.getColumns().stream()
+					.map(tableColumn -> ((Column) tableColumn.getUserData()).getColumnType())
+					.collect(Collectors.toList()).contains(columnType));
+
+			addColumnMenu.getItems().clear();
+			for (ColumnType columnType : columnTypes) {
+				addAddColumnHeaderMenuItem(columnType);
+			}
+		});
 
 		contentEntries = FXCollections.<ContentEntry>observableArrayList();
 		SortedList<ContentEntry> sortedContentEntryList = new SortedList<>(contentEntries);
@@ -177,6 +231,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		contentEntryTable.setOnMousePressed(e -> getContentEntryFile(e.isPrimaryButtonDown() && e.getClickCount() > 1));
 		contentEntryTable.setOnKeyReleased(event -> getContentEntryFile(event.getCode() == KeyCode.ENTER));
+		contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
+		contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
 
 		contentEntryContextMenu.setOnShown(event -> {
 			ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
@@ -186,6 +242,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		contentEntryColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
 		directory.getAutoStartFileProperty().addListener((s, o, n) -> autostart(n));
+		directory.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
+		directory.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
 
 		yearField.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
@@ -205,22 +263,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 		categoryField.setItems(categoryItems);
 		categoryField.getSelectionModel().select(Category.ALL);
 
-		Platform.runLater(() -> {
-			for (Control field : new Control[] { yearField, ratingField, ageField, nameField, groupField, handleField,
-					eventField, updatedField, categoryField }) {
-				field.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(FIELD_WIDTH));
-			}
-			for (TableColumn<?, ?> column : new TableColumn[] { nameColumn, groupColumn, yearColumn, handleColumn,
-					eventColumn, ratingColumn, updatedColumn, categoryColumn }) {
-				column.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(FIELD_WIDTH));
-			}
-			contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
-			directory.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
-
-			contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
-			directory.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
-		});
-
 		pauseTransition = new PauseTransition(Duration.millis(1000));
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		sequentialTransition.setCycleCount(1);
@@ -236,6 +278,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 	public void doClose() {
 		sequentialTransition.stop();
 		sequentialTransitionContentEntry.stop();
+	}
+
+	@FXML
+	private void removeColumn() {
+		if (selectedColumn < 0) {
+			return;
+		}
+		removeColumn(assembly64Table.getColumns().get(selectedColumn));
 	}
 
 	@FXML
@@ -272,6 +322,186 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
+	private void restoreColumns() {
+		parentHBox.getChildren().clear();
+		for (Column column : util.getConfig().getAssembly64Section().getColumns()) {
+			TableColumn<SearchResult, String> tableColumn = addColumn(column);
+			double width = column.getWidth() != null ? column.getWidth().doubleValue() : DEFAULT_WIDTH;
+			tableColumn.setPrefWidth(width);
+			setColumnWidth(column, width);
+		}
+	}
+
+	private void addAddColumnHeaderMenuItem(ColumnType columnType) {
+		MenuItem menuItem = new MenuItem();
+		menuItem.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
+		menuItem.setOnAction(event -> {
+			Column column = new Column();
+			column.setColumnType(columnType);
+			util.getConfig().getAssembly64Section().getColumns().add(column);
+			addColumn(column);
+		});
+		addColumnMenu.getItems().add(menuItem);
+	}
+
+	private TableColumn<SearchResult, String> addColumn(Column column) {
+		ColumnType columnType = column.getColumnType();
+
+		TableColumn<SearchResult, String> tableColumn = new TableColumn<>();
+		tableColumn.setUserData(column);
+		tableColumn.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
+		tableColumn.setCellValueFactory(new PropertyValueFactory<SearchResult, String>(columnType.getColumnProperty()));
+		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
+			column.setWidth(newValue.doubleValue());
+			setColumnWidth(column, newValue);
+		});
+		assembly64Table.getColumns().add(tableColumn);
+		switch (columnType) {
+		case NAME:
+			parentHBox.getChildren().add(nameVBox);
+			break;
+		case GROUP:
+			parentHBox.getChildren().add(groupVBox);
+			break;
+		case YEAR:
+			parentHBox.getChildren().add(yearVBox);
+			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
+			break;
+		case HANDLE:
+			parentHBox.getChildren().add(handleVBox);
+			break;
+		case EVENT:
+			parentHBox.getChildren().add(eventVBox);
+			break;
+		case RATING:
+			parentHBox.getChildren().add(ratingVBox);
+			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
+			break;
+		case CATEGORY:
+			parentHBox.getChildren().add(categoryVBox);
+			break;
+		case UPDATED:
+			parentHBox.getChildren().add(updatedVBox);
+			break;
+		default:
+			break;
+		}
+		return tableColumn;
+	}
+
+	private void setColumnWidth(Column column, Number width) {
+		switch (column.getColumnType()) {
+		case NAME:
+			nameField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case GROUP:
+			groupField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case YEAR:
+			yearField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case HANDLE:
+			handleField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case EVENT:
+			eventField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case RATING:
+			ratingField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case CATEGORY:
+			categoryField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case UPDATED:
+			updatedField.prefWidthProperty().set(width.doubleValue());
+			break;
+		}
+	}
+
+	private void removeColumn(TableColumn<?, ?> tableColumn) {
+		Column column = (Column) tableColumn.getUserData();
+		assembly64Table.getColumns().remove(tableColumn);
+		util.getConfig().getAssembly64Section().getColumns().remove(column);
+		switch (column.getColumnType()) {
+		case NAME:
+			parentHBox.getChildren().remove(nameVBox);
+			nameField.setText("");
+			break;
+		case GROUP:
+			parentHBox.getChildren().remove(groupVBox);
+			groupField.setText("");
+			break;
+		case YEAR:
+			parentHBox.getChildren().remove(yearVBox);
+			yearField.getSelectionModel().select(0);
+			break;
+		case HANDLE:
+			parentHBox.getChildren().remove(handleVBox);
+			handleField.setText("");
+			break;
+		case EVENT:
+			parentHBox.getChildren().remove(eventVBox);
+			eventField.setText("");
+			break;
+		case RATING:
+			parentHBox.getChildren().remove(ratingVBox);
+			ratingField.getSelectionModel().select(0);
+			break;
+		case CATEGORY:
+			parentHBox.getChildren().remove(categoryVBox);
+			categoryField.getSelectionModel().select(Category.ALL);
+			break;
+		case UPDATED:
+			parentHBox.getChildren().remove(updatedVBox);
+			break;
+
+		default:
+			break;
+		}
+		search();
+	}
+
+	void moveColumn() {
+		parentHBox.getChildren().clear();
+		Collection<Column> newOrderList = new ArrayList<Column>();
+		for (TableColumn<SearchResult, ?> tableColumn : assembly64Table.getColumns()) {
+			Column column = (Column) tableColumn.getUserData();
+			if (column != null) {
+				newOrderList.add(column);
+				switch (column.getColumnType()) {
+				case NAME:
+					parentHBox.getChildren().add(nameVBox);
+					break;
+				case GROUP:
+					parentHBox.getChildren().add(groupVBox);
+					break;
+				case YEAR:
+					parentHBox.getChildren().add(yearVBox);
+					break;
+				case HANDLE:
+					parentHBox.getChildren().add(handleVBox);
+					break;
+				case EVENT:
+					parentHBox.getChildren().add(eventVBox);
+					break;
+				case RATING:
+					parentHBox.getChildren().add(ratingVBox);
+					break;
+				case CATEGORY:
+					parentHBox.getChildren().add(categoryVBox);
+					break;
+				case UPDATED:
+					parentHBox.getChildren().add(updatedVBox);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		util.getConfig().getAssembly64Section().getColumns().clear();
+		util.getConfig().getAssembly64Section().getColumns().addAll(newOrderList);
+	}
+
 	private ObjectMapper createObjectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JodaModule module = new JodaModule();
@@ -291,7 +521,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			asList.sort(Comparator.comparing(Category::getDescription));
 			asList.set(0, Category.ALL);
 			return FXCollections.<Category>observableArrayList(asList);
-		} catch (IOException e) {
+		} catch (ProcessingException | IOException e) {
 			System.err.println("Unexpected result: " + e.getMessage());
 			return Collections.emptyList();
 		}
@@ -310,7 +540,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (uri.getPath().contains("***/***/***/***/***/***/***")) {
 			return;
 		}
-		String result = null;
+		String result = "";
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			result = response.readEntity(String.class);
 
@@ -323,7 +553,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			nextBtn.setDisable(stop == null);
 
 			searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
-		} catch (IOException e) {
+		} catch (ProcessingException | IOException e) {
 			try {
 				ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
 				System.err.println(String.join("\n", errorMessage.getStatus() + ": " + errorMessage.getError(),
@@ -357,7 +587,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			if (autostart.getAndSet(false)) {
 				autostart();
 			}
-		} catch (IOException e) {
+		} catch (ProcessingException | IOException e) {
 			System.err.println("Unexpected result: " + e.getMessage());
 		}
 	}
@@ -369,7 +599,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		try {
 			contentEntryFile = requestContentEntry(contentEntry);
-		} catch (IOException e) {
+		} catch (ProcessingException | IOException e) {
 			System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 		}
 		directory.loadPreview(contentEntryFile);
