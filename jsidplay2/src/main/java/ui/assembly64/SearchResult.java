@@ -1,5 +1,7 @@
 package ui.assembly64;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,7 +31,7 @@ public class SearchResult {
 	}
 
 	public String getName() {
-		return nameProperty.get();
+		return StringEscapeUtils.unescapeHtml(nameProperty.get());
 	}
 
 	public void setName(String name) {

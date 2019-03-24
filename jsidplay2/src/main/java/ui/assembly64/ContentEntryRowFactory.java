@@ -25,7 +25,7 @@ public class ContentEntryRowFactory implements Callback<TableView<ContentEntry>,
 			@Override
 			public void updateItem(ContentEntry item, boolean empty) {
 				super.updateItem(item, empty);
-				setTooltip(item != null ? new Tooltip(getItem().getDecodedName()) : null);
+				setTooltip(item != null ? new Tooltip(getItem().getName()) : null);
 
 				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
 				if (!isEmpty() && currentlyPlayedContentEntryProperty.get() != null

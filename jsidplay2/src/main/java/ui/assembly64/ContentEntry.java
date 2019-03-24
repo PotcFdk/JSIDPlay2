@@ -12,7 +12,7 @@ public class ContentEntry {
 
 	public ContentEntry() {
 	}
-	
+
 	public String getId() {
 		return idProperty.get();
 	}
@@ -22,15 +22,11 @@ public class ContentEntry {
 	}
 
 	public String getName() {
-		return nameProperty.get();
+		return URIUtil.decodePath(nameProperty.get());
 	}
 
 	public void setName(String name) {
 		nameProperty.set(name);
-	}
-	
-	public String getDecodedName() {
-		return URIUtil.decodePath(getName());
 	}
 
 }
