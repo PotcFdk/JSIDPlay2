@@ -62,8 +62,8 @@ import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
 import ui.common.UIPart;
 import ui.directory.Directory;
-import ui.entities.config.Column;
-import ui.entities.config.ColumnType;
+import ui.entities.config.Assembly64Column;
+import ui.entities.config.Assembly64ColumnType;
 import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
@@ -295,7 +295,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void restoreColumns() {
 		fieldContainer.getChildren().clear();
-		for (Column column : util.getConfig().getAssembly64Section().getColumns()) {
+		for (Assembly64Column column : util.getConfig().getAssembly64Section().getColumns()) {
 			setColumnWidth(column, addColumn(column).getPrefWidth());
 		}
 	}
@@ -306,13 +306,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 		removeColumn.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"),
 				selectedCell != null ? selectedCell.getTableColumn().getText() : "?"));
 
-		List<ColumnType> columnTypes = new ArrayList<>(Arrays.asList(ColumnType.values()));
+		List<Assembly64ColumnType> columnTypes = new ArrayList<>(Arrays.asList(Assembly64ColumnType.values()));
 		columnTypes.removeIf(columnType -> assembly64Table.getColumns().stream()
-				.map(tableColumn -> ((Column) tableColumn.getUserData()).getColumnType()).collect(Collectors.toList())
-				.contains(columnType));
+				.map(tableColumn -> ((Assembly64Column) tableColumn.getUserData()).getColumnType())
+				.collect(Collectors.toList()).contains(columnType));
 
 		addColumnMenu.getItems().clear();
-		for (ColumnType columnType : columnTypes) {
+		for (Assembly64ColumnType columnType : columnTypes) {
 			addAddColumnHeaderMenuItem(columnType);
 		}
 	}
@@ -323,11 +323,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 		startMenu.setDisable(contentEntry == null);
 	}
 
-	private void addAddColumnHeaderMenuItem(ColumnType columnType) {
+	private void addAddColumnHeaderMenuItem(Assembly64ColumnType columnType) {
 		MenuItem menuItem = new MenuItem();
 		menuItem.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
 		menuItem.setOnAction(event -> {
-			Column column = new Column();
+			Assembly64Column column = new Assembly64Column();
 			column.setColumnType(columnType);
 			addColumn(column);
 			util.getConfig().getAssembly64Section().getColumns().add(column);
@@ -335,8 +335,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		addColumnMenu.getItems().add(menuItem);
 	}
 
-	private TableColumn<SearchResult, String> addColumn(Column column) {
-		ColumnType columnType = column.getColumnType();
+	private TableColumn<SearchResult, String> addColumn(Assembly64Column column) {
+		Assembly64ColumnType columnType = column.getColumnType();
 
 		TableColumn<SearchResult, String> tableColumn = new TableColumn<>();
 		tableColumn.setUserData(column);
@@ -381,7 +381,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		return tableColumn;
 	}
 
-	private void setColumnWidth(Column column, Number width) {
+	private void setColumnWidth(Assembly64Column column, Number width) {
 		switch (column.getColumnType()) {
 		case NAME:
 			nameField.prefWidthProperty().set(width.doubleValue());
@@ -412,7 +412,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void removeColumn(TableColumn<?, ?> tableColumn) {
 		boolean repeatSearch = false;
-		Column column = (Column) tableColumn.getUserData();
+		Assembly64Column column = (Assembly64Column) tableColumn.getUserData();
 		switch (column.getColumnType()) {
 		case NAME:
 			fieldContainer.getChildren().remove(nameVBox);
@@ -466,36 +466,37 @@ public class Assembly64 extends C64VBox implements UIPart {
 	void moveColumn() {
 		fieldContainer.getChildren().clear();
 		util.getConfig().getAssembly64Section().getColumns().clear();
-		assembly64Table.getColumns().stream().map(tableColumn -> (Column) tableColumn.getUserData()).filter(column -> {
-			switch (column.getColumnType()) {
-			case NAME:
-				fieldContainer.getChildren().add(nameVBox);
-				return true;
-			case GROUP:
-				fieldContainer.getChildren().add(groupVBox);
-				return true;
-			case YEAR:
-				fieldContainer.getChildren().add(yearVBox);
-				return true;
-			case HANDLE:
-				fieldContainer.getChildren().add(handleVBox);
-				return true;
-			case EVENT:
-				fieldContainer.getChildren().add(eventVBox);
-				return true;
-			case RATING:
-				fieldContainer.getChildren().add(ratingVBox);
-				return true;
-			case CATEGORY:
-				fieldContainer.getChildren().add(categoryVBox);
-				return true;
-			case UPDATED:
-				fieldContainer.getChildren().add(updatedVBox);
-				return true;
-			default:
-				return true;
-			}
-		}).forEach(column -> util.getConfig().getAssembly64Section().getColumns().add(column));
+		assembly64Table.getColumns().stream().map(tableColumn -> (Assembly64Column) tableColumn.getUserData())
+				.filter(column -> {
+					switch (column.getColumnType()) {
+					case NAME:
+						fieldContainer.getChildren().add(nameVBox);
+						return true;
+					case GROUP:
+						fieldContainer.getChildren().add(groupVBox);
+						return true;
+					case YEAR:
+						fieldContainer.getChildren().add(yearVBox);
+						return true;
+					case HANDLE:
+						fieldContainer.getChildren().add(handleVBox);
+						return true;
+					case EVENT:
+						fieldContainer.getChildren().add(eventVBox);
+						return true;
+					case RATING:
+						fieldContainer.getChildren().add(ratingVBox);
+						return true;
+					case CATEGORY:
+						fieldContainer.getChildren().add(categoryVBox);
+						return true;
+					case UPDATED:
+						fieldContainer.getChildren().add(updatedVBox);
+						return true;
+					default:
+						return true;
+					}
+				}).forEach(column -> util.getConfig().getAssembly64Section().getColumns().add(column));
 	}
 
 	private ObjectMapper createObjectMapper() {

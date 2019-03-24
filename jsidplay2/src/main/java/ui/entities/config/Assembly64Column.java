@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Access(AccessType.PROPERTY)
-public class Column {
+public class Assembly64Column {
 	private Integer id;
 
 	@Id
@@ -24,13 +24,13 @@ public class Column {
 		this.id = id;
 	}
 
-	private ColumnType columnType;
+	private Assembly64ColumnType columnType;
 
-	public ColumnType getColumnType() {
+	public Assembly64ColumnType getColumnType() {
 		return columnType;
 	}
 
-	public void setColumnType(ColumnType columnType) {
+	public void setColumnType(Assembly64ColumnType columnType) {
 		this.columnType = columnType;
 	}
 

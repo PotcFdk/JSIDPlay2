@@ -13,7 +13,7 @@
 		<class>ui.entities.config.FavoritesSection</class>
 		<class>ui.entities.config.FavoriteColumn</class>
 		<class>ui.entities.config.Assembly64Section</class>
-		<class>ui.entities.config.Column</class>
+		<class>ui.entities.config.Assembly64Column</class>
 		<class>ui.entities.config.FilterSection</class>
 		<class>ui.entities.config.JoystickSection</class>
 		<class>ui.entities.config.PrinterSection</class>

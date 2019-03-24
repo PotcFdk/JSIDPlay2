@@ -13,46 +13,46 @@ import javax.persistence.OneToMany;
 @Access(AccessType.PROPERTY)
 public class Assembly64Section {
 
-	private final List<Column> INITIAL_COLUMNS;
+	private final List<Assembly64Column> INITIAL_COLUMNS;
 	{
 		INITIAL_COLUMNS = new ArrayList<>();
-		Column categoryColumn = new Column();
-		categoryColumn.setColumnType(ColumnType.CATEGORY);
-		categoryColumn.setWidth(ColumnType.CATEGORY.getDefaultWidth());
+		Assembly64Column categoryColumn = new Assembly64Column();
+		categoryColumn.setColumnType(Assembly64ColumnType.CATEGORY);
+		categoryColumn.setWidth(Assembly64ColumnType.CATEGORY.getDefaultWidth());
 		INITIAL_COLUMNS.add(categoryColumn);
-		Column nameColumn = new Column();
-		nameColumn.setColumnType(ColumnType.NAME);
-		nameColumn.setWidth(ColumnType.NAME.getDefaultWidth());
+		Assembly64Column nameColumn = new Assembly64Column();
+		nameColumn.setColumnType(Assembly64ColumnType.NAME);
+		nameColumn.setWidth(Assembly64ColumnType.NAME.getDefaultWidth());
 		INITIAL_COLUMNS.add(nameColumn);
-		Column groupColumn = new Column();
-		groupColumn.setColumnType(ColumnType.GROUP);
-		groupColumn.setWidth(ColumnType.GROUP.getDefaultWidth());
+		Assembly64Column groupColumn = new Assembly64Column();
+		groupColumn.setColumnType(Assembly64ColumnType.GROUP);
+		groupColumn.setWidth(Assembly64ColumnType.GROUP.getDefaultWidth());
 		INITIAL_COLUMNS.add(groupColumn);
-		Column eventColumn = new Column();
-		eventColumn.setColumnType(ColumnType.EVENT);
-		eventColumn.setWidth(ColumnType.EVENT.getDefaultWidth());
+		Assembly64Column eventColumn = new Assembly64Column();
+		eventColumn.setColumnType(Assembly64ColumnType.EVENT);
+		eventColumn.setWidth(Assembly64ColumnType.EVENT.getDefaultWidth());
 		INITIAL_COLUMNS.add(eventColumn);
-		Column ratingColumn = new Column();
-		ratingColumn.setColumnType(ColumnType.RATING);
-		ratingColumn.setWidth(ColumnType.RATING.getDefaultWidth());
+		Assembly64Column ratingColumn = new Assembly64Column();
+		ratingColumn.setColumnType(Assembly64ColumnType.RATING);
+		ratingColumn.setWidth(Assembly64ColumnType.RATING.getDefaultWidth());
 		INITIAL_COLUMNS.add(ratingColumn);
-		Column yearColumn = new Column();
-		yearColumn.setColumnType(ColumnType.YEAR);
-		yearColumn.setWidth(ColumnType.YEAR.getDefaultWidth());
+		Assembly64Column yearColumn = new Assembly64Column();
+		yearColumn.setColumnType(Assembly64ColumnType.YEAR);
+		yearColumn.setWidth(Assembly64ColumnType.YEAR.getDefaultWidth());
 		INITIAL_COLUMNS.add(yearColumn);
 	}
 
-	private List<Column> columns = INITIAL_COLUMNS;
+	private List<Assembly64Column> columns = INITIAL_COLUMNS;
 
 	@OneToMany(cascade = CascadeType.ALL)
-	public List<Column> getColumns() {
+	public List<Assembly64Column> getColumns() {
 		if (columns == null) {
-			columns = new ArrayList<Column>();
+			columns = new ArrayList<Assembly64Column>();
 		}
 		return columns;
 	}
 
-	public void setColumns(List<Column> columns) {
+	public void setColumns(List<Assembly64Column> columns) {
 		this.columns = columns;
 	}
 
