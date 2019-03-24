@@ -288,7 +288,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			try {
 				util.getPlayer().insertDisk(contentEntryFile);
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getDecodedName()));
 			}
 		}
 	}
@@ -319,7 +319,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void showContentEntryContextMenu() {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-		attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
+		attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getDecodedName())));
 		startMenu.setDisable(contentEntry == null);
 	}
 
@@ -597,7 +597,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try {
 			contentEntryFile = requestContentEntry(contentEntry);
 		} catch (ProcessingException | IOException e) {
-			System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+			System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getDecodedName()));
 		}
 		directory.loadPreview(contentEntryFile);
 		if (doAutostart) {
@@ -612,7 +612,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			// name without embedded sub-folder (sid/name.sid -> name.sid):
-			String name = new File(contentEntry.getName()).getName();
+			String name = new File(contentEntry.getDecodedName()).getName();
 			File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
 			tempFile.deleteOnExit();
 			try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -670,7 +670,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 					currentlyPlayedContentEntryProperty.set(contentEntry);
 				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getDecodedName()));
 			}
 		}
 	}

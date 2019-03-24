@@ -205,7 +205,7 @@
 								<TableColumn text="%FILENAME"
 									fx:id="contentEntryColumn">
 									<cellValueFactory>
-										<PropertyValueFactory property="name" />
+										<PropertyValueFactory property="decodedName" />
 									</cellValueFactory>
 								</TableColumn>
 							</columns>

@@ -14,7 +14,7 @@ public class ContentEntryRowFactory implements Callback<TableView<ContentEntry>,
 	public ObjectProperty<ContentEntry> getCurrentlyPlayedContentEntryProperty() {
 		return currentlyPlayedContentEntryProperty;
 	}
-	
+
 	public void setCurrentlyPlayedContentEntryProperty(ObjectProperty<ContentEntry> currentlyPlayedHVSCEntryProperty) {
 		this.currentlyPlayedContentEntryProperty = currentlyPlayedHVSCEntryProperty;
 	}
@@ -25,7 +25,7 @@ public class ContentEntryRowFactory implements Callback<TableView<ContentEntry>,
 			@Override
 			public void updateItem(ContentEntry item, boolean empty) {
 				super.updateItem(item, empty);
-				setTooltip(item != null ? new Tooltip(getItem().getName()) : null);
+				setTooltip(item != null ? new Tooltip(getItem().getDecodedName()) : null);
 
 				getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
 				if (!isEmpty() && currentlyPlayedContentEntryProperty.get() != null

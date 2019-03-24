@@ -1,5 +1,7 @@
 package ui.assembly64;
 
+import org.eclipse.jetty.util.URIUtil;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -25,6 +27,10 @@ public class ContentEntry {
 
 	public void setName(String name) {
 		nameProperty.set(name);
+	}
+	
+	public String getDecodedName() {
+		return URIUtil.decodePath(getName());
 	}
 
 }
