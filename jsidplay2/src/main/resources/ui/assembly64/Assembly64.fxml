@@ -90,8 +90,7 @@
 					<children>
 						<VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
 							GridPane.columnSpan="2" GridPane.fillHeight="true">
-							<HBox fx:id="parentHBox">
-							</HBox>
+							<HBox fx:id="fieldContainer" />
 							<TableView fx:id="assembly64Table">
 								<rowFactory>
 									<Assembly64RowFactory>
