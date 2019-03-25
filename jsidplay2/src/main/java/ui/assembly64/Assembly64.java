@@ -18,6 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.ProcessingException;
@@ -112,7 +114,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private Menu addColumnMenu;
 
 	@FXML
-	private MenuItem removeColumn;
+	private MenuItem removeColumn, attachDiskMenu, startMenu;
 
 	@FXML
 	private TableColumn<SearchResult, Category> categoryColumn;
@@ -134,9 +136,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private ContextMenu assembly64ContextMenu, contentEntryContextMenu;
-
-	@FXML
-	private MenuItem attachDiskMenu, startMenu;
 
 	private ObservableList<Category> categoryItems;
 	private ObservableList<SearchResult> searchResults;
@@ -528,12 +527,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/find2").path(
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
-				.queryParam("offset", searchOffset).build(get(nameField), get(groupField), get(yearField),
-						get(handleField), get(eventField), get(ratingField), getCategory(categoryField),
+				.queryParam("offset", searchOffset).build(get(nameField), get(groupField),
+						get(yearField, value -> value, value -> value == 0, "***"), get(handleField), get(eventField),
+						get(ratingField, value -> value, value -> value == 0, "***"),
+						get(categoryField, value -> value.getId(), value -> value == Category.ALL, "***"),
 						get(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
 						get(prgField), get(tapField), get(crtField), get(sidField), get(binField), get(g64Field), "n",
-						getAge(ageField));
-
+						get(ageField, value -> value.getDays(), value -> value == Age.ALL, -1));
 		if (uri.getPath().contains("***/***/***/***/***/***/***")) {
 			return;
 		}
@@ -622,25 +622,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private String getCategory(ComboBox<Category> field) {
-		Category category = field.getValue();
-		if (category.equals(Category.ALL)) {
-			return "***";
+	private <T, U> U get(ComboBox<T> comboBox, Function<T, U> toResult, Predicate<T> checkEmpty, U emptyValue) {
+		T value = comboBox.getValue();
+		if (checkEmpty.test(value)) {
+			return emptyValue;
 		}
-		return String.valueOf(category.getId());
-	}
-
-	private String get(ComboBox<Integer> field) {
-		Integer value = field.getSelectionModel().getSelectedItem();
-		if (value == 0) {
-			return "***";
-		}
-		return String.valueOf(value);
-	}
-
-	private int getAge(ComboBox<Age> field) {
-		Age value = field.getSelectionModel().getSelectedItem();
-		return value != null ? value.getDays() : -1;
+		return toResult.apply(value);
 	}
 
 	private String get(TextField field) {
