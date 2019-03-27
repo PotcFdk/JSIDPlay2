@@ -462,7 +462,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	void moveColumn() {
+	private void moveColumn() {
 		fieldContainer.getChildren().clear();
 		util.getConfig().getAssembly64Section().getColumns().clear();
 		assembly64Table.getColumns().stream().map(tableColumn -> (Assembly64Column) tableColumn.getUserData())
@@ -607,7 +607,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{category}/{contentEntryId}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
