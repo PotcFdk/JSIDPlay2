@@ -1,10 +1,11 @@
 package ui.assembly64;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContentEntrySearchResult {
 
-	private List<ContentEntry> contentEntry;
+	private List<ContentEntry> contentEntry = new ArrayList<>();
 	private Boolean isContentByItself;
 
 	public ContentEntrySearchResult() {

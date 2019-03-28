@@ -573,7 +573,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		directory.clear();
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/entry").path("/{id}/{category}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/contententries").path("/{id}/{category}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
@@ -607,7 +607,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/u64/binary").path("/{id}/{categoryId}/{contentEntryId}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/binary")
+				.path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
