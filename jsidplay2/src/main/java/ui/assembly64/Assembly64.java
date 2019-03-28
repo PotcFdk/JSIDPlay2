@@ -573,7 +573,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		directory.clear();
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/contententries").path("/{id}/{category}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/contententries").path("/{id}/{categoryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
