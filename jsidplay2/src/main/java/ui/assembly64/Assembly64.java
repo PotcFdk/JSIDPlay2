@@ -10,7 +10,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,6 +72,38 @@ import ui.entities.config.Assembly64ColumnType;
 import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
+
+	private static final class NumericComparator implements Comparator<String> {
+		public int compare(String o1, String o2) {
+			return extractInt(o1) - extractInt(o2);
+		}
+
+		private int extractInt(String s) {
+			try {
+				String num = s.replaceAll("\\D", "");
+				return num.isEmpty() ? 0 : Integer.parseInt(num);
+			} catch (NumberFormatException e) {
+				return Integer.MAX_VALUE;
+			}
+		}
+	}
+
+	private static final class DateComparator implements Comparator<String> {
+		private DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		public int compare(String o1, String o2) {
+			return extractDate(o1).compareTo(extractDate(o2));
+		}
+
+		private LocalDate extractDate(String s) {
+			try {
+				return LocalDate.parse(s, DATE_FORMATTER);
+			} catch (DateTimeParseException e) {
+				return LocalDate.now();
+			}
+		}
+	}
+
 	public static final String ID = "ASSEMBLY64";
 
 	private static final int MAX_ROWS = 500;
@@ -105,10 +140,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private TableView<ContentEntry> contentEntryTable;
-
-	@FXML
-	private TableColumn<SearchResult, String> nameColumn, groupColumn, yearColumn, handleColumn, eventColumn,
-			ratingColumn, updatedColumn;
 
 	@FXML
 	private Menu addColumnMenu;
@@ -357,6 +388,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		case YEAR:
 			fieldContainer.getChildren().add(yearVBox);
 			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
+			tableColumn.setComparator(new NumericComparator());
 			break;
 		case HANDLE:
 			fieldContainer.getChildren().add(handleVBox);
@@ -367,12 +399,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 		case RATING:
 			fieldContainer.getChildren().add(ratingVBox);
 			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
+			tableColumn.setComparator(new NumericComparator());
 			break;
 		case CATEGORY:
 			fieldContainer.getChildren().add(categoryVBox);
 			break;
 		case UPDATED:
 			fieldContainer.getChildren().add(updatedVBox);
+			tableColumn.setComparator(new DateComparator());
 			break;
 		default:
 			break;
