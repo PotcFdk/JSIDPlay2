@@ -73,67 +73,42 @@ import ui.filefilter.DiskFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 
-	private static final class NumericComparator implements Comparator<String> {
-		public int compare(String o1, String o2) {
-			return extractInt(o1) - extractInt(o2);
-		}
-
-		private int extractInt(String s) {
-			try {
-				String num = s.replaceAll("\\D", "");
-				return num.isEmpty() ? 0 : Integer.parseInt(num);
-			} catch (NumberFormatException e) {
-				return Integer.MAX_VALUE;
-			}
-		}
-	}
-
-	private static final class DateComparator implements Comparator<String> {
-		private DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-		public int compare(String o1, String o2) {
-			return extractDate(o1).compareTo(extractDate(o2));
-		}
-
-		private LocalDate extractDate(String s) {
-			try {
-				return LocalDate.parse(s, DATE_FORMATTER);
-			} catch (DateTimeParseException e) {
-				return LocalDate.now();
-			}
-		}
-	}
-
 	public static final String ID = "ASSEMBLY64";
+
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	private static final Comparator<String> NUMERIC_COMPARATOR = (o1, o2) -> extractInt(o1) - extractInt(o2);
+
+	private static final Comparator<String> DATE_COMPARATOR = (o1, o2) -> extractDate(o1).compareTo(extractDate(o2));
 
 	private static final int MAX_ROWS = 500;
 
 	private static final int DEFAULT_WIDTH = 150;
 
 	@FXML
-	private BorderPane parent;
+	private BorderPane borderPane;
 
 	@FXML
-	private HBox fieldContainer;
+	private HBox hBox;
 
 	@FXML
 	private VBox nameVBox, groupVBox, yearVBox, handleVBox, eventVBox, ratingVBox, categoryVBox, updatedVBox;
 
 	@FXML
-	private TextField nameField, groupField, handleField, eventField, updatedField;
+	private TextField nameTextField, groupTextField, handleTextField, eventTextField, updatedTextField;
 
 	@FXML
-	private ComboBox<Integer> yearField, ratingField;
+	private ComboBox<Category> categoryComboBox;
 
 	@FXML
-	private ComboBox<Category> categoryField;
+	private ComboBox<Integer> yearComboBox, ratingComboBox;
 
 	@FXML
-	private ComboBox<Age> ageField;
+	private ComboBox<Age> ageComboBox;
 
 	@FXML
-	private CheckBox searchFromStartField, d64Field, t64Field, d81Field, d71Field, prgField, tapField, crtField,
-			sidField, binField, g64Field;
+	private CheckBox searchFromStartCheckBox, d64CheckBox, t64CheckBox, d81CheckBox, d71CheckBox, prgCheckBox,
+			tapCheckBox, crtCheckBox, sidCheckBox, binCheckBox, g64CheckBox;
 
 	@FXML
 	private TableView<SearchResult> assembly64Table;
@@ -145,32 +120,29 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private Menu addColumnMenu;
 
 	@FXML
-	private MenuItem removeColumn, attachDiskMenu, startMenu;
+	private MenuItem removeColumnMenuItem, attachDiskMenuItem, autostartMenuItem;
 
 	@FXML
-	private TableColumn<SearchResult, Category> categoryColumn;
+	private TableColumn<ContentEntry, String> contentEntryFilenameColumn;
 
 	@FXML
-	private TableColumn<ContentEntry, String> contentEntryColumn;
-
-	@FXML
-	private Button prevBtn, nextBtn;
+	private Button prevButton, nextButton;
 
 	@FXML
 	private Directory directory;
 
 	@FXML
-	private ObjectProperty<SearchResult> currentlyPlayedRowProperty;
+	private ObjectProperty<SearchResult> currentlyPlayedSearchResultRowProperty;
 
 	@FXML
-	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryProperty;
+	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryRowProperty;
 
 	@FXML
 	private ContextMenu assembly64ContextMenu, contentEntryContextMenu;
 
 	private ObservableList<Category> categoryItems;
-	private ObservableList<SearchResult> searchResults;
-	private ObservableList<ContentEntry> contentEntries;
+	private ObservableList<SearchResult> searchResultItems;
+	private ObservableList<ContentEntry> contentEntryItems;
 
 	private SearchResult searchResult;
 
@@ -188,10 +160,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private AtomicBoolean autostart;
 
-	private PauseTransition pauseTransition, pauseTransitionContentEntry;
-	private SequentialTransition sequentialTransition, sequentialTransitionContentEntry;
+	private PauseTransition pauseTransitionSearchResult, pauseTransitionContentEntry;
+	private SequentialTransition sequentialTransitionSearchResult, sequentialTransitionContentEntry;
 
-	private TablePosition<?, ?> selectedCell;
+	private TablePosition<?, ?> searchResultTableSelectedCell;
 
 	public Assembly64() {
 	}
@@ -210,8 +182,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		categoryItems = FXCollections.observableArrayList(requestCategories());
 		objectMapper = createObjectMapper();
 
-		searchResults = FXCollections.<SearchResult>observableArrayList();
-		SortedList<SearchResult> sortedSearchResultList = new SortedList<>(searchResults);
+		searchResultItems = FXCollections.<SearchResult>observableArrayList();
+		SortedList<SearchResult> sortedSearchResultList = new SortedList<>(searchResultItems);
 		sortedSearchResultList.comparatorProperty().bind(assembly64Table.comparatorProperty());
 		assembly64Table.setItems(sortedSearchResultList);
 		assembly64Table.getSelectionModel().selectedItemProperty().addListener((s, o, n) -> getContentEntries(false));
@@ -228,8 +200,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		assembly64ContextMenu.setOnShown(event -> showAssembly64ContextMenu());
 		restoreColumns();
 
-		contentEntries = FXCollections.<ContentEntry>observableArrayList();
-		SortedList<ContentEntry> sortedContentEntryList = new SortedList<>(contentEntries);
+		contentEntryItems = FXCollections.<ContentEntry>observableArrayList();
+		SortedList<ContentEntry> sortedContentEntryList = new SortedList<>(contentEntryItems);
 		sortedContentEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
 		contentEntryTable.setItems(sortedContentEntryList);
 		contentEntryTable.getSelectionModel().selectedItemProperty()
@@ -238,36 +210,36 @@ public class Assembly64 extends C64VBox implements UIPart {
 		contentEntryTable.setOnMousePressed(e -> getContentEntryFile(e.isPrimaryButtonDown() && e.getClickCount() > 1));
 		contentEntryTable.setOnKeyReleased(event -> getContentEntryFile(event.getCode() == KeyCode.ENTER));
 		contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
-		contentEntryTable.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
+		contentEntryTable.prefHeightProperty().bind(borderPane.heightProperty().multiply(0.4));
 		contentEntryContextMenu.setOnShown(event -> showContentEntryContextMenu());
-		contentEntryColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
+		contentEntryFilenameColumn.prefWidthProperty().bind(contentEntryTable.widthProperty());
 
 		directory.getAutoStartFileProperty().addListener((s, o, n) -> autostart(n));
 		directory.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
-		directory.prefHeightProperty().bind(parent.heightProperty().multiply(0.4));
+		directory.prefHeightProperty().bind(borderPane.heightProperty().multiply(0.4));
 
-		yearField.setItems(FXCollections.<Integer>observableArrayList(
+		yearComboBox.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
-		yearField.getSelectionModel().select(0);
-		yearField.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
+		yearComboBox.getSelectionModel().select(0);
+		yearComboBox.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
 
-		ratingField.setItems(FXCollections
+		ratingComboBox.setItems(FXCollections
 				.<Integer>observableArrayList(concat(of(0), rangeClosed(1, 10)).boxed().collect(Collectors.toList())));
-		ratingField.getSelectionModel().select(0);
-		ratingField.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
+		ratingComboBox.getSelectionModel().select(0);
+		ratingComboBox.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
 
-		ageField.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
-		ageField.setItems(FXCollections.<Age>observableArrayList(Age.values()));
-		ageField.getSelectionModel().select(Age.ALL);
+		ageComboBox.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
+		ageComboBox.setItems(FXCollections.<Age>observableArrayList(Age.values()));
+		ageComboBox.getSelectionModel().select(Age.ALL);
 
-		categoryField.setConverter(new CategoryToStringConverter<Category>(util.getBundle()));
-		categoryField.setItems(categoryItems);
-		categoryField.getSelectionModel().select(Category.ALL);
+		categoryComboBox.setConverter(new CategoryToStringConverter<Category>(util.getBundle()));
+		categoryComboBox.setItems(categoryItems);
+		categoryComboBox.getSelectionModel().select(Category.ALL);
 
-		pauseTransition = new PauseTransition(Duration.millis(1000));
-		sequentialTransition = new SequentialTransition(pauseTransition);
-		sequentialTransition.setCycleCount(1);
-		pauseTransition.setOnFinished(evt -> requestSearchResults());
+		pauseTransitionSearchResult = new PauseTransition(Duration.millis(1000));
+		sequentialTransitionSearchResult = new SequentialTransition(pauseTransitionSearchResult);
+		sequentialTransitionSearchResult.setCycleCount(1);
+		pauseTransitionSearchResult.setOnFinished(evt -> requestSearchResults());
 
 		pauseTransitionContentEntry = new PauseTransition(Duration.millis(500));
 		sequentialTransitionContentEntry = new SequentialTransition(pauseTransitionContentEntry);
@@ -277,16 +249,18 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
-		sequentialTransition.stop();
+		sequentialTransitionSearchResult.stop();
 		sequentialTransitionContentEntry.stop();
 	}
 
 	@FXML
 	private void removeColumn() {
-		if (selectedCell == null) {
+		if (searchResultTableSelectedCell == null) {
 			return;
 		}
-		removeColumn(selectedCell.getTableColumn());
+		TableColumn<?, ?> tableColumn = searchResultTableSelectedCell.getTableColumn();
+		assembly64Table.getColumns().remove(tableColumn);
+		removeColumn((Assembly64Column) tableColumn.getUserData());
 	}
 
 	@FXML
@@ -324,17 +298,19 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void restoreColumns() {
-		fieldContainer.getChildren().clear();
+		hBox.getChildren().clear();
 		for (Assembly64Column column : util.getConfig().getAssembly64Section().getColumns()) {
 			setColumnWidth(column, addColumn(column).getPrefWidth());
 		}
 	}
 
 	private void showAssembly64ContextMenu() {
-		selectedCell = assembly64Table.getSelectionModel().getSelectedCells().stream().findFirst().orElse(null);
-		removeColumn.setDisable(selectedCell == null || selectedCell.getColumn() <= 0);
-		removeColumn.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"),
-				selectedCell != null ? selectedCell.getTableColumn().getText() : "?"));
+		searchResultTableSelectedCell = assembly64Table.getSelectionModel().getSelectedCells().stream().findFirst()
+				.orElse(null);
+		removeColumnMenuItem
+				.setDisable(searchResultTableSelectedCell == null || searchResultTableSelectedCell.getColumn() <= 0);
+		removeColumnMenuItem.setText(String.format(util.getBundle().getString("REMOVE_COLUMN"),
+				!removeColumnMenuItem.isDisable() ? searchResultTableSelectedCell.getTableColumn().getText() : "?"));
 
 		List<Assembly64ColumnType> columnTypes = new ArrayList<>(Arrays.asList(Assembly64ColumnType.values()));
 		columnTypes.removeIf(columnType -> assembly64Table.getColumns().stream()
@@ -349,8 +325,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void showContentEntryContextMenu() {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-		attachDiskMenu.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
-		startMenu.setDisable(contentEntry == null);
+		attachDiskMenuItem.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
+		autostartMenuItem.setDisable(contentEntry == null);
 	}
 
 	private void addAddColumnHeaderMenuItem(Assembly64ColumnType columnType) {
@@ -380,33 +356,33 @@ public class Assembly64 extends C64VBox implements UIPart {
 		assembly64Table.getColumns().add(tableColumn);
 		switch (columnType) {
 		case NAME:
-			fieldContainer.getChildren().add(nameVBox);
+			hBox.getChildren().add(nameVBox);
 			break;
 		case GROUP:
-			fieldContainer.getChildren().add(groupVBox);
+			hBox.getChildren().add(groupVBox);
 			break;
 		case YEAR:
-			fieldContainer.getChildren().add(yearVBox);
+			hBox.getChildren().add(yearVBox);
 			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
-			tableColumn.setComparator(new NumericComparator());
+			tableColumn.setComparator(NUMERIC_COMPARATOR);
 			break;
 		case HANDLE:
-			fieldContainer.getChildren().add(handleVBox);
+			hBox.getChildren().add(handleVBox);
 			break;
 		case EVENT:
-			fieldContainer.getChildren().add(eventVBox);
+			hBox.getChildren().add(eventVBox);
 			break;
 		case RATING:
-			fieldContainer.getChildren().add(ratingVBox);
+			hBox.getChildren().add(ratingVBox);
 			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
-			tableColumn.setComparator(new NumericComparator());
+			tableColumn.setComparator(NUMERIC_COMPARATOR);
 			break;
 		case CATEGORY:
-			fieldContainer.getChildren().add(categoryVBox);
+			hBox.getChildren().add(categoryVBox);
 			break;
 		case UPDATED:
-			fieldContainer.getChildren().add(updatedVBox);
-			tableColumn.setComparator(new DateComparator());
+			hBox.getChildren().add(updatedVBox);
+			tableColumn.setComparator(DATE_COMPARATOR);
 			break;
 		default:
 			break;
@@ -417,79 +393,77 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void setColumnWidth(Assembly64Column column, Number width) {
 		switch (column.getColumnType()) {
 		case NAME:
-			nameField.prefWidthProperty().set(width.doubleValue());
+			nameTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		case GROUP:
-			groupField.prefWidthProperty().set(width.doubleValue());
+			groupTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		case YEAR:
-			yearField.prefWidthProperty().set(width.doubleValue());
+			yearComboBox.prefWidthProperty().set(width.doubleValue());
 			break;
 		case HANDLE:
-			handleField.prefWidthProperty().set(width.doubleValue());
+			handleTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		case EVENT:
-			eventField.prefWidthProperty().set(width.doubleValue());
+			eventTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		case RATING:
-			ratingField.prefWidthProperty().set(width.doubleValue());
+			ratingComboBox.prefWidthProperty().set(width.doubleValue());
 			break;
 		case CATEGORY:
-			categoryField.prefWidthProperty().set(width.doubleValue());
+			categoryComboBox.prefWidthProperty().set(width.doubleValue());
 			break;
 		case UPDATED:
-			updatedField.prefWidthProperty().set(width.doubleValue());
+			updatedTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		}
 	}
 
-	private void removeColumn(TableColumn<?, ?> tableColumn) {
+	private void removeColumn(Assembly64Column column) {
 		boolean repeatSearch = false;
-		Assembly64Column column = (Assembly64Column) tableColumn.getUserData();
 		switch (column.getColumnType()) {
 		case NAME:
-			fieldContainer.getChildren().remove(nameVBox);
-			repeatSearch = !nameField.getText().isEmpty();
-			nameField.setText("");
+			hBox.getChildren().remove(nameVBox);
+			repeatSearch = !nameTextField.getText().isEmpty();
+			nameTextField.setText("");
 			break;
 		case GROUP:
-			fieldContainer.getChildren().remove(groupVBox);
-			repeatSearch = !groupField.getText().isEmpty();
-			groupField.setText("");
+			hBox.getChildren().remove(groupVBox);
+			repeatSearch = !groupTextField.getText().isEmpty();
+			groupTextField.setText("");
 			break;
 		case YEAR:
-			fieldContainer.getChildren().remove(yearVBox);
-			repeatSearch = yearField.getSelectionModel().getSelectedIndex() > 0;
-			yearField.getSelectionModel().select(0);
+			hBox.getChildren().remove(yearVBox);
+			repeatSearch = yearComboBox.getSelectionModel().getSelectedIndex() > 0;
+			yearComboBox.getSelectionModel().select(0);
 			break;
 		case HANDLE:
-			fieldContainer.getChildren().remove(handleVBox);
-			repeatSearch = !handleField.getText().isEmpty();
-			handleField.setText("");
+			hBox.getChildren().remove(handleVBox);
+			repeatSearch = !handleTextField.getText().isEmpty();
+			handleTextField.setText("");
 			break;
 		case EVENT:
-			fieldContainer.getChildren().remove(eventVBox);
-			repeatSearch = !eventField.getText().isEmpty();
-			eventField.setText("");
+			hBox.getChildren().remove(eventVBox);
+			repeatSearch = !eventTextField.getText().isEmpty();
+			eventTextField.setText("");
 			break;
 		case RATING:
-			fieldContainer.getChildren().remove(ratingVBox);
-			repeatSearch = ratingField.getSelectionModel().getSelectedIndex() > 0;
-			ratingField.getSelectionModel().select(0);
+			hBox.getChildren().remove(ratingVBox);
+			repeatSearch = ratingComboBox.getSelectionModel().getSelectedIndex() > 0;
+			ratingComboBox.getSelectionModel().select(0);
 			break;
 		case CATEGORY:
-			fieldContainer.getChildren().remove(categoryVBox);
-			repeatSearch = categoryField.getSelectionModel().getSelectedIndex() > 0;
-			categoryField.getSelectionModel().select(Category.ALL);
+			hBox.getChildren().remove(categoryVBox);
+			repeatSearch = categoryComboBox.getSelectionModel().getSelectedIndex() > 0;
+			categoryComboBox.getSelectionModel().select(Category.ALL);
 			break;
 		case UPDATED:
-			fieldContainer.getChildren().remove(updatedVBox);
+			hBox.getChildren().remove(updatedVBox);
 			break;
 
 		default:
 			break;
 		}
-		assembly64Table.getColumns().remove(tableColumn);
 		util.getConfig().getAssembly64Section().getColumns().remove(column);
 		if (repeatSearch) {
 			search();
@@ -497,34 +471,34 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void moveColumn() {
-		fieldContainer.getChildren().clear();
+		hBox.getChildren().clear();
 		util.getConfig().getAssembly64Section().getColumns().clear();
 		assembly64Table.getColumns().stream().map(tableColumn -> (Assembly64Column) tableColumn.getUserData())
 				.filter(column -> {
 					switch (column.getColumnType()) {
 					case NAME:
-						fieldContainer.getChildren().add(nameVBox);
+						hBox.getChildren().add(nameVBox);
 						return true;
 					case GROUP:
-						fieldContainer.getChildren().add(groupVBox);
+						hBox.getChildren().add(groupVBox);
 						return true;
 					case YEAR:
-						fieldContainer.getChildren().add(yearVBox);
+						hBox.getChildren().add(yearVBox);
 						return true;
 					case HANDLE:
-						fieldContainer.getChildren().add(handleVBox);
+						hBox.getChildren().add(handleVBox);
 						return true;
 					case EVENT:
-						fieldContainer.getChildren().add(eventVBox);
+						hBox.getChildren().add(eventVBox);
 						return true;
 					case RATING:
-						fieldContainer.getChildren().add(ratingVBox);
+						hBox.getChildren().add(ratingVBox);
 						return true;
 					case CATEGORY:
-						fieldContainer.getChildren().add(categoryVBox);
+						hBox.getChildren().add(categoryVBox);
 						return true;
 					case UPDATED:
-						fieldContainer.getChildren().add(updatedVBox);
+						hBox.getChildren().add(updatedVBox);
 						return true;
 					default:
 						return true;
@@ -561,13 +535,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/find2").path(
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
-				.queryParam("offset", searchOffset).build(get(nameField), get(groupField),
-						get(yearField, value -> value, value -> value == 0, "***"), get(handleField), get(eventField),
-						get(ratingField, value -> value, value -> value == 0, "***"),
-						get(categoryField, value -> value.getId(), value -> value == Category.ALL, "***"),
-						get(searchFromStartField), get(d64Field), get(t64Field), get(d71Field), get(d81Field),
-						get(prgField), get(tapField), get(crtField), get(sidField), get(binField), get(g64Field), "n",
-						get(ageField, value -> value.getDays(), value -> value == Age.ALL, -1));
+				.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
+						get(yearComboBox, value -> value, value -> value == 0, "***"), get(handleTextField),
+						get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, "***"),
+						get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, "***"),
+						get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
+						get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
+						get(binCheckBox), get(g64CheckBox), "n",
+						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1));
 		if (uri.getPath().contains("***/***/***/***/***/***/***")) {
 			return;
 		}
@@ -577,13 +552,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 			Object start = response.getHeaderString("start");
 			searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
-			prevBtn.setDisable(start == null || searchOffset == 0);
+			prevButton.setDisable(start == null || searchOffset == 0);
 
 			Object stop = response.getHeaderString("stop");
 			searchStop = stop != null ? Integer.parseInt(String.valueOf(stop)) : searchOffset + MAX_ROWS;
-			nextBtn.setDisable(stop == null);
+			nextButton.setDisable(stop == null);
 
-			searchResults.setAll(objectMapper.readValue(result, SearchResult[].class));
+			searchResultItems.setAll(objectMapper.readValue(result, SearchResult[].class));
 		} catch (ProcessingException | IOException e) {
 			try {
 				ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
@@ -596,9 +571,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void getContentEntries(boolean doAutostart) {
-		this.searchResult = assembly64Table.getSelectionModel().getSelectedItem();
-		sequentialTransitionContentEntry.playFromStart();
-		autostart.set(doAutostart);
+		if (assembly64Table.getSelectionModel().getSelectedItem() != null) {
+			this.searchResult = assembly64Table.getSelectionModel().getSelectedItem();
+			sequentialTransitionContentEntry.playFromStart();
+			autostart.set(doAutostart);
+		}
 	}
 
 	private void requestContentEntries() {
@@ -613,8 +590,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			ContentEntrySearchResult contentEntry = (ContentEntrySearchResult) objectMapper
 					.readValue(response.readEntity(String.class), ContentEntrySearchResult.class);
-			contentEntries.setAll(contentEntry.getContentEntry());
-			contentEntryTable.getSelectionModel().select(contentEntries.stream().findFirst().orElse(null));
+			contentEntryItems.setAll(contentEntry.getContentEntry());
+			contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
 			if (autostart.getAndSet(false)) {
 				autostart();
 			}
@@ -678,9 +655,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void searchAgain() {
-		searchResults.clear();
-		contentEntries.clear();
-		sequentialTransition.playFromStart();
+		searchResultItems.clear();
+		contentEntryItems.clear();
+		sequentialTransitionSearchResult.playFromStart();
 	}
 
 	private void autostart(File autostartFile) {
@@ -688,8 +665,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 			try {
 				if (convenience.autostart(contentEntryFile, Convenience.LEXICALLY_FIRST_MEDIA, autostartFile)) {
 					util.setPlayingTab(this);
-					currentlyPlayedRowProperty.set(searchResult);
-					currentlyPlayedContentEntryProperty.set(contentEntry);
+					currentlyPlayedSearchResultRowProperty.set(searchResult);
+					currentlyPlayedContentEntryRowProperty.set(contentEntry);
 				}
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
@@ -697,4 +674,20 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
+	private static final int extractInt(String string) {
+		try {
+			String numericCharacters = string.replaceAll("\\D", "");
+			return numericCharacters.isEmpty() ? 0 : Integer.parseInt(numericCharacters);
+		} catch (NumberFormatException e) {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	private static final LocalDate extractDate(String string) {
+		try {
+			return LocalDate.parse(string, DATE_FORMATTER);
+		} catch (DateTimeParseException e) {
+			return LocalDate.now();
+		}
+	}
 }

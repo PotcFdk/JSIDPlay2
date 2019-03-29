@@ -37,52 +37,52 @@
 	type="javafx.scene.layout.VBox">
 	<fx:define>
 		<SimpleObjectProperty
-			fx:id="currentlyPlayedRowProperty" />
+			fx:id="currentlyPlayedSearchResultRowProperty" />
 		<SimpleObjectProperty
-			fx:id="currentlyPlayedContentEntryProperty" />
+			fx:id="currentlyPlayedContentEntryRowProperty" />
 		<ColumnConstraints fx:id="equalColumnWidth"
 			minWidth="-Infinity" maxWidth="Infinity" hgrow="ALWAYS" />
 
 		<VBox fx:id="nameVBox">
 			<Label text="%NAME" />
-			<TextField fx:id="nameField" onAction="#search"
+			<TextField fx:id="nameTextField" onAction="#search"
 				onKeyReleased="#search" />
 		</VBox>
 		<VBox fx:id="groupVBox">
 			<Label text="%GROUP" />
-			<TextField fx:id="groupField" onAction="#search"
+			<TextField fx:id="groupTextField" onAction="#search"
 				onKeyReleased="#search" />
 		</VBox>
 		<VBox fx:id="yearVBox">
 			<Label text="%YEAR" />
-			<ComboBox fx:id="yearField" onAction="#search"
+			<ComboBox fx:id="yearComboBox" onAction="#search"
 				minWidth="100" />
 		</VBox>
 		<VBox fx:id="handleVBox">
 			<Label text="%HANDLE" />
-			<TextField fx:id="handleField" onAction="#search"
+			<TextField fx:id="handleTextField" onAction="#search"
 				onKeyReleased="#search" />
 		</VBox>
 		<VBox fx:id="eventVBox">
 			<Label text="%EVENT" />
-			<TextField fx:id="eventField" onAction="#search"
+			<TextField fx:id="eventTextField" onAction="#search"
 				onKeyReleased="#search" />
 		</VBox>
 		<VBox fx:id="ratingVBox">
 			<Label text="%RATING" />
-			<ComboBox fx:id="ratingField" onAction="#search" />
+			<ComboBox fx:id="ratingComboBox" onAction="#search" />
 		</VBox>
 		<VBox fx:id="categoryVBox">
 			<Label text="%CATEGORY" />
-			<ComboBox fx:id="categoryField" onAction="#search" />
+			<ComboBox fx:id="categoryComboBox" onAction="#search" />
 		</VBox>
 		<VBox fx:id="updatedVBox">
 			<Label text="%UPDATED" />
-			<TextField fx:id="updatedField" disable="true" />
+			<TextField fx:id="updatedTextField" disable="true" />
 		</VBox>
 	</fx:define>
 	<AnchorPane VBox.vgrow="ALWAYS">
-		<BorderPane fx:id="parent" AnchorPane.bottomAnchor="10"
+		<BorderPane fx:id="borderPane" AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
 			AnchorPane.topAnchor="10">
 			<center>
@@ -90,21 +90,21 @@
 					<children>
 						<VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
 							GridPane.columnSpan="2" GridPane.fillHeight="true">
-							<HBox fx:id="fieldContainer" />
+							<HBox fx:id="hBox" />
 							<TableView fx:id="assembly64Table">
 								<rowFactory>
 									<Assembly64RowFactory>
 										<currentlyPlayedRowProperty>
 											<fx:reference
-												source="currentlyPlayedRowProperty" />
+												source="currentlyPlayedSearchResultRowProperty" />
 										</currentlyPlayedRowProperty>
 									</Assembly64RowFactory>
 								</rowFactory>
 								<contextMenu>
 									<ContextMenu fx:id="assembly64ContextMenu">
 										<items>
-											<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN"
-												onAction="#removeColumn" />
+											<MenuItem fx:id="removeColumnMenuItem"
+												text="%REMOVE_COLUMN" onAction="#removeColumn" />
 											<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
 										</items>
 									</ContextMenu>
@@ -112,7 +112,7 @@
 							</TableView>
 						</VBox>
 						<Button focusTraversable="false" onAction="#prevPage"
-							disable="true" fx:id="prevBtn" GridPane.rowIndex="1"
+							disable="true" fx:id="prevButton" GridPane.rowIndex="1"
 							GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
 							<tooltip>
 								<Tooltip text="%PREV" />
@@ -126,7 +126,7 @@
 							</graphic>
 						</Button>
 						<Button focusTraversable="false" onAction="#nextPage"
-							disable="true" fx:id="nextBtn" GridPane.rowIndex="1"
+							disable="true" fx:id="nextButton" GridPane.rowIndex="1"
 							GridPane.columnIndex="1" GridPane.halignment="RIGHT">
 							<tooltip>
 								<Tooltip text="%NEXT" />
@@ -144,43 +144,43 @@
 							GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" expanded="false">
 							<VBox>
 								<GridPane vgap="10" hgap="10">
-									<CheckBox text="%D64" fx:id="d64Field"
+									<CheckBox text="%D64" fx:id="d64CheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="0"
 										GridPane.columnIndex="0" />
-									<CheckBox text="%T64" fx:id="t64Field"
+									<CheckBox text="%T64" fx:id="t64CheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="0"
 										GridPane.columnIndex="1" />
-									<CheckBox text="%D81" fx:id="d81Field"
+									<CheckBox text="%D81" fx:id="d81CheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="0"
 										GridPane.columnIndex="2" />
-									<CheckBox text="%D71" fx:id="d71Field"
+									<CheckBox text="%D71" fx:id="d71CheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="0"
 										GridPane.columnIndex="3" />
-									<CheckBox text="%PRG" fx:id="prgField"
+									<CheckBox text="%PRG" fx:id="prgCheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="0"
 										GridPane.columnIndex="4" />
 									<VBox GridPane.rowIndex="0" GridPane.columnIndex="5">
 										<Label text="" />
 										<CheckBox text="%SEARCH_FROM_START"
-											fx:id="searchFromStartField" onAction="#search" />
+											fx:id="searchFromStartCheckBox" onAction="#search" />
 									</VBox>
 									<VBox GridPane.rowIndex="0" GridPane.columnIndex="6">
 										<Label text="%AGE" />
-										<ComboBox fx:id="ageField" onAction="#search" />
+										<ComboBox fx:id="ageComboBox" onAction="#search" />
 									</VBox>
-									<CheckBox text="%TAP" fx:id="tapField"
+									<CheckBox text="%TAP" fx:id="tapCheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="1"
 										GridPane.columnIndex="0" />
-									<CheckBox text="%CRT" fx:id="crtField"
+									<CheckBox text="%CRT" fx:id="crtCheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="1"
 										GridPane.columnIndex="1" />
-									<CheckBox text="%SID" fx:id="sidField"
+									<CheckBox text="%SID" fx:id="sidCheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="1"
 										GridPane.columnIndex="2" />
-									<CheckBox text="%BIN" fx:id="binField"
+									<CheckBox text="%BIN" fx:id="binCheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="1"
 										GridPane.columnIndex="3" />
-									<CheckBox text="%G64" fx:id="g64Field"
+									<CheckBox text="%G64" fx:id="g64CheckBox"
 										onAction="#search" selected="true" GridPane.rowIndex="1"
 										GridPane.columnIndex="4" />
 								</GridPane>
@@ -197,13 +197,13 @@
 								<ContentEntryRowFactory>
 									<currentlyPlayedContentEntryProperty>
 										<fx:reference
-											source="currentlyPlayedContentEntryProperty" />
+											source="currentlyPlayedContentEntryRowProperty" />
 									</currentlyPlayedContentEntryProperty>
 								</ContentEntryRowFactory>
 							</rowFactory>
 							<columns>
 								<TableColumn text="%FILENAME"
-									fx:id="contentEntryColumn">
+									fx:id="contentEntryFilenameColumn">
 									<cellValueFactory>
 										<PropertyValueFactory property="name" />
 									</cellValueFactory>
@@ -212,10 +212,10 @@
 							<contextMenu>
 								<ContextMenu fx:id="contentEntryContextMenu">
 									<items>
-										<MenuItem fx:id="startMenu" text="%START"
+										<MenuItem fx:id="autostartMenuItem" text="%AUTOSTART"
 											onAction="#autostart" />
-										<MenuItem fx:id="attachDiskMenu" text="%ATTACH_DISK"
-											onAction="#attachDisk" />
+										<MenuItem fx:id="attachDiskMenuItem"
+											text="%ATTACH_DISK" onAction="#attachDisk" />
 									</items>
 								</ContextMenu>
 							</contextMenu>
