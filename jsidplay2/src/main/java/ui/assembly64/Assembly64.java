@@ -117,13 +117,16 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private TableView<ContentEntry> contentEntryTable;
 
 	@FXML
+	private TableColumn<ContentEntry, String> contentEntryFilenameColumn;
+
+	@FXML
+	private ContextMenu assembly64ContextMenu, contentEntryContextMenu;
+
+	@FXML
 	private Menu addColumnMenu;
 
 	@FXML
 	private MenuItem removeColumnMenuItem, attachDiskMenuItem, autostartMenuItem;
-
-	@FXML
-	private TableColumn<ContentEntry, String> contentEntryFilenameColumn;
 
 	@FXML
 	private Button prevButton, nextButton;
@@ -136,9 +139,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	@FXML
 	private ObjectProperty<ContentEntry> currentlyPlayedContentEntryRowProperty;
-
-	@FXML
-	private ContextMenu assembly64ContextMenu, contentEntryContextMenu;
 
 	private ObservableList<Category> categoryItems;
 	private ObservableList<SearchResult> searchResultItems;
