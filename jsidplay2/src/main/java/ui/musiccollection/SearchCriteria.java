@@ -58,10 +58,17 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 			try {
 				String name = nameLocalizer.apply(field);
 				Object value = ((Method) singleAttribute.getJavaMember()).invoke(hvscEntry);
-				result.add(new Pair<>(name, String.valueOf(value != null ? value : "")));
+				result.add(new Pair<>(name, String.valueOf(value != null ? getText(value) : "")));
 			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 			}
 		}
 		return result;
+	}
+
+	public static String getText(Object value) {
+		if (value instanceof Integer && (int) value > 255) {
+			return String.format("0x%04X (%d)", (Integer) value, (Integer) value);
+		}
+		return value.toString();
 	}
 }

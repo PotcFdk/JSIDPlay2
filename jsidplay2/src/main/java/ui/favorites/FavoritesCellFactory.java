@@ -10,6 +10,7 @@ import javafx.util.Callback;
 import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.entities.collection.HVSCEntry;
+import ui.musiccollection.SearchCriteria;
 
 public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>, TableCell<HVSCEntry, ?>> {
 
@@ -43,7 +44,7 @@ public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>,
 		protected void updateItem(Object value, boolean empty) {
 			super.updateItem(value, empty);
 			if (!empty && value != null) {
-				setText(value.toString());
+				setText(SearchCriteria.getText(value));
 				if (getTableView().getColumns().indexOf(getTableColumn()) == 0) {
 					if (player.getStilEntry(getPath()) != null) {
 						setGraphic(new ImageView(STIL_ICON));
