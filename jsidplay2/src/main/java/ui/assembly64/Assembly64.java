@@ -517,7 +517,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private List<Category> requestCategories() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/categories").build();
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/categories").build();
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			String result = response.readEntity(String.class);
@@ -533,7 +533,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void requestSearchResults() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/find2").path(
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
 				.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
 						get(yearComboBox, value -> value, value -> value == 0, "***"), get(handleTextField),
@@ -584,9 +584,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		directory.clear();
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/contententries").path("/{id}/{categoryId}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
-
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
 			ContentEntrySearchResult contentEntry = (ContentEntrySearchResult) objectMapper
 					.readValue(response.readEntity(String.class), ContentEntrySearchResult.class);
@@ -618,7 +617,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search2/binary")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary")
 				.path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
