@@ -65,7 +65,7 @@ public interface Ultimate64 {
 			System.arraycopy(c64Ram, ramStart, ram, 6, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send RAM and RUN: " + e.getMessage());
 		}
 		Thread.sleep(syncDelay);
 	}
@@ -102,7 +102,7 @@ public interface Ultimate64 {
 			System.arraycopy(c64Ram, ramStart, ram, 8, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send RAM and SYS: " + e.getMessage());
 		}
 		Thread.sleep(syncDelay);
 	}
@@ -126,7 +126,7 @@ public interface Ultimate64 {
 			ram[3] = (byte) ((len >> 8) & 0xff);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send RAM: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send RESET: " + e.getMessage());
 		}
 	}
 
@@ -155,7 +155,7 @@ public interface Ultimate64 {
 			System.arraycopy(command.toUpperCase(Locale.US).getBytes(US_ASCII), 0, ram, 4, length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send command: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send COMMAND: " + e.getMessage());
 		}
 	}
 
@@ -179,7 +179,7 @@ public interface Ultimate64 {
 			ram[5] = (byte) ((delay >> 8) & 0xff);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
-			System.err.println("Ultimate64: cannot send command: " + e.getMessage());
+			System.err.println("Ultimate64: cannot send WAIT: " + e.getMessage());
 		}
 	}
 
