@@ -160,8 +160,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private AtomicBoolean autostart;
 
-	private PauseTransition pauseTransitionSearchResult, pauseTransitionContentEntry;
-	private SequentialTransition sequentialTransitionSearchResult, sequentialTransitionContentEntry;
+	private PauseTransition pauseTransitionSearchResult, pauseTransitionContentEntries;
+	private SequentialTransition sequentialTransitionSearchResult, sequentialTransitionContentEntries;
 
 	private TablePosition<?, ?> searchResultTableSelectedCell;
 
@@ -205,10 +205,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 		sortedContentEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
 		contentEntryTable.setItems(sortedContentEntryList);
 		contentEntryTable.getSelectionModel().selectedItemProperty()
-				.addListener((s, o, n) -> getContentEntryFile(false));
+				.addListener((s, o, n) -> getContentEntry(false));
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		contentEntryTable.setOnMousePressed(e -> getContentEntryFile(e.isPrimaryButtonDown() && e.getClickCount() > 1));
-		contentEntryTable.setOnKeyReleased(event -> getContentEntryFile(event.getCode() == KeyCode.ENTER));
+		contentEntryTable.setOnMousePressed(e -> getContentEntry(e.isPrimaryButtonDown() && e.getClickCount() > 1));
+		contentEntryTable.setOnKeyReleased(event -> getContentEntry(event.getCode() == KeyCode.ENTER));
 		contentEntryTable.prefWidthProperty().bind(assembly64Table.widthProperty().multiply(0.5));
 		contentEntryTable.prefHeightProperty().bind(borderPane.heightProperty().multiply(0.4));
 		contentEntryContextMenu.setOnShown(event -> showContentEntryContextMenu());
@@ -241,16 +241,16 @@ public class Assembly64 extends C64VBox implements UIPart {
 		sequentialTransitionSearchResult.setCycleCount(1);
 		pauseTransitionSearchResult.setOnFinished(evt -> requestSearchResults());
 
-		pauseTransitionContentEntry = new PauseTransition(Duration.millis(500));
-		sequentialTransitionContentEntry = new SequentialTransition(pauseTransitionContentEntry);
-		sequentialTransitionContentEntry.setCycleCount(1);
-		pauseTransitionContentEntry.setOnFinished(evt -> requestContentEntries());
+		pauseTransitionContentEntries = new PauseTransition(Duration.millis(500));
+		sequentialTransitionContentEntries = new SequentialTransition(pauseTransitionContentEntries);
+		sequentialTransitionContentEntries.setCycleCount(1);
+		pauseTransitionContentEntries.setOnFinished(evt -> requestContentEntries());
 	}
 
 	@Override
 	public void doClose() {
 		sequentialTransitionSearchResult.stop();
-		sequentialTransitionContentEntry.stop();
+		sequentialTransitionContentEntries.stop();
 	}
 
 	@FXML
@@ -571,11 +571,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private void getContentEntries(boolean doAutostart) {
-		if (assembly64Table.getSelectionModel().getSelectedItem() != null) {
-			this.searchResult = assembly64Table.getSelectionModel().getSelectedItem();
-			sequentialTransitionContentEntry.playFromStart();
-			autostart.set(doAutostart);
+		searchResult = assembly64Table.getSelectionModel().getSelectedItem();
+		if (searchResult == null) {
+			return;
 		}
+		autostart.set(doAutostart);
+		sequentialTransitionContentEntries.playFromStart();
 	}
 
 	private void requestContentEntries() {
@@ -592,14 +593,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 			contentEntryItems.setAll(contentEntry.getContentEntry());
 			contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
 			if (autostart.getAndSet(false)) {
-				autostart();
+				autostart(null);
 			}
 		} catch (ProcessingException | IOException e) {
 			System.err.println("Unexpected result: " + e.getMessage());
 		}
 	}
 
-	private void getContentEntryFile(boolean doAutostart) {
+	private void getContentEntry(boolean doAutostart) {
 		this.contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
 		if (contentEntry == null) {
 			return;
@@ -611,7 +612,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		directory.loadPreview(contentEntryFile);
 		if (doAutostart) {
-			autostart();
+			autostart(null);
 		}
 	}
 
