@@ -1,8 +1,10 @@
 package ui.entities.collection;
 
 import java.io.File;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -20,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
@@ -27,6 +30,7 @@ import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
+import ui.common.XmlLocalDateTimeAdapter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -70,7 +74,8 @@ public class HVSCEntry {
 			this.loadLength = info.getC64dataLen();
 			this.initAddress = info.getInitAddr();
 			this.playerAddress = info.getPlayAddr();
-			this.fileDate = new Date(tuneFile.lastModified());
+			this.fileDate = Instant.ofEpochMilli(tuneFile.lastModified()).atZone(ZoneId.systemDefault())
+					.toLocalDateTime();
 			this.fileSizeKb = tuneFile.length() >> 10;
 			this.tuneSizeB = tuneFile.length();
 			this.relocStartPage = info.getRelocStartPage();
@@ -348,13 +353,14 @@ public class HVSCEntry {
 		this.playerAddress = playerAddress;
 	}
 
-	private Date fileDate;
+	private LocalDateTime fileDate;
 
-	public Date getFileDate() {
+	@XmlJavaTypeAdapter(XmlLocalDateTimeAdapter.class)
+	public LocalDateTime getFileDate() {
 		return fileDate;
 	}
 
-	public void setFileDate(Date fileDate) {
+	public void setFileDate(LocalDateTime fileDate) {
 		this.fileDate = fileDate;
 	}
 

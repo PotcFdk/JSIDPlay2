@@ -111,8 +111,8 @@
 									visible="false" onAction="#doSetValue" />
 								<TypeTextField fx:id="shortTextField" type="Short"
 									visible="false" onAction="#doSetValue" />
-								<TypeTextField type="Date" visible="false"
-									onAction="#doSetValue" />
+								<TypeTextField fx:id="localDateTextField" type="LocalDate" visible="false"
+									promptText="YYYY[-MM[-DD]]" onAction="#doSetValue" />
 								<ComboBox fx:id="combo" onAction="#doSetValue"
 									visible="false" prefWidth="150" />
 							</StackPane>

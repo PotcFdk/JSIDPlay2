@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
+import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.directory.Directory;
 import ui.entities.config.Assembly64Column;
@@ -92,10 +94,14 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private HBox hBox;
 
 	@FXML
-	private VBox nameVBox, groupVBox, yearVBox, handleVBox, eventVBox, ratingVBox, categoryVBox, updatedVBox;
+	private VBox nameVBox, groupVBox, yearVBox, handleVBox, eventVBox, ratingVBox, categoryVBox, updatedVBox,
+			releasedVBox;
 
 	@FXML
 	private TextField nameTextField, groupTextField, handleTextField, eventTextField, updatedTextField;
+
+	@FXML
+	private TypeTextField releasedTextField;
 
 	@FXML
 	private ComboBox<Category> categoryComboBox;
@@ -204,8 +210,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		SortedList<ContentEntry> sortedContentEntryList = new SortedList<>(contentEntryItems);
 		sortedContentEntryList.comparatorProperty().bind(contentEntryTable.comparatorProperty());
 		contentEntryTable.setItems(sortedContentEntryList);
-		contentEntryTable.getSelectionModel().selectedItemProperty()
-				.addListener((s, o, n) -> getContentEntry(false));
+		contentEntryTable.getSelectionModel().selectedItemProperty().addListener((s, o, n) -> getContentEntry(false));
 		contentEntryTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		contentEntryTable.setOnMousePressed(e -> getContentEntry(e.isPrimaryButtonDown() && e.getClickCount() > 1));
 		contentEntryTable.setOnKeyReleased(event -> getContentEntry(event.getCode() == KeyCode.ENTER));
@@ -384,6 +389,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 			hBox.getChildren().add(updatedVBox);
 			tableColumn.setComparator(DATE_COMPARATOR);
 			break;
+		case RELEASED:
+			hBox.getChildren().add(releasedVBox);
+			tableColumn.setComparator(DATE_COMPARATOR);
+			break;
 		default:
 			break;
 		}
@@ -415,6 +424,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 			break;
 		case UPDATED:
 			updatedTextField.prefWidthProperty().set(width.doubleValue());
+			break;
+		case RELEASED:
+			releasedTextField.prefWidthProperty().set(width.doubleValue());
 			break;
 		}
 	}
@@ -460,6 +472,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 		case UPDATED:
 			hBox.getChildren().remove(updatedVBox);
 			break;
+		case RELEASED:
+			hBox.getChildren().remove(releasedVBox);
+			break;
 
 		default:
 			break;
@@ -500,6 +515,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 					case UPDATED:
 						hBox.getChildren().add(updatedVBox);
 						return true;
+					case RELEASED:
+						hBox.getChildren().add(releasedVBox);
+						return true;
 					default:
 						return true;
 					}
@@ -534,7 +552,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void requestSearchResults() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
-				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}")
+				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}/{releasedFrom}/{releasedTo}")
 				.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
 						get(yearComboBox, value -> value, value -> value == 0, "***"), get(handleTextField),
 						get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, "***"),
@@ -542,8 +560,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 						get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
 						get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
 						get(binCheckBox), get(g64CheckBox), "n",
-						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1));
-		if (uri.getPath().contains("***/***/***/***/***/***/***")) {
+						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1), getDate(true),
+						getDate(false));
+		if (uri.getPath().contains("***/***/***/***/***/***/***/***/***")) {
 			return;
 		}
 		String result = "";
@@ -618,8 +637,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary")
-				.path("/{id}/{categoryId}/{contentEntryId}")
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
@@ -648,6 +666,24 @@ public class Assembly64 extends C64VBox implements UIPart {
 			return "***";
 		}
 		return value;
+	}
+
+	private String getDate(boolean fromTo) {
+		LocalDate value = null;
+		if (releasedTextField.getValue() instanceof LocalDate) {
+			value = (LocalDate) releasedTextField.getValue();
+		} else if (releasedTextField.getValue() instanceof YearMonth) {
+			YearMonth yearMonth = (YearMonth) releasedTextField.getValue();
+			value = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(),
+					fromTo ? 1 : yearMonth.lengthOfMonth());
+		} else if (releasedTextField.getValue() instanceof Year) {
+			Year year = (Year) releasedTextField.getValue();
+			value = LocalDate.of(year.getValue(), fromTo ? 1 : 12, fromTo ? 1 : 31);
+		}
+		if (value == null) {
+			return "***";
+		}
+		return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
 	private String get(CheckBox field) {

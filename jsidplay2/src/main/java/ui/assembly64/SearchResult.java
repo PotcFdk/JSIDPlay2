@@ -17,6 +17,7 @@ public class SearchResult {
 	private StringProperty eventProperty = new SimpleStringProperty();
 	private StringProperty ratingProperty = new SimpleStringProperty();
 	private StringProperty updatedProperty = new SimpleStringProperty();
+	private StringProperty releasedProperty = new SimpleStringProperty();
 	private ObjectProperty<Category> categoryProperty = new SimpleObjectProperty<Category>();
 
 	public SearchResult() {
@@ -92,5 +93,13 @@ public class SearchResult {
 
 	public void setCategory(Category category) {
 		categoryProperty.set(category);
+	}
+
+	public String getReleased() {
+		return releasedProperty.get();
+	}
+
+	public void setReleased(String released) {
+		releasedProperty.set(released);
 	}
 }

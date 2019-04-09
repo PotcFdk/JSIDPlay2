@@ -12,14 +12,14 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -150,7 +150,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private TextField collectionDir;
 	@FXML
-	private TypeTextField stringTextField, integerTextField, longTextField, shortTextField;
+	private TypeTextField stringTextField, integerTextField, longTextField, shortTextField, localDateTextField;
 	@FXML
 	private ComboBox<Enum<?>> combo;
 	@FXML
@@ -403,7 +403,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	private void doAutoConfiguration() {
-		String url,urlSearchIndex,urlSearchIndexProperties;
+		String url, urlSearchIndex, urlSearchIndexProperties;
 		switch (getType()) {
 		case HVSC:
 			url = util.getConfig().getOnlineSection().getHvscUrl();
@@ -519,7 +519,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private void doSetValue() {
 		setSearchValue();
-		if (searchForValue != null && !searchForValue.equals(recentlySearchedForValue)) {
+		if (!Objects.equals(searchForValue, recentlySearchedForValue)) {
 			searchOptionsChanged = true;
 			recentlySearchedForValue = searchForValue;
 		}
@@ -527,15 +527,18 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void setSearchEditorVisible() {
-		for (Node node : Arrays.asList(stringTextField, integerTextField, longTextField, shortTextField, combo)) {
+		for (Node node : Arrays.asList(stringTextField, integerTextField, localDateTextField, longTextField,
+				shortTextField, combo)) {
 			node.setVisible(false);
 		}
 		SearchCriteria<?, ?> selectedItem = searchCriteria.getSelectionModel().getSelectedItem();
 		Class<?> type = selectedItem.getAttribute().getJavaType();
 		if (type == Long.class) {
 			longTextField.setVisible(true);
-		} else if (type == Integer.class || type == Date.class) {
+		} else if (type == Integer.class) {
 			integerTextField.setVisible(true);
+		} else if (type == LocalDateTime.class) {
+			localDateTextField.setVisible(true);
 		} else if (type == Short.class) {
 			shortTextField.setVisible(true);
 		} else if (type == String.class) {
@@ -565,10 +568,8 @@ public class MusicCollection extends C64VBox implements UIPart {
 			searchForValue = stringTextField.getValue();
 		} else if (Enum.class.isAssignableFrom(type)) {
 			searchForValue = combo.getSelectionModel().getSelectedItem();
-		} else if (type == Date.class) {
-			Calendar cal = Calendar.getInstance();
-			cal.set((Integer) integerTextField.getValue(), 1, 1);
-			searchForValue = cal.getTime();
+		} else if (type == LocalDateTime.class) {
+			searchForValue = localDateTextField.getValue();
 		}
 	}
 

@@ -2,6 +2,8 @@ package ui.musiccollection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,6 +70,9 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 	public static String getText(Object value) {
 		if (value instanceof Integer && (int) value > 255) {
 			return String.format("0x%04X (%d)", (Integer) value, (Integer) value);
+		}
+		if (value instanceof LocalDateTime) {
+			return ((LocalDateTime) value).format(DateTimeFormatter.ISO_LOCAL_DATE);
 		}
 		return value.toString();
 	}

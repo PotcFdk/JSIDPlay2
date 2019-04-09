@@ -1,10 +1,12 @@
 package ui.entities.collection;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
+
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
@@ -39,7 +41,7 @@ public class HVSCEntry_ {
 	public static volatile SingularAttribute<HVSCEntry, Integer> loadLength;
 	public static volatile SingularAttribute<HVSCEntry, Integer> initAddress;
 	public static volatile SingularAttribute<HVSCEntry, Integer> playerAddress;
-	public static volatile SingularAttribute<HVSCEntry, Date> fileDate;
+	public static volatile SingularAttribute<HVSCEntry, LocalDateTime> fileDate;
 	public static volatile SingularAttribute<HVSCEntry, Long> fileSizeKb;
 	public static volatile SingularAttribute<HVSCEntry, Long> tuneSizeB;
 	public static volatile SingularAttribute<HVSCEntry, Short> relocStartPage;

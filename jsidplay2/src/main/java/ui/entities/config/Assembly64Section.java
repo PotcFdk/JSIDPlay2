@@ -32,14 +32,14 @@ public class Assembly64Section {
 		eventColumn.setColumnType(Assembly64ColumnType.EVENT);
 		eventColumn.setWidth(Assembly64ColumnType.EVENT.getDefaultWidth());
 		INITIAL_COLUMNS.add(eventColumn);
+		Assembly64Column yearColumn = new Assembly64Column();
+		yearColumn.setColumnType(Assembly64ColumnType.RELEASED);
+		yearColumn.setWidth(Assembly64ColumnType.RELEASED.getDefaultWidth());
+		INITIAL_COLUMNS.add(yearColumn);
 		Assembly64Column ratingColumn = new Assembly64Column();
 		ratingColumn.setColumnType(Assembly64ColumnType.RATING);
 		ratingColumn.setWidth(Assembly64ColumnType.RATING.getDefaultWidth());
 		INITIAL_COLUMNS.add(ratingColumn);
-		Assembly64Column yearColumn = new Assembly64Column();
-		yearColumn.setColumnType(Assembly64ColumnType.YEAR);
-		yearColumn.setWidth(Assembly64ColumnType.YEAR.getDefaultWidth());
-		INITIAL_COLUMNS.add(yearColumn);
 	}
 
 	private List<Assembly64Column> columns = INITIAL_COLUMNS;

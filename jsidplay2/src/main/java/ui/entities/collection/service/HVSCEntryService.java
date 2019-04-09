@@ -2,8 +2,10 @@ package ui.entities.collection.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Locale;
 
@@ -98,15 +100,38 @@ public class HVSCEntryService {
 			Root<HVSCEntry> h = q.from(HVSCEntry.class);
 			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
-			if (fieldType == Date.class) {
-				assert (fieldValue.getClass() == Date.class);
-				// SELECT distinct h.path FROM HVSCEntry h WHERE
-				// YEAR(h.<fieldName>) = <value>
-				Path<Date> fieldName = h.get((SingularAttribute<HVSCEntry, Date>) field);
-				Expression<Integer> year = cb.function("YEAR", Integer.class, fieldName);
-				Calendar cal = Calendar.getInstance();
-				cal.setTime((Date) fieldValue);
-				predicate = cb.equal(year, cal.get(Calendar.YEAR));
+			if (fieldType == LocalDateTime.class) {
+				assert (fieldValue.getClass() == LocalDateTime.class);
+				Path<LocalDateTime> fieldName = h.get((SingularAttribute<HVSCEntry, LocalDateTime>) field);
+				if (fieldValue instanceof LocalDate) {
+					// SELECT distinct h.path FROM HVSCEntry h WHERE
+					// YEAR(h.<fieldName>) = <value> and MONTH(h.<fieldName>) = <value> and
+					// DAY(h.<fieldName>) = <value>
+					LocalDate localDate = (LocalDate) fieldValue;
+					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
+					Expression<Integer> monthFunction = cb.function("MONTH", Integer.class, fieldName);
+					Expression<Integer> dayFunction = cb.function("DAY", Integer.class, fieldName);
+					predicate = cb.and(cb.equal(yearFunction, localDate.getYear()),
+							cb.equal(monthFunction, localDate.getMonthValue()),
+							cb.equal(dayFunction, localDate.getDayOfMonth()));
+				} else if (fieldValue instanceof YearMonth) {
+					// SELECT distinct h.path FROM HVSCEntry h WHERE
+					// YEAR(h.<fieldName>) = <value> and MONTH(h.<fieldName>) = <value>
+					YearMonth yearMonth = (YearMonth) fieldValue;
+					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
+					Expression<Integer> monthFunction = cb.function("MONTH", Integer.class, fieldName);
+					predicate = cb.and(cb.equal(yearFunction, yearMonth.getYear()),
+							cb.equal(monthFunction, yearMonth.getMonthValue()));
+				} else if (fieldValue instanceof Year) {
+					// SELECT distinct h.path FROM HVSCEntry h WHERE
+					// YEAR(h.<fieldName>) = <value>
+					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
+					Year year = (Year) fieldValue;
+					predicate = cb.equal(yearFunction, year.getValue());
+				} else {
+					// SELECT distinct h.path FROM HVSCEntry h
+					predicate = cb.and();
+				}
 			} else if (fieldType == String.class) {
 				assert (fieldValue.getClass() == String.class);
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>

@@ -25,6 +25,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.geometry.Insets?>
 <?import javafx.beans.property.SimpleObjectProperty?>
+<?import ui.common.TypeTextField?>
 <?import ui.assembly64.Assembly64RowFactory?>
 <?import ui.assembly64.ContentEntryRowFactory?>
 <?import ui.assembly64.ZeroIgnoringCellFactory?>
@@ -79,6 +80,11 @@
 		<VBox fx:id="updatedVBox">
 			<Label text="%UPDATED" />
 			<TextField fx:id="updatedTextField" disable="true" />
+		</VBox>
+		<VBox fx:id="releasedVBox">
+			<Label text="%RELEASED" />
+			<TypeTextField fx:id="releasedTextField"
+				type="LocalDate" onAction="#search" onKeyReleased="#search" promptText="YYYY[-MM[-DD]]"/>
 		</VBox>
 	</fx:define>
 	<AnchorPane VBox.vgrow="ALWAYS">
