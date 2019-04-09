@@ -4,12 +4,17 @@ import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -30,6 +35,8 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,6 +83,16 @@ import ui.filefilter.DiskFileFilter;
 public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
+
+	private static final MessageDigest MD5_DIGEST;
+
+	static {
+		try {
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (final NoSuchAlgorithmException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -640,11 +657,30 @@ public class Assembly64 extends C64VBox implements UIPart {
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
 
+		// name without embedded sub-folder (sid/name.sid -> name.sid):
+		String name = new File(contentEntry.getName()).getName();
+		File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
+		tempFile.deleteOnExit();
+
+		if (tempFile.exists()) {
+			try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(tempFile));
+					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
+				// read the file and update the hash calculation
+				while (dis.read() != -1)
+					;
+				// get the hash value as byte array
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			char[] hex = Hex.encodeHex(MD5_DIGEST.digest());
+			String digest = new String(hex);
+			System.err.println("JSIDPlay2: " + digest + " <-> Assembly64: " + contentEntry.getChecksum());
+			if (digest.equals(contentEntry.getChecksum())) {
+				return tempFile;
+			}
+		}
+
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			// name without embedded sub-folder (sid/name.sid -> name.sid):
-			String name = new File(contentEntry.getName()).getName();
-			File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
-			tempFile.deleteOnExit();
 			try (FileOutputStream fos = new FileOutputStream(tempFile)) {
 				fos.write(response.readEntity(byte[].class));
 			}
