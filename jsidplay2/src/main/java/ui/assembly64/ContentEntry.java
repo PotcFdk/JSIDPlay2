@@ -9,7 +9,6 @@ public class ContentEntry {
 
 	private StringProperty idProperty = new SimpleStringProperty();
 	private StringProperty nameProperty = new SimpleStringProperty();
-	private StringProperty checksumProperty = new SimpleStringProperty();
 
 	public ContentEntry() {
 	}
@@ -30,11 +29,4 @@ public class ContentEntry {
 		nameProperty.set(name);
 	}
 
-	public String getChecksum() {
-		return checksumProperty.get();
-	}
-	
-	public void setChecksum(String checksum) {
-		checksumProperty.set(checksum);
-	}
 }

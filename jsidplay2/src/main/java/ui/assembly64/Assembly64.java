@@ -4,17 +4,17 @@ import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -36,7 +36,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +69,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -83,16 +85,6 @@ import ui.filefilter.DiskFileFilter;
 public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
-
-	private static final MessageDigest MD5_DIGEST;
-
-	static {
-		try {
-			MD5_DIGEST = MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			throw new ExceptionInInitializerError(e);
-		}
-	}
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -659,32 +651,33 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 		// name without embedded sub-folder (sid/name.sid -> name.sid):
 		String name = new File(contentEntry.getName()).getName();
-		File tempFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
-		tempFile.deleteOnExit();
-
-		if (tempFile.exists()) {
-			try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(tempFile));
-					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
-				// read the file and update the hash calculation
-				while (dis.read() != -1)
-					;
-				// get the hash value as byte array
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			char[] hex = Hex.encodeHex(MD5_DIGEST.digest());
-			String digest = new String(hex);
-			System.err.println("JSIDPlay2: " + digest + " <-> Assembly64: " + contentEntry.getChecksum());
-			if (digest.equals(contentEntry.getChecksum())) {
-				return tempFile;
+		File contentEntryFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
+		contentEntryFile.deleteOnExit();
+		File contentEntryChecksumFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
+				PathUtils.getFilenameWithoutSuffix(name) + ".md5");
+		contentEntryChecksumFile.deleteOnExit();
+		if (contentEntryFile.exists() && contentEntryChecksumFile.exists()) {
+			String checksum = DigestUtils.md5Hex(getContents(contentEntryFile));
+			String checksumToverify = new String(getContents(contentEntryChecksumFile), Charset.forName("US-ASCII"));
+			if (checksum.equals(checksumToverify)) {
+				return contentEntryFile;
 			}
 		}
-
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-				fos.write(response.readEntity(byte[].class));
+			try (OutputStream outputStream = new FileOutputStream(contentEntryFile);
+					PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
+				outputStream.write(response.readEntity(byte[].class));
+				checksumPrintStream.print(response.getHeaderString("checksum"));
 			}
-			return tempFile;
+			return contentEntryFile;
+		}
+	}
+
+	private byte[] getContents(File contentEntryChecksumFile) throws IOException {
+		try (InputStream is = new FileInputStream(contentEntryChecksumFile)) {
+			return IOUtils.toByteArray(is);
+		} catch (IOException e) {
+			return new byte[0];
 		}
 	}
 
