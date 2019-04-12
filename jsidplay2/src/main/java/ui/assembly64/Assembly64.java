@@ -41,7 +41,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -85,8 +85,6 @@ import ui.filefilter.DiskFileFilter;
 public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
-
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final Comparator<String> NUMERIC_COMPARATOR = (o1, o2) -> extractInt(o1) - extractInt(o2);
 
@@ -501,45 +499,33 @@ public class Assembly64 extends C64VBox implements UIPart {
 				.filter(column -> {
 					switch (column.getColumnType()) {
 					case NAME:
-						hBox.getChildren().add(nameVBox);
-						return true;
+						return hBox.getChildren().add(nameVBox);
 					case GROUP:
-						hBox.getChildren().add(groupVBox);
-						return true;
+						return hBox.getChildren().add(groupVBox);
 					case YEAR:
-						hBox.getChildren().add(yearVBox);
-						return true;
+						return hBox.getChildren().add(yearVBox);
 					case HANDLE:
-						hBox.getChildren().add(handleVBox);
-						return true;
+						return hBox.getChildren().add(handleVBox);
 					case EVENT:
-						hBox.getChildren().add(eventVBox);
-						return true;
+						return hBox.getChildren().add(eventVBox);
 					case RATING:
-						hBox.getChildren().add(ratingVBox);
-						return true;
+						return hBox.getChildren().add(ratingVBox);
 					case CATEGORY:
-						hBox.getChildren().add(categoryVBox);
-						return true;
+						return hBox.getChildren().add(categoryVBox);
 					case UPDATED:
-						hBox.getChildren().add(updatedVBox);
-						return true;
+						return hBox.getChildren().add(updatedVBox);
 					case RELEASED:
-						hBox.getChildren().add(releasedVBox);
-						return true;
+						return hBox.getChildren().add(releasedVBox);
 					default:
-						return true;
+						return false;
 					}
 				}).forEach(column -> util.getConfig().getAssembly64Section().getColumns().add(column));
 	}
 
 	private ObjectMapper createObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		JodaModule module = new JodaModule();
+		SimpleModule module = new SimpleModule();
 		module.addDeserializer(Category.class, new CategoryDeserializer(categoryItems));
-		objectMapper.registerModule(module);
-		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		return objectMapper;
+		return new ObjectMapper().registerModule(module).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
 
 	private List<Category> requestCategories() {
@@ -569,8 +555,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 						get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
 						get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
 						get(binCheckBox), get(g64CheckBox), "n",
-						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1), getDate(true),
-						getDate(false));
+						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
+						get(releasedTextField, true), get(releasedTextField, false));
 		if (uri.getPath().contains("***/***/***/***/***/***/***/***/***")) {
 			return;
 		}
@@ -636,7 +622,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try {
 			contentEntryFile = requestContentEntry(contentEntry);
 		} catch (ProcessingException | IOException e) {
-			System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+			System.err.println(String.format("Cannot DOWNLOAD file '%s'.", contentEntry.getName()));
 		}
 		directory.loadPreview(contentEntryFile);
 		if (doAutostart) {
@@ -645,30 +631,36 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
-		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
-				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
-
 		// name without embedded sub-folder (sid/name.sid -> name.sid):
 		String name = new File(contentEntry.getName()).getName();
 		File contentEntryFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
-		contentEntryFile.deleteOnExit();
 		File contentEntryChecksumFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 				PathUtils.getFilenameWithoutSuffix(name) + ".md5");
-		contentEntryChecksumFile.deleteOnExit();
-		if (contentEntryFile.exists() && contentEntryChecksumFile.exists()) {
-			String checksum = DigestUtils.md5Hex(getContents(contentEntryFile));
-			String checksumToverify = new String(getContents(contentEntryChecksumFile), Charset.forName("US-ASCII"));
-			if (checksum.equals(checksumToverify)) {
-				return contentEntryFile;
+		try {
+			// file already downloaded and checksum ok?
+			if (contentEntryFile.exists() && contentEntryChecksumFile.exists()) {
+				String checksum = DigestUtils.md5Hex(getContents(contentEntryFile));
+				String checksumToverify = new String(getContents(contentEntryChecksumFile),
+						Charset.forName("US-ASCII"));
+				if (checksum.equals(checksumToverify)) {
+					return contentEntryFile;
+				}
 			}
+		} catch (IOException e) {
+			// ignore bad checksum or download: re-create instead!
+		} finally {
+			contentEntryFile.deleteOnExit();
+			contentEntryChecksumFile.deleteOnExit();
 		}
-		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			try (OutputStream outputStream = new FileOutputStream(contentEntryFile);
-					PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
-				outputStream.write(response.readEntity(byte[].class));
-				checksumPrintStream.print(response.getHeaderString("checksum"));
-			}
+		// request file, create checksum
+		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
+				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
+		try (Response response = ClientBuilder.newClient().target(uri).request().get();
+				OutputStream outputStream = new FileOutputStream(contentEntryFile);
+				PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
+			outputStream.write(response.readEntity(byte[].class));
+			checksumPrintStream.print(response.getHeaderString("checksum"));
 			return contentEntryFile;
 		}
 	}
@@ -679,6 +671,24 @@ public class Assembly64 extends C64VBox implements UIPart {
 		} catch (IOException e) {
 			return new byte[0];
 		}
+	}
+
+	private String get(TypeTextField field, boolean dateFromTo) {
+		LocalDate value = null;
+		if (field.getValue() instanceof LocalDate) {
+			value = (LocalDate) field.getValue();
+		} else if (field.getValue() instanceof YearMonth) {
+			YearMonth yearMonth = (YearMonth) field.getValue();
+			value = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(),
+					dateFromTo ? 1 : yearMonth.lengthOfMonth());
+		} else if (field.getValue() instanceof Year) {
+			Year year = (Year) field.getValue();
+			value = LocalDate.of(year.getValue(), dateFromTo ? 1 : 12, dateFromTo ? 1 : 31);
+		}
+		if (value == null) {
+			return "***";
+		}
+		return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
 	private <T, U> U get(ComboBox<T> comboBox, Function<T, U> toResult, Predicate<T> checkEmpty, U emptyValue) {
@@ -695,24 +705,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 			return "***";
 		}
 		return value;
-	}
-
-	private String getDate(boolean fromTo) {
-		LocalDate value = null;
-		if (releasedTextField.getValue() instanceof LocalDate) {
-			value = (LocalDate) releasedTextField.getValue();
-		} else if (releasedTextField.getValue() instanceof YearMonth) {
-			YearMonth yearMonth = (YearMonth) releasedTextField.getValue();
-			value = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(),
-					fromTo ? 1 : yearMonth.lengthOfMonth());
-		} else if (releasedTextField.getValue() instanceof Year) {
-			Year year = (Year) releasedTextField.getValue();
-			value = LocalDate.of(year.getValue(), fromTo ? 1 : 12, fromTo ? 1 : 31);
-		}
-		if (value == null) {
-			return "***";
-		}
-		return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
 	private String get(CheckBox field) {
@@ -741,8 +733,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private static final int extractInt(String string) {
 		try {
-			String numericCharacters = string.replaceAll("\\D", "");
-			return numericCharacters.isEmpty() ? 0 : Integer.parseInt(numericCharacters);
+			return Integer.parseInt(string.isEmpty() ? "" : string);
 		} catch (NumberFormatException e) {
 			return Integer.MAX_VALUE;
 		}
@@ -750,7 +741,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private static final LocalDate extractDate(String string) {
 		try {
-			return LocalDate.parse(string, DATE_FORMATTER);
+			return LocalDate.parse(string, DateTimeFormatter.ISO_LOCAL_DATE);
 		} catch (DateTimeParseException e) {
 			return LocalDate.now();
 		}
