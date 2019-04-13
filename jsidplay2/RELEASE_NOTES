@@ -3,3 +3,7 @@ Release Notes:
 Online View Assembly64 added
 T64 files are handled as a program and not as a tape, if loaded. Therefore they load faster, now.
 However T64 can still be inserted as a tape.
+Tune infos show now hex addresses as well.
+Searching for a date in music collection and Assembly64 can now be done using year or
+year and month or year, month and date.
+You can now sync Ultimate64 and JSIDPlay2 by network (supports: insert disk, launch program or demo).
