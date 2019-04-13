@@ -44,6 +44,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -554,11 +555,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/categories").build();
 
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			String result = response.readEntity(String.class);
-			List<Category> asList = Arrays.asList((Category[]) new ObjectMapper().readValue(result, Category[].class));
-			asList.sort(Comparator.comparing(Category::getDescription));
-			asList.set(0, Category.ALL);
-			return FXCollections.<Category>observableArrayList(asList);
+			String responseString = response.readEntity(String.class);
+			List<Category> result = new ObjectMapper().readValue(responseString, new TypeReference<List<Category>>() {
+			});
+			result.sort(Comparator.comparing(Category::getDescription));
+			result.add(0, Category.ALL);
+			return FXCollections.<Category>observableArrayList(result);
 		} catch (ProcessingException | IOException e) {
 			System.err.println("Unexpected result: " + e.getMessage());
 			return Collections.emptyList();
@@ -578,7 +580,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 						get(binCheckBox), get(g64CheckBox), getOr(),
 						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
 						get(releasedTextField, true), get(releasedTextField, false));
-		if (getNumberOfEmptyRequestParameters(uri) == 9) {
+		if (getNumberOfMatchAllRequestParameters(uri) == 9) {
 			// avoid to request everything, it would take too much time!
 			return;
 		}
@@ -606,7 +608,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private int getNumberOfEmptyRequestParameters(URI uri) {
+	private int getNumberOfMatchAllRequestParameters(URI uri) {
 		int result = 0;
 		Matcher matcher = Pattern.compile(MATCH_ALL, Pattern.LITERAL).matcher(uri.toString());
 		while (matcher.find()) {
@@ -633,8 +635,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId());
 		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			ContentEntrySearchResult contentEntry = (ContentEntrySearchResult) objectMapper
-					.readValue(response.readEntity(String.class), ContentEntrySearchResult.class);
+			ContentEntrySearchResult contentEntry = objectMapper.readValue(response.readEntity(String.class),
+					ContentEntrySearchResult.class);
 			contentEntryItems.setAll(contentEntry.getContentEntry());
 			contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
 			if (autostart.getAndSet(false)) {
