@@ -497,6 +497,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			break;
 		case RELEASED:
 			hBox.getChildren().remove(releasedVBox);
+			repeatSearch = !releasedTextField.getText().isEmpty();
 			break;
 
 		default:
