@@ -520,7 +520,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Start player thread.
 	 */
-	public final void startC64() {
+	public synchronized final void startC64() {
 		if (playerThread == null || !playerThread.isAlive()) {
 			playerThread = new Thread(playerRunnable, "Player");
 			playerThread.setPriority(Thread.MAX_PRIORITY);
@@ -540,7 +540,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 
 	 * @param quitOrWait quit player (true) or wait for termination, only (false)
 	 */
-	public final void stopC64(final boolean quitOrWait) {
+	public synchronized final void stopC64(final boolean quitOrWait) {
 		try {
 			while (playerThread != null && playerThread.isAlive()) {
 				if (quitOrWait) {
