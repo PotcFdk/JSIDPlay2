@@ -90,6 +90,7 @@ import ui.directory.Directory;
 import ui.entities.config.Assembly64Column;
 import ui.entities.config.Assembly64ColumnType;
 import ui.filefilter.DiskFileFilter;
+import ui.filefilter.TapeFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 
@@ -146,7 +147,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private Menu addColumnMenu;
 
 	@FXML
-	private MenuItem removeColumnMenuItem, attachDiskMenuItem, autostartMenuItem;
+	private MenuItem removeColumnMenuItem, insertDiskMenuItem, insertTapeMenuItem, autostartMenuItem;
 
 	@FXML
 	private Button prevButton, nextButton;
@@ -174,6 +175,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private DiskFileFilter diskFileFilter;
 
+	private TapeFileFilter tapeFileFilter;
+
 	private ObjectMapper objectMapper;
 
 	private Convenience convenience;
@@ -198,6 +201,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		autostart = new AtomicBoolean();
 		convenience = new Convenience(util.getPlayer());
 		diskFileFilter = new DiskFileFilter();
+		tapeFileFilter = new TapeFileFilter();
 
 		categoryItems = FXCollections.observableArrayList(requestCategories());
 		objectMapper = createObjectMapper();
@@ -306,10 +310,21 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void attachDisk() {
+	private void insertDisk() {
 		if (contentEntryFile != null) {
 			try {
 				util.getPlayer().insertDisk(contentEntryFile);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+			}
+		}
+	}
+
+	@FXML
+	private void insertTape() {
+		if (contentEntryFile != null) {
+			try {
+				util.getPlayer().insertTape(contentEntryFile);
 			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 			}
@@ -344,7 +359,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void showContentEntryContextMenu() {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-		attachDiskMenuItem.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
+		insertDiskMenuItem.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
+		insertTapeMenuItem.setDisable(contentEntry == null || !tapeFileFilter.accept(new File(contentEntry.getName())));
 		autostartMenuItem.setDisable(contentEntry == null);
 	}
 

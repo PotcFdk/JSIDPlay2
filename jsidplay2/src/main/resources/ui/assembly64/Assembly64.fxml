@@ -220,8 +220,10 @@
 									<items>
 										<MenuItem fx:id="autostartMenuItem" text="%AUTOSTART"
 											onAction="#autostart" />
-										<MenuItem fx:id="attachDiskMenuItem"
-											text="%ATTACH_DISK" onAction="#attachDisk" />
+										<MenuItem fx:id="insertDiskMenuItem"
+											text="%INSERT_DISK" onAction="#insertDisk" />
+										<MenuItem fx:id="insertTapeMenuItem"
+											text="%INSERT_TAPE" onAction="#insertTape" />
 									</items>
 								</ContextMenu>
 							</contextMenu>
