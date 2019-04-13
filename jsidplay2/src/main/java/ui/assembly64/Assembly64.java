@@ -1,5 +1,6 @@
 package ui.assembly64;
 
+import static javafx.scene.control.ProgressBar.*;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
@@ -51,6 +52,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -567,44 +569,58 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
+	private void searchAgain() {
+		searchResultItems.clear();
+		contentEntryItems.clear();
+		directory.clear();
+		Platform.runLater(() -> {
+			util.progressProperty(assembly64Table.getScene()).set(INDETERMINATE_PROGRESS);
+		});
+		sequentialTransitionSearchResult.playFromStart();
+	}
+
 	private void requestSearchResults() {
-		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
-				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}/{releasedFrom}/{releasedTo}")
-				.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
-						get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL), get(handleTextField),
-						get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL),
-						get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, MATCH_ALL),
-						get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
-						get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
-						get(binCheckBox), get(g64CheckBox), getOr(),
-						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
-						get(releasedTextField, true), get(releasedTextField, false));
-		if (getNumberOfMatchAllRequestParameters(uri) == 9) {
-			// avoid to request everything, it would take too much time!
-			return;
-		}
-		String result = "";
-		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			result = response.readEntity(String.class);
-
-			Object start = response.getHeaderString("start");
-			searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
-			prevButton.setDisable(start == null || searchOffset == 0);
-
-			Object stop = response.getHeaderString("stop");
-			searchStop = stop != null ? Integer.parseInt(String.valueOf(stop)) : searchOffset + MAX_ROWS;
-			nextButton.setDisable(stop == null);
-
-			searchResultItems.setAll(objectMapper.readValue(result, SearchResult[].class));
-		} catch (ProcessingException | IOException e) {
-			try {
-				ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
-				System.err.println(String.join("\n", errorMessage.getStatus() + ": " + errorMessage.getError(),
-						errorMessage.getMessage()));
-			} catch (IOException e1) {
-				System.err.println("Unexpected result: " + e.getMessage());
+		try {
+			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
+					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}/{releasedFrom}/{releasedTo}")
+					.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
+							get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL), get(handleTextField),
+							get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL),
+							get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, MATCH_ALL),
+							get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
+							get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
+							get(binCheckBox), get(g64CheckBox), getOr(),
+							get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
+							get(releasedTextField, true), get(releasedTextField, false));
+			if (getNumberOfMatchAllRequestParameters(uri) == 9) {
+				// avoid to request everything, it would take too much time!
+				return;
 			}
+			String result = "";
+			try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
+				result = response.readEntity(String.class);
+
+				Object start = response.getHeaderString("start");
+				searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
+				prevButton.setDisable(start == null || searchOffset == 0);
+
+				Object stop = response.getHeaderString("stop");
+				searchStop = stop != null ? Integer.parseInt(String.valueOf(stop)) : searchOffset + MAX_ROWS;
+				nextButton.setDisable(stop == null);
+
+				searchResultItems.setAll(objectMapper.readValue(result, SearchResult[].class));
+			} catch (ProcessingException | IOException e) {
+				try {
+					ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
+					System.err.println(String.join("\n", errorMessage.getStatus() + ": " + errorMessage.getError(),
+							errorMessage.getMessage()));
+				} catch (IOException e1) {
+					System.err.println("Unexpected result: " + e.getMessage());
+				}
+			}
+		} finally {
+			Platform.runLater(() -> util.progressProperty(assembly64Table.getScene()).set(0));
 		}
 	}
 
@@ -623,27 +639,32 @@ public class Assembly64 extends C64VBox implements UIPart {
 			return;
 		}
 		autostart.set(doAutostart);
+		Platform.runLater(() -> util.progressProperty(assembly64Table.getScene()).set(INDETERMINATE_PROGRESS));
 		sequentialTransitionContentEntries.playFromStart();
 	}
 
 	private void requestContentEntries() {
-		if (searchResult == null) {
-			return;
-		}
-		directory.clear();
-		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
-				.build(searchResult.getId(), searchResult.getCategory().getId());
-		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			ContentEntrySearchResult contentEntry = objectMapper.readValue(response.readEntity(String.class),
-					ContentEntrySearchResult.class);
-			contentEntryItems.setAll(contentEntry.getContentEntry());
-			contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
-			if (autostart.getAndSet(false)) {
-				autostart(null);
+		try {
+			if (searchResult == null) {
+				return;
 			}
-		} catch (ProcessingException | IOException e) {
-			System.err.println("Unexpected result: " + e.getMessage());
+			directory.clear();
+			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
+			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
+					.build(searchResult.getId(), searchResult.getCategory().getId());
+			try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
+				ContentEntrySearchResult contentEntry = objectMapper.readValue(response.readEntity(String.class),
+						ContentEntrySearchResult.class);
+				contentEntryItems.setAll(contentEntry.getContentEntry());
+				contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
+				if (autostart.getAndSet(false)) {
+					autostart(null);
+				}
+			} catch (ProcessingException | IOException e) {
+				System.err.println("Unexpected result: " + e.getMessage());
+			}
+		} finally {
+			Platform.runLater(() -> util.progressProperty(assembly64Table.getScene()).set(0));
 		}
 	}
 
@@ -743,13 +764,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private String getOr() {
 		return NO;
-	}
-
-	private void searchAgain() {
-		searchResultItems.clear();
-		contentEntryItems.clear();
-		directory.clear();
-		sequentialTransitionSearchResult.playFromStart();
 	}
 
 	private void autostart(File autostartFile) {
