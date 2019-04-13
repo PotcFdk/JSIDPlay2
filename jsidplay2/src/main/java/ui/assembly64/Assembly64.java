@@ -3,6 +3,10 @@ package ui.assembly64;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
+import static ui.assembly64.SearchResult.DATE_PATTERN;
+import static ui.assembly64.SearchResult.MATCH_ALL;
+import static ui.assembly64.SearchResult.NO;
+import static ui.assembly64.SearchResult.YES;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -566,12 +570,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
 				"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}/{releasedFrom}/{releasedTo}")
 				.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
-						get(yearComboBox, value -> value, value -> value == 0, "***"), get(handleTextField),
-						get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, "***"),
-						get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, "***"),
+						get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL), get(handleTextField),
+						get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL),
+						get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, MATCH_ALL),
 						get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
 						get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
-						get(binCheckBox), get(g64CheckBox), "n",
+						get(binCheckBox), get(g64CheckBox), getOr(),
 						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
 						get(releasedTextField, true), get(releasedTextField, false));
 		if (getNumberOfEmptyRequestParameters(uri) == 9) {
@@ -604,7 +608,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private int getNumberOfEmptyRequestParameters(URI uri) {
 		int result = 0;
-		Matcher matcher = Pattern.compile("***", Pattern.LITERAL).matcher(uri.toString());
+		Matcher matcher = Pattern.compile(MATCH_ALL, Pattern.LITERAL).matcher(uri.toString());
 		while (matcher.find()) {
 			result++;
 		}
@@ -710,9 +714,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 			value = LocalDate.of(year.getValue(), dateFromTo ? 1 : 12, dateFromTo ? 1 : 31);
 		}
 		if (value == null) {
-			return "***";
+			return MATCH_ALL;
 		}
-		return ((LocalDate) value).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		return ((LocalDate) value).format(DateTimeFormatter.ofPattern(DATE_PATTERN));
 	}
 
 	private <T, U> U get(ComboBox<T> comboBox, Function<T, U> toResult, Predicate<T> checkEmpty, U emptyValue) {
@@ -726,13 +730,17 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private String get(TextField field) {
 		String value = field.getText().trim();
 		if (value.isEmpty()) {
-			return "***";
+			return MATCH_ALL;
 		}
 		return value;
 	}
 
 	private String get(CheckBox field) {
-		return field.isSelected() ? "Y" : "N";
+		return field.isSelected() ? YES : NO;
+	}
+
+	private String getOr() {
+		return NO;
 	}
 
 	private void searchAgain() {
