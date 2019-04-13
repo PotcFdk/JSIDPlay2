@@ -76,6 +76,7 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.EnumToStringConverter;
+import ui.common.IntegerToStringConverter;
 import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.directory.Directory;
@@ -232,12 +233,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		yearComboBox.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
 		yearComboBox.getSelectionModel().select(0);
-		yearComboBox.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
+		yearComboBox.setConverter(new IntegerToStringConverter(util.getBundle()));
 
 		ratingComboBox.setItems(FXCollections
 				.<Integer>observableArrayList(concat(of(0), rangeClosed(1, 10)).boxed().collect(Collectors.toList())));
 		ratingComboBox.getSelectionModel().select(0);
-		ratingComboBox.setConverter(new ZeroContainingRatingConverter(util.getBundle()));
+		ratingComboBox.setConverter(new IntegerToStringConverter(util.getBundle()));
 
 		ageComboBox.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
 		ageComboBox.setItems(FXCollections.<Age>observableArrayList(Age.values()));

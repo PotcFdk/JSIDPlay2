@@ -1,14 +1,14 @@
-package ui.assembly64;
+package ui.common;
 
 import java.util.ResourceBundle;
 
 import javafx.util.StringConverter;
 
-public class ZeroContainingRatingConverter extends StringConverter<Integer> {
+public class IntegerToStringConverter extends StringConverter<Integer> {
 
 	private ResourceBundle bundle;
 
-	public ZeroContainingRatingConverter(ResourceBundle bundle) {
+	public IntegerToStringConverter(ResourceBundle bundle) {
 		this.bundle = bundle;
 	}
 
