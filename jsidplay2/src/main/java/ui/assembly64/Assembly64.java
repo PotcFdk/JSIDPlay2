@@ -87,6 +87,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
 
+	private static final Charset US_ASCII = Charset.forName("US-ASCII");
+
 	private static final int MAX_ROWS = 500;
 
 	private static final int DEFAULT_WIDTH = 150;
@@ -571,7 +573,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
 						get(releasedTextField, true), get(releasedTextField, false));
 		if (getNumberOfEmptyRequestParameters(uri) == 9) {
-			// avoid requesting everything, result would be too big!
+			// avoid to request everything, it would take too much time!
 			return;
 		}
 		String result = "";
@@ -599,14 +601,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private int getNumberOfEmptyRequestParameters(URI uri) {
+		int result = 0;
 		Matcher matcher = Pattern.compile("***", Pattern.LITERAL).matcher(uri.toString());
-		int count = 0;
-		int start = 0;
-		while (matcher.find(start)) {
-			count++;
-			start = matcher.start() + 1;
+		while (matcher.find()) {
+			result++;
 		}
-		return count;
+		return result;
 	}
 
 	private void getContentEntries(boolean doAutostart) {
@@ -665,8 +665,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			// file already downloaded and checksum ok?
 			if (contentEntryFile.exists() && contentEntryChecksumFile.exists()) {
 				String checksum = DigestUtils.md5Hex(getContents(contentEntryFile));
-				String checksumToverify = new String(getContents(contentEntryChecksumFile),
-						Charset.forName("US-ASCII"));
+				String checksumToverify = new String(getContents(contentEntryChecksumFile), US_ASCII);
 				if (checksum.equals(checksumToverify)) {
 					return contentEntryFile;
 				}
@@ -699,21 +698,19 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private String get(TypeTextField field, boolean dateFromTo) {
-		LocalDate value = null;
-		if (field.getValue() instanceof LocalDate) {
-			value = (LocalDate) field.getValue();
-		} else if (field.getValue() instanceof YearMonth) {
-			YearMonth yearMonth = (YearMonth) field.getValue();
+		Object value = field.getValue();
+		if (value instanceof YearMonth) {
+			YearMonth yearMonth = (YearMonth) value;
 			value = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(),
 					dateFromTo ? 1 : yearMonth.lengthOfMonth());
-		} else if (field.getValue() instanceof Year) {
-			Year year = (Year) field.getValue();
+		} else if (value instanceof Year) {
+			Year year = (Year) value;
 			value = LocalDate.of(year.getValue(), dateFromTo ? 1 : 12, dateFromTo ? 1 : 31);
 		}
 		if (value == null) {
 			return "***";
 		}
-		return value.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		return ((LocalDate) value).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
 	private <T, U> U get(ComboBox<T> comboBox, Function<T, U> toResult, Predicate<T> checkEmpty, U emptyValue) {
