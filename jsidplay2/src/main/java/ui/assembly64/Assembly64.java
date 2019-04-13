@@ -748,6 +748,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void searchAgain() {
 		searchResultItems.clear();
 		contentEntryItems.clear();
+		directory.clear();
 		sequentialTransitionSearchResult.playFromStart();
 	}
 
