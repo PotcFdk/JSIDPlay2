@@ -1,3 +1,5 @@
 Release Notes:
 ==============
 Online View Assembly64 added
+T64 files are handled as a program and not as a tape, if loaded. Therefore they load faster, now.
+However T64 can still be inserted as a tape.
