@@ -1,8 +1,12 @@
 package ui.assembly64;
 
+import java.time.LocalDate;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -12,12 +16,12 @@ public class SearchResult {
 	private StringProperty idProperty = new SimpleStringProperty();
 	private StringProperty nameProperty = new SimpleStringProperty();
 	private StringProperty groupProperty = new SimpleStringProperty();
-	private StringProperty yearProperty = new SimpleStringProperty();
+	private IntegerProperty yearProperty = new SimpleIntegerProperty();
 	private StringProperty handleProperty = new SimpleStringProperty();
 	private StringProperty eventProperty = new SimpleStringProperty();
-	private StringProperty ratingProperty = new SimpleStringProperty();
-	private StringProperty updatedProperty = new SimpleStringProperty();
-	private StringProperty releasedProperty = new SimpleStringProperty();
+	private IntegerProperty ratingProperty = new SimpleIntegerProperty();
+	private ObjectProperty<LocalDate> updatedProperty = new SimpleObjectProperty<LocalDate>();
+	private ObjectProperty<LocalDate> releasedProperty = new SimpleObjectProperty<LocalDate>();
 	private ObjectProperty<Category> categoryProperty = new SimpleObjectProperty<Category>();
 
 	public SearchResult() {
@@ -47,11 +51,11 @@ public class SearchResult {
 		groupProperty.set(group);
 	}
 
-	public String getYear() {
+	public Integer getYear() {
 		return yearProperty.get();
 	}
 
-	public void setYear(String year) {
+	public void setYear(Integer year) {
 		yearProperty.set(year);
 	}
 
@@ -71,19 +75,19 @@ public class SearchResult {
 		eventProperty.set(event);
 	}
 
-	public String getRating() {
+	public Integer getRating() {
 		return ratingProperty.get();
 	}
 
-	public void setRating(String rating) {
+	public void setRating(Integer rating) {
 		ratingProperty.set(rating);
 	}
 
-	public String getUpdated() {
+	public LocalDate getUpdated() {
 		return updatedProperty.get();
 	}
 
-	public void setUpdated(String updated) {
+	public void setUpdated(LocalDate updated) {
 		updatedProperty.set(updated);
 	}
 
@@ -95,11 +99,11 @@ public class SearchResult {
 		categoryProperty.set(category);
 	}
 
-	public String getReleased() {
+	public LocalDate getReleased() {
 		return releasedProperty.get();
 	}
 
-	public void setReleased(String released) {
+	public void setReleased(LocalDate released) {
 		releasedProperty.set(released);
 	}
 }

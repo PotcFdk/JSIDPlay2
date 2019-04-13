@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +28,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.ProcessingException;
@@ -41,7 +42,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -85,10 +86,6 @@ import ui.filefilter.DiskFileFilter;
 public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
-
-	private static final Comparator<String> NUMERIC_COMPARATOR = (o1, o2) -> extractInt(o1) - extractInt(o2);
-
-	private static final Comparator<String> DATE_COMPARATOR = (o1, o2) -> extractDate(o1).compareTo(extractDate(o2));
 
 	private static final int MAX_ROWS = 500;
 
@@ -353,13 +350,35 @@ public class Assembly64 extends C64VBox implements UIPart {
 		addColumnMenu.getItems().add(menuItem);
 	}
 
-	private TableColumn<SearchResult, String> addColumn(Assembly64Column column) {
+	private TableColumn<SearchResult, ?> addColumn(Assembly64Column column) {
 		Assembly64ColumnType columnType = column.getColumnType();
 
-		TableColumn<SearchResult, String> tableColumn = new TableColumn<>();
+		TableColumn<SearchResult, ?> tableColumn;
+		switch (columnType) {
+		case YEAR:
+		case RATING:
+			TableColumn<SearchResult, Integer> tableColumnInteger = new TableColumn<SearchResult, Integer>();
+			tableColumn = tableColumnInteger;
+			tableColumnInteger.setCellValueFactory(
+					new PropertyValueFactory<SearchResult, Integer>(columnType.getColumnProperty()));
+			tableColumnInteger.setCellFactory(new ZeroIgnoringCellFactory());
+			break;
+		case UPDATED:
+		case RELEASED:
+			TableColumn<SearchResult, LocalDate> tableColumnLocalDate = new TableColumn<SearchResult, LocalDate>();
+			tableColumn = tableColumnLocalDate;
+			tableColumnLocalDate.setCellValueFactory(
+					new PropertyValueFactory<SearchResult, LocalDate>(columnType.getColumnProperty()));
+			break;
+		default:
+			TableColumn<SearchResult, String> tableColumnString = new TableColumn<SearchResult, String>();
+			tableColumn = tableColumnString;
+			tableColumnString.setCellValueFactory(
+					new PropertyValueFactory<SearchResult, String>(columnType.getColumnProperty()));
+			break;
+		}
 		tableColumn.setUserData(column);
 		tableColumn.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
-		tableColumn.setCellValueFactory(new PropertyValueFactory<SearchResult, String>(columnType.getColumnProperty()));
 		tableColumn.setPrefWidth(column.getWidth() != null ? column.getWidth().doubleValue() : DEFAULT_WIDTH);
 		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
 			column.setWidth(newValue.doubleValue());
@@ -375,8 +394,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 			break;
 		case YEAR:
 			hBox.getChildren().add(yearVBox);
-			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
-			tableColumn.setComparator(NUMERIC_COMPARATOR);
 			break;
 		case HANDLE:
 			hBox.getChildren().add(handleVBox);
@@ -386,19 +403,15 @@ public class Assembly64 extends C64VBox implements UIPart {
 			break;
 		case RATING:
 			hBox.getChildren().add(ratingVBox);
-			tableColumn.setCellFactory(new ZeroIgnoringCellFactory());
-			tableColumn.setComparator(NUMERIC_COMPARATOR);
 			break;
 		case CATEGORY:
 			hBox.getChildren().add(categoryVBox);
 			break;
 		case UPDATED:
 			hBox.getChildren().add(updatedVBox);
-			tableColumn.setComparator(DATE_COMPARATOR);
 			break;
 		case RELEASED:
 			hBox.getChildren().add(releasedVBox);
-			tableColumn.setComparator(DATE_COMPARATOR);
 			break;
 		default:
 			break;
@@ -523,7 +536,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	}
 
 	private ObjectMapper createObjectMapper() {
-		SimpleModule module = new SimpleModule();
+		JavaTimeModule module = new JavaTimeModule();
 		module.addDeserializer(Category.class, new CategoryDeserializer(categoryItems));
 		return new ObjectMapper().registerModule(module).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
@@ -557,7 +570,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 						get(binCheckBox), get(g64CheckBox), "n",
 						get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
 						get(releasedTextField, true), get(releasedTextField, false));
-		if (uri.getPath().contains("***/***/***/***/***/***/***/***/***")) {
+		if (getNumberOfEmptyRequestParameters(uri) == 9) {
+			// avoid requesting everything, result would be too big!
 			return;
 		}
 		String result = "";
@@ -582,6 +596,17 @@ public class Assembly64 extends C64VBox implements UIPart {
 				System.err.println("Unexpected result: " + e.getMessage());
 			}
 		}
+	}
+
+	private int getNumberOfEmptyRequestParameters(URI uri) {
+		Matcher matcher = Pattern.compile("***", Pattern.LITERAL).matcher(uri.toString());
+		int count = 0;
+		int start = 0;
+		while (matcher.find(start)) {
+			count++;
+			start = matcher.start() + 1;
+		}
+		return count;
 	}
 
 	private void getContentEntries(boolean doAutostart) {
@@ -728,22 +753,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 			} catch (IOException | SidTuneError | URISyntaxException e) {
 				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
 			}
-		}
-	}
-
-	private static final int extractInt(String string) {
-		try {
-			return Integer.parseInt(string.isEmpty() ? "" : string);
-		} catch (NumberFormatException e) {
-			return Integer.MAX_VALUE;
-		}
-	}
-
-	private static final LocalDate extractDate(String string) {
-		try {
-			return LocalDate.parse(string, DateTimeFormatter.ISO_LOCAL_DATE);
-		} catch (DateTimeParseException e) {
-			return LocalDate.now();
 		}
 	}
 }
