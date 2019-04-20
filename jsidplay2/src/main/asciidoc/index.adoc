@@ -43,7 +43,7 @@ Please read manual here:
 == Latest Beta
 
 |===
-| | Java 8, 9, 10 | Java 11
+| | Java 8, 9, 10 | Java 11, 12
 | Linux | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-linux.zip[Download]
 | Windows | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-win.zip[Download]
 | MacOSX | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-mac.zip[Download]
