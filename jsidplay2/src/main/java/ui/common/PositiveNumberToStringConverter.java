@@ -33,7 +33,7 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 			}
 			return (T) number;
 		} catch (ParseException e) {
-			return (T) new Integer(-1);
+			return (T) Integer.valueOf(-1);
 		}
 	}
 
