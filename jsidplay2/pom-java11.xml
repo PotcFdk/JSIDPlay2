@@ -70,28 +70,28 @@
 			</properties>
 		</profile>
 	</profiles>
-    
+
 	<dependencies>
 		<!-- compile time dependencies -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>11</version>
+			<version>11.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-web</artifactId>
-			<version>11</version>
+			<version>11.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>11</version>
+			<version>11.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-swing</artifactId>
-			<version>11</version>
+			<version>11.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>jsidplay2</groupId>
@@ -159,9 +159,9 @@
 			<version>9.4.10.v20180503</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.jboss.resteasy</groupId>
-		    <artifactId>resteasy-client</artifactId>
-		    <version>3.6.3.Final</version>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<version>3.6.3.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.spec.javax.annotation</groupId>
@@ -188,14 +188,14 @@
 			<version>2.9.5</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.fasterxml.jackson.datatype</groupId>
-		  <artifactId>jackson-datatype-joda</artifactId>
-		  <version>2.9.5</version>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.9.5</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.fasterxml.jackson.datatype</groupId>
-		    <artifactId>jackson-datatype-jsr310</artifactId>
-		    <version>2.9.5</version>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.9.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.beust</groupId>
@@ -213,9 +213,9 @@
 			<version>9.20-2.00beta</version>
 		</dependency>
 		<dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jcodec</groupId>
@@ -692,7 +692,7 @@
 					<injar>deploy/jsiddevice-${project.version}.jar</injar>
 					<outjar>deploy/jsiddevice-${project.version}-proguard.jar</outjar>
 					<outputDirectory>${project.build.directory}</outputDirectory>
-					<proguardInclude>${basedir}/src/main/proguard/proguard.conf</proguardInclude>
+				<proguardInclude>${basedir}/src/main/proguard/proguard.conf</proguardInclude> 
 					<includeDependency>false</includeDependency>
 					
 					<libs>
@@ -782,7 +782,7 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
-			</plugin-->
+				</plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -988,7 +988,7 @@
 						<descriptor>src/main/assembly/zip.xml</descriptor>
 					</descriptors>
 					<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-					<finalName>${project.artifactId}-${project.version}</finalName>
+					<finalName>${project.artifactId}-${project.version}-java11-${javafx.platform}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
