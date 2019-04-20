@@ -442,7 +442,7 @@
 							<goal>javadoc</goal>
 						</goals>
 						<configuration>
-							<additionalOptions>-html5</additionalOptions>
+							<additionalOptions>-html5 -source 8</additionalOptions>
 							<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 							<doclint>${doclint}</doclint>
 							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
