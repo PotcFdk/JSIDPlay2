@@ -1,9 +1,10 @@
 package ui.musiccollection;
 
 import java.io.File;
+import java.util.List;
 
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -13,18 +14,19 @@ public class MusicCollectionCellFactory implements Callback<TreeView<File>, Tree
 
 	private static final String CURRENTLY_PLAYED_FILE_ROW = "currentlyPlayedRow";
 
-	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
+	private ObjectProperty<List<TreeItem<File>>> currentlyPlayedTreeItemsProperty;
 
-	public void setCurrentlyPlayedTreeItems(ObservableList<TreeItem<File>> currentlyPlayedTreeItems) {
-		this.currentlyPlayedTreeItems = currentlyPlayedTreeItems;
+	public void setCurrentlyPlayedTreeItems(ObjectProperty<List<TreeItem<File>>> currentlyPlayedTreeItems) {
+		this.currentlyPlayedTreeItemsProperty = currentlyPlayedTreeItems;
 	}
 
 	public class TextFieldTreeCellImpl extends TreeCell<File> {
 
-		private ListChangeListener<TreeItem<File>> listChangeListener = c -> setCellStyle();
+		private ChangeListener<List<TreeItem<File>>> listChangeListener = (observable, oldValue,
+				newValue) -> setCellStyle();
 
 		public TextFieldTreeCellImpl() {
-			currentlyPlayedTreeItems.addListener(listChangeListener);
+			currentlyPlayedTreeItemsProperty.addListener(listChangeListener);
 		}
 
 		@Override
@@ -48,8 +50,8 @@ public class MusicCollectionCellFactory implements Callback<TreeView<File>, Tree
 		}
 
 		private boolean isCurrentlyPlayed() {
-			return currentlyPlayedTreeItems.stream().filter(treeItem -> treeItem.getValue().equals(getItem()))
-					.findFirst().isPresent();
+			return currentlyPlayedTreeItemsProperty.get() != null ? currentlyPlayedTreeItemsProperty.get().stream()
+					.filter(treeItem -> treeItem.getValue().equals(getItem())).findFirst().isPresent() : false;
 		}
 
 	}

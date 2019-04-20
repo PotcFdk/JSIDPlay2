@@ -1,5 +1,7 @@
 package ui.favorites;
 
+import java.util.Objects;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TableCell;
@@ -73,7 +75,7 @@ public class FavoritesCellFactory implements Callback<TableColumn<HVSCEntry, ?>,
 
 		private void setCellStyle() {
 			getStyleClass().remove(CURRENTLY_PLAYED_FILE_ROW);
-			if (!isEmpty() && getHVSCEntry() == currentlyPlayedHVSCEntryProperty.get()) {
+			if (!isEmpty() && Objects.equals(currentlyPlayedHVSCEntryProperty.get(), getHVSCEntry())) {
 				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
 			}
 		}

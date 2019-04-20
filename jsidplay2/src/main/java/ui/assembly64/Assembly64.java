@@ -1,9 +1,9 @@
 package ui.assembly64;
 
-import static javafx.scene.control.ProgressBar.*;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
+import static javafx.scene.control.ProgressIndicator.INDETERMINATE_PROGRESS;
 import static ui.assembly64.SearchResult.DATE_PATTERN;
 import static ui.assembly64.SearchResult.MATCH_ALL;
 import static ui.assembly64.SearchResult.NO;
@@ -786,7 +786,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (contentEntry != null && contentEntryFile != null) {
 			try {
 				if (convenience.autostart(contentEntryFile, Convenience.LEXICALLY_FIRST_MEDIA, autostartFile)) {
-					util.setPlayingTab(this);
+					util.setPlayingTab(this, currentlyPlayedSearchResultRowProperty,
+							currentlyPlayedContentEntryRowProperty);
 					currentlyPlayedSearchResultRowProperty.set(searchResult);
 					currentlyPlayedContentEntryRowProperty.set(contentEntry);
 				}

@@ -3,15 +3,15 @@ package ui.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -65,35 +65,33 @@ public class UIUtil {
 		}
 	}
 
-	public final void setPlayingTab(Tab tab) {
-		setPlayingTab(tab.getTabPane());
-		tab.setGraphic(new ImageView(PLAYED_ICON));
+	private static ObjectProperty<?>[] currentlyPlayedObjectProperty;
+
+	public final void setPlayingTab(Node node, ObjectProperty<?>... newCurrentlyPlayedObjectProperty) {
+		resetPlayingTab(node.getScene().getRoot(), currentlyPlayedObjectProperty, newCurrentlyPlayedObjectProperty);
+		currentlyPlayedObjectProperty = newCurrentlyPlayedObjectProperty;
+		do {
+			if (node instanceof UIPart && node.getParent().getParent() instanceof TabPane) {
+				TabPane tabPane = (TabPane) node.getParent().getParent();
+				final Node thenode = node;
+				tabPane.getTabs().stream().filter(tab -> tab.getContent().equals(thenode)).findFirst()
+						.ifPresent(tab -> tab.setGraphic(new ImageView(PLAYED_ICON)));
+			}
+			node = node.getParent();
+		} while (node != null);
 	}
 
-	public final void setPlayingTab(Node node) {
-		resetPlayingTab(node.getScene().getRoot());
-		Parent p = node.getParent();
-		while (p != null) {
-			if (p instanceof TabPane) {
-				TabPane tabPane = (TabPane) p;
-				tabPane.getSelectionModel().selectedItemProperty().get().setGraphic(new ImageView(PLAYED_ICON));
-			}
-			p = p.getParent();
-		}
-	}
-
-	private void resetPlayingTab(Node n) {
-		if (n instanceof TabPane) {
-			TabPane tabPane = (TabPane) n;
-			for (Tab tab : tabPane.getTabs()) {
-				tab.setGraphic(null);
+	private void resetPlayingTab(Node root, ObjectProperty<?>[] oldCurrentlyPlayedObjectProperty,
+			ObjectProperty<?>[] newCurrentlyPlayedObjectProperty) {
+		if (oldCurrentlyPlayedObjectProperty != null) {
+			for (ObjectProperty<?> currently : oldCurrentlyPlayedObjectProperty) {
+				if (!Arrays.asList(newCurrentlyPlayedObjectProperty).contains(currently)) {
+					currently.set(null);
+				}
 			}
 		}
-		if (n instanceof Parent) {
-			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
-				resetPlayingTab(c);
-			}
-		}
+		root.lookupAll(".tab-pane").forEach(
+				tabPaneNode -> ((TabPane) tabPaneNode).getTabs().stream().forEach(tab -> tab.setGraphic(null)));
 	}
 
 	public final DoubleProperty progressProperty(Scene scene) {
@@ -109,7 +107,7 @@ public class UIUtil {
 	public C64Window getWindow() {
 		return window;
 	}
-	
+
 	public final Player getPlayer() {
 		return player;
 	}

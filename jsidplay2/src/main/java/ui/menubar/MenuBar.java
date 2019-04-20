@@ -254,7 +254,7 @@ public class MenuBar extends C64VBox implements UIPart {
 						try {
 							video();
 							util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-									.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get());
+									.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get().getContent());
 							new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
 									null);
 						} catch (IOException | SidTuneError | URISyntaxException e) {
@@ -1098,7 +1098,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void playTune(final SidTune tune) {
 		video();
 		util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
-				.findFirst().get());
+				.findFirst().get().getContent());
 		util.getPlayer().play(tune);
 	}
 
@@ -1152,7 +1152,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
 			hvsc();
 			util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-					.filter(tab -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get());
+					.filter(tab -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get().getContent());
 			try {
 				util.getPlayer().play(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {

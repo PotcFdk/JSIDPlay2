@@ -166,7 +166,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private ObservableList<TuneInfo> tuneInfos;
 	private ObservableList<Enum<?>> comboItems;
-	private ObservableList<TreeItem<File>> currentlyPlayedTreeItems;
+	private ObjectProperty<List<TreeItem<File>>> currentlyPlayedTreeItemsProperty;
 
 	private String collectionURL, collectionDS;
 
@@ -281,7 +281,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		comboItems = FXCollections.<Enum<?>>observableArrayList();
 		combo.setItems(comboItems);
 
-		currentlyPlayedTreeItems = FXCollections.<TreeItem<File>>observableArrayList();
+		currentlyPlayedTreeItemsProperty = new SimpleObjectProperty<>(Collections.emptyList());
 
 		contextMenu.setOnShown(contextMenuEvent);
 
@@ -612,7 +612,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private void setViewRoot(final File theRootFile) {
 		MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
-		cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItems);
+		cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItemsProperty);
 		fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
 		fileBrowser.setCellFactory(cellFactory);
 		collectionDir.setText(theRootFile.getAbsolutePath());
@@ -775,7 +775,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			}
 		}
 		if (pathSegs.size() > 0) {
-			currentlyPlayedTreeItems.setAll(pathSegs);
+			currentlyPlayedTreeItemsProperty.set(pathSegs);
 			TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 			TreeItem<File> treeItem = pathSegs.get(pathSegs.size() - 1);
 			if (selectedItem == null || !treeItem.getValue().equals(selectedItem.getValue())) {
@@ -889,7 +889,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void playTune(final File file) {
-		util.setPlayingTab(this);
+		util.setPlayingTab(this, currentlyPlayedTreeItemsProperty);
 		try {
 			util.getPlayer().play(SidTune.load(file));
 		} catch (IOException | SidTuneError e) {
