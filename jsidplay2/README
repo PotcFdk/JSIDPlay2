@@ -23,12 +23,16 @@ Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
 -Dupx.home=<pathToUPX>
 
+Use Oracle Java8
+================
+This is my recommendation, because JavaFX is already included!
+
 Use OpenJDK For Linux users and PulseAudio for sound output:
 ============================================================
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
-sudo apt-get install openjfx
+sudo apt-get install openjfx (prior to openjfx11! No more available on Ubuntu?)
 sudo apt-get install pavucontrol
 
 Some soundcards don't work well with the default pulseaudio settings:
@@ -55,7 +59,7 @@ Java8 in Eclipse:
 
 In Eclipse Preferences/Java/Installed JREs
 Add:
-/usr/lib/jvm/java-8-openjdk-amd64/jre
+<Choose Java8 installation folder>
 X Use as default Java
 
 Java 9,10,11:
@@ -136,9 +140,6 @@ TODO:
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
-Test hardware support (hardsid) with Java11.
-How to deploy win, linux and mac version with Java11 for the Web-site?
-
-Docs: How to launch using java11 (new exe file), using JavaFX11 bundled dependencies
+Test JSIDPlay2 using Java11 and find bugs.
 
 Wait for proguard to support Java11 and adopt changes

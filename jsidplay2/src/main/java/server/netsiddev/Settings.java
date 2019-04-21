@@ -39,6 +39,7 @@ public class Settings extends SIDDeviceStage {
 
 	private SIDDeviceSettings settings;
 
+	@SuppressWarnings("unchecked")
 	public Settings() {
 		getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints gridBagConstants = new GridBagConstraints();

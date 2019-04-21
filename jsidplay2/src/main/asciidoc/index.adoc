@@ -40,13 +40,29 @@ JSidplay2 is able to
 Please read manual here:
 <<UserGuide.ad#UserGuide,JSIDPlay2 User Guide>>
 
-== Latest Beta
+== Latest Beta Version
 
 |===
-| | Java 8, 9, 10 | Java 11, 12
-| Linux | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-linux.zip[Download]
+| | Java 8, 9, 10 | Java 11, 12, ...
+| Linux | link:{codebase}{artifactId}-{version}.zip[Download]| link:{codebase}{artifactId}-{version}-java11-linux.zip[Download]
 | Windows | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-win.zip[Download]
 | MacOSX | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-mac.zip[Download]
+|===
+
+== System Requirement
+
+|===
+| | Java
+| Linux |
+link:{codebase}java/jdk-8u211-linux-x64.tar.gz[[small]*Java8 (64-bit)*]
+
+link:{codebase}java/jdk-8u211-linux-i586.tar.gz[[small]*Java8 (32-bit)*]
+| Windows |
+link:{codebase}java/jdk-8u211-windows-x64.exe[[small]*Java8 (64-bit)*]
+
+link:{codebase}java/jdk-8u211-windows-i586.exe[[small]*Java8 (32-bit)*]
+| MacOSX |
+link:{codebase}java/jdk-8u211-macosx-x64.dmg[[small]*Java8 (64-bit)*]
 |===
 
 == Releases
