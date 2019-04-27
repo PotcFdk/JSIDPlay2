@@ -389,7 +389,10 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 * Connect Keyboard with C64 keyboard.
 	 */
 	private void setupKeyboard() {
+		// capture focus to prevent focus traversal using cursor keys or tab!
+		monitor.focusedProperty().addListener((input,wasFocused, isFocused)->monitor.requestFocus());
 		monitor.setOnKeyPressed(event -> {
+			event.consume();
 			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(event.getCode().getName());
 
 			if (event.isShiftDown()) {
@@ -402,7 +405,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			if (keyTableEntry != null) {
 				pressC64Key(keyTableEntry);
 				releaseC64Key(keyTableEntry);
-				event.consume();
 
 				if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
 					Platform.runLater(() -> {
