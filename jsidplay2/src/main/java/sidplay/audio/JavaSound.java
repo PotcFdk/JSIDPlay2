@@ -70,13 +70,13 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public synchronized void write() throws InterruptedException {
-		// cure buffer underrun/overrun try to reopen
+		// cure buffer underrun/overrun, try to re-open
 		if (dataLine.available() == 0) {
 			dataLine.close();
 			try {
 				dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
 			} catch (LineUnavailableException e) {
-				System.err.println("SourceDataLine cannot be reopened: !");
+				throw new RuntimeException("SourceDataLine cannot be reopened, we must stop!");
 			}
 		}
 		// in pause mode next call of write continues
@@ -92,6 +92,9 @@ public class JavaSound implements AudioDriver {
 	 * @return playback time in ms
 	 */
 	public synchronized int getRemainingPlayTime() {
+		if (dataLine == null) {
+			return 0;
+		}
 		int bytesPerFrame = dataLine.getFormat().getChannels() * Short.BYTES;
 		int framesPlayed = dataLine.available() / bytesPerFrame;
 		int framesTotal = dataLine.getBufferSize() / bytesPerFrame;
@@ -101,13 +104,13 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public synchronized void pause() {
-		if (dataLine.isActive()) {
+		if (dataLine != null && dataLine.isActive()) {
 			dataLine.stop();
 		}
 	}
 
 	public synchronized void flush() {
-		if (dataLine.isActive()) {
+		if (dataLine != null && dataLine.isActive()) {
 			dataLine.flush();
 		}
 	}
