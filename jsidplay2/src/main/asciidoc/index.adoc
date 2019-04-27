@@ -49,7 +49,7 @@ Please read manual here:
 | MacOSX | link:{codebase}{artifactId}-{version}.zip[Download] | link:{codebase}{artifactId}-{version}-java11-mac.zip[Download]
 |===
 
-== System Requirement
+== Minimum System Requirement
 
 |===
 | | Java
