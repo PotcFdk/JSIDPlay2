@@ -70,6 +70,15 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public synchronized void write() throws InterruptedException {
+		// cure buffer underrun/overrun try to reopen
+		if (dataLine.available() == 0) {
+			dataLine.close();
+			try {
+				dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
+			} catch (LineUnavailableException e) {
+				System.err.println("SourceDataLine cannot be reopened: !");
+			}
+		}
 		// in pause mode next call of write continues
 		if (!dataLine.isActive()) {
 			dataLine.start();
