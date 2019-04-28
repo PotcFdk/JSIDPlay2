@@ -22,6 +22,7 @@ public class JavaSound implements AudioDriver {
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
 	private ByteBuffer sampleBuffer;
+	private boolean isLinuxDirectAudioDevice;
 
 	@Override
 	public synchronized void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -57,21 +58,24 @@ public class JavaSound implements AudioDriver {
 		close();
 		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
 		dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
-		
+
 		dataLine.start();
-		
+
 		// The actual buffer size for the open line may differ from the
 		// requested buffer size, therefore
 		cfg.setBufferFrames(dataLine.getBufferSize() / Short.BYTES / cfg.getChannels());
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
+
+		isLinuxDirectAudioDevice = System.getProperty("os.name").equals("Linux")
+				&& dataLine.getClass().getName().contains("DirectAudioDevice");
 	}
 
 	@Override
 	public synchronized void write() throws InterruptedException {
-		// cure buffer underrun/overrun, try to re-open
-		if (dataLine.available() == 0) {
+		// cure buffer underrun/overrun, try to re-open (poor Linux ALSA support)
+		if (isLinuxDirectAudioDevice && dataLine.available() == 0) {
 			dataLine.close();
 			try {
 				dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
@@ -136,4 +140,5 @@ public class JavaSound implements AudioDriver {
 	public ByteBuffer buffer() {
 		return sampleBuffer;
 	}
+
 }
