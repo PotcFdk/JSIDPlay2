@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -25,7 +26,7 @@ public class JavaSound implements AudioDriver {
 	private boolean isLinuxDirectAudioDevice;
 
 	@Override
-	public synchronized void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
 		int device = cfg.getDevice();
 		List<Info> devices = getDevices();
@@ -44,8 +45,7 @@ public class JavaSound implements AudioDriver {
 		return devices;
 	}
 
-	public synchronized void open(final AudioConfig cfg, final Mixer.Info info)
-			throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, final Mixer.Info info) throws IOException, LineUnavailableException {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
@@ -53,7 +53,7 @@ public class JavaSound implements AudioDriver {
 		setAudioDevice(info);
 	}
 
-	public synchronized void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
+	public void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
 		// first close previous dataLine when it is already present
 		close();
 		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
@@ -68,17 +68,21 @@ public class JavaSound implements AudioDriver {
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
 
-		isLinuxDirectAudioDevice = System.getProperty("os.name").equals("Linux")
+		isLinuxDirectAudioDevice = Objects.equals(System.getProperty("hack"), "true")
+				&& System.getProperty("os.name").equals("Linux")
 				&& dataLine.getClass().getName().contains("DirectAudioDevice");
+		System.out.println("isLinuxDirectAudioDevice=" + isLinuxDirectAudioDevice);
+		System.out.println("dataLine.getClass().getName()=" + dataLine.getClass().getName());
 	}
 
 	@Override
-	public synchronized void write() throws InterruptedException {
+	public void write() throws InterruptedException {
 		// cure buffer underrun/overrun, try to re-open (poor Linux ALSA support)
 		if (isLinuxDirectAudioDevice && dataLine.available() == 0) {
 			dataLine.close();
 			try {
 				dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
+				System.err.println("Re-Opened!");
 			} catch (LineUnavailableException e) {
 				throw new RuntimeException("SourceDataLine cannot be reopened, we must stop!");
 			}
@@ -95,7 +99,7 @@ public class JavaSound implements AudioDriver {
 	 * 
 	 * @return playback time in ms
 	 */
-	public synchronized int getRemainingPlayTime() {
+	public int getRemainingPlayTime() {
 		if (dataLine == null) {
 			return 0;
 		}
@@ -107,20 +111,20 @@ public class JavaSound implements AudioDriver {
 	}
 
 	@Override
-	public synchronized void pause() {
+	public void pause() {
 		if (dataLine != null && dataLine.isActive()) {
 			dataLine.stop();
 		}
 	}
 
-	public synchronized void flush() {
+	public void flush() {
 		if (dataLine != null && dataLine.isActive()) {
 			dataLine.flush();
 		}
 	}
 
 	@Override
-	public synchronized void close() {
+	public void close() {
 		if (dataLine == null) {
 			return;
 		}

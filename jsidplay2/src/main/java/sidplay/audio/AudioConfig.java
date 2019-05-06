@@ -25,6 +25,10 @@ import libsidplay.config.IAudioSection;
  *
  */
 public class AudioConfig {
+	private static final int CHUNK_SIZE = System.getProperty("chunk_size") != null
+			? Integer.valueOf(System.getProperty("chunk_size"))
+			: 1024;
+
 	private final int frameRate;
 	private final int channels;
 	private int bufferFrames;
@@ -83,7 +87,7 @@ public class AudioConfig {
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return Math.min(1024, bufferFrames);
+		return Math.min(CHUNK_SIZE, bufferFrames);
 	}
 
 	/**
