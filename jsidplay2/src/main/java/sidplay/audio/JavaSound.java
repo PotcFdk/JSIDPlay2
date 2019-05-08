@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -23,7 +22,6 @@ public class JavaSound implements AudioDriver {
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
 	private ByteBuffer sampleBuffer;
-	private boolean isLinuxDirectAudioDevice;
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -67,26 +65,10 @@ public class JavaSound implements AudioDriver {
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
-
-		isLinuxDirectAudioDevice = Objects.equals(System.getProperty("hack"), "true")
-				&& System.getProperty("os.name").equals("Linux")
-				&& dataLine.getClass().getName().contains("DirectAudioDevice");
-		System.out.println("isLinuxDirectAudioDevice=" + isLinuxDirectAudioDevice);
-		System.out.println("dataLine.getClass().getName()=" + dataLine.getClass().getName());
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		// cure buffer underrun/overrun, try to re-open (poor Linux ALSA support)
-		if (isLinuxDirectAudioDevice && dataLine.available() == 0) {
-			dataLine.close();
-			try {
-				dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
-				System.err.println("Re-Opened!");
-			} catch (LineUnavailableException e) {
-				throw new RuntimeException("SourceDataLine cannot be reopened, we must stop!");
-			}
-		}
 		// in pause mode next call of write continues
 		if (!dataLine.isActive()) {
 			dataLine.start();

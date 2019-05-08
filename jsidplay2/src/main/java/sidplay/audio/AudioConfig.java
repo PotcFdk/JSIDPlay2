@@ -25,10 +25,6 @@ import libsidplay.config.IAudioSection;
  *
  */
 public class AudioConfig {
-	private static final int CHUNK_SIZE = System.getProperty("chunk_size") != null
-			? Integer.valueOf(System.getProperty("chunk_size"))
-			: 1024;
-
 	private final int frameRate;
 	private final int channels;
 	private int bufferFrames;
@@ -49,10 +45,11 @@ public class AudioConfig {
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
 		/*
-		 * We make the sample buffer size divisible by 64 to ensure that all
+		 * 1. We make the sample buffer size divisible by 64 to ensure that all
 		 * fast forward factors can be handled. (32x speed, 2 channels)
+		 * 2. Must be greater or equal than chunk size!
 		 */
-		this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 64;
+		this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256;
 	}
 
 	/**
@@ -87,7 +84,7 @@ public class AudioConfig {
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return Math.min(CHUNK_SIZE, bufferFrames);
+		return Math.min(8192, bufferFrames);
 	}
 
 	/**
