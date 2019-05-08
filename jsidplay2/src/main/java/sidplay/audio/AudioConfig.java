@@ -28,6 +28,7 @@ public class AudioConfig {
 	private final int frameRate;
 	private final int channels;
 	private int bufferFrames;
+	private int chunkFrames;
 	private final int deviceIdx;
 
 	/**
@@ -49,7 +50,7 @@ public class AudioConfig {
 		 * fast forward factors can be handled. (32x speed, 2 channels)
 		 * 2. Must be greater or equal than chunk size!
 		 */
-		this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256;
+		setBufferFrames((1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256);
 	}
 
 	/**
@@ -85,9 +86,14 @@ public class AudioConfig {
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return Math.min(16384, bufferFrames);
+		return chunkFrames;
 	}
 
+	public AudioConfig setChunkFrames(int chunkFrames) {
+		this.chunkFrames = chunkFrames;
+		return this;
+	}
+	
 	/**
 	 * Gets the size of this AudioConfig's audio buffer in frames.
 	 * 
@@ -104,8 +110,10 @@ public class AudioConfig {
 	 * @param bufferFrames
 	 *            available buffer frames
 	 */
-	public final void setBufferFrames(final int bufferFrames) {
+	public final AudioConfig setBufferFrames(final int bufferFrames) {
 		this.bufferFrames = bufferFrames;
+		this.chunkFrames = Math.min(16384, bufferFrames);
+		return this;
 	}
 
 	/**

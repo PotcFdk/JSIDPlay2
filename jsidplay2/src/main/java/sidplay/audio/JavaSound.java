@@ -18,9 +18,9 @@ import libsidplay.common.CPUClock;
 
 public class JavaSound implements AudioDriver {
 
-	private AudioConfig cfg;
+	protected AudioConfig cfg;
 	private AudioFormat audioFormat;
-	private SourceDataLine dataLine;
+	protected SourceDataLine dataLine;
 	private ByteBuffer sampleBuffer;
 
 	@Override

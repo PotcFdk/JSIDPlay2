@@ -2,9 +2,11 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import builder.resid.SIDMixer;
 import libsidplay.common.CPUClock;
 import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
@@ -22,7 +24,7 @@ public class CmpMP3File extends JavaSound {
 
 		public MP3Termination() {
 		}
-		
+
 		public MP3Termination(Exception e) {
 			super(e.getMessage());
 		}
@@ -44,8 +46,10 @@ public class CmpMP3File extends JavaSound {
 	}
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
-		super.open(cfg, recordingFilename, cpuClock);
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+			throws IOException, LineUnavailableException {
+		super.open(cfg.setBufferFrames((1 << SIDMixer.MAX_FAST_FORWARD) * cfg.getChannels() * 64)
+				.setChunkFrames(2048), recordingFilename, cpuClock);
 
 		jump3r = new LameDecoder(audioSection.getMp3File());
 
@@ -60,6 +64,18 @@ public class CmpMP3File extends JavaSound {
 
 	@Override
 	public void write() throws InterruptedException {
+		// repair sound after switching between original and emu
+		for (JavaSound javaSound : Arrays.asList(this, mp3JavaSound)) {
+			if (javaSound.dataLine.available() == 0) {
+				javaSound.dataLine.close();
+				try {
+					javaSound.dataLine.open(javaSound.dataLine.getFormat(),
+							javaSound.cfg.getBufferFrames() * Short.BYTES * javaSound.cfg.getChannels());
+				} catch (LineUnavailableException e) {
+					throw new RuntimeException(e.getMessage());
+				}
+			}
+		}
 		if (!jump3r.decode(mp3JavaSound.buffer())) {
 			throw new MP3Termination();
 		}
