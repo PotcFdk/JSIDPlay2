@@ -80,11 +80,12 @@ public class AudioConfig {
 	 * Return the desired size of buffer used at one time. This is often smaller
 	 * than the whole buffer because doing this allows us to stay closer in sync
 	 * with the audio production.
+	 * <B>Note:</B>Do not choose too small values here: test with 96kHz and 32x fast forward!
 	 * 
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return Math.min(8192, bufferFrames);
+		return Math.min(16384, bufferFrames);
 	}
 
 	/**
