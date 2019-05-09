@@ -20,7 +20,7 @@ import lowlevel.LameDecoder;
 public class CmpMP3File extends JavaSound {
 
 	public static class MP3Termination extends InterruptedException {
-		private static final long serialVersionUID = -7204524330347735933L;
+		private static final long serialVersionUID = 1L;
 
 		public MP3Termination() {
 		}
@@ -35,8 +35,8 @@ public class CmpMP3File extends JavaSound {
 	 */
 	protected LameDecoder jump3r;
 	private int factor;
+	private byte[] decodedMP3;
 	private ByteBuffer mp3Buffer;
-	private ByteBuffer mp3BigBuffer;
 
 	private IAudioSection audioSection;
 
@@ -50,29 +50,31 @@ public class CmpMP3File extends JavaSound {
 		super.open(cfg, recordingFilename, cpuClock);
 
 		jump3r = new LameDecoder(audioSection.getMp3File());
-		mp3Buffer = ByteBuffer.allocate(jump3r.getFrameSize() * Short.BYTES * cfg.getChannels())
-				.order(ByteOrder.LITTLE_ENDIAN);
+		decodedMP3 = new byte[jump3r.getFrameSize() * Short.BYTES * cfg.getChannels()];
 		factor = cfg.getBufferFrames() / jump3r.getFrameSize();
-		mp3BigBuffer = ByteBuffer.allocate(factor * mp3Buffer.capacity()).order(ByteOrder.LITTLE_ENDIAN);
+		mp3Buffer = ByteBuffer.allocateDirect(factor * decodedMP3.length).order(ByteOrder.nativeOrder());
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		((Buffer) mp3BigBuffer).clear();
+		((Buffer) mp3Buffer).clear();
+		boolean decoded = true;
 		for (int i = 0; i < factor; i++) {
-			if (!jump3r.decode(mp3Buffer)) {
-				throw new MP3Termination();
+			decoded &= jump3r.decode(ByteBuffer.wrap(decodedMP3));
+			if (!decoded) {
+				break;
 			}
-			((Buffer) mp3Buffer).clear();
-			mp3BigBuffer.put(mp3Buffer);
+			mp3Buffer.put(decodedMP3);
 		}
 		if (audioSection.isPlayOriginal()) {
 			((Buffer) buffer()).clear();
-			((Buffer) mp3BigBuffer).flip();
-			buffer().put(mp3BigBuffer);
-			((Buffer) buffer()).position(mp3BigBuffer.limit());
+			((Buffer) mp3Buffer).flip();
+			buffer().put(mp3Buffer);
 		}
 		super.write();
+		if (!decoded) {
+			throw new MP3Termination();
+		}
 	}
 
 	@Override
