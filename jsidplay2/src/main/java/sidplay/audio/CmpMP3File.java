@@ -2,11 +2,11 @@ package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.Buffer;
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.sound.sampled.LineUnavailableException;
 
-import builder.resid.SIDMixer;
 import libsidplay.common.CPUClock;
 import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
@@ -34,10 +34,9 @@ public class CmpMP3File extends JavaSound {
 	 * Jump3r decoder.
 	 */
 	protected LameDecoder jump3r;
-	/**
-	 * MP3 sound output.
-	 */
-	protected JavaSound mp3JavaSound = new JavaSound();
+	private int factor;
+	private ByteBuffer mp3Buffer;
+	private ByteBuffer mp3BigBuffer;
 
 	private IAudioSection audioSection;
 
@@ -48,55 +47,37 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
-		super.open(cfg.setBufferFrames((1 << SIDMixer.MAX_FAST_FORWARD) * cfg.getChannels() * 64)
-				.setChunkFrames(2048), recordingFilename, cpuClock);
+		super.open(cfg, recordingFilename, cpuClock);
 
 		jump3r = new LameDecoder(audioSection.getMp3File());
-
-		mp3JavaSound.open(new AudioConfig(jump3r.getSampleRate(), jump3r.getChannels(), cfg.getDevice()) {
-			@Override
-			public int getChunkFrames() {
-				return jump3r.getFrameSize();
-			}
-
-		}, recordingFilename, cpuClock);
+		mp3Buffer = ByteBuffer.allocate(jump3r.getFrameSize() * Short.BYTES * cfg.getChannels())
+				.order(ByteOrder.LITTLE_ENDIAN);
+		factor = cfg.getBufferFrames() / jump3r.getFrameSize();
+		mp3BigBuffer = ByteBuffer.allocate(factor * mp3Buffer.capacity()).order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		// repair sound after switching between original and emu
-		for (JavaSound javaSound : Arrays.asList(this, mp3JavaSound)) {
-			if (javaSound.dataLine.available() == 0) {
-				javaSound.dataLine.close();
-				try {
-					javaSound.dataLine.open(javaSound.dataLine.getFormat(),
-							javaSound.cfg.getBufferFrames() * Short.BYTES * javaSound.cfg.getChannels());
-				} catch (LineUnavailableException e) {
-					throw new RuntimeException(e.getMessage());
-				}
+		((Buffer) mp3BigBuffer).clear();
+		for (int i = 0; i < factor; i++) {
+			if (!jump3r.decode(mp3Buffer)) {
+				throw new MP3Termination();
 			}
+			((Buffer) mp3Buffer).clear();
+			mp3BigBuffer.put(mp3Buffer);
 		}
-		if (!jump3r.decode(mp3JavaSound.buffer())) {
-			throw new MP3Termination();
-		}
-		((Buffer) mp3JavaSound.buffer()).position(mp3JavaSound.buffer().limit());
 		if (audioSection.isPlayOriginal()) {
-			mp3JavaSound.write();
-		} else {
-			super.write();
+			((Buffer) buffer()).clear();
+			((Buffer) mp3BigBuffer).flip();
+			buffer().put(mp3BigBuffer);
+			((Buffer) buffer()).position(mp3BigBuffer.limit());
 		}
-	}
-
-	@Override
-	public synchronized void pause() {
-		super.pause();
-		mp3JavaSound.pause();
+		super.write();
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		mp3JavaSound.close();
 		if (jump3r != null) {
 			jump3r.close();
 		}
