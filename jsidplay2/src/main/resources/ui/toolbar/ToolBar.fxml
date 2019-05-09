@@ -64,6 +64,14 @@
 					<CheckBox text="%SINGLE_SONG" fx:id="singleSong" />
 				</VBox>
 				<VBox>
+					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
+					<TextField fx:id="defaultTime" maxWidth="85">
+						<tooltip>
+							<Tooltip text="%DEFAULT_LENGTH_TIP" />
+						</tooltip>
+					</TextField>
+				</VBox>
+				<VBox>
 					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
 					<ProgressBar fx:id="progress" progress="0" prefWidth="120"/>
 				</VBox>
@@ -270,10 +278,10 @@
 					</TextField>
 				</VBox>
 				<VBox>
-					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-					<TextField fx:id="defaultTime" maxWidth="85">
+					<Label text="%AUDIO_BUFFER_SIZE" alignment="CENTER_RIGHT" />
+					<TextField fx:id="audioBufferSize" maxWidth="60">
 						<tooltip>
-							<Tooltip text="%DEFAULT_LENGTH_TIP" />
+							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" />
 						</tooltip>
 					</TextField>
 				</VBox>

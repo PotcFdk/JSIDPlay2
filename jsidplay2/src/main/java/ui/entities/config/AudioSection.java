@@ -2,6 +2,7 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
@@ -304,5 +305,21 @@ public class AudioSection implements IAudioSection {
 	@Override
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize.set(bufferSize);
+	}
+
+	private IntegerProperty audioBufferSize = new SimpleIntegerProperty(DEFAULT_AUDIO_BUFFER_SIZE);
+
+	public IntegerProperty audioBufferSizeProperty() {
+		return audioBufferSize;
+	}
+
+	@Override
+	public int getAudioBufferSize() {
+		return audioBufferSize.get();
+	}
+
+	@Override
+	public void setAudioBufferSize(int audioBufferSize) {
+		this.audioBufferSize.set(audioBufferSize);
 	}
 }

@@ -220,6 +220,20 @@ public interface IAudioSection {
 	 */
 	void setBufferSize(int bufferSize);
 
+	/**
+	 * Getter of the audio buffer size.
+	 * 
+	 * @return size of the audio buffer
+	 */
+	int getAudioBufferSize();
+
+	/**
+	 * Setter of the audio buffer size.
+	 * 
+	 * @param bufferSize audio buffer size
+	 */
+	void setAudioBufferSize(int audioBufferSize);
+
 	default float getVolume(int sidNum) {
 		switch (sidNum) {
 		case 0:

@@ -2,6 +2,7 @@ package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
@@ -279,6 +280,17 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Parameter(names = { "--bufferSize", "-B" }, descriptionKey = "BUFFER_SIZE")
 	public void setBufferSize(int bufferSize) {
 		iniReader.setProperty("Audio", "Buffer Size", bufferSize);
+	}
+
+	@Override
+	public int getAudioBufferSize() {
+		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", DEFAULT_AUDIO_BUFFER_SIZE);
+	}
+
+	@Override
+	@Parameter(names = { "--audioBufferSize" }, descriptionKey = "AUDIO_BUFFER_SIZE")
+	public void setAudioBufferSize(int audioBufferSize) {
+		iniReader.setProperty("Audio", "Audio Buffer Size", audioBufferSize);
 	}
 
 	@Override

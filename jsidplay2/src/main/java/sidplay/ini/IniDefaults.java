@@ -95,6 +95,7 @@ public interface IniDefaults {
 	int DEFAULT_SECOND_DELAY = AUDIO_SECTION.getSecondDelay();
 	int DEFAULT_THIRD_DELAY = AUDIO_SECTION.getThirdDelay();
 	int DEFAULT_BUFFER_SIZE = AUDIO_SECTION.getBufferSize();
+	int DEFAULT_AUDIO_BUFFER_SIZE = AUDIO_SECTION.getAudioBufferSize();
 
 	// Emulator Section
 

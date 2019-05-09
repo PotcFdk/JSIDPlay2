@@ -22,6 +22,7 @@ public class JavaSound implements AudioDriver {
 	private AudioFormat audioFormat;
 	private SourceDataLine dataLine;
 	private ByteBuffer sampleBuffer;
+	private boolean audioBufferWarning;
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -72,6 +73,10 @@ public class JavaSound implements AudioDriver {
 		// in pause mode next call of write continues
 		if (!dataLine.isActive()) {
 			dataLine.start();
+		}
+		if (dataLine.available() == 0 && !audioBufferWarning) {
+			System.err.println("Audio Buffer should be increased!");
+			audioBufferWarning = true;
 		}
 		dataLine.write(sampleBuffer.array(), 0, sampleBuffer.position());
 	}

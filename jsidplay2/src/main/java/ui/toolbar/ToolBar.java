@@ -91,9 +91,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
-			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyManagerPassword,
-			appServerKeyStorePassword;
+	private TextField bufferSize, audioBufferSize, defaultTime, proxyHostname, proxyPort, hostname, port,
+			ultimate64Hostname, ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort,
+			appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -199,7 +199,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			}
 		});
 		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
-				new PositiveNumberToStringConverter<>(2048));
+				new PositiveNumberToStringConverter<>(2048, false));
 		audioSection.bufferSizeProperty().addListener((obj, o, n) -> {
 			final Tooltip tooltip = new Tooltip();
 			bufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
@@ -211,6 +211,22 @@ public class ToolBar extends C64VBox implements UIPart {
 				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_FORMAT"));
 				bufferSize.setTooltip(tooltip);
 				bufferSize.getStyleClass().add(CELL_VALUE_ERROR);
+			}
+		});
+		Bindings.bindBidirectional(audioBufferSize.textProperty(), audioSection.audioBufferSizeProperty(),
+				new PositiveNumberToStringConverter<>(1024, true));
+		audioSection.audioBufferSizeProperty().addListener((obj, o, n) -> {
+			final Tooltip tooltip = new Tooltip();
+			audioBufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (n.intValue() >= 1024) {
+				tooltip.setText(util.getBundle().getString("AUDIO_BUFFER_SIZE_TIP"));
+				audioBufferSize.setTooltip(tooltip);
+				audioBufferSize.getStyleClass().add(CELL_VALUE_OK);
+				restart();
+			} else {
+				tooltip.setText(util.getBundle().getString("AUDIO_BUFFER_SIZE_FORMAT"));
+				audioBufferSize.setTooltip(tooltip);
+				audioBufferSize.getStyleClass().add(CELL_VALUE_ERROR);
 			}
 		});
 

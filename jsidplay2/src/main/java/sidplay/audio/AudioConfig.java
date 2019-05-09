@@ -29,27 +29,27 @@ public class AudioConfig {
 	private final int channels;
 	private int bufferFrames;
 	private final int deviceIdx;
+	private int audioBufferSize;
 
 	/**
 	 * This instance represents the requested audio configuration
 	 * 
-	 * @param frameRate
-	 *            The desired audio framerate.
-	 * @param channels
-	 *            The number of audio channels to use.
-	 * @param deviceIdx
-	 *            The sound device number.
+	 * @param frameRate       The desired audio framerate.
+	 * @param channels        The number of audio channels to use.
+	 * @param deviceIdx       The sound device number.
+	 * @param audioBufferSize The audio buffer size (null for reasonable default).
 	 */
-	public AudioConfig(final int frameRate, final int channels, final int deviceIdx) {
+	public AudioConfig(final int frameRate, final int channels, final int deviceIdx, Integer audioBufferSize) {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
-		/*
-		 * 1. We make the sample buffer size divisible by 64 to ensure that all
-		 * fast forward factors can be handled. (32x speed, 2 channels)
-		 * 2. Must be greater or equal than chunk size!
-		 */
-		this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256;
+		if (audioBufferSize != null) {
+			this.audioBufferSize = audioBufferSize;
+			this.bufferFrames = audioBufferSize;
+		} else {
+			this.audioBufferSize = 16384;
+			this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256;
+		}
 	}
 
 	/**
@@ -58,13 +58,13 @@ public class AudioConfig {
 	 * <B>Note:</B> The number of audio channels is always two to support stereo
 	 * tunes and to play mono tunes as stereo (fake stereo).
 	 * 
-	 * @param audio
-	 *            audio configuration
+	 * @param audio audio configuration
 	 * 
 	 * @return AudioConfig for current specification
 	 */
 	public static AudioConfig getInstance(final IAudioSection audio) {
-		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice());
+		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice(),
+				audio.getAudioBufferSize());
 	}
 
 	/**
@@ -79,13 +79,13 @@ public class AudioConfig {
 	/**
 	 * Return the desired size of buffer used at one time. This is often smaller
 	 * than the whole buffer because doing this allows us to stay closer in sync
-	 * with the audio production.
-	 * <B>Note:</B>Do not choose too small values here: test with 96kHz and 32x fast forward!
+	 * with the audio production. <B>Note:</B>Do not choose too small values here:
+	 * test with 96kHz and 32x fast forward!
 	 * 
 	 * @return size of one chunk
 	 */
 	public int getChunkFrames() {
-		return Math.min(16384, bufferFrames);
+		return Math.min(audioBufferSize, bufferFrames);
 	}
 
 	/**
@@ -98,11 +98,14 @@ public class AudioConfig {
 	}
 
 	/**
-	 * The actual buffer size for the open audio line may differ from the
-	 * requested buffer size, therefore
+	 * The actual buffer size for the open audio line may differ from the requested
+	 * buffer size, therefore the setter<BR>
 	 * 
-	 * @param bufferFrames
-	 *            available buffer frames
+	 * <B>Note:</B> We make the sample buffer size divisible by 64 to ensure that
+	 * all fast forward factors can be handled. (32x speed, 2 channels).<BR>
+	 * <B>Note:</B> Must be greater or equal than the calculated chunk size!
+	 * 
+	 * @param bufferFrames available buffer frames
 	 */
 	public final void setBufferFrames(final int bufferFrames) {
 		this.bufferFrames = bufferFrames;
