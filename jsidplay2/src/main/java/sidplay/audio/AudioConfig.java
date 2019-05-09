@@ -43,7 +43,7 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
-		if (audioBufferSize != null) {
+		if (audioBufferSize != null && audioBufferSize.intValue() >= 1024) {
 			this.audioBufferSize = audioBufferSize;
 			this.bufferFrames = audioBufferSize;
 		} else {
