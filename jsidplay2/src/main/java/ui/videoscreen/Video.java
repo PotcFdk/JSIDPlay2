@@ -14,7 +14,9 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -66,6 +68,7 @@ import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
 public class Video extends C64VBox implements UIPart, Consumer<int[]> {
+
 	public static final String ID = "VIDEO";
 	private static final double PAL_MARGIN_LEFT = 55;
 	private static final double PAL_MARGIN_RIGHT = 55;
@@ -98,10 +101,13 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
+	private List<Image> imageQueue;
+
 	/**
-	 * Note: volatile, because Player thread writes it and javafx thread reads it!
+	 * Note: volatile, because Screen Updater thread writes it and javafx thread
+	 * reads it!
 	 */
-	private volatile Image lastFrame;
+	private volatile Image lastImage;
 
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
@@ -209,11 +215,22 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return new Task<Void>() {
 
 					public Void call() throws InterruptedException {
-						Image frame = lastFrame;
-						if (frame != null) {
-							screen.getGraphicsContext2D().drawImage(frame, 0, 0, frame.getWidth(), frame.getHeight(),
+						Image image = null;
+						synchronized (imageQueue) {
+							// prevent image buffer overflow
+							int size = imageQueue.size() / 10;
+							for (int i = 0; size > 1 && i < imageQueue.size(); i += imageQueue.size() / size) {
+								imageQueue.remove(i);
+							}
+							if (!imageQueue.isEmpty()) {
+								image = imageQueue.remove(0);
+							}
+						}
+						if (image != null) {
+							screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
 									marginLeft, marginTop, screen.getWidth() - (marginLeft + marginRight),
 									screen.getHeight() - (marginTop + marginBottom));
+							lastImage = image;
 						}
 						return null;
 					}
@@ -222,6 +239,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			}
 		};
 
+		imageQueue = new ArrayList<>();
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 		setVisibilityBasedOnChipType(tune);
@@ -362,6 +380,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return t;
 			}
 		});
+		imageQueue.clear();
 		screenUpdateService.setExecutor(schdExctr);
 		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
@@ -390,7 +409,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 */
 	private void setupKeyboard() {
 		// capture focus to prevent focus traversal using cursor keys or tab!
-		monitor.focusedProperty().addListener((input,wasFocused, isFocused)->monitor.requestFocus());
+		monitor.focusedProperty().addListener((input, wasFocused, isFocused) -> monitor.requestFocus());
 		monitor.setOnKeyPressed(event -> {
 			event.consume();
 			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(event.getCode().getName());
@@ -549,8 +568,9 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 */
 	@Override
 	public void accept(int[] pixels) {
-		// create image with a copy of the pixels to prevent tearing
-		lastFrame = createImage(Arrays.copyOf(pixels, pixels.length));
+		synchronized (imageQueue) {
+			imageQueue.add(createImage(Arrays.copyOf(pixels, pixels.length)));
+		}
 	}
 
 	private Image createImage(int[] pixels) {
@@ -565,7 +585,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 * @return VIC image with current frame
 	 */
 	public Image getVicImage() {
-		return lastFrame;
+		return lastImage;
 	}
 
 }
