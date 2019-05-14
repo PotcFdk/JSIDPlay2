@@ -230,7 +230,7 @@ public interface IAudioSection {
 	/**
 	 * Setter of the audio buffer size.
 	 * 
-	 * @param bufferSize audio buffer size
+	 * @param audioBufferSize audio buffer size
 	 */
 	void setAudioBufferSize(int audioBufferSize);
 
