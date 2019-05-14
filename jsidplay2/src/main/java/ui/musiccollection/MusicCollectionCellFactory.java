@@ -5,6 +5,7 @@ import java.util.List;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -26,7 +27,7 @@ public class MusicCollectionCellFactory implements Callback<TreeView<File>, Tree
 				newValue) -> setCellStyle();
 
 		public TextFieldTreeCellImpl() {
-			currentlyPlayedTreeItemsProperty.addListener(listChangeListener);
+			currentlyPlayedTreeItemsProperty.addListener(new WeakChangeListener<>(listChangeListener));
 		}
 
 		@Override

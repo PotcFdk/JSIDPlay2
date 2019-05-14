@@ -2,6 +2,7 @@ package ui.assembly64;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -25,9 +26,10 @@ public class Assembly64RowFactory implements Callback<TableView<SearchResult>, T
 		private ChangeListener<SearchResult> listener = (observable, oldValue, newValue) -> setCellStyle();
 
 		public MyTableRow() {
-			currentlyPlayedRowProperty.addListener(listener);
+			currentlyPlayedRowProperty.addListener(new WeakChangeListener<>(listener));
 		}
 
+		
 		@Override
 		public void updateItem(SearchResult item, boolean empty) {
 			super.updateItem(item, empty);

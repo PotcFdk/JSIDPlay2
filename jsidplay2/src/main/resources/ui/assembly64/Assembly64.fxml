@@ -99,12 +99,12 @@
 							<HBox fx:id="hBox" />
 							<TableView fx:id="assembly64Table">
 								<rowFactory>
-									<!-- MEMORY LEAK in Java 11! Assembly64RowFactory>
+									<Assembly64RowFactory>
 										<currentlyPlayedRowProperty>
 											<fx:reference
 												source="currentlyPlayedSearchResultRowProperty" />
 										</currentlyPlayedRowProperty>
-									</Assembly64RowFactory-->
+									</Assembly64RowFactory>
 								</rowFactory>
 								<contextMenu>
 									<ContextMenu fx:id="assembly64ContextMenu">

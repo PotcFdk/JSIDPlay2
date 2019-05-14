@@ -1,6 +1,7 @@
 package ui.assembly64;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -34,8 +35,8 @@ public class ContentEntryRowFactory implements Callback<TableView<ContentEntry>,
 				}
 			}
 		};
-		currentlyPlayedContentEntryProperty
-				.addListener((observable, oldValue, newValue) -> tableRow.getTableView().refresh());
+		currentlyPlayedContentEntryProperty.addListener(
+				new WeakChangeListener<>((observable, oldValue, newValue) -> tableRow.getTableView().refresh()));
 		return tableRow;
 	}
 }
