@@ -119,6 +119,14 @@ find out available JavaFX style classes of a node in the scene graph:
 				dump(c, depth + 1);
 	}
 
+Heap Memory Analyzer:
+=====================
+jmap -dump:format=b,file=heap.bin <processId>
+Install Eclipse Heam Memory Analyzer
+Increase max memory in MemoryAnalyzer.ini:
+-Xmx=5g
+File/Open heap.bin
+
 Off-Topic:
 ==========
 
