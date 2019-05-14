@@ -215,22 +215,19 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return new Task<Void>() {
 
 					public Void call() throws InterruptedException {
-						Image image = null;
 						synchronized (imageQueue) {
 							// prevent image buffer overflow
 							int size = imageQueue.size() / 10;
 							for (int i = 0; size > 1 && i < imageQueue.size(); i += imageQueue.size() / size) {
-								imageQueue.remove(i);
+								imageQueue.remove(i + size - 1);
 							}
 							if (!imageQueue.isEmpty()) {
-								image = imageQueue.remove(0);
+								lastImage = imageQueue.remove(0);
+								screen.getGraphicsContext2D().drawImage(lastImage, 0, 0, lastImage.getWidth(),
+										lastImage.getHeight(), marginLeft, marginTop,
+										screen.getWidth() - (marginLeft + marginRight),
+										screen.getHeight() - (marginTop + marginBottom));
 							}
-						}
-						if (image != null) {
-							screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(),
-									marginLeft, marginTop, screen.getWidth() - (marginLeft + marginRight),
-									screen.getHeight() - (marginTop + marginBottom));
-							lastImage = image;
 						}
 						return null;
 					}
