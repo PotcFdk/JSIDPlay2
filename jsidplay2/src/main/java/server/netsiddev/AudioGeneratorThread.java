@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
@@ -124,7 +123,7 @@ public class AudioGeneratorThread extends Thread {
 
 	@Override
 	public void run() {
-		Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
+		Mixer.Info[] aInfos = JavaSound.getDevices().toArray(new Info[0]);
 		try {
 			if (deviceIndex >= 0 && deviceIndex < aInfos.length) {
 				mixerInfo = aInfos[deviceIndex];
