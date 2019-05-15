@@ -15,7 +15,6 @@
  */
 package sidplay.audio;
 
-import builder.resid.SIDMixer;
 import libsidplay.config.IAudioSection;
 
 /**
@@ -43,12 +42,16 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
+		// Default Java Linux Sound System ALSA is aweful!
+		// Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x)
 		if (audioBufferSize != null && audioBufferSize.intValue() >= 1024) {
+			// JSIDPlay needs configuration (1024=responsiveness vs. 16384=stable audio)
 			this.audioBufferSize = audioBufferSize;
-			this.bufferFrames = audioBufferSize;
+			this.bufferFrames = this.audioBufferSize;
 		} else {
-			this.audioBufferSize = 16384;
-			this.bufferFrames = (1 << SIDMixer.MAX_FAST_FORWARD) * channels * 256;
+			// JSIDDevice requires a small audio buffer
+			this.audioBufferSize = 2048;
+			this.bufferFrames = this.audioBufferSize;
 		}
 	}
 
@@ -81,6 +84,9 @@ public class AudioConfig {
 	 * than the whole buffer because doing this allows us to stay closer in sync
 	 * with the audio production. <B>Note:</B>Do not choose too small values here:
 	 * test with 96kHz and 32x fast forward!
+	 * 
+	 * <B>Note:</B> Current implementation uses exactly the same size as
+	 * bufferFrames as a result after numerous tests!
 	 * 
 	 * @return size of one chunk
 	 */

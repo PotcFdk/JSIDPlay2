@@ -227,6 +227,7 @@ class ClientContext {
 				sidRead[i].reset();
 				sidRead[i].write(0x18, volume);
 			}
+			eventConsumerThread.reopen();
 
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;

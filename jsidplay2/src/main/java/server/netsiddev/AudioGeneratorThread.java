@@ -5,15 +5,20 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.Mixer.Info;
 
 import builder.resid.resample.Resampler;
@@ -123,15 +128,31 @@ public class AudioGeneratorThread extends Thread {
 
 	@Override
 	public void run() {
-		Mixer.Info[] aInfos = JavaSound.getDevices().toArray(new Info[0]);
 		try {
-			if (deviceIndex >= 0 && deviceIndex < aInfos.length) {
-				mixerInfo = aInfos[deviceIndex];
-				driver.open(audioConfig, mixerInfo);
-			} else {
-				driver.open(audioConfig, (Info) null);
+			Vector<AudioDevice> audioDevices = new Vector<>();
+			AudioDeviceCompare cmp = new AudioDeviceCompare();
+			mixerInfo = null;
+			int theDeviceIndex = 0;
+			for (Info info : AudioSystem.getMixerInfo()) {
+				Mixer mixer = AudioSystem.getMixer(info);
+				Line.Info lineInfo = new Line.Info(SourceDataLine.class);
+				if (mixer.isLineSupported(lineInfo)) {
+					AudioDevice audioDeviceItem = new AudioDevice(theDeviceIndex, info);
+					audioDevices.add(audioDeviceItem);
+					if (theDeviceIndex == 0) {
+						// first device name is the primary device driver which can
+						// be translated on some systems
+						cmp.setPrimaryDeviceName(info.getName());
+					}
+					if (audioDeviceItem.getIndex() == deviceIndex) {
+						this.mixerInfo = audioDeviceItem.getInfo();
+					}
+				}
+				theDeviceIndex++;
 			}
-
+			Collections.sort(audioDevices, cmp);
+			driver.open(audioConfig, mixerInfo);
+			
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
 			/* Allocate audio buffer for two channels (stereo) */
@@ -303,6 +324,11 @@ public class AudioGeneratorThread extends Thread {
 	public void reset(final int sidNumber, final byte volume) {
 		sids[sidNumber].reset();
 		sids[sidNumber].write(0x18, volume);
+	}
+	
+	public void reopen() {
+		// Fix for Linux ALSA audio systems, only
+		deviceChanged=true;
 	}
 
 	/**
