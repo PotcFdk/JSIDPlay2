@@ -120,7 +120,7 @@ public class ConvertServlet extends HttpServlet {
 				response.setContentType(ContentType.MIME_TYPE_MP4.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP4Driver driver = new MP4Driver();
-				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
+				JCommander commander = JCommander.newBuilder().addObject(config)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
