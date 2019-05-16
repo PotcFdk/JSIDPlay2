@@ -101,7 +101,7 @@ public class AudioGeneratorThread extends Thread {
 	private final AtomicBoolean quicklyDiscardAudio = new AtomicBoolean(false);
 
 	/** Audio output driver. */
-	JavaSound driver = new JavaSound();
+	private JavaSound driver = new JavaSound();
 
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
