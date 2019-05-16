@@ -51,7 +51,7 @@ public class CmpMP3File extends JavaSound {
 
 		jump3r = new LameDecoder(audioSection.getMp3File());
 		decodedMP3 = new byte[jump3r.getFrameSize() * Short.BYTES * cfg.getChannels()];
-		factor = cfg.getBufferFrames() / jump3r.getFrameSize();
+		factor = Math.max(1, cfg.getBufferFrames() / jump3r.getFrameSize());
 		mp3Buffer = ByteBuffer.allocateDirect(factor * decodedMP3.length).order(ByteOrder.nativeOrder());
 	}
 
