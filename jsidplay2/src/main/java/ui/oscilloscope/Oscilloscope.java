@@ -323,7 +323,6 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		switch (chipNum) {
 		case 0:
 			updater.accept(waveMono_0);
-			updater.accept(waveMono_0);
 			updater.accept(waveMono_1);
 			updater.accept(waveMono_2);
 			updater.accept(envMono_0);
