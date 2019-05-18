@@ -219,7 +219,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 							// prevent image buffer overflow
 							int size = imageQueue.size() / 10;
 							for (int i = 0; size > 1 && i < imageQueue.size(); i += imageQueue.size() / size) {
-								imageQueue.remove(i + size - 1);
+								imageQueue.remove(i);
 							}
 							if (!imageQueue.isEmpty()) {
 								lastImage = imageQueue.remove(0);
