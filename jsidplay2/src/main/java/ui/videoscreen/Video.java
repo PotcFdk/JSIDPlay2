@@ -98,6 +98,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
+	private VIC vic;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
@@ -124,6 +125,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 	@FXML
 	protected void initialize() {
+		vic = util.getPlayer().getC64().getVIC();
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
@@ -216,7 +218,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 					public Void call() throws InterruptedException {
 						synchronized (imageQueue) {
-							// prevent image buffer overflow
+							// prevent image buffer overflow, if we run out of sync by dropping frames
 							int size = imageQueue.size() / 10;
 							for (int i = 0; size > 1 && i < imageQueue.size(); i += imageQueue.size() / size) {
 								imageQueue.remove(i);
@@ -370,11 +372,11 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
 
 			@Override
-			public Thread newThread(Runnable r) {
-				Thread t = defaultThreadFactory.newThread(r);
-				t.setDaemon(true);
-				t.setPriority(Thread.MAX_PRIORITY);
-				return t;
+			public Thread newThread(Runnable runnable) {
+				Thread thread = defaultThreadFactory.newThread(runnable);
+				thread.setDaemon(true);
+				thread.setPriority(Thread.MAX_PRIORITY);
+				return thread;
 			}
 		});
 		imageQueue.clear();
@@ -382,8 +384,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
-		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
-		screen.setHeight(util.getPlayer().getC64().getVIC().getBorderHeight());
+		screen.setWidth(vic.getBorderWidth());
+		screen.setHeight(vic.getBorderHeight());
 		updateScaling();
 	}
 
@@ -566,12 +568,15 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	@Override
 	public void accept(int[] pixels) {
 		synchronized (imageQueue) {
-			imageQueue.add(createImage(Arrays.copyOf(pixels, pixels.length)));
+			if (imageQueue.size() > 150) {
+				// prevent OutOfMemoryError, just in case!
+				imageQueue.clear();
+			}
+			imageQueue.add(createImage(pixels));
 		}
 	}
 
 	private Image createImage(int[] pixels) {
-		final VIC vic = util.getPlayer().getC64().getVIC();
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
 				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
