@@ -108,7 +108,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 * Note: volatile, because Screen Updater thread writes it and javafx thread
 	 * reads it!
 	 */
-	private volatile Image lastImage;
+	private volatile Image currentImage;
 
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
@@ -224,13 +224,13 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 								imageQueue.remove(i);
 							}
 							if (!imageQueue.isEmpty()) {
-								lastImage = imageQueue.remove(0);
-								screen.getGraphicsContext2D().drawImage(lastImage, 0, 0, lastImage.getWidth(),
-										lastImage.getHeight(), marginLeft, marginTop,
-										screen.getWidth() - (marginLeft + marginRight),
-										screen.getHeight() - (marginTop + marginBottom));
+								currentImage = imageQueue.remove(0);
 							}
 						}
+						screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
+								currentImage.getHeight(), marginLeft, marginTop,
+								screen.getWidth() - (marginLeft + marginRight),
+								screen.getHeight() - (marginTop + marginBottom));
 						return null;
 					}
 
@@ -587,7 +587,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 * @return VIC image with current frame
 	 */
 	public Image getVicImage() {
-		return lastImage;
+		return currentImage;
 	}
 
 }
