@@ -1,9 +1,13 @@
 package ui.oscilloscope;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import builder.resid.ReSIDBase;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -15,6 +19,8 @@ public final class EnvelopeGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
+	private List<Image> images = new ArrayList<>();
+	
 	public EnvelopeGauge() {
 	}
 	
@@ -25,6 +31,11 @@ public final class EnvelopeGauge extends SIDGauge {
 	@Override
 	protected Canvas getArea() {
 		return area;
+	}
+
+	@Override
+	protected List<Image> getImages() {
+		return images;
 	}
 
 	@Override

@@ -2,10 +2,14 @@ package ui.oscilloscope;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
@@ -23,20 +27,25 @@ public class Gauge extends C64VBox implements UIPart {
 		}
 	}
 
+	private int width;
+	private int height;
+
 	private String text;
 	private int voice;
 
 	public Gauge() {
 	}
-	
+
 	public Gauge(C64Window window, Player player) {
 		super(window, player);
 	}
 
 	@Override
 	protected void initialize() {
+		width = (int) getArea().getWidth();
+		height = (int) getArea().getHeight();
 	}
-	
+
 	/** data plots normalized between -1 .. 1 */
 	private float[] dataMin = new float[256];
 	/** data plots normalized between -1 .. 1 */
@@ -91,22 +100,33 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
-		updateGauge(null);
+		updateGauge(null, null);
 	}
 
-	public void updateGauge(SIDEmu sidemu) {
+	public void updateGauge(SIDEmu sidemu, Image image) {
 		if (getTitledPane() == null) {
 			return;
 		}
 		getTitledPane().setText(text);
 
 		GraphicsContext g = getArea().getGraphicsContext2D();
-		final int width = (int) getArea().getWidth();
-		final int height = (int) getArea().getHeight();
 
-		g.setStroke(Color.BLACK);
-		g.fillRect(0, 0, width, height);
+		g.clearRect(0, 0, width, height);
+		if (image != null) {
+			g.drawImage(image, 0, 0);
+		}
+	}
 
+	public void addImage(SIDEmu sidemu) {
+		WritableImage image = new WritableImage(width, height);
+		PixelWriter pixelWriter = image.getPixelWriter();
+		synchronized (getImages()) {
+			if (getImages().size() > 150) {
+				// prevent OutOfMemoryError, just in case!
+				getImages().clear();
+			}
+			getImages().add(image);
+		}
 		int shade = 255;
 		for (int x = 0; x < width; x++) {
 			final int readPos = dataPos - width + x & dataMin.length - 1;
@@ -126,8 +146,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 			/* one pixel line? */
 			if (intStartPos == intEndPos) {
-				g.setStroke(gaugeColors[shade]);
-				g.strokeLine(x, intStartPos, x, intStartPos);
+				drawLine(pixelWriter, x, intStartPos, x, intStartPos, gaugeColors[shade]);
 				continue;
 			}
 
@@ -151,19 +170,63 @@ public class Gauge extends C64VBox implements UIPart {
 			}
 
 			/* Draw end points */
-			g.setStroke(gaugeColors[(int) (shade * firstPixel)]);
-			g.strokeLine(x, intStartPos, x, intStartPos);
+			drawLine(pixelWriter, x, intStartPos, x, intStartPos, gaugeColors[(int) (shade * firstPixel)]);
 
-			g.setStroke(gaugeColors[(int) (shade * lastPixel)]);
-			g.strokeLine(x, intEndPos, x, intEndPos);
+			drawLine(pixelWriter, x, intEndPos, x, intEndPos, gaugeColors[(int) (shade * lastPixel)]);
 
 			intStartPos += 1;
 			intEndPos -= 1;
 
 			/* Still space for the middle line? */
 			if (intStartPos <= intEndPos) {
-				g.setStroke(gaugeColors[shade]);
-				g.strokeLine(x, intStartPos, x, intEndPos);
+				drawLine(pixelWriter, x, intStartPos, x, intEndPos, gaugeColors[shade]);
+			}
+		}
+	}
+
+	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {
+		x1 = (int) Math.min(Math.max(0, x1), width - 1);
+		x2 = (int) Math.min(Math.max(0, x2), width - 1);
+		y1 = (int) Math.min(Math.max(0, y1), height - 1);
+		y2 = (int) Math.min(Math.max(0, y2), height - 1);
+		// delta of exact value and rounded value of the dependent variable
+		int d = 0;
+
+		int dx = Math.abs(x2 - x1);
+		int dy = Math.abs(y2 - y1);
+
+		int dx2 = 2 * dx; // slope scaling factors to
+		int dy2 = 2 * dy; // avoid floating point
+
+		int ix = x1 < x2 ? 1 : -1; // increment direction
+		int iy = y1 < y2 ? 1 : -1;
+
+		int x = x1;
+		int y = y1;
+
+		if (dx >= dy) {
+			while (true) {
+				pixelWriter.setColor(x, y, c);
+				if (x == x2)
+					break;
+				x += ix;
+				d += dy2;
+				if (d > dx) {
+					y += iy;
+					d -= dx2;
+				}
+			}
+		} else {
+			while (true) {
+				pixelWriter.setColor(x, y, c);
+				if (y == y2)
+					break;
+				y += iy;
+				d += dx2;
+				if (d > dy) {
+					x += ix;
+					d -= dy2;
+				}
 			}
 		}
 	}
@@ -177,6 +240,10 @@ public class Gauge extends C64VBox implements UIPart {
 	}
 
 	protected Canvas getArea() {
+		return null;
+	}
+
+	protected List<Image> getImages() {
 		return null;
 	}
 

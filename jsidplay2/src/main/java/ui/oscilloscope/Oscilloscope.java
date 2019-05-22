@@ -3,6 +3,7 @@ package ui.oscilloscope;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javafx.animation.PauseTransition;
@@ -11,7 +12,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.image.Image;
 import javafx.util.Duration;
+import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -30,9 +33,11 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	public static final String ID = "OSCILLOSCOPE";
 
+	private long lastTime, ticksPerFrame;
+	
 	private class HighResolutionEvent extends Event {
 
-		protected int repaint;
+		private int repaint;
 
 		public HighResolutionEvent() {
 			super("High Resolution SID Register Sampler");
@@ -40,10 +45,18 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 		@Override
 		public void event() {
+			long time = util.getPlayer().getC64().getEventScheduler().getTime(Phase.PHI2);
+			final boolean addFrameImage = time - lastTime >= ticksPerFrame;
 			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> {
 				sid.clock();
 				sampleGauges(chipNum, sid, (repaint & 127) == 0);
+				if (addFrameImage) {
+					updateGauges(chipNum, gauge -> gauge.addImage(sid));
+				}
 			});
+			if (addFrameImage) {
+				lastTime += ticksPerFrame;
+			}
 			++repaint;
 			util.getPlayer().getC64().getEventScheduler().schedule(highResolutionEvent, 128);
 		}
@@ -77,7 +90,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	public Oscilloscope() {
 	}
-	
+
 	public Oscilloscope(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -91,6 +104,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 			final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 			if (event.getNewValue() == State.PLAY) {
 				if (!ctx.isPending(highResolutionEvent)) {
+					prepareHighResolutionEvent();
 					ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
 				}
 				Platform.runLater(() -> {
@@ -116,6 +130,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 		EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
 		if (!ctx.isPending(highResolutionEvent)) {
+			prepareHighResolutionEvent();
 			ctx.scheduleThreadSafe(highResolutionEvent);
 		}
 
@@ -136,14 +151,31 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		startOscilloscope();
 	}
 
+	private void prepareHighResolutionEvent() {
+		lastTime = util.getPlayer().getC64().getEventScheduler().getTime(Phase.PHI2);
+		CPUClock cpuClock = util.getPlayer().getC64().getClock();
+		ticksPerFrame = (long) (cpuClock.getCpuFrequency() / cpuClock.getScreenRefresh());
+	}
+
 	private void startOscilloscope() {
 		/* Initially clear all gauges (unused SIDs inclusive) */
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pauseTransition.setOnFinished(evt -> {
-			util.getPlayer().getC64()
-					.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid)));
+			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge->{
+				synchronized (gauge.getImages()) {
+					List<Image> images = gauge.getImages();
+					int size = images.size() / 10;
+					for (int i = 0; size > 1 && i < images.size(); i += images.size() / size) {
+						images.remove(i);
+					}
+					if (!images.isEmpty()) {
+						Image image = images.remove(0);
+						gauge.updateGauge(sid, image);
+					}
+				}
+			}));
 		});
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 		sequentialTransition.playFromStart();
@@ -223,12 +255,9 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	/**
 	 * Sample audio from provided SID.
 	 * 
-	 * @param chipNum
-	 *            SID chip number
-	 * @param sid
-	 *            provided SID
-	 * @param isLowerResolution
-	 *            lower resolution event occured (less precision)
+	 * @param chipNum           SID chip number
+	 * @param sid               provided SID
+	 * @param isLowerResolution lower resolution event occured (less precision)
 	 */
 	private void sampleGauges(Integer chipNum, SIDEmu sid, boolean isLowerResolution) {
 		switch (chipNum) {
@@ -314,10 +343,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	/**
 	 * Update gauges using provided consumer.
 	 * 
-	 * @param chipNum
-	 *            SID chip number
-	 * @param updater
-	 *            update method
+	 * @param chipNum SID chip number
+	 * @param updater update method
 	 */
 	private void updateGauges(Integer chipNum, Consumer<Gauge> updater) {
 		switch (chipNum) {

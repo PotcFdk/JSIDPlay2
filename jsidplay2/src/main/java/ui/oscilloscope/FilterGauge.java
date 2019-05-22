@@ -1,8 +1,12 @@
 package ui.oscilloscope;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -14,6 +18,8 @@ public final class FilterGauge extends SIDGauge {
 	@FXML
 	private Canvas area;
 
+	private List<Image> images = new ArrayList<>();
+	
 	public FilterGauge() {
 	}
 	
@@ -24,6 +30,11 @@ public final class FilterGauge extends SIDGauge {
 	@Override
 	protected Canvas getArea() {
 		return area;
+	}
+
+	@Override
+	protected List<Image> getImages() {
+		return images;
 	}
 
 	@Override
@@ -40,8 +51,8 @@ public final class FilterGauge extends SIDGauge {
 	}
 
 	@Override
-	public void updateGauge(SIDEmu sidemu) {
-		super.updateGauge(sidemu);
+	public void addImage(SIDEmu sidemu) {
+		super.addImage(sidemu);
 		if (sidemu != null) {
 			final byte vol = sidemu.readInternalRegister(0x18);
 			setText((localizer != null ? localizer.getString("FILTER") : "") + " " + ((vol & 0x10) != 0 ? "L" : "")

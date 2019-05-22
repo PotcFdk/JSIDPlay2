@@ -2,6 +2,7 @@ package ui.oscilloscope;
 
 import java.util.ResourceBundle;
 
+import javafx.scene.image.Image;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -34,8 +35,8 @@ abstract class SIDGauge extends Gauge {
 	 * @param sid
 	 *            SID to redraw the gauge for.
 	 */
-	public void updateGauge(SIDEmu sid) {
-		super.updateGauge(sid);
+	public void updateGauge(SIDEmu sid, Image image) {
+		super.updateGauge(sid, image);
 	}
 
 	public void setLocalizer(ResourceBundle resources) {
