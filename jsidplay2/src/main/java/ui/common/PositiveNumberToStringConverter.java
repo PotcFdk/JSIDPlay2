@@ -7,14 +7,12 @@ import javafx.util.StringConverter;
 
 public final class PositiveNumberToStringConverter<T extends Number> extends StringConverter<T> {
 	private int minValue;
-	private boolean powerOfTwo;
 
 	/**
 	 * @param minValue minimum number value
 	 */
-	public PositiveNumberToStringConverter(int minValue, boolean powerOfTwo) {
+	public PositiveNumberToStringConverter(int minValue) {
 		this.minValue = minValue;
-		this.powerOfTwo = powerOfTwo;
 	}
 
 	@Override
@@ -32,9 +30,6 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 			Number number = NumberFormat.getInstance().parse(string);
 			if (number.doubleValue() < minValue) {
 				throw new ParseException("number must be greater than", minValue);
-			}
-			if (powerOfTwo && (number.intValue() & (number.intValue() - 1)) != 0) {
-				throw new ParseException("number must be a power of two", minValue);
 			}
 			return (T) number;
 		} catch (ParseException e) {

@@ -75,7 +75,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
-	private ComboBox<Integer> hardsid6581Box, hardsid8580Box;
+	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize;
 	@FXML
 	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
@@ -91,7 +91,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
-	private TextField bufferSize, audioBufferSize, defaultTime, proxyHostname, proxyPort, hostname, port,
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port,
 			ultimate64Hostname, ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort,
 			appServerKeyManagerPassword, appServerKeyStorePassword;
 	@FXML
@@ -167,6 +167,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());
 		hardsid8580Box.valueProperty().bindBidirectional(emulationSection.hardsid8580Property());
+		audioBufferSize.valueProperty().bindBidirectional(audioSection.audioBufferSizeProperty());
 
 		engineBox.setConverter(new EnumToStringConverter<Engine>(bundle));
 		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
@@ -199,7 +200,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			}
 		});
 		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
-				new PositiveNumberToStringConverter<>(2048, false));
+				new PositiveNumberToStringConverter<>(2048));
 		audioSection.bufferSizeProperty().addListener((obj, o, n) -> {
 			final Tooltip tooltip = new Tooltip();
 			bufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
@@ -211,22 +212,6 @@ public class ToolBar extends C64VBox implements UIPart {
 				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_FORMAT"));
 				bufferSize.setTooltip(tooltip);
 				bufferSize.getStyleClass().add(CELL_VALUE_ERROR);
-			}
-		});
-		Bindings.bindBidirectional(audioBufferSize.textProperty(), audioSection.audioBufferSizeProperty(),
-				new PositiveNumberToStringConverter<>(1024, true));
-		audioSection.audioBufferSizeProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			audioBufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (n.intValue() >= 1024) {
-				tooltip.setText(util.getBundle().getString("AUDIO_BUFFER_SIZE_TIP"));
-				audioBufferSize.setTooltip(tooltip);
-				audioBufferSize.getStyleClass().add(CELL_VALUE_OK);
-				restart();
-			} else {
-				tooltip.setText(util.getBundle().getString("AUDIO_BUFFER_SIZE_FORMAT"));
-				audioBufferSize.setTooltip(tooltip);
-				audioBufferSize.getStyleClass().add(CELL_VALUE_ERROR);
 			}
 		});
 
@@ -409,6 +394,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		restart();
 	}
 
+	@FXML
+	private void setAudioBufferSize() {
+		restart();
+	}
+	
 	@FXML
 	private void doKeystoreBrowse() {
 		final FileChooser fileDialog = new FileChooser();

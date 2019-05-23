@@ -307,9 +307,9 @@ public class AudioSection implements IAudioSection {
 		this.bufferSize.set(bufferSize);
 	}
 
-	private IntegerProperty audioBufferSize = new SimpleIntegerProperty(DEFAULT_AUDIO_BUFFER_SIZE);
+	private ObjectProperty<Integer> audioBufferSize = new SimpleObjectProperty<>(DEFAULT_AUDIO_BUFFER_SIZE);
 
-	public IntegerProperty audioBufferSizeProperty() {
+	public ObjectProperty<Integer> audioBufferSizeProperty() {
 		return audioBufferSize;
 	}
 

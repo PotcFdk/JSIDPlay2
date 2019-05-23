@@ -93,38 +93,43 @@ public class JSidPlay2Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		player = new Player(getConfigurationFromCommandLineArgs());
-		player.setMenuHook(menuHook);
-		// automatically load tune on start-up
-		Optional<String> filename = filenames.stream().findFirst();
-		if (filename.isPresent()) {
-			try {
-				new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA, null);
-			} catch (IOException | SidTuneError | URISyntaxException e) {
-				System.err.println(e.getMessage());
+		try {
+			player = new Player(getConfigurationFromCommandLineArgs());
+			player.setMenuHook(menuHook);
+			// automatically load tune on start-up
+			Optional<String> filename = filenames.stream().findFirst();
+			if (filename.isPresent()) {
+				try {
+					new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA, null);
+				} catch (IOException | SidTuneError | URISyntaxException e) {
+					System.err.println(e.getMessage());
+				}
 			}
+			jSidplay2 = new JSidPlay2(primaryStage, player);
+			// Set default position and size
+			final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
+			primaryStage.setFullScreen(Boolean.TRUE.equals(section.getFullScreen()));
+			primaryStage.fullScreenProperty()
+					.addListener((observable, oldValue, newValue) -> section.setFullScreen(newValue));
+			final Scene scene = primaryStage.getScene();
+			if (scene != null) {
+				Window window = scene.getWindow();
+				window.setX(section.getFrameX());
+				window.setY(section.getFrameY());
+				window.setWidth(section.getFrameWidth());
+				window.setHeight(section.getFrameHeight());
+				window.widthProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
+				window.heightProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
+				window.xProperty().addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
+				window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
+			}
+			jSidplay2.open();
+		} catch (Throwable t) {
+			// Uncover unparsable view or other development errors
+			t.printStackTrace();
 		}
-		jSidplay2 = new JSidPlay2(primaryStage, player);
-		// Set default position and size
-		final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
-		primaryStage.setFullScreen(Boolean.TRUE.equals(section.getFullScreen()));
-		primaryStage.fullScreenProperty()
-				.addListener((observable, oldValue, newValue) -> section.setFullScreen(newValue));
-		final Scene scene = primaryStage.getScene();
-		if (scene != null) {
-			Window window = scene.getWindow();
-			window.setX(section.getFrameX());
-			window.setY(section.getFrameY());
-			window.setWidth(section.getFrameWidth());
-			window.setHeight(section.getFrameHeight());
-			window.widthProperty()
-					.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
-			window.heightProperty()
-					.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
-			window.xProperty().addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
-			window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
-		}
-		jSidplay2.open();
 	}
 
 	@Override

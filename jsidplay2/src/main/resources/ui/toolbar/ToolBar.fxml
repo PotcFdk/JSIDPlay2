@@ -73,7 +73,8 @@
 				</VBox>
 				<VBox>
 					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
-					<ProgressBar fx:id="progress" progress="0" prefWidth="120"/>
+					<ProgressBar fx:id="progress" progress="0"
+						prefWidth="120" />
 				</VBox>
 			</HBox>
 		</AnchorPane>
@@ -129,19 +130,23 @@
 				<TitledPane text="%SIDBLASTER" expanded="false">
 					<VBox>
 						<Label text="%SIDBLASTER_0" fx:id="sidBlaster0Label" />
-						<ComboBox fx:id="sidBlaster0Box" onAction="#setSidBlaster0" />
+						<ComboBox fx:id="sidBlaster0Box"
+							onAction="#setSidBlaster0" />
 						<Label text="%SIDBLASTER_1" fx:id="sidBlaster1Label" />
-						<ComboBox fx:id="sidBlaster1Box" onAction="#setSidBlaster1" />
+						<ComboBox fx:id="sidBlaster1Box"
+							onAction="#setSidBlaster1" />
 						<Label text="%SIDBLASTER_2" fx:id="sidBlaster2Label" />
-						<ComboBox fx:id="sidBlaster2Box" onAction="#setSidBlaster2" />
+						<ComboBox fx:id="sidBlaster2Box"
+							onAction="#setSidBlaster2" />
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%ULTIMATE64" expanded="false">
 					<VBox>
-						<CheckBox text="%ENABLE_ULTIMATE64" fx:id="enableUltimate64" />
+						<CheckBox text="%ENABLE_ULTIMATE64"
+							fx:id="enableUltimate64" />
 						<Label text="%ULTIMATE64_HOSTNAME" fx:id="hostnameLabel" />
-						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname"
-							prefWidth="80">
+						<TextField fx:id="ultimate64Hostname"
+							onAction="#setUltimate64Hostname" prefWidth="80">
 							<tooltip>
 								<Tooltip text="%ULTIMATE64_HOSTNAME_TIP" />
 							</tooltip>
@@ -154,8 +159,9 @@
 							</tooltip>
 						</TypeTextField>
 						<Label text="%ULTIMATE64_SYNC_DELAY" fx:id="syncDelayLabel" />
-						<TypeTextField type="Integer" fx:id="ultimate64SyncDelay"
-							onAction="#setUltimate64SyncDelay" prefWidth="60">
+						<TypeTextField type="Integer"
+							fx:id="ultimate64SyncDelay" onAction="#setUltimate64SyncDelay"
+							prefWidth="60">
 							<tooltip>
 								<Tooltip text="%ULTIMATE64_SYNC_DELAY_TIP" />
 							</tooltip>
@@ -279,11 +285,22 @@
 				</VBox>
 				<VBox>
 					<Label text="%AUDIO_BUFFER_SIZE" alignment="CENTER_RIGHT" />
-					<TextField fx:id="audioBufferSize" maxWidth="60">
+					<ComboBox onAction="#setAudioBufferSize"
+						fx:id="audioBufferSize">
+						<items>
+							<FXCollections fx:factory="observableArrayList">
+								<!-- responsiveness=1024 vs. stable audio=16384 -->
+								<Integer fx:value="1024" />
+								<Integer fx:value="2048" />
+								<Integer fx:value="4096" />
+								<Integer fx:value="8192" />
+								<Integer fx:value="16384" />
+							</FXCollections>
+						</items>
 						<tooltip>
 							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" />
 						</tooltip>
-					</TextField>
+					</ComboBox>
 				</VBox>
 			</HBox>
 		</AnchorPane>

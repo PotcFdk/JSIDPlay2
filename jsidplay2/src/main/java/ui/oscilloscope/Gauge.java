@@ -100,6 +100,7 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
+		getImages().clear();
 		updateGauge(null, null);
 	}
 
