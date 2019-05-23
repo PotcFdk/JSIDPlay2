@@ -2,7 +2,6 @@ package ui.oscilloscope;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,6 +14,7 @@ import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
+import ui.common.ImageQueue;
 import ui.common.UIPart;
 
 public class Gauge extends C64VBox implements UIPart {
@@ -52,6 +52,8 @@ public class Gauge extends C64VBox implements UIPart {
 	private float[] dataMax = new float[256];
 	/** Position within data buffer */
 	private int dataPos = 0;
+
+	protected ImageQueue imageQueue;
 
 	@Override
 	public String getBundleName() {
@@ -100,7 +102,7 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
-		getImages().clear();
+		imageQueue = new ImageQueue();
 		updateGauge(null, null);
 	}
 
@@ -121,15 +123,7 @@ public class Gauge extends C64VBox implements UIPart {
 	public void addImage(SIDEmu sidemu) {
 		WritableImage image = new WritableImage(width, height);
 		PixelWriter pixelWriter = image.getPixelWriter();
-		synchronized (getImages()) {
-			if (getImages().size() > 150) {
-				// prevent OutOfMemoryError, just in case!
-				if (!getImages().removeAll(getImages())) {
-					System.err.println("FAILED!");
-				}
-			}
-			getImages().add(image);
-		}
+		imageQueue.add(image);
 		int shade = 255;
 		for (int x = 0; x < width; x++) {
 			final int readPos = dataPos - width + x & dataMin.length - 1;
@@ -246,8 +240,8 @@ public class Gauge extends C64VBox implements UIPart {
 		return null;
 	}
 
-	protected List<Image> getImages() {
-		return null;
+	protected ImageQueue getImageQueue() {
+		return imageQueue;
 	}
 
 }

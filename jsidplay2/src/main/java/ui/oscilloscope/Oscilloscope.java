@@ -3,7 +3,6 @@ package ui.oscilloscope;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javafx.animation.PauseTransition;
@@ -12,7 +11,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.image.Image;
 import javafx.util.Duration;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
@@ -34,7 +32,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	public static final String ID = "OSCILLOSCOPE";
 
 	private long lastTime, ticksPerFrame;
-	
+
 	private class HighResolutionEvent extends Event {
 
 		private int repaint;
@@ -163,18 +161,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pauseTransition.setOnFinished(evt -> {
-			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge->{
-				synchronized (gauge.getImages()) {
-					List<Image> images = gauge.getImages();
-					int size = images.size() / 10;
-					for (int i = 0; size > 1 && i < images.size(); i += images.size() / size) {
-						images.remove(i);
-					}
-					if (!images.isEmpty()) {
-						Image image = images.remove(0);
-						gauge.updateGauge(sid, image);
-					}
-				}
+			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> {
+				gauge.updateGauge(sid, gauge.getImageQueue().get());
 			}));
 		});
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);

@@ -14,9 +14,7 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_VIDEO_SCALING;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -58,6 +56,7 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
+import ui.common.ImageQueue;
 import ui.common.NumberToStringConverter;
 import ui.common.UIPart;
 import ui.entities.config.EmulationSection;
@@ -98,11 +97,10 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	@FXML
 	private Label tapeName, diskName, cartridgeName;
 
-	private VIC vic;
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private List<Image> imageQueue;
+	private ImageQueue imageQueue;
 
 	/**
 	 * Note: volatile, because Screen Updater thread writes it and javafx thread
@@ -125,7 +123,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 	@FXML
 	protected void initialize() {
-		vic = util.getPlayer().getC64().getVIC();
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
@@ -217,20 +214,13 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return new Task<Void>() {
 
 					public Void call() throws InterruptedException {
-						synchronized (imageQueue) {
-							// prevent image buffer overflow, if we run out of sync by dropping frames
-							int size = imageQueue.size() / 10;
-							for (int i = 0; size > 1 && i < imageQueue.size(); i += imageQueue.size() / size) {
-								imageQueue.remove(i);
-							}
-							if (!imageQueue.isEmpty()) {
-								currentImage = imageQueue.remove(0);
-							}
+						currentImage = imageQueue.get();
+						if (currentImage != null) {
+							screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
+									currentImage.getHeight(), marginLeft, marginTop,
+									screen.getWidth() - (marginLeft + marginRight),
+									screen.getHeight() - (marginTop + marginBottom));
 						}
-						screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
-								currentImage.getHeight(), marginLeft, marginTop,
-								screen.getWidth() - (marginLeft + marginRight),
-								screen.getHeight() - (marginTop + marginBottom));
 						return null;
 					}
 
@@ -238,7 +228,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			}
 		};
 
-		imageQueue = new ArrayList<>();
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 		setVisibilityBasedOnChipType(tune);
@@ -256,6 +245,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		util.getPlayer().removePixelConsumer(this);
 		screenUpdateService.cancel();
 		timer.stop();
+		currentImage = null;
 	}
 
 	@FXML
@@ -379,13 +369,13 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 				return thread;
 			}
 		});
-		imageQueue.clear();
+		imageQueue = new ImageQueue();
 		screenUpdateService.setExecutor(schdExctr);
 		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
-		screen.setWidth(vic.getBorderWidth());
-		screen.setHeight(vic.getBorderHeight());
+		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
+		screen.setHeight(util.getPlayer().getC64().getVIC().getBorderHeight());
 		updateScaling();
 	}
 
@@ -567,18 +557,11 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	 */
 	@Override
 	public void accept(int[] pixels) {
-		synchronized (imageQueue) {
-			if (imageQueue.size() > 150) {
-				// prevent OutOfMemoryError, just in case!
-				if (!imageQueue.removeAll(imageQueue)) {
-					System.err.println("FAILED!");
-				}
-			}
-			imageQueue.add(createImage(pixels));
-		}
+		imageQueue.add(createImage(pixels));
 	}
 
 	private Image createImage(int[] pixels) {
+		VIC vic = util.getPlayer().getC64().getVIC();
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
 				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
