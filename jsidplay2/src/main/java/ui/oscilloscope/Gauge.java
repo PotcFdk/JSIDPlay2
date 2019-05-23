@@ -124,7 +124,9 @@ public class Gauge extends C64VBox implements UIPart {
 		synchronized (getImages()) {
 			if (getImages().size() > 150) {
 				// prevent OutOfMemoryError, just in case!
-				getImages().clear();
+				if (!getImages().removeAll(getImages())) {
+					System.err.println("FAILED!");
+				}
 			}
 			getImages().add(image);
 		}

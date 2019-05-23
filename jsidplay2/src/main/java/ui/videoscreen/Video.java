@@ -570,7 +570,9 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		synchronized (imageQueue) {
 			if (imageQueue.size() > 150) {
 				// prevent OutOfMemoryError, just in case!
-				imageQueue.clear();
+				if (!imageQueue.removeAll(imageQueue)) {
+					System.err.println("FAILED!");
+				}
 			}
 			imageQueue.add(createImage(pixels));
 		}
