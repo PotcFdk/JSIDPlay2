@@ -43,7 +43,6 @@ public class Assembly64RowFactory implements Callback<TableView<SearchResult>, T
 			if (!isEmpty() && currentlyPlayedRowProperty.get() != null
 					&& getItem().getId().equals(currentlyPlayedRowProperty.get().getId())) {
 				getStyleClass().add(CURRENTLY_PLAYED_FILE_ROW);
-				getTableView().refresh();
 			}
 		}
 	}
