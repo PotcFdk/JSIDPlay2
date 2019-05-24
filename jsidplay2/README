@@ -75,7 +75,7 @@ mvn clean install
 Java9 and successor versions require the configured required modules and since Java11
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
-However to use this new launch in Eclipse you must 1st: rename pom-java11.xml to pom.xml
+However to use this new launch in Eclipse you must 1st: copy the contents of pom-java11.xml to pom.xml
 and 2nd to launch "mvn clean install (Java11)". Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
 
 Eclipse JavaFX support:
@@ -83,13 +83,13 @@ Eclipse JavaFX support:
 1. Install e(fx)clipse
 2. To get a content assistant on javafx css files:
 Right click on your project -> properties -> Java build path -> libraries -> add library -> javaFX SDK
-To edit .fxml files with FXML Editor:
+3. To edit .fxml files with FXML Editor:
 Right click on .fxml file: Open With -> Other... -> FXML Editor (Check "Use it for all '*.fxml' files") -> OK
-To specify text resource inside .fxml file use for example:
+4. To specify text resource inside .fxml file use for example:
 <?scenebuilder-preview-i18n-resource GameBasePage.properties?>
-To use style sheets inside .fxml file use for example:
+5. To use style sheets inside .fxml file use for example:
 <Scene stylesheets="@JSidPlay2.css"> ...
-To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment commented out alternative version)
+6. To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment commented out alternative version)
 Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why some of the layouts need that.
 
 How to Create a HTTPS certificate and install easily for your Apache web-server:
@@ -121,10 +121,12 @@ find out available JavaFX style classes of a node in the scene graph:
 
 Heap Memory Analyzer:
 =====================
-jmap -dump:format=b,file=heap.bin <processId>
-Install Eclipse Heam Memory Analyzer
-Increase max memory in MemoryAnalyzer.ini:
+To find memory leaks you can use:
+jmap -dump:format=b,file=heap.bin <JavaProcessId>
+Install Eclipse Heap Memory Analyzer (https://www.eclipse.org/mat/)
+Increase max memory to load huge heap dumps in file MemoryAnalyzer.ini:
 -Xmx=5g
+Load heap dump:
 File/Open heap.bin
 
 Off-Topic:
@@ -147,7 +149,5 @@ TODO:
 =====
 libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
-
-Test JSIDPlay2 using Java11 and find bugs.
 
 Wait for proguard to support Java11 and adopt changes
