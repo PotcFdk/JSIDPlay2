@@ -160,11 +160,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
-		pauseTransition.setOnFinished(evt -> {
-			util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> {
-				gauge.updateGauge(sid, gauge.getImageQueue().get());
-			}));
-		});
+		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64().configureSIDs(
+				(chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid, gauge.getImageQueue().poll()))));
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 		sequentialTransition.playFromStart();
 	}

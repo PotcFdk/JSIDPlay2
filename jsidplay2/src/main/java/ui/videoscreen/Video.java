@@ -209,7 +209,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		pauseTransition.setOnFinished(evt -> {
-			currentImage = imageQueue.get();
+			currentImage = imageQueue.poll();
 			if (currentImage != null) {
 				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 				screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
