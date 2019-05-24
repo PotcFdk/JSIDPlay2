@@ -15,17 +15,14 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
@@ -110,7 +107,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 	private double marginLeft, marginRight, marginTop, marginBottom;
 
-	private ScheduledService<Void> screenUpdateService;
+	private PauseTransition pauseTransition;
+	private SequentialTransition sequentialTransition;
 
 	private PropertyChangeListener stateListener;
 
@@ -208,26 +206,18 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 		showMonitorBorder.selectedProperty().bindBidirectional(sidplay2Section.showMonitorProperty());
 
-		screenUpdateService = new ScheduledService<Void>() {
-			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-
-					public Void call() throws InterruptedException {
-						currentImage = imageQueue.get();
-						if (currentImage != null) {
-							screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
-							screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
-									currentImage.getHeight(), marginLeft, marginTop,
-									screen.getWidth() - (marginLeft + marginRight),
-									screen.getHeight() - (marginTop + marginBottom));
-						}
-						return null;
-					}
-
-				};
+		pauseTransition = new PauseTransition();
+		sequentialTransition = new SequentialTransition(pauseTransition);
+		pauseTransition.setOnFinished(evt -> {
+			currentImage = imageQueue.get();
+			if (currentImage != null) {
+				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
+				screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
+						currentImage.getHeight(), marginLeft, marginTop, screen.getWidth() - (marginLeft + marginRight),
+						screen.getHeight() - (marginTop + marginBottom));
 			}
-		};
+		});
+		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
@@ -237,14 +227,14 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 
 		updatePeripheralImages();
 
-		screenUpdateService.start();
+		sequentialTransition.playFromStart();
 	}
 
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
 		util.getPlayer().removePixelConsumer(this);
-		screenUpdateService.cancel();
+		sequentialTransition.stop();
 		timer.stop();
 		currentImage = null;
 	}
@@ -359,20 +349,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			marginBottom = NTSC_MARGIN_BOTTOM;
 		}
 
-		ScheduledExecutorService schdExctr = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-			private ThreadFactory defaultThreadFactory = Executors.defaultThreadFactory();
-
-			@Override
-			public Thread newThread(Runnable runnable) {
-				Thread thread = defaultThreadFactory.newThread(runnable);
-				thread.setDaemon(true);
-				thread.setPriority(Thread.MAX_PRIORITY);
-				return thread;
-			}
-		});
 		imageQueue = new ImageQueue();
-		screenUpdateService.setExecutor(schdExctr);
-		screenUpdateService.setPeriod(Duration.millis(1000. / cpuClock.getScreenRefresh()));
+		pauseTransition.setDuration(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
 		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
