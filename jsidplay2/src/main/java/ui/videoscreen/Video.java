@@ -216,6 +216,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 					public Void call() throws InterruptedException {
 						currentImage = imageQueue.get();
 						if (currentImage != null) {
+							screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 							screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
 									currentImage.getHeight(), marginLeft, marginTop,
 									screen.getWidth() - (marginLeft + marginRight),
@@ -564,7 +565,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		VIC vic = util.getPlayer().getC64().getVIC();
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+				PixelFormat.getIntArgbInstance(), Arrays.copyOf(pixels, pixels.length), 0, vic.getBorderWidth());
 		return image;
 	}
 
