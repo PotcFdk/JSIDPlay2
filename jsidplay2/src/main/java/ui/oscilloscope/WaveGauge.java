@@ -4,6 +4,7 @@ import builder.resid.ReSIDBase;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -43,14 +44,14 @@ public final class WaveGauge extends SIDGauge {
 	}
 
 	@Override
-	public void addImage(SIDEmu sidemu) {
-		super.addImage(sidemu);
+	public Image createImage(SIDEmu sidemu) {
 		if (sidemu != null) {
 			final byte wf = sidemu.readInternalRegister(4 + 7 * getVoice());
 			final byte filt = sidemu.readInternalRegister(0x17);
 			setText(String.format(localizer.getString("WAVE") + " %X %s%s%s%s", wf >> 4 & 0xf, (wf & 2) != 0 ? "S" : "",
 					(wf & 4) != 0 ? "R" : "", (wf & 8) != 0 ? "T" : "", (filt & 1 << getVoice()) != 0 ? "F" : ""));
 		}
+		return super.createImage(sidemu);
 	}
 
 }

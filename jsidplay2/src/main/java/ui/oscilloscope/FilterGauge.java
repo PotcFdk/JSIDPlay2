@@ -3,6 +3,7 @@ package ui.oscilloscope;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64Window;
@@ -40,12 +41,12 @@ public final class FilterGauge extends SIDGauge {
 	}
 
 	@Override
-	public void addImage(SIDEmu sidemu) {
-		super.addImage(sidemu);
+	public Image createImage(SIDEmu sidemu) {
 		if (sidemu != null) {
 			final byte vol = sidemu.readInternalRegister(0x18);
 			setText((localizer != null ? localizer.getString("FILTER") : "") + " " + ((vol & 0x10) != 0 ? "L" : "")
 					+ ((vol & 0x20) != 0 ? "B" : "") + ((vol & 0x40) != 0 ? "H" : ""));
 		}
+		return super.createImage(sidemu);
 	}
 }

@@ -49,7 +49,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 				sid.clock();
 				sampleGauges(chipNum, sid, (repaint & 127) == 0);
 				if (addFrameImage) {
-					updateGauges(chipNum, gauge -> gauge.addImage(sid));
+					updateGauges(chipNum, gauge -> gauge.getImageQueue().add(gauge.createImage(sid)));
 				}
 			});
 			if (addFrameImage) {
