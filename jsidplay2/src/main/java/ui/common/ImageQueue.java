@@ -23,11 +23,9 @@ public class ImageQueue {
 	private final List<Image> imageQueue = new ArrayList<>(MAX_SIZE);
 
 	public synchronized void add(Image image) {
-		if (imageQueue.size() >= MAX_SIZE) {
+		if (imageQueue.size() == MAX_SIZE) {
 			// prevent OutOfMemoryError, just in case!
-			if (!imageQueue.removeAll(imageQueue)) {
-				throw new RuntimeException("ImageQueue cannot be cleared!");
-			}
+			imageQueue.remove(0);
 		}
 		imageQueue.add(image);
 	}

@@ -103,9 +103,12 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
 		imageQueue = new ImageQueue();
+		addImage(null);
+		updateGauge(null);
 	}
 
-	public void updateGauge(SIDEmu sidemu, Image image) {
+	public void updateGauge(SIDEmu sidemu) {
+		Image image = imageQueue.poll();
 		if (getTitledPane() == null) {
 			return;
 		}
@@ -119,7 +122,7 @@ public class Gauge extends C64VBox implements UIPart {
 		}
 	}
 
-	public Image createImage(SIDEmu sidemu) {
+	public void addImage(SIDEmu sidemu) {
 		WritableImage image = new WritableImage(width, height);
 		PixelWriter pixelWriter = image.getPixelWriter();
 		int shade = 255;
@@ -177,7 +180,7 @@ public class Gauge extends C64VBox implements UIPart {
 				drawLine(pixelWriter, x, intStartPos, x, intEndPos, gaugeColors[shade]);
 			}
 		}
-		return image;
+		imageQueue.add(image);
 	}
 
 	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {

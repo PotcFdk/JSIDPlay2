@@ -49,7 +49,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 				sid.clock();
 				sampleGauges(chipNum, sid, (repaint & 127) == 0);
 				if (addFrameImage) {
-					updateGauges(chipNum, gauge -> gauge.getImageQueue().add(gauge.createImage(sid)));
+					updateGauges(chipNum, gauge -> gauge.addImage(sid));
 				}
 			});
 			if (addFrameImage) {
@@ -161,7 +161,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 			updateGauges(chipNum, Gauge::reset);
 		}
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64().configureSIDs(
-				(chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid, gauge.getImageQueue().poll()))));
+				(chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 		sequentialTransition.playFromStart();
 	}
