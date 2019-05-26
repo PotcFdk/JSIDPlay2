@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=JSIDPlay2
+Path=/home/ken/Downloads/jsiddevice-4.0.jar
+Exec=java -jar jsiddevice-4.0.jar
+Terminal=false
+Type=Application
+Icon=/home/ken/Downloads/jsiddevice-4.0.jar/jsidplay2.png
+Categories=
+Name[de_DE]=JSIDDevice

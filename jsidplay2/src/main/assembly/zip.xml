@@ -11,5 +11,19 @@
 			<directory>${project.build.directory}/standalone</directory>
 			<outputDirectory></outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>${basedir}/src/main/linux</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+                <include>JSIDPlay2*.desktop</include>
+            </includes>			
+		</fileSet>
+		<fileSet>
+			<directory>${basedir}/src/main/deploy/jsidplay2</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+                <include>jsidplay2.png</include>
+            </includes>			
+		</fileSet>
 	</fileSets>
 </assembly>
