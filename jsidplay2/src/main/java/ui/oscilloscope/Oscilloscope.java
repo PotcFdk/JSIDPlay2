@@ -108,7 +108,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 				Platform.runLater(() -> {
 					startOscilloscope();
 				});
-			} else if (event.getNewValue() == State.PAUSE) {
+			} else if (event.getNewValue() == State.PAUSE || event.getNewValue() == State.END
+					|| event.getNewValue() == State.QUIT) {
 				ctx.cancel(highResolutionEvent);
 				Platform.runLater(() -> {
 					stopOscilloscope();
@@ -160,8 +161,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
-		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64().configureSIDs(
-				(chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
+		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
+				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 		sequentialTransition.playFromStart();
 	}

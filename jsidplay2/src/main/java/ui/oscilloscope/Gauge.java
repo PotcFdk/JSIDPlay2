@@ -242,4 +242,9 @@ public class Gauge extends C64VBox implements UIPart {
 		return imageQueue;
 	}
 
+	@Override
+	public void doClose() {
+		// just in case to not waste ram with frames!
+		imageQueue = new ImageQueue();
+	}
 }
