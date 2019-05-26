@@ -27,12 +27,12 @@ Use Oracle Java8
 ================
 This is my recommendation, because JavaFX is already included!
 
-Use OpenJDK For Linux users and PulseAudio for sound output:
-============================================================
+Alternatively use OpenJDK For Linux users and PulseAudio for sound output:
+==========================================================================
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
-sudo apt-get install openjfx (prior to openjfx11! No more available on Ubuntu?)
+sudo apt-get install openjfx (must then be openfx8 - NOT opnefx11 - No more available on Ubuntu?)
 sudo apt-get install pavucontrol
 
 Some soundcards don't work well with the default pulseaudio settings:
@@ -65,10 +65,10 @@ X Use as default Java
 Java 9,10,11:
 =============
 Since Java11 JavaFX is no longer bundled with Java!
-You will have to use a separate POM for JSIDPlay2 to include JavaFX. Thanks to Oracle :-(
+We will have to use a separate POM for JSIDPlay2 to include JavaFX. Thanks to Oracle :-(
 
-Therefore, use the following command:
-mvn -Djavafx.platform=win -f pom-java11.xml clean install			(Use [win|linux|mac])
+Therefore, use the following build command:
+mvn -Djavafx.platform=win -f pom-java11.xml clean install		"(Specify platform: [win|linux|mac])"
 instead of:
 mvn clean install
 
@@ -76,7 +76,7 @@ Java9 and successor versions require the configured required modules and since J
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
 However to use this new launch in Eclipse you must 1st: copy the contents of pom-java11.xml to pom.xml
-and 2nd to launch "mvn clean install (Java11)". Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
+and 2nd you must launch "mvn clean install (Java11)". Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
 
 Eclipse JavaFX support:
 =======================
@@ -124,7 +124,7 @@ Heap Memory Analyzer:
 To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
 Install Eclipse Heap Memory Analyzer (https://www.eclipse.org/mat/)
-Increase max memory to load huge heap dumps in file MemoryAnalyzer.ini:
+Increase max memory, if required to load huge heap dumps in file MemoryAnalyzer.ini:
 -Xmx=5g
 Load heap dump:
 File/Open heap.bin

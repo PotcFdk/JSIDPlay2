@@ -9,3 +9,4 @@ year and month or year, month and date.
 You can now sync Ultimate64 and JSIDPlay2 by network (supports: insert disk, launch program or demo).
 Java 11 Compatibility
 More stable audio with smooth video screen output at larger audio buffer sizes
+Reduced memory usage fixing memory leaks
