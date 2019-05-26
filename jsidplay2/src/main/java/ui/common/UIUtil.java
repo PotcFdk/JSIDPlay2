@@ -39,9 +39,7 @@ public class UIUtil {
 		this.player = player;
 		this.controller = controller;
 		this.bundle = ResourceBundle.getBundle(controller.getBundleName());
-		if (window != null) {
-			window.getUiParts().add(controller);
-		}
+
 	}
 
 	public Object parse() {

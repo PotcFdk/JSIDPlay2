@@ -1041,7 +1041,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			views.add(new ViewEntity(tab.getId()));
 		}
 		tab.setOnClosed(evt -> {
-			util.getWindow().close((UIPart) tab.getContent());
+			util.getWindow().close(tab.getContent());
 			views.removeIf(view -> view.getFxId().equals(tab.getId()));
 		});
 		jSidPlay2.getTabbedPane().getTabs().add(tab);

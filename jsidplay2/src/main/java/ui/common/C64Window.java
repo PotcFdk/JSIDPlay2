@@ -1,13 +1,13 @@
 package ui.common;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -25,9 +25,6 @@ public abstract class C64Window implements UIPart, Initializable {
 	private Scene scene;
 	private boolean wait;
 
-	/** All UI pieces of this Stage */
-	private final Collection<UIPart> uiParts = new ArrayList<>();
-
 	private Supplier<Boolean> closeActionEnabler = () -> true;
 
 	/**
@@ -40,7 +37,7 @@ public abstract class C64Window implements UIPart, Initializable {
 		util = new UIUtil(null, new Player(configuration), this);
 		configService.close();
 	}
-	
+
 	/**
 	 * Create a scene in a new stage.
 	 */
@@ -88,15 +85,18 @@ public abstract class C64Window implements UIPart, Initializable {
 	public void close() {
 		if (closeActionEnabler.get()) {
 			stage.close();
-			for (UIPart part : uiParts) {
-				part.doClose();
-			}
+			close(getStage().getScene().getRoot());
+			doClose();
 		}
 	}
 
-	public void close(UIPart part) {
-		part.doClose();
-		uiParts.remove(part);
+	public void close(Node node) {
+		if (node instanceof UIPart) {
+			((UIPart) node).doClose();
+		}
+		if (node instanceof Parent) {
+			((Parent) node).getChildrenUnmodifiable().stream().forEach(child -> close(child));
+		}
 	}
 
 	public void setCloseActionEnabler(Supplier<Boolean> closeActionEnabler) {
@@ -115,11 +115,8 @@ public abstract class C64Window implements UIPart, Initializable {
 		this.wait = wait;
 	}
 
-	Collection<UIPart> getUiParts() {
-		return uiParts;
-	}
-
 	public UIUtil getUtil() {
 		return util;
 	}
+
 }
