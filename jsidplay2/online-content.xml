@@ -79,10 +79,10 @@
          ================================= -->
 	<target name="zip_jsiddevice">
 		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true">
-			<fileset dir="${base_dir}/src/main/linux">
+			<fileset dir="src/main/linux">
 				<include name="JSIDDevice*.desktop" />
 			</fileset>
-			<fileset dir="${base_dir}/src/main/deploy/jsidplay2">
+			<fileset dir="src/main/deploy/jsidplay2">
 				<include name="jsidplay2.png" />
 			</fileset>
 			<fileset dir="${deploy_dir}">
