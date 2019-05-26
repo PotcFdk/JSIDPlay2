@@ -236,6 +236,7 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		util.getPlayer().removePixelConsumer(this);
 		sequentialTransition.stop();
 		timer.stop();
+		imageQueue.dispose();
 		currentImage = null;
 	}
 

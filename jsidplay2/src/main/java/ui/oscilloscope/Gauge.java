@@ -116,8 +116,8 @@ public class Gauge extends C64VBox implements UIPart {
 
 		GraphicsContext g = getArea().getGraphicsContext2D();
 
-		g.clearRect(0, 0, width, height);
 		if (image != null) {
+			g.clearRect(0, 0, width, height);
 			g.drawImage(image, 0, 0);
 		}
 	}
@@ -245,6 +245,6 @@ public class Gauge extends C64VBox implements UIPart {
 	@Override
 	public void doClose() {
 		// just in case to not waste ram with frames!
-		imageQueue = new ImageQueue();
+		imageQueue.dispose();
 	}
 }

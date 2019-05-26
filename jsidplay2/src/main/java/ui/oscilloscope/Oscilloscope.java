@@ -100,7 +100,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		highResolutionEvent = new HighResolutionEvent();
 		listener = event -> {
 			final EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
-			if (event.getNewValue() == State.PLAY) {
+			if (event.getNewValue() == State.START) {
 				if (!ctx.isPending(highResolutionEvent)) {
 					prepareHighResolutionEvent();
 					ctx.schedule(highResolutionEvent, 0, Phase.PHI2);
@@ -108,8 +108,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 				Platform.runLater(() -> {
 					startOscilloscope();
 				});
-			} else if (event.getNewValue() == State.PAUSE || event.getNewValue() == State.END
-					|| event.getNewValue() == State.QUIT) {
+			} else if (event.getNewValue() == State.END
+					|| event.getNewValue() == State.RESTART || event.getNewValue() == State.QUIT) {
 				ctx.cancel(highResolutionEvent);
 				Platform.runLater(() -> {
 					stopOscilloscope();
@@ -127,12 +127,6 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		wave3Sid_1.setLocalizer(util.getBundle());
 		wave3Sid_2.setLocalizer(util.getBundle());
 
-		EventScheduler ctx = util.getPlayer().getC64().getEventScheduler();
-		if (!ctx.isPending(highResolutionEvent)) {
-			prepareHighResolutionEvent();
-			ctx.scheduleThreadSafe(highResolutionEvent);
-		}
-
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		muteVoice1.selectedProperty().bindBidirectional(emulationSection.muteVoice1Property());
 		muteVoice2.selectedProperty().bindBidirectional(emulationSection.muteVoice2Property());
@@ -148,6 +142,9 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		muteVoice12.selectedProperty().bindBidirectional(emulationSection.muteThirdSIDVoice4Property());
 
 		startOscilloscope();
+
+		prepareHighResolutionEvent();
+		util.getPlayer().getC64().getEventScheduler().scheduleThreadSafe(highResolutionEvent);
 	}
 
 	private void prepareHighResolutionEvent() {

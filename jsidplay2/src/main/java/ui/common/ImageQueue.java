@@ -25,7 +25,12 @@ public class ImageQueue {
 
 	private final List<Image> imageQueue = new ArrayList<>(MAX_SIZE);
 
+	private boolean disposed;
+
 	public synchronized void add(Image image) {
+		if (disposed) {
+			return;
+		}
 		if (imageQueue.size() == MAX_SIZE) {
 			// prevent OutOfMemoryError, just in case!
 			imageQueue.remove(0);
@@ -42,6 +47,11 @@ public class ImageQueue {
 			return null;
 		}
 		return imageQueue.remove(0);
+	}
+	
+	public synchronized void dispose() {
+		imageQueue.clear();
+		disposed = true;
 	}
 
 }
