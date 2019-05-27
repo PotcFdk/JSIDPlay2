@@ -33,7 +33,7 @@ public class AudioConfig {
 	/**
 	 * This instance represents the requested audio configuration
 	 * 
-	 * @param frameRate       The desired audio framerate.
+	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
 	 * @param deviceIdx       The sound device number.
 	 * @param audioBufferSize The audio buffer size (null for reasonable default).
@@ -42,7 +42,7 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
-		// Default Java Linux Sound System ALSA is aweful!
+		// Java Linux ALSA Sound System is awful!
 		// Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x)
 		if (audioBufferSize != null && audioBufferSize.intValue() >= 1024) {
 			// JSIDPlay needs configuration (1024=responsiveness vs. 16384=stable audio)
@@ -82,8 +82,10 @@ public class AudioConfig {
 	/**
 	 * Return the desired size of buffer used at one time. This is often smaller
 	 * than the whole buffer because doing this allows us to stay closer in sync
-	 * with the audio production. <B>Note:</B>Do not choose too small values here:
-	 * test with 96kHz and 32x fast forward!
+	 * with the audio production.
+	 * 
+	 * <B>Note:</B>Do not choose too small values here: test with 96kHz and 32x fast
+	 * forward!
 	 * 
 	 * <B>Note:</B> Current implementation uses exactly the same size as
 	 * bufferFrames as a result after numerous tests!
