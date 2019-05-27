@@ -7,7 +7,7 @@
 package libsidplay.components.mos656x;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -268,7 +268,7 @@ public abstract class VIC extends Bank {
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected Consumer<int[]> pixelConsumer = pixels -> {
+	protected BiConsumer<VIC, int[]> pixelConsumer = (vic, pixels) -> {
 	};
 
 	/**
@@ -277,7 +277,7 @@ public abstract class VIC extends Bank {
 	 * @param consumer
 	 *            consumer of C64 screen pixels as ARGB data
 	 */
-	public void setPixelConsumer(Consumer<int[]> consumer) {
+	public void setPixelConsumer(BiConsumer<VIC, int[]> consumer) {
 		pixelConsumer = consumer;
 	}
 

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.components.mos656x.VIC;
 
 /**
  * Proxy driver to use two different sound or video drivers at the same time.
@@ -59,12 +60,12 @@ public class ProxyDriver implements VideoDriver {
 	}
 
 	@Override
-	public void accept(int[] bgraData) {
+	public void accept(VIC vic, int[] bgraData) {
 		if (driverOne instanceof VideoDriver) {
-			((VideoDriver) driverOne).accept(bgraData);
+			((VideoDriver) driverOne).accept(vic, bgraData);
 		}
 		if (driverTwo instanceof VideoDriver) {
-			((VideoDriver) driverTwo).accept(bgraData);
+			((VideoDriver) driverTwo).accept(vic, bgraData);
 		}
 	}
 

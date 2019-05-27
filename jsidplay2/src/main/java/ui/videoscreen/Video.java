@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -63,7 +64,7 @@ import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
-public class Video extends C64VBox implements UIPart, Consumer<int[]> {
+public class Video extends C64VBox implements UIPart, BiConsumer<VIC, int[]> {
 
 	public static final String ID = "VIDEO";
 	private static final double PAL_MARGIN_LEFT = 55;
@@ -219,6 +220,8 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 		});
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
 
+		imageQueue = new ImageQueue();
+
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 		setVisibilityBasedOnChipType(tune);
@@ -349,8 +352,6 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 			marginTop = NTSC_MARGIN_TOP;
 			marginBottom = NTSC_MARGIN_BOTTOM;
 		}
-
-		imageQueue = new ImageQueue();
 		pauseTransition.setDuration(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
@@ -533,19 +534,14 @@ public class Video extends C64VBox implements UIPart, Consumer<int[]> {
 	/**
 	 * Create an image per frame of VIC screen output.
 	 * 
-	 * @see java.util.function.Consumer#accept(java.lang.Object)
+	 * @see java.util.function.BiConsumer#accept(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void accept(int[] pixels) {
-		imageQueue.add(createImage(pixels));
-	}
-
-	private Image createImage(int[] pixels) {
-		VIC vic = util.getPlayer().getC64().getVIC();
+	public void accept(VIC vic, int[] pixels) {
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-				PixelFormat.getIntArgbInstance(), Arrays.copyOf(pixels, pixels.length), 0, vic.getBorderWidth());
-		return image;
+				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+		imageQueue.add(image);
 	}
 
 	/**

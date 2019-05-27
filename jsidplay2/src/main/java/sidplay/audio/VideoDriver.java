@@ -1,10 +1,11 @@
 package sidplay.audio;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import libsidplay.common.CPUClock;
+import libsidplay.components.mos656x.VIC;
 
-public interface VideoDriver extends AudioDriver, Consumer<int[]> {
+public interface VideoDriver extends AudioDriver, BiConsumer<VIC, int[]> {
 
 	/**
 	 * Propagates VIC pixel data for video drivers.
@@ -12,6 +13,6 @@ public interface VideoDriver extends AudioDriver, Consumer<int[]> {
 	 * <B>Note:</B> Pixel format is BGRA and is updated frequently at a rate of
 	 * screen refresh rate. {@link CPUClock#getScreenRefresh()}
 	 */
-	void accept(int[] bgraData);
+	void accept(VIC vic, int[] bgraData);
 
 }

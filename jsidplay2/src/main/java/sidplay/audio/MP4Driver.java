@@ -89,7 +89,7 @@ public class MP4Driver implements VideoDriver {
 	}
 
 	@Override
-	public void accept(int[] bgraData) {
+	public void accept(VIC vic, int[] bgraData) {
 		try {
 			setPictureData(bgraData);
 			this.sequenceEncoder.encodeNativeFrame(picture);

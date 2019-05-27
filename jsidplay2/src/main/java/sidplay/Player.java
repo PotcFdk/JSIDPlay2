@@ -83,7 +83,7 @@ import sidplay.player.Timer;
  * @author Ken Händel
  * 
  */
-public class Player extends HardwareEnsemble implements Consumer<int[]> {
+public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 
 	/** Build date calculated from our own modify time */
 	public static Calendar LAST_MODIFIED;
@@ -227,7 +227,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	/**
 	 * Consumer for VIC screen output as BGRA data
 	 */
-	protected List<Consumer<int[]>> pixelConsumers = new CopyOnWriteArrayList<Consumer<int[]>>();
+	protected List<BiConsumer<VIC, int[]>> pixelConsumers = new CopyOnWriteArrayList<BiConsumer<VIC, int[]>>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -911,7 +911,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
-	public void addPixelConsumer(Consumer<int[]> consumer) {
+	public void addPixelConsumer(BiConsumer<VIC, int[]> consumer) {
 		pixelConsumers.add(consumer);
 	}
 
@@ -920,7 +920,7 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
-	public void removePixelConsumer(Consumer<int[]> consumer) {
+	public void removePixelConsumer(BiConsumer<VIC, int[]> consumer) {
 		pixelConsumers.remove(consumer);
 	}
 
@@ -929,14 +929,14 @@ public class Player extends HardwareEnsemble implements Consumer<int[]> {
 	 * 4x, ... , 32x).
 	 */
 	@Override
-	public void accept(int[] bgraData) {
+	public void accept(VIC vic, int[] bgraData) {
 		// skip frame(s) on fast forward
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
-			Iterator<Consumer<int[]>> iterator = pixelConsumers.iterator();
+			Iterator<BiConsumer<VIC, int[]>> iterator = pixelConsumers.iterator();
 			while (iterator.hasNext()) {
-				iterator.next().accept(bgraData);
+				iterator.next().accept(vic, bgraData);
 			}
 		}
 	}
