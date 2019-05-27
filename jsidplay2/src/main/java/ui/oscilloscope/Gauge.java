@@ -53,7 +53,7 @@ public class Gauge extends C64VBox implements UIPart {
 	/** Position within data buffer */
 	private int dataPos = 0;
 
-	protected ImageQueue imageQueue;
+	protected ImageQueue imageQueue = new ImageQueue();
 
 	@Override
 	public String getBundleName() {
@@ -102,21 +102,16 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
-		imageQueue = new ImageQueue();
 		addImage(null);
 		updateGauge(null);
 	}
 
 	public void updateGauge(SIDEmu sidemu) {
-		Image image = imageQueue.poll();
-		if (getTitledPane() == null) {
-			return;
-		}
 		getTitledPane().setText(text);
 
-		GraphicsContext g = getArea().getGraphicsContext2D();
-
+		Image image = imageQueue.poll();
 		if (image != null) {
+			GraphicsContext g = getArea().getGraphicsContext2D();
 			g.clearRect(0, 0, width, height);
 			g.drawImage(image, 0, 0);
 		}
@@ -184,6 +179,7 @@ public class Gauge extends C64VBox implements UIPart {
 	}
 
 	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {
+		// clip coordinates
 		x1 = (int) Math.min(Math.max(0, x1), width - 1);
 		x2 = (int) Math.min(Math.max(0, x2), width - 1);
 		y1 = (int) Math.min(Math.max(0, y1), height - 1);

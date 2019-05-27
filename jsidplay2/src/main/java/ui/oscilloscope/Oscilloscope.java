@@ -1,7 +1,5 @@
 package ui.oscilloscope;
 
-import static libsidplay.components.pla.PLA.MAX_SIDS;
-
 import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
@@ -108,8 +106,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 				Platform.runLater(() -> {
 					startOscilloscope();
 				});
-			} else if (event.getNewValue() == State.END
-					|| event.getNewValue() == State.RESTART || event.getNewValue() == State.QUIT) {
+			} else if (event.getNewValue() == State.END || event.getNewValue() == State.RESTART
+					|| event.getNewValue() == State.QUIT) {
 				ctx.cancel(highResolutionEvent);
 				Platform.runLater(() -> {
 					stopOscilloscope();
@@ -155,9 +153,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	private void startOscilloscope() {
 		/* Initially clear all gauges (unused SIDs inclusive) */
-		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
-			updateGauges(chipNum, Gauge::reset);
-		}
+		util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, Gauge::reset));
+
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
 				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
@@ -240,7 +237,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	 * 
 	 * @param chipNum           SID chip number
 	 * @param sid               provided SID
-	 * @param isLowerResolution lower resolution event occured (less precision)
+	 * @param isLowerResolution lower resolution event occurred (less precision)
 	 */
 	private void sampleGauges(Integer chipNum, SIDEmu sid, boolean isLowerResolution) {
 		switch (chipNum) {
