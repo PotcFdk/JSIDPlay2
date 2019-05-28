@@ -49,8 +49,12 @@ public class ImageQueue {
 		return imageQueue.remove(0);
 	}
 	
-	public synchronized void dispose() {
+	public synchronized void clear() {
 		imageQueue.clear();
+	}
+	
+	public synchronized void dispose() {
+		clear();
 		disposed = true;
 	}
 

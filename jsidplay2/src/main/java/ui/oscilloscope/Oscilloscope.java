@@ -1,5 +1,7 @@
 package ui.oscilloscope;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
@@ -153,8 +155,9 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	private void startOscilloscope() {
 		/* Initially clear all gauges (unused SIDs inclusive) */
-		util.getPlayer().getC64().configureSIDs((chipNum, sid) -> updateGauges(chipNum, Gauge::reset));
-
+		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
+			updateGauges(chipNum, Gauge::reset);
+		}
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
 				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
 		sequentialTransition.setCycleCount(Timeline.INDEFINITE);

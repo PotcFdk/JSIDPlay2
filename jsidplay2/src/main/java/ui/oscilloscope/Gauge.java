@@ -102,6 +102,7 @@ public class Gauge extends C64VBox implements UIPart {
 		Arrays.fill(dataMin, (byte) 0);
 		Arrays.fill(dataMax, (byte) 0);
 		dataPos = 0;
+		imageQueue.clear();
 		addImage(null);
 		updateGauge(null);
 	}
@@ -139,7 +140,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 			/* one pixel line? */
 			if (intStartPos == intEndPos) {
-				drawLine(pixelWriter, x, intStartPos, x, intStartPos, gaugeColors[shade]);
+				drawPoint(pixelWriter, x, intStartPos, gaugeColors[shade]);
 				continue;
 			}
 
@@ -163,9 +164,9 @@ public class Gauge extends C64VBox implements UIPart {
 			}
 
 			/* Draw end points */
-			drawLine(pixelWriter, x, intStartPos, x, intStartPos, gaugeColors[(int) (shade * firstPixel)]);
+			drawPoint(pixelWriter, x, intStartPos, gaugeColors[(int) (shade * firstPixel)]);
 
-			drawLine(pixelWriter, x, intEndPos, x, intEndPos, gaugeColors[(int) (shade * lastPixel)]);
+			drawPoint(pixelWriter, x, intEndPos, gaugeColors[(int) (shade * lastPixel)]);
 
 			intStartPos += 1;
 			intEndPos -= 1;
@@ -178,12 +179,21 @@ public class Gauge extends C64VBox implements UIPart {
 		imageQueue.add(image);
 	}
 
+	private void drawPoint(PixelWriter pixelWriter, int x, int y, Color c) {
+		// clip coordinates
+		x = (int) Math.min(Math.max(0, x), width - 1);
+		y = (int) Math.min(Math.max(0, y), height - 1);
+
+		pixelWriter.setColor(x, y, c);
+	}
+
 	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {
 		// clip coordinates
 		x1 = (int) Math.min(Math.max(0, x1), width - 1);
 		x2 = (int) Math.min(Math.max(0, x2), width - 1);
 		y1 = (int) Math.min(Math.max(0, y1), height - 1);
 		y2 = (int) Math.min(Math.max(0, y2), height - 1);
+
 		// delta of exact value and rounded value of the dependent variable
 		int d = 0;
 
