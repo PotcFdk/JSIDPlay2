@@ -893,7 +893,7 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 					fInitAddress, fPlayerAddress));
 			out.println("Calling initroutine with subtune " + (fCurrentSong - 1));
 			out.println(
-					"Calling playroutine for " + fSeconds * TUNE_SPEED + " frames, starting from frame " + fFirstframe);
+					"Calling playroutine for " + (int) (fSeconds * TUNE_SPEED) + " frames, starting from frame " + fFirstframe);
 			out.println(String.format("Middle C frequency is $%04X", FREQ_TBL_LO_USE[48] | FREQ_TBL_HI_USE[48] << 8));
 			out.println();
 			out.println(

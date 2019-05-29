@@ -27,7 +27,7 @@ public abstract class SidRegExtension implements SIDListener {
 			fTime = time;
 		}
 		final long relTime = time - fTime;
-		final SidRegWrite row = new SidRegWrite(time, relTime, addr & 0xffe0, bundle.getString(description[addr & 0xf]),
+		final SidRegWrite row = new SidRegWrite(time, relTime, addr, bundle.getString(description[addr & 0xf]),
 				String.format("$%02X", data & 0xff));
 
 		sidWrite(row);

@@ -128,9 +128,9 @@
 							<PropertyValueFactory property="relCycles" />
 						</cellValueFactory>
 					</TableColumn>
-					<TableColumn text="%COL_BASE" prefWidth="50">
+					<TableColumn text="%COL_ADDR" prefWidth="50">
 						<cellValueFactory>
-							<PropertyValueFactory property="baseAddr" />
+							<PropertyValueFactory property="address" />
 						</cellValueFactory>
 					</TableColumn>
 					<TableColumn text="%COL_DESCRIPTION" prefWidth="300">
