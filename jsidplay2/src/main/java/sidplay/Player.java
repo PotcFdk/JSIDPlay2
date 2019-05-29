@@ -710,8 +710,8 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 			if (audioAndDriver.getValue().buffer() != null) {
 				audioAndDriver.getValue().write();
 			}
-		} catch (InterruptedException e) {
-			// ignore interruptions near close
+		} catch (Throwable e) {
+			// ignore exceptions near close
 		} finally {
 			audioAndDriver.getValue().close();
 		}

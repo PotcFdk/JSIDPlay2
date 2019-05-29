@@ -1,9 +1,12 @@
 package sidplay.audio;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -35,7 +38,7 @@ public class CmpMP3File extends JavaSound {
 	 */
 	protected LameDecoder jump3r;
 	private int factor;
-	private byte[] decodedMP3;
+	private ByteBuffer decodedMP3Buffer;
 	private ByteBuffer mp3Buffer;
 
 	private IAudioSection audioSection;
@@ -49,10 +52,16 @@ public class CmpMP3File extends JavaSound {
 			throws IOException, LineUnavailableException {
 		super.open(cfg, recordingFilename, cpuClock);
 
+		if (!new File(audioSection.getMp3File()).exists()) {
+			throw new FileNotFoundException(audioSection.getMp3File());
+		}
 		jump3r = new LameDecoder(audioSection.getMp3File());
-		decodedMP3 = new byte[jump3r.getFrameSize() * Short.BYTES * cfg.getChannels()];
+		decodedMP3Buffer = ByteBuffer.wrap(new byte[jump3r.getFrameSize() * Short.BYTES * jump3r.getChannels()])
+				.order(ByteOrder.nativeOrder());
+
 		factor = Math.max(1, cfg.getBufferFrames() / jump3r.getFrameSize());
-		mp3Buffer = ByteBuffer.allocateDirect(factor * decodedMP3.length).order(ByteOrder.nativeOrder());
+		mp3Buffer = ByteBuffer.allocateDirect(factor * jump3r.getFrameSize() * Short.BYTES * cfg.getChannels())
+				.order(ByteOrder.nativeOrder());
 	}
 
 	@Override
@@ -60,11 +69,16 @@ public class CmpMP3File extends JavaSound {
 		((Buffer) mp3Buffer).clear();
 		boolean decoded = true;
 		for (int i = 0; i < factor; i++) {
-			decoded &= jump3r.decode(ByteBuffer.wrap(decodedMP3));
+			((Buffer) decodedMP3Buffer).clear();
+			decoded &= jump3r.decode(decodedMP3Buffer);
 			if (!decoded) {
 				break;
 			}
-			mp3Buffer.put(decodedMP3);
+			if (jump3r.getChannels() == 1) {
+				monoToStereo(decodedMP3Buffer, mp3Buffer);
+			} else {
+				mp3Buffer.put(decodedMP3Buffer);
+			}
 		}
 		if (audioSection.isPlayOriginal()) {
 			((Buffer) buffer()).clear();
@@ -85,4 +99,12 @@ public class CmpMP3File extends JavaSound {
 		}
 	}
 
+	private void monoToStereo(ByteBuffer monoMP3Buffer, ByteBuffer stereoBuffer) {
+		ShortBuffer monoBuffer = monoMP3Buffer.asShortBuffer();
+		for (int i = 0; i < monoBuffer.capacity(); i++) {
+			short monoSample = monoBuffer.get();
+			stereoBuffer.putShort(monoSample);
+			stereoBuffer.putShort(monoSample);
+		}
+	}
 }
