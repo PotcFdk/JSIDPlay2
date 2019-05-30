@@ -74,7 +74,7 @@
 				<VBox>
 					<Label text="%PROGRESS" alignment="CENTER_RIGHT" />
 					<ProgressBar fx:id="progress" progress="0"
-						prefWidth="120" />
+						prefWidth="90" />
 				</VBox>
 			</HBox>
 		</AnchorPane>
