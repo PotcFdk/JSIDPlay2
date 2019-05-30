@@ -46,6 +46,8 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.sidtune.MP3Tune;
+import libsidplay.sidtune.SidTune;
 import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
@@ -91,9 +93,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port,
-			ultimate64Hostname, ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort,
-			appServerKeyManagerPassword, appServerKeyStorePassword;
+	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
+			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyManagerPassword,
+			appServerKeyStorePassword;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -159,7 +161,10 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		samplingRateBox.setConverter(new EnumToStringConverter<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
-		samplingRateBox.valueProperty().bindBidirectional(audioSection.samplingRateProperty());
+		samplingRateBox.valueProperty().addListener((obj, o, n) -> audioSection.setSamplingRate(n));
+		audioSection.samplingRateProperty()
+				.addListener((obj, o, n) -> Platform.runLater(() -> samplingRateBox.setValue(n)));
+		samplingRateBox.setValue(audioSection.getSamplingRate());
 
 		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
@@ -398,7 +403,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void setAudioBufferSize() {
 		restart();
 	}
-	
+
 	@FXML
 	private void doKeystoreBrowse() {
 		final FileChooser fileDialog = new FileChooser();
@@ -456,6 +461,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getAudioSection().setMp3File(file.getAbsolutePath());
+			if (util.getPlayer().getTune() instanceof MP3Tune) {
+				util.getPlayer().setTune(SidTune.RESET);
+			}
 			restart();
 		}
 	}

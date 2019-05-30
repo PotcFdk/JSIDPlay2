@@ -25,14 +25,21 @@ import lowlevel.LameDecoder;
  */
 public class CmpMP3File extends JavaSound {
 
+	@SuppressWarnings("serial")
 	public static class MP3Termination extends InterruptedException {
-		private static final long serialVersionUID = 1L;
-
 		public MP3Termination() {
 		}
-
 		public MP3Termination(Exception e) {
 			super(e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("serial")
+	public static class MP3WrongSettingsException extends IOException {
+		public MP3WrongSettingsException() {
+		}
+		public MP3WrongSettingsException(String message) {
+			super(message);
 		}
 	}
 
@@ -67,7 +74,8 @@ public class CmpMP3File extends JavaSound {
 			throw new IOException("Unsupported sample rate: " + sampleRate + " in " + mp3File);
 		}
 		if (sampleRate != audioSection.getSamplingRate().getFrequency()) {
-			throw new IOException("Sample rate must match: " + sampleRate + ", please change settings to listen!");
+			audioSection.setSamplingRate(samplingRateFound.get());
+			throw new MP3WrongSettingsException("Sampling rate does not match " + sampleRate);
 		}
 		decodedMP3Buffer = ByteBuffer.wrap(new byte[frameSize * Short.BYTES * channels]).order(ByteOrder.nativeOrder());
 

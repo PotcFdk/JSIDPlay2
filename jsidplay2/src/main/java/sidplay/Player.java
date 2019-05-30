@@ -69,6 +69,7 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File.MP3Termination;
+import sidplay.audio.CmpMP3File.MP3WrongSettingsException;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
 import sidplay.ini.IniConfig;
@@ -596,6 +597,9 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 				}
 			} catch (MP3Termination e) {
 				stateProperty.set(END);
+			} catch (MP3WrongSettingsException e) {
+				System.out.println(e.getMessage());
+				stateProperty.set(QUIT);
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
