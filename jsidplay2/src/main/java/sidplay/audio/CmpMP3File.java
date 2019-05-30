@@ -7,10 +7,13 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
+import java.util.Optional;
 
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
 
@@ -50,18 +53,29 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
-		super.open(cfg, recordingFilename, cpuClock);
-
-		if (!new File(audioSection.getMp3File()).exists()) {
-			throw new FileNotFoundException(audioSection.getMp3File());
+		String mp3File = audioSection.getMp3File();
+		if (mp3File == null || !new File(mp3File).exists()) {
+			throw new FileNotFoundException(mp3File);
 		}
-		jump3r = new LameDecoder(audioSection.getMp3File());
-		decodedMP3Buffer = ByteBuffer.wrap(new byte[jump3r.getFrameSize() * Short.BYTES * jump3r.getChannels()])
+		jump3r = new LameDecoder(mp3File);
+		int sampleRate = jump3r.getSampleRate();
+		int channels = jump3r.getChannels();
+		int frameSize = jump3r.getFrameSize();
+		Optional<SamplingRate> samplingRateFound = Arrays.asList(SamplingRate.values()).stream()
+				.filter(samplingRate -> samplingRate.getFrequency() == sampleRate).findFirst();
+		if (!samplingRateFound.isPresent()) {
+			throw new IOException("Unsupported sample rate: " + sampleRate + " in " + mp3File);
+		}
+		if (sampleRate != audioSection.getSamplingRate().getFrequency()) {
+			throw new IOException("Sample rate must match: " + sampleRate + ", please change settings to listen!");
+		}
+		decodedMP3Buffer = ByteBuffer.wrap(new byte[frameSize * Short.BYTES * channels]).order(ByteOrder.nativeOrder());
+
+		factor = Math.max(1, cfg.getBufferFrames() / frameSize);
+		mp3Buffer = ByteBuffer.allocateDirect(factor * frameSize * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.nativeOrder());
 
-		factor = Math.max(1, cfg.getBufferFrames() / jump3r.getFrameSize());
-		mp3Buffer = ByteBuffer.allocateDirect(factor * jump3r.getFrameSize() * Short.BYTES * cfg.getChannels())
-				.order(ByteOrder.nativeOrder());
+		super.open(cfg, recordingFilename, cpuClock);
 	}
 
 	@Override
@@ -101,7 +115,7 @@ public class CmpMP3File extends JavaSound {
 
 	private void monoToStereo(ByteBuffer monoMP3Buffer, ByteBuffer stereoBuffer) {
 		ShortBuffer monoBuffer = monoMP3Buffer.asShortBuffer();
-		for (int i = 0; i < monoBuffer.capacity(); i++) {
+		for (int i = 0; i < monoBuffer.limit(); i++) {
 			short monoSample = monoBuffer.get();
 			stereoBuffer.putShort(monoSample);
 			stereoBuffer.putShort(monoSample);
