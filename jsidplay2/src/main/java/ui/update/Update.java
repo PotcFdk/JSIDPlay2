@@ -8,10 +8,13 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
+import javafx.util.Duration;
 import libsidutils.DesktopIntegration;
 import libsidutils.InternetUtils;
 import sidplay.Player;
@@ -37,28 +40,34 @@ public class Update extends C64Window {
 
 	@FXML
 	protected void initialize() {
-		// check our version
-		int[] currentVersion = null;
-		try {
-			Properties currentProperties = new Properties();
-			URL resource = JSidPlay2Main.class.getResource(LOCAL_VERSION_RES);
-			currentProperties.load(resource.openConnection().getInputStream());
-			currentVersion = getVersionNumbers(currentProperties.getProperty("version"));
-		} catch (NullPointerException | IOException e) {
-		}
-		// check latest version
-		int[] latestVersion = null;
-		try {
-			Properties latestProperties = new Properties();
-			Proxy proxy = util.getConfig().getSidplay2Section().getProxy();
-			URLConnection connection = InternetUtils.openConnection(new URL(ONLINE_VERSION_RES), proxy);
-			latestProperties.load(connection.getInputStream());
-			latestVersion = getVersionNumbers(latestProperties.getProperty("version"));
-		} catch (NullPointerException | IOException e) {
-		}
-		final boolean updateAvailable = isUpdateAvailableNewer(currentVersion, latestVersion);
-		latestVersionLink.setVisible(updateAvailable);
-		update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
+		update.setText(util.getBundle().getString("PLEASE_WAIT"));
+		PauseTransition pauseTransition = new PauseTransition(Duration.millis(1000));
+		SequentialTransition sequentialTransition = new SequentialTransition(pauseTransition);
+		pauseTransition.setOnFinished(evt -> {
+			// check our version
+			int[] currentVersion = null;
+			try {
+				Properties currentProperties = new Properties();
+				URL resource = JSidPlay2Main.class.getResource(LOCAL_VERSION_RES);
+				currentProperties.load(resource.openConnection().getInputStream());
+				currentVersion = getVersionNumbers(currentProperties.getProperty("version"));
+			} catch (NullPointerException | IOException e) {
+			}
+			// check latest version
+			int[] latestVersion = null;
+			try {
+				Properties latestProperties = new Properties();
+				Proxy proxy = util.getConfig().getSidplay2Section().getProxy();
+				URLConnection connection = InternetUtils.openConnection(new URL(ONLINE_VERSION_RES), proxy);
+				latestProperties.load(connection.getInputStream());
+				latestVersion = getVersionNumbers(latestProperties.getProperty("version"));
+			} catch (NullPointerException | IOException e) {
+			}
+			final boolean updateAvailable = isUpdateAvailableNewer(currentVersion, latestVersion);
+			latestVersionLink.setVisible(updateAvailable);
+			update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
+		});
+		sequentialTransition.playFromStart();
 	}
 
 	@FXML

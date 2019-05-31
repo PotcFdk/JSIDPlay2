@@ -24,7 +24,7 @@
 					<Button text="%OK" onAction="#okPressed" />
 				</HBox>
 				<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
-					onAction="#gotoLatestVersion" fx:id="latestVersionLink" />
+					onAction="#gotoLatestVersion" fx:id="latestVersionLink" visible="false" />
 			</VBox>
 		</bottom>
 	</BorderPane>
