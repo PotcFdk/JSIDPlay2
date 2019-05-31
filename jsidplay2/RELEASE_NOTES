@@ -8,6 +8,6 @@ Searching for a date in music collection and Assembly64 can now be done using ye
 year and month or year, month and date.
 You can now sync Ultimate64 and JSIDPlay2 by network (supports: insert disk, launch program or demo).
 Java 11 Compatibility
-More stable audio with smooth video screen output at larger audio buffer sizes
+More stable audio with smooth video screen output at configurable larger audio buffer sizes
 Reduced memory usage fixing memory leaks
 Support mono and stereo MP3 playback with 41000 Hz, 84000 Hz and 96000 Hz and auto-change players settings
