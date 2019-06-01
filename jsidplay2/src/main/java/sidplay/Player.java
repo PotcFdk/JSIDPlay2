@@ -975,7 +975,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		credits.append("\tCopyright (©) 2010-2011 Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Assembly64:\n");
-		credits.append("\tCopyright (©) 2019 Fredrik Åberg\n");
+		credits.append("\tCopyright (©) " + LAST_MODIFIED.get(Calendar.YEAR) + " Fredrik Åberg\n");
 		credits.append("\thttp://hackerswithstyle.ddns.net/assembly/\n");
 		credits.append("This product uses the database of Game Base 64 (GB64)\n");
 		credits.append("\thttp://www.gb64.com/\n");
@@ -985,7 +985,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n");
 		credits.append("\thttp://www.6581-8580.com/\n");
 		credits.append("6510 cross assembler (Kickassembler V5.5):\n");
-		credits.append("\tCopyright (©) 2006-2019 Mads Nielsen\n");
+		credits.append("\tCopyright (©) 2006-" + LAST_MODIFIED.get(Calendar.YEAR) + " Mads Nielsen\n");
 		credits.append("\thttp://www.theweb.dk/KickAssembler/\n");
 		credits.append("PSID to PRG converter (PSID64 v0.9):\n");
 		credits.append("\tCopyright (©) 2001-2007 Roland Hermans\n");

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=JSIDPlay2 (Java11)
 Name[de_DE]=JSIDPlay2 (Java11)
-Path=/home/ken/Downloads/jsidplay2-4.0
-Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/Downloads/jsidplay2-4.0 ; java --module-path . --add-modules javafx.controls,javafx.web,javafx.fxml -jar jsidplay2-4.0.jar'
+Path=/home/ken/Downloads/jsidplay2-4.1
+Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/Downloads/jsidplay2-4.1 ; java --module-path . --add-modules javafx.controls,javafx.web,javafx.fxml -jar jsidplay2-4.1.jar'
 Terminal=false
 Type=Application
-Icon=/home/ken/Downloads/jsidplay2-4.0/jsidplay2.png
+Icon=/home/ken/Downloads/jsidplay2-4.1/jsidplay2.png
 Categories=
