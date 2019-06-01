@@ -623,7 +623,7 @@
 							<excludes>
 								<exclude>sidplay/ConsolePlayer*.class</exclude>
 							</excludes>
-							<outputDirectory>${project.build.directory}/libsidplay</outputDirectory>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
 							<finalName>libsidplay-${project.version}</finalName>
 							<archive>
 								<addMavenDescriptor>false</addMavenDescriptor>

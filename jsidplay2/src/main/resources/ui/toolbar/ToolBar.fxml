@@ -298,7 +298,7 @@
 							</FXCollections>
 						</items>
 						<tooltip>
-							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" />
+							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" wrapText="true" prefWidth="400"/>
 						</tooltip>
 					</ComboBox>
 				</VBox>
