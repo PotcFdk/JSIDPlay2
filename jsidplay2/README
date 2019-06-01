@@ -11,7 +11,7 @@ and uploads target/deploy to web-server
 
 mvn clean deploy and run UI-tests
 =================================
-mvn clean install -P release
+mvn clean install -P release			"You should disable screensaver to not interfere with the tests"
 
 Set the following optional properties in Eclipse:
 Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
