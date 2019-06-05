@@ -119,6 +119,10 @@ public class AudioConfig {
 		this.bufferFrames = bufferFrames;
 	}
 
+	public void setAudioBufferSize(int audioBufferSize) {
+		this.audioBufferSize = audioBufferSize;
+	}
+	
 	/**
 	 * Get number of audio channels
 	 * 

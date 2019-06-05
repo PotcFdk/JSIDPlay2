@@ -84,6 +84,12 @@ public class CmpMP3File extends JavaSound {
 				.order(ByteOrder.nativeOrder());
 
 		super.open(cfg, recordingFilename, cpuClock);
+		if (buffer().capacity() < mp3Buffer.capacity()) {
+			// Prevent BufferOverflowException
+			cfg.setBufferFrames(mp3Buffer.capacity());
+			cfg.setAudioBufferSize(mp3Buffer.capacity());
+			super.open(cfg, recordingFilename, cpuClock);
+		}
 	}
 
 	@Override
