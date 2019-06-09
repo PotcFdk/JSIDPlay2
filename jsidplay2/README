@@ -32,7 +32,7 @@ Alternatively use OpenJDK For Linux users and PulseAudio for sound output:
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
-sudo apt-get install openjfx (must then be openfx8 - NOT opnefx11 - No more available on Ubuntu?)
+sudo apt-get install openjfx (must then be openfx8 - NOT openjfx11 - No more available on Ubuntu?)
 sudo apt-get install pavucontrol
 
 Some soundcards don't work well with the default pulseaudio settings:
