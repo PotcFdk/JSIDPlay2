@@ -210,11 +210,12 @@ public class Video extends C64VBox implements UIPart, BiConsumer<VIC, int[]> {
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		pauseTransition.setOnFinished(evt -> {
-			currentImage = imageQueue.poll();
-			if (currentImage != null) {
+			Image image = imageQueue.poll();
+			if (image != null) {
+				currentImage = image;
 				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
-				screen.getGraphicsContext2D().drawImage(currentImage, 0, 0, currentImage.getWidth(),
-						currentImage.getHeight(), marginLeft, marginTop, screen.getWidth() - (marginLeft + marginRight),
+				screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), marginLeft,
+						marginTop, screen.getWidth() - (marginLeft + marginRight),
 						screen.getHeight() - (marginTop + marginBottom));
 			}
 		});

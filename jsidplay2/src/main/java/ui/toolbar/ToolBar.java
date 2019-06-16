@@ -309,10 +309,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
 		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
 
-		Platform.runLater(() -> {
-			appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
-			appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
-		});
+		appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
+		appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
+
 		startAppServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			appServerUsage.setDisable(!newValue);
 			downloadApp.setDisable(!newValue);
