@@ -151,3 +151,5 @@ libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
 Wait for proguard to support Java11 and adopt changes
+
+Ultimate64: support audio and video streaming
