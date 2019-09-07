@@ -349,7 +349,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	}
 
 	/**
-	 * Configure all available SIDs.
+	 * Configure all available SIDs thread-safe.
 	 * 
 	 * @param action SID chip consumer
 	 */
@@ -358,7 +358,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	}
 
 	/**
-	 * Configure one specific SID.
+	 * Configure one specific SID thread-safe.
 	 * 
 	 * @param chipNum SID chip number
 	 * @param action  SID chip consumer
@@ -368,7 +368,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	}
 
 	/**
-	 * Configure the mixer, optionally implemented by SID builder.
+	 * Configure the mixer, optionally implemented by SID builder thread-safe.
 	 * 
 	 * @param action mixer consumer
 	 */
