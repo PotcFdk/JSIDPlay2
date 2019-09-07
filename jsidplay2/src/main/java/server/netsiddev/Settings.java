@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -31,11 +32,15 @@ public class Settings extends SIDDeviceStage {
 
 	private JComboBox<AudioDevice> audioDevice;
 
+	private JComboBox<Integer> audioBuffer;
+
 	private JCheckBox allowExternalConnections, digiBoost;
 
 	private JButton okButton;
 
 	private Vector<AudioDevice> audioDevices;
+
+	private Vector<Integer> audioBufferSizes;
 
 	private SIDDeviceSettings settings;
 
@@ -66,6 +71,17 @@ public class Settings extends SIDDeviceStage {
 		audioDevice.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		audioPane.add(audioDevice);
 
+		JLabel audioBufferSizeLabel = new JLabel(util.getBundle().getString("AUDIO_BUFFER_SIZE"));
+		audioBufferSizeLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		audioPane.add(audioBufferSizeLabel);
+		
+		audioBufferSizes = new Vector<>(Arrays.asList(1024, 2048, 4096, 8192, 16384));
+		audioBuffer = new JComboBox<Integer>(audioBufferSizes);
+		audioBuffer.setRenderer(new ItemRenderer());
+		audioBuffer.addActionListener(event -> setAudioBuffer());
+		audioBuffer.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		audioPane.add(audioBuffer);
+		
 		getContentPane().add(audioPane, gridBagConstants);
 
 		JPanel connectionPane = new JPanel();
@@ -134,6 +150,7 @@ public class Settings extends SIDDeviceStage {
 		audioDevice.setSelectedItem(selectedAudioDeviceItem);
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
+		audioBuffer.setSelectedItem(settings.getAudioBufferSize());
 	}
 	
 	public void open() throws IOException {
@@ -151,6 +168,14 @@ public class Settings extends SIDDeviceStage {
 		if (device != null) {
 			ClientContext.changeDevice(device.getInfo());
 			settings.saveDeviceIndex(device.getIndex());
+		}
+	}
+
+	private void setAudioBuffer() {
+		Integer audioBufferSize = (Integer) audioBuffer.getSelectedItem();
+		if (audioBufferSize != null) {
+			ClientContext.setAudioBufferSize(audioBufferSize);
+			settings.saveAudioBufferSize(audioBufferSize);
 		}
 	}
 

@@ -18,8 +18,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.Mixer.Info;
+import javax.sound.sampled.SourceDataLine;
 
 import builder.resid.resample.Resampler;
 import libsidplay.common.CPUClock;
@@ -124,6 +124,8 @@ public class AudioGeneratorThread extends Thread {
 
 		deviceIndex = settings.getDeviceIndex();
 		digiBoostEnabled = settings.getDigiBoostEnabled();
+		audioConfig.setAudioBufferSize(settings.getAudioBufferSize());
+		audioConfig.setBufferFrames(settings.getAudioBufferSize());
 	}
 
 	@Override
@@ -352,6 +354,12 @@ public class AudioGeneratorThread extends Thread {
 		deviceChanged = true;
 	}
 
+	public void setAudioBufferSize(Integer audioBufferSize) {
+		audioConfig.setAudioBufferSize(audioBufferSize);
+		audioConfig.setBufferFrames(audioBufferSize);
+		deviceChanged = true;
+	}
+
 	/**
 	 * Set NTSC/PAL time source.
 	 *
@@ -537,4 +545,5 @@ public class AudioGeneratorThread extends Thread {
 			}
 		}
 	}
+	
 }

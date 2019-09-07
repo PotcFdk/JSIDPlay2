@@ -42,4 +42,11 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 		iniReader.setProperty("Audio", "Sampling Rate", samplingRate);
 	}
 
+	public int getAudioBufferSize() {
+		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", 2048);
+	}
+
+	public void setAudioBufferSize(int audioBufferSize) {
+		iniReader.setProperty("Audio", "Audio Buffer Size", audioBufferSize);
+	}
 }

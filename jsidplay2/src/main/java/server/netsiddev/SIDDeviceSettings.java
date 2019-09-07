@@ -10,6 +10,7 @@ public class SIDDeviceSettings {
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
 	private final static String PROPERTY_DIGI_BOOST = "digiBoost";
+	private final static String PROPERTY_AUDIO_BUFFER_SIZE = "audioBufferSize";
 	private final static String ALLOW_EXTERNAL_CONNECTIONS = "allowExternalConnections";
 	private final static String PROPERTY_DEVICE_INDEX_COMMENT = "JSIDDevice settings";
 
@@ -42,6 +43,17 @@ public class SIDDeviceSettings {
 	}
 
 	/**
+	 * @return device index. If not found then null is returned.
+	 */
+	public synchronized int getAudioBufferSize() {
+		try {
+			return Integer.valueOf(props.getProperty(PROPERTY_AUDIO_BUFFER_SIZE));
+		} catch (NumberFormatException nfe) {
+			return 2048;
+		}
+	}
+
+	/**
 	 * @return digi boost value from the settings.
 	 */
 	public synchronized boolean getDigiBoostEnabled() {
@@ -61,6 +73,15 @@ public class SIDDeviceSettings {
 	 */
 	public synchronized void saveDeviceIndex(final Integer deviceIndex) {
 		props.setProperty(PROPERTY_DEVICE_INDEX, String.valueOf(deviceIndex));
+		save();
+	}
+
+	/**
+	 * @param audioBufferSize
+	 *            the audio buffer size to be saved
+	 */
+	public synchronized void saveAudioBufferSize(final Integer audioBufferSize) {
+		props.setProperty(PROPERTY_AUDIO_BUFFER_SIZE, String.valueOf(audioBufferSize));
 		save();
 	}
 

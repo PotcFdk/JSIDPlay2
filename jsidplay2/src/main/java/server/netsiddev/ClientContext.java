@@ -558,6 +558,18 @@ class ClientContext {
 		}
 	}
 
+	/**
+	 * setAudioBufferSize will change the size of the audio buffer for all
+	 * connected client contexts
+	 * 
+	 * @param audioBufferSize specifies the size of the audio buffer (1024-16384 as a power of two)
+	 */
+	public static void setAudioBufferSize(final Integer audioBufferSize) {
+		for (ClientContext clientContext : clientContextMap.values()) {
+			clientContext.eventConsumerThread.setAudioBufferSize(audioBufferSize);
+		}
+	}
+
 	public static Collection<PSidHeader> getTuneHeaders() {
 		return clientContextMap.values().stream().map(clientContext -> clientContext.getTuneHeader())
 				.collect(Collectors.toList());
@@ -610,9 +622,9 @@ class ClientContext {
 							sc.configureBlocking(false);
 
 							sc.register(selector, SelectionKey.OP_READ);
-							IniJSIDDeviceAudioSection audio = config.audio();
+							IniJSIDDeviceAudioSection audio = config.audio();							
 							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2,
-									audio.getDevice(), null);
+									audio.getDevice(), audio.getAudioBufferSize());
 							ClientContext cc = new ClientContext(audioConfig, config.jsiddevice().getLatency());
 							clientContextMap.put(sc, cc);
 							System.out.println("New client: " + cc);

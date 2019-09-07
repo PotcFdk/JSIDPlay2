@@ -43,16 +43,10 @@ public class AudioConfig {
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
 		// Java Linux ALSA Sound System is awful!
-		// Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x)
-		if (audioBufferSize != null && audioBufferSize.intValue() >= 1024) {
-			// JSIDPlay needs configuration (1024=responsiveness vs. 16384=stable audio)
-			this.audioBufferSize = audioBufferSize;
-			this.bufferFrames = this.audioBufferSize;
-		} else {
-			// JSIDDevice requires a small audio buffer
-			this.audioBufferSize = 2048;
-			this.bufferFrames = this.audioBufferSize;
-		}
+		// Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x fast forward)
+		// 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
+		this.audioBufferSize = audioBufferSize;
+		this.bufferFrames = this.audioBufferSize;
 	}
 
 	/**
