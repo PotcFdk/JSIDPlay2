@@ -78,7 +78,7 @@
           Create zip file
          ================================= -->
 	<target name="zip_jsiddevice">
-		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true">
+		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true" zip64mode="always">
 			<fileset dir="src/main/linux">
 				<include name="JSIDDevice*.desktop" />
 			</fileset>
