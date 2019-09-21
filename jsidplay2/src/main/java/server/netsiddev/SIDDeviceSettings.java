@@ -49,7 +49,7 @@ public class SIDDeviceSettings {
 		try {
 			return Integer.valueOf(props.getProperty(PROPERTY_AUDIO_BUFFER_SIZE));
 		} catch (NumberFormatException nfe) {
-			return 4096;
+			return 16384;
 		}
 	}
 

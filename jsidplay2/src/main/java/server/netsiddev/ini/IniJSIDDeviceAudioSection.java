@@ -43,7 +43,7 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 	}
 
 	public int getAudioBufferSize() {
-		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", 4096);
+		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", 16384);
 	}
 
 	public void setAudioBufferSize(int audioBufferSize) {
