@@ -24,6 +24,19 @@ import libsidplay.sidtune.SidTune;
  */
 public interface Ultimate64 {
 
+	public enum StreamingType {
+		VIC(0x20, 0xFF, 0x30, 0xFF), SID(0x21, 0xFF, 0x31, 0xFF);
+
+		public int onCmdLow, onCmdHigh, offCmdLow, offCmdHigh;
+
+		private StreamingType(int onCmdLow, int onCmdHigh, int offCmdLow, int offCmdHigh) {
+			this.onCmdLow = onCmdLow;
+			this.onCmdHigh = onCmdHigh;
+			this.offCmdLow = offCmdLow;
+			this.offCmdHigh = offCmdHigh;
+		}
+	}
+
 	/**
 	 * Ultimate64 socket connection timeout.
 	 */
@@ -209,4 +222,65 @@ public interface Ultimate64 {
 		}
 	}
 
+	/**
+	 * Start streaming.
+	 * 
+	 * <pre>
+	 * 192.168.0.119:11000 unicast address on the local network, port number 11000
+	 * myserver.com unicast address, using DNS and default port number
+	 * myserver.com:4567 unicast address, using DNS and specific port number
+	 * 239.0.1.64 multicast address, using default port number
+	 * 239.0.2.77:64738 multicast address with port number specified
+	 * </pre>
+	 * 
+	 * @param config        configuration
+	 * @param streamingType VIC/SID
+	 * @param target        network target to receive the stream
+	 * @param streamNumber  0-15
+	 * @param duration      duration in ticks (one tick is 5ms, 0=forever)
+	 */
+	default void startStreaming(IConfig config, StreamingType streamingType, String target, int streamNumber,
+			int duration) {
+		String hostname = config.getEmulationSection().getUltimate64Host();
+		int port = config.getEmulationSection().getUltimate64Port();
+		try (Socket connectedSocket = new Socket()) {
+			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+			byte[] ram = new byte[target.length() + 6];
+			ram[0] = (byte) streamingType.onCmdLow;
+			ram[1] = (byte) streamingType.onCmdHigh;
+			ram[2] = (byte) ((target.length() + 2) & 0xff);
+			ram[3] = (byte) (((target.length() + 2) >> 8) & 0xff);
+			ram[4] = (byte) (streamNumber);
+			ram[5] = (byte) (duration);
+			System.arraycopy(target.getBytes(US_ASCII), 0, ram, 6, target.length());
+			connectedSocket.getOutputStream().write(ram);
+		} catch (IOException e) {
+			System.err.println("Ultimate64: cannot start streaming: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Stop streaming.
+	 * 
+	 * @param config        configuration
+	 * @param streamingType VIC/SID
+	 * @param target        network target to receive the stream
+	 * @param streamNumber  0-15
+	 */
+	default void stopStreaming(IConfig config, StreamingType streamingType, int streamNumber) {
+		String hostname = config.getEmulationSection().getUltimate64Host();
+		int port = config.getEmulationSection().getUltimate64Port();
+		try (Socket connectedSocket = new Socket()) {
+			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
+			byte[] ram = new byte[5];
+			ram[0] = (byte) streamingType.offCmdLow;
+			ram[1] = (byte) streamingType.offCmdHigh;
+			ram[2] = (byte) (0);
+			ram[3] = (byte) (0);
+			ram[4] = (byte) (streamNumber);
+			connectedSocket.getOutputStream().write(ram);
+		} catch (IOException e) {
+			System.err.println("Ultimate64: cannot stop streaming: " + e.getMessage());
+		}
+	}
 }

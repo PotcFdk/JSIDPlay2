@@ -275,6 +275,10 @@
 						</accelerator>
 					</MenuItem>
 				</Menu>
+				<!-- Menu text="%EXTRAS">
+					<MenuItem text="%ULTIMATE64"
+						onAction="#ultimate64" />
+				</Menu-->
 				<Menu text="%SETTINGS">
 					<MenuItem text="%EMULATION_SETTINGS"
 						onAction="#emulationSettings" />

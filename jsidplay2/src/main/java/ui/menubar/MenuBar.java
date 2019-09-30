@@ -90,6 +90,7 @@ import ui.oscilloscope.Oscilloscope;
 import ui.printer.Printer;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
+import ui.ultimate64.Ultimate64Window;
 import ui.update.Update;
 import ui.videoscreen.Video;
 import ui.webview.WebView;
@@ -405,6 +406,11 @@ public class MenuBar extends C64VBox implements UIPart {
 		createHardCopy("png");
 	}
 
+	@FXML
+	private void ultimate64() {
+		new Ultimate64Window(util.getPlayer()).open();
+	}
+	
 	@FXML
 	private void emulationSettings() {
 		new EmulationSettings(util.getPlayer()).open();
