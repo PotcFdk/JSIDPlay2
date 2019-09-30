@@ -264,7 +264,6 @@ public interface Ultimate64 {
 	 * 
 	 * @param config        configuration
 	 * @param streamingType VIC/SID
-	 * @param target        network target to receive the stream
 	 * @param streamNumber  0-15
 	 */
 	default void stopStreaming(IConfig config, StreamingType streamingType, int streamNumber) {
