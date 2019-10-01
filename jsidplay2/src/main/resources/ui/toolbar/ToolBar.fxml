@@ -144,7 +144,7 @@
 					<VBox>
 						<CheckBox text="%ENABLE_ULTIMATE64"
 							fx:id="enableUltimate64" />
-						<Label text="%ULTIMATE64_HOSTNAME" fx:id="hostnameLabel" />
+						<Label text="%ULTIMATE64_HOSTNAME" />
 						<TextField fx:id="ultimate64Hostname"
 							onAction="#setUltimate64Hostname" prefWidth="80">
 							<tooltip>
@@ -164,6 +164,29 @@
 							prefWidth="60">
 							<tooltip>
 								<Tooltip text="%ULTIMATE64_SYNC_DELAY_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_STREAMING_TARGET" />
+						<TextField fx:id="ultimate64StreamingTarget"
+							onAction="#setUltimate64StreamingTarget" prefWidth="80">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_TARGET_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%ULTIMATE64_STREAMING_AUDIO_PORT" />
+						<TypeTextField type="Integer"
+							fx:id="ultimate64StreamingAudioPort"
+							onAction="#setUtimate64StreamingAudioPort" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_AUDIO_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_STREAMING_VIDEO_PORT" />
+						<TypeTextField type="Integer"
+							fx:id="ultimate64StreamingVideoPort"
+							onAction="#setUtimate64StreamingVideoPort" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_VIDEO_PORT_TIP" />
 							</tooltip>
 						</TypeTextField>
 					</VBox>
@@ -298,7 +321,8 @@
 							</FXCollections>
 						</items>
 						<tooltip>
-							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" wrapText="true" prefWidth="400"/>
+							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" wrapText="true"
+								prefWidth="400" />
 						</tooltip>
 					</ComboBox>
 				</VBox>

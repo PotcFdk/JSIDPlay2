@@ -95,7 +95,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
 			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyManagerPassword,
-			appServerKeyStorePassword;
+			appServerKeyStorePassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
+			ultimate64StreamingVideoPort;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -311,11 +312,18 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
 		appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
-
 		startAppServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			appServerUsage.setDisable(!newValue);
 			downloadApp.setDisable(!newValue);
 		});
+
+		ultimate64StreamingTarget.textProperty()
+				.bindBidirectional(emulationSection.ultimate64StreamingTargetProperty());
+		ultimate64StreamingAudioPort.textProperty().bindBidirectional(
+				emulationSection.ultimate64StreamingAudioPortProperty(), new IntegerStringConverter());
+		ultimate64StreamingVideoPort.textProperty().bindBidirectional(
+				emulationSection.ultimate64StreamingVideoPortProperty(), new IntegerStringConverter());
+
 		this.duringInitialization = false;
 	}
 
@@ -400,6 +408,21 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void setAudioBufferSize() {
+		restart();
+	}
+
+	@FXML
+	private void setUltimate64StreamingTarget() {
+		restart();
+	}
+
+	@FXML
+	private void setUtimate64StreamingAudioPort() {
+		restart();
+	}
+
+	@FXML
+	private void setUtimate64StreamingVideoPort() {
 		restart();
 	}
 

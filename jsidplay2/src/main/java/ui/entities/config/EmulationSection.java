@@ -9,6 +9,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
 import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
 import static sidplay.ini.IniDefaults.DEFAULT_ENGINE;
 import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
@@ -17,9 +18,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -34,10 +32,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
-import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -50,6 +44,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -57,6 +54,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
@@ -112,6 +112,24 @@ public class EmulationSection implements IEmulationSection {
 	 * web-services to play SIDs on the mobile.
 	 */
 	public static final int DEFAULT_APP_SERVER_SECURE_PORT = 8443;
+
+	/**
+	 * Hostname of the Ultimate64 streaming target to receive audio/video streams by
+	 * UDP network packets.
+	 */
+	public static final String DEFAULT_ULTIMATE64_STREAMING_TARGET = "127.0.0.1";
+
+	/**
+	 * Port of the Ultimate64 streaming target to receive audio streams by UDP
+	 * network packets.
+	 */
+	public static final int DEFAULT_ULTIMATE64_STREAMING_AUDIO_PORT = 30000;
+
+	/**
+	 * Port of the Ultimate64 streaming target to receive video streams by UDP
+	 * network packets.
+	 */
+	public static final int DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT = 30001;
 
 	public EmulationSection() {
 		Bindings.bindBidirectional(this.appServerKeystore, appServerKeystoreFile, new FileToStringConverter());
@@ -350,7 +368,8 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_0);
+	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<ChipModel>(
+			DEFAULT_SIDBLASTER_0);
 
 	public ObjectProperty<ChipModel> sidBlaster0ModelProperty() {
 		return sidBlaster0ModelProperty;
@@ -367,7 +386,8 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster0ModelProperty.set(sidBlaster0Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_1);
+	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<ChipModel>(
+			DEFAULT_SIDBLASTER_1);
 
 	public ObjectProperty<ChipModel> sidBlaster1ModelProperty() {
 		return sidBlaster1ModelProperty;
@@ -384,7 +404,8 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster1ModelProperty.set(sidBlaster1Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<ChipModel>(DEFAULT_SIDBLASTER_2);
+	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<ChipModel>(
+			DEFAULT_SIDBLASTER_2);
 
 	public ObjectProperty<ChipModel> sidBlaster2ModelProperty() {
 		return sidBlaster2ModelProperty;
@@ -432,7 +453,6 @@ public class EmulationSection implements IEmulationSection {
 	public void setNetSIDDevPort(int port) {
 		this.netSidDevPortProperty.set(port);
 	}
-
 
 	private BooleanProperty enableUltimate64Property = new SimpleBooleanProperty(DEFAULT_ENABLE_ULTIMATE64);
 
@@ -482,7 +502,8 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64PortProperty.set(port);
 	}
 
-	private ObjectProperty<Integer> ultimate64SyncDelayProperty = new SimpleObjectProperty<Integer>(DEFAULT_ULTIMATE64_SYNC_DELAY);
+	private ObjectProperty<Integer> ultimate64SyncDelayProperty = new SimpleObjectProperty<Integer>(
+			DEFAULT_ULTIMATE64_SYNC_DELAY);
 
 	public ObjectProperty<Integer> ultimate64SyncDelayProperty() {
 		return ultimate64SyncDelayProperty;
@@ -496,6 +517,51 @@ public class EmulationSection implements IEmulationSection {
 	@Override
 	public void setUltimate64SyncDelay(int syncDelay) {
 		this.ultimate64SyncDelayProperty.set(syncDelay);
+	}
+
+	private StringProperty ultimate64StreamingTargetProperty = new SimpleStringProperty(
+			DEFAULT_ULTIMATE64_STREAMING_TARGET);
+
+	public StringProperty ultimate64StreamingTargetProperty() {
+		return ultimate64StreamingTargetProperty;
+	}
+
+	public String getUltimate64StreamingTarget() {
+		return ultimate64StreamingTargetProperty.get();
+	}
+
+	public void setUltimate64StreamingTarget(String ultimate64StreamingTarget) {
+		this.ultimate64StreamingTargetProperty.set(ultimate64StreamingTarget);
+	}
+
+	private ObjectProperty<Integer> ultimate64StreamingAudioPortProperty = new SimpleObjectProperty<Integer>(
+			DEFAULT_ULTIMATE64_STREAMING_AUDIO_PORT);
+
+	public ObjectProperty<Integer> ultimate64StreamingAudioPortProperty() {
+		return ultimate64StreamingAudioPortProperty;
+	}
+
+	public int getUltimate64StreamingAudioPort() {
+		return ultimate64StreamingAudioPortProperty.get();
+	}
+
+	public void setUltimate64StreamingAudioPort(int ultimate64StreamingAudioPort) {
+		this.ultimate64StreamingAudioPortProperty.set(ultimate64StreamingAudioPort);
+	}
+
+	private ObjectProperty<Integer> ultimate64StreamingVideoPortProperty = new SimpleObjectProperty<Integer>(
+			DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT);
+
+	public ObjectProperty<Integer> ultimate64StreamingVideoPortProperty() {
+		return ultimate64StreamingVideoPortProperty;
+	}
+
+	public int getUltimate64StreamingVideoPort() {
+		return ultimate64StreamingVideoPortProperty.get();
+	}
+
+	public void setUltimate64StreamingVideoPort(int ultimate64StreamingVideoPort) {
+		this.ultimate64StreamingVideoPortProperty.set(ultimate64StreamingVideoPort);
 	}
 
 	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<Connectors>(DEFAULT_CONNECTORS);

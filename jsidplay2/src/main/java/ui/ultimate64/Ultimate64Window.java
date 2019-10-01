@@ -27,6 +27,8 @@ import ui.common.ImageQueue;
 import ui.entities.config.EmulationSection;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
+	private static final int STREAM_NUMBER = 0;
+
 	private static final int FRAME_RATE = 48000;
 	private static final int CHANNELS = 2;
 	private static final int AUDIO_BUFFER_SIZE = 192;
@@ -37,20 +39,18 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
 			0xff0088ff, 0xffbbbbbb };
 
-	private static final String TARGET = "192.168.1.219";
-	private static final int AUDIO_PORT = 30000;
-	private static final int VIDEO_PORT = 30001;
-	private static final int STREAM_NUMBER = 0;
-
 	private StreamingPlayer audioPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
 		private JavaSound javaSound = new JavaSound();
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, AUDIO_BUFFER_SIZE), null);
-			serverSocket = new DatagramSocket(AUDIO_PORT);
-			startStreaming(util.getConfig(), StreamingType.SID, TARGET + ":" + AUDIO_PORT, STREAM_NUMBER, 0);
+			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
+			serverSocket.setSoTimeout(3000);
+			startStreaming(util.getConfig(), StreamingType.SID, emulationSection.getUltimate64StreamingTarget() + ":"
+					+ emulationSection.getUltimate64StreamingAudioPort(), STREAM_NUMBER, 0);
 		}
 
 		@Override
@@ -75,6 +75,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
+			audioStreaming.setSelected(false);
 		}
 	};
 
@@ -85,9 +86,12 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
-			serverSocket = new DatagramSocket(VIDEO_PORT);
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingVideoPort());
+			serverSocket.setSoTimeout(3000);
 			image = new WritableImage(SCREEN_WIDTH, SCREEN_HEIGHT);
-			startStreaming(util.getConfig(), StreamingType.VIC, TARGET + ":" + VIDEO_PORT, STREAM_NUMBER, 0);
+			startStreaming(util.getConfig(), StreamingType.VIC, emulationSection.getUltimate64StreamingTarget() + ":"
+					+ emulationSection.getUltimate64StreamingVideoPort(), STREAM_NUMBER, 0);
 			frameStart = false;
 		}
 
@@ -138,6 +142,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
+			videoStreaming.setSelected(false);
 		}
 
 	};
@@ -146,10 +151,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private Canvas screen;
 
 	@FXML
-	private ToggleButton audioStreaming;
-
-	@FXML
-	private ToggleButton videoStreaming;
+	private ToggleButton audioStreaming, videoStreaming;
 
 	private ImageQueue imageQueue;
 
