@@ -173,25 +173,14 @@ public class GameBase extends C64VBox implements UIPart {
 	@FXML
 	private void doEnableGameBase() {
 		if (enableGameBase.isSelected()) {
-			File dbFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), "GameBase64.mdb");
-			if (dbFile.exists()) {
-				// There is already a database file downloaded earlier.
-				// Therefore we try to connect
-
-				SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-				sidPlay2Section.setGameBase64(dbFile.getAbsolutePath());
-				gameBaseFile.setText(dbFile.getAbsolutePath());
-				setRoot(dbFile);
-			} else {
-				enableGameBase.setDisable(true);
-				try {
-					final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
-					DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-							new GameBaseListener(util, letter.getScene()), url);
-					downloadThread.start();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
+			enableGameBase.setDisable(true);
+			try {
+				final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
+				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
+						new GameBaseListener(util, letter.getScene()), url);
+				downloadThread.start();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
 		}
 	}
