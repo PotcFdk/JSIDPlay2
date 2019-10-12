@@ -1,5 +1,10 @@
 package ui.ultimate64;
 
+import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREAM_OFF;
+import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREAM_ON;
+import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_OFF;
+import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_ON;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -27,8 +32,6 @@ import ui.common.ImageQueue;
 import ui.entities.config.EmulationSection;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
-	private static final int STREAM_NUMBER = 0;
-
 	private static final int FRAME_RATE = 48000;
 	private static final int CHANNELS = 2;
 	private static final int AUDIO_BUFFER_SIZE = 192;
@@ -49,8 +52,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, AUDIO_BUFFER_SIZE), null);
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(3000);
-			startStreaming(util.getConfig(), StreamingType.SID, emulationSection.getUltimate64StreamingTarget() + ":"
-					+ emulationSection.getUltimate64StreamingAudioPort(), STREAM_NUMBER, 0);
+			startStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
+					+ ":" + emulationSection.getUltimate64StreamingAudioPort(), 0);
 		}
 
 		@Override
@@ -70,7 +73,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void close() {
-			stopStreaming(util.getConfig(), StreamingType.SID, STREAM_NUMBER);
+			stopStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_OFF);
 			javaSound.close();
 			if (serverSocket != null) {
 				serverSocket.close();
@@ -90,8 +93,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingVideoPort());
 			serverSocket.setSoTimeout(3000);
 			image = new WritableImage(SCREEN_WIDTH, SCREEN_HEIGHT);
-			startStreaming(util.getConfig(), StreamingType.VIC, emulationSection.getUltimate64StreamingTarget() + ":"
-					+ emulationSection.getUltimate64StreamingVideoPort(), STREAM_NUMBER, 0);
+			startStreaming(util.getConfig(), SOCKET_CMD_VICSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
+					+ ":" + emulationSection.getUltimate64StreamingVideoPort(), 0);
 			frameStart = false;
 		}
 
@@ -138,7 +141,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		@Override
 		protected void close() {
 			imageQueue.clear();
-			stopStreaming(util.getConfig(), StreamingType.VIC, 0);
+			stopStreaming(util.getConfig(), SOCKET_CMD_VICSTREAM_OFF);
 			if (serverSocket != null) {
 				serverSocket.close();
 			}

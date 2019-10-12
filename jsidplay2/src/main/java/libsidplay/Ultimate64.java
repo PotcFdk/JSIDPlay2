@@ -19,23 +19,44 @@ import libsidplay.sidtune.SidTune;
  * 
  * https://github.com/GideonZ/1541ultimate/blob/master/python/sock.py
  * 
+ * https://1541u-documentation.readthedocs.io/en/latest/data_streams.html
+ * 
  * @author ken
  *
  */
 public interface Ultimate64 {
+	enum SocketCommand {
+		// "Ok ok, use them then..."
+		SOCKET_CMD_DMA(0xFF01), SOCKET_CMD_DMARUN(0xFF02), SOCKET_CMD_KEYB(0xFF03), SOCKET_CMD_RESET(0xFF04),
+		SOCKET_CMD_WAIT(0xFF05), SOCKET_CMD_DMAWRITE(0xFF06), SOCKET_CMD_REUWRITE(0xFF07),
+		SOCKET_CMD_KERNALWRITE(0xFF08), SOCKET_CMD_DMAJUMP(0xFF09), INSERT_DISK(0xFF0A), SOCKET_CMD_RUN_IMG(0xFF0B),
+		// Undocumented, shall only be used by developers.
+		SOCKET_CMD_LOADSIDCRT(0xFF71), SOCKET_CMD_LOADBOOTCRT(0xFF72), SOCKET_CMD_READMEM(0xFF74),
+		SOCKET_CMD_READFLASH(0xFF75), SOCKET_CMD_DEBUG_REG(0xFF76);
 
-	public enum StreamingType {
-		VIC(0x20, 0xFF, 0x30, 0xFF), SID(0x21, 0xFF, 0x31, 0xFF);
+		int value;
 
-		public int onCmdLow, onCmdHigh, offCmdLow, offCmdHigh;
-
-		private StreamingType(int onCmdLow, int onCmdHigh, int offCmdLow, int offCmdHigh) {
-			this.onCmdLow = onCmdLow;
-			this.onCmdHigh = onCmdHigh;
-			this.offCmdLow = offCmdLow;
-			this.offCmdHigh = offCmdHigh;
+		private SocketCommand(int on) {
+			this.value = on;
 		}
 	}
+
+	enum SocketStreamingCommand {
+		// Only available on U64
+		SOCKET_CMD_VICSTREAM_ON(0xFF20), SOCKET_CMD_AUDIOSTREAM_ON(0xFF21), SOCKET_CMD_VICSTREAM_OFF(0xFF30),
+		SOCKET_CMD_AUDIOSTREAM_OFF(0xFF31);
+
+		int value;
+
+		private SocketStreamingCommand(int on) {
+			this.value = on;
+		}
+	}
+
+	/**
+	 * ASCII charset
+	 */
+	Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Ultimate64 socket connection timeout.
@@ -46,8 +67,6 @@ public interface Ultimate64 {
 	 * Maximum length for a user typed-in command.
 	 */
 	int MAX_COMMAND_LEN = 16;
-
-	Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Send RAM to Ultimate64 C64-RAM and type Run.<BR>
@@ -69,8 +88,8 @@ public interface Ultimate64 {
 			int ramStart = 0x0800;
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 6];
-			ram[0] = (byte) 0x02;
-			ram[1] = (byte) 0xff;
+			ram[0] = (byte) (SocketCommand.SOCKET_CMD_DMARUN.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_DMARUN.value >> 8) & 0xff);
 			ram[2] = (byte) (ram.length & 0xff);
 			ram[3] = (byte) ((ram.length >> 8) & 0xff);
 			ram[4] = (byte) (ramStart & 0xff);
@@ -104,8 +123,8 @@ public interface Ultimate64 {
 			int ramStart = 0x0400;
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 8];
-			ram[0] = (byte) 0x09;
-			ram[1] = (byte) 0xff;
+			ram[0] = (byte) (SocketCommand.SOCKET_CMD_DMAJUMP.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_DMAJUMP.value >> 8) & 0xff);
 			ram[2] = (byte) (ram.length & 0xff);
 			ram[3] = (byte) ((ram.length >> 8) & 0xff);
 			ram[4] = (byte) (startAddr & 0xff);
@@ -131,12 +150,11 @@ public interface Ultimate64 {
 		int port = config.getEmulationSection().getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			int len = 1;
-			byte[] ram = new byte[len + 4];
-			ram[0] = (byte) 0x04;
-			ram[1] = (byte) 0xff;
-			ram[2] = (byte) (len & 0xff);
-			ram[3] = (byte) ((len >> 8) & 0xff);
+			byte[] ram = new byte[4];
+			ram[0] = (byte) (SocketCommand.SOCKET_CMD_RESET.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_RESET.value >> 8) & 0xff);
+			ram[2] = 0;
+			ram[3] = 0;
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
 			System.err.println("Ultimate64: cannot send RESET: " + e.getMessage());
@@ -161,10 +179,10 @@ public interface Ultimate64 {
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[length + 4];
-			ram[0] = (byte) 0x03;
-			ram[1] = (byte) 0xff;
-			ram[2] = (byte) (length);
-			ram[3] = (byte) (0);
+			ram[0] = (byte) (SocketCommand.SOCKET_CMD_KEYB.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_KEYB.value >> 8) & 0xff);
+			ram[2] = (byte) (length & 0xff);
+			ram[3] = (byte) ((length >> 8) & 0xff);
 			System.arraycopy(command.toUpperCase(Locale.US).getBytes(US_ASCII), 0, ram, 4, length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -184,8 +202,8 @@ public interface Ultimate64 {
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[6];
-			ram[0] = (byte) 0x05;
-			ram[1] = (byte) 0xff;
+			ram[0] = (byte) (SocketCommand.SOCKET_CMD_WAIT.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_WAIT.value >> 8) & 0xff);
 			ram[2] = (byte) (delay & 0xff);
 			ram[3] = (byte) ((delay >> 8) & 0xff);
 			ram[4] = (byte) (delay & 0xff);
@@ -210,8 +228,8 @@ public interface Ultimate64 {
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[diskContents.length + 5];
-			ram[0] = (byte) 0x0a;
-			ram[1] = (byte) 0xff;
+			ram[0] = (byte) (SocketCommand.INSERT_DISK.value & 0xff);
+			ram[1] = (byte) ((SocketCommand.INSERT_DISK.value >> 8) & 0xff);
 			ram[2] = (byte) (diskContents.length & 0xff);
 			ram[3] = (byte) ((diskContents.length >> 8) & 0xff);
 			ram[4] = (byte) ((diskContents.length >> 16) & 0xff);
@@ -233,25 +251,23 @@ public interface Ultimate64 {
 	 * 239.0.2.77:64738 multicast address with port number specified
 	 * </pre>
 	 * 
-	 * @param config        configuration
-	 * @param streamingType VIC/SID
-	 * @param target        network target to receive the stream
-	 * @param streamNumber  0-15
-	 * @param duration      duration in ticks (one tick is 5ms, 0=forever)
+	 * @param config   configuration
+	 * @param command  streaming VIC/SID
+	 * @param target   network target to receive the stream
+	 * @param duration duration in ticks (one tick is 5ms, 0=forever)
 	 */
-	default void startStreaming(IConfig config, StreamingType streamingType, String target, int streamNumber,
-			int duration) {
+	default void startStreaming(IConfig config, SocketStreamingCommand command, String target, int duration) {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[target.length() + 6];
-			ram[0] = (byte) streamingType.onCmdLow;
-			ram[1] = (byte) streamingType.onCmdHigh;
+			ram[0] = (byte) (command.value & 0xff);
+			ram[1] = (byte) ((command.value >> 8) & 0xff);
 			ram[2] = (byte) ((target.length() + 2) & 0xff);
 			ram[3] = (byte) (((target.length() + 2) >> 8) & 0xff);
-			ram[4] = (byte) (streamNumber);
-			ram[5] = (byte) (duration);
+			ram[4] = 0;
+			ram[5] = (byte) (duration & 0xff);
 			System.arraycopy(target.getBytes(US_ASCII), 0, ram, 6, target.length());
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -262,21 +278,19 @@ public interface Ultimate64 {
 	/**
 	 * Stop streaming.
 	 * 
-	 * @param config        configuration
-	 * @param streamingType VIC/SID
-	 * @param streamNumber  0-15
+	 * @param config  configuration
+	 * @param command streaming VIC/SID
 	 */
-	default void stopStreaming(IConfig config, StreamingType streamingType, int streamNumber) {
+	default void stopStreaming(IConfig config, SocketStreamingCommand command) {
 		String hostname = config.getEmulationSection().getUltimate64Host();
 		int port = config.getEmulationSection().getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			byte[] ram = new byte[5];
-			ram[0] = (byte) streamingType.offCmdLow;
-			ram[1] = (byte) streamingType.offCmdHigh;
-			ram[2] = (byte) (0);
-			ram[3] = (byte) (0);
-			ram[4] = (byte) (streamNumber);
+			byte[] ram = new byte[4];
+			ram[0] = (byte) (command.value & 0xff);
+			ram[1] = (byte) ((command.value >> 8) & 0xff);
+			ram[2] = 0;
+			ram[3] = 0;
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
 			System.err.println("Ultimate64: cannot stop streaming: " + e.getMessage());
