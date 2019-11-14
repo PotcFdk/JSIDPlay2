@@ -1,6 +1,7 @@
 package ui.assembly64;
 
-import org.eclipse.jetty.util.URIUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -22,7 +23,11 @@ public class ContentEntry {
 	}
 
 	public String getName() {
-		return URIUtil.decodePath(nameProperty.get());
+		try {
+			return URLDecoder.decode(nameProperty.get(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return nameProperty.get();
+		}
 	}
 
 	public void setName(String name) {

@@ -22,35 +22,19 @@ Basic authentication is used calling the services with the following credentials
 * *Password:* jsidplay2!
 
 You can change the settings of the user or add an administrative user by an external configuration file.
-The file must be named: "realm.properties" located in your home directory and be readable on startup of the server.
-The reason why you can add an administrative user is to grant access to additional private music collections for him.
+The file must be named: "tomcat-users.xml" located in your home directory and be readable on startup of the server.
+The reason why you can add an administrative user is to grant access to additional private music collections which normal users are not able to access.
 
 Example:
 [source,subs="attributes+"]
 ----
-#
-# This file defines users passwords and roles for a HashUserRealm
-#
-# The format is
-#  <username>: <password>[,<rolename> ...]
-#
-# Passwords may be clear text, obfuscated or checksummed.  The class
-# org.eclipse.jetty.util.security.Password should be used to generate obfuscated
-# passwords or password checksums
-#
-# If DIGEST Authentication is used, the password must be in a recoverable
-# format, either plain text or OBF:.
-#
-#jetty: MD5:164c88b302622e17050af52c89945d44,user
-#admin: CRYPT:adpexzg3FUZAk,server-administrator,content-administrator,admin,user
-#other: OBF:1xmk1w261u9r1w1c1xmq,user
-#plain: plain,user
-#user: password,user
-# This entry is for digest auth.  The credential is a MD5 hash of username:realmname:password
-#digest: MD5:6e120743ad67abfbc385bc2bb754e297,user
+<tomcat-users>
+  <role rolename="admin"/>
+  <role rolename="user"/>
 
-jsidplay2: jsidplay2!,user
-administrator: MD5:0bd6506986ec42e732ffb866d33bb14e,admin
+  <user name="jsidplay2" password="jsidplay2!" roles="user"/>
+  <user name="admin" password="admin" roles="user"/>
+</tomcat-users>
 ---- 
 All known roles are user and admin.
 
@@ -59,17 +43,19 @@ All known roles are user and admin.
 To create a self-signed certificate you must use the keytool command of the java installation
 [source,subs="attributes+"]
 ----
-keytool -genkey -alias sitename -keyalg RSA -keystore /etc/jsidplay2.ks -keysize 2048 <1>
+keytool -genkey -alias jsidplay2 -keyalg RSA -keystore /etc/jsidplay2.ks -keysize 2048 <1>
 ----
 <1> *Warning:* A self-signed certificate is only a temporary solution, since
 it creates a warning message in the browser window and is
-unaccepted by iPhones and mobiles running Android9!
+unaccepted by iPhones and mobiles running Android9 and later versions!
 
 ==== Use trusted certificate
 *Info*: This example is related to Let’s Encrypt and Apache2 installation on Linux.
 
-If your web-server and JSIDPlay2 server is both in the same domain, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
+If you already have a web-server and want to host JSIDPlay2-server on the same machine, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
 This is a step by step instruction of how it works.
+
+If i can assume you already use Apache2 web server:
 
 First lets make the Apache2 web-server secure, which is very easy with Let's Encrypt, these days:
 [source,subs="attributes+"]
@@ -81,8 +67,9 @@ sudo apt-get install python-certbot-apache
 sudo certbot --apache
 ----
 
-For automatic renewal a cron job is created by Let's Encrypt.
-Let's Encrypt already adds the certbot script to renew certificates regularly.
+Valid certificates do not last forever, therefore
+for automatic renewal a cron job is created by Let's Encrypt.
+Let's Encrypt already adds the certbot script to renew the certificates regularly.
 
 *Important:*
 In order to re-use these renewed certificates for JSIDPlay2 we add a cronjob as well (script /usr/bin/jsidplay2cert).
@@ -196,8 +183,9 @@ cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
-	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \
+	--appServerKeyAlias jsidplay2 \
+	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTPS & # <1>
 ----
 <1> Launch the JSIDPlay2 AppServer using HTTPS standalone
@@ -228,8 +216,9 @@ ExecStart=/usr/bin/java -server \
 	-classpath /home/ken/Downloads/jsidplay2-{version}/jsidplay2-{version}.jar \
 	server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
-	--appServerManagerPassword jsidplay2 \
 	--appServerKeystorePassword jsidplay2 \
+	--appServerKeyAlias jsidplay2 \
+	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS
 User=ken
 
@@ -341,8 +330,9 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 *Info:* This service method does only work, if directoryServlet had been configured before to grant access to "/Demos"!
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/Demos/ALGODANCER2/ALGODANCER2.d64?defaultLength=00:30&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/Demos/ALGODANCER2/ALGODANCER2.d64?defaultLength=00:30&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60]
-Return a mp4 stream of the specified demo. On the server side the emulator is started and streams the sound output back to the client.
+Return a mp4 stream of the specified demo. On the server side the emulator is started and streams the video output back to the client.
 All parameters are used to specify emulation settings that should be used.
+For technical reasons the video is rendered first completely at the server side and afterwards returned. So, this is not really streaming. I hope i will change that in the future.
 
 For a description of all possible parameters please call console player's usage, because
 they are exactly the same. But keep in mind you must use the gnu-style parameter syntax and leave away "--":
@@ -353,7 +343,7 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
 <1> Show ConsolePlayer's usage for a description of all parameters
 
-*Note:* I will not take responsability for any costs, that arise from streaming mp3 files from the internet!
+*Note:* I will not take responsability for any costs, that arise from streaming sound or video files from the internet!
 
 *Info:* All Parameter names match exactly the command line parameter names of the console player in gnu style (prepended by --).
 For example defaultLength=180 sets the default song length.

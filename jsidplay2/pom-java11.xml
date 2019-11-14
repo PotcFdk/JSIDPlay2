@@ -26,6 +26,7 @@
 		<hostname>haendel.ddns.net</hostname>
 		<port>8443</port>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
+		<tomcat.version>9.0.27</tomcat.version>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>scp://ken:haendel@haendel.ddns.net/home/ken</serverUrl>
@@ -147,16 +148,6 @@
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>2.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>9.4.10.v20180503</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.10.v20180503</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
@@ -295,6 +286,29 @@
 			<artifactId>jackcess</artifactId>
 			<version>2.1.11</version>
 			<scope>runtime</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper -->
+		<dependency>
+	        <groupId>org.apache.tomcat.embed</groupId>
+	        <artifactId>tomcat-embed-core</artifactId>
+	        <version>${tomcat.version}</version>
+	        <exclusions>
+	        	<exclusion>
+					<groupId>org.apache.tomcat</groupId>
+					<artifactId>tomcat-annotations-api</artifactId>
+	        	</exclusion>
+	        </exclusions>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.apache.tomcat.embed</groupId>
+	        <artifactId>tomcat-embed-jasper</artifactId>
+	        <version>${tomcat.version}</version>
+	    </dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>jstl</artifactId>
+		    <version>1.2</version>
 		</dependency>
 		<!-- test dependencies -->
 		<dependency>

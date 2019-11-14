@@ -1,0 +1,6 @@
+<tomcat-users>
+  <role rolename="admin"/>
+  <role rolename="user"/>
+
+  <user name="jsidplay2" password="jsidplay2!" roles="user"/>
+</tomcat-users>

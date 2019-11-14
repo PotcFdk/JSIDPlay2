@@ -94,8 +94,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
 	@FXML
 	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
-			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyManagerPassword,
-			appServerKeyStorePassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
+			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword,
+			appServerKeyAlias, appServerKeyPassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
 			ultimate64StreamingVideoPort;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
@@ -105,7 +105,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	protected Button volumeButton, mp3Browse, keystoreBrowse;
 	@FXML
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname,
-			appServerPortLbl, appServerSecurePortLbl, appServerKeyManagerPasswordLbl, appServerKeyStorePasswordLbl;
+			appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl, appServerKeyAliasLbl,
+			appServerKeyPasswordLbl;
 	@FXML
 	private Hyperlink appServerUsage, downloadApp;
 
@@ -139,8 +140,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		final AudioSection audioSection = config.getAudioSection();
 		final EmulationSection emulationSection = config.getEmulationSection();
 
-		jsidplay2Server = JSIDPlay2Server.getInstance();
-		jsidplay2Server.setConfiguration(config);
+		jsidplay2Server = JSIDPlay2Server.getInstance(config);
 
 		audioBox.setConverter(new EnumToStringConverter<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_MP3,
@@ -261,9 +261,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		appServerConnectorsBox.valueProperty().addListener((obj, o, n) -> {
 			switch (n) {
 			case HTTP_HTTPS:
-				for (Node node : Arrays.asList(appServerPortLbl, appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
-						appServerKeyStorePasswordLbl, appServerPort, appServerSecurePort, keystoreBrowse,
-						appServerKeyManagerPassword, appServerKeyStorePassword)) {
+				for (Node node : Arrays.asList(appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl,
+						appServerKeyAliasLbl, appServerKeyPasswordLbl, appServerPort, appServerSecurePort,
+						keystoreBrowse, appServerKeyStorePassword, appServerKeyAlias, appServerKeyPassword)) {
 					node.setVisible(true);
 					node.setManaged(true);
 				}
@@ -273,9 +273,9 @@ public class ToolBar extends C64VBox implements UIPart {
 					node.setVisible(false);
 					node.setManaged(false);
 				}
-				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
-						appServerKeyStorePasswordLbl, appServerSecurePort, keystoreBrowse, appServerKeyManagerPassword,
-						appServerKeyStorePassword)) {
+				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyStorePasswordLbl,
+						appServerKeyAliasLbl, appServerKeyPasswordLbl, appServerSecurePort, keystoreBrowse,
+						appServerKeyStorePassword, appServerKeyAlias, appServerKeyPassword)) {
 					node.setVisible(true);
 					node.setManaged(true);
 				}
@@ -283,9 +283,9 @@ public class ToolBar extends C64VBox implements UIPart {
 
 			case HTTP:
 			default:
-				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyManagerPasswordLbl,
-						appServerKeyStorePasswordLbl, appServerSecurePort, keystoreBrowse, appServerKeyManagerPassword,
-						appServerKeyStorePassword)) {
+				for (Node node : Arrays.asList(appServerSecurePortLbl, appServerKeyStorePasswordLbl,
+						appServerKeyAliasLbl, appServerKeyPasswordLbl, appServerSecurePort, keystoreBrowse,
+						appServerKeyStorePassword, appServerKeyAlias, appServerKeyPassword)) {
 					node.setVisible(false);
 					node.setManaged(false);
 				}
@@ -298,10 +298,10 @@ public class ToolBar extends C64VBox implements UIPart {
 		});
 		appServerConnectorsBox.setItems(FXCollections.<Connectors>observableArrayList(HTTP, HTTP_HTTPS, HTTPS));
 		appServerConnectorsBox.valueProperty().bindBidirectional(emulationSection.appServerConnectorsProperty());
-		appServerKeyManagerPassword.textProperty()
-				.bindBidirectional(emulationSection.appServerKeyManagerPasswordProperty());
 		appServerKeyStorePassword.textProperty()
 				.bindBidirectional(emulationSection.appServerKeystorePasswordProperty());
+		appServerKeyPassword.textProperty().bindBidirectional(emulationSection.appServerKeyPasswordProperty());
+		appServerKeyAlias.textProperty().bindBidirectional(emulationSection.appServerKeyAliasProperty());
 
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());

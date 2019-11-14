@@ -252,21 +252,30 @@
 								</graphic>
 							</Button>
 							<Label managed="false" visible="false"
-								text="%APP_SERVER_KEY_MANAGER_PASSWORD"
-								fx:id="appServerKeyManagerPasswordLbl" />
-							<PasswordField managed="false" visible="false"
-								fx:id="appServerKeyManagerPassword" prefWidth="60">
-								<tooltip>
-									<Tooltip text="%APP_SERVER_KEY_MANAGER_PASSWORD_TIP" />
-								</tooltip>
-							</PasswordField>
-							<Label managed="false" visible="false"
 								text="%APP_SERVER_KEY_STORE_PASSWORD"
 								fx:id="appServerKeyStorePasswordLbl" />
 							<PasswordField managed="false" visible="false"
 								fx:id="appServerKeyStorePassword" prefWidth="60">
 								<tooltip>
 									<Tooltip text="%APP_SERVER_KEY_STORE_PASSWORD_TIP" />
+								</tooltip>
+							</PasswordField>
+							<Label managed="false" visible="false"
+								text="%APP_SERVER_KEY_ALIAS"
+								fx:id="appServerKeyAliasLbl" />
+							<PasswordField managed="false" visible="false"
+								fx:id="appServerKeyAlias" prefWidth="60">
+								<tooltip>
+									<Tooltip text="%APP_SERVER_KEY_ALIAS_TIP" />
+								</tooltip>
+							</PasswordField>
+							<Label managed="false" visible="false"
+								text="%APP_SERVER_KEY_PASSWORD"
+								fx:id="appServerKeyPasswordLbl" />
+							<PasswordField managed="false" visible="false"
+								fx:id="appServerKeyPassword" prefWidth="60">
+								<tooltip>
+									<Tooltip text="%APP_SERVER_KEY_PASSWORD_TIP" />
 								</tooltip>
 							</PasswordField>
 							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />

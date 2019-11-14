@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.MimeTypes;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import server.restful.common.ServletUtil;
@@ -39,7 +37,7 @@ public class FiltersServlet extends HttpServlet {
 			throws ServletException, IOException {
 		List<String> filters = getFilters();
 
-		response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
+		response.setContentType("application/json; charset=utf-8");
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -13,9 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.URIUtil;
 
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
@@ -44,7 +42,7 @@ public class PhotoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
 		String filePath = decodedPath.substring(decodedPath.indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
 		try {
@@ -58,7 +56,7 @@ public class PhotoServlet extends HttpServlet {
 			response.getOutputStream().write(photo);
 			response.setContentLength(photo.length);
 		} catch (Exception e) {
-			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+			response.setContentType("text/plain; charset=utf-8");
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

@@ -627,26 +627,6 @@ public class EmulationSection implements IEmulationSection {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}
 
-	private StringProperty appServerKeyManagerPasswordProperty = new SimpleStringProperty();
-
-	public StringProperty appServerKeyManagerPasswordProperty() {
-		return appServerKeyManagerPasswordProperty;
-	}
-
-	/**
-	 * <b>Note:</b> security reasons make it necessary to remove passwords!
-	 */
-	@Transient
-	@XmlTransient
-	public String getAppServerKeyManagerPassword() {
-		return appServerKeyManagerPasswordProperty.get();
-	}
-
-	@Parameter(names = { "--appServerManagerPassword" }, descriptionKey = "APP_SERVER_MANAGER_PASSWORD")
-	public void setAppServerKeyManagerPassword(String appServerKeyManagerPassword) {
-		this.appServerKeyManagerPasswordProperty.set(appServerKeyManagerPassword);
-	}
-
 	private StringProperty appServerKeystorePasswordProperty = new SimpleStringProperty();
 
 	public StringProperty appServerKeystorePasswordProperty() {
@@ -665,6 +645,41 @@ public class EmulationSection implements IEmulationSection {
 	@Parameter(names = { "--appServerKeystorePassword" }, descriptionKey = "APP_SERVER_KEYSTORE_PASSWORD")
 	public void setAppServerKeystorePassword(String appServerKeyStorePassword) {
 		this.appServerKeystorePasswordProperty.set(appServerKeyStorePassword);
+	}
+
+	private StringProperty appServerKeyAliasProperty = new SimpleStringProperty();
+
+	public StringProperty appServerKeyAliasProperty() {
+		return appServerKeyAliasProperty;
+	}
+
+	public String getAppServerKeyAlias() {
+		return appServerKeyAliasProperty.get();
+	}
+
+	@Parameter(names = { "--appServerKeyAlias" }, descriptionKey = "APP_SERVER_KEY_ALIAS")
+	public void setAppServerKeyAlias(String appServerKeyAlias) {
+		this.appServerKeyAliasProperty.set(appServerKeyAlias);
+	}
+
+	private StringProperty appServerKeyPasswordProperty = new SimpleStringProperty();
+
+	public StringProperty appServerKeyPasswordProperty() {
+		return appServerKeyPasswordProperty;
+	}
+
+	/**
+	 * <b>Note:</b> security reasons make it necessary to remove passwords!
+	 */
+	@Transient
+	@XmlTransient
+	public String getAppServerKeyPassword() {
+		return appServerKeyPasswordProperty.get();
+	}
+
+	@Parameter(names = { "--appServerKeyPassword" }, descriptionKey = "APP_SERVER_KEY_PASSWORD")
+	public void setAppServerKeyPassword(String appServerKeyPassword) {
+		this.appServerKeyPasswordProperty.set(appServerKeyPassword);
 	}
 
 	private BooleanProperty filter = new SimpleBooleanProperty(DEFAULT_USE_FILTER);

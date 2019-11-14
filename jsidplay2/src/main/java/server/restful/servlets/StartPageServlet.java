@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.MimeTypes;
-
 import libsidplay.sidtune.SidTune;
 import server.restful.common.Connectors;
 import server.restful.common.ServletUtil;
@@ -49,10 +47,10 @@ public class StartPageServlet extends HttpServlet {
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			if (is != null) {
-				response.setContentType(MimeTypes.Type.TEXT_HTML_UTF_8.asString());
+				response.setContentType("text/html; charset=utf-8");
 				response.getWriter().println(is != null ? convertStreamToString(is, "UTF-8", replacements) : "");
 			} else {
-				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.setContentType("text/plain; charset=utf-8");
 				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
 			}
 		}

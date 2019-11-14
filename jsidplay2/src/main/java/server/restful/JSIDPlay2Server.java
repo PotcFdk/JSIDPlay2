@@ -6,6 +6,7 @@ import static server.restful.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
 import static server.restful.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
 import static server.restful.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
 import static server.restful.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
+import static server.restful.servlets.PlayerServlet.SERVLET_PATH_PLAYER;
 import static server.restful.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static server.restful.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
@@ -15,33 +16,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.StringUtil;
-import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleState;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.realm.MemoryRealm;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.util.descriptor.web.LoginConfig;
+import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
@@ -51,9 +43,10 @@ import server.restful.servlets.DownloadServlet;
 import server.restful.servlets.FavoritesServlet;
 import server.restful.servlets.FiltersServlet;
 import server.restful.servlets.PhotoServlet;
+import server.restful.servlets.PlayerServlet;
 import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.TuneInfoServlet;
-import ui.JSidPlay2;
+import sidplay.Player;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
@@ -72,7 +65,7 @@ public class JSIDPlay2Server {
 	/**
 	 * User role
 	 */
-	public static final String ROLE_USER = "user";
+	private static final String ROLE_USER = "user";
 
 	/**
 	 * Admin role
@@ -88,162 +81,171 @@ public class JSIDPlay2Server {
 	public static final String DIRECTORIES_CONFIG_FILE = "directoryServlet";
 
 	/**
-	 * Filename of the configuration file containing username, password and role
-	 * e.g. "jsidplay2: jsidplay2!,user" (user: password,role)
+	 * Filename of the configuration file containing username, password and role.
+	 * For an example please refer to the internal file tomcat-users.xml
 	 */
-	public static final String REALM_CONFIG_FILE = "realm";
+	public static final String REALM_CONFIG_FILE = "tomcat-users.xml";
 
 	/**
 	 * Configuration of usernames, passwords and roles
 	 */
-	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class
-			.getResource("/" + REALM_CONFIG_FILE + ".properties");
+	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG_FILE);
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
 	private static JSIDPlay2Server instance;
 
-	private Server server;
+	private Tomcat tomcat;
 
+	@ParametersDelegate
 	private Configuration configuration;
 
 	private Properties directoryProperties = new Properties();
 
-	private JSIDPlay2Server() {
+	private JSIDPlay2Server(Configuration configuration) {
+		this.configuration = configuration;
 		try (InputStream is = new FileInputStream(getDirectoryConfigPath())) {
 			directoryProperties.load(is);
 		} catch (IOException e) {
 			// ignore non-existing properties
 		}
+		Player.initializeTmpDir(configuration);
 	}
 
-	public static JSIDPlay2Server getInstance() {
+	public static JSIDPlay2Server getInstance(Configuration configuration) {
 		if (instance == null) {
-			instance = new JSIDPlay2Server();
+			instance = new JSIDPlay2Server(configuration);
 		}
 		return instance;
 	}
 
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-	}
-
-	public void start() throws Exception {
-		assert configuration != null;
-		if (server == null || !(server.isStarting() || server.isStarted())) {
-			server = createServer();
-			server.start();
+	public synchronized void start() throws Exception {
+		if (tomcat == null) {
+			Tomcat webServer = createServer();
+			tomcat = webServer;
+			tomcat.start();
 		}
 	}
 
-	public void stop() throws Exception {
-		if (server != null) {
-			server.stop();
-			server.join();
+	public synchronized void stop() throws Exception {
+		if (tomcat != null && tomcat.getServer().getState() != LifecycleState.STOPPING_PREP
+				&& tomcat.getServer().getState() != LifecycleState.STOPPING
+				&& tomcat.getServer().getState() != LifecycleState.STOPPED
+				&& tomcat.getServer().getState() != LifecycleState.DESTROYING
+				&& tomcat.getServer().getState() != LifecycleState.DESTROYED) {
+			try {
+				try {
+					tomcat.stop();
+					tomcat.getServer().await();
+				} catch (Throwable e) {
+					// ignore: workaround java11 problem
+				}
+				tomcat.getServer().destroy();
+			} finally {
+				tomcat = null;
+			}
 		}
 	}
 
-	private Server createServer() {
-		HashLoginService loginService = new HashLoginService(JSidPlay2.class.getSimpleName(),
-				getRealmConfigPath().toExternalForm());
+	private Tomcat createServer() throws IOException {
+		Tomcat tomcat = new Tomcat();
 
-		ConstraintSecurityHandler securityHandler = createSecurity();
-		securityHandler.setLoginService(loginService);
-		securityHandler.setHandler(createServletContextHandler());
+		MemoryRealm realm = new MemoryRealm();
+		realm.setPathname(getRealmConfigPath().toString());
+		tomcat.getEngine().setRealm(realm);
 
-		Server server = new Server();
-		server.setConnectors(getConnectors(server));
-		server.addBean(loginService);
-		server.setHandler(securityHandler);
-		return server;
+		// context root is our .jsidplay2 directory!
+		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
+
+		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
+		jarScanner.setJarScanFilter(
+				(jarScanType, jarName) -> jarName.startsWith("jsidplay2") || jarName.startsWith("jstl"));
+		context.setJarScanner(jarScanner);
+
+		setConnectors(tomcat);
+		createAuthorizationConstraints(context);
+		addServlets(context);
+
+		return tomcat;
 	}
 
-	private Connector[] getConnectors(Server server) {
+	private void setConnectors(Tomcat tomcat) {
 		switch (configuration.getEmulationSection().getAppServerConnectors()) {
 		case HTTP_HTTPS: {
-			ServerConnector httpConnector = new ServerConnector(server);
-			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
-
-			ServerConnector httpsConnector = getHttpsConnector(server);
-			httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
-			return new Connector[] { httpConnector, httpsConnector };
+			tomcat.setConnector(createHttpConnector());
+			tomcat.setConnector(createHttpsConnector());
+			break;
 		}
 		case HTTPS: {
-			ServerConnector httpsConnector = getHttpsConnector(server);
-			httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
-			return new Connector[] { httpsConnector };
+			tomcat.setConnector(createHttpsConnector());
+			break;
 		}
 		case HTTP:
 		default: {
-			ServerConnector httpConnector = new ServerConnector(server);
-			httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
-			return new Connector[] { httpConnector };
+			tomcat.setConnector(createHttpConnector());
+			break;
 		}
 		}
 	}
 
-	private ServerConnector getHttpsConnector(Server server) {
-		HttpConfiguration https = new HttpConfiguration();
-		https.addCustomizer(new SecureRequestCustomizer());
-		SslContextFactory sslContextFactory = getSslContextFactory();
-
-		ServerConnector httpsSslConnector = new ServerConnector(server,
-				new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-				new HttpConnectionFactory(https));
-		return httpsSslConnector;
+	private Connector createHttpConnector() {
+		Connector httpConnector = new Connector();
+		httpConnector.setURIEncoding("UTF-8");
+		httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
+		return httpConnector;
 	}
 
-	private SslContextFactory getSslContextFactory() {
-		SslContextFactory sslContextFactory = new SslContextFactory();
-		sslContextFactory.setKeyStorePath(configuration.getEmulationSection().getAppServerKeystoreFile());
-		sslContextFactory.setKeyStorePassword(
-				StringUtil.nonNull(configuration.getEmulationSection().getAppServerKeystorePassword()));
-		sslContextFactory.setKeyManagerPassword(
-				StringUtil.nonNull(configuration.getEmulationSection().getAppServerKeyManagerPassword()));
-		return sslContextFactory;
+	private Connector createHttpsConnector() {
+		Connector httpsConnector = new Connector();
+		httpsConnector.setSecure(true);
+		httpsConnector.setScheme("https");
+		httpsConnector.setAttribute("keystoreFile", configuration.getEmulationSection().getAppServerKeystoreFile());
+		httpsConnector.setAttribute("keystorePass", configuration.getEmulationSection().getAppServerKeystorePassword());
+		httpsConnector.setAttribute("keyAlias", configuration.getEmulationSection().getAppServerKeyAlias());
+		httpsConnector.setAttribute("keyPass", configuration.getEmulationSection().getAppServerKeyPassword());
+		httpsConnector.setAttribute("sslProtocol", "TLS");
+		httpsConnector.setAttribute("SSLEnabled", true);
+		httpsConnector.setURIEncoding("UTF-8");
+		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
+		return httpsConnector;
 	}
 
-	private ConstraintSecurityHandler createSecurity() {
-		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
-		security.setConstraintMappings(createConstrainedMappings());
-		security.setAuthenticator(new BasicAuthenticator());
-		return security;
+	private void createAuthorizationConstraints(Context context) {
+		LoginConfig loginConfig = new LoginConfig();
+		loginConfig.setAuthMethod(HttpServletRequest.BASIC_AUTH);
+		context.setLoginConfig(loginConfig);
+
+		SecurityConstraint constraint = new SecurityConstraint();
+		constraint.addAuthRole(ROLE_ADMIN);
+		constraint.addAuthRole(ROLE_USER);
+		constraint.setAuthConstraint(true);
+
+		SecurityCollection collection = new SecurityCollection();
+		collection.addPattern(CONTEXT_ROOT + "/*");
+		constraint.addCollection(collection);
+		context.addConstraint(constraint);
 	}
 
-	private ServletContextHandler createServletContextHandler() {
-		HttpServlet startPageServlet = new StartPageServlet(configuration, directoryProperties);
-		HttpServlet filtersServlet = new FiltersServlet(configuration, directoryProperties);
-		HttpServlet directoryServlet = new DirectoryServlet(configuration, directoryProperties);
-		HttpServlet tuneInfoServlet = new TuneInfoServlet(configuration, directoryProperties);
-		HttpServlet photoServlet = new PhotoServlet(configuration, directoryProperties);
-		HttpServlet convertServlet = new ConvertServlet(configuration, directoryProperties);
-		HttpServlet downloadServlet = new DownloadServlet(configuration, directoryProperties);
-		HttpServlet favoritesServlet = new FavoritesServlet(configuration, directoryProperties);
-
-		ServletContextHandler contextHandler = new ServletContextHandler();
-		contextHandler.setContextPath("/");
-		contextHandler.addServlet(new ServletHolder(startPageServlet), SERVLET_PATH_STARTPAGE);
-		contextHandler.addServlet(new ServletHolder(filtersServlet), CONTEXT_ROOT + SERVLET_PATH_FILTERS);
-		contextHandler.addServlet(new ServletHolder(directoryServlet), CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
-		contextHandler.addServlet(new ServletHolder(tuneInfoServlet), CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
-		contextHandler.addServlet(new ServletHolder(photoServlet), CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
-		contextHandler.addServlet(new ServletHolder(convertServlet), CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
-		contextHandler.addServlet(new ServletHolder(downloadServlet), CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
-		contextHandler.addServlet(new ServletHolder(favoritesServlet), CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
-		return contextHandler;
-	}
-
-	private List<ConstraintMapping> createConstrainedMappings() {
-		Constraint constraint = new Constraint();
-		constraint.setName(Constraint.__BASIC_AUTH);
-		constraint.setAuthenticate(true);
-		constraint.setRoles(new String[] { ROLE_USER, ROLE_ADMIN });
-
-		ConstraintMapping constrainedMapping = new ConstraintMapping();
-		constrainedMapping.setPathSpec(CONTEXT_ROOT + "/*");
-		constrainedMapping.setConstraint(constraint);
-		return Collections.singletonList(constrainedMapping);
+	private void addServlets(Context context) {
+		Tomcat.addServlet(context, "startPageServlet", new StartPageServlet(configuration, directoryProperties))
+				.addMapping(SERVLET_PATH_STARTPAGE);
+		Tomcat.addServlet(context, "filtersServlet", new FiltersServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FILTERS);
+		Tomcat.addServlet(context, "directoryServlet", new DirectoryServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
+		Tomcat.addServlet(context, "tuneInfoServlet", new TuneInfoServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
+		Tomcat.addServlet(context, "photoServlet", new PhotoServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
+		Tomcat.addServlet(context, "convertServlet", new ConvertServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
+		Tomcat.addServlet(context, "downloadServlet", new DownloadServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
+		Tomcat.addServlet(context, "favoritesServlet", new FavoritesServlet(configuration, directoryProperties))
+				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
+		Tomcat.addServlet(context, "playerServlet", new PlayerServlet(configuration, directoryProperties))
+				.addMapping(SERVLET_PATH_PLAYER);
 	}
 
 	/**
@@ -271,7 +273,7 @@ public class JSIDPlay2Server {
 	 */
 	private URL getRealmConfigPath() {
 		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, REALM_CONFIG_FILE + ".properties");
+			File configPlace = new File(s, REALM_CONFIG_FILE);
 			if (configPlace.exists()) {
 				try {
 					return configPlace.toURI().toURL();
@@ -297,16 +299,15 @@ public class JSIDPlay2Server {
 
 	public static void main(String[] args) throws Exception {
 		try {
-			JSIDPlay2Server jsidplay2Server = JSIDPlay2Server.getInstance();
-			Configuration config = new ConfigService(ConfigurationType.XML).load();
-			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server).addObject(config)
+			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
+			JSIDPlay2Server jsidplay2Server = getInstance(configuration);
+			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server)
 					.programName(JSIDPlay2Server.class.getName()).build();
 			commander.parse(args);
 			if (jsidplay2Server.help) {
 				commander.usage();
 				exit(1);
 			}
-			jsidplay2Server.setConfiguration(config);
 			jsidplay2Server.start();
 		} catch (ParameterException | IOException | SidTuneError e) {
 			System.err.println(e.getMessage());

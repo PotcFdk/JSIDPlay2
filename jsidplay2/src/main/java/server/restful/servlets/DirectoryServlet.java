@@ -3,6 +3,7 @@ package server.restful.servlets;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Properties;
 
@@ -10,9 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.URIUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,14 +37,17 @@ public class DirectoryServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
 		String filter = request.getParameter("filter");
+		if (filter != null) {
+			filter = URLDecoder.decode(filter, "UTF-8");
+		}
 
 		List<String> files = util.getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
 
-		response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
+		response.setContentType("application/json; charset=utf-8");
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

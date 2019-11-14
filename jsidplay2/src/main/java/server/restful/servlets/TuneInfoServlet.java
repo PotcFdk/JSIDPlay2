@@ -5,6 +5,7 @@ import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.DoubleSupplier;
@@ -14,9 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.URIUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,12 +46,12 @@ public class TuneInfoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
 
 		try {
-			response.setContentType(MimeTypes.Type.APPLICATION_JSON_UTF_8.asString());
+			response.setContentType("application/json; charset=utf-8");
 			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
@@ -63,7 +61,7 @@ public class TuneInfoServlet extends HttpServlet {
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 		} catch (Exception e) {
-			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+			response.setContentType("text/plain; charset=utf-8");
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

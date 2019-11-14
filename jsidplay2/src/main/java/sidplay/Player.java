@@ -315,7 +315,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 			}
 
 		};
-		initializeTmpDir();
+		initializeTmpDir(config);
 		recordingFilenameProvider = tune -> new File(config.getSidplay2Section().getTmpDir(), "jsidplay2")
 				.getAbsolutePath();
 	}
@@ -324,7 +324,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * Create temporary directory, if it does not exist.<BR>
 	 * E.g. Recordings and converted tapes are saved here!
 	 */
-	private void initializeTmpDir() {
+	public static void initializeTmpDir(IConfig config) {
 		File tmpDir = new File(config.getSidplay2Section().getTmpDir());
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();

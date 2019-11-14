@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,9 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.URIUtil;
 
 import com.beust.jcommander.JCommander;
 
@@ -77,7 +75,7 @@ public class ConvertServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
@@ -89,12 +87,13 @@ public class ConvertServlet extends HttpServlet {
 				copy(file, response.getOutputStream());
 				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 			} catch (Exception e) {
-				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.setContentType("text/plain; charset=utf-8");
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".dat")
+				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
 			try {
 				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
@@ -109,7 +108,7 @@ public class ConvertServlet extends HttpServlet {
 				commander.parse(args);
 				convertAudio(config, file, driver);
 			} catch (Exception e) {
-				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.setContentType("text/plain; charset=utf-8");
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -130,7 +129,7 @@ public class ConvertServlet extends HttpServlet {
 				mp4File = convertVideo(config, file, driver);
 				copy(mp4File, response.getOutputStream());
 			} catch (Exception e) {
-				response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+				response.setContentType("text/plain; charset=utf-8");
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			} finally {
 				if (mp4File != null) {

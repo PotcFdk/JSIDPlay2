@@ -7,15 +7,13 @@ import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.URIUtil;
 
 import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
@@ -41,7 +39,7 @@ public class DownloadServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URIUtil.decodePath(request.getRequestURI());
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
@@ -50,7 +48,7 @@ public class DownloadServlet extends HttpServlet {
 			copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
 		} catch (Exception e) {
-			response.setContentType(MimeTypes.Type.TEXT_PLAIN_UTF_8.asString());
+			response.setContentType("text/plain; charset=utf-8");
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
