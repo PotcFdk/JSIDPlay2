@@ -572,8 +572,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/categories").build();
 
-		try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-			String responseString = response.readEntity(String.class);
+		try (Response response = requestUri(uri)) {
+			String responseString = readString(response);
 			List<Category> result = new ObjectMapper().readValue(responseString, new TypeReference<List<Category>>() {
 			});
 			result.sort(Comparator.comparing(Category::getDescription));
@@ -614,8 +614,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 				return;
 			}
 			String result = "";
-			try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-				result = response.readEntity(String.class);
+			try (Response response = requestUri(uri)) {
+				result = readString(response);
 
 				Object start = response.getHeaderString("start");
 				searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
@@ -668,8 +668,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
 					.build(searchResult.getId(), searchResult.getCategory().getId());
-			try (Response response = ClientBuilder.newClient().target(uri).request().get()) {
-				ContentEntrySearchResult contentEntry = objectMapper.readValue(response.readEntity(String.class),
+			try (Response response = requestUri(uri)) {
+				ContentEntrySearchResult contentEntry = objectMapper.readValue(readString(response),
 						ContentEntrySearchResult.class);
 				contentEntryItems.setAll(contentEntry.getContentEntry());
 				contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
@@ -725,7 +725,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
 				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
-		try (Response response = ClientBuilder.newClient().target(uri).request().get();
+		try (Response response = requestUri(uri);
 				OutputStream outputStream = new FileOutputStream(contentEntryFile);
 				PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
 			outputStream.write(response.readEntity(byte[].class));
@@ -796,4 +796,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 			}
 		}
 	}
+
+	private Response requestUri(URI uri) {
+		return ClientBuilder.newClient().target(uri).request().get();
+	}
+
+	private String readString(Response response) {
+		return response.readEntity(String.class);
+	}
+
 }

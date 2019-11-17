@@ -26,7 +26,6 @@
 		<hostname>haendel.ddns.net</hostname>
 		<port>8443</port>
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
-		<tomcat.version>9.0.27</tomcat.version>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
 		<serverUrl>scp://ken:haendel@haendel.ddns.net/home/ken</serverUrl>
@@ -291,7 +290,7 @@
 		<dependency>
 	        <groupId>org.apache.tomcat.embed</groupId>
 	        <artifactId>tomcat-embed-core</artifactId>
-	        <version>${tomcat.version}</version>
+	        <version>9.0.27</version>
 	        <exclusions>
 	        	<exclusion>
 					<groupId>org.apache.tomcat</groupId>
@@ -302,14 +301,8 @@
 	    <dependency>
 	        <groupId>org.apache.tomcat.embed</groupId>
 	        <artifactId>tomcat-embed-jasper</artifactId>
-	        <version>${tomcat.version}</version>
+	        <version>9.0.27</version>
 	    </dependency>
-		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
-		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>jstl</artifactId>
-		    <version>1.2</version>
-		</dependency>
 		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.testfx</groupId>

@@ -17,6 +17,7 @@ public class PlayerServlet extends HttpServlet {
 
 	public static final String SERVLET_PATH_PLAYER = "/player";
 
+	@SuppressWarnings("unused")
 	private ServletUtil util;
 
 	public PlayerServlet(Configuration configuration, Properties directoryProperties) {
@@ -26,11 +27,6 @@ public class PlayerServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		try {
-			request.setAttribute("favorites", util.getConfiguration().getFavorites());
-			request.getRequestDispatcher("/player.jsp").forward(request, response);
-		} catch (Exception e) {
-
-		}
+		request.getRequestDispatcher("/player.jsp").forward(request, response);
 	}
 }

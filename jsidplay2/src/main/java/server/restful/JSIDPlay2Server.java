@@ -159,8 +159,8 @@ public class JSIDPlay2Server {
 		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
 
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-		jarScanner.setJarScanFilter(
-				(jarScanType, jarName) -> jarName.startsWith("jsidplay2") || jarName.startsWith("jstl"));
+		jarScanner.setScanManifest(false);
+		jarScanner.setScanAllFiles(false);
 		context.setJarScanner(jarScanner);
 
 		setConnectors(tomcat);
