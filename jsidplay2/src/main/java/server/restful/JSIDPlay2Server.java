@@ -16,6 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -155,6 +159,8 @@ public class JSIDPlay2Server {
 		realm.setPathname(getRealmConfigPath().toString());
 		tomcat.getEngine().setRealm(realm);
 
+		extractWebappResources();
+
 		// context root is our .jsidplay2 directory!
 		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
 
@@ -168,6 +174,17 @@ public class JSIDPlay2Server {
 		addServlets(context);
 
 		return tomcat;
+	}
+
+	private void extractWebappResources() {
+		for (String filename : Arrays.asList("player.jsp")) {
+			Path target = new File(configuration.getSidplay2Section().getTmpDir(), filename).toPath();
+			try (InputStream source = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + filename)) {
+				Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void setConnectors(Tomcat tomcat) {

@@ -24,6 +24,12 @@ public class PlayerServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
+	/**
+	 * Show Online JSIDPlay2 Demo.
+	 * 
+	 * E.g.
+	 * https://haendel.ddns.net:8443/player
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
