@@ -6,7 +6,6 @@ import static server.restful.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
 import static server.restful.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
 import static server.restful.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
 import static server.restful.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
-import static server.restful.servlets.PlayerServlet.SERVLET_PATH_PLAYER;
 import static server.restful.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
 import static server.restful.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
 
@@ -28,6 +27,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -47,7 +47,6 @@ import server.restful.servlets.DownloadServlet;
 import server.restful.servlets.FavoritesServlet;
 import server.restful.servlets.FiltersServlet;
 import server.restful.servlets.PhotoServlet;
-import server.restful.servlets.PlayerServlet;
 import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.TuneInfoServlet;
 import sidplay.Player;
@@ -66,6 +65,8 @@ public class JSIDPlay2Server {
 	 */
 	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
 
+	private static final String SERVLET_PATH_PLAYER = "/player";
+
 	/**
 	 * User role
 	 */
@@ -82,7 +83,7 @@ public class JSIDPlay2Server {
 	 * e.g. "/MP3=/media/nas1/mp3,true" (top-level logical directory name=real
 	 * directory name, admin role required)
 	 */
-	public static final String DIRECTORIES_CONFIG_FILE = "directoryServlet";
+	public static final String DIRECTORIES_CONFIG_FILE = "directoryServlet.properties";
 
 	/**
 	 * Filename of the configuration file containing username, password and role.
@@ -167,7 +168,6 @@ public class JSIDPlay2Server {
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
 		jarScanner.setScanManifest(false);
 		jarScanner.setScanAllFiles(false);
-		context.setJarScanner(jarScanner);
 
 		setConnectors(tomcat);
 		createAuthorizationConstraints(context);
@@ -177,8 +177,10 @@ public class JSIDPlay2Server {
 	}
 
 	private void extractWebappResources() {
-		for (String filename : Arrays.asList("player.jsp")) {
-			Path target = new File(configuration.getSidplay2Section().getTmpDir(), filename).toPath();
+		for (String filename : Arrays.asList("favorites.vue")) {
+			File playerDir = new File(configuration.getSidplay2Section().getTmpDir(), "player");
+			playerDir.mkdir();
+			Path target = new File(playerDir, filename).toPath();
 			try (InputStream source = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + filename)) {
 				Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
@@ -261,8 +263,7 @@ public class JSIDPlay2Server {
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
 		Tomcat.addServlet(context, "favoritesServlet", new FavoritesServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
-		Tomcat.addServlet(context, "playerServlet", new PlayerServlet(configuration, directoryProperties))
-				.addMapping(SERVLET_PATH_PLAYER);
+		Tomcat.addServlet(context, "defaultServlet", new DefaultServlet()).addMapping(SERVLET_PATH_PLAYER + "/*");
 	}
 
 	/**
@@ -272,14 +273,14 @@ public class JSIDPlay2Server {
 	 * @return configuration file
 	 */
 	private File getDirectoryConfigPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, DIRECTORIES_CONFIG_FILE + ".properties");
+		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(dir, DIRECTORIES_CONFIG_FILE);
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
 		// default directory
-		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE + ".properties");
+		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE);
 	}
 
 	/**
@@ -289,8 +290,8 @@ public class JSIDPlay2Server {
 	 * @return user, password and role configuration file
 	 */
 	private URL getRealmConfigPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, REALM_CONFIG_FILE);
+		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(dir, REALM_CONFIG_FILE);
 			if (configPlace.exists()) {
 				try {
 					return configPlace.toURI().toURL();
