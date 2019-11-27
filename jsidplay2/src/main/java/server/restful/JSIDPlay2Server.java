@@ -145,7 +145,7 @@ public class JSIDPlay2Server {
 					tomcat.stop();
 					tomcat.getServer().await();
 				} catch (Throwable e) {
-					// ignore: workaround java11 problem
+					// ignore: workaround java11 problem: InaccessibleObjectException
 				}
 				tomcat.getServer().destroy();
 			} finally {
