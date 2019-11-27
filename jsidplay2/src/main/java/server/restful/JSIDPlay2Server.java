@@ -141,12 +141,8 @@ public class JSIDPlay2Server {
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYING
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYED) {
 			try {
-				try {
-					tomcat.stop();
-					tomcat.getServer().await();
-				} catch (Throwable e) {
-					// ignore: workaround java11 problem: InaccessibleObjectException
-				}
+				tomcat.stop();
+				tomcat.getServer().await();
 				tomcat.getServer().destroy();
 			} finally {
 				tomcat = null;
