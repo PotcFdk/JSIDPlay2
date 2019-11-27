@@ -32,6 +32,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import com.beust.jcommander.JCommander;
@@ -116,6 +117,7 @@ public class JSIDPlay2Server {
 			// ignore non-existing properties
 		}
 		Player.initializeTmpDir(configuration);
+		extractWebappResources();
 	}
 
 	public static JSIDPlay2Server getInstance(Configuration configuration) {
@@ -127,8 +129,7 @@ public class JSIDPlay2Server {
 
 	public synchronized void start() throws Exception {
 		if (tomcat == null) {
-			Tomcat webServer = createServer();
-			tomcat = webServer;
+			tomcat = createServer();
 			tomcat.start();
 		}
 	}
@@ -153,29 +154,6 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	private Tomcat createServer() throws IOException {
-		Tomcat tomcat = new Tomcat();
-
-		MemoryRealm realm = new MemoryRealm();
-		realm.setPathname(getRealmConfigPath().toString());
-		tomcat.getEngine().setRealm(realm);
-
-		extractWebappResources();
-
-		// context root is our .jsidplay2 directory!
-		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
-
-		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-		jarScanner.setScanManifest(false);
-		jarScanner.setScanAllFiles(false);
-
-		setConnectors(tomcat);
-		createAuthorizationConstraints(context);
-		addServlets(context);
-
-		return tomcat;
-	}
-
 	private void extractWebappResources() {
 		for (String filename : Arrays.asList("favorites.vue")) {
 			File playerDir = new File(configuration.getSidplay2Section().getTmpDir(), "player");
@@ -187,6 +165,36 @@ public class JSIDPlay2Server {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private Tomcat createServer() throws IOException {
+		Tomcat tomcat = new Tomcat();
+
+		setConnectors(tomcat);
+
+		Context context = createContext(tomcat);
+
+		MemoryRealm realm = new MemoryRealm();
+		realm.setPathname(getRealmConfigPath().toString());
+		tomcat.getEngine().setRealm(realm);
+		
+		createAuthorizationConstraints(context);
+
+		addServlets(context);
+
+		return tomcat;
+	}
+
+	private Context createContext(Tomcat tomcat) {
+		// context root is our .jsidplay2 directory!
+		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
+		context.addSecurityRole(ROLE_USER);
+		context.addSecurityRole(ROLE_ADMIN);
+		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
+		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
+		jarScanner.setScanManifest(false);
+		jarScanFilter.setTldSkip("*");
+		return context;
 	}
 
 	private void setConnectors(Tomcat tomcat) {
@@ -219,12 +227,12 @@ public class JSIDPlay2Server {
 		Connector httpsConnector = new Connector();
 		httpsConnector.setSecure(true);
 		httpsConnector.setScheme("https");
+		httpsConnector.setAttribute("sslProtocol", "TLS");
+		httpsConnector.setAttribute("SSLEnabled", true);
 		httpsConnector.setAttribute("keystoreFile", configuration.getEmulationSection().getAppServerKeystoreFile());
 		httpsConnector.setAttribute("keystorePass", configuration.getEmulationSection().getAppServerKeystorePassword());
 		httpsConnector.setAttribute("keyAlias", configuration.getEmulationSection().getAppServerKeyAlias());
 		httpsConnector.setAttribute("keyPass", configuration.getEmulationSection().getAppServerKeyPassword());
-		httpsConnector.setAttribute("sslProtocol", "TLS");
-		httpsConnector.setAttribute("SSLEnabled", true);
 		httpsConnector.setURIEncoding("UTF-8");
 		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
 		return httpsConnector;
