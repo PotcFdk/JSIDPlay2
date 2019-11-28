@@ -188,23 +188,19 @@ public class JSIDPlay2Server {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setAddDefaultWebXmlToWebapp(false);
 
-		tomcat.getEngine().setRealm(createRealm());
-
+		addRealm(tomcat);
 		addConnectors(tomcat);
 
 		Context context = addWebApp(tomcat);
-
 		addSecurityConstraints(context);
-
 		addServlets(context);
-
 		return tomcat;
 	}
 
-	private MemoryRealm createRealm() {
+	private void addRealm(Tomcat tomcat) {
 		MemoryRealm realm = new MemoryRealm();
 		realm.setPathname(getRealmConfigPath().toString());
-		return realm;
+		tomcat.getEngine().setRealm(realm);
 	}
 
 	/**
@@ -269,8 +265,10 @@ public class JSIDPlay2Server {
 		return httpsConnector;
 	}
 
+	/**
+	 * <b>Note:</b> Context root is .jsidplay2 directory
+	 */
 	private Context addWebApp(Tomcat tomcat) {
-		// context root is our .jsidplay2 directory!
 		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
 		context.addSecurityRole(ROLE_USER);
 		context.addSecurityRole(ROLE_ADMIN);
@@ -298,21 +296,21 @@ public class JSIDPlay2Server {
 	}
 
 	private void addServlets(Context context) {
-		Tomcat.addServlet(context, "startPageServlet", new StartPageServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "startPage", new StartPageServlet(configuration, directoryProperties))
 				.addMapping(SERVLET_PATH_STARTPAGE);
-		Tomcat.addServlet(context, "filtersServlet", new FiltersServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "filters", new FiltersServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FILTERS);
-		Tomcat.addServlet(context, "directoryServlet", new DirectoryServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "directory", new DirectoryServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
-		Tomcat.addServlet(context, "tuneInfoServlet", new TuneInfoServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "tuneInfo", new TuneInfoServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
-		Tomcat.addServlet(context, "photoServlet", new PhotoServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "photo", new PhotoServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
-		Tomcat.addServlet(context, "convertServlet", new ConvertServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "convert", new ConvertServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
-		Tomcat.addServlet(context, "downloadServlet", new DownloadServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "download", new DownloadServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
-		Tomcat.addServlet(context, "favoritesServlet", new FavoritesServlet(configuration, directoryProperties))
+		Tomcat.addServlet(context, "favorites", new FavoritesServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
 		Tomcat.addServlet(context, "default", new DefaultServlet()).addMapping(SERVLET_PATH_PLAYER + "/*");
 	}
