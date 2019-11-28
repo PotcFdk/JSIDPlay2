@@ -100,12 +100,12 @@ public class JSIDPlay2Server {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
+	@ParametersDelegate
+	private Configuration configuration;
+
 	private static JSIDPlay2Server instance;
 
 	private Tomcat tomcat;
-
-	@ParametersDelegate
-	private Configuration configuration;
 
 	private Properties directoryProperties = new Properties();
 
@@ -129,7 +129,7 @@ public class JSIDPlay2Server {
 
 	public synchronized void start() throws Exception {
 		if (tomcat == null) {
-			tomcat = createServer();
+			tomcat = createTomcat();
 			tomcat.start();
 		}
 	}
@@ -141,13 +141,34 @@ public class JSIDPlay2Server {
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYING
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYED) {
 			try {
-				tomcat.stop();
-				tomcat.getServer().await();
+				try {
+					tomcat.stop();
+					tomcat.getServer().await();
+				} catch (Throwable e) {
+					// workaround java11 problem
+				}
 				tomcat.getServer().destroy();
 			} finally {
 				tomcat = null;
 			}
 		}
+	}
+
+	/**
+	 * Search for optional configuration containing additional directories. Search
+	 * in CWD and in the HOME folder.
+	 * 
+	 * @return configuration file
+	 */
+	private File getDirectoryConfigPath() {
+		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(dir, DIRECTORIES_CONFIG_FILE);
+			if (configPlace.exists()) {
+				return configPlace;
+			}
+		}
+		// default directory
+		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE);
 	}
 
 	private void extractWebappResources() {
@@ -163,37 +184,51 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	private Tomcat createServer() throws IOException {
+	private Tomcat createTomcat() {
 		Tomcat tomcat = new Tomcat();
+		tomcat.setAddDefaultWebXmlToWebapp(false);
 
-		setConnectors(tomcat);
+		tomcat.getEngine().setRealm(createRealm());
 
-		Context context = createContext(tomcat);
+		addConnectors(tomcat);
 
-		MemoryRealm realm = new MemoryRealm();
-		realm.setPathname(getRealmConfigPath().toString());
-		tomcat.getEngine().setRealm(realm);
-		
-		createAuthorizationConstraints(context);
+		Context context = addWebApp(tomcat);
+
+		addSecurityConstraints(context);
 
 		addServlets(context);
 
 		return tomcat;
 	}
 
-	private Context createContext(Tomcat tomcat) {
-		// context root is our .jsidplay2 directory!
-		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
-		context.addSecurityRole(ROLE_USER);
-		context.addSecurityRole(ROLE_ADMIN);
-		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
-		jarScanner.setScanManifest(false);
-		jarScanFilter.setTldSkip("*");
-		return context;
+	private MemoryRealm createRealm() {
+		MemoryRealm realm = new MemoryRealm();
+		realm.setPathname(getRealmConfigPath().toString());
+		return realm;
 	}
 
-	private void setConnectors(Tomcat tomcat) {
+	/**
+	 * Search for user, password and role configuration file.<BR>
+	 * <B>Note:</B>If no configuration file is found internal configuration is used
+	 * 
+	 * @return user, password and role configuration file
+	 */
+	private URL getRealmConfigPath() {
+		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(dir, REALM_CONFIG_FILE);
+			if (configPlace.exists()) {
+				try {
+					return configPlace.toURI().toURL();
+				} catch (MalformedURLException e) {
+					// ignore, use internal config instead!
+				}
+			}
+		}
+		// built-in default configuration
+		return INTERNAL_REALM_CONFIG;
+	}
+
+	private void addConnectors(Tomcat tomcat) {
 		switch (configuration.getEmulationSection().getAppServerConnectors()) {
 		case HTTP_HTTPS: {
 			tomcat.setConnector(createHttpConnector());
@@ -234,7 +269,19 @@ public class JSIDPlay2Server {
 		return httpsConnector;
 	}
 
-	private void createAuthorizationConstraints(Context context) {
+	private Context addWebApp(Tomcat tomcat) {
+		// context root is our .jsidplay2 directory!
+		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
+		context.addSecurityRole(ROLE_USER);
+		context.addSecurityRole(ROLE_ADMIN);
+		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
+		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
+		jarScanner.setScanManifest(false);
+		jarScanFilter.setTldSkip("*");
+		return context;
+	}
+
+	private void addSecurityConstraints(Context context) {
 		LoginConfig loginConfig = new LoginConfig();
 		loginConfig.setAuthMethod(HttpServletRequest.BASIC_AUTH);
 		context.setLoginConfig(loginConfig);
@@ -267,45 +314,7 @@ public class JSIDPlay2Server {
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
 		Tomcat.addServlet(context, "favoritesServlet", new FavoritesServlet(configuration, directoryProperties))
 				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
-		Tomcat.addServlet(context, "defaultServlet", new DefaultServlet()).addMapping(SERVLET_PATH_PLAYER + "/*");
-	}
-
-	/**
-	 * Search for optional configuration containing additional directories. Search
-	 * in CWD and in the HOME folder.
-	 * 
-	 * @return configuration file
-	 */
-	private File getDirectoryConfigPath() {
-		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(dir, DIRECTORIES_CONFIG_FILE);
-			if (configPlace.exists()) {
-				return configPlace;
-			}
-		}
-		// default directory
-		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE);
-	}
-
-	/**
-	 * Search for user, password and role configuration file.<BR>
-	 * <B>Note:</B>If no configuration file is found internal configuration is used
-	 * 
-	 * @return user, password and role configuration file
-	 */
-	private URL getRealmConfigPath() {
-		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(dir, REALM_CONFIG_FILE);
-			if (configPlace.exists()) {
-				try {
-					return configPlace.toURI().toURL();
-				} catch (MalformedURLException e) {
-					// ignore, use internal config instead!
-				}
-			}
-		}
-		// built-in default configuration
-		return INTERNAL_REALM_CONFIG;
+		Tomcat.addServlet(context, "default", new DefaultServlet()).addMapping(SERVLET_PATH_PLAYER + "/*");
 	}
 
 	private static void exit(int rc) {

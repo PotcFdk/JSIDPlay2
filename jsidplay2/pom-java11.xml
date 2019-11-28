@@ -286,10 +286,9 @@
 			<version>2.1.11</version>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper -->
-		<dependency>
+	    <dependency>
 	        <groupId>org.apache.tomcat.embed</groupId>
-	        <artifactId>tomcat-embed-core</artifactId>
+	        <artifactId>tomcat-embed-jasper</artifactId>
 	        <version>9.0.27</version>
 	        <exclusions>
 	        	<exclusion>
@@ -297,11 +296,6 @@
 					<artifactId>tomcat-annotations-api</artifactId>
 	        	</exclusion>
 	        </exclusions>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.apache.tomcat.embed</groupId>
-	        <artifactId>tomcat-embed-jasper</artifactId>
-	        <version>9.0.27</version>
 	    </dependency>
 		<!-- test dependencies -->
 		<dependency>
