@@ -229,6 +229,17 @@
 			<version>4.5.2</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-core</artifactId>
+		    <version>9.0.27</version>
+	        <exclusions>
+	        	<exclusion>
+					<groupId>org.apache.tomcat</groupId>
+					<artifactId>tomcat-annotations-api</artifactId>
+	        	</exclusion>
+	        </exclusions>
+		</dependency>
+		<dependency>
 			<groupId>net.java.jinput</groupId>
 			<artifactId>jinput</artifactId>
 			<version>2.0.7</version>
@@ -281,17 +292,6 @@
 			<version>2.1.11</version>
 			<scope>runtime</scope>
 		</dependency>
-	    <dependency>
-	        <groupId>org.apache.tomcat.embed</groupId>
-	        <artifactId>tomcat-embed-jasper</artifactId>
-	        <version>9.0.27</version>
-	        <exclusions>
-	        	<exclusion>
-					<groupId>org.apache.tomcat</groupId>
-					<artifactId>tomcat-annotations-api</artifactId>
-	        	</exclusion>
-	        </exclusions>
-	    </dependency>
 		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.testfx</groupId>
