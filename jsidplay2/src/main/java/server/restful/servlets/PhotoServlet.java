@@ -14,26 +14,28 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
-public class PhotoServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_PHOTO = "/photo";
+@SuppressWarnings("serial")
+public class PhotoServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public PhotoServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/photo";
 	}
 
 	/**
@@ -45,7 +47,7 @@ public class PhotoServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
+		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 
 		try {
 			response.setContentType(MIME_TYPE_JPG.getContentType());

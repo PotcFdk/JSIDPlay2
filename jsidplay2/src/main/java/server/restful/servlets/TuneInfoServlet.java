@@ -15,7 +15,6 @@ import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,14 +23,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.util.Pair;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddatabase.SidDatabase;
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
 
-public class TuneInfoServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public class TuneInfoServlet extends JSIDPlay2Servlet {
 
 	public static final String SERVLET_PATH_TUNE_INFO = "/info";
 
@@ -39,6 +38,11 @@ public class TuneInfoServlet extends HttpServlet {
 
 	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/info";
 	}
 
 	/**

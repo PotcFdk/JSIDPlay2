@@ -8,27 +8,29 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 import ui.entities.config.FavoritesSection;
 
-public class FavoritesServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_FAVORITES = "/favorites";
+@SuppressWarnings("serial")
+public class FavoritesServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public FavoritesServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/favorites";
 	}
 
 	/**

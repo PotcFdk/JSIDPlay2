@@ -16,23 +16,25 @@ import java.net.URLDecoder;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
-public class DownloadServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_DOWNLOAD = "/download";
+@SuppressWarnings("serial")
+public class DownloadServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public DownloadServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/download";
 	}
 
 	/**
@@ -44,8 +46,7 @@ public class DownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath
-				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
+		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 
 		try {
 			response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());

@@ -1,32 +1,35 @@
 package server.restful.servlets;
 
-import static server.restful.common.MimeType.*;
+import static server.restful.common.MimeType.MIME_TYPE_JSON;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.FilterSection;
 
-public class FiltersServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_FILTERS = "/filters";
+@SuppressWarnings("serial")
+public class FiltersServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public FiltersServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/filters";
 	}
 
 	/**

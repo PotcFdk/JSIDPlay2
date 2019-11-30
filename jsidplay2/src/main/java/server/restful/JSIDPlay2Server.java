@@ -1,14 +1,8 @@
 package server.restful;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static server.restful.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
-import static server.restful.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
-import static server.restful.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
-import static server.restful.servlets.FavoritesServlet.SERVLET_PATH_FAVORITES;
-import static server.restful.servlets.FiltersServlet.SERVLET_PATH_FILTERS;
-import static server.restful.servlets.PhotoServlet.SERVLET_PATH_PHOTO;
-import static server.restful.servlets.StartPageServlet.SERVLET_PATH_STARTPAGE;
-import static server.restful.servlets.TuneInfoServlet.SERVLET_PATH_TUNE_INFO;
+import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
+import static org.apache.catalina.startup.Tomcat.addServlet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,12 +11,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleState;
@@ -43,6 +35,7 @@ import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.servlets.ConvertServlet;
 import server.restful.servlets.DirectoryServlet;
 import server.restful.servlets.DownloadServlet;
@@ -63,11 +56,19 @@ public class JSIDPlay2Server {
 	}
 
 	/**
+	 * Context root of start page
+	 */
+	private static final String CONTEXT_ROOT = "";
+
+	/**
 	 * Context root of all servlets
 	 */
-	private static final String CONTEXT_ROOT = "/jsidplay2service/JSIDPlay2REST";
+	private static final String CONTEXT_ROOT_SERVLET = "/jsidplay2service/JSIDPlay2REST";
 
-	private static final String SERVLET_PATH_PLAYER = "/player";
+	/**
+	 * Context root of static pages
+	 */
+	private static final String CONTEXT_ROOT_STATIC = "/player";
 
 	/**
 	 * User role
@@ -98,17 +99,36 @@ public class JSIDPlay2Server {
 	 */
 	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG_FILE);
 
+	/**
+	 * Static resources to serve
+	 */
+	private static final List<String> STATIC_RESOURCES = Arrays.asList("favorites.vue");
+
+	/**
+	 * Our servlets to serve
+	 */
+	private static final List<Class<? extends JSIDPlay2Servlet>> SERVLETS = Arrays.asList(FiltersServlet.class,
+			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
+			DownloadServlet.class, FavoritesServlet.class);
+
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
 	@ParametersDelegate
 	private Configuration configuration;
 
-	private static JSIDPlay2Server instance;
-
 	private Tomcat tomcat;
 
 	private Properties directoryProperties = new Properties();
+
+	private static JSIDPlay2Server instance;
+
+	public static JSIDPlay2Server getInstance(Configuration configuration) {
+		if (instance == null) {
+			instance = new JSIDPlay2Server(configuration);
+		}
+		return instance;
+	}
 
 	private JSIDPlay2Server(Configuration configuration) {
 		this.configuration = configuration;
@@ -118,14 +138,7 @@ public class JSIDPlay2Server {
 			// ignore non-existing properties
 		}
 		Player.initializeTmpDir(configuration);
-		extractWebappResources();
-	}
-
-	public static JSIDPlay2Server getInstance(Configuration configuration) {
-		if (instance == null) {
-			instance = new JSIDPlay2Server(configuration);
-		}
-		return instance;
+		extractStaticWebappResources();
 	}
 
 	public synchronized void start() throws Exception {
@@ -172,20 +185,19 @@ public class JSIDPlay2Server {
 		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE);
 	}
 
-	private void extractWebappResources() {
-		for (String filename : Arrays.asList("favorites.vue")) {
-			File playerDir = new File(configuration.getSidplay2Section().getTmpDir(), "player");
-			playerDir.mkdir();
-			Path target = new File(playerDir, filename).toPath();
-			try (InputStream source = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + filename)) {
-				Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+	private void extractStaticWebappResources() {
+		File playerDir = new File(configuration.getSidplay2Section().getTmpDir(), "player");
+		playerDir.mkdir();
+		for (String resource : STATIC_RESOURCES) {
+			try (InputStream source = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + resource)) {
+				Files.copy(source, new File(playerDir, resource).toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private Tomcat createTomcat() {
+	private Tomcat createTomcat() throws Exception {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setAddDefaultWebXmlToWebapp(false);
 
@@ -253,6 +265,8 @@ public class JSIDPlay2Server {
 
 	private Connector createHttpsConnector() {
 		Connector httpsConnector = new Connector();
+		httpsConnector.setURIEncoding(UTF_8.name());
+		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
 		httpsConnector.setSecure(true);
 		httpsConnector.setScheme("https");
 		httpsConnector.setAttribute("sslProtocol", "TLS");
@@ -261,18 +275,17 @@ public class JSIDPlay2Server {
 		httpsConnector.setAttribute("keystorePass", configuration.getEmulationSection().getAppServerKeystorePassword());
 		httpsConnector.setAttribute("keyAlias", configuration.getEmulationSection().getAppServerKeyAlias());
 		httpsConnector.setAttribute("keyPass", configuration.getEmulationSection().getAppServerKeyPassword());
-		httpsConnector.setURIEncoding(UTF_8.name());
-		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
 		return httpsConnector;
 	}
 
 	/**
-	 * <b>Note:</b> Context root is .jsidplay2 directory
+	 * <b>Note:</b> Base directory of the context root is .jsidplay2
 	 */
 	private Context addWebApp(Tomcat tomcat) {
-		Context context = tomcat.addWebapp(tomcat.getHost(), "", configuration.getSidplay2Section().getTmpDir());
-		context.addSecurityRole(ROLE_USER);
+		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT,
+				configuration.getSidplay2Section().getTmpDir());
 		context.addSecurityRole(ROLE_ADMIN);
+		context.addSecurityRole(ROLE_USER);
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
 		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
 		jarScanner.setScanManifest(false);
@@ -281,9 +294,7 @@ public class JSIDPlay2Server {
 	}
 
 	private void addSecurityConstraints(Context context) {
-		LoginConfig loginConfig = new LoginConfig();
-		loginConfig.setAuthMethod(HttpServletRequest.BASIC_AUTH);
-		context.setLoginConfig(loginConfig);
+		context.setLoginConfig(new LoginConfig(BASIC_AUTH, null, null, null));
 
 		SecurityConstraint constraint = new SecurityConstraint();
 		constraint.addAuthRole(ROLE_ADMIN);
@@ -291,29 +302,27 @@ public class JSIDPlay2Server {
 		constraint.setAuthConstraint(true);
 
 		SecurityCollection collection = new SecurityCollection();
-		collection.addPattern(CONTEXT_ROOT + "/*");
+		collection.addPattern(CONTEXT_ROOT_SERVLET + "/*");
 		constraint.addCollection(collection);
 		context.addConstraint(constraint);
 	}
 
-	private void addServlets(Context context) {
-		Tomcat.addServlet(context, "startPage", new StartPageServlet(configuration, directoryProperties))
-				.addMapping(SERVLET_PATH_STARTPAGE);
-		Tomcat.addServlet(context, "filters", new FiltersServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FILTERS);
-		Tomcat.addServlet(context, "directory", new DirectoryServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DIRECTORY + "/*");
-		Tomcat.addServlet(context, "tuneInfo", new TuneInfoServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_TUNE_INFO + "/*");
-		Tomcat.addServlet(context, "photo", new PhotoServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_PHOTO + "/*");
-		Tomcat.addServlet(context, "convert", new ConvertServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_CONVERT + "/*");
-		Tomcat.addServlet(context, "download", new DownloadServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_DOWNLOAD + "/*");
-		Tomcat.addServlet(context, "favorites", new FavoritesServlet(configuration, directoryProperties))
-				.addMapping(CONTEXT_ROOT + SERVLET_PATH_FAVORITES);
-		Tomcat.addServlet(context, "default", new DefaultServlet()).addMapping(SERVLET_PATH_PLAYER + "/*");
+	private void addServlets(Context context) throws Exception {
+		StartPageServlet startPageServlet = new StartPageServlet(configuration, directoryProperties);
+		addServlet(context, StartPageServlet.class.getSimpleName(), startPageServlet)
+				.addMapping(CONTEXT_ROOT + startPageServlet.getServletPath());
+
+		DefaultServlet defaultServlet = new DefaultServlet();
+		addServlet(context, DefaultServlet.class.getSimpleName(), defaultServlet)
+				.addMapping(CONTEXT_ROOT_STATIC + "/*");
+
+		for (Class<? extends JSIDPlay2Servlet> servletCls : SERVLETS) {
+			JSIDPlay2Servlet servlet = (JSIDPlay2Servlet) servletCls
+					.getDeclaredConstructor(Configuration.class, Properties.class)
+					.newInstance(configuration, directoryProperties);
+			addServlet(context, servletCls.getSimpleName(), servlet)
+					.addMapping(CONTEXT_ROOT_SERVLET + servlet.getServletPath() + "/*");
+		}
 	}
 
 	private static void exit(int rc) {

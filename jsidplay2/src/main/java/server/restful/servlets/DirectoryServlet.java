@@ -10,25 +10,27 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
-public class DirectoryServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_DIRECTORY = "/directory";
+@SuppressWarnings("serial")
+public class DirectoryServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public DirectoryServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/directory";
 	}
 
 	/**
@@ -40,8 +42,7 @@ public class DirectoryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath
-				.substring(decodedPath.indexOf(SERVLET_PATH_DIRECTORY) + SERVLET_PATH_DIRECTORY.length());
+		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 		String filter = request.getParameter("filter");
 		if (filter != null) {
 			filter = URLDecoder.decode(filter, UTF_8.name());

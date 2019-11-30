@@ -1,8 +1,8 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.*;
-import static server.restful.common.MimeType.MIME_TYPE_HTML;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.ZipFileUtils.convertStreamToString;
+import static server.restful.common.MimeType.MIME_TYPE_HTML;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
 import java.io.IOException;
@@ -14,26 +14,28 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import libsidplay.sidtune.SidTune;
 import server.restful.common.Connectors;
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 
-public class StartPageServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_STARTPAGE = "/";
+@SuppressWarnings("serial")
+public class StartPageServlet extends JSIDPlay2Servlet {
 
 	private ServletUtil util;
 
 	public StartPageServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
+	}
+
+	@Override
+	public String getServletPath() {
+		return "/";
 	}
 
 	@Override

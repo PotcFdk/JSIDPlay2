@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +35,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
+import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
@@ -49,11 +49,8 @@ import ui.filefilter.DiskFileFilter;
 import ui.filefilter.TapeFileFilter;
 import ui.filefilter.TuneFileFilter;
 
-public class ConvertServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
-
-	public static final String SERVLET_PATH_CONVERT = "/convert";
+@SuppressWarnings("serial")
+public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -66,6 +63,11 @@ public class ConvertServlet extends HttpServlet {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
+	@Override
+	public String getServletPath() {
+		return "/convert";
+	}
+	
 	/**
 	 * Stream SID as MP3.
 	 * 
@@ -82,8 +84,7 @@ public class ConvertServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath
-				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
+		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")
