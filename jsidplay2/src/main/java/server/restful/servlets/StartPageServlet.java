@@ -1,6 +1,9 @@
 package server.restful.servlets;
 
+import static java.nio.charset.StandardCharsets.*;
+import static server.restful.common.MimeType.MIME_TYPE_HTML;
 import static libsidutils.ZipFileUtils.convertStreamToString;
+import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,10 +50,10 @@ public class StartPageServlet extends HttpServlet {
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			if (is != null) {
-				response.setContentType("text/html; charset=utf-8");
-				response.getWriter().println(is != null ? convertStreamToString(is, "UTF-8", replacements) : "");
+				response.setContentType(MIME_TYPE_HTML.getContentType());
+				response.getWriter().println(is != null ? convertStreamToString(is, UTF_8.name(), replacements) : "");
 			} else {
-				response.setContentType("text/plain; charset=utf-8");
+				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
 			}
 		}

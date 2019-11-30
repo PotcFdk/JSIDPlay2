@@ -1,5 +1,7 @@
 package ui.download;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -61,7 +63,6 @@ import ui.entities.config.Configuration;
  * 
  */
 public class DownloadThread extends Thread implements RBCWrapperDelegate {
-	private static final String UTF_8 = "UTF-8";
 	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
 	private static final String REPLACEMENT_ILLEGAL_CHAR = "_";
 	public static final int MAX_BUFFER_SIZE = 1 << 20;
@@ -176,7 +177,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File download(URL currentURL, boolean retry, boolean useAlreadyAvailableFile) throws IOException {
-		String decoded = URLDecoder.decode(currentURL.toString(), UTF_8);
+		String decoded = URLDecoder.decode(currentURL.toString(), UTF_8.name());
 		int tries = 0;
 		do {
 			tries++;
@@ -223,7 +224,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File createLocalFile(URL currentURL) throws IOException {
-		String decoded = URLDecoder.decode(currentURL.getFile(), UTF_8);
+		String decoded = URLDecoder.decode(currentURL.getFile(), UTF_8.name());
 		String name = new File(decoded).getName();
 		return new File(config.getSidplay2Section().getTmpDir(),
 				name.replaceAll(ILLEGAL_FILENAME_CHARS, REPLACEMENT_ILLEGAL_CHAR));

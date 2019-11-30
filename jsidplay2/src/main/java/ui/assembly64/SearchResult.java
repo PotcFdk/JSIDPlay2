@@ -2,8 +2,6 @@ package ui.assembly64;
 
 import java.time.LocalDate;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -41,7 +39,7 @@ public class SearchResult {
 	}
 
 	public String getName() {
-		return StringEscapeUtils.unescapeHtml(nameProperty.get());
+		return nameProperty.get();
 	}
 
 	public void setName(String name) {

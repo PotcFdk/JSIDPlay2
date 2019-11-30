@@ -1,8 +1,13 @@
 package server.restful.servlets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.ZipFileUtils.copy;
+import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
+import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
+import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.MimeType.getMimeType;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +20,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
@@ -39,16 +43,16 @@ public class DownloadServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_DOWNLOAD) + SERVLET_PATH_DOWNLOAD.length());
 
 		try {
-			response.setContentType(ContentType.getContentType(getFilenameSuffix(filePath)).getContentType());
+			response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
 			copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
-			response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
+			response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 		} catch (Exception e) {
-			response.setContentType("text/plain; charset=utf-8");
+			response.setContentType(MIME_TYPE_TEXT.getContentType());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

@@ -1,6 +1,9 @@
 package server.restful.servlets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
+import static server.restful.common.MimeType.MIME_TYPE_JPG;
+import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
@@ -42,11 +44,11 @@ public class PhotoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath.substring(decodedPath.indexOf(SERVLET_PATH_PHOTO) + SERVLET_PATH_PHOTO.length());
 
 		try {
-			response.setContentType(ContentType.MIME_TYPE_JPG.getContentType());
+			response.setContentType(MIME_TYPE_JPG.getContentType());
 			File absoluteFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
@@ -56,7 +58,7 @@ public class PhotoServlet extends HttpServlet {
 			response.getOutputStream().write(photo);
 			response.setContentLength(photo.length);
 		} catch (Exception e) {
-			response.setContentType("text/plain; charset=utf-8");
+			response.setContentType(MIME_TYPE_TEXT.getContentType());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

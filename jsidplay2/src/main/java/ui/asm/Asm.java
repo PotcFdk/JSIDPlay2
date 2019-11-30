@@ -1,5 +1,7 @@
 package ui.asm;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,7 +123,7 @@ public class Asm extends C64VBox implements UIPart {
 		try {
 			HashMap<String, String> globals = new HashMap<String, String>();
 			variables.stream().forEach(var -> globals.put(var.getName(), var.getValue()));
-			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes("UTF-8"));
+			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes(UTF_8.name()));
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals).getData();
 			InputStream is = new ByteArrayInputStream(assembly);
 			SidTune tune = SidTune.load("assembly.prg", is);

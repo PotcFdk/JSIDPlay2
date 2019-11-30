@@ -1,6 +1,9 @@
 package server.restful.servlets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
+import static server.restful.common.MimeType.MIME_TYPE_JSON;
+import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,12 +49,12 @@ public class TuneInfoServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
 
 		try {
-			response.setContentType("application/json; charset=utf-8");
+			response.setContentType(MIME_TYPE_JSON.getContentType());
 			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
@@ -61,7 +64,7 @@ public class TuneInfoServlet extends HttpServlet {
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 		} catch (Exception e) {
-			response.setContentType("text/plain; charset=utf-8");
+			response.setContentType(MIME_TYPE_TEXT.getContentType());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

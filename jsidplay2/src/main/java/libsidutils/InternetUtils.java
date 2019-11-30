@@ -1,5 +1,7 @@
 package libsidutils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
@@ -22,7 +24,7 @@ public class InternetUtils {
 				case HttpURLConnection.HTTP_SEE_OTHER:
 					String location = connection.getHeaderField("Location");
 					if (location != null) {
-						location = URLDecoder.decode(location, "UTF-8");
+						location = URLDecoder.decode(location, UTF_8.name());
 						// Deal with relative URLs
 						URL next = new URL(currentURL, location);
 						currentURL = new URL(next.toExternalForm().replace("%", "%25").replace(" ", "%20"));

@@ -3,7 +3,7 @@ package server.restful.common;
 import java.util.Arrays;
 import java.util.Locale;
 
-public enum ContentType {
+public enum MimeType {
 	/**
 	 * Picture formats
 	 */
@@ -21,14 +21,26 @@ public enum ContentType {
 	 */
 	MIME_TYPE_SID("audio/prs.sid", ".sid"),
 	/**
-	 * Other formats
+	 * Binary formats
 	 */
-	MIME_TYPE_OCTET_STREAM("application/octet-stream");
+	MIME_TYPE_OCTET_STREAM("application/octet-stream"),
+	/**
+	 * Text
+	 */
+	MIME_TYPE_TEXT("text/plain; charset=utf-8"),
+	/**
+	 * Json
+	 */
+	MIME_TYPE_JSON("application/json; charset=utf-8"),
+	/**
+	 * Html
+	 */
+	MIME_TYPE_HTML("text/html; charset=utf-8");
 
 	private String contentType;
 	private String[] extensions;
 
-	private ContentType(String contentType, String... extensions) {
+	private MimeType(String contentType, String... extensions) {
 		this.contentType = contentType;
 		this.extensions = extensions;
 	}
@@ -41,10 +53,10 @@ public enum ContentType {
 		return extensions;
 	}
 
-	public static ContentType getContentType(String extension) {
+	public static MimeType getMimeType(String extension) {
 		return Arrays.asList(values()).stream().filter(
 				ct -> extension != null && Arrays.asList(ct.getExtensions()).contains(extension.toLowerCase(Locale.US)))
 				.findFirst().orElse(MIME_TYPE_OCTET_STREAM);
 	}
-	
+
 }

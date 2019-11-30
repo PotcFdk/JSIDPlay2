@@ -1,5 +1,6 @@
 package ui.toolbar;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidplay.common.ChipModel.MOS6581;
 import static libsidplay.common.ChipModel.MOS8580;
 import static server.restful.common.Connectors.HTTP;
@@ -547,7 +548,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private String getHostname() {
 		try {
 			Process proc = Runtime.getRuntime().exec("hostname");
-			return ZipFileUtils.convertStreamToString(proc.getInputStream(), "UTF-8");
+			return ZipFileUtils.convertStreamToString(proc.getInputStream(), UTF_8.name());
 		} catch (IOException e) {
 			return "?hostname?";
 		}

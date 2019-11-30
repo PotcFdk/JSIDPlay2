@@ -1,5 +1,6 @@
 package server.restful;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.servlets.ConvertServlet.SERVLET_PATH_CONVERT;
 import static server.restful.servlets.DirectoryServlet.SERVLET_PATH_DIRECTORY;
 import static server.restful.servlets.DownloadServlet.SERVLET_PATH_DOWNLOAD;
@@ -245,7 +246,7 @@ public class JSIDPlay2Server {
 
 	private Connector createHttpConnector() {
 		Connector httpConnector = new Connector();
-		httpConnector.setURIEncoding("UTF-8");
+		httpConnector.setURIEncoding(UTF_8.name());
 		httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
 		return httpConnector;
 	}
@@ -260,7 +261,7 @@ public class JSIDPlay2Server {
 		httpsConnector.setAttribute("keystorePass", configuration.getEmulationSection().getAppServerKeystorePassword());
 		httpsConnector.setAttribute("keyAlias", configuration.getEmulationSection().getAppServerKeyAlias());
 		httpsConnector.setAttribute("keyPass", configuration.getEmulationSection().getAppServerKeyPassword());
-		httpsConnector.setURIEncoding("UTF-8");
+		httpsConnector.setURIEncoding(UTF_8.name());
 		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
 		return httpsConnector;
 	}

@@ -1,5 +1,7 @@
 package server.restful.servlets;
 
+import static server.restful.common.MimeType.MIME_TYPE_JSON;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ public class FavoritesServlet extends HttpServlet {
 			throws ServletException, IOException {
 		List<String> filters = getFavorites();
 
-		response.setContentType("application/json; charset=utf-8");
+		response.setContentType(MIME_TYPE_JSON.getContentType());
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

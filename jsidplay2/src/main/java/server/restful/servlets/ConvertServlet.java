@@ -1,8 +1,15 @@
 package server.restful.servlets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.ZipFileUtils.copy;
+import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
+import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
+import static server.restful.common.MimeType.MIME_TYPE_MP4;
+import static server.restful.common.MimeType.MIME_TYPE_MPEG;
+import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.MimeType.getMimeType;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +36,6 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
-import server.restful.common.ContentType;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
@@ -64,18 +69,19 @@ public class ConvertServlet extends HttpServlet {
 	/**
 	 * Stream SID as MP3.
 	 * 
-	 * <BR>E.g. stream audio<BR>
+	 * <BR>
+	 * E.g. stream audio<BR>
 	 * {@code
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/C64Music/DEMOS/0-9/1_45_Tune.sid
-	 * }
-	 * <BR>E.g. stream video<BR>
+	 * } <BR>
+	 * E.g. stream video<BR>
 	 * {@code
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/ALGODANCER2/ALGODANCER2.d64?defaultLength=00:30&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true
 	 * }
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), "utf8");
+		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath
 				.substring(decodedPath.indexOf(SERVLET_PATH_CONVERT) + SERVLET_PATH_CONVERT.length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
@@ -83,11 +89,11 @@ public class ConvertServlet extends HttpServlet {
 		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")
 				|| filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp4")) {
 			try {
-				response.setContentType(ContentType.getContentType(getFilenameSuffix(filePath)).getContentType());
+				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
 				copy(file, response.getOutputStream());
-				response.addHeader("Content-Disposition", "attachment; filename=" + new File(filePath).getName());
+				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 			} catch (Exception e) {
-				response.setContentType("text/plain; charset=utf-8");
+				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -96,7 +102,7 @@ public class ConvertServlet extends HttpServlet {
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
 			try {
-				response.setContentType(ContentType.MIME_TYPE_MPEG.getContentType());
+				response.setContentType(MIME_TYPE_MPEG.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP3Stream driver = new MP3Stream(response.getOutputStream());
 				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
@@ -104,11 +110,11 @@ public class ConvertServlet extends HttpServlet {
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
-						.flatMap(List::stream).collect(Collectors.toList()).toArray(new String[0]);
+						.flatMap(List::stream).toArray(String[]::new);
 				commander.parse(args);
 				convertAudio(config, file, driver);
 			} catch (Exception e) {
-				response.setContentType("text/plain; charset=utf-8");
+				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -116,20 +122,20 @@ public class ConvertServlet extends HttpServlet {
 				|| tapeFileFilter.accept(file)) {
 			File mp4File = null;
 			try {
-				response.setContentType(ContentType.MIME_TYPE_MP4.getContentType());
+				response.setContentType(MIME_TYPE_MP4.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP4Driver driver = new MP4Driver();
-				JCommander commander = JCommander.newBuilder().addObject(config)
-						.programName(getClass().getName()).build();
+				JCommander commander = JCommander.newBuilder().addObject(config).programName(getClass().getName())
+						.build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
-						.flatMap(List::stream).collect(Collectors.toList()).toArray(new String[0]);
+						.flatMap(List::stream).toArray(String[]::new);
 				commander.parse(args);
 				mp4File = convertVideo(config, file, driver);
 				copy(mp4File, response.getOutputStream());
 			} catch (Exception e) {
-				response.setContentType("text/plain; charset=utf-8");
+				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			} finally {
 				if (mp4File != null) {
