@@ -102,7 +102,7 @@ public class JSIDPlay2Server {
 	/**
 	 * Static resources to serve
 	 */
-	private static final List<String> STATIC_RESOURCES = Arrays.asList("favorites.vue");
+	private static final List<String> STATIC_RESOURCES = Arrays.asList("favorites.vue", "hvsc.vue");
 
 	/**
 	 * Our servlets to serve
