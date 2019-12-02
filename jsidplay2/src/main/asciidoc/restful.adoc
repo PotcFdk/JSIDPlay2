@@ -204,7 +204,7 @@ Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
 === Autostart JSIDPlay2 AppServer on system startup
 
-To start JSIPlay2 AppServer on system startup, please type 'vi /etc/systemd/jsidplay2.service':
+To start JSIPlay2 AppServer on system startup, please type 'vi /lib/systemd/system/jsidplay2.service':
 [source,subs="attributes+"]
 ----
 [Unit]
@@ -229,9 +229,9 @@ WantedBy=default.target
 Now, grant permission and enable jsidplay2.service to autostart:
 [source,subs="attributes+"]
 ----
-chmod 644 /etc/systemd/jsidplay2.service
+chmod 644 /lib/systemd/system/jsidplay2.service
 sudo systemctl daemon-reload
-sudo systemctl enable /etc/systemd/jsidplay2.service
+sudo systemctl enable jsidplay2.service
 ----
 
 === Access from the Internet
