@@ -200,6 +200,7 @@ public class JSIDPlay2Server {
 	private Tomcat createTomcat() throws Exception {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setAddDefaultWebXmlToWebapp(false);
+		tomcat.setBaseDir(configuration.getSidplay2Section().getTmpDir());
 
 		addRealm(tomcat);
 		addConnectors(tomcat);
