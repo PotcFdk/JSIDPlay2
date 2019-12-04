@@ -5,6 +5,7 @@ import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.ZipFileUtils.copy;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_MP4;
 import static server.restful.common.MimeType.MIME_TYPE_MPEG;
@@ -65,9 +66,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return "/convert";
+		return CONTEXT_ROOT_SERVLET + "/convert";
 	}
-	
+
 	/**
 	 * Stream SID as MP3.
 	 * 
@@ -87,18 +88,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 
-		if (filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp3")
-				|| filePath.toLowerCase(Locale.ENGLISH).endsWith(".mp4")) {
-			try {
-				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
-				copy(file, response.getOutputStream());
-				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
-			} catch (Exception e) {
-				response.setContentType(MIME_TYPE_TEXT.getContentType());
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
-			}
-			response.setStatus(HttpServletResponse.SC_OK);
-		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
+		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".dat")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
@@ -119,15 +109,15 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
-		} else if (cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
-				|| tapeFileFilter.accept(file)) {
+		} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
+				|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 			File mp4File = null;
 			try {
 				response.setContentType(MIME_TYPE_MP4.getContentType());
 				IConfig config = new IniConfig(false, null);
 				MP4Driver driver = new MP4Driver();
-				JCommander commander = JCommander.newBuilder().addObject(config).programName(getClass().getName())
-						.build();
+				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
+						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
@@ -142,6 +132,16 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				if (mp4File != null) {
 					mp4File.delete();
 				}
+			}
+			response.setStatus(HttpServletResponse.SC_OK);
+		} else {
+			try {
+				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
+				copy(file, response.getOutputStream());
+				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
+			} catch (Exception e) {
+				response.setContentType(MIME_TYPE_TEXT.getContentType());
+				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
 		}

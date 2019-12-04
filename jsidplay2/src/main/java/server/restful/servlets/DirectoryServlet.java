@@ -1,6 +1,7 @@
 package server.restful.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
 
@@ -30,7 +31,7 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return "/directory";
+		return CONTEXT_ROOT_SERVLET + "/directory";
 	}
 
 	/**

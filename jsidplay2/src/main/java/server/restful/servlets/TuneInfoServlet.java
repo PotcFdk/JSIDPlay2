@@ -1,6 +1,7 @@
 package server.restful.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
@@ -32,8 +33,6 @@ import ui.musiccollection.SearchCriteria;
 @SuppressWarnings("serial")
 public class TuneInfoServlet extends JSIDPlay2Servlet {
 
-	public static final String SERVLET_PATH_TUNE_INFO = "/info";
-
 	private ServletUtil util;
 
 	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
@@ -42,7 +41,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return "/info";
+		return CONTEXT_ROOT_SERVLET + "/info";
 	}
 
 	/**
@@ -54,8 +53,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath
-				.substring(decodedPath.indexOf(SERVLET_PATH_TUNE_INFO) + SERVLET_PATH_TUNE_INFO.length());
+		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 
 		try {
 			response.setContentType(MIME_TYPE_JSON.getContentType());

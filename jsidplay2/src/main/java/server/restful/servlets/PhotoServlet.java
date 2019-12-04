@@ -1,6 +1,7 @@
 package server.restful.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_JPG;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
@@ -35,7 +36,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return "/photo";
+		return CONTEXT_ROOT_SERVLET + "/photo";
 	}
 
 	/**

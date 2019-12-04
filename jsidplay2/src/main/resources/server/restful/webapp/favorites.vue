@@ -32,12 +32,7 @@
 			fetchData: function () {
 				axios({
 					method: 'get',
-					url: '/jsidplay2service/JSIDPlay2REST/favorites',
-					withCredentials: true,
-					auth: {
-						username: 'jsidplay2',
-						password: 'jsidplay2!'
-					}
+					url: '/jsidplay2service/JSIDPlay2REST/favorites'
 				}).then(response => {
 					this.favorites = response.data
 				})

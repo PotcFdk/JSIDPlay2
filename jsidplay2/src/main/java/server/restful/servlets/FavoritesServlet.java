@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return "/favorites";
+		return CONTEXT_ROOT_SERVLET + "/favorites";
 	}
 
 	/**
