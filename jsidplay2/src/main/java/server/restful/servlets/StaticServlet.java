@@ -5,6 +5,9 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
 import static server.restful.common.MimeType.MIME_TYPE_HTML;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -24,7 +27,6 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class StaticServlet extends JSIDPlay2Servlet {
 
-	@SuppressWarnings("unused")
 	private ServletUtil util;
 
 	public StaticServlet(Configuration configuration, Properties directoryProperties) {
@@ -46,7 +48,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 
-		try (InputStream source = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp" + filePath)) {
+		try (InputStream source = getResourceAsStream(filePath)) {
 			response.setContentType(MIME_TYPE_HTML.getContentType());
 			response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
 		} catch (IOException e) {
@@ -54,6 +56,14 @@ public class StaticServlet extends JSIDPlay2Servlet {
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	private InputStream getResourceAsStream(String filePath) throws FileNotFoundException {
+		File localFile = new File(util.getConfiguration().getSidplay2Section().getTmpDir(), filePath);
+		if (localFile.exists() && localFile.canRead()) {
+			return new FileInputStream(localFile);
+		}
+		return JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp" + filePath);
 	}
 
 }
