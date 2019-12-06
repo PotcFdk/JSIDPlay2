@@ -55,8 +55,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 			File absoluteFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
-				throw new FileNotFoundException(
-						absoluteFile.getAbsolutePath() + " (Datei oder Verzeichnis nicht gefunden)");
+				throw new FileNotFoundException(filePath + " (No such file or directory)");
 			}
 			response.getOutputStream().write(photo);
 			response.setContentLength(photo.length);

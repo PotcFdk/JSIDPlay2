@@ -36,7 +36,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_STATIC + "";
+		return CONTEXT_ROOT_STATIC;
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 		}
 		InputStream resourceAsStream = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + filePath);
 		if (resourceAsStream == null) {
-			throw new FileNotFoundException("Resource not found: " + filePath);
+			throw new FileNotFoundException(filePath + " (No such file or directory)");
 		}
 		return resourceAsStream;
 	}
