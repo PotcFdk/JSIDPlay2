@@ -68,6 +68,9 @@ public class ServletUtil {
 			String virtualCollectionRoot, boolean adminRole) {
 		ArrayList<String> result = new ArrayList<String>();
 		if (rootFile != null) {
+			if (path.endsWith("/")) {
+				path = path.substring(0, path.length() - 1);
+			}
 			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
 			File[] listFiles = file.listFiles(pathname -> {
 				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))

@@ -31,11 +31,15 @@ public enum MimeType {
 	/**
 	 * Json
 	 */
-	MIME_TYPE_JSON("application/json; charset=utf-8"),
+	MIME_TYPE_JSON("application/json; charset=utf-8", ".json"),
 	/**
 	 * Html
 	 */
-	MIME_TYPE_HTML("text/html; charset=utf-8");
+	MIME_TYPE_HTML("text/html; charset=utf-8", ".html", ".vue"),
+	/**
+	 * Javascript
+	 */
+	MIME_TYPE_JAVASCRIPT("application/javascript", ".js");
 
 	private String contentType;
 	private String[] extensions;

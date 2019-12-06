@@ -2,7 +2,6 @@ package server.restful.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
-import static server.restful.common.MimeType.MIME_TYPE_HTML;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
 import java.io.File;
@@ -18,9 +17,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
 import server.restful.common.JSIDPlay2Servlet;
+import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
@@ -49,7 +50,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 
 		try (InputStream source = getResourceAsStream(filePath)) {
-			response.setContentType(MIME_TYPE_HTML.getContentType());
+			response.setContentType(MimeType.getMimeType(PathUtils.getFilenameSuffix(filePath)).getContentType());
 			response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
 		} catch (IOException e) {
 			response.setContentType(MIME_TYPE_TEXT.getContentType());
@@ -59,11 +60,18 @@ public class StaticServlet extends JSIDPlay2Servlet {
 	}
 
 	private InputStream getResourceAsStream(String filePath) throws FileNotFoundException {
+		if (filePath.startsWith("/")) {
+			filePath = filePath.substring(1);
+		}
 		File localFile = new File(util.getConfiguration().getSidplay2Section().getTmpDir(), filePath);
 		if (localFile.exists() && localFile.canRead()) {
 			return new FileInputStream(localFile);
 		}
-		return JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp" + filePath);
+		InputStream resourceAsStream = JSIDPlay2Server.class.getResourceAsStream("/server/restful/webapp/" + filePath);
+		if (resourceAsStream == null) {
+			throw new FileNotFoundException("Resource not found: " + filePath);
+		}
+		return resourceAsStream;
 	}
 
 }
