@@ -23,16 +23,12 @@ Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
 -Dupx.home=<pathToUPX>
 
-Use Oracle Java8
-================
-This is my recommendation, because JavaFX is already included!
-
-Alternatively use OpenJDK For Linux users and PulseAudio for sound output:
-==========================================================================
+Use OpenJDK For Linux users and PulseAudio for sound output:
+============================================================
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
-sudo apt-get install openjfx (must then be openfx8 - NOT openjfx11 - No more available on Ubuntu?)
+sudo apt-get install openjfx (must then be openfx8 - NOT openjfx11 - Is it no more available on Ubuntu?)
 sudo apt-get install pavucontrol
 
 Some soundcards don't work well with the default pulseaudio settings:
@@ -53,6 +49,10 @@ In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
 Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 Lower your microphone volume level to prevent overdrive noise
+
+Use Oracle Java8
+================
+This is my recommendation, because JavaFX is already included!
 
 Java8 in Eclipse:
 =================
@@ -106,10 +106,10 @@ Choose a different one...
 /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar
 X Remember file type assignment
 
-Shrink jsiddevice using packer UPX:
+Shrink jsiddevice using packer UPX (done in the release build automatically):
 upx.exe --lzma --best --ultra-brute jsiddevice.exe
 
-find out available JavaFX style classes of a node in the scene graph:
+How to find out available JavaFX style classes of a node in the scene graph?
 	private void dump(Node n, int depth) {
 		for (int i = 0; i < depth; i++)
 			System.out.print("  ");
@@ -151,5 +151,3 @@ libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
 Wait for proguard to support Java11 and adopt changes
-
-Ultimate64: support audio and video streaming
