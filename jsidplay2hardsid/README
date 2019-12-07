@@ -25,14 +25,34 @@ Click on Menu/Project/Build All
 Copy hardsid_usb.dll to JSIDPlay2 directory
 src/main/resources/win32-x86/
 
-Test:
-=====
-Windows is guest in Virtual Box, Ubuntu Linux is host:
-Launch Windows
+Test HardSID4U in Virtual Box:
+==============================
+Windows is guest, Ubuntu Linux is host:
+Launch Windows 10
 Install Java 32-Bit
+
+Alternative 1 (use unsigned drivers):
+=====================================
 Install USB Driver (hardsidusb.*) from directory resources/driver
-Press F8 on Windows boot
-Choose deactivate Driver signature checks and continue booting.
+Now, reboot your computer into "disable driver signing" mode.
+- Press F8 on every Windows boot
+- Choose deactivate Driver signature checks and continue booting.
+
+Alternative 2 (use signed drivers)
+==================================
+Open a new command prompt (important: use open as Administrator)
+Extract signtools.zip containing important exe files.
+Please type the following commands
+makecert -$ individual -r -pe -ss "Self Signed Drivers" -n CN="Self Signed Drivers" selfsign.cer
+certmgr /add selfsign.cer /s /r localMachine root
+signtool sign /v /s "Self Signed Drivers" /n "Self Signed Drivers" hardsidusb_x64.sys
+bcdedit -set TESTSIGNING ON
+Now, reboot your computer into "disable driver signing" mode and load your shining new signed driver.
+You only need to boot into this "disable driver signing" mode first time you
+load the driver. It should work after that without any special tricks however testsigning needs to be enabled.
+
+Use HardSID4U:
+==============
 Connect HardSID4U device to your real computer.
 Allow Windows to use USB hardware with Virtual box Toolbar icon in the bottom right side of the window.
 Your user has to be a member of the group: vboxusers to let virtualbox access USB hardware.
