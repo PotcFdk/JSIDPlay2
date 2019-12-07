@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=JSIDPlay2
 Name[de_DE]=JSIDPlay2
-Path=/home/ken/Downloads/jsidplay2-4.1
-Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/Downloads/jsidplay2-4.1 ; java -jar jsidplay2-4.1.jar'
+Path=/home/ken/Downloads/${project.artifactId}-${project.version}
+Exec=/bin/bash -c 'export LD_LIBRARY_PATH=/home/ken/Downloads/${project.artifactId}-${project.version} ; java -jar ${project.artifactId}-${project.version}.jar'
 Terminal=false
 Type=Application
-Icon=/home/ken/Downloads/jsidplay2-4.1/jsidplay2.png
+Icon=/home/ken/Downloads/${project.artifactId}-${project.version}/jsidplay2.png
 Categories=

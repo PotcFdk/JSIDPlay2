@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=JSIDPlay2 (Java11)
-Path=/home/ken/Downloads/jjsiddevice-4.1.jar
-Exec=java -jar jsiddevice-4.1.jar
+Name=JSIDDevice (Java11)
+Name[de_DE]=JSIDDevice (Java11)
+Path=/home/ken/Downloads/jsiddevice-${project.version}.jar
+Exec=java -jar jsiddevice-${project.version}.jar
 Terminal=false
 Type=Application
-Icon=/home/ken/Downloads/jsiddevice-4.1.jar/jsidplay2.png
+Icon=/home/ken/Downloads/jsiddevice-${project.version}.jar/jsidplay2.png
 Categories=
-Name[de_DE]=JSIDDevice (Java11)

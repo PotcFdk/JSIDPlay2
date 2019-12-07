@@ -78,8 +78,14 @@
           Create zip file
          ================================= -->
 	<target name="zip_jsiddevice">
+		<copy todir = "${deploy_dir}">
+			<fileset dir = "src/main/linux" includes = "JSIDDevice*.desktop"/>
+			<filterset begintoken="${" endtoken="}">
+				<filter token = "project.version" value = "${project.version}"/>
+			</filterset>
+		</copy>
 		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true" zip64mode="always">
-			<fileset dir="src/main/linux">
+			<fileset dir="${deploy_dir}">
 				<include name="JSIDDevice*.desktop" />
 			</fileset>
 			<fileset dir="src/main/deploy/jsidplay2">
@@ -90,6 +96,11 @@
 				<exclude name="${jsiddevice}.zip" />
 			</fileset>
 		</zip>
+		<delete>
+			<fileset dir="${deploy_dir}">
+				<include name="JSIDDevice*.desktop" />
+			</fileset>
+		</delete>
 	</target>
 
 	<!-- ================================= 
