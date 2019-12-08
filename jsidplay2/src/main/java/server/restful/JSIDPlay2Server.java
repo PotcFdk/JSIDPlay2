@@ -201,7 +201,7 @@ public class JSIDPlay2Server {
 
 	private void setRealm(Tomcat tomcat) {
 		MemoryRealm realm = new MemoryRealm();
-		realm.setPathname(getRealmConfigPath().toExternalForm());
+		realm.setPathname(getRealmConfigURL().toExternalForm());
 		tomcat.getEngine().setRealm(realm);
 	}
 
@@ -211,7 +211,7 @@ public class JSIDPlay2Server {
 	 * 
 	 * @return user, password and role configuration file
 	 */
-	private URL getRealmConfigPath() {
+	private URL getRealmConfigURL() {
 		for (String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home") }) {
 			File configPlace = new File(dir, REALM_CONFIG);
 			if (configPlace.exists()) {
