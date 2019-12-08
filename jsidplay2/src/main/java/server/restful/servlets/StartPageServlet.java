@@ -47,7 +47,7 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
 		String preferredProtocol = appServerConnectors.getPreferredProtocol();
 		String hostname = InetAddress.getLocalHost().getHostAddress();
-		String portNum = String.valueOf(appServerConnectors.getPortNum());
+		String portNum = String.valueOf(appServerConnectors.getPreferredPortNum());
 		Map<String, String> replacements = new HashMap<>();
 		replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
 
