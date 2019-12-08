@@ -1,6 +1,7 @@
 package server.restful;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static org.apache.catalina.startup.Tomcat.addServlet;
 
@@ -10,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,9 +20,13 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.apache.tomcat.util.net.Constants;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
@@ -32,6 +37,7 @@ import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
+import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.servlets.ConvertServlet;
 import server.restful.servlets.DirectoryServlet;
@@ -44,6 +50,8 @@ import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
 import sidplay.Player;
 import ui.entities.config.Configuration;
+import ui.entities.config.EmulationSection;
+import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 
@@ -100,7 +108,7 @@ public class JSIDPlay2Server {
 	/**
 	 * Our servlets to serve
 	 */
-	private static final List<Class<? extends JSIDPlay2Servlet>> SERVLETS = Arrays.asList(FiltersServlet.class,
+	private static final List<Class<? extends JSIDPlay2Servlet>> SERVLETS = asList(FiltersServlet.class,
 			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class);
 
@@ -178,22 +186,27 @@ public class JSIDPlay2Server {
 	}
 
 	private Tomcat createTomcat() throws Exception {
+		SidPlay2Section sidplay2Section = configuration.getSidplay2Section();
+		EmulationSection emulationSection = configuration.getEmulationSection();
+
 		Tomcat tomcat = new Tomcat();
 		tomcat.setAddDefaultWebXmlToWebapp(false);
-		tomcat.setBaseDir(configuration.getSidplay2Section().getTmpDir());
+		tomcat.setBaseDir(sidplay2Section.getTmpDir());
 
-		addRealm(tomcat);
-		addConnectors(tomcat);
+		setRealm(tomcat);
+		setConnectors(tomcat, emulationSection);
 
-		Context context = addWebApp(tomcat);
+		Context context = addWebApp(tomcat, sidplay2Section);
+
 		addSecurityConstraints(context);
 		addServlets(context);
+
 		return tomcat;
 	}
 
-	private void addRealm(Tomcat tomcat) {
+	private void setRealm(Tomcat tomcat) {
 		MemoryRealm realm = new MemoryRealm();
-		realm.setPathname(getRealmConfigPath().toString());
+		realm.setPathname(getRealmConfigPath().toExternalForm());
 		tomcat.getEngine().setRealm(realm);
 	}
 
@@ -218,53 +231,62 @@ public class JSIDPlay2Server {
 		return INTERNAL_REALM_CONFIG;
 	}
 
-	private void addConnectors(Tomcat tomcat) {
-		switch (configuration.getEmulationSection().getAppServerConnectors()) {
+	private void setConnectors(Tomcat tomcat, EmulationSection emulationSection) {
+		switch (emulationSection.getAppServerConnectors()) {
 		case HTTP_HTTPS: {
-			tomcat.setConnector(createHttpConnector());
-			tomcat.setConnector(createHttpsConnector());
+			tomcat.setConnector(createHttpConnector(emulationSection));
+			tomcat.setConnector(createHttpsConnector(emulationSection));
 			break;
 		}
 		case HTTPS: {
-			tomcat.setConnector(createHttpsConnector());
+			tomcat.setConnector(createHttpsConnector(emulationSection));
 			break;
 		}
 		case HTTP:
 		default: {
-			tomcat.setConnector(createHttpConnector());
+			tomcat.setConnector(createHttpConnector(emulationSection));
 			break;
 		}
 		}
 	}
 
-	private Connector createHttpConnector() {
-		Connector httpConnector = new Connector();
+	private Connector createHttpConnector(EmulationSection emulationSection) {
+		Connector httpConnector = new Connector(Http11NioProtocol.class.getName());
 		httpConnector.setURIEncoding(UTF_8.name());
-		httpConnector.setPort(configuration.getEmulationSection().getAppServerPort());
+		httpConnector.setPort(emulationSection.getAppServerPort());
+		httpConnector.setScheme(Connectors.HTTP.getPreferredProtocol());
 		return httpConnector;
 	}
 
-	private Connector createHttpsConnector() {
-		Connector httpsConnector = new Connector();
+	private Connector createHttpsConnector(EmulationSection emulationSection) {
+		Connector httpsConnector = new Connector(Http11NioProtocol.class.getName());
 		httpsConnector.setURIEncoding(UTF_8.name());
-		httpsConnector.setPort(configuration.getEmulationSection().getAppServerSecurePort());
-		httpsConnector.setSecure(true);
-		httpsConnector.setScheme("https");
-		httpsConnector.setAttribute("sslProtocol", "TLS");
-		httpsConnector.setAttribute("SSLEnabled", true);
-		httpsConnector.setAttribute("keystoreFile", configuration.getEmulationSection().getAppServerKeystoreFile());
-		httpsConnector.setAttribute("keystorePass", configuration.getEmulationSection().getAppServerKeystorePassword());
-		httpsConnector.setAttribute("keyAlias", configuration.getEmulationSection().getAppServerKeyAlias());
-		httpsConnector.setAttribute("keyPass", configuration.getEmulationSection().getAppServerKeyPassword());
+		httpsConnector.setPort(emulationSection.getAppServerSecurePort());
+		httpsConnector.setScheme(Connectors.HTTPS.getPreferredProtocol());
+
+		Http11NioProtocol protocol = (Http11NioProtocol) httpsConnector.getProtocolHandler();
+		protocol.setSecure(true);
+		protocol.setSSLEnabled(true);
+		protocol.setSslProtocol(Constants.SSL_PROTO_TLSv1_2);
+
+		asList(protocol.findSslHostConfigs()).stream().findFirst().ifPresent(sslHostConfig -> {
+			SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.RSA);
+			certificate.setCertificateKeystoreType(KeyStore.getDefaultType());
+			certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile());
+			certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
+			certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
+			certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
+
+			sslHostConfig.addCertificate(certificate);
+		});
 		return httpsConnector;
 	}
 
 	/**
 	 * <b>Note:</b> Base directory of the context root is .jsidplay2
 	 */
-	private Context addWebApp(Tomcat tomcat) {
-		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT,
-				configuration.getSidplay2Section().getTmpDir());
+	private Context addWebApp(Tomcat tomcat, SidPlay2Section sidplay2Section) {
+		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT, sidplay2Section.getTmpDir());
 		context.addSecurityRole(ROLE_ADMIN);
 		context.addSecurityRole(ROLE_USER);
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
