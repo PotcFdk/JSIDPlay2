@@ -87,23 +87,23 @@ public class JSIDPlay2Server {
 	public static final String ROLE_ADMIN = "admin";
 
 	/**
-	 * Filename of the configuration file containing additional directories of
-	 * {@link DirectoryServlet}<BR>
+	 * Filename of the configuration file to access additional directories.
+	 * 
 	 * e.g. "/MP3=/media/nas1/mp3,true" (top-level logical directory name=real
-	 * directory name, admin role required)
+	 * directory name, admin role required?)
 	 */
-	public static final String DIRECTORIES_CONFIG_FILE = "directoryServlet.properties";
+	public static final String SERVLET_UTIL_CONFIG_FILE = "directoryServlet.properties";
 
 	/**
-	 * Filename of the configuration file containing username, password and role.
-	 * For an example please refer to the internal file tomcat-users.xml
+	 * Filename of the configuration containing username, password and role. For an
+	 * example please refer to the internal resource tomcat-users.xml
 	 */
-	public static final String REALM_CONFIG_FILE = "tomcat-users.xml";
+	public static final String REALM_CONFIG = "tomcat-users.xml";
 
 	/**
 	 * Configuration of usernames, passwords and roles
 	 */
-	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG_FILE);
+	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG);
 
 	/**
 	 * Our servlets to serve
@@ -120,7 +120,7 @@ public class JSIDPlay2Server {
 
 	private Tomcat tomcat;
 
-	private Properties directoryProperties = new Properties();
+	private Properties servletUtilProperties;
 
 	private static JSIDPlay2Server instance;
 
@@ -133,11 +133,7 @@ public class JSIDPlay2Server {
 
 	private JSIDPlay2Server(Configuration configuration) {
 		this.configuration = configuration;
-		try (InputStream is = new FileInputStream(getDirectoryConfigPath())) {
-			directoryProperties.load(is);
-		} catch (IOException e) {
-			// ignore non-existing properties
-		}
+		this.servletUtilProperties = getServletUtilProperties();
 		Player.initializeTmpDir(configuration);
 	}
 
@@ -169,20 +165,19 @@ public class JSIDPlay2Server {
 	}
 
 	/**
-	 * Search for optional configuration containing additional directories. Search
-	 * in CWD and in the HOME folder.
-	 * 
-	 * @return configuration file
+	 * Search for configuration of additional accessible directories. Search in CWD
+	 * and in the HOME folder.
 	 */
-	private File getDirectoryConfigPath() {
-		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(dir, DIRECTORIES_CONFIG_FILE);
-			if (configPlace.exists()) {
-				return configPlace;
+	private Properties getServletUtilProperties() {
+		Properties result = new Properties();
+		for (String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home") }) {
+			try (InputStream is = new FileInputStream(new File(dir, SERVLET_UTIL_CONFIG_FILE))) {
+				result.load(is);
+			} catch (IOException e) {
+				// ignore non-existing properties
 			}
 		}
-		// default directory
-		return new File(System.getProperty("user.home"), DIRECTORIES_CONFIG_FILE);
+		return result;
 	}
 
 	private Tomcat createTomcat() throws Exception {
@@ -217,13 +212,13 @@ public class JSIDPlay2Server {
 	 * @return user, password and role configuration file
 	 */
 	private URL getRealmConfigPath() {
-		for (final String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(dir, REALM_CONFIG_FILE);
+		for (String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home") }) {
+			File configPlace = new File(dir, REALM_CONFIG);
 			if (configPlace.exists()) {
 				try {
 					return configPlace.toURI().toURL();
 				} catch (MalformedURLException e) {
-					// ignore, use internal config instead!
+					throw new Error(e); // Can't happen
 				}
 			}
 		}
@@ -253,18 +248,20 @@ public class JSIDPlay2Server {
 	private Connector createHttpConnector(EmulationSection emulationSection) {
 		Connector httpConnector = new Connector(Http11NioProtocol.class.getName());
 		httpConnector.setURIEncoding(UTF_8.name());
-		httpConnector.setPort(emulationSection.getAppServerPort());
 		httpConnector.setScheme(Connectors.HTTP.getPreferredProtocol());
+
+		Http11NioProtocol protocol = (Http11NioProtocol) httpConnector.getProtocolHandler();
+		protocol.setPort(emulationSection.getAppServerPort());
 		return httpConnector;
 	}
 
 	private Connector createHttpsConnector(EmulationSection emulationSection) {
 		Connector httpsConnector = new Connector(Http11NioProtocol.class.getName());
 		httpsConnector.setURIEncoding(UTF_8.name());
-		httpsConnector.setPort(emulationSection.getAppServerSecurePort());
 		httpsConnector.setScheme(Connectors.HTTPS.getPreferredProtocol());
 
 		Http11NioProtocol protocol = (Http11NioProtocol) httpsConnector.getProtocolHandler();
+		protocol.setPort(emulationSection.getAppServerSecurePort());
 		protocol.setSecure(true);
 		protocol.setSSLEnabled(true);
 		protocol.setSslProtocol(Constants.SSL_PROTO_TLSv1_2);
@@ -276,7 +273,6 @@ public class JSIDPlay2Server {
 			certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
 			certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
 			certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
-
 			sslHostConfig.addCertificate(certificate);
 		});
 		return httpsConnector;
@@ -314,7 +310,7 @@ public class JSIDPlay2Server {
 		for (Class<? extends JSIDPlay2Servlet> servletCls : SERVLETS) {
 			JSIDPlay2Servlet servlet = (JSIDPlay2Servlet) servletCls
 					.getDeclaredConstructor(Configuration.class, Properties.class)
-					.newInstance(configuration, directoryProperties);
+					.newInstance(configuration, servletUtilProperties);
 			addServlet(context, servletCls.getSimpleName(), servlet).addMapping(servlet.getServletPath() + "/*");
 		}
 	}
@@ -339,7 +335,7 @@ public class JSIDPlay2Server {
 			commander.parse(args);
 			if (jsidplay2Server.help) {
 				commander.usage();
-				exit(1);
+				exit(0);
 			}
 			jsidplay2Server.start();
 		} catch (ParameterException | IOException | SidTuneError e) {
