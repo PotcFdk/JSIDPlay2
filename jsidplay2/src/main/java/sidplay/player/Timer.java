@@ -169,8 +169,7 @@ public abstract class Timer {
 	private double schedule(final double seconds, final Event event, final boolean includeEndpoint) {
 		double maxSeconds = seconds + (includeEndpoint ? .001 : 0);
 		EventScheduler eventScheduler = player.getC64().getEventScheduler();
-		double cyclesPerSecond = eventScheduler.getCyclesPerSecond();
-		long absoluteCycles = (long) (maxSeconds * cyclesPerSecond);
+		long absoluteCycles = (long) (maxSeconds * eventScheduler.getCyclesPerSecond());
 		if (absoluteCycles < eventScheduler.getTime(Phase.PHI1)) {
 			// event is in the past? Trigger immediately!
 			eventScheduler.scheduleAbsolute(event, 0, Phase.PHI1);

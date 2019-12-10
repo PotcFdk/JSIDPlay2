@@ -14,8 +14,6 @@ public class DebugUtil {
 		try {
 			// turn off HSQL logging re-configuration
 			System.setProperty("hsqldb.reconfig_logging", "false");
-			// make jetty use java util logging
-			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.JavaUtilLog");
 			// configure JSIDPlay2 logging (java util logging)
 			LogManager.getLogManager().readConfiguration(JSidPlay2Main.class.getResourceAsStream(LOG_CONFIG_RES));
 		} catch (final IOException e) {
