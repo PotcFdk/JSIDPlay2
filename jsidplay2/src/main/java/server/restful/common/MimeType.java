@@ -15,6 +15,10 @@ public enum MimeType {
 	/**
 	 * Video formats
 	 */
+	MIME_TYPE_AVI("video/msvideo", ".avi"),
+	/**
+	 * Video formats
+	 */
 	MIME_TYPE_MP4("video/mp4", ".mp4"),
 	/**
 	 * SID formats

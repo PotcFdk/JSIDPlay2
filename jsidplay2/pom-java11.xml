@@ -109,6 +109,11 @@
 			<version>5.5</version>
 		</dependency>
 		<dependency>
+		    <groupId>com.liferay</groupId>
+		    <artifactId>org.monte-java9</artifactId>
+		    <version>0.7.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>2.4.0-b180830.0438</version>

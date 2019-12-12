@@ -21,12 +21,16 @@ public enum Audio {
 	WAV(true, ".wav", WavFile.class),
 	/** MP3 file write. */
 	MP3(true, ".mp3", MP3File.class),
+	/** AVI file write. */
+	AVI(true, ".avi", AVIDriver.class),
 	/** MP4 file write. */
 	MP4(true, ".mp4", MP4Driver.class),
 	/** Java Sound API plus WAV file write. */
 	LIVE_WAV(true, ".wav", ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(true, ".mp3", ProxyDriver.class, JavaSound.class, MP3File.class),
+	/** Java Sound API plus AVI file write. */
+	LIVE_AVI(true, ".avi", ProxyDriver.class, JavaSound.class, AVIDriver.class),
 	/** MP4 file write. */
 	LIVE_MP4(true, ".mp4", ProxyDriver.class, JavaSound.class, MP4Driver.class),
 	/** Java Sound API plus play-back of MP3 recording. */

@@ -7,7 +7,6 @@ import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_MP4;
 import static server.restful.common.MimeType.MIME_TYPE_MPEG;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 import static server.restful.common.MimeType.getMimeType;
@@ -37,8 +36,10 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
+import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
+import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.MP4Driver;
@@ -95,7 +96,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			try {
 				response.setContentType(MIME_TYPE_MPEG.getContentType());
 				IConfig config = new IniConfig(false, null);
-				MP3Stream driver = new MP3Stream(response.getOutputStream());
+				AudioDriver driver = new MP3Stream(response.getOutputStream());
 				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
@@ -111,11 +112,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 				|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
-			File mp4File = null;
+			File videoFile = null;
 			try {
-				response.setContentType(MIME_TYPE_MP4.getContentType());
 				IConfig config = new IniConfig(false, null);
+
+//				Audio audio = Audio.AVI;
+//				AudioDriver driver = new AVIDriver();
+				Audio audio = Audio.MP4;
 				MP4Driver driver = new MP4Driver();
+				
+				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
+
 				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
 						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
@@ -123,14 +130,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
 						.flatMap(List::stream).toArray(String[]::new);
 				commander.parse(args);
-				mp4File = convertVideo(config, file, driver);
-				copy(mp4File, response.getOutputStream());
+				videoFile = convertVideo(config, file, driver, audio);
+				copy(videoFile, response.getOutputStream());
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			} finally {
-				if (mp4File != null) {
-					mp4File.delete();
+				if (videoFile != null) {
+					videoFile.delete();
 				}
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -158,11 +165,12 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private File convertVideo(IConfig config, File file, AudioDriver driver)
+	private File convertVideo(IConfig config, File file, AudioDriver driver, Audio audio)
 			throws IOException, SidTuneError, URISyntaxException {
 		Player player = new Player(config);
-		File mp4File = File.createTempFile("jsidplay2video", ".mp4");
-		player.setRecordingFilenameProvider(tune -> mp4File.getAbsolutePath());
+		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
+				new File(config.getSidplay2Section().getTmpDir()));
+		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
 		player.setAudioDriver(driver);
 		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));
 		try (OutputStream fileOutputStream = new FileOutputStream(extractedFile)) {
@@ -171,6 +179,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		extractedFile.delete();
 		player.stopC64(false);
-		return mp4File;
+		return videoFile;
 	}
 }
