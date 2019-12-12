@@ -69,6 +69,10 @@ public enum Audio {
 		return extension;
 	}
 
+	public Class<? extends AudioDriver> getAudioDriverClass() {
+		return audioDriverClass;
+	}
+	
 	/**
 	 * Get audio driver.
 	 * 

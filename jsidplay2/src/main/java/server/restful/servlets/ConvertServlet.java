@@ -39,7 +39,6 @@ import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
-import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
@@ -94,16 +93,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
 				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
 			try {
-				response.setContentType(MIME_TYPE_MPEG.getContentType());
-				IConfig config = new IniConfig(false, null);
-				AudioDriver driver = new MP3Stream(response.getOutputStream());
-				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
-						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
 						.flatMap(List::stream).toArray(String[]::new);
+
+				IConfig config = new IniConfig(false, null);
+				
+				AudioDriver driver = new MP3Stream(response.getOutputStream());
+				
+				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
+						.programName(getClass().getName()).build();
 				commander.parse(args);
+				
+				response.setContentType(MIME_TYPE_MPEG.getContentType());
 				convertAudio(config, file, driver);
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
@@ -114,23 +117,25 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 			File videoFile = null;
 			try {
-				IConfig config = new IniConfig(false, null);
-
-				Audio audio = Audio.AVI;
-				AudioDriver driver = new AVIDriver();
-//				Audio audio = Audio.MP4;
-//				MP4Driver driver = new MP4Driver();
-				
-				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
-
-				JCommander commander = JCommander.newBuilder().addObject(config).addObject(driver)
-						.programName(getClass().getName()).build();
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
 								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
 						.flatMap(List::stream).toArray(String[]::new);
+
+				IConfig config = new IniConfig(false, null);
+
+				JCommander commander = JCommander.newBuilder().addObject(config).programName(getClass().getName())
+						.build();
 				commander.parse(args);
+
+				Audio audio = getAudio(config);
+				AudioDriver driver = audio.getAudioDriverClass().newInstance();
+
+				commander = JCommander.newBuilder().addObject(driver).programName(getClass().getName()).build();
+
 				videoFile = convertVideo(config, file, driver, audio);
+				
+				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 				copy(videoFile, response.getOutputStream());
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
@@ -154,6 +159,21 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
+	private Audio getAudio(IConfig config) {
+		Audio audio = config.getAudioSection().getAudio();
+		if (audio == null) {
+			return Audio.MP4;
+		}
+		switch (audio) {
+		case AVI:
+		case MP4:
+			return audio;
+
+		default:
+			return Audio.MP4;
+		}
+	}
+
 	private void convertAudio(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
 		String root = util.getConfiguration().getSidplay2Section().getHvsc();
@@ -168,17 +188,19 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private File convertVideo(IConfig config, File file, AudioDriver driver, Audio audio)
 			throws IOException, SidTuneError, URISyntaxException {
 		Player player = new Player(config);
-		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
-				new File(config.getSidplay2Section().getTmpDir()));
-		if (config.getSidplay2Section().getDefaultPlayLength()==0) {
-			config.getSidplay2Section().setDefaultPlayLength(180);
+		if (config.getSidplay2Section().getDefaultPlayLength() == 0) {
+			// Prevent unlimited video length in record mode!
+			config.getSidplay2Section().setDefaultPlayLength(30);
+		}
+		File tmpDirectory = new File(config.getSidplay2Section().getTmpDir());
+		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(), tmpDirectory);
+		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()),
+				tmpDirectory);
+		try (OutputStream extractedFileOutputStream = new FileOutputStream(extractedFile)) {
+			copy(file, extractedFileOutputStream);
 		}
 		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
 		player.setAudioDriver(driver);
-		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));
-		try (OutputStream fileOutputStream = new FileOutputStream(extractedFile)) {
-			copy(file, fileOutputStream);
-		}
 		new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		extractedFile.delete();
 		player.stopC64(false);
