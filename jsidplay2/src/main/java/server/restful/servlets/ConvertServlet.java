@@ -39,10 +39,10 @@ import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
+import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
-import sidplay.audio.MP4Driver;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
 import ui.entities.config.Configuration;
@@ -116,10 +116,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			try {
 				IConfig config = new IniConfig(false, null);
 
-//				Audio audio = Audio.AVI;
-//				AudioDriver driver = new AVIDriver();
-				Audio audio = Audio.MP4;
-				MP4Driver driver = new MP4Driver();
+				Audio audio = Audio.AVI;
+				AudioDriver driver = new AVIDriver();
+//				Audio audio = Audio.MP4;
+//				MP4Driver driver = new MP4Driver();
 				
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 
@@ -170,6 +170,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		Player player = new Player(config);
 		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));
+		if (config.getSidplay2Section().getDefaultPlayLength()==0) {
+			config.getSidplay2Section().setDefaultPlayLength(180);
+		}
 		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
 		player.setAudioDriver(driver);
 		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()));

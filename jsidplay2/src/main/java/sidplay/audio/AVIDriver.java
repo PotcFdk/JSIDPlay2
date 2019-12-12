@@ -39,6 +39,7 @@ public class AVIDriver implements VideoDriver {
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
+		System.out.println("Recording, file=" + recordingFilename);
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
 		aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f).prepend(
