@@ -13,6 +13,10 @@ public enum MimeType {
 	 */
 	MIME_TYPE_MPEG("audio/mpeg", ".mpg", ".mpeg", ".mp3"),
 	/**
+	 * Audio formats
+	 */
+	MIME_TYPE_WAV("audio/wav", ".wav"),
+	/**
 	 * Video formats
 	 */
 	MIME_TYPE_AVI("video/msvideo", ".avi"),

@@ -7,6 +7,7 @@ import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.MP3Driver.MP3File;
+import sidplay.audio.WAVDriver.WavFile;
 
 /**
  * Audio output.
@@ -69,10 +70,6 @@ public enum Audio {
 		return extension;
 	}
 
-	public Class<? extends AudioDriver> getAudioDriverClass() {
-		return audioDriverClass;
-	}
-	
 	/**
 	 * Get audio driver.
 	 * 

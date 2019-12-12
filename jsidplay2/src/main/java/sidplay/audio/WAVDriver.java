@@ -1,6 +1,9 @@
 package sidplay.audio;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,11 +19,66 @@ import libsidplay.common.CPUClock;
  * @author Ken Händel
  * 
  */
-public class WavFile implements AudioDriver {
-	private static final int HEADER_LENGTH = 44;
-	private static final int HEADER_OFFSET = 8;
+public abstract class WAVDriver implements AudioDriver {
 
-	private ByteBuffer sampleBuffer;
+	/**
+	 * File based driver to create a WAV file.
+	 * 
+	 * @author Ken Händel
+	 * 
+	 */
+	public static class WavFile extends WAVDriver {
+
+		private RandomAccessFile file;
+
+		@Override
+		protected OutputStream getOut(String recordingFilename) throws IOException {
+			System.out.println("Recording, file=" + recordingFilename);
+			file = new RandomAccessFile(new File(recordingFilename), "rw");
+			return new FileOutputStream(file.getFD());
+		}
+
+		@Override
+		public void close() {
+			super.close();
+			if (out != null) {
+				try {
+					file.seek(0);
+
+					writeHeader();
+					out.close();
+
+					file.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Driver to write into an WAV output stream.<BR>
+	 * 
+	 * @author Ken Händel
+	 * 
+	 */
+	public static class WAVStream extends WAVDriver {
+
+		/**
+		 * Use several instances for parallel emulator instances, where applicable.
+		 * 
+		 * @param out Output stream to write the encoded MP3 to
+		 */
+		public WAVStream(OutputStream out) {
+			this.out = out;
+		}
+
+		@Override
+		protected OutputStream getOut(String recordingFilename) {
+			return out;
+		}
+
+	}
 
 	/**
 	 * WAV header format.
@@ -59,13 +117,26 @@ public class WavFile implements AudioDriver {
 		}
 	}
 
+	private static final int HEADER_LENGTH = 44;
+	private static final int HEADER_OFFSET = 8;
+
+	/**
+	 * Output stream to write the encoded MP3 to.
+	 */
+	protected OutputStream out;
+
+	private ByteBuffer sampleBuffer;
+
 	private int samplesWritten;
-	private RandomAccessFile file;
+
 	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+			throws IOException, LineUnavailableException {
 		final int blockAlign = Short.BYTES * cfg.getChannels();
+
+		out = getOut(recordingFilename);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
 		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -78,10 +149,7 @@ public class WavFile implements AudioDriver {
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
 
-		System.out.println("Recording, file=" + recordingFilename);
-		file = new RandomAccessFile(recordingFilename, "rw");
-		file.setLength(0);
-		file.write(wavHdr.getBytes());
+		out.write(wavHdr.getBytes());
 
 		samplesWritten = 0;
 	}
@@ -90,7 +158,7 @@ public class WavFile implements AudioDriver {
 	public void write() throws InterruptedException {
 		try {
 			int len = sampleBuffer.position();
-			file.write(sampleBuffer.array(), 0, len);
+			out.write(sampleBuffer.array(), 0, len);
 			samplesWritten += len;
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -100,15 +168,12 @@ public class WavFile implements AudioDriver {
 
 	@Override
 	public void close() {
-		try {
-			wavHdr.length = samplesWritten + HEADER_LENGTH - HEADER_OFFSET;
-			wavHdr.dataChunkLen = samplesWritten;
-			file.seek(0);
-			file.write(wavHdr.getBytes(), 0, HEADER_LENGTH);
-			file.close();
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
+	}
+
+	protected void writeHeader() throws IOException {
+		wavHdr.length = samplesWritten + HEADER_LENGTH - HEADER_OFFSET;
+		wavHdr.dataChunkLen = samplesWritten;
+		out.write(wavHdr.getBytes(), 0, HEADER_LENGTH);
 	}
 
 	@Override
@@ -116,4 +181,5 @@ public class WavFile implements AudioDriver {
 		return sampleBuffer;
 	}
 
+	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }
