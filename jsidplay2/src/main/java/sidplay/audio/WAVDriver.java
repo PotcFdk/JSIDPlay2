@@ -67,7 +67,7 @@ public abstract class WAVDriver implements AudioDriver {
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 * 
-		 * @param out Output stream to write the encoded MP3 to
+		 * @param out Output stream to write the encoded WAV to
 		 */
 		public WAVStream(OutputStream out) {
 			this.out = out;
@@ -121,7 +121,7 @@ public abstract class WAVDriver implements AudioDriver {
 	private static final int HEADER_OFFSET = 8;
 
 	/**
-	 * Output stream to write the encoded MP3 to.
+	 * Output stream to write the encoded WAV to.
 	 */
 	protected OutputStream out;
 

@@ -103,17 +103,18 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				IConfig config = new IniConfig(false, null);
 
-				JCommander commander = JCommander.newBuilder().addObject(config)
-						.acceptUnknownOptions(true).programName(getClass().getName()).build();
+				JCommander commander = JCommander.newBuilder().addObject(config).acceptUnknownOptions(true)
+						.programName(getClass().getName()).build();
 				commander.parse(args);
 
-				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfAudio(config);
+				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfAudioFormat(
+						config);
 				Audio audio = audioAndDriver.getKey();
 				AudioDriver driver = audioAndDriver.getValue().getConstructor(OutputStream.class)
 						.newInstance(response.getOutputStream());
 
-				commander = JCommander.newBuilder().addObject(driver)
-						.acceptUnknownOptions(true).programName(getClass().getName()).build();
+				commander = JCommander.newBuilder().addObject(driver).acceptUnknownOptions(true)
+						.programName(getClass().getName()).build();
 				commander.parse(args);
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
@@ -138,11 +139,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						.build();
 				commander.parse(args);
 
-				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfVideo(config);
+				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfVideoFormat(
+						config);
 				Audio audio = audioAndDriver.getKey();
 				AudioDriver driver = audioAndDriver.getValue().newInstance();
 
-				commander = JCommander.newBuilder().addObject(driver).programName(getClass().getName()).build();
+				commander = JCommander.newBuilder().addObject(driver).acceptUnknownOptions(true)
+						.programName(getClass().getName()).build();
 
 				videoFile = convertVideo(config, file, driver, audio);
 
@@ -170,7 +173,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfAudio(IConfig config) {
+	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfAudioFormat(IConfig config) {
 		Audio audio = config.getAudioSection().getAudio();
 		if (audio == null) {
 			return new SimpleImmutableEntry<>(Audio.MP3, MP3Stream.class);
@@ -180,26 +183,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			return new SimpleImmutableEntry<>(Audio.WAV, WAVStream.class);
 
 		case MP3:
-			return new SimpleImmutableEntry<>(Audio.MP3, MP3Stream.class);
-
 		default:
 			return new SimpleImmutableEntry<>(Audio.MP3, MP3Stream.class);
-		}
-	}
-
-	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfVideo(IConfig config) {
-		Audio audio = config.getAudioSection().getAudio();
-		if (audio == null) {
-			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
-		}
-		switch (audio) {
-		case AVI:
-			return new SimpleImmutableEntry<>(Audio.AVI, AVIDriver.class);
-		case MP4:
-			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
-
-		default:
-			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
 		}
 	}
 
@@ -212,6 +197,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setAudioDriver(driver);
 		player.play(SidTune.load(file));
 		player.stopC64(false);
+	}
+
+	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfVideoFormat(IConfig config) {
+		Audio audio = config.getAudioSection().getAudio();
+		if (audio == null) {
+			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
+		}
+		switch (audio) {
+		case AVI:
+			return new SimpleImmutableEntry<>(Audio.AVI, AVIDriver.class);
+		case MP4:
+		default:
+			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
+		}
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver, Audio audio)
