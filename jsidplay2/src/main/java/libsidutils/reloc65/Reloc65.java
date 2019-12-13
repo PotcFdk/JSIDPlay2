@@ -1,12 +1,11 @@
 package libsidutils.reloc65;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 
 public class Reloc65 {
-
-	private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 	private static final byte CMP_O64[] = { 1, 0, 'o', '6', '5' };
 

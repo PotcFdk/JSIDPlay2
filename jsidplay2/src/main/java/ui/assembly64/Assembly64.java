@@ -1,5 +1,6 @@
 package ui.assembly64;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
@@ -19,7 +20,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -95,8 +95,6 @@ import ui.filefilter.TapeFileFilter;
 public class Assembly64 extends C64VBox implements UIPart {
 
 	public static final String ID = "ASSEMBLY64";
-
-	private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 	private static final int MAX_ROWS = 500;
 

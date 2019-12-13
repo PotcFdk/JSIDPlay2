@@ -9,6 +9,7 @@
  */
 package sidplay;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static libsidplay.common.SIDEmu.NONE;
 import static libsidplay.sidtune.SidTune.RESET;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
@@ -23,7 +24,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Calendar;
 import java.util.Date;
@@ -98,8 +98,6 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
-
-	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Timeout (in ms) for sleeping, if player is paused.

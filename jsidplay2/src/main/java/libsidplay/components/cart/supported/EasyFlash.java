@@ -27,11 +27,12 @@
  */
 package libsidplay.components.cart.supported;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -165,8 +166,7 @@ public class EasyFlash extends Cartridge {
 	/**
 	 * EasyFlash jumper.
 	 * 
-	 * @param val
-	 *            EasyFlash jumper
+	 * @param val EasyFlash jumper
 	 */
 	public void setEasyflashJumper(boolean val) {
 		easyflashJumper = val ? 1 : 0;
@@ -175,8 +175,7 @@ public class EasyFlash extends Cartridge {
 	/**
 	 * Save to EasyFlash crt on detach?
 	 * 
-	 * @param val
-	 *            save on detach
+	 * @param val save on detach
 	 */
 	public void setEasyflashCRTWrite(boolean val) {
 		easyflashCrtWrite = val;
@@ -354,7 +353,6 @@ public class EasyFlash extends Cartridge {
 
 	/* --------------------------------------------------------------------- */
 
-	protected static final Charset US_ASCII = Charset.forName("US-ASCII");
 	/**
 	 * see http://skoe.de/easyflash/
 	 */

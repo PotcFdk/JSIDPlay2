@@ -1,5 +1,7 @@
 package sidplay.audio;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,14 +9,13 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 
 /**
- * File based driver to create a WAV file.
+ * Abstract base class to output a WAV to an output stream.
  * 
  * @author Ken Händel
  * 
@@ -86,7 +87,6 @@ public abstract class WAVDriver implements AudioDriver {
 	 * @author Ken Händel
 	 */
 	static class WavHeader {
-		private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 		private int length;
 		private short format;
@@ -148,7 +148,6 @@ public abstract class WAVDriver implements AudioDriver {
 		wavHdr.bytesPerSec = cfg.getFrameRate() * blockAlign;
 		wavHdr.blockAlign = (short) blockAlign;
 		wavHdr.bitsPerSample = 16;
-
 		out.write(wavHdr.getBytes());
 
 		samplesWritten = 0;

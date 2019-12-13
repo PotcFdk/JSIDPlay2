@@ -63,8 +63,7 @@ public abstract class MP3Driver implements AudioDriver {
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 * 
-		 * @param out
-		 *            Output stream to write the encoded MP3 to
+		 * @param out Output stream to write the encoded MP3 to
 		 */
 		public MP3Stream(OutputStream out) {
 			this.out = out;
@@ -84,14 +83,17 @@ public abstract class MP3Driver implements AudioDriver {
 	/**
 	 * MP3: Constant bit rate (-1=auto)
 	 */
+	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
 	protected int cbr = LameEncoder.DEFAULT_BITRATE;
 	/**
 	 * MP3: Variable bit rate quality (0=best, 5=medium, 9=worst)
 	 */
+	@Parameter(names = { "--vbrQuality" }, descriptionKey = "VBR_QUALITY")
 	protected int vbrQuality = LameEncoder.DEFAULT_QUALITY;
 	/**
 	 * Use variable bit rate mode? (or constant bit rate mode)
 	 */
+	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity = 1)
 	protected boolean vbr = LameEncoder.DEFAULT_VBR;
 
 	/**
@@ -103,23 +105,9 @@ public abstract class MP3Driver implements AudioDriver {
 	 */
 	private LameEncoder jump3r;
 
-	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
-	public void setCbr(int cbr) {
-		this.cbr = cbr;
-	}
-
-	@Parameter(names = { "--vbrQuality" }, descriptionKey = "VBR_QUALITY")
-	public void setVbrQuality(int vbrQuality) {
-		this.vbrQuality = vbrQuality;
-	}
-
-	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity = 1)
-	public void setVbr(boolean isVbr) {
-		this.vbr = isVbr;
-	}
-
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+			throws IOException, LineUnavailableException {
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);

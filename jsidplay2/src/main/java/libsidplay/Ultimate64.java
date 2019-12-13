@@ -1,10 +1,11 @@
 package libsidplay;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Locale;
 
@@ -52,11 +53,6 @@ public interface Ultimate64 {
 			this.value = on;
 		}
 	}
-
-	/**
-	 * ASCII charset
-	 */
-	Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
 	 * Ultimate64 socket connection timeout.

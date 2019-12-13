@@ -1,5 +1,7 @@
 package libsidutils.vicesync;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,6 +15,7 @@ public class ViceSync {
 	private ServerSocket serverSocket;
 	private DataInputStream in;
 	private DataOutputStream out;
+
 	public void connect(int port) throws IOException {
 		int portNumber = port;
 		serverSocket = new ServerSocket(portNumber);
@@ -22,11 +25,11 @@ public class ViceSync {
 	}
 
 	public String receive() throws IOException {
-		/*int type =*/ in.read();
+		/* int type = */ in.read();
 		int length = in.readInt();
 		byte[] result = new byte[length];
 		in.read(result);
-		return new String(result, "US-ASCII");
+		return new String(result, US_ASCII);
 	}
 
 	public void send(String answer) throws IOException {
@@ -58,6 +61,7 @@ public class ViceSync {
 		public long getSyncClk() {
 			return syncClk;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			MOS6510State other = (MOS6510State) obj;
@@ -74,7 +78,7 @@ public class ViceSync {
 			assert false : "hashCode not designed";
 			return 42; // any arbitrary constant will do
 		}
-		
+
 		@Override
 		public String toString() {
 			return String.format("%08d - %d: pc=%04x, a=%02x, x=%02x, y=%02x, sp=%02x", clk, syncClk, pc, (byte) a,
