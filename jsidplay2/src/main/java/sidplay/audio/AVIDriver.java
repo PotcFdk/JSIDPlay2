@@ -42,9 +42,9 @@ public class AVIDriver implements VideoDriver {
 		System.out.println("Recording, file=" + recordingFilename);
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
-		aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f).prepend(
-				MediaTypeKey, MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1),
-				WidthKey, VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
+		aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f, MediaTypeKey,
+				MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1), WidthKey,
+				VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
 
 		aviWriter.addTrack(new Format(SampleRateKey, new Rational(cfg.getFrameRate(), 1), ChannelsKey,
 				cfg.getChannels(), SampleSizeInBitsKey, Short.SIZE, EncodingKey, ENCODING_PCM_SIGNED));

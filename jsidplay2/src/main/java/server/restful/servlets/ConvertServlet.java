@@ -135,8 +135,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				IConfig config = new IniConfig(false, null);
 
-				JCommander commander = JCommander.newBuilder().addObject(config).programName(getClass().getName())
-						.build();
+				JCommander commander = JCommander.newBuilder().addObject(config).acceptUnknownOptions(true)
+						.programName(getClass().getName()).build();
 				commander.parse(args);
 
 				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfVideoFormat(
