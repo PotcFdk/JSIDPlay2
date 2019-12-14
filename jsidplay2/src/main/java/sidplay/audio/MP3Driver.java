@@ -55,6 +55,8 @@ public abstract class MP3Driver implements AudioDriver {
 	/**
 	 * Driver to write into an MP3 encoded output stream.<BR>
 	 * 
+	 * <B>Note:</B> The caller is responsible of closing the output stream
+	 * 
 	 * @author Ken Händel
 	 * 
 	 */

@@ -58,6 +58,8 @@ public abstract class WAVDriver implements AudioDriver {
 	/**
 	 * Driver to write into an WAV output stream.<BR>
 	 * 
+	 * <B>Note:</B> The caller is responsible of closing the output stream
+	 * 
 	 * @author Ken Händel
 	 * 
 	 */
