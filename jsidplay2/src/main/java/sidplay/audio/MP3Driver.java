@@ -46,7 +46,7 @@ public abstract class MP3Driver implements AudioDriver {
 				try {
 					out.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new RuntimeException("Error closing MP3 audio stream", e);
 				}
 			}
 		}

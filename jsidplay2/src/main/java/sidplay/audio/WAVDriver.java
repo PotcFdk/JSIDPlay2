@@ -2,7 +2,6 @@ package sidplay.audio;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,7 +34,7 @@ public abstract class WAVDriver implements AudioDriver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
 			System.out.println("Recording, file=" + recordingFilename);
-			file = new RandomAccessFile(new File(recordingFilename), "rw");
+			file = new RandomAccessFile(recordingFilename, "rw");
 			return new FileOutputStream(file.getFD());
 		}
 
@@ -45,13 +44,12 @@ public abstract class WAVDriver implements AudioDriver {
 			if (out != null) {
 				try {
 					file.seek(0);
-
-					writeHeader();
+					out.write(wavHeader.getBytes());
 					out.close();
 
 					file.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new RuntimeException("Error closing WAV audio stream", e);
 				}
 			}
 		}
@@ -86,7 +84,10 @@ public abstract class WAVDriver implements AudioDriver {
 	 * 
 	 * @author Ken Händel
 	 */
-	static class WavHeader {
+	private static class WavHeader {
+
+		private static final int HEADER_OFFSET = 8;
+		private static final int HEADER_LENGTH = 44;
 
 		private int length;
 		private short format;
@@ -96,6 +97,22 @@ public abstract class WAVDriver implements AudioDriver {
 		private short blockAlign;
 		private short bitsPerSample;
 		private int dataChunkLen;
+
+		public WavHeader(int channels, int frameRate) {
+			this.length = HEADER_LENGTH - HEADER_OFFSET;
+			this.format = 1;
+			this.channels = (short) channels;
+			this.sampleFreq = frameRate;
+			this.bytesPerSec = frameRate * Short.BYTES * channels;
+			this.blockAlign = (short) (Short.BYTES * channels);
+			this.bitsPerSample = 16;
+			this.dataChunkLen = 0;
+		}
+
+		public void advance(int length) {
+			this.length += length;
+			this.dataChunkLen += length;
+		}
 
 		private byte[] getBytes() {
 			final ByteBuffer b = ByteBuffer.allocate(HEADER_LENGTH);
@@ -115,64 +132,42 @@ public abstract class WAVDriver implements AudioDriver {
 			b.putInt(dataChunkLen);
 			return b.array();
 		}
-	}
 
-	private static final int HEADER_LENGTH = 44;
-	private static final int HEADER_OFFSET = 8;
+	}
 
 	/**
 	 * Output stream to write the encoded WAV to.
 	 */
 	protected OutputStream out;
 
+	protected WavHeader wavHeader;
+
 	private ByteBuffer sampleBuffer;
-
-	private int samplesWritten;
-
-	private final WavHeader wavHdr = new WavHeader();
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
-		final int blockAlign = Short.BYTES * cfg.getChannels();
+		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
 
 		out = getOut(recordingFilename);
+		out.write(wavHeader.getBytes());
 
-		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * blockAlign);
-		sampleBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-		wavHdr.length = HEADER_LENGTH - HEADER_OFFSET;
-		wavHdr.format = 1;
-		wavHdr.channels = (short) cfg.getChannels();
-		wavHdr.sampleFreq = cfg.getFrameRate();
-		wavHdr.bytesPerSec = cfg.getFrameRate() * blockAlign;
-		wavHdr.blockAlign = (short) blockAlign;
-		wavHdr.bitsPerSample = 16;
-		out.write(wavHdr.getBytes());
-
-		samplesWritten = 0;
+		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
+				.order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
 		try {
-			int len = sampleBuffer.position();
-			out.write(sampleBuffer.array(), 0, len);
-			samplesWritten += len;
+			out.write(sampleBuffer.array(), 0, sampleBuffer.position());
+			wavHeader.advance(sampleBuffer.position());
 		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new InterruptedException();
+			throw new RuntimeException("Error writing WAV audio stream", e);
 		}
 	}
 
 	@Override
 	public void close() {
-	}
-
-	protected void writeHeader() throws IOException {
-		wavHdr.length = samplesWritten + HEADER_LENGTH - HEADER_OFFSET;
-		wavHdr.dataChunkLen = samplesWritten;
-		out.write(wavHdr.getBytes(), 0, HEADER_LENGTH);
 	}
 
 	@Override
