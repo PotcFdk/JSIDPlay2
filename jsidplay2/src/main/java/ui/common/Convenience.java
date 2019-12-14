@@ -96,6 +96,13 @@ public class Convenience {
 			Extract7Zip extract7Zip = new Extract7Zip(zip, new File(tmpDir));
 			extract7Zip.extract();
 			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
+		} else if (zip.isEntry()) {
+			// uncompress zip entry
+			File zipEntry = new File(tmpDir, zip.getName());
+			zipEntry.deleteOnExit();
+			TFile.cp_rp(zip, zipEntry, TArchiveDetector.ALL);
+			// search media file to attach
+			toAttach = zipEntry;
 		} else if (isSupportedMedia(file)) {
 			toAttach = file;
 		}

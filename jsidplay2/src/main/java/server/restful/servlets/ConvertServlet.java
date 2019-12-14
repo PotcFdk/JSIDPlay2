@@ -11,7 +11,6 @@ import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 import static server.restful.common.MimeType.getMimeType;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -33,7 +32,6 @@ import com.beust.jcommander.JCommander;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.MimeType;
@@ -220,17 +218,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			// Prevent unlimited video length in record mode!
 			config.getSidplay2Section().setDefaultPlayLength(30);
 		}
-		File tmpDirectory = new File(config.getSidplay2Section().getTmpDir());
-		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(), tmpDirectory);
-		File extractedFile = File.createTempFile("jsidplay2autostart", PathUtils.getFilenameSuffix(file.getName()),
-				tmpDirectory);
-		try (OutputStream extractedFileOutputStream = new FileOutputStream(extractedFile)) {
-			copy(file, extractedFileOutputStream);
-		}
+		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
+				new File(config.getSidplay2Section().getTmpDir()));
 		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
 		player.setAudioDriver(driver);
-		new Convenience(player).autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, null);
-		extractedFile.delete();
+		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
 		return videoFile;
 	}
