@@ -51,8 +51,8 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 
 		try {
 			response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
-			copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
+			copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 		} catch (Exception e) {
 			response.setContentType(MIME_TYPE_TEXT.getContentType());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));

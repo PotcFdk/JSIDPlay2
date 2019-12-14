@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -145,9 +146,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				commander = JCommander.newBuilder().addObject(driver).acceptUnknownOptions(true)
 						.programName(getClass().getName()).build();
 
-				videoFile = convertVideo(config, file, driver, audio);
-
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
+				videoFile = convertVideo(config, file, driver, audio);
 				copy(videoFile, response.getOutputStream());
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
@@ -161,8 +161,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		} else {
 			try {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
-				copy(file, response.getOutputStream());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
+				copy(file, response.getOutputStream());
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
@@ -172,10 +172,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfAudioFormat(IConfig config) {
-		Audio audio = config.getAudioSection().getAudio();
-		if (audio == null) {
-			return new SimpleImmutableEntry<>(Audio.MP3, MP3Stream.class);
-		}
+		Audio audio = Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3);
 		switch (audio) {
 		case WAV:
 			return new SimpleImmutableEntry<>(Audio.WAV, WAVStream.class);
@@ -198,10 +195,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfVideoFormat(IConfig config) {
-		Audio audio = config.getAudioSection().getAudio();
-		if (audio == null) {
-			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
-		}
+		Audio audio = Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4);
 		switch (audio) {
 		case AVI:
 			return new SimpleImmutableEntry<>(Audio.AVI, AVIDriver.class);
