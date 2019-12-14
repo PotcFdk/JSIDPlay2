@@ -72,7 +72,7 @@ public class AVIDriver implements VideoDriver {
 			aviWriter.writeSamples(1, sampleBuffer.position() >> 2/* / (Short.BYTES * cfg.getChannels()) */,
 					sampleBuffer.array(), 0, sampleBuffer.position(), true);
 		} catch (IOException e) {
-			throw new RuntimeException("Error writing AVI audio stream", e);
+			throw new RuntimeException("Error writing AVI video stream", e);
 		}
 	}
 
