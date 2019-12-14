@@ -125,7 +125,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 				|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
-			File videoFile = null;
 			try {
 				String[] args = Collections.list(request.getParameterNames()).stream()
 						.map(name -> Arrays.asList("--" + name,
@@ -147,15 +146,12 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						.programName(getClass().getName()).build();
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
-				videoFile = convertVideo(config, file, driver, audio);
+				File videoFile = convertVideo(config, file, driver, audio);
 				copy(videoFile, response.getOutputStream());
+				videoFile.delete();
 			} catch (Exception e) {
 				response.setContentType(MIME_TYPE_TEXT.getContentType());
 				e.printStackTrace(new PrintStream(response.getOutputStream()));
-			} finally {
-				if (videoFile != null) {
-					videoFile.delete();
-				}
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else {
@@ -214,6 +210,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));
+		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
 		player.setAudioDriver(driver);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
