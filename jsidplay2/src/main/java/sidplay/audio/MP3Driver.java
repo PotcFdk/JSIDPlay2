@@ -79,10 +79,6 @@ public abstract class MP3Driver implements AudioDriver {
 	}
 
 	/**
-	 * Sample buffer to be encoded as MP3.
-	 */
-	protected ByteBuffer sampleBuffer;
-	/**
 	 * MP3: Constant bit rate (-1=auto)
 	 */
 	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
@@ -99,13 +95,17 @@ public abstract class MP3Driver implements AudioDriver {
 	protected boolean vbr = LameEncoder.DEFAULT_VBR;
 
 	/**
+	 * Jump3r encoder.
+	 */
+	private LameEncoder jump3r;
+	/**
 	 * Output stream to write the encoded MP3 to.
 	 */
 	protected OutputStream out;
 	/**
-	 * Jump3r encoder.
+	 * Sample buffer to be encoded as MP3.
 	 */
-	private LameEncoder jump3r;
+	protected ByteBuffer sampleBuffer;
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)

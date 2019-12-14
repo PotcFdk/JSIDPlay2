@@ -40,13 +40,13 @@ import libsidutils.PathUtils;
 
 public class MP4Driver implements VideoDriver {
 
+	private OutputStream pcmAudioStream;
+	private File pcmAudioFile, videoFile;
+	private String recordingFilename;
 	private AACAudioEncoder aacEncoder;
 	private SequenceEncoder sequenceEncoder;
 	private ByteBuffer vicPixelBuffer, pictureBuffer, sampleBuffer;
 	private Picture picture;
-	private OutputStream pcmAudioStream;
-	private File pcmAudioFile, videoFile;
-	private String recordingFilename;
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
