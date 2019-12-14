@@ -1,28 +1,34 @@
 == [[RESTful]]RESTful web-services in JSIDPlay2
 
 You can implement your own client to access this emulator.
+
 You can access this emulator by using the following service methods to stream music or browse music collection directories.
+
 The service methods are available as soon as you click start in the built-in AppServer in JSIDPlay2.
 
-=== Preparation
-
 *Info*: All commands showed here have been verified on Ubuntu 18.
+
+=== Preparation
 
 ==== General
 
 All the following RESTful service methods of JSIDPlay2 AppServer are using your configured music collections HVSC and CGSC.
+
 To make the following examples to work, first configure HVSC and CGSC music collection in JSIDPlay2, properly!
+
 If you can browse these music collections in JSIDPlay2 the service methods can browse and stream the contained tune files as well.
 
 ==== Security
 
-Basic authentication is used calling the services with the following credentials:
+Basic authentication is used calling the services with the following pre-configured credentials:
 
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
 
-You can change the settings of the user or add an administrative user by an external configuration file.
+You can change the password of the user or add an administrative user by an external configuration file.
+
 The file must be named: "tomcat-users.xml" located in your home directory and be readable on startup of the server.
+
 The reason why you can add an administrative user is to grant access to additional private music collections which normal users are not able to access.
 
 Example:
@@ -33,12 +39,16 @@ Example:
   <role rolename="user"/>
 
   <user name="jsidplay2" password="jsidplay2!" roles="user"/>
-  <user name="admin" password="admin" roles="user"/>
+  <user name="admin" password="admin" roles="admin"/>
 </tomcat-users>
 ---- 
 All known roles are user and admin.
 
+The built-in AppServer in JSIDPlay2 supports HTTP and/or HTTPS protocol for client to server communication.
+
 ==== Use Self-signed certificate
+
+*Info*: This step is only required, if you want to make use of the HTTPS protocol.
 
 To create a self-signed certificate you must use the keytool command of the java installation
 [source,subs="attributes+"]
@@ -50,12 +60,14 @@ it creates a warning message in the browser window and is
 unaccepted by iPhones and mobiles running Android9 and later versions!
 
 ==== Use trusted certificate
-*Info*: This example is related to Let’s Encrypt and Apache2 installation on Linux.
+*Info*: This step is only required, if you want to make use of the HTTPS protocol.
 
-If you already have a web-server and want to host JSIDPlay2-server on the same machine, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
+*Info*: This example is related to Let’s Encrypt and Apache2 installation on Linux according to my situation here.
+
+If you as well, already have a web-server and want to host JSIDPlay2-server on the same machine, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
 This is a step by step instruction of how it works.
 
-If i can assume you already use Apache2 web server:
+If i can assume you already use Apache2 as a web server, then do the following:
 
 First lets make the Apache2 web-server secure, which is very easy with Let's Encrypt, these days:
 [source,subs="attributes+"]
@@ -118,7 +130,7 @@ openssl pkcs12 -export -out /tmp/fullchain.pkcs12 -in /tmp/fullchain.pem \
 	-password pass:jsidplay2 >> /var/log/jsidplay2cert.log 2>&1
 rm /tmp/fullchain.pem >> /var/log/jsidplay2cert.log 2>&1
 
-# Create empty keystore, first we create one, then we remove contents again
+# Create empty keystore, first we create a non-empty one, then we remove contents again
 rm /etc/jsidplay2.ks >> /var/log/jsidplay2cert.log 2>&1
 keytool -genkey -keyalg RSA -alias jsidplay2 -keystore /etc/jsidplay2.ks \
 	-storepass jsidplay2 -keypass jsidplay2 \
@@ -147,7 +159,7 @@ Now, grant permission to execute that script by our cronjob:
 sudo chmod 755 /usr/bin/jsidplay2cert
 ----
 
-As a result we get weekly a fresh new keystore (/etc/jsidplay2.ks). A log file for troubleshooting is placed here (/var/log/jsidplay2cert)
+As a result we get weekly a fresh new keystore (/etc/jsidplay2.ks). A log file for troubleshooting is placed here (/var/log/jsidplay2cert.log)
 
 === Launch JSIDPlay2 AppServer using HTTP
 
@@ -268,6 +280,7 @@ To each directory contents a parent folder entry will be added appended by "../"
 Additionally you can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|p00|prg|d64|mp3|mp4)$"
 
 You can add more collections by creating an external configuration file located in your home directory.
+
 The file must be named: "directoryServlet.properties" and be readable on startup of the server.
 
 Example:
@@ -277,8 +290,8 @@ Example:
 /Demos=/home/ken/.jsidplay2/Demos.zip,false
 ---- 
 <1> Syntax is: "<localDirectoryNameInTheRequest>" = "<realDirectoryName>", "<adminRoleRequired>"
-In the request above simply replace "/jsidplay2service/JSIDPlay2REST/directory/C64Music/..."
-by "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
+
+In the request above simply use the URL "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
 
 ==== Get tune infos
 
@@ -325,6 +338,8 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
 <1> Show ConsolePlayer's usage for a description of all parameters
 
+*Info:* The audio parameter let you choose WAV as an alternative, but beware of a much bigger file size.
+
 ==== Stream Demo as MP4
 
 *Info:* This service method does only work, if directoryServlet had been configured before to grant access to "/Demos"!
@@ -348,6 +363,8 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 *Info:* All Parameter names match exactly the command line parameter names of the console player in gnu style (prepended by --).
 For example defaultLength=180 sets the default song length.
 
+*Info:* The audio parameter let you choose AVI as an alternative, but beware of a much bigger file size.
+
 === Android Client for JSIDPlay2 AppServer
 
 Source code of the example Android app using the RESTful web-service interface can be found link:https://github.com/kenchis/JSIDPlay2[here].
@@ -355,3 +372,4 @@ Source code of the example Android app using the RESTful web-service interface c
 Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +
 *Please note: Streaming music using your mobile can cause additional costs!*
 
+As an alternative you can use a browser enabled client like link:https://haendel.ddns.net:8443/static/hvsc.vue[here]
