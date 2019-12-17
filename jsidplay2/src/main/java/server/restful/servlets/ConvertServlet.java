@@ -89,93 +89,76 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
 		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
-
-		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
-				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".dat")
-				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
-				|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
-			try {
-				String[] args = Collections.list(request.getParameterNames()).stream()
-						.map(name -> Arrays.asList("--" + name,
-								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
-						.flatMap(List::stream).toArray(String[]::new);
-
+		try {
+			if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
+					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".dat")
+					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
+					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
 				IConfig config = new IniConfig(false, null);
 
-				JCommander commander = JCommander.newBuilder().addObject(config).acceptUnknownOptions(true)
-						.programName(getClass().getName()).build();
-				commander.parse(args);
+				String[] args = getRequestParameters(request);
 
-				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfAudioFormat(
-						config);
+				configure(config, args);
+
+				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfAudioFormat(config,
+						response.getOutputStream());
 				Audio audio = audioAndDriver.getKey();
-				AudioDriver driver = audioAndDriver.getValue().getConstructor(OutputStream.class)
-						.newInstance(response.getOutputStream());
+				AudioDriver driver = audioAndDriver.getValue();
 
-				commander = JCommander.newBuilder().addObject(driver).acceptUnknownOptions(true)
-						.programName(getClass().getName()).build();
-				commander.parse(args);
+				configure(driver, args);
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 				convertAudio(config, file, driver);
-			} catch (Exception e) {
-				response.setContentType(MIME_TYPE_TEXT.getContentType());
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
-			}
-			response.setStatus(HttpServletResponse.SC_OK);
-		} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
-				|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
-			try {
-				String[] args = Collections.list(request.getParameterNames()).stream()
-						.map(name -> Arrays.asList("--" + name,
-								Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
-						.flatMap(List::stream).toArray(String[]::new);
-
+			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
+					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 				IConfig config = new IniConfig(false, null);
 
-				JCommander commander = JCommander.newBuilder().addObject(config).acceptUnknownOptions(true)
-						.programName(getClass().getName()).build();
-				commander.parse(args);
+				String[] args = getRequestParameters(request);
 
-				SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> audioAndDriver = getAudioOfVideoFormat(
-						config);
+				configure(config, args);
+
+				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfVideoFormat(config);
 				Audio audio = audioAndDriver.getKey();
-				AudioDriver driver = audioAndDriver.getValue().newInstance();
+				AudioDriver driver = audioAndDriver.getValue();
 
-				commander = JCommander.newBuilder().addObject(driver).acceptUnknownOptions(true)
-						.programName(getClass().getName()).build();
+				configure(driver, args);
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 				File videoFile = convertVideo(config, file, driver, audio);
 				copy(videoFile, response.getOutputStream());
 				videoFile.delete();
-			} catch (Exception e) {
-				response.setContentType(MIME_TYPE_TEXT.getContentType());
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
-			}
-			response.setStatus(HttpServletResponse.SC_OK);
-		} else {
-			try {
+			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(file, response.getOutputStream());
-			} catch (Exception e) {
-				response.setContentType(MIME_TYPE_TEXT.getContentType());
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
 			}
-			response.setStatus(HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfAudioFormat(IConfig config) {
-		Audio audio = Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3);
-		switch (audio) {
+	private String[] getRequestParameters(HttpServletRequest request) {
+		return Collections.list(request.getParameterNames()).stream()
+				.map(name -> Arrays.asList("--" + name,
+						Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
+				.flatMap(List::stream).toArray(String[]::new);
+	}
+
+	private void configure(Object argObject, String[] args) {
+		JCommander.newBuilder().addObject(argObject).programName(getClass().getName()).acceptUnknownOptions(true)
+				.build().parse(args);
+	}
+
+	private SimpleImmutableEntry<Audio, AudioDriver> getAudioOfAudioFormat(IConfig config, OutputStream outputstream) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
 		case WAV:
-			return new SimpleImmutableEntry<>(Audio.WAV, WAVStream.class);
+			return new SimpleImmutableEntry<>(Audio.WAV, new WAVStream(outputstream));
 
 		case MP3:
 		default:
-			return new SimpleImmutableEntry<>(Audio.MP3, MP3Stream.class);
+			return new SimpleImmutableEntry<>(Audio.MP3, new MP3Stream(outputstream));
 		}
 	}
 
@@ -190,14 +173,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private SimpleImmutableEntry<Audio, Class<? extends AudioDriver>> getAudioOfVideoFormat(IConfig config) {
-		Audio audio = Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4);
-		switch (audio) {
+	private SimpleImmutableEntry<Audio, AudioDriver> getAudioOfVideoFormat(IConfig config) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4)) {
 		case AVI:
-			return new SimpleImmutableEntry<>(Audio.AVI, AVIDriver.class);
+			return new SimpleImmutableEntry<>(Audio.AVI, new AVIDriver());
 		case MP4:
 		default:
-			return new SimpleImmutableEntry<>(Audio.MP4, MP4Driver.class);
+			return new SimpleImmutableEntry<>(Audio.MP4, new MP4Driver());
 		}
 	}
 
