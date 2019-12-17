@@ -4,9 +4,11 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
-import ui.entities.config.FavoritesSection;
 
 @SuppressWarnings("serial")
 public class FavoritesServlet extends JSIDPlay2Servlet {
@@ -41,25 +41,19 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<String> filters = getFavorites();
+		List<String> filters = getFirstFavorites();
 
 		response.setContentType(MIME_TYPE_JSON.getContentType());
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private List<String> getFavorites() {
-		List<String> result = new ArrayList<String>();
-		for (FavoritesSection favoritesSection : util.getConfiguration().getFavorites()) {
-			for (HVSCEntry favorite : favoritesSection.getFavorites()) {
-				String filename = util.getFavoriteFilename(favorite);
-				if (filename != null) {
-					result.add(filename);
-				}
-			}
-			break;
-		}
-		return result;
+	private List<String> getFirstFavorites() {
+		List<String> filters = util.getConfiguration().getFavorites().stream().findFirst()
+				.map(favoritesSection -> favoritesSection.getFavorites()).orElseGet(Collections::emptyList).stream()
+				.map(favorite -> util.getFavoriteFilename(favorite)).filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		return filters;
 	}
 
 }
