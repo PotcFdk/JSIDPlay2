@@ -285,10 +285,16 @@ public class JSIDPlay2Server {
 		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT, sidplay2Section.getTmpDir());
 		context.addSecurityRole(ROLE_ADMIN);
 		context.addSecurityRole(ROLE_USER);
+		
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
 		jarScanner.setScanManifest(false);
+		jarScanner.setScanClassPath(false);
+		jarScanner.setScanAllDirectories(false);
+
+		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
 		jarScanFilter.setTldSkip("*");
+		jarScanFilter.setDefaultTldScan(false);
+		jarScanFilter.setDefaultPluggabilityScan(false);
 		return context;
 	}
 
