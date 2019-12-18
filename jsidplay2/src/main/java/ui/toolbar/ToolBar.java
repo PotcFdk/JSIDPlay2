@@ -6,6 +6,7 @@ import static libsidplay.common.ChipModel.MOS8580;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
+import static ui.entities.config.OnlineSection.ONLINE_PLAYER_URL;
 import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
 
 import java.io.File;
@@ -109,7 +110,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl, appServerKeyAliasLbl,
 			appServerKeyPasswordLbl;
 	@FXML
-	private Hyperlink appServerUsage, downloadApp;
+	private Hyperlink appServerUsage, onlinePlayer, downloadApp;
 
 	@FXML
 	protected ProgressBar progress;
@@ -315,6 +316,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
 		startAppServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			appServerUsage.setDisable(!newValue);
+			onlinePlayer.setDisable(!newValue);
 			downloadApp.setDisable(!newValue);
 		});
 
@@ -533,6 +535,11 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void setVideoStandard() {
 		restart();
+	}
+
+	@FXML
+	private void onlinePlayer() {
+		DesktopIntegration.browse(ONLINE_PLAYER_URL);
 	}
 
 	@FXML

@@ -283,6 +283,9 @@
 							<Hyperlink text="%APP_SERVER_USAGE" textFill="BLUE"
 								underline="true" onAction="#gotoRestApiUsage"
 								fx:id="appServerUsage" disable="true" />
+							<Hyperlink text="%ONLINE_PLAYER" textFill="BLUE"
+								underline="true" onAction="#onlinePlayer" fx:id="onlinePlayer"
+								disable="true" />
 							<Hyperlink text="%DOWNLOAD_APP" textFill="BLUE"
 								underline="true" onAction="#downloadApp" fx:id="downloadApp"
 								disable="true" />

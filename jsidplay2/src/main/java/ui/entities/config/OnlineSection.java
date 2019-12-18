@@ -13,7 +13,13 @@ public class OnlineSection {
 	 */
 	private static final String DEPLOYMENT_URL = "https://haendel.ddns.net/~ken/";
 
+	/**
+	 * URL of the JSIDPlay2 AppServer.
+	 */
+	private static final String APP_SERVER_URL = "https://haendel.ddns.net:8443/";
+
 	public static final String JSIDPLAY2_JS2_URL = DEPLOYMENT_URL + "jsidplay2.js2";
+	public static final String ONLINE_PLAYER_URL = APP_SERVER_URL + "static/hvsc.vue";
 	public static final String JSIDPLAY2_APP_URL = DEPLOYMENT_URL + "jsidplay2app.apk";
 
 	private String hvscUrl = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
