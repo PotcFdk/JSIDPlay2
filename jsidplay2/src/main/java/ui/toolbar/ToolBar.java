@@ -6,13 +6,19 @@ import static libsidplay.common.ChipModel.MOS8580;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
-import static ui.entities.config.OnlineSection.ONLINE_PLAYER_URL;
 import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
+import static ui.entities.config.OnlineSection.ONLINE_PLAYER_URL;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.ResourceBundle;
@@ -39,6 +45,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.common.CPUClock;
@@ -57,6 +64,7 @@ import server.restful.common.Connectors;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
+import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.EnumToStringConverter;
@@ -71,6 +79,24 @@ import ui.entities.config.SidPlay2Section;
 
 public class ToolBar extends C64VBox implements UIPart {
 
+	private StateChangeListener propertyChangeListener;
+
+	private class StateChangeListener implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			Platform.runLater(() -> {
+				if (event.getNewValue() == State.START) {
+					saveRecordingLabel.setDisable(true);
+				}
+				if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
+						&& util.getConfig().getAudioSection().getAudio().isRecording()) {
+					saveRecordingLabel.setDisable(false);
+				}
+			});
+		}
+
+	}
+
 	private static final String CELL_VALUE_OK = "cellValueOk";
 	private static final String CELL_VALUE_ERROR = "cellValueError";
 
@@ -84,6 +110,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
 	private ComboBox<Audio> audioBox;
+	@FXML
+	private Label saveRecordingLabel;
 	@FXML
 	private ComboBox<Info> devicesBox;
 	@FXML
@@ -327,12 +355,37 @@ public class ToolBar extends C64VBox implements UIPart {
 		ultimate64StreamingVideoPort.textProperty().bindBidirectional(
 				emulationSection.ultimate64StreamingVideoPortProperty(), new IntegerStringConverter());
 
+		propertyChangeListener = new StateChangeListener();
+		util.getPlayer().stateProperty().addListener(propertyChangeListener);
+
 		this.duringInitialization = false;
 	}
 
 	@FXML
 	private void setAudio() {
 		restart();
+	}
+
+	@FXML
+	private void saveRecording() {
+		try {
+			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+			final DirectoryChooser fileDialog = new DirectoryChooser();
+			fileDialog.setTitle(util.getBundle().getString("SAVE_RECORDING"));
+			fileDialog.setInitialDirectory(sidplay2Section.getLastDirectoryFolder());
+			File directory = fileDialog.showDialog(getScene().getWindow());
+			if (directory != null) {
+				sidplay2Section.setLastDirectory(directory.getAbsolutePath());
+
+				Path sourcePath = Paths.get(util.getPlayer().getRecordingFilename());
+				Path targetPath = new File(directory, sourcePath.toFile().getName()).toPath();
+				Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+				sourcePath.toFile().deleteOnExit();
+				System.out.println("Recording Saved to: " + targetPath);
+			}
+		} catch (IOException e) {
+			openErrorDialog(e.getMessage());
+		}
 	}
 
 	@FXML
@@ -549,6 +602,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
+		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 		stopAppServer();
 	}
 
