@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Convert time in minutes and seconds ([mm:]ss)
+ * Convert time in minutes and seconds (mm:ss[.SSS])
  */
 public class TimeConverter {
 
