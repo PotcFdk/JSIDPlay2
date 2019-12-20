@@ -1,7 +1,9 @@
 package sidplay.audio;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
@@ -76,17 +78,15 @@ public enum Audio {
 	public final AudioDriver getAudioDriver() {
 		try {
 			if (audioDriver == null) {
-				int parameterNum = 0;
-				Class<?> parameterTypes[] = new Class<?>[parameterClasses.length];
-				Object parametersValues[] = new Object[parameterClasses.length];
+				Class<?> parameterTypes[] = Stream.<Class<?>>generate(() -> AudioDriver.class)
+						.limit(parameterClasses.length).toArray(Class<?>[]::new);
+				Collection<Object> initArgs = new ArrayList<>();
 				for (Class<?> parameterClass : parameterClasses) {
-					parameterTypes[parameterNum] = AudioDriver.class;
-					parametersValues[parameterNum++] = Arrays.asList(values()).stream()
-							.filter(audio -> parameterClass.isInstance(audio.audioDriver))
-							.map(audio -> audio.audioDriver).findFirst()
-							.orElse((AudioDriver) parameterClass.getConstructor().newInstance());
+					initArgs.add(Stream.of(values()).map(audio -> audio.audioDriver)
+							.filter(audioDriver -> parameterClass.isInstance(audioDriver)).findFirst()
+							.orElse((AudioDriver) parameterClass.getConstructor().newInstance()));
 				}
-				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(parametersValues);
+				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(initArgs.toArray());
 			}
 			return audioDriver;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

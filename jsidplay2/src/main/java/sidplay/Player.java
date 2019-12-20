@@ -617,9 +617,9 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * @throws IOException              audio output file cannot be written
 	 */
 	private void open() throws IOException, LineUnavailableException {
-		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-		IEmulationSection emulationSection = config.getEmulationSection();
-		IAudioSection audioSection = config.getAudioSection();
+		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+		final IEmulationSection emulationSection = config.getEmulationSection();
+		final IAudioSection audioSection = config.getAudioSection();
 
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());
@@ -644,26 +644,6 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		stateProperty.addListener(pauseListener);
 
 		reset();
-	}
-
-	/**
-	 * Check the configuration.
-	 * 
-	 * @throws IOException configuration error
-	 */
-	private void verifyConfiguration() throws IOException {
-		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-
-		if (getAudioDriver().isRecording() && sidplay2Section.getDefaultPlayLength() <= 0
-				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
-			throw new IOException("Error: unknown song length in record mode"
-					+ " (please use option --defaultLength or configure song length database)");
-		}
-
-		if (getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
-			System.out.println("Warning: Loop has been disabled while recording audio files!");
-			sidplay2Section.setLoop(false);
-		}
 	}
 
 	/**
@@ -706,6 +686,26 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
 		this.audioAndDriver = new SimpleImmutableEntry<>(audio, audioDriver);
 		verifyConfiguration();
+	}
+
+	/**
+	 * Check the configuration.
+	 * 
+	 * @throws IOException configuration error
+	 */
+	private void verifyConfiguration() throws IOException {
+		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+
+		if (getAudioDriver().isRecording() && sidplay2Section.getDefaultPlayLength() <= 0
+				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
+			throw new IOException("Error: unknown song length in record mode"
+					+ " (please use option --defaultLength or configure song length database)");
+		}
+
+		if (getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
+			System.out.println("Warning: Loop has been disabled while recording audio files!");
+			sidplay2Section.setLoop(false);
+		}
 	}
 
 	/**
