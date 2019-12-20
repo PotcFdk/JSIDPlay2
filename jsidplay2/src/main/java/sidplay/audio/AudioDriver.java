@@ -71,4 +71,8 @@ public interface AudioDriver {
 	 */
 	ByteBuffer buffer();
 
+	/**
+	 * @return is this audio driver recording tunes?
+	 */
+	boolean isRecording();
 }

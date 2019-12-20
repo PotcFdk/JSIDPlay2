@@ -59,6 +59,7 @@ import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -217,7 +218,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 */
 	private PropertyChangeListener pauseListener = event -> {
 		if (event.getNewValue() == PAUSE) {
-			audioAndDriver.getValue().pause();
+			getAudioDriver().pause();
 			configureMixer(mixer -> mixer.pause());
 			// audio driver continues automatically, next call of write!
 		}
@@ -257,8 +258,8 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 			public void start() {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
-				if (audioAndDriver.getValue() instanceof VideoDriver) {
-					addPixelConsumer((VideoDriver) audioAndDriver.getValue());
+				if (getAudioDriver() instanceof VideoDriver) {
+					addPixelConsumer((VideoDriver) getAudioDriver());
 				}
 			}
 
@@ -617,30 +618,52 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 */
 	private void open() throws IOException, LineUnavailableException {
 		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+		IEmulationSection emulationSection = config.getEmulationSection();
 		IAudioSection audioSection = config.getAudioSection();
 
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());
 
 		// PAL/NTSC
-		setClock(CPUClock.getCPUClock(config.getEmulationSection(), tune));
+		setClock(CPUClock.getCPUClock(emulationSection, tune));
 
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
 		if (audioAndDriver.getKey() != null) {
 			Audio audio = audioSection.getAudio();
-			audioAndDriver = new SimpleImmutableEntry<>(audio, audio.getAudioDriver(audioSection, tune));
+			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
+
 		// open audio driver
-		audioAndDriver.getValue().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
+		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
 
 		sidBuilder = createSIDBuilder(c64.getClock());
-		configureMixer(mixer -> mixer.setAudioDriver(audioAndDriver.getValue()));
+		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
 		configureVICs(vic -> vic.setPixelConsumer(this));
 		fastForwardVICFrames = 0;
 
 		stateProperty.addListener(pauseListener);
 
 		reset();
+	}
+
+	/**
+	 * Check the configuration.
+	 * 
+	 * @throws IOException configuration error
+	 */
+	private void verifyConfiguration() throws IOException {
+		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+
+		if (getAudioDriver().isRecording() && sidplay2Section.getDefaultPlayLength() <= 0
+				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
+			throw new IOException("Error: unknown song length in record mode"
+					+ " (please use option --defaultLength or configure song length database)");
+		}
+
+		if (getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
+			System.out.println("Warning: Loop has been disabled while recording audio files!");
+			sidplay2Section.setLoop(false);
+		}
 	}
 
 	/**
@@ -666,14 +689,35 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	}
 
 	/**
+	 * Get currently used audio driver.
+	 * 
+	 * @return currently used audio driver
+	 */
+	public AudioDriver getAudioDriver() {
+		return this.audioAndDriver.getValue();
+	}
+
+	/**
+	 * Set audio for play-back
+	 *
+	 * @param audio audio for play-back
+	 * @throws IOException configuration error
+	 */
+	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
+		this.audioAndDriver = new SimpleImmutableEntry<>(audio, audioDriver);
+		verifyConfiguration();
+	}
+
+	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune (e.g. {@link MP3Stream})
 	 * 
 	 * @param audioDriver for example {@link MP3Stream}
+	 * @throws IOException configuration error
 	 */
-	public final void setAudioDriver(final AudioDriver audioDriver) {
-		this.audioAndDriver = new SimpleImmutableEntry<>(null, audioDriver);
+	public final void setAudioDriver(final AudioDriver audioDriver) throws IOException {
+		setAudioAndDriver(null, audioDriver);
 	}
 
 	/**
@@ -705,17 +749,17 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		try {
 			stateProperty.removeListener(pauseListener);
 			c64.insertSIDChips(noSIDs, sidLocator);
-			if (audioAndDriver.getValue() instanceof VideoDriver) {
-				removePixelConsumer((VideoDriver) audioAndDriver.getValue());
+			if (getAudioDriver() instanceof VideoDriver) {
+				removePixelConsumer((VideoDriver) getAudioDriver());
 			}
 			// save still unwritten sound data
-			if (audioAndDriver.getValue().buffer() != null) {
-				audioAndDriver.getValue().write();
+			if (getAudioDriver().buffer() != null) {
+				getAudioDriver().write();
 			}
 		} catch (Throwable e) {
 			// ignore exceptions near close
 		} finally {
-			audioAndDriver.getValue().close();
+			getAudioDriver().close();
 		}
 	}
 

@@ -186,10 +186,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private File convertVideo(IConfig config, File file, AudioDriver driver, Audio audio)
 			throws IOException, SidTuneError, URISyntaxException {
 		Player player = new Player(config);
-		if (config.getSidplay2Section().getDefaultPlayLength() == 0) {
-			// Prevent unlimited video length in record mode!
-			config.getSidplay2Section().setDefaultPlayLength(30);
-		}
 		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));
 		videoFile.deleteOnExit();

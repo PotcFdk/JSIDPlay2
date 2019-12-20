@@ -141,6 +141,16 @@ public class MP4Driver implements VideoDriver {
 		}
 	}
 
+	@Override
+	public ByteBuffer buffer() {
+		return sampleBuffer;
+	}
+
+	@Override
+	public boolean isRecording() {
+		return true;
+	}
+
 	private TextTrackImpl getSubtitles() {
 		TextTrackImpl textTrack = new TextTrackImpl();
 		textTrack.getSubs().add(new TextTrackImpl.Line(0, 3 * 1000 /* ms */, "Recorded by JSIDPlay2"));
@@ -159,10 +169,5 @@ public class MP4Driver implements VideoDriver {
 				pictureBuffer.put((byte) (pixelData - 128));
 			}
 		}
-	}
-
-	@Override
-	public ByteBuffer buffer() {
-		return sampleBuffer;
 	}
 }

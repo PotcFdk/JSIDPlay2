@@ -127,4 +127,9 @@ public class JavaSound implements AudioDriver {
 		return sampleBuffer;
 	}
 
+	@Override
+	public boolean isRecording() {
+		return false;
+	}
+
 }

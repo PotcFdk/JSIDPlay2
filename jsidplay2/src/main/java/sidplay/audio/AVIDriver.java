@@ -79,10 +79,17 @@ public class AVIDriver implements VideoDriver {
 	@Override
 	public void close() {
 		try {
-			aviWriter.close();
+			if (aviWriter != null) {
+				aviWriter.close();
+			}
 		} catch (IOException e) {
 			throw new RuntimeException("Error closing AVI", e);
 		}
+	}
+
+	@Override
+	public boolean isRecording() {
+		return true;
 	}
 
 	@Override

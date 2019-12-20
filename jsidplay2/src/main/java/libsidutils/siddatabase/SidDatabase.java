@@ -1,5 +1,7 @@
 package libsidutils.siddatabase;
 
+import static libsidplay.sidtune.SidTune.RESET;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -72,6 +74,9 @@ public class SidDatabase {
 	 * @return song length of the current song of the tune
 	 */
 	public double getSongLength(final SidTune tune) {
+		if (tune == RESET) {
+			return 0;
+		}
 		final int songNum = tune.getInfo().getCurrentSong();
 		final String md5 = tune.getMD5Digest(version);
 		return songNum == 0 || md5 == null ? 0 : getLength(md5, songNum);

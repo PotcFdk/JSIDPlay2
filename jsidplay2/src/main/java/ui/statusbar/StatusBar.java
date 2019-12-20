@@ -41,7 +41,6 @@ import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.entities.config.AudioSection;
 import ui.entities.config.C1541Section;
 import ui.entities.config.EmulationSection;
 
@@ -160,7 +159,6 @@ public class StatusBar extends C64VBox implements UIPart {
 	 * Set all the internal information of the emulation in the status bar.
 	 */
 	protected void setStatusLine() {
-		AudioSection audioSection = util.getConfig().getAudioSection();
 		C1541Section c1541Section = util.getConfig().getC1541Section();
 
 		// Get status information of the first disk drive
@@ -212,7 +210,7 @@ public class StatusBar extends C64VBox implements UIPart {
 				(runtime.totalMemory() - runtime.freeMemory()) >> 20, runtime.maxMemory() >> 20));
 		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
-		if (audioSection.getAudio() != null && audioSection.getAudio().isRecording()) {
+		if (util.getPlayer().getAudioDriver().isRecording()) {
 			line.append(String.format(", %s: %s (%s)", util.getBundle().getString("RECORDING_FILENAME"),
 					util.getPlayer().getRecordingFilename(),
 					getFileSize(new File(util.getPlayer().getRecordingFilename()).length())));

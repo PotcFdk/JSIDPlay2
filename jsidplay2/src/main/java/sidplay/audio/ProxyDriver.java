@@ -82,6 +82,11 @@ public class ProxyDriver implements VideoDriver {
 		return driverOne.buffer();
 	}
 
+	@Override
+	public boolean isRecording() {
+		return driverOne.isRecording() || driverTwo.isRecording();
+	}
+
 	public AudioDriver getDriverOne() {
 		return driverOne;
 	}

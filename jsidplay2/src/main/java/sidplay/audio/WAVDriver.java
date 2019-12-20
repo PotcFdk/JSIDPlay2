@@ -50,6 +50,8 @@ public abstract class WAVDriver implements AudioDriver {
 					file.close();
 				} catch (IOException e) {
 					throw new RuntimeException("Error closing WAV audio stream", e);
+				} finally {
+					out = null;
 				}
 			}
 		}
@@ -175,6 +177,11 @@ public abstract class WAVDriver implements AudioDriver {
 	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;
+	}
+
+	@Override
+	public boolean isRecording() {
+		return true;
 	}
 
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;

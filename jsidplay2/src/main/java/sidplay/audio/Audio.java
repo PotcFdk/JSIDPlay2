@@ -17,27 +17,26 @@ import sidplay.audio.WAVDriver.WavFile;
  */
 public enum Audio {
 	/** Java Sound API. */
-	SOUNDCARD(false, null, JavaSound.class),
+	SOUNDCARD(null, JavaSound.class),
 	/** WAV file write. */
-	WAV(true, ".wav", WavFile.class),
+	WAV(".wav", WavFile.class),
 	/** MP3 file write. */
-	MP3(true, ".mp3", MP3File.class),
+	MP3(".mp3", MP3File.class),
 	/** AVI file write. */
-	AVI(true, ".avi", AVIDriver.class),
+	AVI(".avi", AVIDriver.class),
 	/** MP4 file write. */
-	MP4(true, ".mp4", MP4Driver.class),
+	MP4(".mp4", MP4Driver.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(true, ".wav", ProxyDriver.class, JavaSound.class, WavFile.class),
+	LIVE_WAV(".wav", ProxyDriver.class, JavaSound.class, WavFile.class),
 	/** Java Sound API plus MP3 file write. */
-	LIVE_MP3(true, ".mp3", ProxyDriver.class, JavaSound.class, MP3File.class),
+	LIVE_MP3(".mp3", ProxyDriver.class, JavaSound.class, MP3File.class),
 	/** Java Sound API plus AVI file write. */
-	LIVE_AVI(true, ".avi", ProxyDriver.class, JavaSound.class, AVIDriver.class),
+	LIVE_AVI(".avi", ProxyDriver.class, JavaSound.class, AVIDriver.class),
 	/** MP4 file write. */
-	LIVE_MP4(true, ".mp4", ProxyDriver.class, JavaSound.class, MP4Driver.class),
+	LIVE_MP4(".mp4", ProxyDriver.class, JavaSound.class, MP4Driver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(false, null, CmpMP3File.class);
+	COMPARE_MP3(null, CmpMP3File.class);
 
-	private boolean recording;
 	private String extension;
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver;
@@ -48,19 +47,10 @@ public enum Audio {
 	 * @param audioDriver audio driver
 	 */
 	@SafeVarargs
-	Audio(boolean recording, String extension, Class<? extends AudioDriver> audioDriverClass,
-			Class<? extends AudioDriver>... parameters) {
-		this.recording = recording;
+	Audio(String extension, Class<? extends AudioDriver> audioDriverClass, Class<? extends AudioDriver>... parameters) {
 		this.extension = extension;
 		this.audioDriverClass = audioDriverClass;
 		this.parameterClasses = parameters;
-	}
-
-	/**
-	 * @return is this audio driver recording tunes?
-	 */
-	public boolean isRecording() {
-		return recording;
 	}
 
 	/**

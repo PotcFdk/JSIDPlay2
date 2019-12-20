@@ -47,6 +47,8 @@ public abstract class MP3Driver implements AudioDriver {
 					out.close();
 				} catch (IOException e) {
 					throw new RuntimeException("Error closing MP3 audio stream", e);
+				} finally {
+					out = null;
 				}
 			}
 		}
@@ -141,6 +143,11 @@ public abstract class MP3Driver implements AudioDriver {
 	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;
+	}
+
+	@Override
+	public boolean isRecording() {
+		return true;
 	}
 
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;

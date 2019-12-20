@@ -89,7 +89,7 @@ public class ToolBar extends C64VBox implements UIPart {
 					saveRecordingLabel.setDisable(true);
 				}
 				if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
-						&& util.getConfig().getAudioSection().getAudio().isRecording()) {
+						&& util.getPlayer().getAudioDriver().isRecording()) {
 					saveRecordingLabel.setDisable(false);
 				}
 			});
