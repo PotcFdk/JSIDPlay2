@@ -52,7 +52,8 @@ final public class ConsolePlayer {
 		try {
 			final IniConfig config = new IniConfig(true);
 			JCommander commander = JCommander.newBuilder().addObject(this).addObject(config)
-					.addObject(Audio.MP3.getAudioDriver()).programName(getClass().getName()).build();
+					.addObject(Audio.MP3.getAudioDriver()).addObject(Audio.AVI.getAudioDriver())
+					.programName(getClass().getName()).build();
 			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {

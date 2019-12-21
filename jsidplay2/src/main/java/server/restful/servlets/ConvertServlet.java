@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.JCommander.Builder;
 
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -98,14 +99,12 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				configure(config, args);
+				configure(args, config, Audio.MP3.getAudioDriver());
 
 				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfAudioFormat(config,
 						response.getOutputStream());
 				Audio audio = audioAndDriver.getKey();
 				AudioDriver driver = audioAndDriver.getValue();
-
-				configure(driver, args);
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 				convertAudio(config, file, driver);
@@ -115,13 +114,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				configure(config, args);
+				configure(args, Audio.AVI.getAudioDriver());
 
 				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfVideoFormat(config);
 				Audio audio = audioAndDriver.getKey();
 				AudioDriver driver = audioAndDriver.getValue();
-
-				configure(driver, args);
 
 				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
 				File videoFile = convertVideo(config, file, driver, audio);
@@ -146,9 +143,12 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				.flatMap(List::stream).toArray(String[]::new);
 	}
 
-	private void configure(Object argObject, String[] args) {
-		JCommander.newBuilder().addObject(argObject).programName(getClass().getName()).acceptUnknownOptions(true)
-				.build().parse(args);
+	private void configure(String[] args, Object... configObjects) {
+		Builder jCommanderBuilder = JCommander.newBuilder().programName(getClass().getName());
+		for (Object object : configObjects) {
+			jCommanderBuilder.addObject(object);
+		}
+		jCommanderBuilder.build().parse(args);
 	}
 
 	private SimpleImmutableEntry<Audio, AudioDriver> getAudioOfAudioFormat(IConfig config, OutputStream outputstream) {

@@ -26,15 +26,25 @@ import org.monte.media.FormatKeys.MediaType;
 import org.monte.media.avi.AVIWriter;
 import org.monte.media.math.Rational;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 
+@Parameters(resourceBundle = "sidplay.audio.AVIDriver")
 public class AVIDriver implements VideoDriver {
 
 	private AVIWriter aviWriter;
 
 	private ByteBuffer sampleBuffer;
 	private BufferedImage videoImage;
+
+	/**
+	 * AVI: compression quality (1=best, 0.97=default, 0=worst)
+	 */
+	@Parameter(names = { "--aviVideoQuality" }, descriptionKey = "AVI_VIDEO_QUALITY")
+	private float aviVideoQuality = 0.97f;
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -51,6 +61,7 @@ public class AVIDriver implements VideoDriver {
 
 		videoImage = new BufferedImage(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		aviWriter.setPalette(0, videoImage.getColorModel());
+		aviWriter.setCompressionQuality(0, aviVideoQuality);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
@@ -69,6 +80,9 @@ public class AVIDriver implements VideoDriver {
 	@Override
 	public void write() throws InterruptedException {
 		try {
+			if (aviWriter.isDataLimitReached()) {
+				throw new IOException("AVI file size limit reached!");
+			}
 			aviWriter.writeSamples(1, sampleBuffer.position() >> 2/* / (Short.BYTES * cfg.getChannels()) */,
 					sampleBuffer.array(), 0, sampleBuffer.position(), true);
 		} catch (IOException e) {
