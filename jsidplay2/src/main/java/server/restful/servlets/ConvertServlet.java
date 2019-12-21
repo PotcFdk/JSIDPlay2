@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.stream.Stream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -145,9 +146,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private void configure(String[] args, Object... configObjects) {
 		Builder jCommanderBuilder = JCommander.newBuilder().programName(getClass().getName());
-		for (Object object : configObjects) {
-			jCommanderBuilder.addObject(object);
-		}
+		Stream.of(configObjects).forEach(jCommanderBuilder::addObject);
 		jCommanderBuilder.build().parse(args);
 	}
 

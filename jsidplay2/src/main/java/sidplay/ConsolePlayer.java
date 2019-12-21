@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.sound.sampled.Mixer.Info;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.JCommander.Builder;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
@@ -51,9 +53,10 @@ final public class ConsolePlayer {
 	private ConsolePlayer(final String[] args) {
 		try {
 			final IniConfig config = new IniConfig(true);
-			JCommander commander = JCommander.newBuilder().addObject(this).addObject(config)
-					.addObject(Audio.MP3.getAudioDriver()).addObject(Audio.AVI.getAudioDriver())
-					.programName(getClass().getName()).build();
+			Builder jCommanderBuilder = JCommander.newBuilder().programName(getClass().getName());
+			Stream.concat(Stream.of(this, config), Stream.of(Audio.values()).map(Audio::getAudioDriver))
+					.forEach(jCommanderBuilder::addObject);
+			JCommander commander = jCommanderBuilder.build();
 			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {
