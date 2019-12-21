@@ -114,7 +114,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				configure(args, Audio.AVI.getAudioDriver());
+				configure(args, config, Audio.AVI.getAudioDriver());
 
 				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfVideoFormat(config);
 				Audio audio = audioAndDriver.getKey();
