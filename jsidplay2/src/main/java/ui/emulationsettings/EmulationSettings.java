@@ -153,10 +153,13 @@ public class EmulationSettings extends C64Window {
 				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setVoiceMute(3, n.booleanValue())));
 
 		mainFilters = FXCollections.<String>observableArrayList();
+		mainFilter.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		mainFilter.setItems(mainFilters);
 		secondFilters = FXCollections.<String>observableArrayList();
+		secondFilter.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		secondFilter.setItems(secondFilters);
 		thirdFilters = FXCollections.<String>observableArrayList();
+		thirdFilter.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		thirdFilter.setItems(thirdFilters);
 
 		mainBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
@@ -203,60 +206,76 @@ public class EmulationSettings extends C64Window {
 
 		stereoModes = FXCollections.<StereoMode>observableArrayList(StereoMode.values());
 		stereoMode.setConverter(new EnumToStringConverter<StereoMode>(bundle));
+		stereoMode.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		stereoMode.setItems(stereoModes);
 
 		baseAddress.textProperty().bindBidirectional(emulationSection.dualSidBaseProperty(),
 				new HexNumberToStringConverter());
+		baseAddress.textProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		thirdAddress.textProperty().bindBidirectional(emulationSection.thirdSIDBaseProperty(),
 				new HexNumberToStringConverter());
+		thirdAddress.textProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 
 		sidReads = FXCollections.<SidReads>observableArrayList(SidReads.values());
 		sidToRead.setConverter(new EnumToStringConverter<SidReads>(bundle));
 		sidToRead.setItems(sidReads);
+		sidToRead.valueProperty().addListener((onj, o, n) -> emulationSection.setSidNumToRead(n.ordinal()));
 		sidToRead.getSelectionModel().select(emulationSection.getSidNumToRead());
 
 		sid1Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid1Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid1Emulation.valueProperty().bindBidirectional(emulationSection.userEmulationProperty());
+		sid1Emulation.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid1Emulation.setItems(sid1Emulations);
 
 		sid2Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid2Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid2Emulation.valueProperty().bindBidirectional(emulationSection.stereoEmulationProperty());
+		sid2Emulation.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid2Emulation.setItems(sid2Emulations);
 
 		sid3Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid3Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		sid3Emulation.valueProperty().bindBidirectional(emulationSection.thirdEmulationProperty());
+		sid3Emulation.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid3Emulation.setItems(sid3Emulations);
 
 		sid1Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid1Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid1Model.valueProperty().bindBidirectional(emulationSection.userSidModelProperty());
+		sid1Model.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid1Model.setItems(sid1Models);
 
 		sid2Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid2Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid2Model.valueProperty().bindBidirectional(emulationSection.stereoSidModelProperty());
+		sid2Model.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid2Model.setItems(sid2Models);
 
 		sid3Models = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
 		sid3Model.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		sid3Model.valueProperty().bindBidirectional(emulationSection.thirdSIDModelProperty());
+		sid3Model.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		sid3Model.setItems(sid3Models);
 
 		defaultModels = FXCollections.<ChipModel>observableArrayList(MOS6581, MOS8580);
 		defaultModel.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		defaultModel.valueProperty().bindBidirectional(emulationSection.defaultSidModelProperty());
+		defaultModel.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		defaultModel.setItems(defaultModels);
 
 		defaultEmulations = FXCollections.<Emulation>observableArrayList(RESID, RESIDFP);
 		defaultEmulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
 		defaultEmulation.valueProperty().bindBidirectional(emulationSection.defaultEmulationProperty());
+		defaultEmulation.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		defaultEmulation.setItems(defaultEmulations);
 
 		boosted8580.selectedProperty().bindBidirectional(emulationSection.digiBoosted8580Property());
+		boosted8580.selectedProperty().addListener((obj, o, n) -> util.getPlayer().configureSIDs(
+				(num, sid) -> sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0)));
+		
 		fakeStereo.selectedProperty().bindBidirectional(emulationSection.fakeStereoProperty());
+		fakeStereo.selectedProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		detectPSID64ChipModel.selectedProperty().bindBidirectional(emulationSection.detectPSID64ChipModelProperty());
 
 		emulationChange = new EmulationChange();
@@ -343,19 +362,16 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setSid1Emulation() {
 		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Emulation() {
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Emulation() {
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -365,7 +381,6 @@ public class EmulationSettings extends C64Window {
 		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -375,19 +390,16 @@ public class EmulationSettings extends C64Window {
 		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid2Model() {
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSid3Model() {
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -397,19 +409,16 @@ public class EmulationSettings extends C64Window {
 		updateFilterList(util.getPlayer().getTune(), 0, mainFilters, mainFilter);
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setBaseAddress() {
 		enableStereoSettings(util.getPlayer().getTune());
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setThirdAddress() {
 		enableStereoSettings(util.getPlayer().getTune());
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -418,7 +427,6 @@ public class EmulationSettings extends C64Window {
 		// fake stereo mode has an impact on mono and stereo filter curves
 		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
 		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
@@ -439,37 +447,29 @@ public class EmulationSettings extends C64Window {
 		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
 		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
 		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSidToRead() {
-		int sidNumToRead = sidToRead.getSelectionModel().getSelectedIndex();
-		util.getConfig().getEmulationSection().setSidNumToRead(sidNumToRead);
 	}
 
 	@FXML
 	private void setDigiBoost() {
-		util.getPlayer().configureSIDs((num, sid) -> sid
-				.input(util.getConfig().getEmulationSection().isDigiBoosted8580() ? sid.getInputDigiBoost() : 0));
 	}
 
 	@FXML
 	private void setMainFilter() {
 		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setSecondFilter() {
 		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
-		updateSIDChipConfiguration();
 	}
 
 	@FXML
 	private void setThirdFilter() {
 		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
-		updateSIDChipConfiguration();
 	}
 
 	/**
