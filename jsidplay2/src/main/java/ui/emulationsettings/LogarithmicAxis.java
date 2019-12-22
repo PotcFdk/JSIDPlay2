@@ -1,5 +1,7 @@
 package ui.emulationsettings;
 
+import static libsidplay.common.SIDChip.FC_MAX;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,11 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	private final DoubleProperty logUpperBound = new SimpleDoubleProperty();
 	private final DoubleProperty logLowerBound = new SimpleDoubleProperty();
 
-	//
-
 	// we bind our properties with the default bounds of the value axis. But
 	// before, we should verify the given range according to the mathematic
 	// logarithmic interval definition.
 	public LogarithmicAxis() {
-		super(0, 2048);
+		super(0, FC_MAX);
 		bindLogBoundsToDefaultBounds();
 	}
 
@@ -38,8 +38,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Bind our logarithmic bounds with the super class bounds, consider the
-	 * base 10 logarithmic scale.
+	 * Bind our logarithmic bounds with the super class bounds, consider the base 10
+	 * logarithmic scale.
 	 */
 	private void bindLogBoundsToDefaultBounds() {
 		logLowerBound.bind(new DoubleBinding() {
@@ -65,8 +65,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Validate the bounds by throwing an exception if the values are not
-	 * conform to the mathematics log interval: ]0,Double.MAX_VALUE]
+	 * Validate the bounds by throwing an exception if the values are not conform to
+	 * the mathematics log interval: ]0,Double.MAX_VALUE]
 	 * 
 	 * @param lowerBound
 	 * @param upperBound
@@ -192,8 +192,8 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	}
 
 	/**
-	 * Exception to be thrown when a bound value isn't supported by the
-	 * logarithmic axis<br>
+	 * Exception to be thrown when a bound value isn't supported by the logarithmic
+	 * axis<br>
 	 * 
 	 * 
 	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
@@ -203,8 +203,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 		private static final long serialVersionUID = -1874700637219400970L;
 
 		/**
-		 * @param message
-		 *            Error message
+		 * @param message Error message
 		 */
 		public IllegalLogarithmicRangeException(String message) {
 			super(message);
