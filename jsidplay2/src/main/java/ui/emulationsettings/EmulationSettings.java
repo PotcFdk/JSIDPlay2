@@ -296,6 +296,7 @@ public class EmulationSettings extends C64Window {
 
 	private void enableStereoSettings(SidTune tune) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		
 		boolean hardwareBasedSid = emulationSection.getEngine() == HARDSID
 				|| emulationSection.getEngine() == SIDBLASTER;
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
@@ -431,16 +432,18 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setStereoMode() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
 		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();
 		if (mode == StereoMode.THREE_SID) {
-			util.getConfig().getEmulationSection().setForceStereoTune(true);
-			util.getConfig().getEmulationSection().setForce3SIDTune(true);
+			emulationSection.setForceStereoTune(true);
+			emulationSection.setForce3SIDTune(true);
 		} else if (mode == StereoMode.STEREO) {
-			util.getConfig().getEmulationSection().setForceStereoTune(true);
-			util.getConfig().getEmulationSection().setForce3SIDTune(false);
+			emulationSection.setForceStereoTune(true);
+			emulationSection.setForce3SIDTune(false);
 		} else {
-			util.getConfig().getEmulationSection().setForceStereoTune(false);
-			util.getConfig().getEmulationSection().setForce3SIDTune(false);
+			emulationSection.setForceStereoTune(false);
+			emulationSection.setForce3SIDTune(false);
 		}
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
@@ -493,6 +496,7 @@ public class EmulationSettings extends C64Window {
 	private void updateFilterList(final SidTune tune, int num, ObservableList<String> filters,
 			ComboBox<String> filter) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
 		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
@@ -505,7 +509,7 @@ public class EmulationSettings extends C64Window {
 			filters.addAll(TrySetSidModel.getFilterNames(model));
 		} else {
 			filters.add(""/* filter disabled */);
-			for (IFilterSection filterSection : util.getConfig().getFilterSection()) {
+			for (IFilterSection filterSection : filterSections) {
 				switch (model) {
 				case MOS6581:
 					if (emulation.equals(RESIDFP) && filterSection.isReSIDfpFilter6581()
