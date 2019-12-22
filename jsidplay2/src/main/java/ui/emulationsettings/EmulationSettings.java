@@ -273,7 +273,7 @@ public class EmulationSettings extends C64Window {
 		boosted8580.selectedProperty().bindBidirectional(emulationSection.digiBoosted8580Property());
 		boosted8580.selectedProperty().addListener((obj, o, n) -> util.getPlayer().configureSIDs(
 				(num, sid) -> sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0)));
-		
+
 		fakeStereo.selectedProperty().bindBidirectional(emulationSection.fakeStereoProperty());
 		fakeStereo.selectedProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		detectPSID64ChipModel.selectedProperty().bindBidirectional(emulationSection.detectPSID64ChipModelProperty());
@@ -425,8 +425,8 @@ public class EmulationSettings extends C64Window {
 	private void setFakeStereo() {
 		enableStereoSettings(util.getPlayer().getTune());
 		// fake stereo mode has an impact on mono and stereo filter curves
-		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
-		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
+		drawFilterCurve(0, mainFilter, mainFilterCurve);
+		drawFilterCurve(1, secondFilter, secondFilterCurve);
 	}
 
 	@FXML
@@ -444,9 +444,9 @@ public class EmulationSettings extends C64Window {
 		}
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
-		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
-		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
-		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
+		drawFilterCurve(0, mainFilter, mainFilterCurve);
+		drawFilterCurve(1, secondFilter, secondFilterCurve);
+		drawFilterCurve(2, thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML
@@ -459,17 +459,17 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setMainFilter() {
-		updateFilterConfiguration(0, mainFilter, mainFilterCurve);
+		drawFilterCurve(0, mainFilter, mainFilterCurve);
 	}
 
 	@FXML
 	private void setSecondFilter() {
-		updateFilterConfiguration(1, secondFilter, secondFilterCurve);
+		drawFilterCurve(1, secondFilter, secondFilterCurve);
 	}
 
 	@FXML
 	private void setThirdFilter() {
-		updateFilterConfiguration(2, thirdFilter, thirdFilterCurve);
+		drawFilterCurve(2, thirdFilter, thirdFilterCurve);
 	}
 
 	/**
@@ -479,32 +479,6 @@ public class EmulationSettings extends C64Window {
 		if (!duringInitialization) {
 			util.getPlayer().updateSIDChipConfiguration();
 		}
-	}
-
-	/**
-	 * Update filter settings of the specified SID number according to the currently
-	 * selected filter.
-	 * 
-	 * @param sidNum      SID chip number
-	 * @param filterBox   filter combo box
-	 * @param filterCurve filter curve to update
-	 */
-	private void updateFilterConfiguration(int sidNum, ComboBox<String> filterBox,
-			LineChart<Number, Number> filterCurve) {
-		IEmulationSection emulationSection = util.getConfig().getEmulationSection();
-
-		SidTune tune = util.getPlayer().getTune();
-		Engine engine = emulationSection.getEngine();
-		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
-		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
-
-		String filterName = filterBox.getSelectionModel().getSelectedItem();
-		boolean filterDisabled = filterName == null || filterName.isEmpty();
-
-		emulationSection.setFilterEnable(sidNum, !filterDisabled);
-		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
-
-		drawFilterCurve(filterBox, filterCurve);
 	}
 
 	/**
@@ -558,32 +532,44 @@ public class EmulationSettings extends C64Window {
 	}
 
 	/**
-	 * Draw filter curve of the specified SID number and filter name
+	 * Update filter settings of the specified SID number according to the currently
+	 * selected filter and re-draw filter curve.
 	 * 
-	 * @param filterBox filter combo box
-	 * @param num       SID chip number
+	 * @param sidNum      SID chip number
+	 * @param filterBox   filter combo box
+	 * @param filterCurve filter curve to update
 	 */
-	private void drawFilterCurve(final ComboBox<String> filterBox, LineChart<Number, Number> filterCurve) {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+	private void drawFilterCurve(int sidNum, ComboBox<String> filterBox, LineChart<Number, Number> filterCurve) {
+		IEmulationSection emulationSection = util.getConfig().getEmulationSection();
+		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
 		SidTune tune = util.getPlayer().getTune();
+		Engine engine = emulationSection.getEngine();
+		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
+		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
 
+		String filterName = filterBox.getSelectionModel().getSelectedItem();
+		boolean filterDisabled = filterName == null || filterName.isEmpty();
+
+		emulationSection.setFilterEnable(sidNum, !filterDisabled);
+		emulationSection.setFilterName(sidNum, engine, emulation, model, !filterDisabled ? filterName : null);
+
 		List<Data<Number, Number>> dataList = new ArrayList<>();
 
-		Optional<FilterSection> optFilter = util.getConfig().getFilterSection().stream()
-				.filter(f -> f.getName().equals(filterBox.getSelectionModel().getSelectedItem())).findFirst();
+		Optional<FilterSection> optFilter = filterSections.stream().filter(f -> f.getName().equals(filterName))
+				.findFirst();
 		if (optFilter.isPresent()) {
-			FilterSection filter = optFilter.get();
+			FilterSection filterSection = optFilter.get();
 			// stereo curve or 3-SID curve currently not used?
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
 				for (int fc = 0; fc < FC_MAX; fc++) {
-					if (filter.isReSIDFilter6581() || filter.isReSIDFilter8580()) {
-						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filter, fc);
+					if (filterSection.isReSIDFilter6581() || filterSection.isReSIDFilter8580()) {
+						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filterSection, fc);
 						dataList.add(new XYChart.Data<>(fc, data));
-					} else if (filter.isReSIDfpFilter6581() || filter.isReSIDfpFilter8580()) {
-						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filter, fc);
+					} else if (filterSection.isReSIDfpFilter6581() || filterSection.isReSIDfpFilter8580()) {
+						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filterSection, fc);
 						dataList.add(new XYChart.Data<>(fc, data));
 					}
 				}
