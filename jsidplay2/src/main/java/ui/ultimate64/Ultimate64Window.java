@@ -229,13 +229,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			audioPlayer.start();
 			audioStreaming.setSelected(true);
 		}
-		if (videoStreaming.isSelected()) {
-			videoPlayer.stop();
-			videoPlayer.start();
-			videoStreaming.setSelected(true);
-		} else {
-			videoPlayer.stop();
-		}
 	}
 
 	/**
