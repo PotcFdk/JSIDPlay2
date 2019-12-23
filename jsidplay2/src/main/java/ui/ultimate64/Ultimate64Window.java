@@ -29,6 +29,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
+import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
@@ -48,8 +49,10 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
+			AudioSection audioSection = util.getConfig().getAudioSection();
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
-			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, AUDIO_BUFFER_SIZE), null);
+
+			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, audioSection.getAudioBufferSize()), null);
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(3000);
 			startStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
@@ -66,9 +69,12 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			byte[] audioData = new byte[768];
 			/* left ch, right ch (16 bits each) */
 			System.arraycopy(receivePacket.getData(), 2, audioData, 0, audioData.length);
-			javaSound.buffer().put(audioData);
-			javaSound.write();
-			javaSound.buffer().clear();
+			for (byte b : audioData) {
+				if (!javaSound.buffer().put(b).hasRemaining()) {
+					javaSound.write();
+					javaSound.buffer().clear();
+				}
+			}
 		}
 
 		@Override
