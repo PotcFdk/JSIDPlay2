@@ -5,11 +5,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.collections.FXCollections?> 
+<?import java.lang.Integer?>
 <?scenebuilder-preview-i18n-resource Ultimate64.properties?>
 
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
@@ -39,13 +43,33 @@
 							<Tooltip text="%VIDEO_STREAMING_TIP" />
 						</tooltip>
 					</ToggleButton>
+					<Label text="%AUDIO_BUFFER_SIZE" alignment="CENTER_RIGHT" />
+					<ComboBox onAction="#setAudioBufferSize" fx:id="audioBufferSize">
+						<items>
+							<FXCollections fx:factory="observableArrayList">
+								<!-- responsiveness=192 vs. stable audio=16384 -->
+								<Integer fx:value="192" />
+								<Integer fx:value="256" />
+								<Integer fx:value="512" />
+								<Integer fx:value="1024" />
+								<Integer fx:value="2048" />
+								<Integer fx:value="4096" />
+								<Integer fx:value="8192" />
+								<Integer fx:value="16384" />
+							</FXCollections>
+						</items>
+						<tooltip>
+							<Tooltip text="%AUDIO_BUFFER_SIZE_TIP" wrapText="true"
+								prefWidth="400" />
+						</tooltip>
+					</ComboBox>
 				</HBox>
 			</top>
 			<center>
 				<GridPane>
 					<children>
 						<TitledPane text="%VIDEO_SCREEN" collapsible="false"
-							GridPane.columnIndex="0" GridPane.rowIndex="0" minWidth="768" minHeight="544">
+							GridPane.columnIndex="0" GridPane.rowIndex="0" minWidth="1024" minHeight="768">
 							<Canvas fx:id="screen" scaleX="2" scaleY="2"/>
 						</TitledPane>
 					</children>

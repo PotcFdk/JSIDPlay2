@@ -16,6 +16,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
@@ -29,7 +30,6 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
-import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
@@ -49,10 +49,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
-			AudioSection audioSection = util.getConfig().getAudioSection();
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, audioSection.getAudioBufferSize()), null);
+			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, audioBufferSize.getValue()), null);
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(3000);
 			startStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
@@ -162,6 +161,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	@FXML
 	private ToggleButton audioStreaming, videoStreaming;
 
+	@FXML
+	private ComboBox<Integer> audioBufferSize;
+
 	private ImageQueue imageQueue;
 
 	private PauseTransition pauseTransition;
@@ -178,6 +180,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	@FXML
 	protected void initialize() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		audioBufferSize.setValue(192);
 
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
@@ -213,6 +217,22 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private void enableDisableVideoStreaming() {
 		if (videoStreaming.isSelected()) {
 			videoPlayer.start();
+		} else {
+			videoPlayer.stop();
+		}
+	}
+
+	@FXML
+	private void setAudioBufferSize() {
+		if (audioStreaming.isSelected()) {
+			audioPlayer.stop();
+			audioPlayer.start();
+			audioStreaming.setSelected(true);
+		}
+		if (videoStreaming.isSelected()) {
+			videoPlayer.stop();
+			videoPlayer.start();
+			videoStreaming.setSelected(true);
 		} else {
 			videoPlayer.stop();
 		}
