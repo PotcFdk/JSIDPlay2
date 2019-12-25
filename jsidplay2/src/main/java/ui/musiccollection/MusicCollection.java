@@ -118,15 +118,6 @@ import ui.stilview.STILView;
  */
 public class MusicCollection extends C64VBox implements UIPart {
 
-	public static final String HVSC_ID = "HVSC";
-	public static final String CGSC_ID = "CGSC";
-
-	private static final String HVSC_URL = "http://www.hvsc.de/";
-	private static final String CGSC_URL = "http://www.c64music.co.uk/";
-
-	private static final String HVSC_DS = PersistenceProperties.HVSC_DS;
-	private static final String CGSC_DS = PersistenceProperties.CGSC_DS;
-
 	@FXML
 	private CheckBox autoConfiguration;
 	@FXML
@@ -168,8 +159,6 @@ public class MusicCollection extends C64VBox implements UIPart {
 	private ObservableList<Enum<?>> comboItems;
 	private ObjectProperty<List<TreeItem<File>>> currentlyPlayedTreeItemsProperty;
 
-	private String collectionURL, collectionDS;
-
 	private EntityManager em;
 	private VersionService versionService;
 
@@ -200,20 +189,6 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	public void setType(MusicCollectionType type) {
-		switch (type) {
-		case HVSC:
-			collectionURL = HVSC_URL;
-			collectionDS = HVSC_DS;
-			break;
-
-		case CGSC:
-			collectionURL = CGSC_URL;
-			collectionDS = CGSC_DS;
-			break;
-
-		default:
-			break;
-		}
 		this.type.set(type);
 	}
 
@@ -513,7 +488,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		DesktopIntegration.browse(collectionURL);
+		DesktopIntegration.browse(type.get().getUrl());
 	}
 
 	@FXML
@@ -589,7 +564,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			closeDatabase();
 			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
 			PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), Database.HSQL_FILE);
-			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(collectionDS, pp);
+			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(), pp);
 			em = emFactory.createEntityManager();
 			versionService = new VersionService(em);
 		} catch (FileNotFoundException e) {

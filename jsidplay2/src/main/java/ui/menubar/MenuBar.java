@@ -711,55 +711,55 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void hvsc() {
-		if (!tabAlreadyOpen(MusicCollection.HVSC_ID)) {
+		if (!tabAlreadyOpen(MusicCollectionType.HVSC.name())) {
 			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 			collection.setType(MusicCollectionType.HVSC);
-			Tab tab = new Tab(util.getBundle().getString(MusicCollection.HVSC_ID), collection);
-			tab.setId(MusicCollection.HVSC_ID);
+			Tab tab = new Tab(util.getBundle().getString(MusicCollectionType.HVSC.name()), collection);
+			tab.setId(MusicCollectionType.HVSC.name());
 			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void cgsc() {
-		if (!tabAlreadyOpen(MusicCollection.CGSC_ID)) {
+		if (!tabAlreadyOpen(MusicCollectionType.CGSC.name())) {
 			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 			collection.setType(MusicCollectionType.CGSC);
-			Tab tab = new Tab(util.getBundle().getString(MusicCollection.CGSC_ID), collection);
-			tab.setId(MusicCollection.CGSC_ID);
+			Tab tab = new Tab(util.getBundle().getString(MusicCollectionType.CGSC.name()), collection);
+			tab.setId(MusicCollectionType.CGSC.name());
 			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void hvmec() {
-		if (!tabAlreadyOpen(DiskCollection.HVMEC_ID)) {
+		if (!tabAlreadyOpen(DiskCollectionType.HVMEC.name())) {
 			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.HVMEC);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollection.HVMEC_ID), collection);
-			tab.setId(DiskCollection.HVMEC_ID);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.HVMEC.name()), collection);
+			tab.setId(DiskCollectionType.HVMEC.name());
 			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void demos() {
-		if (!tabAlreadyOpen(DiskCollection.DEMOS_ID)) {
+		if (!tabAlreadyOpen(DiskCollectionType.DEMOS.name())) {
 			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.DEMOS);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollection.DEMOS_ID), collection);
-			tab.setId(DiskCollection.DEMOS_ID);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.DEMOS.name()), collection);
+			tab.setId(DiskCollectionType.DEMOS.name());
 			addTab(tab);
 		}
 	}
 
 	@FXML
 	private void mags() {
-		if (!tabAlreadyOpen(DiskCollection.MAGS_ID)) {
+		if (!tabAlreadyOpen(DiskCollectionType.MAGS.name())) {
 			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 			collection.setType(DiskCollectionType.MAGS);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollection.MAGS_ID), collection);
-			tab.setId(DiskCollection.MAGS_ID);
+			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.MAGS.name()), collection);
+			tab.setId(DiskCollectionType.MAGS.name());
 			addTab(tab);
 		}
 	}
@@ -986,15 +986,15 @@ public class MenuBar extends C64VBox implements UIPart {
 			asm();
 		} else if (Oscilloscope.ID.equals(id)) {
 			oscilloscope();
-		} else if (MusicCollection.HVSC_ID.equals(id)) {
+		} else if (MusicCollectionType.HVSC.name().equals(id)) {
 			hvsc();
-		} else if (MusicCollection.CGSC_ID.equals(id)) {
+		} else if (MusicCollectionType.CGSC.name().equals(id)) {
 			cgsc();
-		} else if (DiskCollection.HVMEC_ID.equals(id)) {
+		} else if (DiskCollectionType.HVMEC.name().equals(id)) {
 			hvmec();
-		} else if (DiskCollection.DEMOS_ID.equals(id)) {
+		} else if (DiskCollectionType.DEMOS.name().equals(id)) {
 			demos();
-		} else if (DiskCollection.MAGS_ID.equals(id)) {
+		} else if (DiskCollectionType.MAGS.name().equals(id)) {
 			mags();
 		} else if (GameBase.ID.equals(id)) {
 			gamebase();
@@ -1154,7 +1154,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
 			hvsc();
 			util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-					.filter(tab -> tab.getId().equals(MusicCollection.HVSC_ID)).findFirst().get().getContent());
+					.filter(tab -> tab.getId().equals(MusicCollectionType.HVSC.name())).findFirst().get().getContent());
 			try {
 				util.getPlayer().play(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {

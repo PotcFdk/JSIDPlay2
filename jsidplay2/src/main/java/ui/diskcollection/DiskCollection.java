@@ -49,9 +49,6 @@ import ui.filefilter.TapeFileFilter;
 
 public class DiskCollection extends C64VBox implements UIPart {
 
-	public static final String MAGS_ID = "MAGS";
-	public static final String DEMOS_ID = "DEMOS";
-	public static final String HVMEC_ID = "HVMEC";
 	private static final String HVMEC_DATA = "DATA";
 	private static final String HVMEC_CONTROL = "CONTROL";
 
