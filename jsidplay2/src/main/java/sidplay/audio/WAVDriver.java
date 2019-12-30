@@ -184,5 +184,10 @@ public abstract class WAVDriver implements AudioDriver {
 		return true;
 	}
 
+	@Override
+	public String getExtension() {
+		return ".wav";
+	}
+	
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

@@ -87,6 +87,11 @@ public class ProxyDriver implements VideoDriver {
 		return driverOne.isRecording() || driverTwo.isRecording();
 	}
 
+	@Override
+	public String getExtension() {
+		return driverOne.getExtension() != null ? driverOne.getExtension() : driverTwo.getExtension();
+	}
+
 	public AudioDriver getDriverOne() {
 		return driverOne;
 	}

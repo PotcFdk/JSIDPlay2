@@ -150,5 +150,10 @@ public abstract class MP3Driver implements AudioDriver {
 		return true;
 	}
 
+	@Override
+	public String getExtension() {
+		return ".mp3";
+	}
+	
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

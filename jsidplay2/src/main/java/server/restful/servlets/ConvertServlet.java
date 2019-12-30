@@ -16,14 +16,13 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.stream.Stream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -102,12 +101,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				configure(args, config, Audio.MP3.getAudioDriver());
 
-				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfAudioFormat(config,
-						response.getOutputStream());
-				Audio audio = audioAndDriver.getKey();
-				AudioDriver driver = audioAndDriver.getValue();
+				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
-				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
+				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
 				convertAudio(config, file, driver);
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
@@ -117,12 +113,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				configure(args, config, Audio.AVI.getAudioDriver());
 
-				SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = getAudioOfVideoFormat(config);
-				Audio audio = audioAndDriver.getKey();
-				AudioDriver driver = audioAndDriver.getValue();
+				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
-				response.setContentType(MimeType.getMimeType(audio.getExtension()).getContentType());
-				File videoFile = convertVideo(config, file, driver, audio);
+				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
+				File videoFile = convertVideo(config, file, driver);
 				copy(videoFile, response.getOutputStream());
 				videoFile.delete();
 			} else {
@@ -150,14 +144,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		jCommanderBuilder.build().parse(args);
 	}
 
-	private SimpleImmutableEntry<Audio, AudioDriver> getAudioOfAudioFormat(IConfig config, OutputStream outputstream) {
+	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
 		case WAV:
-			return new SimpleImmutableEntry<>(Audio.WAV, new WAVStream(outputstream));
+			return new WAVStream(outputstream);
 
 		case MP3:
 		default:
-			return new SimpleImmutableEntry<>(Audio.MP3, new MP3Stream(outputstream));
+			return new MP3Stream(outputstream);
 		}
 	}
 
@@ -172,20 +166,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private SimpleImmutableEntry<Audio, AudioDriver> getAudioOfVideoFormat(IConfig config) {
+	private AudioDriver getAudioDriverOfVideoFormat(IConfig config) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4)) {
 		case AVI:
-			return new SimpleImmutableEntry<>(Audio.AVI, new AVIDriver());
+			return new AVIDriver();
 		case MP4:
 		default:
-			return new SimpleImmutableEntry<>(Audio.MP4, new MP4Driver());
+			return new MP4Driver();
 		}
 	}
 
-	private File convertVideo(IConfig config, File file, AudioDriver driver, Audio audio)
+	private File convertVideo(IConfig config, File file, AudioDriver driver)
 			throws IOException, SidTuneError, URISyntaxException {
 		Player player = new Player(config);
-		File videoFile = File.createTempFile("jsidplay2video", audio.getExtension(),
+		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));
 		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());

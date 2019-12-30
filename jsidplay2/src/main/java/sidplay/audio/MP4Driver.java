@@ -151,6 +151,11 @@ public class MP4Driver implements VideoDriver {
 		return true;
 	}
 
+	@Override
+	public String getExtension() {
+		return ".mp4";
+	}
+	
 	private TextTrackImpl getSubtitles() {
 		TextTrackImpl textTrack = new TextTrackImpl();
 		textTrack.getSubs().add(new TextTrackImpl.Line(0, 3 * 1000 /* ms */, "Recorded by JSIDPlay2"));

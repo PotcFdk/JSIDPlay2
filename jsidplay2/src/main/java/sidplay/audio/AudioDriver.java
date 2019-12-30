@@ -29,14 +29,13 @@ public interface AudioDriver {
 	 * 
 	 * The audio parameters may be manipulated by open().
 	 * 
-	 * @param cfg
-	 *            Configuration requested.
-	 * @param recordingFilename
-	 *            name for a recording
+	 * @param cfg               Configuration requested.
+	 * @param recordingFilename name for a recording
 	 * @throws IOException
 	 * @throws LineUnavailableException
 	 */
-	void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock) throws IOException, LineUnavailableException;
+	void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+			throws IOException, LineUnavailableException;
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.
@@ -63,9 +62,9 @@ public interface AudioDriver {
 	/**
 	 * Return the bytebuffer intended to hold the audio data.
 	 * 
-	 * The audio data is in interleaved format and has as many channels as given
-	 * by the result of open(). Use putShort() to write 16-bit values. Don't
-	 * call write() until you have filled the entire buffer with audio.
+	 * The audio data is in interleaved format and has as many channels as given by
+	 * the result of open(). Use putShort() to write 16-bit values. Don't call
+	 * write() until you have filled the entire buffer with audio.
 	 * 
 	 * @return The buffer to write audio to.
 	 */
@@ -75,4 +74,12 @@ public interface AudioDriver {
 	 * @return is this audio driver recording tunes?
 	 */
 	boolean isRecording();
+
+	/**
+	 * @return file extension for recordings
+	 */
+	default String getExtension() {
+		return null;
+	}
+
 }

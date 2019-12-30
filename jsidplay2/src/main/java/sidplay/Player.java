@@ -935,9 +935,9 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * @return recording filename
 	 */
 	public String getRecordingFilename() {
-		Audio audio = audioAndDriver.getKey();
-		if (audio != null && audio.getExtension() != null) {
-			return recordingFilenameProvider.apply(tune) + audio.getExtension();
+		AudioDriver audioDriver = getAudioDriver();
+		if (audioDriver.getExtension() != null) {
+			return recordingFilenameProvider.apply(tune) + audioDriver.getExtension();
 		} else {
 			return recordingFilenameProvider.apply(tune);
 		}

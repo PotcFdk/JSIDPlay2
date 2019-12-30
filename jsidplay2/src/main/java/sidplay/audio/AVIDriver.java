@@ -107,6 +107,11 @@ public class AVIDriver implements VideoDriver {
 	}
 
 	@Override
+	public String getExtension() {
+		return ".avi";
+	}
+	
+	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;
 	}
