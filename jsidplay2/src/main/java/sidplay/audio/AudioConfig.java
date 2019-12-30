@@ -26,12 +26,16 @@ import libsidplay.config.IAudioSection;
 public class AudioConfig {
 	private final int frameRate;
 	private final int channels;
-	private int bufferFrames;
 	private final int deviceIdx;
-	private int audioBufferSize;
+	private int audioBufferSize, bufferFrames;
 
 	/**
-	 * This instance represents the requested audio configuration
+	 * This instance represents the requested audio configuration.<BR>
+	 * 
+	 * <B>Note:</B> Java Linux ALSA Sound System is awful!<BR>
+	 * Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x
+	 * fast forward)<BR>
+	 * 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
 	 * 
 	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
@@ -42,11 +46,7 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.deviceIdx = deviceIdx;
-		// Java Linux ALSA Sound System is awful!
-		// Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x fast forward)
-		// 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
-		this.audioBufferSize = audioBufferSize;
-		this.bufferFrames = this.audioBufferSize;
+		this.bufferFrames = this.audioBufferSize = audioBufferSize;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class AudioConfig {
 	 * 
 	 * @return size of one chunk
 	 */
-	public int getChunkFrames() {
+	public final int getChunkFrames() {
 		return Math.min(audioBufferSize, bufferFrames);
 	}
 
@@ -113,10 +113,10 @@ public class AudioConfig {
 		this.bufferFrames = bufferFrames;
 	}
 
-	public void setAudioBufferSize(int audioBufferSize) {
+	public final void setAudioBufferSize(int audioBufferSize) {
 		this.audioBufferSize = audioBufferSize;
 	}
-	
+
 	/**
 	 * Get number of audio channels
 	 * 
