@@ -34,6 +34,7 @@ import com.beust.jcommander.JCommander.Builder;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.MimeType;
@@ -182,7 +183,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));
 		videoFile.deleteOnExit();
-		player.setRecordingFilenameProvider(tune -> videoFile.getAbsolutePath());
+		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
