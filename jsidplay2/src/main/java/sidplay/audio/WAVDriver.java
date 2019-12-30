@@ -41,7 +41,7 @@ public abstract class WAVDriver implements AudioDriver {
 		@Override
 		public void close() {
 			super.close();
-			if (out != null) {
+			if (out != null && file != null) {
 				try {
 					file.seek(0);
 					out.write(wavHeader.getBytes());
@@ -52,6 +52,7 @@ public abstract class WAVDriver implements AudioDriver {
 					throw new RuntimeException("Error closing WAV audio stream", e);
 				} finally {
 					out = null;
+					file = null;
 				}
 			}
 		}

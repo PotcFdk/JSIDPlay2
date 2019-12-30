@@ -75,10 +75,12 @@ public class ProxyDriver implements VideoDriver {
 		driverTwo.close();
 	}
 
+	/**
+	 * Driver one's buffer gets filled, while driver two gets a copy in method
+	 * write()
+	 */
 	@Override
 	public ByteBuffer buffer() {
-		// Driver one's buffer gets filled, while driver two gets a copy in
-		// method write()
 		return driverOne.buffer();
 	}
 
