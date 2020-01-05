@@ -752,7 +752,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 				removePixelConsumer((VideoDriver) getAudioDriver());
 			}
 			// save still unwritten sound data
-			if (getAudioDriver().buffer() != null) {
+			if (stateProperty.get() == END && getAudioDriver().buffer() != null) {
 				getAudioDriver().write();
 			}
 		} catch (Throwable e) {
