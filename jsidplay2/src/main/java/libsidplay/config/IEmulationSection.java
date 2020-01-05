@@ -1,9 +1,15 @@
 package libsidplay.config;
 
+import static libsidplay.common.StereoMode.AUTO;
+import static libsidplay.common.StereoMode.STEREO;
+import static libsidplay.common.StereoMode.THREE_SID;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
+import libsidplay.common.SidReads;
+import libsidplay.common.StereoMode;
 
 public interface IEmulationSection {
 
@@ -867,6 +873,62 @@ public interface IEmulationSection {
 	 * @param model the the 3-SID model
 	 */
 	void setThirdSIDModel(ChipModel model);
+
+	/**
+	 * Get stereo mode.
+	 * 
+	 * @return stereo mode
+	 */
+	default StereoMode getStereoMode() {
+		if (isForce3SIDTune()) {
+			return THREE_SID;
+		} else if (isForceStereoTune()) {
+			return STEREO;
+		} else {
+			return AUTO;
+		}
+	}
+
+	/**
+	 * Set stereo mode.
+	 * 
+	 * @param stereoMode stereo mode
+	 */
+	default void setStereoMode(StereoMode stereoMode) {
+		switch (stereoMode) {
+		case THREE_SID:
+			setForceStereoTune(true);
+			setForce3SIDTune(true);
+			break;
+		case STEREO:
+			setForceStereoTune(true);
+			setForce3SIDTune(false);
+			break;
+	
+		default:
+			setForceStereoTune(false);
+			setForce3SIDTune(false);
+			break;
+		}
+	}
+
+	/**
+	 * Get SID that should do reads.
+	 * 
+	 * @return SID that should do reads
+	 */
+	default SidReads getSidToRead() {
+		return SidReads.values()[getSidNumToRead()];
+	}
+
+	/**
+	 * Set SID that should do reads.
+	 * 
+	 * @param sidReads SID that should do reads
+	 */
+	default void setSidToRead(SidReads sidReads) {
+		setSidNumToRead(sidReads.ordinal());
+	}
 
 	/**
 	 * Get chip model depending of the SIDBlaster device ID

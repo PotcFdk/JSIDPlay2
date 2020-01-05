@@ -5,8 +5,8 @@ import static libsidplay.common.ChipModel.MOS8580;
 import static libsidplay.common.Emulation.RESID;
 import static libsidplay.common.Emulation.RESIDFP;
 import static libsidplay.common.Engine.HARDSID;
-import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.common.Engine.NETSID;
+import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.common.SIDChip.FC_MAX;
 
 import java.beans.PropertyChangeEvent;
@@ -33,6 +33,8 @@ import javafx.scene.control.TextField;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
+import libsidplay.common.SidReads;
+import libsidplay.common.StereoMode;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
@@ -55,14 +57,6 @@ public class EmulationSettings extends C64Window {
 				Platform.runLater(() -> updateSettingsForTune(util.getPlayer().getTune()));
 			}
 		}
-	}
-
-	private enum StereoMode {
-		AUTO, STEREO, THREE_SID,
-	}
-
-	private enum SidReads {
-		FIRST_SID, SECOND_SID, THIRD_SID
 	}
 
 	@FXML
@@ -219,8 +213,8 @@ public class EmulationSettings extends C64Window {
 		sidReads = FXCollections.<SidReads>observableArrayList(SidReads.values());
 		sidToRead.setConverter(new EnumToStringConverter<SidReads>(bundle));
 		sidToRead.setItems(sidReads);
-		sidToRead.valueProperty().addListener((onj, o, n) -> emulationSection.setSidNumToRead(n.ordinal()));
-		sidToRead.getSelectionModel().select(emulationSection.getSidNumToRead());
+		sidToRead.valueProperty().addListener((onj, o, n) -> emulationSection.setSidToRead(n));
+		sidToRead.getSelectionModel().select(emulationSection.getSidToRead());
 
 		sid1Emulations = FXCollections.<Emulation>observableArrayList(Emulation.values());
 		sid1Emulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
@@ -303,13 +297,8 @@ public class EmulationSettings extends C64Window {
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
 		boolean isForcedStereo = emulationSection.isForceStereoTune();
 		boolean isForced3Sid = emulationSection.isForce3SIDTune();
-		if (isForced3Sid) {
-			stereoMode.getSelectionModel().select(StereoMode.THREE_SID);
-		} else if (isForcedStereo) {
-			stereoMode.getSelectionModel().select(StereoMode.STEREO);
-		} else {
-			stereoMode.getSelectionModel().select(StereoMode.AUTO);
-		}
+
+		stereoMode.getSelectionModel().select(emulationSection.getStereoMode());
 		mainVolume.setDisable(hardwareBasedSid);
 		sid1Emulation.setDisable(hardwareBasedSid);
 		sid1Model.setDisable(hardwareBasedSid);
@@ -432,19 +421,8 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setStereoMode() {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		util.getConfig().getEmulationSection().setStereoMode(stereoMode.getSelectionModel().getSelectedItem());
 
-		StereoMode mode = stereoMode.getSelectionModel().getSelectedItem();
-		if (mode == StereoMode.THREE_SID) {
-			emulationSection.setForceStereoTune(true);
-			emulationSection.setForce3SIDTune(true);
-		} else if (mode == StereoMode.STEREO) {
-			emulationSection.setForceStereoTune(true);
-			emulationSection.setForce3SIDTune(false);
-		} else {
-			emulationSection.setForceStereoTune(false);
-			emulationSection.setForce3SIDTune(false);
-		}
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
 		drawFilterCurve(0, mainFilter, mainFilterCurve);
@@ -566,7 +544,7 @@ public class EmulationSettings extends C64Window {
 				.findFirst();
 		if (optFilter.isPresent()) {
 			FilterSection filterSection = optFilter.get();
-			// stereo curve or 3-SID curve currently not used?
+			// stereo curve or 3-SID curve currently used?
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
 				for (int fc = 0; fc < FC_MAX; fc++) {
 					if (filterSection.isReSIDFilter6581() || filterSection.isReSIDFilter8580()) {
