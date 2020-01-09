@@ -23,8 +23,12 @@ Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 -Dhvmec.bz2=<pathToHVMEC.tar.bz2>
 -Dupx.home=<pathToUPX>
 
-Use OpenJDK For Linux users and PulseAudio for sound output:
-============================================================
+Use Oracle Java8
+================
+This is my recommendation, because JavaFX is already included!
+
+Optional: You can use OpenJDK For Linux users and PulseAudio for sound output:
+==============================================================================
 OpenJDK + OpenJFX + PulseAudio Mixer is required!
 Execute the following commands:
 sudo apt-get install openjdk-8-jdk
@@ -43,16 +47,12 @@ Now stop and start pulseaudio again without root rights:
 "pulseaudio -k"
 "pulseaudio -D"
 
-Hard-wire HardSID4U: connect mixed/out into the Microfone/in of your computer:
-==============================================================================
+Hard-wire HardSID4U: connect mixed/out into the Microfone-in connector of your computer:
+========================================================================================
 In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
 Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 Lower your microphone volume level to prevent overdrive noise
-
-Use Oracle Java8
-================
-This is my recommendation, because JavaFX is already included!
 
 Java8 in Eclipse:
 =================
@@ -75,8 +75,11 @@ mvn clean install
 Java9 and successor versions require the configured required modules and since Java11
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
-However to use this new launch in Eclipse you must 1st: copy the contents of pom-java11.xml to pom.xml
-and 2nd you must launch "mvn clean install (Java11)". Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
+However to use this new launch in Eclipse you must
+1st: use Java11 with Eclipse and
+2nd: Copy the contents of pom-java11.xml to pom.xml and
+3rd: Launch "mvn clean install (Java11)".
+Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
 
 Eclipse JavaFX support:
 =======================
@@ -103,7 +106,7 @@ For support of double click on the JAR to start JSIDPlay2:
 Right click on jsidplay-<version>.jar
 Open with...
 Choose a different one...
-/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar
+/home/ken/Downloads/jdk1.8.0_211/bin/java -jar
 X Remember file type assignment
 
 Shrink jsiddevice using packer UPX (done in the release build automatically):
