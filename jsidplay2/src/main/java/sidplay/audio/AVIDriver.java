@@ -36,9 +36,10 @@ import libsidplay.components.mos656x.VIC;
 public class AVIDriver implements AudioDriver, VideoDriver {
 
 	private AVIWriter aviWriter;
+	private int videoTrack, audioTrack;
 
-	private ByteBuffer sampleBuffer;
 	private BufferedImage videoImage;
+	private ByteBuffer sampleBuffer;
 
 	/**
 	 * AVI: compression quality (1=best, 0.97=default, 0=worst)
@@ -52,16 +53,16 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		System.out.println("Recording, file=" + recordingFilename);
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
-		aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f, MediaTypeKey,
-				MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1), WidthKey,
-				VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
+		videoTrack = aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f,
+				MediaTypeKey, MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1),
+				WidthKey, VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
 
-		aviWriter.addTrack(new Format(SampleRateKey, new Rational(cfg.getFrameRate(), 1), ChannelsKey,
+		audioTrack = aviWriter.addTrack(new Format(SampleRateKey, new Rational(cfg.getFrameRate(), 1), ChannelsKey,
 				cfg.getChannels(), SampleSizeInBitsKey, Short.SIZE, EncodingKey, ENCODING_PCM_SIGNED));
 
 		videoImage = new BufferedImage(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		aviWriter.setPalette(0, videoImage.getColorModel());
-		aviWriter.setCompressionQuality(0, aviVideoQuality);
+		aviWriter.setPalette(videoTrack, videoImage.getColorModel());
+		aviWriter.setCompressionQuality(videoTrack, aviVideoQuality);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
@@ -71,7 +72,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	public void accept(VIC vic, int[] pixels) {
 		try {
 			videoImage.setRGB(0, 0, VIC.MAX_WIDTH, VIC.MAX_HEIGHT, pixels, 0, VIC.MAX_WIDTH);
-			aviWriter.write(0, videoImage, 1);
+			aviWriter.write(videoTrack, videoImage, 1);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing AVI video stream", e);
 		}
@@ -83,7 +84,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 			if (aviWriter.isDataLimitReached()) {
 				throw new IOException("AVI file size limit reached!");
 			}
-			aviWriter.writeSamples(1, sampleBuffer.position() >> 2/* / (Short.BYTES * cfg.getChannels()) */,
+			aviWriter.writeSamples(audioTrack, sampleBuffer.position() >> 2/* / (Short.BYTES * cfg.getChannels()) */,
 					sampleBuffer.array(), 0, sampleBuffer.position(), true);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing AVI video stream", e);
@@ -110,7 +111,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	public String getExtension() {
 		return ".avi";
 	}
-	
+
 	@Override
 	public ByteBuffer buffer() {
 		return sampleBuffer;

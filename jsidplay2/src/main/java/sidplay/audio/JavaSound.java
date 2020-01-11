@@ -47,7 +47,7 @@ public class JavaSound implements AudioDriver {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
-		this.audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
+		audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
 		setAudioDevice(info);
 	}
 
