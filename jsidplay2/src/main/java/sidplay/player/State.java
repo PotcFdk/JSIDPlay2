@@ -7,6 +7,8 @@ package sidplay.player;
  *
  */
 public enum State {
+	/** Player is about to start to play a tune */
+	OPEN,
 	/** Player starts to play a tune */
 	START,
 	/** Player playing */

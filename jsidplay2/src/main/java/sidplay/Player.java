@@ -14,6 +14,7 @@ import static libsidplay.common.SIDEmu.NONE;
 import static libsidplay.sidtune.SidTune.RESET;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.player.State.END;
+import static sidplay.player.State.OPEN;
 import static sidplay.player.State.PAUSE;
 import static sidplay.player.State.PLAY;
 import static sidplay.player.State.QUIT;
@@ -70,9 +71,9 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File.MP3Termination;
-import sidplay.audio.CmpMP3File.MP3WrongSettingsException;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
+import sidplay.ini.IniConfigException;
 import sidplay.ini.IniConfig;
 import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
@@ -586,8 +587,12 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		// Run until the player gets stopped
 		do {
 			try {
-				open();
-				stateProperty.set(START);
+				stateProperty.set(OPEN);
+				try {
+					open();
+				} finally {
+					stateProperty.set(START);
+				}
 				menuHook.accept(Player.this);
 				// Play next chunk of sound data
 				stateProperty.set(PLAY);
@@ -596,9 +601,9 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 				}
 			} catch (MP3Termination e) {
 				stateProperty.set(END);
-			} catch (MP3WrongSettingsException e) {
+			} catch (IniConfigException e) {
 				System.out.println(e.getMessage());
-				stateProperty.set(QUIT);
+				stateProperty.set(RESTART);
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
@@ -698,8 +703,10 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 
 		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
-			throw new IOException("Error: unknown song length in record mode"
-					+ " (please use option --defaultLength or configure song length database)");
+			sidplaySection.setDefaultPlayLength(180);
+			throw new IniConfigException("unknown song length in record mode"
+					+ " (please use option --defaultLength or configure song length database).\n"
+					+ "Set default length to " + sidplaySection.getDefaultPlayLength() + "s");
 		}
 		if (getAudioDriver().isRecording() && sidplaySection.isLoop()) {
 			System.out.println("Warning: Loop has been disabled while recording audio files!");
@@ -787,10 +794,13 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * @param command basic command to be entered after a normal reset
 	 */
 	private void play(final SidTune tune, final String command) {
-		stopC64();
-		setTune(tune);
-		setCommand(command);
-		startC64();
+		// prevent (re)starting a tune during initialization phase (IniConfigException)
+		if (stateProperty().get() != OPEN) {
+			stopC64();
+			setTune(tune);
+			setCommand(command);
+			startC64();
+		}
 	}
 
 	/**

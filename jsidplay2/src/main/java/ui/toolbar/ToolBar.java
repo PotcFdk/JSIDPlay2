@@ -70,6 +70,7 @@ import ui.common.C64Window;
 import ui.common.EnumToStringConverter;
 import ui.common.MixerInfoToStringConverter;
 import ui.common.PositiveNumberToStringConverter;
+import ui.common.ThreadSafeBindings;
 import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.entities.config.AudioSection;
@@ -192,10 +193,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		samplingRateBox.setConverter(new EnumToStringConverter<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
-		samplingRateBox.valueProperty().addListener((obj, o, n) -> audioSection.setSamplingRate(n));
-		audioSection.samplingRateProperty()
-				.addListener((obj, o, n) -> Platform.runLater(() -> samplingRateBox.setValue(n)));
-		samplingRateBox.setValue(audioSection.getSamplingRate());
+		ThreadSafeBindings.bindBidirectional(samplingRateBox.valueProperty(), audioSection.samplingRateProperty());
 
 		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());

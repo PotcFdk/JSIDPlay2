@@ -16,6 +16,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import lowlevel.LameDecoder;
+import sidplay.ini.IniConfigException;
 
 /**
  * Sound driver to listen to emulation and MP3 recording in parallel.
@@ -31,15 +32,6 @@ public class CmpMP3File extends JavaSound {
 		}
 		public MP3Termination(Exception e) {
 			super(e.getMessage());
-		}
-	}
-
-	@SuppressWarnings("serial")
-	public static class MP3WrongSettingsException extends IOException {
-		public MP3WrongSettingsException() {
-		}
-		public MP3WrongSettingsException(String message) {
-			super(message);
 		}
 	}
 
@@ -75,7 +67,7 @@ public class CmpMP3File extends JavaSound {
 		}
 		if (sampleRate != audioSection.getSamplingRate().getFrequency()) {
 			audioSection.setSamplingRate(samplingRateFound.get());
-			throw new MP3WrongSettingsException("Sampling rate does not match " + sampleRate);
+			throw new IniConfigException("Sampling rate does not match " + sampleRate);
 		}
 		decodedMP3Buffer = ByteBuffer.wrap(new byte[frameSize * Short.BYTES * channels]).order(ByteOrder.nativeOrder());
 
