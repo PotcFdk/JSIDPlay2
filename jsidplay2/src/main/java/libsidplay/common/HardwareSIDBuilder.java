@@ -12,18 +12,18 @@ public interface HardwareSIDBuilder extends SIDBuilder {
 	/**
 	 * Get device ID of specified SID
 	 * 
-	 * @param deviceNum SID device number
+	 * @param sidNum SID number
 	 * 
 	 * @return device ID of specified SID (null means unassigned)
 	 */
-	Integer getDeviceId(int deviceNum);
+	Integer getDeviceId(int sidNum);
 
 	/**
 	 * Get device chip model of specified SID
 	 * 
-	 * @param deviceNum SID device number
+	 * @param sidNum SID number
 	 * 
 	 * @return device chip model of specified SID (null means unassigned)
 	 */
-	ChipModel getDeviceChipModel(int deviceNum);
+	ChipModel getDeviceChipModel(int sidNum);
 }

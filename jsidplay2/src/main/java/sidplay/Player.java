@@ -704,13 +704,13 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
 			sidplaySection.setDefaultPlayLength(180);
-			throw new IniConfigException("unknown song length in record mode"
-					+ " (please use option --defaultLength or configure song length database).\n"
-					+ "Set default length to " + sidplaySection.getDefaultPlayLength() + "s");
+			throw new IniConfigException("Unknown song length in record mode"
+					+ " (Please use option --defaultLength or configure song length database).\n"
+					+ "Set default length to " + sidplaySection.getDefaultPlayLength() + "sec.");
 		}
 		if (getAudioDriver().isRecording() && sidplaySection.isLoop()) {
-			System.out.println("Warning: Loop has been disabled while recording audio files!");
 			sidplaySection.setLoop(false);
+			System.out.println("Warning: Loop has been disabled during recording!");
 		}
 	}
 
@@ -794,7 +794,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * @param command basic command to be entered after a normal reset
 	 */
 	private void play(final SidTune tune, final String command) {
-		// prevent (re)starting a tune during initialization phase (IniConfigException)
+		// prevent (re)starting a tune during IniConfigException
 		if (stateProperty().get() != OPEN) {
 			stopC64();
 			setTune(tune);

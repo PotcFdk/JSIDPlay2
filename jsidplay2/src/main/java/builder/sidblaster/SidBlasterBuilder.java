@@ -132,13 +132,13 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	@Override
-	public Integer getDeviceId(int deviceNum) {
-		return deviceNum < sids.size() ? Integer.valueOf(sids.get(deviceNum).getDeviceId()) : null;
+	public Integer getDeviceId(int sidNum) {
+		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getDeviceId()) : null;
 	}
 
 	@Override
-	public ChipModel getDeviceChipModel(int deviceNum) {
-		return deviceNum < sids.size() ? sids.get(deviceNum).getChipModel() : null;
+	public ChipModel getDeviceChipModel(int sidNum) {
+		return sidNum < sids.size() ? sids.get(sidNum).getChipModel() : null;
 	}
 
 	@Override
