@@ -33,7 +33,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 
 @Parameters(resourceBundle = "sidplay.audio.AVIDriver")
-public class AVIDriver implements VideoDriver {
+public class AVIDriver implements AudioDriver, VideoDriver {
 
 	private AVIWriter aviWriter;
 
@@ -68,9 +68,9 @@ public class AVIDriver implements VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic, int[] bgraData) {
+	public void accept(VIC vic, int[] pixels) {
 		try {
-			videoImage.setRGB(0, 0, VIC.MAX_WIDTH, VIC.MAX_HEIGHT, bgraData, 0, VIC.MAX_WIDTH);
+			videoImage.setRGB(0, 0, VIC.MAX_WIDTH, VIC.MAX_HEIGHT, pixels, 0, VIC.MAX_WIDTH);
 			aviWriter.write(0, videoImage, 1);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing AVI video stream", e);

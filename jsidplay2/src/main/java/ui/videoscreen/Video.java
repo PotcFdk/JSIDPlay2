@@ -15,7 +15,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -51,6 +50,7 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
+import sidplay.audio.VideoDriver;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -64,7 +64,7 @@ import ui.filefilter.DiskFileExtensions;
 import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
-public class Video extends C64VBox implements UIPart, BiConsumer<VIC, int[]> {
+public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	public static final String ID = "VIDEO";
 	private static final double PAL_MARGIN_LEFT = 55;

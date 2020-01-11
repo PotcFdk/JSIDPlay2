@@ -86,7 +86,7 @@ import sidplay.player.Timer;
  * @author Ken Händel
  * 
  */
-public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
+public class Player extends HardwareEnsemble implements VideoDriver {
 
 	/** Build date calculated from our own modify time */
 	public static Calendar LAST_MODIFIED;
@@ -226,7 +226,7 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	};
 
 	/**
-	 * Consumer for VIC screen output as BGRA data
+	 * Consumer for VIC screen output as ARGB data
 	 */
 	protected List<BiConsumer<VIC, int[]>> pixelConsumers = new CopyOnWriteArrayList<BiConsumer<VIC, int[]>>();
 
@@ -984,14 +984,14 @@ public class Player extends HardwareEnsemble implements BiConsumer<VIC, int[]> {
 	 * 4x, ... , 32x).
 	 */
 	@Override
-	public void accept(VIC vic, int[] bgraData) {
+	public void accept(VIC vic, int[] pixels) {
 		// skip frame(s) on fast forward
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
 			Iterator<BiConsumer<VIC, int[]>> iterator = pixelConsumers.iterator();
 			while (iterator.hasNext()) {
-				iterator.next().accept(vic, bgraData);
+				iterator.next().accept(vic, pixels);
 			}
 		}
 	}

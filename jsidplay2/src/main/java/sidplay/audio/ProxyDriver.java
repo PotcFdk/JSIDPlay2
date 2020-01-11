@@ -17,7 +17,7 @@ import libsidplay.components.mos656x.VIC;
  * @author Ken Händel
  * 
  */
-public class ProxyDriver implements VideoDriver {
+public class ProxyDriver implements AudioDriver, VideoDriver {
 	private final AudioDriver driverOne;
 	private final AudioDriver driverTwo;
 
@@ -60,12 +60,12 @@ public class ProxyDriver implements VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic, int[] bgraData) {
+	public void accept(VIC vic, int[] pixels) {
 		if (driverOne instanceof VideoDriver) {
-			((VideoDriver) driverOne).accept(vic, bgraData);
+			((VideoDriver) driverOne).accept(vic, pixels);
 		}
 		if (driverTwo instanceof VideoDriver) {
-			((VideoDriver) driverTwo).accept(vic, bgraData);
+			((VideoDriver) driverTwo).accept(vic, pixels);
 		}
 	}
 

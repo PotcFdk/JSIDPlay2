@@ -59,7 +59,7 @@ public abstract class VIC extends Bank {
 	public static final int MAX_WIDTH = 48 * 8;
 
 	/**
-	 * Alpha channel of ARGBA pixel data.
+	 * Alpha channel of ARGB pixel data.
 	 */
 	private static final int ALPHA = 0xff000000;
 

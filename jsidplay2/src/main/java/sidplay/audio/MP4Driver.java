@@ -38,7 +38,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 import libsidutils.PathUtils;
 
-public class MP4Driver implements VideoDriver {
+public class MP4Driver implements AudioDriver, VideoDriver {
 
 	private OutputStream pcmAudioStream;
 	private File pcmAudioFile, videoFile;
@@ -89,9 +89,9 @@ public class MP4Driver implements VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic, int[] bgraData) {
+	public void accept(VIC vic, int[] pixels) {
 		try {
-			setPictureData(bgraData);
+			setPictureData(pixels);
 			this.sequenceEncoder.encodeNativeFrame(picture);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing H264 video stream", e);
@@ -162,9 +162,9 @@ public class MP4Driver implements VideoDriver {
 		return textTrack;
 	}
 
-	private void setPictureData(int[] bgraData) {
+	private void setPictureData(int[] pixels) {
 		((Buffer) vicPixelBuffer).clear();
-		vicPixelBuffer.asIntBuffer().put(bgraData);
+		vicPixelBuffer.asIntBuffer().put(pixels);
 		((Buffer) pictureBuffer).clear();
 		for (int channelIndex = 0; channelIndex < vicPixelBuffer.capacity(); channelIndex++) {
 			byte pixelData = vicPixelBuffer.get();
