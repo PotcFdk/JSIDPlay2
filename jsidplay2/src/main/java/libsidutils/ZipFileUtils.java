@@ -58,7 +58,11 @@ public class ZipFileUtils {
 	}
 
 	public static void copy(File file, OutputStream os) throws IOException {
-		final ReadableByteChannel inputChannel = Channels.newChannel(newFileInputStream(file));
+		copy(newFileInputStream(file), os);
+	}
+
+	public static void copy(InputStream is, OutputStream os) throws IOException {
+		final ReadableByteChannel inputChannel = Channels.newChannel(is);
 		final WritableByteChannel outputChannel = Channels.newChannel(os);
 		final ByteBuffer buffer = ByteBuffer.allocateDirect(COPY_BUFFER_CHUNK_SIZE);
 
