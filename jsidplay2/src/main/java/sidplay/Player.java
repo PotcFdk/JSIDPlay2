@@ -73,8 +73,8 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.CmpMP3File.MP3Termination;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
-import sidplay.ini.IniConfigException;
 import sidplay.ini.IniConfig;
+import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -228,7 +228,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected List<BiConsumer<VIC, int[]>> pixelConsumers = new CopyOnWriteArrayList<BiConsumer<VIC, int[]>>();
+	protected List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<VideoDriver>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -260,7 +260,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
 				if (getAudioDriver() instanceof VideoDriver) {
-					addPixelConsumer((VideoDriver) getAudioDriver());
+					addVideoDriver((VideoDriver) getAudioDriver());
 				}
 			}
 
@@ -643,7 +643,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 
 		sidBuilder = createSIDBuilder(c64.getClock());
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
-		configureVICs(vic -> vic.setPixelConsumer(this));
+		configureVICs(vic -> vic.setVideoDriver(this));
 		fastForwardVICFrames = 0;
 
 		stateProperty.addListener(pauseListener);
@@ -756,7 +756,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 			stateProperty.removeListener(pauseListener);
 			c64.insertSIDChips(noSIDs, sidLocator);
 			if (getAudioDriver() instanceof VideoDriver) {
-				removePixelConsumer((VideoDriver) getAudioDriver());
+				removeVideoDriver((VideoDriver) getAudioDriver());
 			}
 			// save still unwritten sound data
 			if (stateProperty.get() == END && getAudioDriver().buffer() != null) {
@@ -966,8 +966,8 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * 
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
-	public void addPixelConsumer(BiConsumer<VIC, int[]> consumer) {
-		pixelConsumers.add(consumer);
+	public void addVideoDriver(VideoDriver consumer) {
+		videoDrivers.add(consumer);
 	}
 
 	/**
@@ -975,8 +975,8 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * 
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
-	public void removePixelConsumer(BiConsumer<VIC, int[]> consumer) {
-		pixelConsumers.remove(consumer);
+	public void removeVideoDriver(VideoDriver consumer) {
+		videoDrivers.remove(consumer);
 	}
 
 	/**
@@ -989,7 +989,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
-			Iterator<BiConsumer<VIC, int[]>> iterator = pixelConsumers.iterator();
+			Iterator<VideoDriver> iterator = videoDrivers.iterator();
 			while (iterator.hasNext()) {
 				iterator.next().accept(vic, pixels);
 			}

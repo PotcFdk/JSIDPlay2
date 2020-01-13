@@ -258,7 +258,7 @@ public class MOS6567 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					pixelConsumer.accept(MOS6567.this, pixels);
+					videoDriver.accept(MOS6567.this, pixels);
 				}
 				setBA(!sprites[3].isDMA() && !sprites[4].isDMA() && !sprites[5].isDMA());
 				fetchSpriteData(3);

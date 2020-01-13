@@ -237,7 +237,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(stateListener);
-		util.getPlayer().removePixelConsumer(this);
+		util.getPlayer().removeVideoDriver(this);
 		sequentialTransition.stop();
 		timer.stop();
 		imageQueue.dispose();
@@ -500,7 +500,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 * Make breadbox/pc64 image visible, if the internal SID player is used.
 	 */
 	private void setVisibilityBasedOnChipType(final SidTune sidTune) {
-		util.getPlayer().removePixelConsumer(this);
+		util.getPlayer().removeVideoDriver(this);
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		if (sidTune != SidTune.RESET && sidTune.getInfo().getPlayAddr() != 0) {
 			// SID Tune is loaded and uses internal player?
@@ -521,7 +521,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			pc64.setVisible(false);
 			screen.setVisible(true);
 			monitorBorder.setVisible(showMonitorBorder.isSelected());
-			util.getPlayer().addPixelConsumer(this);
+			util.getPlayer().addVideoDriver(this);
 		}
 	}
 

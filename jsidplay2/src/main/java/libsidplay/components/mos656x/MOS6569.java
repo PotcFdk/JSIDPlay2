@@ -283,7 +283,7 @@ public final class MOS6569 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					pixelConsumer.accept(MOS6569.this, pixels);
+					videoDriver.accept(MOS6569.this, pixels);
 				}
 
 				// reset collision pointer to first pixel in line

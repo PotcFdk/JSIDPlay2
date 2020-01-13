@@ -7,13 +7,13 @@
 package libsidplay.components.mos656x;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.components.pla.Bank;
 import libsidplay.components.pla.PLA;
+import sidplay.audio.VideoDriver;
 
 /* TODO
  * 
@@ -268,17 +268,17 @@ public abstract class VIC extends Bank {
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected BiConsumer<VIC, int[]> pixelConsumer = (vic, pixels) -> {
+	protected VideoDriver videoDriver = (vic, pixels) -> {
 	};
 
 	/**
 	 * Set consumer of VIC screen output as ARGB data
 	 * 
-	 * @param consumer
+	 * @param videoDriver
 	 *            consumer of C64 screen pixels as ARGB data
 	 */
-	public void setPixelConsumer(BiConsumer<VIC, int[]> consumer) {
-		pixelConsumer = consumer;
+	public void setVideoDriver(VideoDriver videoDriver) {
+		this.videoDriver = videoDriver;
 	}
 
 	/**
