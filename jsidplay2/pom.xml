@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
-			<version>0.2.3</version>
+			<version>0.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sheinbergon</groupId>
@@ -176,12 +176,12 @@
 		<dependency>
             <groupId>org.mp4parser</groupId>
             <artifactId>muxer</artifactId>
-            <version>1.9.34</version>
+            <version>1.9.36</version>
 		</dependency>
 		<dependency>
             <groupId>org.mp4parser</groupId>
             <artifactId>streaming</artifactId>
-            <version>1.9.34</version>
+            <version>1.9.36</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>

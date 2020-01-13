@@ -65,9 +65,9 @@ public class AudioConfig {
 	}
 
 	/**
-	 * Gets the audio framerate of this AudioConfig.
+	 * Gets the audio frame rate of this AudioConfig.
 	 * 
-	 * @return The audio framerate of this AudioConfig.
+	 * @return The audio frame rate of this AudioConfig.
 	 */
 	public final int getFrameRate() {
 		return frameRate;

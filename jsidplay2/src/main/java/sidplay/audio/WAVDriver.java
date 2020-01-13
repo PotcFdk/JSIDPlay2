@@ -94,14 +94,8 @@ public abstract class WAVDriver implements AudioDriver {
 		private static final int HEADER_OFFSET = 8;
 		private static final int HEADER_LENGTH = 44;
 
-		private int length;
-		private short format;
-		private short channels;
-		private int sampleFreq;
-		private int bytesPerSec;
-		private short blockAlign;
-		private short bitsPerSample;
-		private int dataChunkLen;
+		private int length, sampleFreq,bytesPerSec, dataChunkLen;
+		private short format, channels, blockAlign, bitsPerSample;
 
 		public WavHeader(int channels, int frameRate) {
 			this.length = HEADER_LENGTH - HEADER_OFFSET;

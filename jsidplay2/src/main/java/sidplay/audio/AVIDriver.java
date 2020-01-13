@@ -71,6 +71,9 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void accept(VIC vic, int[] pixels) {
 		try {
+			if (aviWriter.isDataLimitReached()) {
+				throw new IOException("AVI file size limit reached!");
+			}
 			videoImage.setRGB(0, 0, VIC.MAX_WIDTH, VIC.MAX_HEIGHT, pixels, 0, VIC.MAX_WIDTH);
 			aviWriter.write(videoTrack, videoImage, 1);
 		} catch (IOException e) {
