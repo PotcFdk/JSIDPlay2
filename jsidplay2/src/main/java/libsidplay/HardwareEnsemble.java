@@ -29,6 +29,7 @@ import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.mos6510.MOS6510;
+import libsidplay.components.mos656x.Palette;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.config.IC1541Section;
 import libsidplay.config.IConfig;
@@ -266,15 +267,16 @@ public class HardwareEnsemble implements Ultimate64 {
 	protected void reset() {
 		c64.configureVICs(vic -> {
 			ISidPlay2Section sidplay2section = config.getSidplay2Section();
-			vic.getPalette().setBrightness(sidplay2section.getBrightness());
-			vic.getPalette().setContrast(sidplay2section.getContrast());
-			vic.getPalette().setGamma(sidplay2section.getGamma());
-			vic.getPalette().setSaturation(sidplay2section.getSaturation());
-			vic.getPalette().setPhaseShift(sidplay2section.getPhaseShift());
-			vic.getPalette().setOffset(sidplay2section.getOffset());
-			vic.getPalette().setTint(sidplay2section.getTint());
-			vic.getPalette().setLuminanceC(sidplay2section.getBlur());
-			vic.getPalette().setDotCreep(sidplay2section.getBleed());
+			Palette palette = vic.getPalEmulation().getPalette();
+			palette.setBrightness(sidplay2section.getBrightness());
+			palette.setContrast(sidplay2section.getContrast());
+			palette.setGamma(sidplay2section.getGamma());
+			palette.setSaturation(sidplay2section.getSaturation());
+			palette.setPhaseShift(sidplay2section.getPhaseShift());
+			palette.setOffset(sidplay2section.getOffset());
+			palette.setTint(sidplay2section.getTint());
+			palette.setLuminanceC(sidplay2section.getBlur());
+			palette.setDotCreep(sidplay2section.getBleed());
 		});
 		final IC1541Section c1541Section = config.getC1541Section();
 		c64.setCustomKernal(c1541Section.isJiffyDosInstalled() ? JIFFYDOS_C64_KERNAL : null);

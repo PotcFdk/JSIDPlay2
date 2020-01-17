@@ -40,11 +40,10 @@ import libsidplay.components.pla.PLA;
  * PAL specialization of the VIC
  */
 public final class MOS6569 extends VIC {
-	/** System's palette */
-	private final Palette palette = new Palette();
 
-	public MOS6569(PLA pla, EventScheduler context) {
+	public MOS6569(Model model, PLA pla, EventScheduler context) {
 		super(pla, context, 63, 312);
+		palEmulation = new PALEmulation(model);
 	}
 
 	private static final int FIRST_DISPLAY_LINE = 15;
@@ -269,20 +268,12 @@ public final class MOS6569 extends VIC {
 
 				latchedXscroll = xscroll << 2;
 				oldGraphicsData = 0;
-				previousLineIndex = 0;
+				palEmulation.determineCurrentPalette(rasterY, rasterY == FIRST_DISPLAY_LINE);
 				if (rasterY == FIRST_DISPLAY_LINE) {
-					/* current row odd? -> start with even, init, swap */
-					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven : linePaletteOdd;
-					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven : combinedLinesOdd;
 					graphicsRendering = true;
 					((Buffer) pixels).clear();
 					((Buffer) vicColors).clear();
-					for (int i = 0; i < previousLineDecodedColor.length; i++) {
-						previousLineDecodedColor[i] = linePaletteCurrent[0];
-					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
@@ -414,7 +405,7 @@ public final class MOS6569 extends VIC {
 	@Override
 	public final void reset() {
 		super.reset();
-		updatePalette();
+		palEmulation.updatePalette();
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
 	}
@@ -422,20 +413,6 @@ public final class MOS6569 extends VIC {
 	@Override
 	public int getBorderHeight() {
 		return LAST_DISPLAY_LINE - FIRST_DISPLAY_LINE;
-	}
-
-	@Override
-	public void updatePalette() {
-		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
-	}
-
-	@Override
-	public Palette getPalette() {
-		return palette;
 	}
 
 }

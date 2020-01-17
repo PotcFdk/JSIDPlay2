@@ -62,11 +62,6 @@ public abstract class VIC extends Bank {
 	public static final int MAX_WIDTH = 48 * 8;
 
 	/**
-	 * Alpha channel of ARGB pixel data.
-	 */
-	private static final int ALPHA = 0xff000000;
-
-	/**
 	 * Chip models supported by MOS656X.
 	 */
 	public static enum Model {
@@ -124,26 +119,8 @@ public abstract class VIC extends Bank {
 	/** xscroll-delayed phi1 data */
 	private int phi1DataPipe;
 
-	protected int[] combinedLinesCurrent;
-	/**
-	 * Table for looking up color using a packed 2x8 value for even rasterlines
-	 */
-	protected final int[] combinedLinesEven = new int[256 * 256];
-	/**
-	 * Table for looking up color using a packed 2x8 value for odd rasterlines
-	 */
-	protected final int[] combinedLinesOdd = new int[256 * 256];
-	/** Prevailing VIC color palette for current line (odd/even) */
-	protected byte[] linePaletteCurrent;
-	/** VIC color palette for even rasterlines */
-	protected final byte[] linePaletteEven = new byte[16 * 16 * 16 * 16];
-	/** VIC color palette for odd rasterlines */
-	protected final byte[] linePaletteOdd = new byte[16 * 16 * 16 * 16];
-	/** Last line's color */
-	protected final byte[] previousLineDecodedColor = new byte[65 * 8];
-	/** Index into last line */
-	protected int previousLineIndex;
-
+	protected PALEmulation palEmulation;
+	
 	/** PLA chip */
 	private final PLA pla;
 
@@ -626,11 +603,8 @@ public abstract class VIC extends Bank {
 			for (int i = 0; i < 4; i++) {
 				oldGraphicsData <<= 4;
 				final int vicColor = oldGraphicsData >>> 16;
-				final byte lineColor = linePaletteCurrent[vicColor];
-				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
 				vicColors.put((byte) (vicColor & 0x0f));
-				pixels.put(ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00]);
-				previousLineDecodedColor[previousLineIndex++] = lineColor;
+				pixels.put(palEmulation.getRGBA(vicColor));
 			}
 			graphicsDataBuffer <<= 16;
 		}
@@ -1172,17 +1146,12 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * Gets the currently used palette.
-	 *
-	 * @return The currently used palette.
+	 * PAL emulation
 	 */
-	public abstract Palette getPalette();
-
-	/**
-	 * Updates the palette
-	 */
-	public abstract void updatePalette();
-
+	public PALEmulation getPalEmulation() {
+		return palEmulation;
+	}
+	
 	/**
 	 * Trigger the lightpen. Sets the lightpen usage flag.
 	 */

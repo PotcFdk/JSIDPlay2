@@ -19,10 +19,10 @@ import libsidplay.components.pla.PLA;
  * @author Antti Lankila
  */
 public class MOS6567 extends VIC {
-	private final Palette palette = new Palette();
 
-	public MOS6567(PLA pla, EventScheduler context) {
+	public MOS6567(Model model, PLA pla, EventScheduler context) {
 		super(pla, context, 65, 263);
+		palEmulation = new PALEmulation(model);
 	}
 
 	private static final int FIRST_DISPLAY_LINE = 40;
@@ -244,20 +244,12 @@ public class MOS6567 extends VIC {
 
 				latchedXscroll = xscroll << 2;
 				oldGraphicsData = 0;
-				previousLineIndex = 0;
+				palEmulation.determineCurrentPalette(rasterY, rasterY == FIRST_DISPLAY_LINE);
 				if (rasterY == FIRST_DISPLAY_LINE) {
-					/* current row odd? -> start with even, init, swap */
-					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven : linePaletteOdd;
-					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven : combinedLinesOdd;
 					graphicsRendering = true;
 					((Buffer) pixels).clear();
 					((Buffer) vicColors).clear();
-					for (int i = 0; i < previousLineDecodedColor.length; i++) {
-						previousLineDecodedColor[i] = linePaletteCurrent[0];
-					}
 				}
-				linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
-				combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
@@ -398,7 +390,7 @@ public class MOS6567 extends VIC {
 	@Override
 	public final void reset() {
 		super.reset();
-		updatePalette();
+		palEmulation.updatePalette();
 		lineCycle = 9; // preincremented at event
 		context.schedule(event, 0, Phase.PHI1);
 	}
@@ -408,17 +400,4 @@ public class MOS6567 extends VIC {
 		return LAST_DISPLAY_LINE - FIRST_DISPLAY_LINE + MAX_RASTERS;
 	}
 
-	@Override
-	public void updatePalette() {
-		palette.calculatePalette(Palette.buildPaletteVariant(VIC.Model.MOS6567R8));
-		System.arraycopy(palette.getEvenLines(), 0, combinedLinesEven, 0, combinedLinesEven.length);
-		System.arraycopy(palette.getOddLines(), 0, combinedLinesOdd, 0, combinedLinesOdd.length);
-		System.arraycopy(palette.getEvenFiltered(), 0, linePaletteEven, 0, linePaletteEven.length);
-		System.arraycopy(palette.getOddFiltered(), 0, linePaletteOdd, 0, linePaletteOdd.length);
-	}
-
-	@Override
-	public Palette getPalette() {
-		return palette;
-	}
 }
