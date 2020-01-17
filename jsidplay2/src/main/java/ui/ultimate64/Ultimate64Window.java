@@ -8,6 +8,7 @@ import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.IntBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -24,10 +25,14 @@ import javafx.scene.image.WritableImage;
 import javafx.util.Duration;
 import libsidplay.Ultimate64;
 import libsidplay.common.CPUClock;
+import libsidplay.components.mos656x.PALEmulation;
+import libsidplay.components.mos656x.Palette;
+import libsidplay.components.mos656x.VIC.Model;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.ini.IniDefaults;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.entities.config.EmulationSection;
@@ -90,10 +95,24 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private StreamingPlayer videoPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
 		private WritableImage image;
+		private PALEmulation palEmulation;
 		private boolean frameStart;
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
+			palEmulation = new PALEmulation(Model.MOS6569R3);
+			Palette palette = palEmulation.getPalette();
+			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
+			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
+			palette.setGamma(IniDefaults.DEFAULT_GAMMA);
+			palette.setSaturation(IniDefaults.DEFAULT_SATURATION);
+			palette.setPhaseShift(IniDefaults.DEFAULT_PHASE_SHIFT);
+			palette.setOffset(IniDefaults.DEFAULT_OFFSET);
+			palette.setTint(IniDefaults.DEFAULT_TINT);
+			palette.setLuminanceC(IniDefaults.DEFAULT_BLUR);
+			palette.setDotCreep(IniDefaults.DEFAULT_BLEED);
+			palEmulation.updatePalette();
+
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingVideoPort());
 			serverSocket.setSoTimeout(3000);
@@ -126,13 +145,26 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			assert (encodingType == 0); // or later 1 for RLE?
 
 			if (frameStart) {
-				int[] pixels = new int[pixelsPerLine * linesPerPacket];
-				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x += 2) {
-					pixels[x] = VIC_PALETTE[pixelData[x >> 1] & 0xf];
-					pixels[x + 1] = VIC_PALETTE[(pixelData[x >> 1] >> 4) & 0xf];
+				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine * linesPerPacket);
+
+//				int graphicsDataBuffer = 0;
+//				for (int y = 0; y < linesPerPacket; y++) {
+//					int rasterY = lineNo + y;
+//					palEmulation.determineCurrentPalette(rasterY, rasterY == 0);
+//
+//					for (int x = 0; x <= pixelsPerLine; x++) {
+//						graphicsDataBuffer <<= 4;
+//						graphicsDataBuffer |= (pixelData[x >> 1] >> (x & 1 << 2)) & 0xf;
+//						if (((x + 1) & 0x7) == 0) {
+//							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
+//						}
+//					}
+//				}
+				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x++) {
+					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> (x & 1 << 2)) & 0xf]);
 				}
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
-						PixelFormat.getIntArgbInstance(), pixels, 0, pixelsPerLine);
+						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {
 					imageQueue.add(image);
 					image = new WritableImage(SCREEN_WIDTH, SCREEN_HEIGHT);

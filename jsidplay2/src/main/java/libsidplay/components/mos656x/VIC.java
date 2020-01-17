@@ -384,9 +384,6 @@ public abstract class VIC extends Bank {
 		}
 	}
 
-	/** Previous sequencer data */
-	protected int oldGraphicsData;
-
 	/**
 	 * This monster method calculates:
 	 * <ul>
@@ -598,16 +595,10 @@ public abstract class VIC extends Bank {
 		}
 
 		/* Pixels arrive in 0x12345678 order. */
-		for (int j = 0; j < 2; j++) {
-			oldGraphicsData |= graphicsDataBuffer >>> 16;
-			for (int i = 0; i < 4; i++) {
-				oldGraphicsData <<= 4;
-				final int vicColor = oldGraphicsData >>> 16;
-				vicColors.put((byte) (vicColor & 0x0f));
-				pixels.put(palEmulation.getRGBA(vicColor));
-			}
-			graphicsDataBuffer <<= 16;
-		}
+		palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> {
+			vicColors.put(b);
+			pixels.put(i);
+		});
 	}
 
 	/**

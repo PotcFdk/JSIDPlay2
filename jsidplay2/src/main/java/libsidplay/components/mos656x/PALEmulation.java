@@ -1,5 +1,7 @@
 package libsidplay.components.mos656x;
 
+import java.util.function.BiConsumer;
+
 public class PALEmulation {
 
 	/**
@@ -26,6 +28,9 @@ public class PALEmulation {
 	private final byte[] previousLineDecodedColor = new byte[65 * 8];
 	/** Index into last line */
 	private int previousLineIndex;
+
+	/** Previous sequencer data */
+	protected int oldGraphicsData;
 
 	private final VIC.Model model;
 
@@ -68,20 +73,26 @@ public class PALEmulation {
 		}
 		linePaletteCurrent = linePaletteCurrent == linePaletteOdd ? linePaletteEven : linePaletteOdd;
 		combinedLinesCurrent = combinedLinesCurrent == combinedLinesOdd ? combinedLinesEven : combinedLinesOdd;
+		oldGraphicsData = 0;
 	}
 
-	/**
-	 * Get ARGB pixel data for current VIC color value (0x00-0x0f) and current
-	 * raster line
-	 * 
-	 * @param vicColor
-	 * @return
-	 */
-	public int getRGBA(int vicColor) {
-		final byte lineColor = linePaletteCurrent[vicColor];
-		final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
-		previousLineDecodedColor[previousLineIndex++] = lineColor;
-		return ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00];
+	public void drawPixels(int graphicsDataBuffer, BiConsumer<Byte,Integer> pixelConsumer) {
+		/* Pixels arrive in 0x12345678 order. */
+		for (int j = 0; j < 2; j++) {
+			oldGraphicsData |= graphicsDataBuffer >>> 16;
+			for (int i = 0; i < 4; i++) {
+				oldGraphicsData <<= 4;
+				final int vicColor = oldGraphicsData >>> 16;
+				final byte lineColor = linePaletteCurrent[vicColor];
+				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
+				previousLineDecodedColor[previousLineIndex++] = lineColor;
+				pixelConsumer.accept((byte) (vicColor & 0x0f),
+						ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00]);
+				
+			}
+			graphicsDataBuffer <<= 16;
+		}
+
 	}
 
 }

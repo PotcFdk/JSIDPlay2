@@ -267,7 +267,6 @@ public final class MOS6569 extends VIC {
 				}
 
 				latchedXscroll = xscroll << 2;
-				oldGraphicsData = 0;
 				palEmulation.determineCurrentPalette(rasterY, rasterY == FIRST_DISPLAY_LINE);
 				if (rasterY == FIRST_DISPLAY_LINE) {
 					graphicsRendering = true;
