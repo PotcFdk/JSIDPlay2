@@ -60,12 +60,12 @@ public class ProxyDriver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic, int[] pixels) {
+	public void accept(VIC vic) {
 		if (driverOne instanceof VideoDriver) {
-			((VideoDriver) driverOne).accept(vic, pixels);
+			((VideoDriver) driverOne).accept(vic);
 		}
 		if (driverTwo instanceof VideoDriver) {
-			((VideoDriver) driverTwo).accept(vic, pixels);
+			((VideoDriver) driverTwo).accept(vic);
 		}
 	}
 

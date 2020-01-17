@@ -984,14 +984,14 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * 4x, ... , 32x).
 	 */
 	@Override
-	public void accept(VIC vic, int[] pixels) {
+	public void accept(VIC vic) {
 		// skip frame(s) on fast forward
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
 			fastForwardVICFrames = 0;
 			Iterator<VideoDriver> iterator = videoDrivers.iterator();
 			while (iterator.hasNext()) {
-				iterator.next().accept(vic, pixels);
+				iterator.next().accept(vic);
 			}
 		}
 	}

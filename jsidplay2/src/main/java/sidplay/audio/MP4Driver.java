@@ -11,8 +11,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -87,9 +89,9 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic, int[] pixels) {
+	public void accept(VIC vic) {
 		try {
-			setPictureData(pixels);
+			setPictureData(vic.getPixels());
 			sequenceEncoder.encodeNativeFrame(picture);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing H264 video stream", e);
@@ -159,9 +161,11 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 		return textTrack;
 	}
 
-	private final void setPictureData(int[] pixels) {
+	private final void setPictureData(IntBuffer pixels) {
+		((Buffer) pixels).clear();
 		ByteBuffer pictureBuffer = ByteBuffer.wrap(picture.getPlaneData(0));
-		for (int pixel : pixels) {
+		while (pixels.hasRemaining()) {
+			int pixel = pixels.get();
 			// ignore ALPHA channel (ARGB channel order)
 			pictureBuffer.put((byte) (((pixel >> 16) & 0xff) - 128));
 			pictureBuffer.put((byte) (((pixel >> 8) & 0xff) - 128));

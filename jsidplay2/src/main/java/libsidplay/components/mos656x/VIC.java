@@ -6,6 +6,9 @@
  */
 package libsidplay.components.mos656x;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import libsidplay.common.Event;
@@ -220,9 +223,12 @@ public abstract class VIC extends Bank {
 	 * Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha, red,
 	 * green, blue
 	 */
-	protected final int[] pixels = new int[MAX_WIDTH * MAX_HEIGHT];
-	/** Index of next pixel to paint */
-	protected int nextPixel;
+	protected final IntBuffer pixels = IntBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
+	/**
+	 * VIC color data as byte array. 4-bit per pixel (4-bit VIC colors)
+	 */
+	protected final ByteBuffer vicColors = ByteBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
+	
 	/** Current visible line */
 	protected int lineCycle;
 	/** Is display rendering enabled? */
@@ -268,7 +274,7 @@ public abstract class VIC extends Bank {
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected VideoDriver videoDriver = (vic, pixels) -> {
+	protected VideoDriver videoDriver = vic -> {
 	};
 
 	/**
@@ -619,9 +625,11 @@ public abstract class VIC extends Bank {
 			oldGraphicsData |= graphicsDataBuffer >>> 16;
 			for (int i = 0; i < 4; i++) {
 				oldGraphicsData <<= 4;
-				final byte lineColor = linePaletteCurrent[oldGraphicsData >>> 16];
+				final int vicColor = oldGraphicsData >>> 16;
+				final byte lineColor = linePaletteCurrent[vicColor];
 				final byte previousLineColor = previousLineDecodedColor[previousLineIndex];
-				pixels[nextPixel++] = ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00];
+				vicColors.put((byte) (vicColor & 0x0f));
+				pixels.put(ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00]);
 				previousLineDecodedColor[previousLineIndex++] = lineColor;
 			}
 			graphicsDataBuffer <<= 16;
@@ -1129,9 +1137,10 @@ public abstract class VIC extends Bank {
 		}
 
 		// clear the screen
-		for (int i = 0; i < pixels.length; ++i) {
-			pixels[i] = ALPHA;
-		}
+		((Buffer) pixels).clear();
+		((Buffer) pixels.put(new int[pixels.capacity()])).clear();
+		((Buffer) vicColors).clear();
+		((Buffer) vicColors.put(new byte[vicColors.capacity()])).clear();
 		graphicsRendering = false;
 
 		// reset all registers
@@ -1148,7 +1157,6 @@ public abstract class VIC extends Bank {
 		yscroll = 0;
 		irqFlags = 0;
 		irqMask = 0;
-		nextPixel = 0;
 		lpx = 0;
 		lpy = 0;
 		determineVideoMemoryBaseAddresses();
@@ -1218,6 +1226,21 @@ public abstract class VIC extends Bank {
 
 	public byte[] getRegisters() {
 		return registers;
+	}
+	
+	/**
+	 * @return Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha,
+	 *         red, green, blue
+	 */
+	public IntBuffer getPixels() {
+		return pixels;
+	}
+
+	/**
+	 * @return VIC color data as byte array. MSB to LSB -&gt; 4-bit per pixel (4-bit VIC colors)
+	 */
+	public ByteBuffer getVICColors() {
+		return vicColors;
 	}
 
 }

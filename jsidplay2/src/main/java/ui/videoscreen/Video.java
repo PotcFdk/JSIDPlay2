@@ -538,12 +538,22 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 * @see java.util.function.BiConsumer#accept(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void accept(VIC vic, int[] pixels) {
+	public void accept(VIC vic) {
+		// TODO turn on/off PAL emulation
+//		((Buffer) vic.getVICColors()).clear();
+//		IntBuffer newPixels = IntBuffer.allocate(vic.getPixels().capacity());
+//		while (vic.getVICColors().hasRemaining()) {
+//			newPixels.put(VIC_PALETTE[vic.getVICColors().get()]);
+//		}
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-				PixelFormat.getIntArgbInstance(), pixels, 0, vic.getBorderWidth());
+				PixelFormat.getIntArgbInstance(), vic.getPixels()/*newPixels*/.array(), 0, vic.getBorderWidth());
 		imageQueue.add(image);
 	}
+
+//	private static int[] VIC_PALETTE = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
+//			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
+//			0xff0088ff, 0xffbbbbbb };
 
 	/**
 	 * @return VIC image with current frame

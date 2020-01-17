@@ -6,6 +6,8 @@
  */
 package libsidplay.components.mos656x;
 
+import java.nio.Buffer;
+
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -248,7 +250,8 @@ public class MOS6567 extends VIC {
 					linePaletteCurrent = (rasterY & 1) != 0 ? linePaletteEven : linePaletteOdd;
 					combinedLinesCurrent = (rasterY & 1) != 0 ? combinedLinesEven : combinedLinesOdd;
 					graphicsRendering = true;
-					nextPixel = 0;
+					((Buffer) pixels).clear();
+					((Buffer) vicColors).clear();
 					for (int i = 0; i < previousLineDecodedColor.length; i++) {
 						previousLineDecodedColor[i] = linePaletteCurrent[0];
 					}
@@ -258,7 +261,7 @@ public class MOS6567 extends VIC {
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
 					graphicsRendering = false;
-					videoDriver.accept(MOS6567.this, pixels);
+					videoDriver.accept(MOS6567.this);
 				}
 				setBA(!sprites[3].isDMA() && !sprites[4].isDMA() && !sprites[5].isDMA());
 				fetchSpriteData(3);
