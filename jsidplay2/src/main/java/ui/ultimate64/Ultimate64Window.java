@@ -145,18 +145,19 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			assert (encodingType == 0); // or later 1 for RLE?
 
 			if (frameStart) {
-				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine * linesPerPacket);
+				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* linesPerPacket */);
 
 //				int graphicsDataBuffer = 0;
 //				for (int y = 0; y < linesPerPacket; y++) {
 //					int rasterY = lineNo + y;
 //					palEmulation.determineCurrentPalette(rasterY, rasterY == 0);
 //
-//					for (int x = 0; x <= pixelsPerLine; x++) {
+//					for (int x = 0; x < pixelsPerLine; x++) {
 //						graphicsDataBuffer <<= 4;
 //						graphicsDataBuffer |= (pixelData[x >> 1] >> (x & 1 << 2)) & 0xf;
 //						if (((x + 1) & 0x7) == 0) {
 //							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
+//							graphicsDataBuffer = 0;
 //						}
 //					}
 //				}

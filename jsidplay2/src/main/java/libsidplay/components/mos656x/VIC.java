@@ -202,7 +202,7 @@ public abstract class VIC extends Bank {
 	 */
 	protected final IntBuffer pixels = IntBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
 	/**
-	 * VIC color data as byte array. 4-bit per pixel (4-bit VIC colors)
+	 * VIC color data as byte array. 4-bit VIC colors
 	 */
 	protected final ByteBuffer vicColors = ByteBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
 	
