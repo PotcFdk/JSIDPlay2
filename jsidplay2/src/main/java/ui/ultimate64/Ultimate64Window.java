@@ -154,15 +154,14 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 //
 //					for (int x = 0; x < pixelsPerLine; x++) {
 //						graphicsDataBuffer <<= 4;
-//						graphicsDataBuffer |= (pixelData[x >> 1] >> (x & 1 << 2)) & 0xf;
+//						graphicsDataBuffer |= (pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf;
 //						if (((x + 1) & 0x7) == 0) {
 //							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
-//							graphicsDataBuffer = 0;
 //						}
 //					}
 //				}
 				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x++) {
-					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> (x & 1 << 2)) & 0xf]);
+					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf]);
 				}
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
