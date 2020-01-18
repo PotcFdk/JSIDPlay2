@@ -100,7 +100,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
-			palEmulation = new PALEmulation(Model.MOS6569R3);
+			palEmulation = new PALEmulation(Model.MOS6567R8);
 			Palette palette = palEmulation.getPalette();
 			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
 			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
