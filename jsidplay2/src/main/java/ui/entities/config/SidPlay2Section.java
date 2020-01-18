@@ -1,5 +1,6 @@
 package ui.entities.config;
 
+import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
 import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
 import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
@@ -484,6 +485,22 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public ObjectProperty<Boolean> showMonitorProperty() {
 		return showMonitorProperty;
+	}
+
+	private BooleanProperty palEmulationProperty = new SimpleBooleanProperty(DEFAULT_PAL_EMULATION);
+
+	public BooleanProperty palEmulationProperty () {
+		return palEmulationProperty;
+	}
+
+	@Override
+	public boolean isPalEmulation() {
+		return palEmulationProperty.get();
+	}
+
+	@Override
+	public void setPalEmulation(boolean isPalEmulation) {
+		palEmulationProperty.set(isPalEmulation);
 	}
 
 	private FloatProperty brightnessProperty = new SimpleFloatProperty(DEFAULT_BRIGHTNESS);

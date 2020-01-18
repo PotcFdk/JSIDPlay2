@@ -42,9 +42,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	private static final int SCREEN_HEIGHT = 272;
 	private static final int SCREEN_WIDTH = 384;
-//	private static int[] VIC_PALETTE = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
-//			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
-//			0xff0088ff, 0xffbbbbbb };
 
 	private StreamingPlayer audioPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
@@ -146,7 +143,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			if (frameStart) {
 				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* linesPerPacket */);
 
-				// TODO Turn on/off PAL emulation
 				int graphicsDataBuffer = 0;
 				int pixelDataOffset = 0;
 				for (int y = 0; y < linesPerPacket; y++) {
@@ -157,14 +153,11 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						graphicsDataBuffer <<= 4;
 						graphicsDataBuffer |= (pixelData[pixelDataOffset + x >> 1] >> ((x & 1) << 2)) & 0xf;
 						if (((x + 1) & 0x7) == 0) {
-							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
+							palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color), true);
 						}
 					}
 					pixelDataOffset += pixelsPerLine;
 				}
-//				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x++) {
-//					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf]);
-//				}
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {

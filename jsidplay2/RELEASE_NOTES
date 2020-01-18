@@ -4,3 +4,4 @@ JSIDDevice: configurable audio buffer size added
 Ultimate64 Audio-/Video Streaming added, PAL emulation for video output
 AVI recording driver added
 Save Recording to folder added
+Turn PAL emulation on/off

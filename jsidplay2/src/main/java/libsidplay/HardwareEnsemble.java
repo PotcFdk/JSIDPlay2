@@ -267,6 +267,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	protected void reset() {
 		c64.configureVICs(vic -> {
 			ISidPlay2Section sidplay2section = config.getSidplay2Section();
+			vic.setPalEmulationEnable(sidplay2section.isPalEmulation());
 			Palette palette = vic.getPalEmulation().getPalette();
 			palette.setBrightness(sidplay2section.getBrightness());
 			palette.setContrast(sidplay2section.getContrast());

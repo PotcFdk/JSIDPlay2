@@ -7,7 +7,6 @@
 package libsidplay.components.mos656x;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
@@ -201,10 +200,6 @@ public abstract class VIC extends Bank {
 	 * green, blue
 	 */
 	protected final IntBuffer pixels = IntBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
-	/**
-	 * VIC color data as byte array. 4-bit VIC colors
-	 */
-	protected final ByteBuffer vicColors = ByteBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
 	
 	/** Current visible line */
 	protected int lineCycle;
@@ -264,6 +259,15 @@ public abstract class VIC extends Bank {
 		this.videoDriver = videoDriver;
 	}
 
+	/**
+	 * Use PAL emulation?
+	 */
+	private boolean palEmulationEnable;
+	
+	public void setPalEmulationEnable(boolean palEmulationEnable) {
+		this.palEmulationEnable = palEmulationEnable;
+	}
+	
 	/**
 	 * Read the x-coordinate of a sprite
 	 * 
@@ -595,10 +599,7 @@ public abstract class VIC extends Bank {
 		}
 
 		/* Pixels arrive in 0x12345678 order. */
-		palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> {
-			vicColors.put(b);
-			pixels.put(i);
-		});
+		palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color), palEmulationEnable);
 	}
 
 	/**
@@ -1104,8 +1105,6 @@ public abstract class VIC extends Bank {
 		// clear the screen
 		((Buffer) pixels).clear();
 		((Buffer) pixels.put(new int[pixels.capacity()])).clear();
-		((Buffer) vicColors).clear();
-		((Buffer) vicColors.put(new byte[vicColors.capacity()])).clear();
 		graphicsRendering = false;
 
 		// reset all registers
@@ -1194,13 +1193,6 @@ public abstract class VIC extends Bank {
 	 */
 	public IntBuffer getPixels() {
 		return pixels;
-	}
-
-	/**
-	 * @return VIC color data as byte array. MSB to LSB -&gt; 4-bit per pixel (4-bit VIC colors)
-	 */
-	public ByteBuffer getVICColors() {
-		return vicColors;
 	}
 
 }

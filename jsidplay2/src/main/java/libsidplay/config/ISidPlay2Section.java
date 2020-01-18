@@ -121,130 +121,144 @@ public interface ISidPlay2Section {
 	void setTmpDir(String path);
 
 	/**
+	 * Get PAL emulation enable.
+	 * 
+	 * @return PAL emulation enable
+	 */
+	boolean isPalEmulation();
+	
+	/**
+	 * Set PAL emulation enable.
+	 * 
+	 *  @param palEmulation PAL emulation enable
+	 */
+	void setPalEmulation(boolean palEmulation);
+	
+	/**
 	 * Get VIC palette setting brightness.
 	 * 
 	 * @return VIC palette setting brightness
 	 */
-	public float getBrightness();
+	float getBrightness();
 
 	/**
 	 * Set VIC palette setting brightness
 	 * 
 	 * @param brightness brightness
 	 */
-	public void setBrightness(float brightness);
+	void setBrightness(float brightness);
 
 	/**
 	 * Get VIC palette setting contrast.
 	 * 
 	 * @return VIC palette setting contrast
 	 */
-	public float getContrast();
+	float getContrast();
 
 	/**
 	 * Set VIC palette setting contrast
 	 * 
 	 * @param contrast contrast
 	 */
-	public void setContrast(float contrast);
+	void setContrast(float contrast);
 
 	/**
 	 * Get VIC palette setting gamma.
 	 * 
 	 * @return VIC palette setting gamma
 	 */
-	public float getGamma();
+	float getGamma();
 
 	/**
 	 * Set VIC palette setting gamma
 	 * 
 	 * @param gamma gamma
 	 */
-	public void setGamma(float gamma);
+	void setGamma(float gamma);
 
 	/**
 	 * Get VIC palette setting saturation.
 	 * 
 	 * @return VIC palette setting saturation
 	 */
-	public float getSaturation();
+	float getSaturation();
 
 	/**
 	 * Set VIC palette setting saturation
 	 * 
 	 * @param saturation saturation
 	 */
-	public void setSaturation(float saturation);
+	void setSaturation(float saturation);
 
 	/**
 	 * Get VIC palette setting phaseShift.
 	 * 
 	 * @return VIC palette setting phaseShift
 	 */
-	public float getPhaseShift();
+	float getPhaseShift();
 
 	/**
 	 * Set VIC palette setting phaseShift
 	 * 
 	 * @param phaseShift phaseShift
 	 */
-	public void setPhaseShift(float phaseShift);
+	void setPhaseShift(float phaseShift);
 
 	/**
 	 * Get VIC palette setting offset.
 	 * 
 	 * @return VIC palette setting offset
 	 */
-	public float getOffset();
+	float getOffset();
 
 	/**
 	 * Set VIC palette setting offset
 	 * 
 	 * @param offset offset
 	 */
-	public void setOffset(float offset);
+	void setOffset(float offset);
 
 	/**
 	 * Get VIC palette setting tint.
 	 * 
 	 * @return VIC palette setting tint
 	 */
-	public float getTint();
+	float getTint();
 
 	/**
 	 * Set VIC palette setting tint
 	 * 
 	 * @param tint tint
 	 */
-	public void setTint(float tint);
+	void setTint(float tint);
 
 	/**
 	 * Get VIC palette setting blur.
 	 * 
 	 * @return VIC palette setting blur
 	 */
-	public float getBlur();
+	float getBlur();
 
 	/**
 	 * Set VIC palette setting blur
 	 * 
 	 * @param blur blur
 	 */
-	public void setBlur(float blur);
+	void setBlur(float blur);
 
 	/**
 	 * Get VIC palette setting bleed.
 	 * 
 	 * @return VIC palette setting bleed
 	 */
-	public float getBleed();
+	float getBleed();
 
 	/**
 	 * Set VIC palette setting bleed
 	 * 
 	 * @param bleed bleed
 	 */
-	public void setBleed(float bleed);
+	void setBleed(float bleed);
 
 	/**
 	 * Getter of convert other programs to turbo-tape or normal tape format

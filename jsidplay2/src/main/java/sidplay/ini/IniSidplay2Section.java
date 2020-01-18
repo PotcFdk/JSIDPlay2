@@ -1,5 +1,6 @@
 package sidplay.ini;
 
+import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
 import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
 import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
@@ -166,74 +167,103 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 		iniReader.setProperty("SIDPlay2", "Temp Dir", path);
 	}
 
+	@Override
+	public boolean isPalEmulation() {
+		return iniReader.getPropertyBool("SIDPlay2", "PAL Emulation", DEFAULT_PAL_EMULATION);
+	}
+
+	@Override
+	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1)
+	public void setPalEmulation(boolean palEmulation) {
+		iniReader.setProperty("SIDPlay2", "PAL Emulation", palEmulation);
+	}
+	
+	@Override
 	public float getBrightness() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Brightness", DEFAULT_BRIGHTNESS);
 	}
 
+	@Override
 	public void setBrightness(float brightness) {
 		iniReader.setProperty("SIDPlay2", "Brightness", brightness);
 	}
 
+	@Override
 	public float getContrast() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Contrast", DEFAULT_CONTRAST);
 	}
 
+	@Override
 	public void setContrast(float contrast) {
 		iniReader.setProperty("SIDPlay2", "Contrast", contrast);
 	}
 
+	@Override
 	public float getGamma() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Gamma", DEFAULT_GAMMA);
 	}
 
+	@Override
 	public void setGamma(float gamma) {
 		iniReader.setProperty("SIDPlay2", "Gamma", gamma);
 	}
 
+	@Override
 	public float getSaturation() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Saturation", DEFAULT_SATURATION);
 	}
 
+	@Override
 	public void setSaturation(float saturation) {
 		iniReader.setProperty("SIDPlay2", "Saturation", saturation);
 	}
 
+	@Override
 	public float getPhaseShift() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Phase Shift", DEFAULT_PHASE_SHIFT);
 	}
 
+	@Override
 	public void setPhaseShift(float phaseShift) {
 		iniReader.setProperty("SIDPlay2", "Phase Shift", phaseShift);
 	}
 
+	@Override
 	public float getOffset() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Offset", DEFAULT_OFFSET);
 	}
 
+	@Override
 	public void setOffset(float offset) {
 		iniReader.setProperty("SIDPlay2", "Offset", offset);
 	}
 
+	@Override
 	public float getTint() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Tint", DEFAULT_TINT);
 	}
 
+	@Override
 	public void setTint(float tint) {
 		iniReader.setProperty("SIDPlay2", "Tint", tint);
 	}
 
+	@Override
 	public float getBlur() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Blur", DEFAULT_BLUR);
 	}
 
+	@Override
 	public void setBlur(float blur) {
 		iniReader.setProperty("SIDPlay2", "Blur", blur);
 	}
 
+	@Override
 	public float getBleed() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Bleed", DEFAULT_BLEED);
 	}
 
+	@Override
 	public void setBleed(float bleed) {
 		iniReader.setProperty("SIDPlay2", "Bleed", bleed);
 	}

@@ -85,7 +85,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	@FXML
 	private Slider scaling, brightness, contrast, gamma, saturation, phaseShift, offset, tint, blur, bleed;
 	@FXML
-	private CheckBox applyImmediately, showMonitorBorder;
+	private CheckBox palEmulation, applyImmediately, showMonitorBorder;
 	@FXML
 	private Label scalingValue, brightnessValue, contrastValue, gammaValue, saturationValue, phaseShiftValue,
 			offsetValue, tintValue, blurValue, bleedValue;
@@ -145,6 +145,10 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 				updateScaling();
 			}
 		});
+
+		palEmulation.selectedProperty().bindBidirectional(sidplay2Section.palEmulationProperty());
+		palEmulation.selectedProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureVICs(vic -> vic.setPalEmulationEnable(newValue)));
 
 		brightness.setLabelFormatter(new NumberToStringConverter<>(2));
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());
@@ -557,21 +561,11 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 */
 	@Override
 	public void accept(VIC vic) {
-		// TODO turn on/off PAL emulation
-//		((Buffer) vic.getVICColors()).clear();
-//		IntBuffer newPixels = IntBuffer.allocate(vic.getPixels().capacity());
-//		while (vic.getVICColors().hasRemaining()) {
-//			newPixels.put(VIC_PALETTE[vic.getVICColors().get()]);
-//		}
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
-				PixelFormat.getIntArgbInstance(), vic.getPixels()/* newPixels */.array(), 0, vic.getBorderWidth());
+				PixelFormat.getIntArgbInstance(), vic.getPixels().array(), 0, vic.getBorderWidth());
 		imageQueue.add(image);
 	}
-
-//	private static int[] VIC_PALETTE = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
-//			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
-//			0xff0088ff, 0xffbbbbbb };
 
 	/**
 	 * @return VIC image with current frame

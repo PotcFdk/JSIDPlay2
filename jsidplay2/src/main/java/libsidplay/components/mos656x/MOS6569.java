@@ -271,7 +271,6 @@ public final class MOS6569 extends VIC {
 				if (rasterY == FIRST_DISPLAY_LINE) {
 					graphicsRendering = true;
 					((Buffer) pixels).clear();
-					((Buffer) vicColors).clear();
 				}
 
 				if (rasterY == LAST_DISPLAY_LINE + 1) {
