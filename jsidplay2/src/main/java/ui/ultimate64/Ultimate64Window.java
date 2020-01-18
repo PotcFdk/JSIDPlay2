@@ -26,13 +26,11 @@ import javafx.util.Duration;
 import libsidplay.Ultimate64;
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.PALEmulation;
-import libsidplay.components.mos656x.Palette;
 import libsidplay.components.mos656x.VIC.Model;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
-import sidplay.ini.IniDefaults;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.entities.config.EmulationSection;
@@ -44,9 +42,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	private static final int SCREEN_HEIGHT = 272;
 	private static final int SCREEN_WIDTH = 384;
-	private static int[] VIC_PALETTE = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
-			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
-			0xff0088ff, 0xffbbbbbb };
+//	private static int[] VIC_PALETTE = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
+//			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
+//			0xff0088ff, 0xffbbbbbb };
 
 	private StreamingPlayer audioPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
@@ -100,17 +98,18 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
-			palEmulation = new PALEmulation(Model.MOS6567R8);
-			Palette palette = palEmulation.getPalette();
-			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
-			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
-			palette.setGamma(IniDefaults.DEFAULT_GAMMA);
-			palette.setSaturation(IniDefaults.DEFAULT_SATURATION);
-			palette.setPhaseShift(IniDefaults.DEFAULT_PHASE_SHIFT);
-			palette.setOffset(IniDefaults.DEFAULT_OFFSET);
-			palette.setTint(IniDefaults.DEFAULT_TINT);
-			palette.setLuminanceC(IniDefaults.DEFAULT_BLUR);
-			palette.setDotCreep(IniDefaults.DEFAULT_BLEED);
+			palEmulation = new PALEmulation(Model.MOS6569R3);
+			// configurable?
+//			Palette palette = palEmulation.getPalette();
+//			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
+//			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
+//			palette.setGamma(IniDefaults.DEFAULT_GAMMA);
+//			palette.setSaturation(IniDefaults.DEFAULT_SATURATION);
+//			palette.setPhaseShift(IniDefaults.DEFAULT_PHASE_SHIFT);
+//			palette.setOffset(IniDefaults.DEFAULT_OFFSET);
+//			palette.setTint(IniDefaults.DEFAULT_TINT);
+//			palette.setLuminanceC(IniDefaults.DEFAULT_BLUR);
+//			palette.setDotCreep(IniDefaults.DEFAULT_BLEED);
 			palEmulation.updatePalette();
 
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
@@ -147,22 +146,25 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			if (frameStart) {
 				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* linesPerPacket */);
 
-//				int graphicsDataBuffer = 0;
-//				for (int y = 0; y < linesPerPacket; y++) {
-//					int rasterY = lineNo + y;
-//					palEmulation.determineCurrentPalette(rasterY, rasterY == 0);
-//
-//					for (int x = 0; x < pixelsPerLine; x++) {
-//						graphicsDataBuffer <<= 4;
-//						graphicsDataBuffer |= (pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf;
-//						if (((x + 1) & 0x7) == 0) {
-//							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
-//						}
-//					}
-//				}
-				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x++) {
-					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf]);
+				// TODO Turn on/off PAL emulation
+				int graphicsDataBuffer = 0;
+				int pixelDataOffset = 0;
+				for (int y = 0; y < linesPerPacket; y++) {
+					int rasterY = lineNo + y;
+					palEmulation.determineCurrentPalette(rasterY, rasterY == 0);
+
+					for (int x = 0; x < pixelsPerLine; x++) {
+						graphicsDataBuffer <<= 4;
+						graphicsDataBuffer |= (pixelData[pixelDataOffset + x >> 1] >> ((x & 1) << 2)) & 0xf;
+						if (((x + 1) & 0x7) == 0) {
+							palEmulation.drawPixels(graphicsDataBuffer, (b, i) -> pixels.put(i));
+						}
+					}
+					pixelDataOffset += pixelsPerLine;
 				}
+//				for (int x = 0; x < pixelsPerLine << 2/* linesPerPacket */; x++) {
+//					pixels.put(VIC_PALETTE[(pixelData[x >> 1] >> ((x & 1) << 2)) & 0xf]);
+//				}
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {
@@ -220,8 +222,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		pauseTransition.setOnFinished(evt -> {
 			Image image = imageQueue.poll();
 			if (image != null) {
-				screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(),
-						screen.heightProperty().get());
+				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 				screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), 0, 0,
 						screen.getWidth(), screen.getHeight());
 			}
@@ -271,7 +272,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		screen.setWidth(SCREEN_WIDTH);
 		screen.setHeight(SCREEN_HEIGHT);
-		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
+		screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 	}
 
 	@Override
