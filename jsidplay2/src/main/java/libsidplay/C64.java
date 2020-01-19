@@ -303,7 +303,6 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		cpu.setMemoryHandler(address -> pla.cpuRead(address), (address, value) -> pla.cpuWrite(address, value));
 		pla.setCpu(cpu);
 
-		// TODO configure video chip type
 		palVic = new MOS6569(VICChipModel.MOS6569R3, pla, context);
 		ntscVic = new MOS6567(VICChipModel.MOS6567R8, pla, context);
 		pla.setVic(palVic);

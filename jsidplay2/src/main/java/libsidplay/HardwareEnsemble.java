@@ -140,6 +140,7 @@ public class HardwareEnsemble implements Ultimate64 {
 			}
 		};
 
+		// TODO configure chip types (CIA, VIC)
 		this.c64 = new C64(cpuClass) {
 			@Override
 			public void printerUserportWriteData(final byte data) {
