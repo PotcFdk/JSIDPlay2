@@ -25,8 +25,8 @@ import javafx.scene.image.WritableImage;
 import javafx.util.Duration;
 import libsidplay.Ultimate64;
 import libsidplay.common.CPUClock;
+import libsidplay.common.VICChipModel;
 import libsidplay.components.mos656x.PALEmulation;
-import libsidplay.components.mos656x.VIC.Model;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
@@ -95,8 +95,12 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
-			palEmulation = new PALEmulation(Model.MOS6569R3);
-			// configurable?
+			palEmulation = new PALEmulation(VICChipModel.MOS6569R3);
+			// TODO configurable?
+//			palEmulation.setPalEmulationEnable(true);
+//			palEmulation.setVicPaletteNoPal(new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
+//					0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777,
+//					0xffaaff66, 0xff0088ff, 0xffbbbbbb });
 //			Palette palette = palEmulation.getPalette();
 //			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
 //			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
@@ -153,7 +157,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						graphicsDataBuffer <<= 4;
 						graphicsDataBuffer |= (pixelData[pixelDataOffset + x >> 1] >> ((x & 1) << 2)) & 0xf;
 						if (((x + 1) & 0x7) == 0) {
-							palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color), true);
+							palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color));
 						}
 					}
 					pixelDataOffset += pixelsPerLine;

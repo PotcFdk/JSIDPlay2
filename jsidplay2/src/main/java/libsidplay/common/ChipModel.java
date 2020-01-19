@@ -7,6 +7,10 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Model;
 
+/**
+ * SID chip model
+ * 
+ */
 public enum ChipModel {
 	/** Auto-detect SID model */
 	AUTO,
@@ -19,10 +23,10 @@ public enum ChipModel {
 	 * Detect chip model of specified SID number in the following order:
 	 * <OL>
 	 * <LI>SID model forced by user configuration
-	 * <LI>chip model provided by tune information (auto detected) and if
-	 * unknown, then
-	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the
-	 * same chip model as for the 1st SID
+	 * <LI>chip model provided by tune information (auto detected) and if unknown,
+	 * then
+	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the same
+	 * chip model as for the 1st SID
 	 * </OL>
 	 * 
 	 * @return chip model to be used for SID number 0..MAX_SIDS-1

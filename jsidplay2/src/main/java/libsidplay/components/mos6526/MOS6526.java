@@ -17,6 +17,7 @@ package libsidplay.components.mos6526;
 
 import java.util.Arrays;
 
+import libsidplay.common.CIAChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
@@ -29,10 +30,6 @@ import libsidplay.components.pla.Bank;
  * @author Antti Lankila
  */
 public abstract class MOS6526 extends Bank {
-	public enum Model {
-		MOS6526, MOS6526A
-	}
-
 	/**
 	 * These are the credits.
 	 */
@@ -825,9 +822,9 @@ public abstract class MOS6526 extends Bank {
 	 * @param ctx
 	 *            the event context
 	 */
-	protected MOS6526(final EventScheduler ctx, final Model model) {
+	protected MOS6526(final EventScheduler ctx, final CIAChipModel model) {
 		this.context = ctx;
-		this.interruptSource = model == Model.MOS6526A ? new InterruptSource6526A() : new InterruptSource6526();
+		this.interruptSource = model == CIAChipModel.MOS6526A ? new InterruptSource6526A() : new InterruptSource6526();
 		a = new TimerA();
 		b = new TimerB();
 		reset();

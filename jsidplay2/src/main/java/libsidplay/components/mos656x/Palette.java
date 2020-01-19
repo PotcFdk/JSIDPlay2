@@ -3,6 +3,8 @@ package libsidplay.components.mos656x;
 import java.util.HashMap;
 import java.util.Map;
 
+import libsidplay.common.VICChipModel;
+
 /**
  * <p>
  * Generates PAL VIC colors from first principles. The VIC colors are
@@ -72,17 +74,16 @@ public class Palette {
 	private float gamma = 2.0f;
 
 	/**
-	 * The nominal PAL gamma is 2.8. However, there is some disagreement with
-	 * what the value really is. 2.8 makes bright colors painfully bright. Many
-	 * emulators have chosen 2.5. I will follow suit to not appear too
-	 * different.
+	 * The nominal PAL gamma is 2.8. However, there is some disagreement with what
+	 * the value really is. 2.8 makes bright colors painfully bright. Many emulators
+	 * have chosen 2.5. I will follow suit to not appear too different.
 	 */
 	private static final float NOMINAL_PAL_GAMMA = 2.5f;
 
 	/**
-	 * This tunable is used to trade between the reproduced accuracy of rarely
-	 * used colors to the accuracy of common blends. 256 colors per line are
-	 * nowhere near enough, so this kind of tunable is surprisingly necessary.
+	 * This tunable is used to trade between the reproduced accuracy of rarely used
+	 * colors to the accuracy of common blends. 256 colors per line are nowhere near
+	 * enough, so this kind of tunable is surprisingly necessary.
 	 */
 	private static final int PALETTE_PURITY = 256;
 
@@ -152,12 +153,9 @@ public class Palette {
 		/**
 		 * Construct YUV color from components.
 		 * 
-		 * @param y
-		 *            range 0 .. 1
-		 * @param u
-		 *            range -0.5 .. 0.5
-		 * @param v
-		 *            range -0.5 .. 0.5
+		 * @param y range 0 .. 1
+		 * @param u range -0.5 .. 0.5
+		 * @param v range -0.5 .. 0.5
 		 */
 		protected YUVEntry(final float y, final float u, final float v) {
 			this.y = y;
@@ -168,8 +166,7 @@ public class Palette {
 		/**
 		 * Construct YUV color from packed format.
 		 * 
-		 * @param yuvPacked
-		 *            The packed approximation as 0x00YYUUVV.
+		 * @param yuvPacked The packed approximation as 0x00YYUUVV.
 		 */
 		protected YUVEntry(final int yuvPacked) {
 			y = (yuvPacked >> 20 & 0x3ff) / 1023f;
@@ -197,12 +194,9 @@ public class Palette {
 		/**
 		 * Convert to RGB with parameters
 		 *
-		 * @param brightness
-		 *            Brightness
-		 * @param contrast
-		 *            Contrast
-		 * @param gamma
-		 *            Gamma
+		 * @param brightness Brightness
+		 * @param contrast   Contrast
+		 * @param gamma      Gamma
 		 *
 		 * @return The parameters as RGB.
 		 */
@@ -328,10 +322,8 @@ public class Palette {
 	/**
 	 * Gauss
 	 * 
-	 * @param b
-	 *            Position with respect to origo
-	 * @param c
-	 *            Width of peak
+	 * @param b Position with respect to origo
+	 * @param c Width of peak
 	 * @return Gaussian value
 	 */
 	private static float gauss(float b, float c) {
@@ -466,41 +458,8 @@ public class Palette {
 		return dotCreep;
 	}
 
-	public static PaletteEntry[] buildPaletteVariant(final VIC.Model model) {
-		/*
-		 * http://www.zimmers.net/anonftp/pub/cbm/documents/chipdata/656x-
-		 * luminances.txt
-		 */
-		final float[] lum;
-		switch (model) {
-		// case MOS6567R56A:
-		// lum = new float[] {
-		// 560, 1825, 840, 1500, 1180, 1180, 840, 1500,
-		// 1180, 840, 1180, 840, 1180, 1500, 1180, 1500 };
-		// break;
-		case MOS6567R8:
-			lum = new float[] { 590, 1825, 950, 1380, 1030, 1210, 860, 1560, 1030, 860, 1210, 950, 1160, 1560, 1160,
-					1380 };
-			break;
-		case MOS6569R1:
-			lum = new float[] { 630, 1850, 900, 1560, 1260, 1260, 900, 1560, 1260, 900, 1260, 900, 1260, 1560, 1260,
-					1560 };
-			break;
-		case MOS6569R3:
-			lum = new float[] { 700, 1850, 1090, 1480, 1180, 1340, 1020, 1620, 1180, 1020, 1340, 1090, 1300, 1620, 1300,
-					1480 };
-			break;
-		case MOS6569R4:
-			lum = new float[] { 500, 1875, 840, 1300, 920, 1100, 760, 1500, 920, 760, 1100, 840, 1050, 1500, 1050,
-					1300 };
-			break;
-		case MOS6569R5:
-			lum = new float[] { 540, 1850, 900, 1340, 980, 1150, 810, 1520, 980, 810, 1150, 900, 1110, 1520, 1110,
-					1340 };
-			break;
-		default:
-			throw new RuntimeException("Unknown chip");
-		}
+	public static PaletteEntry[] buildPaletteVariant(final VICChipModel model) {
+		final float[] lum = model.getLuminances();
 
 		final float min = lum[0];
 		final float max = lum[1];

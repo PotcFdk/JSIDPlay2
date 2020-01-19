@@ -60,18 +60,6 @@ public abstract class VIC extends Bank {
 
 	public static final int MAX_WIDTH = 48 * 8;
 
-	/**
-	 * Chip models supported by MOS656X.
-	 */
-	public static enum Model {
-		// MOS6567R56A, /* Old NTSC */
-		MOS6567R8, /* NTSC */
-		MOS6569R1, /* PAL */
-		MOS6569R3, /* PAL */
-		MOS6569R4, /* PAL */
-		MOS6569R5, /* PAL */
-	}
-
 	/** First line when we check for bad lines */
 	protected static final int FIRST_DMA_LINE = 0x30;
 
@@ -259,15 +247,6 @@ public abstract class VIC extends Bank {
 		this.videoDriver = videoDriver;
 	}
 
-	/**
-	 * Use PAL emulation?
-	 */
-	private boolean palEmulationEnable;
-	
-	public void setPalEmulationEnable(boolean palEmulationEnable) {
-		this.palEmulationEnable = palEmulationEnable;
-	}
-	
 	/**
 	 * Read the x-coordinate of a sprite
 	 * 
@@ -599,7 +578,7 @@ public abstract class VIC extends Bank {
 		}
 
 		/* Pixels arrive in 0x12345678 order. */
-		palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color), palEmulationEnable);
+		palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color));
 	}
 
 	/**

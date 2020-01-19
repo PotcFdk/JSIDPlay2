@@ -11,6 +11,7 @@ import java.nio.Buffer;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.VICChipModel;
 import libsidplay.components.pla.PLA;
 
 /**
@@ -20,7 +21,7 @@ import libsidplay.components.pla.PLA;
  */
 public class MOS6567 extends VIC {
 
-	public MOS6567(Model model, PLA pla, EventScheduler context) {
+	public MOS6567(VICChipModel model, PLA pla, EventScheduler context) {
 		super(pla, context, 65, 263);
 		palEmulation = new PALEmulation(model);
 	}

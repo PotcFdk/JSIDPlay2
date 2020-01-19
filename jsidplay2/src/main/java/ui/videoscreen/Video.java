@@ -148,7 +148,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 
 		palEmulation.selectedProperty().bindBidirectional(sidplay2Section.palEmulationProperty());
 		palEmulation.selectedProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureVICs(vic -> vic.setPalEmulationEnable(newValue)));
+				.configureVICs(vic -> vic.getPalEmulation().setPalEmulationEnable(newValue)));
 
 		brightness.setLabelFormatter(new NumberToStringConverter<>(2));
 		brightness.valueProperty().bindBidirectional(sidplay2Section.brightnessProperty());

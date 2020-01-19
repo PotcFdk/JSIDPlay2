@@ -29,6 +29,7 @@ import libsidplay.components.cart.CartridgeType;
 import libsidplay.components.iec.IECBus;
 import libsidplay.components.iec.SerialIECDevice;
 import libsidplay.components.mos6510.MOS6510;
+import libsidplay.components.mos656x.PALEmulation;
 import libsidplay.components.mos656x.Palette;
 import libsidplay.components.printer.mps803.MPS803;
 import libsidplay.config.IC1541Section;
@@ -265,10 +266,11 @@ public class HardwareEnsemble implements Ultimate64 {
 	 * Reset hardware.
 	 */
 	protected void reset() {
+		final ISidPlay2Section sidplay2section = config.getSidplay2Section();
 		c64.configureVICs(vic -> {
-			ISidPlay2Section sidplay2section = config.getSidplay2Section();
-			vic.setPalEmulationEnable(sidplay2section.isPalEmulation());
-			Palette palette = vic.getPalEmulation().getPalette();
+			PALEmulation palEmulation = vic.getPalEmulation();
+			palEmulation.setPalEmulationEnable(sidplay2section.isPalEmulation());
+			Palette palette = palEmulation.getPalette();
 			palette.setBrightness(sidplay2section.getBrightness());
 			palette.setContrast(sidplay2section.getContrast());
 			palette.setGamma(sidplay2section.getGamma());
