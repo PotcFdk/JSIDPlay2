@@ -166,7 +166,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 		ByteBuffer pictureBuffer = ByteBuffer.wrap(picture.getPlaneData(0));
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
-			// ignore ALPHA channel (ARGB channel order)
+			// ignore ALPHA channel (ARGB channel order), picture data is -128 shifted
 			pictureBuffer.put((byte) (((pixel >> 16) & 0xff) - 128));
 			pictureBuffer.put((byte) (((pixel >> 8) & 0xff) - 128));
 			pictureBuffer.put((byte) ((pixel & 0xff) - 128));
