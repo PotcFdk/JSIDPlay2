@@ -1,6 +1,7 @@
 package sidplay.audio.processor;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class AudioProcessorDriver implements AudioDriver {
 	@Override
 	public void write() throws InterruptedException {
 		for (AudioProcessor audioProcessor : audioProcessors) {
-			samplesBuffer.position(audioDriver.buffer().position() >> 1);
+			((Buffer) samplesBuffer).position(audioDriver.buffer().position() >> 1);
 			audioProcessor.process(samplesBuffer);
 		}
 		audioDriver.write();
