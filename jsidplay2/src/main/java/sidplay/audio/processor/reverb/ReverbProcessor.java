@@ -1,5 +1,6 @@
 package sidplay.audio.processor.reverb;
 
+import java.nio.Buffer;
 import java.nio.ShortBuffer;
 
 import libsidplay.config.IAudioSection;
@@ -66,11 +67,11 @@ public class ReverbProcessor implements AudioProcessor {
 		}
 		if (!audioSection.getReverbBypass()) {
 			int len = sampleBuffer.position();
-			sampleBuffer.flip();
+			((Buffer) sampleBuffer).flip();
 			short[] dest = new short[len];
 			ShortBuffer.wrap(dest).put(sampleBuffer);
 			int newLen = reverb.doReverb(dest, len);
-			sampleBuffer.clear();
+			((Buffer) sampleBuffer).clear();
 			sampleBuffer.put(dest, 0, newLen);
 		}
 	}
