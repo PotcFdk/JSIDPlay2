@@ -234,6 +234,244 @@ public interface IAudioSection {
 	 */
 	void setAudioBufferSize(int audioBufferSize);
 
+	/**
+	 * Getter of the delay bypass setting
+	 * 
+	 * @return delay bypass setting
+	 */
+	boolean getDelayBypass();
+
+	/**
+	 * Setter of the delay bypass setting
+	 * 
+	 * @param delayBypass delay bypass setting
+	 */
+	void setDelayBypass(boolean delayBypass);
+
+	/**
+	 * Getter of the delay setting
+	 * 
+	 * @return delay setting
+	 */
+	int getDelay();
+
+	/**
+	 * Setter of the delay setting
+	 * 
+	 * @param delay delay setting
+	 */
+	void setDelay(int delay);
+
+	/**
+	 * Getter of the delay wet level setting
+	 * 
+	 * @return delay wet level setting
+	 */
+	int getDelayWetLevel();
+
+	/**
+	 * Setter of the delay wet level setting
+	 * 
+	 * @param delayWetLevel delay wet level setting
+	 */
+	void setDelayWetLevel(int delayWetLevel);
+
+	/**
+	 * Getter of the delay dry level setting
+	 * 
+	 * @return delay dry level setting
+	 */
+	int getDelayDryLevel();
+
+	/**
+	 * Setter of the delay dry level setting
+	 * 
+	 * @param delayDryLevel delay dry level setting
+	 */
+	void setDelayDryLevel(int delayDryLevel);
+
+	/**
+	 * Getter of the delay feedback level setting
+	 * 
+	 * @return delay feedback level setting
+	 */
+	int getDelayFeedbackLevel();
+
+	/**
+	 * Setter of the delay feedback level setting
+	 * 
+	 * @param delayFeedbackLevel delay feedback level setting
+	 */
+	void setDelayFeedbackLevel(int delayFeedbackLevel);
+
+	/**
+	 * Getter of the distortion bypass setting
+	 * 
+	 * @return distortion bypass setting
+	 */
+	boolean getDistortionBypass();
+
+	/**
+	 * Setter of the distortion bypass setting
+	 * 
+	 * @param distortionBypass distortion bypass setting
+	 */
+	void setDistortionBypass(boolean distortionBypass);
+
+	/**
+	 * Getter of the distortion threshold setting
+	 * 
+	 * @return distortion threshold setting
+	 */
+	int getDistortionThreshold();
+
+	/**
+	 * Setter of the distortion threshold setting
+	 * 
+	 * @param distortionThreshold distortion threshold setting
+	 */
+	void setDistortionThreshold(int distortionThreshold);
+
+	/**
+	 * Getter of the distortion gain setting
+	 * 
+	 * @return distortion gain setting
+	 */
+	float getDistortionGain();
+
+	/**
+	 * Setter of the distortion gain setting
+	 * 
+	 * @param distortionGain distortion gain setting
+	 */
+	void setDistortionGain(float distortionGain);
+
+	/**
+	 * Getter of the reverb bypass setting
+	 * 
+	 * @return reverb bypass setting
+	 */
+	boolean getReverbBypass();
+
+	/**
+	 * Setter of the reverb bypass setting
+	 * 
+	 * @param reverbBypass reverb bypass setting
+	 */
+	void setReverbBypass(boolean reverbBypass);
+
+	/**
+	 * Getter of the reverb comp1 delay setting
+	 * 
+	 * @return reverb comp1 delay setting
+	 */
+	float getReverbComb1Delay();
+
+	/**
+	 * Setter of the reverb comp1 delay setting
+	 * 
+	 * @param reverbComb1Delay reverb comp1 delay setting
+	 */
+	void setReverbComb1Delay(float reverbComb1Delay);
+
+	/**
+	 * Getter of the reverb comp2 delay setting
+	 * 
+	 * @return reverb comp2 delay setting
+	 */
+	float getReverbComb2Delay();
+
+	/**
+	 * Setter of the reverb comp2 delay setting
+	 * 
+	 * @param reverbComb2Delay reverb comp2 delay setting
+	 */
+	void setReverbComb2Delay(float reverbComb2Delay);
+
+	/**
+	 * Getter of the reverb comp3 delay setting
+	 * 
+	 * @return reverb comp3 delay setting
+	 */
+	float getReverbComb3Delay();
+
+	/**
+	 * Setter of the reverb comp3 delay setting
+	 * 
+	 * @param reverbComb3Delay reverb comp3 delay setting
+	 */
+	void setReverbComb3Delay(float reverbComb3Delay);
+
+	/**
+	 * Getter of the reverb comp4 delay setting
+	 * 
+	 * @return reverb comp4 delay setting
+	 */
+	float getReverbComb4Delay();
+
+	/**
+	 * Setter of the reverb comp4 delay setting
+	 * 
+	 * @param reverbComb4Delay reverb comp4 delay setting
+	 */
+	void setReverbComb4Delay(float reverbComb4Delay);
+
+	/**
+	 * Getter of the reverb all pass1 delay setting
+	 * 
+	 * @return reverb all pass1 delay setting
+	 */
+	float getReverbAllPass1Delay();
+
+	/**
+	 * Setter of the reverb all pass1 delay delay setting
+	 * 
+	 * @param reverbAllPass1Delay reverb all pass1 delay delay setting
+	 */
+	void setReverbAllPass1Delay(float reverbAllPass1Delay);
+
+	/**
+	 * Getter of the reverb all pass2 delay setting
+	 * 
+	 * @return reverb all pass2 delay setting
+	 */
+	float getReverbAllPass2Delay();
+
+	/**
+	 * Setter of the reverb all pass2 delay delay setting
+	 * 
+	 * @param reverbAllPass2Delay reverb all pass2 delay delay setting
+	 */
+	void setReverbAllPass2Delay(float reverbAllPass2Delay);
+
+	/**
+	 * Getter of the reverb sustain delay setting
+	 * 
+	 * @return reverb sustain delay setting
+	 */
+	float getReverbSustainDelay();
+
+	/**
+	 * Setter of the reverb sustain delay delay setting
+	 * 
+	 * @param reverbSustainDelay reverb sustain delay delay setting
+	 */
+	void setReverbSustainDelay(float reverbSustainDelay);
+
+	/**
+	 * Getter of the reverb dry wet mix setting
+	 * 
+	 * @return reverb dry wet mix setting
+	 */
+	float getReverbDryWetMix();
+
+	/**
+	 * Setter of the reverb dry wet mix setting
+	 * 
+	 * @param reverbDryWetMix reverb dry wet mix setting
+	 */
+	void setReverbDryWetMix(float reverbDryWetMix);
+
 	default float getVolume(int sidNum) {
 		switch (sidNum) {
 		case 0:

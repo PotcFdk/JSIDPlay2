@@ -1,14 +1,29 @@
 package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
-import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
+import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
+import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
+import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
+import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_BYPASS;
+import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_GAIN;
+import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_THRESHOLD;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_MP3_FILE;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_BYPASS;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB1_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB2_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB3_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB4_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_DRY_WET_MIX;
+import static sidplay.ini.IniDefaults.DEFAULT_REVERB_SUSTAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING;
 import static sidplay.ini.IniDefaults.DEFAULT_SAMPLING_RATE;
 import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
@@ -291,6 +306,193 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Parameter(names = { "--audioBufferSize" }, descriptionKey = "AUDIO_BUFFER_SIZE")
 	public void setAudioBufferSize(int audioBufferSize) {
 		iniReader.setProperty("Audio", "Audio Buffer Size", audioBufferSize);
+	}
+
+	@Override
+	public boolean getDelayBypass() {
+		return iniReader.getPropertyBool("Audio", "Delay Bypass", DEFAULT_DELAY_BYPASS);
+	}
+
+	@Override
+	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS")
+	public void setDelayBypass(boolean delayBypass) {
+		iniReader.setProperty("Audio", "Delay Bypass", delayBypass);
+	}
+
+	@Override
+	public int getDelay() {
+		return iniReader.getPropertyInt("Audio", "Delay", DEFAULT_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--delay" }, descriptionKey = "DELAY")
+	public void setDelay(int delay) {
+		iniReader.setProperty("Audio", "Delay", delay);
+	}
+
+	@Override
+	public int getDelayWetLevel() {
+		return iniReader.getPropertyInt("Audio", "Delay Wet Level", DEFAULT_DELAY_WET_LEVEL);
+	}
+
+	@Override
+	@Parameter(names = { "--delayWetLevel" }, descriptionKey = "DELAY_WET_LEVEL")
+	public void setDelayWetLevel(int delayWetLevel) {
+		iniReader.setProperty("Audio", "Delay Wet Level", delayWetLevel);
+	}
+
+	@Override
+	public int getDelayDryLevel() {
+		return iniReader.getPropertyInt("Audio", "Delay Dry Level", DEFAULT_DELAY_DRY_LEVEL);
+	}
+
+	@Override
+	@Parameter(names = { "--delayDryLevel" }, descriptionKey = "DELAY_DRY_LEVEL")
+	public void setDelayDryLevel(int delayDryLevel) {
+		iniReader.setProperty("Audio", "Delay Dry Level", delayDryLevel);
+	}
+
+	@Override
+	public int getDelayFeedbackLevel() {
+		return iniReader.getPropertyInt("Audio", "Delay Feedback Level", DEFAULT_DELAY_FEEDBACK_LEVEL);
+	}
+
+	@Override
+	@Parameter(names = { "--delayFeedbackLevel" }, descriptionKey = "DELAY_FEEDBACK_LEVEL")
+	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
+		iniReader.setProperty("Audio", "Delay Feedback Level", delayFeedbackLevel);
+	}
+
+	@Override
+	public boolean getDistortionBypass() {
+		return iniReader.getPropertyBool("Audio", "Distortion Bypass", DEFAULT_DISTORTION_BYPASS);
+	}
+
+	@Override
+	@Parameter(names = { "--distortionBypass" }, descriptionKey = "DISTORTION_BYPASS")
+	public void setDistortionBypass(boolean distortionBypass) {
+		iniReader.setProperty("Audio", "Distortion Bypass", distortionBypass);
+	}
+
+	@Override
+	public int getDistortionThreshold() {
+		return iniReader.getPropertyInt("Audio", "Distortion Threshold", DEFAULT_DISTORTION_THRESHOLD);
+	}
+
+	@Override
+	@Parameter(names = { "--distortionThreshold" }, descriptionKey = "DISTORTION_THRESHOLD")
+	public void setDistortionThreshold(int distortionThreshold) {
+		iniReader.setProperty("Audio", "Distortion Threshold", distortionThreshold);
+	}
+
+	@Override
+	public float getDistortionGain() {
+		return iniReader.getPropertyFloat("Audio", "Distortion Gain", DEFAULT_DISTORTION_GAIN);
+	}
+
+	@Override
+	@Parameter(names = { "--distortionGain" }, descriptionKey = "DISTORTION_GAIN")
+	public void setDistortionGain(float distortionGain) {
+		iniReader.setProperty("Audio", "Distortion Gain", distortionGain);
+	}
+
+	@Override
+	public boolean getReverbBypass() {
+		return iniReader.getPropertyBool("Audio", "Reverb Bypass", DEFAULT_REVERB_BYPASS);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS")
+	public void setReverbBypass(boolean reverbBypass) {
+		iniReader.setProperty("Audio", "Reverb Bypass", reverbBypass);
+	}
+
+	@Override
+	public float getReverbComb1Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Comb1 Delay", DEFAULT_REVERB_COMB1_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbComb1Delay" }, descriptionKey = "REVERB_COMB1_DELAY")
+	public void setReverbComb1Delay(float reverbComb1Delay) {
+		iniReader.setProperty("Audio", "Reverb Comb1 Delay", reverbComb1Delay);
+	}
+
+	@Override
+	public float getReverbComb2Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Comb2 Delay", DEFAULT_REVERB_COMB2_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbComb2Delay" }, descriptionKey = "REVERB_COMB2_DELAY")
+	public void setReverbComb2Delay(float reverbComb2Delay) {
+		iniReader.setProperty("Audio", "Reverb Comb2 Delay", reverbComb2Delay);
+	}
+
+	@Override
+	public float getReverbComb3Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Comb3 Delay", DEFAULT_REVERB_COMB3_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbComb3Delay" }, descriptionKey = "REVERB_COMB3_DELAY")
+	public void setReverbComb3Delay(float reverbComb3Delay) {
+		iniReader.setProperty("Audio", "Reverb Comb3 Delay", reverbComb3Delay);
+	}
+
+	@Override
+	public float getReverbComb4Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Comb4 Delay", DEFAULT_REVERB_COMB4_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbComb4Delay" }, descriptionKey = "REVERB_COMB4_DELAY")
+	public void setReverbComb4Delay(float reverbComb4Delay) {
+		iniReader.setProperty("Audio", "Reverb Comb4 Delay", reverbComb4Delay);
+	}
+
+	@Override
+	public float getReverbAllPass1Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb All Pass1 Delay", DEFAULT_REVERB_COMB1_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbAllPass1Delay" }, descriptionKey = "REVERB_ALL_PASS1_DELAY")
+	public void setReverbAllPass1Delay(float reverbAllPass1Delay) {
+		iniReader.setProperty("Audio", "Reverb All Pass1 Delay", reverbAllPass1Delay);
+	}
+
+	@Override
+	public float getReverbAllPass2Delay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb All Pass2 Delay", DEFAULT_REVERB_COMB2_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbAllPass2Delay" }, descriptionKey = "REVERB_ALL_PASS2_DELAY")
+	public void setReverbAllPass2Delay(float reverbAllPass2Delay) {
+		iniReader.setProperty("Audio", "Reverb All Pass2 Delay", reverbAllPass2Delay);
+	}
+
+	@Override
+	public float getReverbSustainDelay() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Sustain Delay", DEFAULT_REVERB_SUSTAIN_DELAY);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbSustainDelay" }, descriptionKey = "REVERB_SUSTAIN_DELAY")
+	public void setReverbSustainDelay(float reverbSustainDelay) {
+		iniReader.setProperty("Audio", "Reverb Sustain Delay", reverbSustainDelay);
+	}
+
+	@Override
+	public float getReverbDryWetMix() {
+		return iniReader.getPropertyFloat("Audio", "Reverb Dry Wet Mix", DEFAULT_REVERB_DRY_WET_MIX);
+	}
+
+	@Override
+	@Parameter(names = { "--reverbDryWetMix" }, descriptionKey = "REVERB_DRY_WET_MIX")
+	public void setReverbDryWetMix(float reverbDryWetMix) {
+		iniReader.setProperty("Audio", "Reverb DryWetMix", reverbDryWetMix);
 	}
 
 	@Override

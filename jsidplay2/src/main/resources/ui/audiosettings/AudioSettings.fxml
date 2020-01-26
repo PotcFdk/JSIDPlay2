@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import ui.common.KnobSkin?>
+<?scenebuilder-preview-i18n-resource AudioSettings.properties?>
+<?import javafx.scene.control.Button?>
+
+<!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
+
+<Scene xmlns:fx="http://javafx.com/fxml" width="1024" height="1024"
+	stylesheets="@AudioSettings.css">
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" width="800" height="600" stylesheets="@AudioSettings.css" 
+		fx:controller="ui.audiosettings.AudioSettings"> -->
+	<ScrollPane>
+		<VBox>
+			<TitledPane text="%DELAY_POST_PROCESSOR">
+				<GridPane>
+					<VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
+						<CheckBox fx:id="bypassDelay" text="%BYPASS"></CheckBox>
+					</VBox>
+					<HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%DELAY" />
+							<Label fx:id="delayValue" text="100ms" />
+							<Slider fx:id="delay" min="0" max="100" value="0"
+								styleClass="knobstyle" blockIncrement="5" majorTickUnit="1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%WET_LEVEL" />
+							<Label fx:id="delayWetLevelValue" text="100%" />
+							<Slider fx:id="delayWetLevel" min="0" max="100" value="70"
+								blockIncrement="10" majorTickUnit="1" styleClass="knobstyle" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%DRY_LEVEL" />
+							<Label fx:id="delayDryLevelValue" text="100%" />
+							<Slider fx:id="delayDryLevel" min="0" max="100" value="70"
+								blockIncrement="10" majorTickUnit="1" styleClass="knobstyle" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%FEEDBACK_LEVEL" />
+							<Label fx:id="delayFeedbackLevelValue" text="100%" />
+							<Slider fx:id="delayFeedbackLevel" min="0" max="100"
+								value="10" blockIncrement="10" majorTickUnit="1" styleClass="knobstyle" />
+						</VBox>
+					</HBox>
+				</GridPane>
+			</TitledPane>
+			<TitledPane text="%DISTORTION_POST_PROCESSOR">
+				<GridPane>
+					<VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
+						<CheckBox fx:id="bypassDistortion" text="%BYPASS"></CheckBox>
+					</VBox>
+					<HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%THRESHOLD" />
+							<Label fx:id="distortionThresholdValue" text="32768" />
+							<Slider fx:id="distortionThreshold" min="0" max="32768"
+								value="32768" styleClass="knobstyle" blockIncrement="100"
+								majorTickUnit="10" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%GAIN" />
+							<Label fx:id="distortionGainValue" text="0" />
+							<Slider styleClass="knobstyle" fx:id="distortionGain" min="-12"
+								max="12" value="1" minorTickCount="1" snapToTicks="true"
+								blockIncrement="1" majorTickUnit="1" showTickLabels="true"
+								showTickMarks="true" />
+						</VBox>
+					</HBox>
+				</GridPane>
+			</TitledPane>
+			<TitledPane text="%REVERB_POST_PROCESSOR">
+				<GridPane>
+					<VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
+						<CheckBox fx:id="bypassReverb" text="%BYPASS"></CheckBox>
+					</VBox>
+					<HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%COMB1_DELAY" />
+							<Label fx:id="reverbComb1DelayValue" text="20ms" />
+							<Slider fx:id="reverbComb1Delay" min="1" max="100" value="20"
+								styleClass="knobstyle" blockIncrement="1" majorTickUnit="0.1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%COMB2_DELAY" />
+							<Label fx:id="reverbComb2DelayValue" text="30ms" />
+							<Slider fx:id="reverbComb2Delay" min="1" max="100" value="30"
+								styleClass="knobstyle" blockIncrement="1" majorTickUnit="0.1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%COMB3_DELAY" />
+							<Label fx:id="reverbComb3DelayValue" text="40ms" />
+							<Slider fx:id="reverbComb3Delay" min="1" max="100" value="40"
+								styleClass="knobstyle" blockIncrement="1" majorTickUnit="0.1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%COMB4_DELAY" />
+							<Label fx:id="reverbComb4DelayValue" text="50ms" />
+							<Slider fx:id="reverbComb4Delay" min="1" max="100" value="50"
+								styleClass="knobstyle" blockIncrement="1" majorTickUnit="0.1" />
+						</VBox>
+					</HBox>
+					<HBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%ALL_PASS1_DELAY" />
+							<Label fx:id="reverbAllPass1DelayValue" text="2ms" />
+							<Slider fx:id="reverbAllPass1Delay" min="1" max="50"
+								value="2" styleClass="knobstyle" blockIncrement="1"
+								majorTickUnit="0.1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%ALL_PASS2_DELAY" />
+							<Label fx:id="reverbAllPass2DelayValue" text="4ms" />
+							<Slider fx:id="reverbAllPass2Delay" min="1" max="50"
+								value="4" styleClass="knobstyle" blockIncrement="1"
+								majorTickUnit="0.1" />
+						</VBox>
+					</HBox>
+					<HBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%SUSTAIN_DELAY" />
+							<Label fx:id="reverbSustainDelayValue" text="800ms" />
+							<Slider fx:id="reverbSustainDelay" min="1" max="1000"
+								value="2" styleClass="knobstyle" blockIncrement="100"
+								majorTickUnit="1" />
+						</VBox>
+						<VBox alignment="TOP_CENTER" minWidth="150">
+							<Label text="%DRY_WET_MIX" />
+							<Label fx:id="reverbDryWetMixValue" text="0.25" />
+							<Slider fx:id="reverbDryWetMix" min="0" max="1" value="0.25"
+								styleClass="knobstyle" minorTickCount="1" snapToTicks="true"
+								blockIncrement="0.1" majorTickUnit="0.01" showTickLabels="true"
+								showTickMarks="true" />
+						</VBox>
+					</HBox>
+				</GridPane>
+			</TitledPane>
+			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults"/>
+		</VBox>
+	</ScrollPane>
+</Scene>

@@ -20,7 +20,11 @@ public final class NumberToStringConverter<T extends Number> extends StringConve
 			return "";
 		}
 		double rounded = (double) Math.round(d.doubleValue() * factor) / factor;
-		return String.format("%." + decimalPlaces + "f", rounded);
+		if (factor == 0) {
+			return String.format("%f", rounded);
+		} else {
+			return String.format("%." + decimalPlaces + "f", rounded);
+		}
 	}
 
 	@Override

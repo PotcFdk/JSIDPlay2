@@ -280,6 +280,8 @@
 						onAction="#ultimate64" />
 				</Menu>
 				<Menu text="%SETTINGS">
+					<MenuItem text="%AUDIO_SETTINGS"
+						onAction="#audioSettings" />
 					<MenuItem text="%EMULATION_SETTINGS"
 						onAction="#emulationSettings" />
 					<MenuItem text="%JOYSTICK_SETTINGS"

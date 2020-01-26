@@ -62,6 +62,7 @@ import ui.JSidPlay2Main;
 import ui.about.About;
 import ui.asm.Asm;
 import ui.assembly64.Assembly64;
+import ui.audiosettings.AudioSettings;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
@@ -411,6 +412,11 @@ public class MenuBar extends C64VBox implements UIPart {
 		new Ultimate64Window(util.getPlayer()).open();
 	}
 	
+	@FXML
+	private void audioSettings() {
+		new AudioSettings(util.getPlayer()).open();
+	}
+
 	@FXML
 	private void emulationSettings() {
 		new EmulationSettings(util.getPlayer()).open();
