@@ -314,7 +314,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS")
+	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS", arity=1)
 	public void setDelayBypass(boolean delayBypass) {
 		iniReader.setProperty("Audio", "Delay Bypass", delayBypass);
 	}
@@ -369,7 +369,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--distortionBypass" }, descriptionKey = "DISTORTION_BYPASS")
+	@Parameter(names = { "--distortionBypass" }, descriptionKey = "DISTORTION_BYPASS", arity=1)
 	public void setDistortionBypass(boolean distortionBypass) {
 		iniReader.setProperty("Audio", "Distortion Bypass", distortionBypass);
 	}
@@ -402,7 +402,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS")
+	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS", arity=1)
 	public void setReverbBypass(boolean reverbBypass) {
 		iniReader.setProperty("Audio", "Reverb Bypass", reverbBypass);
 	}
