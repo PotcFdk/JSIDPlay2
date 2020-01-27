@@ -305,48 +305,6 @@ public interface IAudioSection {
 	void setDelayFeedbackLevel(int delayFeedbackLevel);
 
 	/**
-	 * Getter of the distortion bypass setting
-	 * 
-	 * @return distortion bypass setting
-	 */
-	boolean getDistortionBypass();
-
-	/**
-	 * Setter of the distortion bypass setting
-	 * 
-	 * @param distortionBypass distortion bypass setting
-	 */
-	void setDistortionBypass(boolean distortionBypass);
-
-	/**
-	 * Getter of the distortion threshold setting
-	 * 
-	 * @return distortion threshold setting
-	 */
-	int getDistortionThreshold();
-
-	/**
-	 * Setter of the distortion threshold setting
-	 * 
-	 * @param distortionThreshold distortion threshold setting
-	 */
-	void setDistortionThreshold(int distortionThreshold);
-
-	/**
-	 * Getter of the distortion gain setting
-	 * 
-	 * @return distortion gain setting
-	 */
-	float getDistortionGain();
-
-	/**
-	 * Setter of the distortion gain setting
-	 * 
-	 * @param distortionGain distortion gain setting
-	 */
-	void setDistortionGain(float distortionGain);
-
-	/**
 	 * Getter of the reverb bypass setting
 	 * 
 	 * @return reverb bypass setting

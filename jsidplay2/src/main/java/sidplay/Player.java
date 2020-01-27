@@ -75,7 +75,6 @@ import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.processor.AudioProcessorDriver;
 import sidplay.audio.processor.delay.DelayProcessor;
-import sidplay.audio.processor.distortion.DistortionProcessor;
 import sidplay.audio.processor.reverb.ReverbProcessor;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
@@ -706,7 +705,6 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	private AudioProcessorDriver addAudioProcessorDriver(final AudioDriver audioDriver) {
 		AudioProcessorDriver audioProcessorDriver = new AudioProcessorDriver(audioDriver);
 		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor(config));
-		audioProcessorDriver.getAudioProcessors().add(new DistortionProcessor(config));
 		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor(config));
 		return audioProcessorDriver;
 	}

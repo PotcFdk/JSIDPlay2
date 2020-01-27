@@ -9,9 +9,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_BYPASS;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_GAIN;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_THRESHOLD;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
@@ -361,39 +358,6 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Parameter(names = { "--delayFeedbackLevel" }, descriptionKey = "DELAY_FEEDBACK_LEVEL")
 	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
 		iniReader.setProperty("Audio", "Delay Feedback Level", delayFeedbackLevel);
-	}
-
-	@Override
-	public boolean getDistortionBypass() {
-		return iniReader.getPropertyBool("Audio", "Distortion Bypass", DEFAULT_DISTORTION_BYPASS);
-	}
-
-	@Override
-	@Parameter(names = { "--distortionBypass" }, descriptionKey = "DISTORTION_BYPASS", arity=1)
-	public void setDistortionBypass(boolean distortionBypass) {
-		iniReader.setProperty("Audio", "Distortion Bypass", distortionBypass);
-	}
-
-	@Override
-	public int getDistortionThreshold() {
-		return iniReader.getPropertyInt("Audio", "Distortion Threshold", DEFAULT_DISTORTION_THRESHOLD);
-	}
-
-	@Override
-	@Parameter(names = { "--distortionThreshold" }, descriptionKey = "DISTORTION_THRESHOLD")
-	public void setDistortionThreshold(int distortionThreshold) {
-		iniReader.setProperty("Audio", "Distortion Threshold", distortionThreshold);
-	}
-
-	@Override
-	public float getDistortionGain() {
-		return iniReader.getPropertyFloat("Audio", "Distortion Gain", DEFAULT_DISTORTION_GAIN);
-	}
-
-	@Override
-	@Parameter(names = { "--distortionGain" }, descriptionKey = "DISTORTION_GAIN")
-	public void setDistortionGain(float distortionGain) {
-		iniReader.setProperty("Audio", "Distortion Gain", distortionGain);
 	}
 
 	@Override

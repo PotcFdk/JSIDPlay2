@@ -5,9 +5,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_BYPASS;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_GAIN;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_THRESHOLD;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS1_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS2_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_BYPASS;
@@ -30,13 +27,10 @@ import ui.entities.config.AudioSection;
 public class AudioSettings extends C64Window {
 
 	@FXML
-	private CheckBox bypassDelay, bypassDistortion, bypassReverb;
+	private CheckBox bypassDelay, bypassReverb;
 
 	@FXML
 	private Slider delay, delayWetLevel, delayDryLevel, delayFeedbackLevel;
-
-	@FXML
-	private Slider distortionThreshold, distortionGain;
 
 	@FXML
 	private Slider reverbComb1Delay, reverbComb2Delay, reverbComb3Delay, reverbComb4Delay;
@@ -49,9 +43,6 @@ public class AudioSettings extends C64Window {
 
 	@FXML
 	private Label delayValue, delayWetLevelValue, delayDryLevelValue, delayFeedbackLevelValue;
-
-	@FXML
-	private Label distortionThresholdValue, distortionGainValue;
 
 	@FXML
 	private Label reverbComb1DelayValue, reverbComb2DelayValue, reverbComb3DelayValue, reverbComb4DelayValue;
@@ -93,18 +84,6 @@ public class AudioSettings extends C64Window {
 		delayFeedbackLevel.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		delayFeedbackLevel.valueProperty().bindBidirectional(audioSection.delayFeedbackLevelProperty());
 		delayFeedbackLevelValue.textProperty().bindBidirectional(audioSection.delayFeedbackLevelProperty(),
-				new NumberToStringConverter<>(0));
-
-		bypassDistortion.selectedProperty().bindBidirectional(audioSection.distortionBypassProperty());
-
-		distortionThreshold.setLabelFormatter(new NumberToStringConverter<Double>(1));
-		distortionThreshold.valueProperty().bindBidirectional(audioSection.distortionThresholdProperty());
-		distortionThresholdValue.textProperty().bindBidirectional(audioSection.distortionThresholdProperty(),
-				new NumberToStringConverter<>(0));
-
-		distortionGain.setLabelFormatter(new NumberToStringConverter<Double>(1));
-		distortionGain.valueProperty().bindBidirectional(audioSection.distortionGainProperty());
-		distortionGainValue.textProperty().bindBidirectional(audioSection.distortionGainProperty(),
 				new NumberToStringConverter<>(0));
 
 		bypassReverb.selectedProperty().bindBidirectional(audioSection.reverbBypassProperty());
@@ -159,10 +138,6 @@ public class AudioSettings extends C64Window {
 		audioSection.setDelayWetLevel(DEFAULT_DELAY_WET_LEVEL);
 		audioSection.setDelayDryLevel(DEFAULT_DELAY_DRY_LEVEL);
 		audioSection.setDelayFeedbackLevel(DEFAULT_DELAY_FEEDBACK_LEVEL);
-
-		audioSection.setDistortionBypass(DEFAULT_DISTORTION_BYPASS);
-		audioSection.setDistortionThreshold(DEFAULT_DISTORTION_THRESHOLD);
-		audioSection.setDistortionGain(DEFAULT_DISTORTION_GAIN);
 
 		audioSection.setReverbBypass(DEFAULT_REVERB_BYPASS);
 		audioSection.setReverbComb1Delay(DEFAULT_REVERB_COMB1_DELAY);

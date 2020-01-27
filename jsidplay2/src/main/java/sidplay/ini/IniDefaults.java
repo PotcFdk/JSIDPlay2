@@ -102,9 +102,6 @@ public interface IniDefaults {
 	int DEFAULT_DELAY_WET_LEVEL = AUDIO_SECTION.getDelayWetLevel();
 	int DEFAULT_DELAY_DRY_LEVEL = AUDIO_SECTION.getDelayDryLevel();
 	int DEFAULT_DELAY_FEEDBACK_LEVEL = AUDIO_SECTION.getDelayFeedbackLevel();
-	boolean DEFAULT_DISTORTION_BYPASS = AUDIO_SECTION.getDistortionBypass();
-	int DEFAULT_DISTORTION_THRESHOLD = AUDIO_SECTION.getDistortionThreshold();
-	float DEFAULT_DISTORTION_GAIN = AUDIO_SECTION.getDistortionGain();
 	boolean DEFAULT_REVERB_BYPASS = AUDIO_SECTION.getReverbBypass();
 	float DEFAULT_REVERB_COMB1_DELAY = AUDIO_SECTION.getReverbComb1Delay();
 	float DEFAULT_REVERB_COMB2_DELAY = AUDIO_SECTION.getReverbComb2Delay();

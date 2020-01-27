@@ -9,9 +9,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_BYPASS;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_GAIN;
-import static sidplay.ini.IniDefaults.DEFAULT_DISTORTION_THRESHOLD;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
@@ -420,54 +417,6 @@ public class AudioSection implements IAudioSection {
 		return delayFeedbackLevelProperty;
 	}
 
-	private BooleanProperty distortionBypassProperty = new SimpleBooleanProperty(DEFAULT_DISTORTION_BYPASS);
-
-	@Override
-	public boolean getDistortionBypass() {
-		return distortionBypassProperty.get();
-	}
-	
-	@Override
-	public void setDistortionBypass(boolean distortionBypass) {
-		distortionBypassProperty.set(distortionBypass);
-	}
-	
-	public BooleanProperty distortionBypassProperty() {
-		return distortionBypassProperty;
-	}
-
-	private IntegerProperty distortionThresholdProperty = new SimpleIntegerProperty(DEFAULT_DISTORTION_THRESHOLD);
-
-	@Override
-	public int getDistortionThreshold() {
-		return distortionThresholdProperty.get();
-	}
-
-	@Override
-	public void setDistortionThreshold(int distortionThreshold) {
-		distortionThresholdProperty.set(distortionThreshold);
-	}
-	
-	public IntegerProperty distortionThresholdProperty() {
-		return distortionThresholdProperty;
-	}
-	
-	private FloatProperty distortionGainProperty = new SimpleFloatProperty(DEFAULT_DISTORTION_GAIN);
-
-	@Override
-	public float getDistortionGain() {
-		return this.distortionGainProperty.get();
-	}
-
-	@Override
-	public void setDistortionGain(float distortionGain) {
-		this.distortionGainProperty.set(distortionGain);
-	}
-
-	public FloatProperty distortionGainProperty() {
-		return distortionGainProperty;
-	}
-	
 	private BooleanProperty reverbBypassProperty = new SimpleBooleanProperty(DEFAULT_REVERB_BYPASS);
 
 	@Override
