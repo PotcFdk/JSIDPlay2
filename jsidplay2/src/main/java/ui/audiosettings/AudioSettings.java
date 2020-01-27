@@ -67,21 +67,21 @@ public class AudioSettings extends C64Window {
 
 		bypassDelay.selectedProperty().bindBidirectional(audioSection.delayBypassProperty());
 
-		delay.setLabelFormatter(new NumberToStringConverter<Double>(1));
+		delay.setLabelFormatter(new NumberToStringConverter<Double>(0));
 		delay.valueProperty().bindBidirectional(audioSection.delayProperty());
 		delayValue.textProperty().bindBidirectional(audioSection.delayProperty(), new NumberToStringConverter<>(0));
 
-		delayWetLevel.setLabelFormatter(new NumberToStringConverter<Double>(1));
+		delayWetLevel.setLabelFormatter(new NumberToStringConverter<Double>(0));
 		delayWetLevel.valueProperty().bindBidirectional(audioSection.delayWetLevelProperty());
 		delayWetLevelValue.textProperty().bindBidirectional(audioSection.delayWetLevelProperty(),
 				new NumberToStringConverter<>(0));
 
-		delayDryLevel.setLabelFormatter(new NumberToStringConverter<Double>(1));
+		delayDryLevel.setLabelFormatter(new NumberToStringConverter<Double>(0));
 		delayDryLevel.valueProperty().bindBidirectional(audioSection.delayDryLevelProperty());
 		delayDryLevelValue.textProperty().bindBidirectional(audioSection.delayDryLevelProperty(),
 				new NumberToStringConverter<>(0));
 
-		delayFeedbackLevel.setLabelFormatter(new NumberToStringConverter<Double>(1));
+		delayFeedbackLevel.setLabelFormatter(new NumberToStringConverter<Double>(0));
 		delayFeedbackLevel.valueProperty().bindBidirectional(audioSection.delayFeedbackLevelProperty());
 		delayFeedbackLevelValue.textProperty().bindBidirectional(audioSection.delayFeedbackLevelProperty(),
 				new NumberToStringConverter<>(0));
