@@ -8,10 +8,12 @@ import java.util.List;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.components.mos656x.VIC;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
+import sidplay.audio.VideoDriver;
 
-public class AudioProcessorDriver implements AudioDriver {
+public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 
 	private AudioDriver audioDriver;
 
@@ -32,6 +34,13 @@ public class AudioProcessorDriver implements AudioDriver {
 		audioDriver.open(cfg, recordingFilename, cpuClock);
 		for (AudioProcessor audioProcessor : audioProcessors) {
 			audioProcessor.prepare(cfg);
+		}
+	}
+
+	@Override
+	public void accept(VIC vic) {
+		if (audioDriver instanceof VideoDriver) {
+			((VideoDriver) audioDriver).accept(vic);
 		}
 	}
 
@@ -62,10 +71,10 @@ public class AudioProcessorDriver implements AudioDriver {
 	public String getExtension() {
 		return audioDriver.getExtension();
 	}
-	
+
 	@Override
 	public void pause() {
 		audioDriver.pause();
 	}
-	
+
 }
