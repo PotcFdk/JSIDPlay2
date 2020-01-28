@@ -1,9 +1,7 @@
 package sidplay.audio.processor;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +17,6 @@ public class AudioProcessorDriver implements AudioDriver {
 
 	private List<AudioProcessor> audioProcessors;
 
-	private ShortBuffer samplesBuffer;
-
 	public AudioProcessorDriver(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 		this.audioProcessors = new ArrayList<>();
@@ -34,17 +30,15 @@ public class AudioProcessorDriver implements AudioDriver {
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
 		audioDriver.open(cfg, recordingFilename, cpuClock);
-		samplesBuffer = audioDriver.buffer().asShortBuffer();
 		for (AudioProcessor audioProcessor : audioProcessors) {
-			audioProcessor.prepare(samplesBuffer, cfg);
+			audioProcessor.prepare(cfg);
 		}
 	}
 
 	@Override
 	public void write() throws InterruptedException {
 		for (AudioProcessor audioProcessor : audioProcessors) {
-			((Buffer) samplesBuffer).position(audioDriver.buffer().position() >> 1);
-			audioProcessor.process(samplesBuffer);
+			audioProcessor.process(audioDriver.buffer());
 		}
 		audioDriver.write();
 	}

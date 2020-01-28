@@ -1,7 +1,7 @@
 package sidplay.audio.processor.delay;
 
 import java.nio.Buffer;
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
 
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
@@ -17,47 +17,38 @@ public class DelayProcessor implements AudioProcessor {
 	private short[] delayBuffer;
 	private int readIndex, writeIndex, delayBufferSize, delayOffset;
 
-	private int SAMPLEBUFFERSIZE;
-
-	private int delayInMs;
+	private Integer delayInMs;
 
 	public DelayProcessor(IConfig config) {
 		this.config = config;
 	}
 
 	@Override
-	public void prepare(ShortBuffer sampleBuffer, AudioConfig cfg) {
-		SAMPLEBUFFERSIZE = sampleBuffer.capacity();
+	public void prepare(AudioConfig cfg) {
 		sampleRate = cfg.getFrameRate();
 		numberOfChannels = cfg.getChannels();
-
-		prepareDelayBuffer();
-	}
-
-	private void prepareDelayBuffer() {
-		delayInMs = config.getAudioSection().getDelay();
-
-		delayOffset = (delayInMs * sampleRate * numberOfChannels) / 1000;
-		delayBufferSize = SAMPLEBUFFERSIZE + delayOffset;
-		delayBuffer = new short[delayBufferSize];
-		writeIndex = 0;
-		readIndex = SAMPLEBUFFERSIZE;
 	}
 
 	@Override
-	public void process(ShortBuffer sampleBuffer) {
+	public void process(ByteBuffer sampleBuffer) {
 		IAudioSection audioSection = config.getAudioSection();
-		if (delayInMs != config.getAudioSection().getDelay()) {
-			prepareDelayBuffer();
+		if (delayInMs == null || delayInMs != config.getAudioSection().getDelay()) {
+			delayInMs = config.getAudioSection().getDelay();
+
+			delayOffset = (delayInMs * sampleRate * numberOfChannels) / 1000;
+			delayBufferSize = (sampleBuffer.capacity() >> 1) + delayOffset;
+			delayBuffer = new short[delayBufferSize];
+			writeIndex = 0;
+			readIndex = sampleBuffer.capacity() >> 1;
 		}
 
 		if (!audioSection.getDelayBypass() && delayOffset > 0) {
 			int len = sampleBuffer.position();
 			((Buffer) sampleBuffer).flip();
-			ShortBuffer buffer = ShortBuffer.wrap(new short[len]);
+			ByteBuffer buffer = ByteBuffer.wrap(new byte[len]).order(sampleBuffer.order());
 
-			for (int i = 0; i < len; i++) {
-				int inputSample = (int) sampleBuffer.get();
+			for (int i = 0; i < len >> 1; i++) {
+				int inputSample = (int) sampleBuffer.getShort();
 				int delaySample = (int) delayBuffer[readIndex++];
 				int outputSample = ((inputSample * audioSection.getDelayDryLevel()) / 100)
 						+ ((delaySample * audioSection.getDelayWetLevel()) / 100);
@@ -67,7 +58,7 @@ public class DelayProcessor implements AudioProcessor {
 				else if (outputSample < -32768)
 					outputSample = -32768;
 
-				buffer.put((short) outputSample);
+				buffer.putShort((short) outputSample);
 
 				inputSample += (delaySample * audioSection.getDelayFeedbackLevel()) / 100;
 

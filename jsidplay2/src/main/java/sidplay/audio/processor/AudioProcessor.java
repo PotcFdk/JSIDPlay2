@@ -1,13 +1,13 @@
 package sidplay.audio.processor;
 
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
 
 import sidplay.audio.AudioConfig;
 
 public interface AudioProcessor {
 
-	void prepare(ShortBuffer sampleBuffer, AudioConfig cfg);
+	void prepare(AudioConfig cfg);
 
-	void process(ShortBuffer buffer);
+	void process(ByteBuffer buffer);
 
 }
