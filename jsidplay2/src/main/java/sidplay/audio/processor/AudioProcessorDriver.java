@@ -17,11 +17,10 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 
 	private AudioDriver audioDriver;
 
-	private List<AudioProcessor> audioProcessors;
-
+	private List<AudioProcessor> audioProcessors = new ArrayList<>();
+	
 	public AudioProcessorDriver(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
-		this.audioProcessors = new ArrayList<>();
 	}
 
 	public List<AudioProcessor> getAudioProcessors() {
