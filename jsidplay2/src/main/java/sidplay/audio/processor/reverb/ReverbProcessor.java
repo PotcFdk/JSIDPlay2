@@ -1,8 +1,5 @@
 package sidplay.audio.processor.reverb;
 
-import static sidplay.audio.processor.reverb.SchroederReverb.ALLPASS1SUSTAINMSDEF;
-import static sidplay.audio.processor.reverb.SchroederReverb.ALLPASS2SUSTAINMSDEF;
-
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
@@ -58,8 +55,6 @@ public class ReverbProcessor implements AudioProcessor {
 			reverb.comb2.setSustainTimeInMs(audioSection.getReverbSustainDelay());
 			reverb.comb3.setSustainTimeInMs(audioSection.getReverbSustainDelay());
 			reverb.comb4.setSustainTimeInMs(audioSection.getReverbSustainDelay());
-			reverb.allpass1.setSustainTimeInMs(ALLPASS1SUSTAINMSDEF);
-			reverb.allpass2.setSustainTimeInMs(ALLPASS2SUSTAINMSDEF);
 		}
 		if (reverb.mix != audioSection.getReverbDryWetMix()) {
 			reverb.mix = audioSection.getReverbDryWetMix();

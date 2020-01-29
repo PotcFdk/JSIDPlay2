@@ -31,7 +31,7 @@ public class DelayProcessor implements AudioProcessor {
 
 	@Override
 	public void process(ByteBuffer sampleBuffer) {
-		IAudioSection audioSection = config.getAudioSection();
+		final IAudioSection audioSection = config.getAudioSection();
 		if (delayInMs == null || delayInMs != config.getAudioSection().getDelay()) {
 			delayInMs = config.getAudioSection().getDelay();
 

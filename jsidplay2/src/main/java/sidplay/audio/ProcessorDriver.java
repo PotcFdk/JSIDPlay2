@@ -11,12 +11,20 @@ import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 import sidplay.audio.processor.AudioProcessor;
 
+/**
+ * Processor driver to use several audio post processors short before sample
+ * data gets written. Audio post processors must implement
+ * {@link AudioProcessor}.
+ * 
+ * @author Ken Händel
+ * 
+ */
 public class ProcessorDriver implements AudioDriver, VideoDriver {
 
 	private AudioDriver audioDriver;
 
 	private List<AudioProcessor> audioProcessors = new ArrayList<>();
-	
+
 	public ProcessorDriver(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 	}
@@ -29,7 +37,7 @@ public class ProcessorDriver implements AudioDriver, VideoDriver {
 	public void pause() {
 		audioDriver.pause();
 	}
-	
+
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
@@ -53,7 +61,7 @@ public class ProcessorDriver implements AudioDriver, VideoDriver {
 			((VideoDriver) audioDriver).accept(vic);
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		audioDriver.close();
@@ -63,7 +71,7 @@ public class ProcessorDriver implements AudioDriver, VideoDriver {
 	public ByteBuffer buffer() {
 		return audioDriver.buffer();
 	}
-	
+
 	@Override
 	public boolean isRecording() {
 		return audioDriver.isRecording();
