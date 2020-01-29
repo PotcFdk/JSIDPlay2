@@ -1,5 +1,8 @@
 package sidplay.audio.processor.reverb;
 
+import static sidplay.audio.processor.reverb.SchroederReverb.ALLPASS1SUSTAINMSDEF;
+import static sidplay.audio.processor.reverb.SchroederReverb.ALLPASS2SUSTAINMSDEF;
+
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
@@ -32,29 +35,34 @@ public class ReverbProcessor implements AudioProcessor {
 		if (reverb == null) {
 			reverb = new SchroederReverb(sampleRate, numberOfChannels, sampleBuffer.capacity());
 		}
-		if (reverb.getComb1Delay() != audioSection.getReverbComb1Delay()) {
-			reverb.setComb1Delay(audioSection.getReverbComb1Delay());
+		if (reverb.comb1.getDelayInMs() != audioSection.getReverbComb1Delay()) {
+			reverb.comb1.setDelayInMs(audioSection.getReverbComb1Delay());
 		}
-		if (reverb.getComb2Delay() != audioSection.getReverbComb2Delay()) {
-			reverb.setComb2Delay(audioSection.getReverbComb2Delay());
+		if (reverb.comb2.getDelayInMs() != audioSection.getReverbComb2Delay()) {
+			reverb.comb2.setDelayInMs(audioSection.getReverbComb2Delay());
 		}
-		if (reverb.getComb3Delay() != audioSection.getReverbComb3Delay()) {
-			reverb.setComb3Delay(audioSection.getReverbComb3Delay());
+		if (reverb.comb3.getDelayInMs() != audioSection.getReverbComb3Delay()) {
+			reverb.comb3.setDelayInMs(audioSection.getReverbComb3Delay());
 		}
-		if (reverb.getComb4Delay() != audioSection.getReverbComb4Delay()) {
-			reverb.setComb4Delay(audioSection.getReverbComb4Delay());
+		if (reverb.comb4.getDelayInMs() != audioSection.getReverbComb4Delay()) {
+			reverb.comb4.setDelayInMs(audioSection.getReverbComb4Delay());
 		}
-		if (reverb.getAllpass1Delay() != audioSection.getReverbAllPass1Delay()) {
-			reverb.setAllpass1Delay(audioSection.getReverbAllPass1Delay());
+		if (reverb.allpass1.getDelayInMs() != audioSection.getReverbAllPass1Delay()) {
+			reverb.allpass1.setDelayInMs(audioSection.getReverbAllPass1Delay());
 		}
-		if (reverb.getAllpass2Delay() != audioSection.getReverbAllPass2Delay()) {
-			reverb.setAllpass2Delay(audioSection.getReverbAllPass2Delay());
+		if (reverb.allpass2.getDelayInMs() != audioSection.getReverbAllPass2Delay()) {
+			reverb.allpass2.setDelayInMs(audioSection.getReverbAllPass2Delay());
 		}
-		if (reverb.getSustainInMs() != audioSection.getReverbSustainDelay()) {
-			reverb.setSustainInMs(audioSection.getReverbSustainDelay());
+		if (reverb.comb1.getSustainTimeInMs() != audioSection.getReverbSustainDelay()) {
+			reverb.comb1.setSustainTimeInMs(audioSection.getReverbSustainDelay());
+			reverb.comb2.setSustainTimeInMs(audioSection.getReverbSustainDelay());
+			reverb.comb3.setSustainTimeInMs(audioSection.getReverbSustainDelay());
+			reverb.comb4.setSustainTimeInMs(audioSection.getReverbSustainDelay());
+			reverb.allpass1.setSustainTimeInMs(ALLPASS1SUSTAINMSDEF);
+			reverb.allpass2.setSustainTimeInMs(ALLPASS2SUSTAINMSDEF);
 		}
-		if (reverb.getMix() != audioSection.getReverbDryWetMix()) {
-			reverb.setDryWetMix(audioSection.getReverbDryWetMix());
+		if (reverb.mix != audioSection.getReverbDryWetMix()) {
+			reverb.mix = audioSection.getReverbDryWetMix();
 		}
 		if (!audioSection.getReverbBypass()) {
 			short[] dest = new short[sampleBuffer.position() >> 1];

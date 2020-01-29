@@ -70,10 +70,10 @@ import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
+import sidplay.audio.ProcessorDriver;
 import sidplay.audio.CmpMP3File.MP3Termination;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
-import sidplay.audio.processor.AudioProcessorDriver;
 import sidplay.audio.processor.delay.DelayProcessor;
 import sidplay.audio.processor.reverb.ReverbProcessor;
 import sidplay.ini.IniConfig;
@@ -692,7 +692,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * @throws IOException configuration error
 	 */
 	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
-		this.audioAndDriver = new SimpleImmutableEntry<>(audio, addAudioProcessorDriver(audioDriver));
+		this.audioAndDriver = new SimpleImmutableEntry<>(audio, addProcessorDriver(audioDriver));
 		verifyConfiguration();
 	}
 
@@ -700,13 +700,13 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * Add some audio post processing
 	 * 
 	 * @param audioDriver original audio driver to install
-	 * @return audio processor driver
+	 * @return processor driver
 	 */
-	private AudioProcessorDriver addAudioProcessorDriver(final AudioDriver audioDriver) {
-		AudioProcessorDriver audioProcessorDriver = new AudioProcessorDriver(audioDriver);
-		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor(config));
-		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor(config));
-		return audioProcessorDriver;
+	private ProcessorDriver addProcessorDriver(final AudioDriver audioDriver) {
+		ProcessorDriver processorDriver = new ProcessorDriver(audioDriver);
+		processorDriver.getAudioProcessors().add(new DelayProcessor(config));
+		processorDriver.getAudioProcessors().add(new ReverbProcessor(config));
+		return processorDriver;
 	}
 
 	/**

@@ -27,113 +27,43 @@ public class SchroederReverb {
 	public static final double ALLPASS1SUSTAINMSDEF = 96.8;
 	public static final double ALLPASS2SUSTAINMSDEF = 32.9;
 	
-	
-	
 	private static final double SUSTAINTIMEMSDEF = 500;
 	private static final double MIXDEF = 0.25;
 
-	public SchroederReverb(int sampleRate, int numberOfChannels, int SAMPLEBUFFERSIZE) {
+	protected double mix;
+	protected CombFilter comb1;
+	protected CombFilter comb2;
+	protected CombFilter comb3;
+	protected CombFilter comb4;
+	protected AllpassNetwork allpass1;
+	protected AllpassNetwork allpass2;
+
+	private double [] dBuffer = new double[1];
+
+	public SchroederReverb(int sampleRate, int numberOfChannels, int sampleBufferSize) {
 
 		// Instantiate the comb filters and the allpass networks
-		comb1 = new CombFilter(sampleRate, numberOfChannels, COMB1DELAYMSDEF, SAMPLEBUFFERSIZE);
-		comb2 = new CombFilter(sampleRate, numberOfChannels, COMB2DELAYMSDEF, SAMPLEBUFFERSIZE);
-		comb3 = new CombFilter(sampleRate, numberOfChannels, COMB3DELAYMSDEF, SAMPLEBUFFERSIZE);
-		comb4 = new CombFilter(sampleRate, numberOfChannels, COMB4DELAYMSDEF, SAMPLEBUFFERSIZE);
+		comb1 = new CombFilter(sampleRate, numberOfChannels, COMB1DELAYMSDEF, sampleBufferSize);
+		comb2 = new CombFilter(sampleRate, numberOfChannels, COMB2DELAYMSDEF, sampleBufferSize);
+		comb3 = new CombFilter(sampleRate, numberOfChannels, COMB3DELAYMSDEF, sampleBufferSize);
+		comb4 = new CombFilter(sampleRate, numberOfChannels, COMB4DELAYMSDEF, sampleBufferSize);
 
-		allpass1 = new AllpassNetwork(sampleRate, numberOfChannels, ALLPASS1DELAYMSDEF, SAMPLEBUFFERSIZE);
-		allpass2 = new AllpassNetwork(sampleRate, numberOfChannels, ALLPASS2DELAYMSDEF, SAMPLEBUFFERSIZE);
+		allpass1 = new AllpassNetwork(sampleRate, numberOfChannels, ALLPASS1DELAYMSDEF, sampleBufferSize);
+		allpass2 = new AllpassNetwork(sampleRate, numberOfChannels, ALLPASS2DELAYMSDEF, sampleBufferSize);
 
 		// Set initial value for sustain
-		setSustainInMs(SUSTAINTIMEMSDEF);
+		comb1.setSustainTimeInMs(SUSTAINTIMEMSDEF);
+		comb2.setSustainTimeInMs(SUSTAINTIMEMSDEF);
+		comb3.setSustainTimeInMs(SUSTAINTIMEMSDEF);
+		comb4.setSustainTimeInMs(SUSTAINTIMEMSDEF);
+		allpass1.setSustainTimeInMs(ALLPASS1SUSTAINMSDEF);
+		allpass2.setSustainTimeInMs(ALLPASS2SUSTAINMSDEF);
+
 
 		// Set dry/wet mix to initial value
 		mix = MIXDEF;
 	}
 
-	// Set the comb filter delays
-	public void setComb1Delay(double delay) {
-
-		comb1.setDelayInMs(delay);
-	}
-
-	public double getComb1Delay() {
-		return comb1.getDelayInMs();
-	}
-
-	public void setComb2Delay(double delay) {
-
-		comb2.setDelayInMs(delay);
-	}
-	
-	public double getComb2Delay() {
-		return comb2.getDelayInMs();
-	}
-
-	public void setComb3Delay(double delay) {
-
-		comb3.setDelayInMs(delay);
-	}
-	
-	public double getComb3Delay() {
-		return comb3.getDelayInMs();
-	}
-
-	public void setComb4Delay(double delay) {
-
-		comb4.setDelayInMs(delay);
-	}
-
-	public double getComb4Delay() {
-		return comb4.getDelayInMs();
-	}
-
-	// Set the allpass filter delays
-	public void setAllpass1Delay(double delay) {
-
-		allpass1.setDelayInMs(delay);
-	}
-
-	public double getAllpass1Delay() {
-		return allpass1.getDelayInMs();
-	}
-	
-	public void setAllpass2Delay(double delay) {
-		
-		allpass2.setDelayInMs(delay);
-	}
-
-	public double getAllpass2Delay() {
-		return allpass2.getDelayInMs();
-	}
-	
-	public void setSustainInMs(double sustainInMs) {
-
-		// Set sustain in all comb filters
-		comb1.setSustainTimeInMs(sustainInMs);
-		comb2.setSustainTimeInMs(sustainInMs);
-		comb3.setSustainTimeInMs(sustainInMs);
-		comb4.setSustainTimeInMs(sustainInMs);
-		
-		// Allpass filter sustain is set by model
-		allpass1.setSustainTimeInMs(ALLPASS1SUSTAINMSDEF);
-		allpass2.setSustainTimeInMs(ALLPASS2SUSTAINMSDEF);
-	}
-
-	public double getSustainInMs() {
-		return allpass1.getSustainTimeInMs();
-	}
-	
-
-	// Set the mix between the dry and the wet signal
-	public void setDryWetMix(double mix) {
-
-		this.mix = mix;
-	}
-
-	public double getMix() {
-		return mix;
-	}
-	
 	// Process a buffer of samples at a time thru the reverb
 	public int doReverb(short [] inBuf, int length) {
 
@@ -199,17 +129,4 @@ public class SchroederReverb {
 		return length;
 	}
 
-	// Private class data
-	private double mix;
-	private CombFilter comb1;
-	private CombFilter comb2;
-	private CombFilter comb3;
-	private CombFilter comb4;
-	private AllpassNetwork allpass1;
-	private AllpassNetwork allpass2;
-	private double [] dBuffer = new double[1];
 }
-
-
-
-

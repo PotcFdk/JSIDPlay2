@@ -6,14 +6,14 @@ package sidplay.audio.processor.reverb;
 
 public class AllpassNetwork {
 
-	private int SAMPLEBUFFERSIZE;
+	private int sampleBufferSize;
 	public AllpassNetwork(int sampleRate, int numberOfChannels,
-						  double delayInMs, int SAMPLEBUFFERSIZE) {
+						  double delayInMs, int sampleBufferSize) {
 
 		// Save incoming
 		this.sampleRate = sampleRate;
 		this.numberOfChannels = numberOfChannels;
-		this.SAMPLEBUFFERSIZE = SAMPLEBUFFERSIZE;
+		this.sampleBufferSize = sampleBufferSize;
 
 		// Default gain of allpass network
 		double networkGain = 0.7;
@@ -36,7 +36,7 @@ public class AllpassNetwork {
 		int delayOffset = (int)
 				((delayInMs + 0.5) * sampleRate * numberOfChannels) / 1000;
 
-		delayBufferSize = SAMPLEBUFFERSIZE + delayOffset;
+		delayBufferSize = sampleBufferSize + delayOffset;
 
 		// Allocate new delay buffer
 		delayBuffer = new double[delayBufferSize];
@@ -46,7 +46,7 @@ public class AllpassNetwork {
 		writeIndex = 0;
 			
 		// Index where wet sample is read
-		readIndex = SAMPLEBUFFERSIZE;
+		readIndex = sampleBufferSize;
 
 		// Calculate gain for filter
 		calcGain();

@@ -48,30 +48,27 @@ public class DelayProcessor implements AudioProcessor {
 			ByteBuffer buffer = ByteBuffer.wrap(new byte[len]).order(sampleBuffer.order());
 
 			for (int i = 0; i < len >> 1; i++) {
-				int inputSample = (int) sampleBuffer.getShort();
-				int delaySample = (int) delayBuffer[readIndex++];
+				int inputSample = sampleBuffer.getShort();
+				int delaySample = delayBuffer[readIndex++];
 				int outputSample = ((inputSample * audioSection.getDelayDryLevel()) / 100)
 						+ ((delaySample * audioSection.getDelayWetLevel()) / 100);
 
-				if (outputSample > 32767)
-					outputSample = 32767;
-				else if (outputSample < -32768)
-					outputSample = -32768;
+				outputSample = Math.max(Math.min(outputSample, Short.MAX_VALUE), Short.MIN_VALUE);
 
 				buffer.putShort((short) outputSample);
 
 				inputSample += (delaySample * audioSection.getDelayFeedbackLevel()) / 100;
 
-				if (inputSample > 32767)
-					inputSample = 32767;
-				else if (inputSample < -32768)
-					inputSample = -32768;
+				inputSample = Math.max(Math.min(inputSample, Short.MAX_VALUE), Short.MIN_VALUE);
 
 				delayBuffer[writeIndex++] = (short) inputSample;
 
-				readIndex %= delayBufferSize;
-				writeIndex %= delayBufferSize;
-
+				if (readIndex == delayBufferSize) {
+					readIndex = 0;
+				}
+				if (writeIndex == delayBufferSize) {
+					writeIndex = 0;
+				}
 			}
 			((Buffer) sampleBuffer).flip();
 			((Buffer) buffer).flip();

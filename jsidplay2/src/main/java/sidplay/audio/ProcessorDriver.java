@@ -1,4 +1,4 @@
-package sidplay.audio.processor;
+package sidplay.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,17 +9,15 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
-import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
-import sidplay.audio.VideoDriver;
+import sidplay.audio.processor.AudioProcessor;
 
-public class AudioProcessorDriver implements AudioDriver, VideoDriver {
+public class ProcessorDriver implements AudioDriver, VideoDriver {
 
 	private AudioDriver audioDriver;
 
 	private List<AudioProcessor> audioProcessors = new ArrayList<>();
 	
-	public AudioProcessorDriver(AudioDriver audioDriver) {
+	public ProcessorDriver(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 	}
 
@@ -28,18 +26,16 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
+	public void pause() {
+		audioDriver.pause();
+	}
+	
+	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
 		audioDriver.open(cfg, recordingFilename, cpuClock);
 		for (AudioProcessor audioProcessor : audioProcessors) {
 			audioProcessor.prepare(cfg);
-		}
-	}
-
-	@Override
-	public void accept(VIC vic) {
-		if (audioDriver instanceof VideoDriver) {
-			((VideoDriver) audioDriver).accept(vic);
 		}
 	}
 
@@ -52,15 +48,22 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
-	public ByteBuffer buffer() {
-		return audioDriver.buffer();
+	public void accept(VIC vic) {
+		if (audioDriver instanceof VideoDriver) {
+			((VideoDriver) audioDriver).accept(vic);
+		}
 	}
-
+	
 	@Override
 	public void close() {
 		audioDriver.close();
 	}
 
+	@Override
+	public ByteBuffer buffer() {
+		return audioDriver.buffer();
+	}
+	
 	@Override
 	public boolean isRecording() {
 		return audioDriver.isRecording();
@@ -69,11 +72,6 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	@Override
 	public String getExtension() {
 		return audioDriver.getExtension();
-	}
-
-	@Override
-	public void pause() {
-		audioDriver.pause();
 	}
 
 }
