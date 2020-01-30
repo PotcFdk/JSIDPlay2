@@ -12,20 +12,20 @@ import libsidplay.components.mos656x.VIC;
 import sidplay.audio.processor.AudioProcessor;
 
 /**
- * Processor driver to use several audio post processors short before sample
+ * AudioProcessor driver to use several audio post processors short before sample
  * data gets written. Audio post processors must implement
  * {@link AudioProcessor}.
  * 
  * @author Ken Händel
  * 
  */
-public class ProcessorDriver implements AudioDriver, VideoDriver {
+public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 
 	private AudioDriver audioDriver;
 
 	private List<AudioProcessor> audioProcessors = new ArrayList<>();
 
-	public ProcessorDriver(AudioDriver audioDriver) {
+	public AudioProcessorDriver(AudioDriver audioDriver) {
 		this.audioDriver = audioDriver;
 	}
 

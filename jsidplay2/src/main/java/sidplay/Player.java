@@ -70,7 +70,7 @@ import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.ProcessorDriver;
+import sidplay.audio.AudioProcessorDriver;
 import sidplay.audio.CmpMP3File.MP3Termination;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
@@ -700,13 +700,13 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * Add some audio post processing
 	 * 
 	 * @param audioDriver original audio driver to install
-	 * @return processor driver
+	 * @return audio processor driver
 	 */
-	private ProcessorDriver addProcessorDriver(final AudioDriver audioDriver) {
-		ProcessorDriver processorDriver = new ProcessorDriver(audioDriver);
-		processorDriver.getAudioProcessors().add(new DelayProcessor(config));
-		processorDriver.getAudioProcessors().add(new ReverbProcessor(config));
-		return processorDriver;
+	private AudioProcessorDriver addProcessorDriver(final AudioDriver audioDriver) {
+		AudioProcessorDriver audioProcessorDriver = new AudioProcessorDriver(audioDriver);
+		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor(config));
+		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor(config));
+		return audioProcessorDriver;
 	}
 
 	/**
