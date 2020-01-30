@@ -23,7 +23,6 @@ public class ReverbProcessor implements AudioProcessor {
 	public void prepare(AudioConfig cfg) {
 		sampleRate = cfg.getFrameRate();
 		numberOfChannels = cfg.getChannels();
-
 	}
 
 	@Override

@@ -102,8 +102,12 @@ public class CombFilter {
 				delayBuffer[writeIndex++] = sample;
 
 				// Update buffer indices
-				readIndex %= delayBufferSize;
-				writeIndex %= delayBufferSize;
+				if (readIndex == delayBufferSize) {
+					readIndex = 0;
+				}
+				if (writeIndex == delayBufferSize) {
+					writeIndex = 0;
+				}
 			}
 			return length;
 
@@ -129,8 +133,12 @@ public class CombFilter {
 				delayBuffer[writeIndex++] = delaySample;
 
 				// Update buffer indices
-				readIndex %= delayBufferSize;
-				writeIndex %= delayBufferSize;
+				if (readIndex == delayBufferSize) {
+					readIndex = 0;
+				}
+				if (writeIndex == delayBufferSize) {
+					writeIndex = 0;
+				}
 				sustainSampleCount--;
 			}
 			return samplesToMove;
