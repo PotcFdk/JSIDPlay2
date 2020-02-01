@@ -640,13 +640,13 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 			Audio audio = audioSection.getAudio();
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
-		// configure
+		// configure audio driver
 		getAudioDriver().configure(audioSection);
 
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
 
-		verifyConfiguration();
+		verifyConfiguration(sidplay2Section);
 
 		sidBuilder = createSIDBuilder(c64.getClock());
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
@@ -717,9 +717,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * 
 	 * @throws IOException configuration error
 	 */
-	private void verifyConfiguration() throws IOException {
-		final ISidPlay2Section sidplaySection = config.getSidplay2Section();
-
+	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
 		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
 			sidplaySection.setDefaultPlayLength(180);
@@ -1007,7 +1005,6 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 		// skip frame(s) on fast forward
 		int fastForwardBitMask = getMixerInfo(m -> m.getFastForwardBitMask(), 0);
 		if ((fastForwardVICFrames++ & fastForwardBitMask) == fastForwardBitMask) {
-			fastForwardVICFrames = 0;
 			Iterator<VideoDriver> iterator = videoDrivers.iterator();
 			while (iterator.hasNext()) {
 				iterator.next().accept(vic);
