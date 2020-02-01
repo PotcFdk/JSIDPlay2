@@ -42,6 +42,9 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void configure(IAudioSection audioSection) {
 		audioDriver.configure(audioSection);
+		for (AudioProcessor audioProcessor : audioProcessors) {
+			audioProcessor.configure(audioSection);
+		}
 	}
 
 	@Override

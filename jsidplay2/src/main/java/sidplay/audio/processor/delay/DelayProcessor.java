@@ -4,13 +4,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import libsidplay.config.IAudioSection;
-import libsidplay.config.IConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.processor.AudioProcessor;
 
 public class DelayProcessor implements AudioProcessor {
-
-	private IConfig config;
 
 	private int sampleRate, numberOfChannels;
 
@@ -19,8 +16,11 @@ public class DelayProcessor implements AudioProcessor {
 
 	private Integer delayInMs;
 
-	public DelayProcessor(IConfig config) {
-		this.config = config;
+	private IAudioSection audioSection;
+	
+	@Override
+	public void configure(IAudioSection audioSection) {
+		this.audioSection = audioSection;
 	}
 
 	@Override
@@ -31,9 +31,8 @@ public class DelayProcessor implements AudioProcessor {
 
 	@Override
 	public void process(ByteBuffer sampleBuffer) {
-		final IAudioSection audioSection = config.getAudioSection();
-		if (delayInMs == null || delayInMs != config.getAudioSection().getDelay()) {
-			delayInMs = config.getAudioSection().getDelay();
+		if (delayInMs == null || delayInMs != audioSection.getDelay()) {
+			delayInMs = audioSection.getDelay();
 
 			delayOffset = (delayInMs * sampleRate * numberOfChannels) / 1000;
 			delayBufferSize = (sampleBuffer.capacity() >> 1) + delayOffset;

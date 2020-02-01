@@ -4,19 +4,20 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import libsidplay.config.IAudioSection;
-import libsidplay.config.IConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.processor.AudioProcessor;
 
 public class ReverbProcessor implements AudioProcessor {
 
-	private IConfig config;
 	private int sampleRate;
 	private int numberOfChannels;
 	private SchroederReverb reverb;
 
-	public ReverbProcessor(IConfig config) {
-		this.config = config;
+	private IAudioSection audioSection;
+	
+	@Override
+	public void configure(IAudioSection audioSection) {
+		this.audioSection = audioSection;
 	}
 
 	@Override
@@ -27,7 +28,6 @@ public class ReverbProcessor implements AudioProcessor {
 
 	@Override
 	public void process(ByteBuffer sampleBuffer) {
-		IAudioSection audioSection = config.getAudioSection();
 		if (reverb == null) {
 			reverb = new SchroederReverb(sampleRate, numberOfChannels, sampleBuffer.capacity());
 		}

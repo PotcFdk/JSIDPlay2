@@ -640,9 +640,13 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 			Audio audio = audioSection.getAudio();
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
+		// configure
+		getAudioDriver().configure(audioSection);
 
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
+
+		verifyConfiguration();
 
 		sidBuilder = createSIDBuilder(c64.getClock());
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
@@ -692,9 +696,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * @throws IOException configuration error
 	 */
 	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
-		audioDriver.configure(config.getAudioSection());
 		this.audioAndDriver = new SimpleImmutableEntry<>(audio, installAudioProcessorDriver(audioDriver));
-		verifyConfiguration();
 	}
 
 	/**
@@ -705,8 +707,8 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 */
 	private AudioDriver installAudioProcessorDriver(final AudioDriver audioDriver) {
 		AudioProcessorDriver audioProcessorDriver = new AudioProcessorDriver(audioDriver);
-		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor(config));
-		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor(config));
+		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor());
+		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor());
 		return audioProcessorDriver;
 	}
 
