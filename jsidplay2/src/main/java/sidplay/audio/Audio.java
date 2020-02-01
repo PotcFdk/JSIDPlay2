@@ -59,11 +59,6 @@ public enum Audio {
 	 * <B>Note:</B> Audio drivers are instantiated at runtime on demand. We do not
 	 * want to load unused libraries like jump3r, if not required!<BR>
 	 * 
-	 * <B>Note2:</B> We try to reuse audio driver instances for the proxy driver's
-	 * sub-driver. The reason for this is, that it may have already been configured
-	 * by ConsolePlayer's command-line parameters (e.g. quality settings of
-	 * MP3Driver).
-	 * 
 	 * @return audio driver
 	 */
 	public final AudioDriver getAudioDriver() {
@@ -99,9 +94,6 @@ public enum Audio {
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
 			audioSection.setPlayOriginal(true);
 			audioDriver = COMPARE_MP3.getAudioDriver();
-		}
-		if (COMPARE_MP3.audioDriver == audioDriver) {
-			((CmpMP3File) audioDriver).setAudioSection(audioSection);
 		}
 		return audioDriver;
 	}

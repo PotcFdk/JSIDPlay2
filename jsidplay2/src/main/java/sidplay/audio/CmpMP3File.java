@@ -45,7 +45,8 @@ public class CmpMP3File extends JavaSound {
 
 	private IAudioSection audioSection;
 
-	void setAudioSection(final IAudioSection audioSection) {
+	@Override
+	public void configure(IAudioSection audioSection) {
 		this.audioSection = audioSection;
 	}
 

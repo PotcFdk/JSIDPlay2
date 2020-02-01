@@ -9,10 +9,8 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
-
 import libsidplay.common.CPUClock;
+import libsidplay.config.IAudioSection;
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
 import sidplay.audio.CmpMP3File.MP3Termination;
@@ -23,7 +21,6 @@ import sidplay.audio.CmpMP3File.MP3Termination;
  * @author Ken Händel
  * 
  */
-@Parameters(resourceBundle = "sidplay.audio.MP3Driver")
 public abstract class MP3Driver implements AudioDriver {
 
 	/**
@@ -80,22 +77,10 @@ public abstract class MP3Driver implements AudioDriver {
 
 	}
 
-	/**
-	 * MP3: Constant bit rate (-1=auto)
-	 */
-	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
-	protected int cbr = LameEncoder.DEFAULT_BITRATE;
-	/**
-	 * MP3: Variable bit rate quality (0=best, 5=medium, 9=worst)
-	 */
-	@Parameter(names = { "--vbrQuality" }, descriptionKey = "VBR_QUALITY")
-	protected int vbrQuality = LameEncoder.DEFAULT_QUALITY;
-	/**
-	 * Use variable bit rate mode? (or constant bit rate mode)
-	 */
-	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity = 1)
-	protected boolean vbr = LameEncoder.DEFAULT_VBR;
-
+	private  int cbr = LameEncoder.DEFAULT_BITRATE;
+	private  int vbrQuality = LameEncoder.DEFAULT_QUALITY;
+	private boolean vbr = LameEncoder.DEFAULT_VBR;
+	
 	/**
 	 * Jump3r encoder.
 	 */
@@ -109,6 +94,13 @@ public abstract class MP3Driver implements AudioDriver {
 	 */
 	protected ByteBuffer sampleBuffer;
 
+	@Override
+	public void configure(IAudioSection audioSection) {
+		cbr = audioSection.getCbr();
+		vbr = audioSection.isVbr();
+		vbrQuality = audioSection.getVbrQuality();
+	}
+	
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {
@@ -154,6 +146,6 @@ public abstract class MP3Driver implements AudioDriver {
 	public String getExtension() {
 		return ".mp3";
 	}
-	
+
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

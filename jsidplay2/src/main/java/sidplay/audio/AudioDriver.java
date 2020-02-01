@@ -21,8 +21,17 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.config.IAudioSection;
 
 public interface AudioDriver {
+
+	/**
+	 * Add additional configuration where appropriate.
+	 * 
+	 * @param audioSection audio configuration
+	 */
+	default void configure(IAudioSection audioSection) {
+	};
 
 	/**
 	 * Open audio interface.

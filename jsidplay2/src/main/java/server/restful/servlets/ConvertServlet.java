@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.JCommander.Builder;
 
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -100,7 +98,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				configure(args, config, Audio.MP3.getAudioDriver());
+				JCommander.newBuilder().addObject(config).programName(getClass().getName()).build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
@@ -112,7 +110,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				configure(args, config, Audio.AVI.getAudioDriver());
+				JCommander.newBuilder().addObject(config).programName(getClass().getName()).build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
@@ -137,12 +135,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				.map(name -> Arrays.asList("--" + name,
 						Arrays.asList(request.getParameterValues(name)).stream().findFirst().orElse("?")))
 				.flatMap(List::stream).toArray(String[]::new);
-	}
-
-	private void configure(String[] args, Object... configObjects) {
-		Builder jCommanderBuilder = JCommander.newBuilder().programName(getClass().getName());
-		Stream.of(configObjects).forEach(jCommanderBuilder::addObject);
-		jCommanderBuilder.build().parse(args);
 	}
 
 	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {

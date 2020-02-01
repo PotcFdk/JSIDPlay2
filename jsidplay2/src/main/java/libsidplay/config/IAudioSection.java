@@ -53,34 +53,6 @@ public interface IAudioSection {
 	void setSampling(SamplingMethod method);
 
 	/**
-	 * Do we play the recording?
-	 * 
-	 * @return play the recording
-	 */
-	boolean isPlayOriginal();
-
-	/**
-	 * Setter to play the recorded tune.
-	 * 
-	 * @param original Play recorded (original) or emulated tune
-	 */
-	void setPlayOriginal(boolean original);
-
-	/**
-	 * Getter of the recorded tune filename.
-	 * 
-	 * @return the recorded tune filename
-	 */
-	String getMp3File();
-
-	/**
-	 * Setter of the recorded tune filename.
-	 * 
-	 * @param recording the recorded tune filename
-	 */
-	void setMp3File(String recording);
-
-	/**
 	 * Getter of the main SID volume setting.
 	 * 
 	 * @return the main SID volume setting
@@ -233,6 +205,94 @@ public interface IAudioSection {
 	 * @param audioBufferSize audio buffer size
 	 */
 	void setAudioBufferSize(int audioBufferSize);
+
+	/**
+	 * Audio Driver: Compare with MP3 recording - do we play the recording?
+	 * 
+	 * @return play the recording
+	 */
+	boolean isPlayOriginal();
+
+	/**
+	 * Audio Driver: compare with MP3 recording - Setter to play the recorded tune.
+	 * 
+	 * @param original Play recorded (original) or emulated tune
+	 */
+	void setPlayOriginal(boolean original);
+
+	/**
+	 * Audio Driver: Compare with MP3 recording - Getter of the recorded tune
+	 * filename.
+	 * 
+	 * @return the recorded tune filename
+	 */
+	String getMp3File();
+
+	/**
+	 * Audio Driver: Compare with MP3 recording - Setter of the recorded tune
+	 * filename.
+	 * 
+	 * @param recording the recorded tune filename
+	 */
+	void setMp3File(String recording);
+
+	/**
+	 * Audio Driver: MP3 recording - Getter of the constant bit rate.
+	 * 
+	 * @return the constant bit rate
+	 */
+	int getCbr();
+
+	/**
+	 * Audio Driver: MP3 recording - Setter of the constant bit rate.
+	 * 
+	 * @param cbr constant bit rate
+	 */
+	void setCbr(int cbr);
+
+	/**
+	 * Audio Driver: MP3 recording - do we use variable bitrate instead of constant
+	 * bitrate?
+	 * 
+	 * @return use variable bitrate
+	 */
+	boolean isVbr();
+
+	/**
+	 * Audio Driver: MP3 recording - use variable bitrate instead of constant
+	 * bitrate.
+	 * 
+	 * @param vbr use variable bitrate
+	 */
+	void setVbr(boolean vbr);
+
+	/**
+	 * Audio Driver: MP3 recording - Getter of the variable bitrate quality.
+	 * 
+	 * @return variable bitrate quality
+	 */
+	int getVbrQuality();
+
+	/**
+	 * Audio Driver: MP3 recording - Setter of the variable bitrate quality.
+	 * 
+	 * @param vbr variable bitrate quality
+	 */
+	void setVbrQuality(int vbr);
+
+	/**
+	 * Audio Driver: AVI recording - Getter of the compression quality.
+	 * 
+	 * @return compression quality
+	 */
+	float getAviCompressionQuality();
+
+	/**
+	 * Audio Driver: AVI recording - Setter of the compression quality.
+	 * 
+	 * @param aviCompressionQuality compression quality
+	 */
+	void setAviCompressionQuality(float aviCompressionQuality);
 
 	/**
 	 * Getter of the delay bypass setting

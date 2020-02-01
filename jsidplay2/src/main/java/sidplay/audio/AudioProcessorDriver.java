@@ -9,11 +9,12 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.processor.AudioProcessor;
 
 /**
- * AudioProcessor driver to use several audio post processors short before sample
- * data gets written. Audio post processors must implement
+ * AudioProcessor driver to use several audio post processors short before
+ * sample data gets written. Audio post processors must implement
  * {@link AudioProcessor}.
  * 
  * @author Ken Händel
@@ -36,6 +37,11 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void pause() {
 		audioDriver.pause();
+	}
+
+	@Override
+	public void configure(IAudioSection audioSection) {
+		audioDriver.configure(audioSection);
 	}
 
 	@Override

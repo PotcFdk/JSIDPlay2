@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.sound.sampled.Mixer.Info;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.JCommander.Builder;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.sidtune.SidTune;
@@ -21,7 +20,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.debug.MOS6510Debug;
 import libsidutils.siddatabase.SidDatabase;
-import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
 import sidplay.consoleplayer.ConsoleIO;
 import sidplay.consoleplayer.VerboseValidator;
@@ -50,13 +48,12 @@ final public class ConsolePlayer {
 	@Parameter(description = "filename")
 	private List<String> filenames = new ArrayList<String>();
 
+	@ParametersDelegate
+	private IniConfig config = new IniConfig(true);
+
 	private ConsolePlayer(final String[] args) {
 		try {
-			final IniConfig config = new IniConfig(true);
-			Builder jCommanderBuilder = JCommander.newBuilder().programName(getClass().getName());
-			Stream.concat(Stream.of(this, config), Stream.of(Audio.values()).map(Audio::getAudioDriver))
-					.forEach(jCommanderBuilder::addObject);
-			JCommander commander = jCommanderBuilder.build();
+			JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
 			commander.parse(args);
 			Optional<String> filename = filenames.stream().findFirst();
 			if (help || !filename.isPresent()) {

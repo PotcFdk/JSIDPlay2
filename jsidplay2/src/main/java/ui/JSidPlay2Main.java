@@ -166,9 +166,10 @@ public class JSidPlay2Main extends Application {
 		try {
 			Parameters parameters = getParameters();
 			if (parameters != null) {
+				String[] args = parameters.getRaw().toArray(new String[0]);
 				JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName())
 						.build();
-				commander.parse(parameters.getRaw().toArray(new String[0]));
+				commander.parse(args);
 				if (help) {
 					commander.usage();
 					System.out.println("Press <enter> to exit!");

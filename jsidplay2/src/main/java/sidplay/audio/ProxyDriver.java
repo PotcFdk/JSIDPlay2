@@ -8,6 +8,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
+import libsidplay.config.IAudioSection;
 
 /**
  * Proxy driver to use two different sound or video drivers at the same time.
@@ -32,6 +33,12 @@ public class ProxyDriver implements AudioDriver, VideoDriver {
 		driverTwo = driver2;
 	}
 
+	@Override
+	public void configure(IAudioSection audioSection) {
+		driverOne.configure(audioSection);
+		driverTwo.configure(audioSection);
+	}
+	
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {

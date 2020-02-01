@@ -2,7 +2,9 @@ package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
@@ -29,6 +31,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -112,46 +116,6 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Parameter(names = { "--sampling" }, descriptionKey = "SAMPLING")
 	public final void setSampling(final SamplingMethod method) {
 		iniReader.setProperty("Audio", "Sampling", method);
-	}
-
-	/**
-	 * Do we play the recording?
-	 * 
-	 * @return play the recording
-	 */
-	@Override
-	public final boolean isPlayOriginal() {
-		return iniReader.getPropertyBool("Audio", "Play Original", DEFAULT_PLAY_ORIGINAL);
-	}
-
-	/**
-	 * Setter to play the recorded tune.
-	 * 
-	 * @param original Play recorded (original) or emulated tune
-	 */
-	@Override
-	public final void setPlayOriginal(final boolean original) {
-		iniReader.setProperty("Audio", "Play Original", original);
-	}
-
-	/**
-	 * Getter of the recorded tune filename.
-	 * 
-	 * @return the recorded tune filename
-	 */
-	@Override
-	public final String getMp3File() {
-		return iniReader.getPropertyString("Audio", "MP3File", DEFAULT_MP3_FILE);
-	}
-
-	/**
-	 * Setter of the recorded tune filename.
-	 * 
-	 * @param recording the recorded tune filename
-	 */
-	@Override
-	public final void setMp3File(final String recording) {
-		iniReader.setProperty("Audio", "MP3File", recording);
 	}
 
 	/**
@@ -306,12 +270,76 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	public int getCbr() {
+		return iniReader.getPropertyInt("Audio", "MP3 CBR", DEFAULT_CBR);
+	}
+
+	@Override
+	@Parameter(names = { "--cbr" }, descriptionKey = "CBR")
+	public void setCbr(int cbr) {
+		iniReader.setProperty("Audio", "MP3 CBR", cbr);
+	}
+
+	@Override
+	public boolean isVbr() {
+		return iniReader.getPropertyBool("Audio", "MP3 VBR", DEFAULT_VBR);
+	}
+
+	@Override
+	@Parameter(names = { "--vbr" }, descriptionKey = "VBR", arity = 1)
+	public void setVbr(boolean vbr) {
+		iniReader.setProperty("Audio", "MP3 VBR", vbr);
+	}
+
+	@Override
+	public int getVbrQuality() {
+		return iniReader.getPropertyInt("Audio", "MP3 VBR Quality", DEFAULT_VBR_QUALITY);
+	}
+
+	@Override
+	@Parameter(names = { "--vbrQuality" }, descriptionKey = "VBR_QUALITY")
+	public void setVbrQuality(int vbr) {
+		iniReader.setProperty("Audio", "MP3 VBR Quality", vbr);
+	}
+
+	@Override
+	public final boolean isPlayOriginal() {
+		return iniReader.getPropertyBool("Audio", "Play Original", DEFAULT_PLAY_ORIGINAL);
+	}
+
+	@Override
+	public final void setPlayOriginal(final boolean original) {
+		iniReader.setProperty("Audio", "Play Original", original);
+	}
+
+	@Override
+	public final String getMp3File() {
+		return iniReader.getPropertyString("Audio", "MP3 File", DEFAULT_MP3_FILE);
+	}
+
+	@Override
+	public final void setMp3File(final String recording) {
+		iniReader.setProperty("Audio", "MP3 File", recording);
+	}
+
+	@Override
+	public float getAviCompressionQuality() {
+		return iniReader.getPropertyFloat("Audio", "AVI Compression Quality", DEFAULT_AVI_COMPRESSION_QUALITY);
+	}
+
+	@Override
+	@Parameter(names = { "--aviVideoQuality" }, descriptionKey = "AVI_VIDEO_QUALITY")
+	public void setAviCompressionQuality(float aviCompressionQuality) {
+		iniReader.setProperty("Audio", "AVI Compression Quality", aviCompressionQuality);
+	}
+
+	@Override
 	public boolean getDelayBypass() {
 		return iniReader.getPropertyBool("Audio", "Delay Bypass", DEFAULT_DELAY_BYPASS);
 	}
 
 	@Override
-	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS", arity=1)
+	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS", arity = 1)
 	public void setDelayBypass(boolean delayBypass) {
 		iniReader.setProperty("Audio", "Delay Bypass", delayBypass);
 	}
@@ -366,7 +394,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS", arity=1)
+	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS", arity = 1)
 	public void setReverbBypass(boolean reverbBypass) {
 		iniReader.setProperty("Audio", "Reverb Bypass", reverbBypass);
 	}

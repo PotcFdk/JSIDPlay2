@@ -692,7 +692,8 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * @throws IOException configuration error
 	 */
 	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
-		this.audioAndDriver = new SimpleImmutableEntry<>(audio, addProcessorDriver(audioDriver));
+		audioDriver.configure(config.getAudioSection());
+		this.audioAndDriver = new SimpleImmutableEntry<>(audio, installAudioProcessorDriver(audioDriver));
 		verifyConfiguration();
 	}
 
@@ -702,7 +703,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 * @param audioDriver original audio driver to install
 	 * @return audio processor driver
 	 */
-	private AudioProcessorDriver addProcessorDriver(final AudioDriver audioDriver) {
+	private AudioDriver installAudioProcessorDriver(final AudioDriver audioDriver) {
 		AudioProcessorDriver audioProcessorDriver = new AudioProcessorDriver(audioDriver);
 		audioProcessorDriver.getAudioProcessors().add(new DelayProcessor(config));
 		audioProcessorDriver.getAudioProcessors().add(new ReverbProcessor(config));

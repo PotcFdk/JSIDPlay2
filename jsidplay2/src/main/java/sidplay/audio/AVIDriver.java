@@ -26,14 +26,13 @@ import org.monte.media.FormatKeys.MediaType;
 import org.monte.media.avi.AVIWriter;
 import org.monte.media.math.Rational;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
-
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
+import libsidplay.config.IAudioSection;
 
-@Parameters(resourceBundle = "sidplay.audio.AVIDriver")
 public class AVIDriver implements AudioDriver, VideoDriver {
+
+	private float aviVideoQuality = 0.97f;
 
 	private AVIWriter aviWriter;
 	private int videoTrack, audioTrack;
@@ -41,12 +40,11 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	private BufferedImage videoImage;
 	private ByteBuffer sampleBuffer;
 
-	/**
-	 * AVI: compression quality (1=best, 0.97=default, 0=worst)
-	 */
-	@Parameter(names = { "--aviVideoQuality" }, descriptionKey = "AVI_VIDEO_QUALITY")
-	private float aviVideoQuality = 0.97f;
-
+	@Override
+	public void configure(IAudioSection audioSection) {
+		aviVideoQuality = audioSection.getAviCompressionQuality();
+	}
+	
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException {

@@ -2,7 +2,9 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
+import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
@@ -30,6 +32,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
 
 import java.io.File;
 
@@ -126,39 +130,6 @@ public class AudioSection implements IAudioSection {
 
 	public ObjectProperty<SamplingMethod> samplingProperty() {
 		return sampling;
-	}
-
-	private BooleanProperty playOriginal = new SimpleBooleanProperty(DEFAULT_PLAY_ORIGINAL);
-
-	@Override
-	public boolean isPlayOriginal() {
-		return playOriginal.get();
-	}
-
-	@Override
-	public void setPlayOriginal(boolean original) {
-		this.playOriginal.set(original);
-	}
-
-	public BooleanProperty playOriginalProperty() {
-		return playOriginal;
-	}
-
-	private ObjectProperty<File> mp3File = new SimpleObjectProperty<File>();
-	private StringProperty mp3 = new SimpleStringProperty();
-
-	public ObjectProperty<File> mp3FileProperty() {
-		return mp3File;
-	}
-
-	@Override
-	public String getMp3File() {
-		return this.mp3.get();
-	}
-
-	@Override
-	public void setMp3File(String recording) {
-		this.mp3.set(recording);
 	}
 
 	private FloatProperty mainVolume = new SimpleFloatProperty(DEFAULT_MAIN_VOLUME);
@@ -337,18 +308,115 @@ public class AudioSection implements IAudioSection {
 		this.audioBufferSize.set(audioBufferSize);
 	}
 
+	private BooleanProperty playOriginal = new SimpleBooleanProperty(DEFAULT_PLAY_ORIGINAL);
+
+	@Override
+	public boolean isPlayOriginal() {
+		return playOriginal.get();
+	}
+
+	@Override
+	public void setPlayOriginal(boolean original) {
+		this.playOriginal.set(original);
+	}
+
+	public BooleanProperty playOriginalProperty() {
+		return playOriginal;
+	}
+
+	private ObjectProperty<File> mp3File = new SimpleObjectProperty<File>();
+	private StringProperty mp3 = new SimpleStringProperty();
+
+	public ObjectProperty<File> mp3FileProperty() {
+		return mp3File;
+	}
+
+	@Override
+	public String getMp3File() {
+		return this.mp3.get();
+	}
+
+	@Override
+	public void setMp3File(String recording) {
+		this.mp3.set(recording);
+	}
+
+	private ObjectProperty<Integer> cbrProperty = new SimpleObjectProperty<>(DEFAULT_CBR);
+
+	@Override
+	public int getCbr() {
+		return cbrProperty.get();
+	}
+
+	@Override
+	public void setCbr(int cbr) {
+		this.cbrProperty.set(cbr);
+	}
+
+	public ObjectProperty<Integer> cbrProperty() {
+		return cbrProperty;
+	}
+
+	private BooleanProperty vbrProperty = new SimpleBooleanProperty(DEFAULT_VBR);
+
+	@Override
+	public boolean isVbr() {
+		return vbrProperty.get();
+	}
+
+	@Override
+	public void setVbr(boolean vbr) {
+		vbrProperty.set(vbr);
+	}
+
+	public BooleanProperty vbrProperty() {
+		return vbrProperty;
+	}
+
+	private ObjectProperty<Integer> vbrQualityProperty = new SimpleObjectProperty<>(DEFAULT_VBR_QUALITY);
+
+	@Override
+	public int getVbrQuality() {
+		return vbrQualityProperty.get();
+	}
+
+	@Override
+	public void setVbrQuality(int vbrQuality) {
+		this.vbrQualityProperty.set(vbrQuality);
+	}
+
+	public ObjectProperty<Integer> vbrQualityProperty() {
+		return vbrQualityProperty;
+	}
+
+	private FloatProperty aviCompressionQualityProperty = new SimpleFloatProperty(DEFAULT_AVI_COMPRESSION_QUALITY);
+
+	@Override
+	public float getAviCompressionQuality() {
+		return aviCompressionQualityProperty.get();
+	}
+
+	@Override
+	public void setAviCompressionQuality(float aviCompressionQuality) {
+		aviCompressionQualityProperty.set(aviCompressionQuality);
+	}
+
+	public FloatProperty aviCompressionQualityProperty() {
+		return aviCompressionQualityProperty;
+	}
+
 	private BooleanProperty delayBypassProperty = new SimpleBooleanProperty(DEFAULT_DELAY_BYPASS);
 
 	@Override
 	public boolean getDelayBypass() {
 		return delayBypassProperty.get();
 	}
-	
+
 	@Override
 	public void setDelayBypass(boolean delayBypass) {
 		delayBypassProperty.set(delayBypass);
 	}
-	
+
 	public BooleanProperty delayBypassProperty() {
 		return delayBypassProperty;
 	}
@@ -364,7 +432,7 @@ public class AudioSection implements IAudioSection {
 	public void setDelay(int delay) {
 		delayProperty.set(delay);
 	}
-	
+
 	public IntegerProperty delayProperty() {
 		return delayProperty;
 	}
@@ -380,7 +448,7 @@ public class AudioSection implements IAudioSection {
 	public void setDelayDryLevel(int delayDryLevel) {
 		delayDryLevelProperty.set(delayDryLevel);
 	}
-	
+
 	public IntegerProperty delayDryLevelProperty() {
 		return delayDryLevelProperty;
 	}
@@ -396,7 +464,7 @@ public class AudioSection implements IAudioSection {
 	public void setDelayWetLevel(int delayWetLevel) {
 		delayWetLevelProperty.set(delayWetLevel);
 	}
-	
+
 	public IntegerProperty delayWetLevelProperty() {
 		return delayWetLevelProperty;
 	}
@@ -412,7 +480,7 @@ public class AudioSection implements IAudioSection {
 	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
 		delayFeedbackLevelProperty.set(delayFeedbackLevel);
 	}
-	
+
 	public IntegerProperty delayFeedbackLevelProperty() {
 		return delayFeedbackLevelProperty;
 	}
@@ -423,7 +491,7 @@ public class AudioSection implements IAudioSection {
 	public boolean getReverbBypass() {
 		return reverbBypassProperty.get();
 	}
-	
+
 	@Override
 	public void setReverbBypass(boolean reverbBypass) {
 		reverbBypassProperty.set(reverbBypass);
@@ -432,7 +500,7 @@ public class AudioSection implements IAudioSection {
 	public BooleanProperty reverbBypassProperty() {
 		return reverbBypassProperty;
 	}
-	
+
 	private FloatProperty reverbComb1DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB1_DELAY);
 
 	@Override
@@ -444,11 +512,11 @@ public class AudioSection implements IAudioSection {
 	public void setReverbComb1Delay(float reverbComb1Delay) {
 		reverbComb1DelayProperty.set(reverbComb1Delay);
 	}
-	
+
 	public FloatProperty reverbComb1DelayProperty() {
 		return reverbComb1DelayProperty;
 	}
-	
+
 	private FloatProperty reverbComb2DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB2_DELAY);
 
 	@Override
@@ -460,11 +528,11 @@ public class AudioSection implements IAudioSection {
 	public void setReverbComb2Delay(float reverbComb2Delay) {
 		reverbComb2DelayProperty.set(reverbComb2Delay);
 	}
-	
+
 	public FloatProperty reverbComb2DelayProperty() {
 		return reverbComb2DelayProperty;
 	}
-	
+
 	private FloatProperty reverbComb3DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB3_DELAY);
 
 	@Override
@@ -476,11 +544,11 @@ public class AudioSection implements IAudioSection {
 	public void setReverbComb3Delay(float reverbComb3Delay) {
 		reverbComb3DelayProperty.set(reverbComb3Delay);
 	}
-	
+
 	public FloatProperty reverbComb3DelayProperty() {
 		return reverbComb3DelayProperty;
 	}
-	
+
 	private FloatProperty reverbComb4DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB4_DELAY);
 
 	@Override
@@ -492,18 +560,18 @@ public class AudioSection implements IAudioSection {
 	public void setReverbComb4Delay(float reverbComb4Delay) {
 		reverbComb4DelayProperty.set(reverbComb4Delay);
 	}
-	
+
 	public FloatProperty reverbComb4DelayProperty() {
 		return reverbComb4DelayProperty;
 	}
-	
+
 	private FloatProperty reverbAllPass1DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_ALL_PASS1_DELAY);
 
 	@Override
 	public float getReverbAllPass1Delay() {
 		return reverbAllPass1DelayProperty.get();
 	}
-	
+
 	@Override
 	public void setReverbAllPass1Delay(float reverbAllPass1Delay) {
 		reverbAllPass1DelayProperty.set(reverbAllPass1Delay);
@@ -512,14 +580,14 @@ public class AudioSection implements IAudioSection {
 	public FloatProperty reverbAllPass1DelayProperty() {
 		return reverbAllPass1DelayProperty;
 	}
-	
+
 	private FloatProperty reverbAllPass2DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_ALL_PASS2_DELAY);
 
 	@Override
 	public float getReverbAllPass2Delay() {
 		return reverbAllPass2DelayProperty.get();
 	}
-	
+
 	@Override
 	public void setReverbAllPass2Delay(float reverbAllPass2Delay) {
 		reverbAllPass2DelayProperty.set(reverbAllPass2Delay);
@@ -528,30 +596,30 @@ public class AudioSection implements IAudioSection {
 	public FloatProperty reverbAllPass2DelayProperty() {
 		return reverbAllPass2DelayProperty;
 	}
-	
+
 	private FloatProperty reverbSustainDelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_SUSTAIN_DELAY);
 
 	@Override
 	public float getReverbSustainDelay() {
 		return reverbSustainDelayProperty.get();
 	}
-	
+
 	@Override
 	public void setReverbSustainDelay(float reverbSustainDelay) {
 		reverbSustainDelayProperty.set(reverbSustainDelay);
 	}
-	
+
 	public FloatProperty reverbSustainDelayProperty() {
 		return reverbSustainDelayProperty;
 	}
-	
+
 	private FloatProperty reverbDryWetMixProperty = new SimpleFloatProperty(DEFAULT_REVERB_DRY_WET_MIX);
 
 	@Override
 	public float getReverbDryWetMix() {
 		return reverbDryWetMixProperty.get();
 	}
-	
+
 	@Override
 	public void setReverbDryWetMix(float reverbDryWetMix) {
 		reverbDryWetMixProperty.set(reverbDryWetMix);
@@ -560,6 +628,5 @@ public class AudioSection implements IAudioSection {
 	public FloatProperty reverbDryWetMixProperty() {
 		return reverbDryWetMixProperty;
 	}
-	
 
 }

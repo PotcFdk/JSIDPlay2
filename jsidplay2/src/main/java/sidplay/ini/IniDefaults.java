@@ -84,8 +84,6 @@ public interface IniDefaults {
 	int DEFAULT_DEVICE = AUDIO_SECTION.getDevice();
 	SamplingRate DEFAULT_SAMPLING_RATE = AUDIO_SECTION.getSamplingRate();
 	SamplingMethod DEFAULT_SAMPLING = AUDIO_SECTION.getSampling();
-	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
-	String DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3File();
 	float DEFAULT_MAIN_VOLUME = AUDIO_SECTION.getMainVolume();
 	float DEFAULT_SECOND_VOLUME = AUDIO_SECTION.getSecondVolume();
 	float DEFAULT_THIRD_VOLUME = AUDIO_SECTION.getThirdVolume();
@@ -97,6 +95,14 @@ public interface IniDefaults {
 	int DEFAULT_THIRD_DELAY = AUDIO_SECTION.getThirdDelay();
 	int DEFAULT_BUFFER_SIZE = AUDIO_SECTION.getBufferSize();
 	int DEFAULT_AUDIO_BUFFER_SIZE = AUDIO_SECTION.getAudioBufferSize();
+	int DEFAULT_CBR = AUDIO_SECTION.getCbr();
+	boolean DEFAULT_VBR = AUDIO_SECTION.isVbr();
+	int DEFAULT_VBR_QUALITY = AUDIO_SECTION.getVbrQuality();
+	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
+	String DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3File();
+	float DEFAULT_AVI_COMPRESSION_QUALITY = AUDIO_SECTION.getAviCompressionQuality();
+	
+	
 	boolean DEFAULT_DELAY_BYPASS = AUDIO_SECTION.getDelayBypass();
 	int DEFAULT_DELAY = AUDIO_SECTION.getDelay();
 	int DEFAULT_DELAY_WET_LEVEL = AUDIO_SECTION.getDelayWetLevel();
