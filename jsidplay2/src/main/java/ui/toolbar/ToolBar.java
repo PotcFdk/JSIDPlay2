@@ -55,6 +55,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidutils.DesktopIntegration;
@@ -122,7 +123,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<ChipModel> sidBlaster0Box, sidBlaster1Box, sidBlaster2Box;
 	@FXML
-	private CheckBox enableSldb, singleSong, proxyEnable, enableUltimate64;
+	private ComboBox<Ultimate64Mode> ultimate64Box;
+	@FXML
+	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
 	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
 			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword,
@@ -145,6 +148,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	protected ProgressBar progress;
 
 	private ObservableList<ChipModel> sidBlaster0Models, sidBlaster1Models, sidBlaster2Models;
+
+	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
 	private boolean duringInitialization;
 
@@ -273,7 +278,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
 				new IntegerStringConverter());
 
-		enableUltimate64.selectedProperty().bindBidirectional(emulationSection.enableUltimate64Property());
+		ultimate64Modes = FXCollections.<Ultimate64Mode>observableArrayList(Ultimate64Mode.values());
+		ultimate64Box.setConverter(new EnumToStringConverter<Ultimate64Mode>(bundle));
+		ultimate64Box.valueProperty().bindBidirectional(emulationSection.ultimate64ModeProperty());
+		ultimate64Box.setItems(ultimate64Modes);
+		
 		ultimate64Hostname.textProperty().bindBidirectional(emulationSection.ultimate64HostProperty());
 		Bindings.bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
 				new IntegerStringConverter());
@@ -445,6 +454,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		restart();
 	}
 
+	@FXML
+	private void setUltimate64() {
+		restart();
+	}
+	
 	@FXML
 	private void setUltimate64Hostname() {
 		restart();

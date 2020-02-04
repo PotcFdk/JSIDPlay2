@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
 import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 
@@ -10,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.URLDecoder;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -46,9 +44,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
-
+		String filePath = request.getPathInfo();
 		try (InputStream source = getResourceAsStream(filePath)) {
 			response.setContentType(MimeType.getMimeType(PathUtils.getFilenameSuffix(filePath)).getContentType());
 			response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));

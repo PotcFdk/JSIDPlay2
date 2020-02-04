@@ -10,6 +10,7 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.SidReads;
 import libsidplay.common.StereoMode;
+import libsidplay.common.Ultimate64Mode;
 
 public interface IEmulationSection {
 
@@ -238,18 +239,18 @@ public interface IEmulationSection {
 	void setNetSIDDevPort(int port);
 
 	/**
-	 * Do we play a tune on Ultimate64?
+	 * Getter of the Ultimate64 mode.
 	 * 
-	 * @return play a tune on Ultimate64
+	 * @return Ultimate64 mode
 	 */
-	boolean isEnableUltimate64();
+	Ultimate64Mode getUltimate64Mode();
 
 	/**
-	 * Setter to play a tune on Ultimate64.
+	 * Setter of the Ultimate64 mode.
 	 * 
-	 * @param enableUltimate64 play a tune on Ultimate64
+	 * @param ultimate64 Ultimate64 mode
 	 */
-	void setEnableUltimate64(boolean enableUltimate64);
+	void setUltimate64Mode(Ultimate64Mode ultimate64Mode);
 
 	/**
 	 * Getter of the host name of a Ultimate64.

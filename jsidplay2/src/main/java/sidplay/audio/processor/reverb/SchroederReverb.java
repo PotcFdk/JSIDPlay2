@@ -100,25 +100,14 @@ public class SchroederReverb {
 			// Mix the dry input samples with the processed samples
 			for (int i = 0; i < length; i++) {
 				double s = (inBuf[i] * (1.0 - mix)) + (dBuffer[i] * mix);
-				if (s > 32767.0)
-					s = 32767.0;
-				else if (s < -32768.0)
-					s = -32768.0;
-
-				inBuf[i] = (short) s;
+				inBuf[i] = (short) Math.max(Math.min(s, Short.MAX_VALUE), Short.MIN_VALUE);
 			}
-
 		} else {
 
 			// Only wet samples are available
 			for (int i = 0; i < length; i++) {
 				double s = dBuffer[i] * mix;
-				if (s > 32767.0)
-					s = 32767.0;
-				else if (s < -32768.0)
-					s = -32768.0;
-
-				inBuf[i] = (short) s;
+				inBuf[i] = (short) Math.max(Math.min(s, Short.MAX_VALUE), Short.MIN_VALUE);
 			}
 		}
 		return length;

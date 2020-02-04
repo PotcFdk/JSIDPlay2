@@ -17,6 +17,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -90,14 +91,12 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private StreamingPlayer videoPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
 		private WritableImage image;
-		private PALEmulation palEmulation;
 		private boolean frameStart;
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
 			palEmulation = new PALEmulation(VICChipModel.MOS6569R3);
 			// TODO configurable?
-//			palEmulation.setPalEmulationEnable(true);
 //			palEmulation.setVicPaletteNoPal(new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
 //					0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777,
 //					0xffaaff66, 0xff0088ff, 0xffbbbbbb });
@@ -194,6 +193,11 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	@FXML
 	private ComboBox<Integer> audioBufferSize;
+	
+	@FXML
+	private CheckBox enablePalEmulation;
+
+	private PALEmulation palEmulation;
 
 	private ImageQueue imageQueue;
 
@@ -212,7 +216,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	protected void initialize() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
+		// TODO configure values
 		audioBufferSize.setValue(192);
+		enablePalEmulation.setSelected(true);
 
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
@@ -259,6 +265,11 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			audioPlayer.start();
 			audioStreaming.setSelected(true);
 		}
+	}
+	
+	@FXML
+	private void setEnablePalEmulation() {
+		palEmulation.setPalEmulationEnable(enablePalEmulation.isSelected());
 	}
 
 	/**

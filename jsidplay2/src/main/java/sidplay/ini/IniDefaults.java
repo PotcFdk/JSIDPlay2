@@ -6,6 +6,7 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
@@ -139,7 +140,7 @@ public interface IniDefaults {
 	ChipModel DEFAULT_SIDBLASTER_2 = EMULATOR_SECTION.getSidBlaster2Model();
 	String DEFAULT_NETSIDDEV_HOST = EMULATOR_SECTION.getNetSIDDevHost();
 	int DEFAULT_NETSIDDEV_PORT = EMULATOR_SECTION.getNetSIDDevPort();
-	boolean DEFAULT_ENABLE_ULTIMATE64 = EMULATOR_SECTION.isEnableUltimate64();
+	Ultimate64Mode DEFAULT_ULTIMATE64_MODE = EMULATOR_SECTION.getUltimate64Mode();
 	String DEFAULT_ULTIMATE64_HOST = EMULATOR_SECTION.getUltimate64Host();
 	int DEFAULT_ULTIMATE64_PORT = EMULATOR_SECTION.getUltimate64Port();
 	int DEFAULT_ULTIMATE64_SYNC_DELAY = EMULATOR_SECTION.getUltimate64SyncDelay();

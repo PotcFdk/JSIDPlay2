@@ -42,8 +42,7 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
+		String filePath = request.getPathInfo();
 		String filter = request.getParameter("filter");
 		if (filter != null) {
 			filter = URLDecoder.decode(filter, UTF_8.name());

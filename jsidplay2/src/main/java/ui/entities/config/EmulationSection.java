@@ -9,7 +9,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
 import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
-import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
 import static sidplay.ini.IniDefaults.DEFAULT_ENGINE;
 import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
@@ -87,6 +87,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
 import ui.common.FileToStringConverter;
@@ -454,21 +455,23 @@ public class EmulationSection implements IEmulationSection {
 		this.netSidDevPortProperty.set(port);
 	}
 
-	private BooleanProperty enableUltimate64Property = new SimpleBooleanProperty(DEFAULT_ENABLE_ULTIMATE64);
+	private ObjectProperty<Ultimate64Mode> ultimate64Mode = new SimpleObjectProperty<Ultimate64Mode>(DEFAULT_ULTIMATE64_MODE);
+
+	public ObjectProperty<Ultimate64Mode> ultimate64ModeProperty() {
+		return ultimate64Mode;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public Ultimate64Mode getUltimate64Mode() {
+		return ultimate64Mode.get();
+	}
 
 	@Override
-	public boolean isEnableUltimate64() {
-		return enableUltimate64Property.get();
+	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
+		this.ultimate64Mode.set(ultimate64Mode);
 	}
 
-	@Override
-	public void setEnableUltimate64(boolean isEnableUltimate64) {
-		enableUltimate64Property.set(isEnableUltimate64);
-	}
-
-	public BooleanProperty enableUltimate64Property() {
-		return enableUltimate64Property;
-	}
 
 	private StringProperty ultimate64HostProperty = new SimpleStringProperty(DEFAULT_ULTIMATE64_HOST);
 

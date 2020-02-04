@@ -145,7 +145,7 @@
 				</TitledPane>
 				<TitledPane text="%ULTIMATE64" expanded="false">
 					<VBox>
-						<CheckBox text="%ENABLE_ULTIMATE64" fx:id="enableUltimate64" />
+						<ComboBox fx:id="ultimate64Box" onAction="#setUltimate64" />
 						<Label text="%ULTIMATE64_HOSTNAME" />
 						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname"
 							prefWidth="80">

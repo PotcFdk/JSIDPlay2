@@ -415,12 +415,6 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			if (keyTableEntry != null) {
 				pressC64Key(keyTableEntry);
 				releaseC64Key(keyTableEntry);
-
-				if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
-					Platform.runLater(() -> {
-						util.getPlayer().sendCommand(util.getConfig(), String.valueOf(event.getText()));
-					});
-				}
 			}
 
 			if (event.isShiftDown()) {

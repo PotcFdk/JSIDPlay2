@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.ZipFileUtils.copy;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -86,8 +84,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
+		String filePath = request.getPathInfo();
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 		try {
 			if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")

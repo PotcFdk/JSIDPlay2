@@ -33,7 +33,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
-import static sidplay.ini.IniDefaults.DEFAULT_ENABLE_ULTIMATE64;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
@@ -70,6 +70,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
 
 /**
@@ -272,18 +273,17 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty("Emulation", "NetSIDDev Port", port);
 	}
 
-
 	@Override
-	public final boolean isEnableUltimate64() {
-		return iniReader.getPropertyBool("Emulation", "Enable Ultimate64", DEFAULT_ENABLE_ULTIMATE64);
+	public Ultimate64Mode getUltimate64Mode() {
+		return iniReader.getPropertyEnum("Emulation", "Ultimate64 Mode", DEFAULT_ULTIMATE64_MODE, Ultimate64Mode.class);
 	}
-
+	
 	@Override
-	@Parameter(names = { "--enableUltimate64" }, descriptionKey = "ENABLE_ULTIMATE64", arity = 1)
-	public final void setEnableUltimate64(final boolean enableUltimate64) {
-		iniReader.setProperty("Emulation", "Enable Ultimate64", enableUltimate64);
+	@Parameter(names = { "--ultimate64Mode" }, descriptionKey = "ULTIMATE64_MODE")
+	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
+		iniReader.setProperty("Emulation", "Ultimate64 Mode", ultimate64Mode);
 	}
-
+	
 	@Override
 	public String getUltimate64Host() {
 		return iniReader.getPropertyString("Emulation", "Ultimate64 Host", DEFAULT_ULTIMATE64_HOST);

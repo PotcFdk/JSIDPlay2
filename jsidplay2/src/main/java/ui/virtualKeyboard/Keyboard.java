@@ -3,7 +3,6 @@ package ui.virtualKeyboard;
 import java.util.HashSet;
 import java.util.Set;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseButton;
@@ -60,12 +59,6 @@ public class Keyboard extends C64Window {
 	private void keyReleased(MouseEvent mouseEvent) {
 		ToggleButton button = (ToggleButton) mouseEvent.getSource();
 		KeyTableEntry keyTableEntry = Enum.valueOf(KeyTableEntry.class, button.getUserData().toString());
-
-		if (util.getConfig().getEmulationSection().isEnableUltimate64()) {
-			Platform.runLater(() -> {
-				util.getPlayer().sendCommand(util.getConfig(), String.valueOf(button.getUserData().toString()));
-			});
-		}
 
 		if (!shiftLocked.equals(button) && mouseEvent.getButton() == MouseButton.PRIMARY) {
 			button.setSelected(false);

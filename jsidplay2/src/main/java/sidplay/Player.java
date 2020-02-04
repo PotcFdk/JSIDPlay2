@@ -54,6 +54,7 @@ import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
@@ -409,7 +410,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	protected final void reset() {
 		super.reset();
 		timer.reset();
-		if (config.getEmulationSection().isEnableUltimate64() && tune == RESET) {
+		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF && tune == RESET) {
 			sendReset(config, tune);
 		}
 		c64.getEventScheduler().schedule(new Event("Auto-start") {
@@ -419,23 +420,27 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 					// for tunes: Install player into RAM
 					Integer driverAddress = tune.placeProgramInMemory(c64.getRAM());
 					if (driverAddress != null) {
-						// Set play address to feedback call frames counter.
-						c64.setPlayAddr(tune.getInfo().getPlayAddr());
-						// Start SID player driver
-						c64.getCPU().forcedJump(driverAddress);
-						if (config.getEmulationSection().isEnableUltimate64()) {
+						if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 							sendRamAndSys(config, tune, c64.getRAM(), driverAddress);
+						}
+						if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
+							// Set play address to feedback call frames counter.
+							c64.setPlayAddr(tune.getInfo().getPlayAddr());
+							// Start SID player driver
+							c64.getCPU().forcedJump(driverAddress);
 						}
 					} else {
 						// No player: Start basic program or assembler code
 						final int loadAddr = tune.getInfo().getLoadAddr();
-						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
-						if (config.getEmulationSection().isEnableUltimate64()) {
+						if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 							if (loadAddr == 0x0801) {
 								sendRamAndRun(config, tune, c64.getRAM());
 							} else {
 								sendRamAndSys(config, tune, c64.getRAM(), loadAddr);
 							}
+						}
+						if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
+							command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
 						}
 					}
 				}
@@ -446,7 +451,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 					}
 					// Enter basic command
 					typeInCommand(command);
-					if (config.getEmulationSection().isEnableUltimate64() && tune == RESET) {
+					if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF && tune == RESET) {
 						sendWait(config, 300);
 						sendCommand(config, command);
 					}
@@ -910,7 +915,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	 */
 	public final void quit() {
 		executeInPlayerThread("Quit", () -> stateProperty.set(QUIT));
-		if (config.getEmulationSection().isEnableUltimate64()) {
+		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 			sendReset(config, tune);
 		}
 	}

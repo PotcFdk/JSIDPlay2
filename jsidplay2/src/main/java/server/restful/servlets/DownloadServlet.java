@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.ZipFileUtils.copy;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
@@ -13,7 +12,6 @@ import static server.restful.common.MimeType.getMimeType;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URLDecoder;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -46,9 +44,7 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
-
+		String filePath = request.getPathInfo();
 		try {
 			response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
 			response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());

@@ -15,6 +15,7 @@ import java.util.Locale;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
+import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.C1541Runner;
@@ -140,7 +141,6 @@ public class HardwareEnsemble implements Ultimate64 {
 			}
 		};
 
-		// TODO configure chip types (CIA, VIC)
 		this.c64 = new C64(cpuClass) {
 			@Override
 			public void printerUserportWriteData(final byte data) {
@@ -436,19 +436,21 @@ public class HardwareEnsemble implements Ultimate64 {
 	 * @throws IOException image read error
 	 */
 	public final void insertDisk(final File file) throws IOException, SidTuneError {
-		if (config.getEmulationSection().isEnableUltimate64()) {
+		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 			sendInsertDisk(config, file);
 		}
-		// automatically turn drive on
 		config.getSidplay2Section().setLastDirectory(file.getParent());
-		config.getC1541Section().setDriveOn(true);
-		enableFloppyDiskDrives(true);
-		// attach selected disk into the first disk drive
-		DiskImage disk = floppies[0].getDiskController().insertDisk(file);
-		if (policy != null) {
-			disk.setExtendImagePolicy(policy);
+		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
+			// automatically turn drive on
+			config.getC1541Section().setDriveOn(true);
+			enableFloppyDiskDrives(true);
+			// attach selected disk into the first disk drive
+			DiskImage disk = floppies[0].getDiskController().insertDisk(file);
+			if (policy != null) {
+				disk.setExtendImagePolicy(policy);
+			}
+			installHack(file);
 		}
-		installHack(file);
 	}
 
 	private void installHack(File file) {

@@ -119,8 +119,12 @@ public class AllpassNetwork {
 				delayBuffer[writeIndex++] = inSample;
 
 				// Update buffer indices
-				readIndex %= delayBufferSize;
-				writeIndex %= delayBufferSize;
+				if (readIndex == delayBufferSize) {
+					readIndex = 0;
+				}
+				if (writeIndex == delayBufferSize) {
+					writeIndex = 0;
+				}
 			}
 			return length;
 

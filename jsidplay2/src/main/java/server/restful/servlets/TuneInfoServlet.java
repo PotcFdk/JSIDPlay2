@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
@@ -9,7 +8,6 @@ import static server.restful.common.MimeType.MIME_TYPE_TEXT;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.DoubleSupplier;
@@ -52,9 +50,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String decodedPath = URLDecoder.decode(request.getRequestURI(), UTF_8.name());
-		String filePath = decodedPath.substring(decodedPath.indexOf(getServletPath()) + getServletPath().length());
-
+		String filePath = request.getPathInfo();
 		try {
 			response.setContentType(MIME_TYPE_JSON.getContentType());
 			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
