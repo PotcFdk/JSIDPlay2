@@ -248,7 +248,7 @@ public interface IEmulationSection {
 	/**
 	 * Setter of the Ultimate64 mode.
 	 * 
-	 * @param ultimate64 Ultimate64 mode
+	 * @param ultimate64Mode Ultimate64 mode
 	 */
 	void setUltimate64Mode(Ultimate64Mode ultimate64Mode);
 
