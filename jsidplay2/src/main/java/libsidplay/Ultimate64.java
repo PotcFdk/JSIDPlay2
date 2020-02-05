@@ -249,10 +249,10 @@ public interface Ultimate64 {
 	 * 239.0.2.77:64738 multicast address with port number specified
 	 * </pre>
 	 * 
-	 * @param config   configuration
-	 * @param command  streaming VIC/SID
-	 * @param target   network target to receive the stream
-	 * @param duration duration in ticks (one tick is 5ms, 0=forever)
+	 * @param emulationSection emulation configuration
+	 * @param command          streaming VIC/SID
+	 * @param target           network target to receive the stream
+	 * @param duration         duration in ticks (one tick is 5ms, 0=forever)
 	 */
 	default void startStreaming(IEmulationSection emulationSection, SocketStreamingCommand command, String target,
 			int duration) {
@@ -277,8 +277,8 @@ public interface Ultimate64 {
 	/**
 	 * Stop streaming.
 	 * 
-	 * @param config  configuration
-	 * @param command streaming VIC/SID
+	 * @param emulationSection emulation configuration
+	 * @param command          streaming VIC/SID
 	 */
 	default void stopStreaming(IEmulationSection emulationSection, SocketStreamingCommand command) {
 		String hostname = emulationSection.getUltimate64Host();
