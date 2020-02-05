@@ -200,7 +200,7 @@ public interface Ultimate64 {
 			byte[] ram = new byte[6];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_WAIT.value & 0xff);
 			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_WAIT.value >> 8) & 0xff);
-			// XXX ??? should be length and delay. TEST ME!
+			// XXX Should be length and delay (0x02 0x00 delayLow delayHigh?) TEST ME!
 			ram[2] = (byte) (delay & 0xff);
 			ram[3] = (byte) ((delay >> 8) & 0xff);
 			ram[4] = (byte) (delay & 0xff);
