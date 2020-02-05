@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.Locale;
 
 import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 
 /**
@@ -253,9 +254,10 @@ public interface Ultimate64 {
 	 * @param target   network target to receive the stream
 	 * @param duration duration in ticks (one tick is 5ms, 0=forever)
 	 */
-	default void startStreaming(IConfig config, SocketStreamingCommand command, String target, int duration) {
-		String hostname = config.getEmulationSection().getUltimate64Host();
-		int port = config.getEmulationSection().getUltimate64Port();
+	default void startStreaming(IEmulationSection emulationSection, SocketStreamingCommand command, String target,
+			int duration) {
+		String hostname = emulationSection.getUltimate64Host();
+		int port = emulationSection.getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[target.length() + 6];
@@ -278,9 +280,9 @@ public interface Ultimate64 {
 	 * @param config  configuration
 	 * @param command streaming VIC/SID
 	 */
-	default void stopStreaming(IConfig config, SocketStreamingCommand command) {
-		String hostname = config.getEmulationSection().getUltimate64Host();
-		int port = config.getEmulationSection().getUltimate64Port();
+	default void stopStreaming(IEmulationSection emulationSection, SocketStreamingCommand command) {
+		String hostname = emulationSection.getUltimate64Host();
+		int port = emulationSection.getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[4];

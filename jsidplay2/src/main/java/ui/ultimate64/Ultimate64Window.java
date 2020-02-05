@@ -28,6 +28,7 @@ import libsidplay.Ultimate64;
 import libsidplay.common.CPUClock;
 import libsidplay.common.VICChipModel;
 import libsidplay.components.mos656x.PALEmulation;
+import libsidplay.components.mos656x.Palette;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
@@ -35,6 +36,7 @@ import sidplay.audio.JavaSound;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.entities.config.EmulationSection;
+import ui.entities.config.SidPlay2Section;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private static final int FRAME_RATE = 48000;
@@ -54,8 +56,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, audioBufferSize.getValue()), null);
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
-			serverSocket.setSoTimeout(3000);
-			startStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
+			serverSocket.setSoTimeout(SOCKET_CONNECT_TIMEOUT);
+			startStreaming(emulationSection, SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
 					+ ":" + emulationSection.getUltimate64StreamingAudioPort(), 0);
 		}
 
@@ -66,11 +68,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 //			int sequenceNo = ((receivePacket.getData()[1] & 0xff) << 8) | (receivePacket.getData()[0] & 0xff);
-			byte[] audioData = new byte[768];
 			/* left ch, right ch (16 bits each) */
-			System.arraycopy(receivePacket.getData(), 2, audioData, 0, audioData.length);
-			for (byte b : audioData) {
-				if (!javaSound.buffer().put(b).hasRemaining()) {
+			for (int i = 2; i < receiveData.length - 2; i++) {
+				if (!javaSound.buffer().put(receivePacket.getData()[i]).hasRemaining()) {
 					javaSound.write();
 					javaSound.buffer().clear();
 				}
@@ -79,7 +79,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void close() {
-			stopStreaming(util.getConfig(), SOCKET_CMD_AUDIOSTREAM_OFF);
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+			stopStreaming(emulationSection, SOCKET_CMD_AUDIOSTREAM_OFF);
 			javaSound.close();
 			if (serverSocket != null) {
 				serverSocket.close();
@@ -95,28 +97,27 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
+			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
 			palEmulation = new PALEmulation(VICChipModel.MOS6569R3);
-			// TODO configurable?
-//			palEmulation.setVicPaletteNoPal(new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
-//					0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777,
-//					0xffaaff66, 0xff0088ff, 0xffbbbbbb });
-//			Palette palette = palEmulation.getPalette();
-//			palette.setBrightness(IniDefaults.DEFAULT_BRIGHTNESS);
-//			palette.setContrast(IniDefaults.DEFAULT_CONTRAST);
-//			palette.setGamma(IniDefaults.DEFAULT_GAMMA);
-//			palette.setSaturation(IniDefaults.DEFAULT_SATURATION);
-//			palette.setPhaseShift(IniDefaults.DEFAULT_PHASE_SHIFT);
-//			palette.setOffset(IniDefaults.DEFAULT_OFFSET);
-//			palette.setTint(IniDefaults.DEFAULT_TINT);
-//			palette.setLuminanceC(IniDefaults.DEFAULT_BLUR);
-//			palette.setDotCreep(IniDefaults.DEFAULT_BLEED);
+			palEmulation.setPalEmulationEnable(enablePalEmulation.isSelected());
+			Palette palette = palEmulation.getPalette();
+			palette.setBrightness(sidplay2Section.getBrightness());
+			palette.setContrast(sidplay2Section.getContrast());
+			palette.setGamma(sidplay2Section.getGamma());
+			palette.setSaturation(sidplay2Section.getSaturation());
+			palette.setPhaseShift(sidplay2Section.getPhaseShift());
+			palette.setOffset(sidplay2Section.getOffset());
+			palette.setTint(sidplay2Section.getTint());
+			palette.setLuminanceC(sidplay2Section.getBlur());
+			palette.setDotCreep(sidplay2Section.getBleed());
 			palEmulation.updatePalette();
 
-			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingVideoPort());
-			serverSocket.setSoTimeout(3000);
+			serverSocket.setSoTimeout(SOCKET_CONNECT_TIMEOUT);
 			image = new WritableImage(SCREEN_WIDTH, SCREEN_HEIGHT);
-			startStreaming(util.getConfig(), SOCKET_CMD_VICSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
+			startStreaming(emulationSection, SOCKET_CMD_VICSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
 					+ ":" + emulationSection.getUltimate64StreamingVideoPort(), 0);
 			frameStart = false;
 		}
@@ -175,8 +176,10 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void close() {
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
 			imageQueue.clear();
-			stopStreaming(util.getConfig(), SOCKET_CMD_VICSTREAM_OFF);
+			stopStreaming(emulationSection, SOCKET_CMD_VICSTREAM_OFF);
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
