@@ -439,9 +439,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 								sendRamAndSys(config, tune, c64.getRAM(), loadAddr);
 							}
 						}
-						if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
-							command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
-						}
+						command = loadAddr == 0x0801 ? RUN : String.format(SYS, loadAddr);
 					}
 				}
 				if (command != null) {
@@ -450,7 +448,9 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 						datasette.control(Control.START);
 					}
 					// Enter basic command
-					typeInCommand(command);
+					if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
+						typeInCommand(command);
+					}
 					if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF && tune == RESET) {
 						sendWait(config, 300);
 						sendCommand(config, command);
