@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -87,10 +88,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		String filePath = request.getPathInfo();
 		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 		try {
-			if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".sid")
-					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".dat")
-					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mus")
-					|| file.getName().toLowerCase(Locale.ENGLISH).endsWith(".str")) {
+			if (Stream.of(".sid", ".dat", ".mus", ".str")
+					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
+				
 				IConfig config = new IniConfig(false, null);
 
 				String[] args = getRequestParameters(request);
@@ -101,8 +101,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
 				convertAudio(config, file, driver);
-			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
-					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
+			} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+				
+				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
+				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
+				copy(file, response.getOutputStream());
+			} else if (cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
+					|| tapeFileFilter.accept(file)) {
+				
 				IConfig config = new IniConfig(false, null);
 
 				String[] args = getRequestParameters(request);
@@ -118,7 +124,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
-				copy(file, response.getOutputStream());
+				copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			}
 		} catch (Exception e) {
 			response.setContentType(MIME_TYPE_TEXT.getContentType());
