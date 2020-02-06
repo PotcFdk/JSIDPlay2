@@ -101,13 +101,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
 				convertAudio(config, file, driver);
-			} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
-				
-				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
-				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
-				copy(file, response.getOutputStream());
-			} else if (cartFileFilter.accept(file) || tuneFileFilter.accept(file) || diskFileFilter.accept(file)
-					|| tapeFileFilter.accept(file)) {
+			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
+					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 				
 				IConfig config = new IniConfig(false, null);
 
