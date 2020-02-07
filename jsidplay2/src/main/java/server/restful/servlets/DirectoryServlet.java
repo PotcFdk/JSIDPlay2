@@ -1,12 +1,10 @@
 package server.restful.servlets;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.MimeType.MIME_TYPE_JSON;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,9 +42,6 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
 		String filter = request.getParameter("filter");
-		if (filter != null) {
-			filter = URLDecoder.decode(filter, UTF_8.name());
-		}
 
 		List<String> files = util.getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
 
