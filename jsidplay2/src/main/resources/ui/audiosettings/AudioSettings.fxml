@@ -5,13 +5,15 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.layout.GridPane?>
 <?import ui.common.KnobSkin?>
+<?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource AudioSettings.properties?>
-<?import javafx.scene.control.Button?>
 
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
 
@@ -120,7 +122,34 @@
 					</HBox>
 				</GridPane>
 			</TitledPane>
-			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults"/>
+			<TitledPane text="%MP3_RECORDING">
+				<VBox>
+					<Label text="%CBR" fx:id="cbrLabel" />
+					<TypeTextField type="Integer" fx:id="cbr">
+						<tooltip>
+							<Tooltip text="%CBR_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<CheckBox text="%VBR" fx:id="vbr" />
+					<Label text="%VBR_QUALITY" fx:id="vbrQualityLabel" />
+					<TypeTextField type="Integer" fx:id="vbrQuality">
+						<tooltip>
+							<Tooltip text="%VBR_QUALITY_TIP" />
+						</tooltip>
+					</TypeTextField>
+				</VBox>
+			</TitledPane>
+			<TitledPane text="%AVI_RECORDING">
+				<VBox>
+					<Label text="%AVI_VIDEO_QUALITY" fx:id="aviVideoQualityLabel" />
+					<TypeTextField type="Float" fx:id="aviVideoQuality">
+						<tooltip>
+							<Tooltip text="%AVI_VIDEO_QUALITY_TIP" />
+						</tooltip>
+					</TypeTextField>
+				</VBox>
+			</TitledPane>
+			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults" />
 		</VBox>
 	</ScrollPane>
 </Scene>

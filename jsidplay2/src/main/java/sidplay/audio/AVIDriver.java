@@ -51,16 +51,16 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		System.out.println("Recording, file=" + recordingFilename);
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
-		videoTrack = aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, 1f,
-				MediaTypeKey, MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1),
-				WidthKey, VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
+		videoTrack = aviWriter.addTrack(
+				new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, aviVideoQuality, MediaTypeKey,
+						MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1), WidthKey,
+						VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
 
 		audioTrack = aviWriter.addTrack(new Format(SampleRateKey, new Rational(cfg.getFrameRate(), 1), ChannelsKey,
 				cfg.getChannels(), SampleSizeInBitsKey, Short.SIZE, EncodingKey, ENCODING_PCM_SIGNED));
 
 		videoImage = new BufferedImage(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		aviWriter.setPalette(videoTrack, videoImage.getColorModel());
-		aviWriter.setCompressionQuality(videoTrack, aviVideoQuality);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);

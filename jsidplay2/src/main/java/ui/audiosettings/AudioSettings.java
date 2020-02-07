@@ -1,5 +1,7 @@
 package ui.audiosettings;
 
+import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
@@ -14,11 +16,16 @@ import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB3_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_COMB4_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_DRY_WET_MIX;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_SUSTAIN_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR;
+import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.NumberStringConverter;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.NumberToStringConverter;
@@ -53,6 +60,15 @@ public class AudioSettings extends C64Window {
 	@FXML
 	private Label reverbSustainDelayValue, reverbDryWetMixValue;
 
+	@FXML
+	private Label cbrLabel, vbrQualityLabel, aviVideoQualityLabel;
+	
+	@FXML
+	private TextField cbr, vbrQuality, aviVideoQuality;
+	
+	@FXML
+	private CheckBox vbr;
+	
 	public AudioSettings() {
 		super();
 	}
@@ -127,6 +143,13 @@ public class AudioSettings extends C64Window {
 		reverbDryWetMix.valueProperty().bindBidirectional(audioSection.reverbDryWetMixProperty());
 		reverbDryWetMixValue.textProperty().bindBidirectional(audioSection.reverbDryWetMixProperty(),
 				new NumberToStringConverter<>(2));
+
+		cbr.textProperty().bindBidirectional(audioSection.cbrProperty(), new IntegerStringConverter());
+		vbr.selectedProperty().bindBidirectional(audioSection.vbrProperty());
+		vbrQuality.textProperty().bindBidirectional(audioSection.vbrQualityProperty(), new IntegerStringConverter());
+
+		aviVideoQuality.textProperty().bindBidirectional(audioSection.aviCompressionQualityProperty(),
+				new NumberStringConverter());
 	}
 
 	@FXML
@@ -148,6 +171,10 @@ public class AudioSettings extends C64Window {
 		audioSection.setReverbAllPass2Delay(DEFAULT_REVERB_ALL_PASS2_DELAY);
 		audioSection.setReverbSustainDelay(DEFAULT_REVERB_SUSTAIN_DELAY);
 		audioSection.setReverbDryWetMix(DEFAULT_REVERB_DRY_WET_MIX);
+		audioSection.setCbr(DEFAULT_CBR);
+		audioSection.setVbr(DEFAULT_VBR);
+		audioSection.setVbrQuality(DEFAULT_VBR_QUALITY);
+		audioSection.setAviCompressionQuality(DEFAULT_AVI_COMPRESSION_QUALITY);
 	}
 
 }
