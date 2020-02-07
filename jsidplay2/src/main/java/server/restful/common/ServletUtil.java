@@ -41,7 +41,7 @@ public class ServletUtil {
 	}
 
 	public List<String> getDirectory(String path, String filter, boolean adminRole) {
-		if (path.equals("/")) {
+		if (path == null || path.equals("/")) {
 			return getRoot(adminRole);
 		} else if (path.startsWith(C64_MUSIC)) {
 			String root = configuration.getSidplay2Section().getHvsc();

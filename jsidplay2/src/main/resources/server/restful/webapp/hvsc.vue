@@ -59,7 +59,7 @@
 				if (type == 'directory') {
 					axios({
 						method: 'get',
-						url: '/jsidplay2service/JSIDPlay2REST/' + type + encodeURI(entry).replace(/\+/g,'%2B')
+						url: '/jsidplay2service/JSIDPlay2REST/' + type + encodeURI(entry).replace(/\+/g,'%2B') + '?filter=.*%5C.(sid%7Cdat%7Cmus%7Cstr%7Cmp3%7Cmp4%7Cjpg%7Cprg%7Cd64)$'
 					}).then(response => {
 						this.directory= response.data;
 					})
