@@ -4,6 +4,8 @@ import static libsidplay.sidtune.SidTune.RESET;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
@@ -1124,7 +1126,18 @@ public class MenuBar extends C64VBox implements UIPart {
 			if (vicImage != null) {
 				File file = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 						"screenshot" + (++hardcopyCounter) + "." + format);
-				ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format, file);
+				// Workaround Java8 bug (Remove alpha-channel from jpg)
+				if (format.equals("jpg")) {
+					BufferedImage image = SwingFXUtils.fromFXImage(vicImage, null);
+					BufferedImage vicImageRGB = new BufferedImage(image.getWidth(), image.getHeight(),
+							BufferedImage.OPAQUE);
+					Graphics2D graphics = vicImageRGB.createGraphics();
+					graphics.drawImage(image, 0, 0, null);
+					ImageIO.write(vicImageRGB, format, file);
+					graphics.dispose();
+				} else {
+					ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format, file);
+				}
 				DesktopIntegration.open(file);
 			} else {
 				System.err.println("Screenshot not possible, there is currently no frame!");
