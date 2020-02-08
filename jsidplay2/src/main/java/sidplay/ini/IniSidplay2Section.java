@@ -60,7 +60,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1)
+	@Parameter(names = { "--enableSidDatabase", "-n" }, descriptionKey = "ENABLE_SID_DATABASE", arity = 1, order = 0)
 	public final void setEnableDatabase(final boolean enable) {
 		iniReader.setProperty("SIDPlay2", "EnableDatabase", enable);
 	}
@@ -71,7 +71,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class)
+	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class, order = 1)
 	public final void setStartTime(final double startTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (startTime * 1000)));
 		iniReader.setProperty("SIDPlay2", "Start Time", time);
@@ -84,7 +84,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	@Parameter(names = { "--defaultLength",
-			"-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class)
+			"-g" }, descriptionKey = "DEFAULT_LENGTH", converter = ParameterTimeConverter.class, order = 2)
 	public final void setDefaultPlayLength(final double playLength) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (playLength * 1000)));
 		iniReader.setProperty("SIDPlay2", "Default Play Length", time);
@@ -96,7 +96,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--fadeIn" }, descriptionKey = "FADE_IN", converter = ParameterTimeConverter.class)
+	@Parameter(names = { "--fadeIn" }, descriptionKey = "FADE_IN", converter = ParameterTimeConverter.class, order = 3)
 	public void setFadeInTime(double fadeInTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeInTime * 1000)));
 		iniReader.setProperty("SIDPlay2", "Fade In Time", time);
@@ -108,7 +108,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class)
+	@Parameter(names = { "--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class, order = 4)
 	public void setFadeOutTime(double fadeOutTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeOutTime * 1000)));
 		iniReader.setProperty("SIDPlay2", "Fade Out Time", time);
@@ -120,7 +120,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity = 1)
+	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity = 1, order = 5)
 	public void setLoop(boolean loop) {
 		iniReader.setProperty("SIDPlay2", "Loop", loop);
 	}
@@ -131,7 +131,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE", arity = 1)
+	@Parameter(names = { "--single", "-s" }, descriptionKey = "SINGLE", arity = 1, order = 6)
 	public final void setSingle(final boolean singleSong) {
 		iniReader.setProperty("SIDPlay2", "SingleTrack", singleSong);
 	}
@@ -173,7 +173,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1)
+	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1, order = 7)
 	public void setPalEmulation(boolean palEmulation) {
 		iniReader.setProperty("SIDPlay2", "PAL Emulation", palEmulation);
 	}

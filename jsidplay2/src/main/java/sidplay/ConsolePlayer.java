@@ -27,22 +27,22 @@ import sidplay.ini.IniConfig;
 
 @Parameters(resourceBundle = "sidplay.ConsolePlayer")
 final public class ConsolePlayer {
-	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
+	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true, order=10000)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG")
+	@Parameter(names = "--cpuDebug", hidden = true, descriptionKey = "DEBUG", order=10001)
 	private Boolean cpuDebug = Boolean.FALSE;
 
-	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME")
+	@Parameter(names = { "--recordingFilename", "-r" }, descriptionKey = "RECORDING_FILENAME", order=10002)
 	private String recordingFilename = "jsidplay2";
 
-	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG")
+	@Parameter(names = { "--startSong", "-o" }, descriptionKey = "START_SONG", order=10003)
 	private Integer song = null;
 
-	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class)
+	@Parameter(names = { "--verbose", "-v" }, descriptionKey = "VERBOSE", validateWith = VerboseValidator.class, order=10004)
 	private Integer verbose = 0;
 
-	@Parameter(names = { "--quiet", "-q" }, descriptionKey = "QUIET")
+	@Parameter(names = { "--quiet", "-q" }, descriptionKey = "QUIET", order=10005)
 	private Boolean quiet = Boolean.FALSE;
 
 	@Parameter(description = "filename")
