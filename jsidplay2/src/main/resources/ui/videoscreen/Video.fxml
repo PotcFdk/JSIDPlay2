@@ -24,8 +24,10 @@
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 
-<!-- <Scene xmlns:fx="http://javafx.com/fxml"  stylesheets="@../JSidPlay2.css" fx:controller="ui.videoscreen.Video"> -->
-<fx:root xmlns:fx="http://javafx.com/fxml" stylesheets="@../JSidPlay2.css" type="javafx.scene.layout.VBox">
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@../JSidPlay2.css" 
+	fx:controller="ui.videoscreen.Video"> -->
+<fx:root xmlns:fx="http://javafx.com/fxml" stylesheets="@../JSidPlay2.css"
+	type="javafx.scene.layout.VBox">
 	<AnchorPane>
 		<BorderPane AnchorPane.bottomAnchor="10"
 			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
@@ -166,7 +168,7 @@
 							<Label fx:id="scalingValue" text="1.00" />
 							<Slider fx:id="scaling" min="0" max="4" value="2.00"
 								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
-								majorTickUnit="0.1" showTickMarks="true">
+								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
 								</styleClass>
@@ -176,7 +178,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="brightnessValue" text="0.00" />
 							<Slider fx:id="brightness" min="-1" max="1" value="0.00"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -187,7 +189,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="contrastValue" text="1.00" />
 							<Slider fx:id="contrast" min="0" max="2" value="1.00"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -198,7 +200,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="gammaValue" text="2.00" />
 							<Slider fx:id="gamma" min="1.8" max="2.5" value="2.00"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -209,7 +211,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="saturationValue" text="0.50" />
 							<Slider fx:id="saturation" min="0" max="1" value="0.50"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -231,7 +233,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="offsetValue" text="0.9" />
 							<Slider fx:id="offset" min="0.1" max="2" value="0.9"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -242,7 +244,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="tintValue" text="0.00" />
 							<Slider fx:id="tint" min="-0.1" max="0.1" value="0.00"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -253,7 +255,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="blurValue" text="0.50" />
 							<Slider fx:id="blur" min="0.5" max="1.5" value="0.50"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -264,7 +266,7 @@
 						<VBox alignment="TOP_CENTER">
 							<Label fx:id="bleedValue" text="0.50" />
 							<Slider fx:id="bleed" min="0" max="1" value="0.50"
-								minorTickCount="1" snapToTicks="true" blockIncrement="0.01"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 								majorTickUnit="0.01" showTickMarks="true">
 								<styleClass>
 									<String fx:value="knobStyle" />
@@ -287,5 +289,5 @@
 			</bottom>
 		</BorderPane>
 	</AnchorPane>
-<!-- </Scene> -->
+	<!-- </Scene> -->
 </fx:root>

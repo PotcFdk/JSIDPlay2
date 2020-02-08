@@ -8,10 +8,12 @@ public class PALEmulation {
 	/** Alpha channel of ARGB pixel data. */
 	private static final int ALPHA = 0xff000000;
 
-	/** If PAL emulation is turned off: use this palette for VIC colors 0-15. */
-	private final int[] vicPaletteNoPal = new int[] { 0xff000000, 0xffffffff, 0xff880000, 0xffaaffee, 0xffcc44cc,
-			0xff00cc55, 0xff0000aa, 0xffeeee77, 0xffdd8855, 0xff664400, 0xffff7777, 0xff333333, 0xff777777, 0xffaaff66,
-			0xff0088ff, 0xffbbbbbb };
+	/**
+	 * If PAL emulation is turned off: use this palette for VIC colors 0-15.
+	 * https://www.pepto.de/projects/colorvic/2001/
+	 */
+	private final int[] vicPaletteNoPal = new int[] { 0x000000, 0xFFFFFF, 0x68372B, 0x70A4B2, 0x6F3D86, 0x588D43,
+			0x352879, 0xB8C76F, 0x6F4F25, 0x433900, 0x9A6759, 0x444444, 0x6C6C6C, 0x9AD284, 0x6C5EB5, 0x959595, };
 	/** Table for looking up color using a packed 2x8 value for even rasterlines */
 	private final int[] combinedLinesEven = new int[256 * 256];
 	/** Table for looking up color using a packed 2x8 value for odd rasterlines */
@@ -116,7 +118,7 @@ public class PALEmulation {
 				if (palEmulationEnable) {
 					rgbaColor = ALPHA | combinedLinesCurrent[lineColor & 0xff | previousLineColor << 8 & 0xff00];
 				} else {
-					rgbaColor = vicPaletteNoPal[vicColor & 0x0f];
+					rgbaColor = ALPHA | vicPaletteNoPal[vicColor & 0x0f];
 				}
 				pixelConsumer.accept(rgbaColor);
 				previousLineDecodedColor[previousLineIndex++] = lineColor;
