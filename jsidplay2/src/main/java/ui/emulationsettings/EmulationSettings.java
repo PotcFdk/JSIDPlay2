@@ -671,13 +671,20 @@ public class EmulationSettings extends C64Window {
 				for (int fc = 0; fc < FC_MAX; fc++) {
 					if (filterSection.isReSIDFilter6581() || filterSection.isReSIDFilter8580()) {
 						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filterSection, fc);
-						dataList.add(new XYChart.Data<>(fc, data));
+						if (data != 0) {
+							dataList.add(new XYChart.Data<>(fc, data));
+						}
 					} else if (filterSection.isReSIDfpFilter6581() || filterSection.isReSIDfpFilter8580()) {
 						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filterSection, fc);
-						dataList.add(new XYChart.Data<>(fc, data));
+						if (data != 0) {
+							dataList.add(new XYChart.Data<>(fc, data));
+						}
 					}
 				}
 			}
+		}
+		if (dataList.isEmpty()) {
+			dataList.add(new XYChart.Data<>(0, 0));
 		}
 		XYChart.Series<Number, Number> series = new XYChart.Series<>();
 		series.setData(FXCollections.observableArrayList(dataList));
