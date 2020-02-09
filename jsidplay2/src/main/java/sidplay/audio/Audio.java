@@ -89,13 +89,12 @@ public enum Audio {
 	 * @param tune         SID tune
 	 */
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {
-		AudioDriver audioDriver = getAudioDriver();
 		if (tune instanceof MP3Tune) {
 			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
 			audioSection.setPlayOriginal(true);
 			return COMPARE_MP3.getAudioDriver();
 		}
-		return audioDriver;
+		return getAudioDriver();
 	}
 
 }
