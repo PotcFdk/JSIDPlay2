@@ -668,17 +668,13 @@ public class EmulationSettings extends C64Window {
 			FilterSection filterSection = optFilter.get();
 			// stereo curve or 3-SID curve currently used?
 			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
-				for (int fc = 0; fc < FC_MAX; fc++) {
+				for (int fc = 1; fc < FC_MAX; fc++) {
 					if (filterSection.isReSIDFilter6581() || filterSection.isReSIDFilter8580()) {
 						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filterSection, fc);
-						if (data != 0) {
-							dataList.add(new XYChart.Data<>(fc, data));
-						}
+						dataList.add(new XYChart.Data<>(fc, data));
 					} else if (filterSection.isReSIDfpFilter6581() || filterSection.isReSIDfpFilter8580()) {
 						double data = builder.resid.residfp.FilterModelConfig.estimateFrequency(filterSection, fc);
-						if (data != 0) {
-							dataList.add(new XYChart.Data<>(fc, data));
-						}
+						dataList.add(new XYChart.Data<>(fc, data));
 					}
 				}
 			}
