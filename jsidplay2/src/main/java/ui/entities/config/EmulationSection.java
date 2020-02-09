@@ -1033,7 +1033,7 @@ public class EmulationSection implements IEmulationSection {
 
 	@Override
 	public void setMuteThirdSIDVoice4(boolean mute) {
-		muteStereoVoice4.set(mute);
+		muteThirdSIDVoice4.set(mute);
 	}
 
 	private StringProperty netSIDFilter6581 = new SimpleStringProperty(DEFAULT_NETSID_FILTER_6581);

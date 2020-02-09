@@ -8,6 +8,58 @@ import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.common.Engine.NETSID;
 import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.common.SIDChip.FC_MAX;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_3SID_MODEL;
+import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
+import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_THIRDSID_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
+import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_SECOND_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
+import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_STEREO_MODEL;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_BALANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
+import static sidplay.ini.IniDefaults.DEFAULT_USER_EMULATION;
+import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
+import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
+import static ui.entities.config.EmulationSection.DEFAULT_DETECT_PSID64_CHIP_MODEL;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -290,7 +342,7 @@ public class EmulationSettings extends C64Window {
 
 	private void enableStereoSettings(SidTune tune) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		
+
 		boolean hardwareBasedSid = emulationSection.getEngine() == HARDSID
 				|| emulationSection.getEngine() == SIDBLASTER;
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
@@ -451,6 +503,76 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private void setThirdFilter() {
 		drawFilterCurve(2, thirdFilter, thirdFilterCurve);
+	}
+
+	@FXML
+	private void restoreDefaults() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		AudioSection audioSection = util.getConfig().getAudioSection();
+
+		emulationSection.setMuteVoice1(DEFAULT_MUTE_VOICE1);
+		emulationSection.setMuteVoice2(DEFAULT_MUTE_VOICE2);
+		emulationSection.setMuteVoice3(DEFAULT_MUTE_VOICE3);
+		emulationSection.setMuteVoice4(DEFAULT_MUTE_VOICE4);
+		emulationSection.setMuteStereoVoice1(DEFAULT_MUTE_STEREO_VOICE1);
+		emulationSection.setMuteStereoVoice2(DEFAULT_MUTE_STEREO_VOICE2);
+		emulationSection.setMuteStereoVoice3(DEFAULT_MUTE_STEREO_VOICE3);
+		emulationSection.setMuteStereoVoice4(DEFAULT_MUTE_STEREO_VOICE4);
+		emulationSection.setMuteThirdSIDVoice1(DEFAULT_MUTE_THIRDSID_VOICE1);
+		emulationSection.setMuteThirdSIDVoice2(DEFAULT_MUTE_THIRDSID_VOICE2);
+		emulationSection.setMuteThirdSIDVoice3(DEFAULT_MUTE_THIRDSID_VOICE3);
+		emulationSection.setMuteThirdSIDVoice4(DEFAULT_MUTE_THIRDSID_VOICE4);
+
+		audioSection.setMainBalance(DEFAULT_MAIN_BALANCE);
+		audioSection.setSecondBalance(DEFAULT_SECOND_BALANCE);
+		audioSection.setThirdBalance(DEFAULT_THIRD_BALANCE);
+		audioSection.setMainDelay(DEFAULT_MAIN_DELAY);
+		audioSection.setSecondDelay(DEFAULT_SECOND_DELAY);
+		audioSection.setThirdDelay(DEFAULT_THIRD_DELAY);
+		audioSection.setMainVolume(DEFAULT_MAIN_VOLUME);
+		audioSection.setSecondVolume(DEFAULT_SECOND_VOLUME);
+		audioSection.setThirdVolume(DEFAULT_THIRD_VOLUME);
+
+		emulationSection.setForceStereoTune(DEFAULT_FORCE_STEREO_TUNE);
+		emulationSection.setForce3SIDTune(DEFAULT_FORCE_3SID_TUNE);
+		emulationSection.setDualSidBase(DEFAULT_DUAL_SID_BASE);
+		emulationSection.setThirdSIDBase(DEFAULT_THIRD_SID_BASE);
+		emulationSection.setSidNumToRead(DEFAULT_SID_NUM_TO_READ);
+
+		emulationSection.setDefaultSidModel(DEFAULT_SID_MODEL);
+		emulationSection.setDefaultEmulation(DEFAULT_EMULATION);
+
+		emulationSection.setDigiBoosted8580(DEFAULT_DIGI_BOOSTED_8580);
+		emulationSection.setFakeStereo(DEFAULT_FAKE_STEREO);
+		emulationSection.setDetectPSID64ChipModel(DEFAULT_DETECT_PSID64_CHIP_MODEL);
+
+		emulationSection.setUserEmulation(DEFAULT_USER_EMULATION);
+		emulationSection.setStereoEmulation(DEFAULT_STEREO_EMULATION);
+		emulationSection.setThirdEmulation(DEFAULT_3SID_EMULATION);
+
+		emulationSection.setUserSidModel(DEFAULT_USER_MODEL);
+		emulationSection.setStereoSidModel(DEFAULT_STEREO_MODEL);
+		emulationSection.setThirdSIDModel(DEFAULT_3SID_MODEL);
+
+		emulationSection.setFilter(DEFAULT_USE_FILTER);
+		emulationSection.setStereoFilter(DEFAULT_USE_STEREO_FILTER);
+		emulationSection.setThirdSIDFilter(DEFAULT_USE_3SID_FILTER);
+
+		emulationSection.setFilter6581(DEFAULT_FILTER_6581);
+		emulationSection.setFilter8580(DEFAULT_FILTER_8580);
+		emulationSection.setStereoFilter6581(DEFAULT_STEREO_FILTER_6581);
+		emulationSection.setStereoFilter8580(DEFAULT_STEREO_FILTER_8580);
+		emulationSection.setThirdSIDFilter6581(DEFAULT_3SID_FILTER_6581);
+		emulationSection.setThirdSIDFilter8580(DEFAULT_3SID_FILTER_8580);
+
+		emulationSection.setReSIDfpFilter6581(DEFAULT_ReSIDfp_FILTER_6581);
+		emulationSection.setReSIDfpFilter8580(DEFAULT_ReSIDfp_FILTER_8580);
+		emulationSection.setReSIDfpStereoFilter6581(DEFAULT_ReSIDfp_STEREO_FILTER_6581);
+		emulationSection.setReSIDfpStereoFilter8580(DEFAULT_ReSIDfp_STEREO_FILTER_8580);
+		emulationSection.setReSIDfpThirdSIDFilter6581(DEFAULT_ReSIDfp_3SID_FILTER_6581);
+		emulationSection.setReSIDfpThirdSIDFilter8580(DEFAULT_ReSIDfp_3SID_FILTER_8580);
+
+		updateSettingsForTune(util.getPlayer().getTune());
 	}
 
 	/**
