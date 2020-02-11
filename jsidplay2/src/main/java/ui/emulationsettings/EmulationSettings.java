@@ -234,21 +234,20 @@ public class EmulationSettings extends C64Window {
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
 		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(m -> m.setVolume(0, newValue.floatValue()));
-		});
+		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(m -> m.setVolume(0, newValue.floatValue())));
+
 		secondVolume.valueProperty().bindBidirectional(audioSection.secondVolumeProperty());
 		secondVolumeValue.textProperty().bindBidirectional(audioSection.secondVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(b -> b.setVolume(1, newValue.floatValue()));
-		});
+		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(b -> b.setVolume(1, newValue.floatValue())));
+		
 		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
 		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getPlayer().configureMixer(b -> b.setVolume(2, newValue.floatValue()));
-		});
+		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
+				.configureMixer(b -> b.setVolume(2, newValue.floatValue())));
 
 		stereoModes = FXCollections.<StereoMode>observableArrayList(StereoMode.values());
 		stereoMode.setConverter(new EnumToStringConverter<StereoMode>(bundle));
