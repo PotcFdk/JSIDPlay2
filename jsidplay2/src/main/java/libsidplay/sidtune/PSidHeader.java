@@ -26,6 +26,7 @@ public class PSidHeader {
 	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
 	public static final int SIZE = 124;
+	public static final int DATA_OFFSET_FIELD = 6;
 
 	public PSidHeader(final byte[] header) {
 		final ByteBuffer buffer = ByteBuffer.wrap(header);

@@ -65,8 +65,8 @@ class ClientContext {
 	private SIDChip[] sidRead;
 
 	/**
-	 * Allocate read buffer. Maximum command + maximum socket buffer size (assumed
-	 * to be per request 16K)
+	 * Allocate read buffer. Maximum command + maximum socket buffer size
+	 * (assumed to be per request 16K)
 	 */
 	private final ByteBuffer dataRead = ByteBuffer.allocateDirect(65536 + 4 + 16384);
 
@@ -96,8 +96,7 @@ class ClientContext {
 	private PSidHeader tuneHeader;
 
 	/**
-	 * Indicates if a new connection should be opened in case of connection settings
-	 * changes.
+	 * Indicates if a new connection should be opened in case of connection settings changes.
 	 */
 	private static boolean openNewConnection = true;
 
@@ -111,8 +110,8 @@ class ClientContext {
 		eventConsumerThread = new AudioGeneratorThread(config);
 		eventConsumerThread.start();
 		((Buffer) dataRead).limit(4);
-		
-		setDefaultSidConfiguration();		
+
+		setDefaultSidConfiguration();
 	}
 
 	private void setDefaultSidConfiguration() {
@@ -393,7 +392,7 @@ class ClientContext {
 				break;
 			}
 
-			int config = dataRead.get(4) & 0xff;
+			final int config = dataRead.get(4) & 0xff;
 
 			sidRead[sidNumber] = NetworkSIDDevice.getSidConfig(config);
 			eventConsumerThread.setSID(sidNumber, NetworkSIDDevice.getSidConfig(config));
@@ -406,7 +405,7 @@ class ClientContext {
 				throw new InvalidCommandException("SET_DELAY needs 1 byte", dataLength);
 			}
 
-			int delay = dataRead.get(4) & 0xff;
+			final int delay = dataRead.get(4) & 0xff;
 
 			eventConsumerThread.setDelay(sidNumber, delay);
 			dataWrite.put((byte) Response.OK.ordinal());
@@ -424,9 +423,10 @@ class ClientContext {
 				break;
 			}
 
-			float fadeIn = Float.intBitsToFloat(dataRead.getInt(4));
+			final long fadeInMillis = dataRead.getInt(4) & 0xffffffffl;
+			final float fadeInSec = fadeInMillis / 1000;
 
-			eventConsumerThread.setFadeIn(fadeIn);
+			eventConsumerThread.setFadeIn(fadeInSec);
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
@@ -442,23 +442,26 @@ class ClientContext {
 				break;
 			}
 
-			float fadeOut = Float.intBitsToFloat(dataRead.getInt(4));
+			final long fadeOutMillis = dataRead.getInt(4) & 0xffffffffl;
+			final float fadeOutSec = fadeOutMillis / 1000;
 
-			eventConsumerThread.setFadeOut(fadeOut);
+			eventConsumerThread.setFadeOut(fadeOutSec);
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
-		case SET_PSID_HEADER:
-			if (dataLength < PSidHeader.SIZE) {
-				throw new InvalidCommandException(
-						"SET_PSID_HEADER needs " + PSidHeader.SIZE + " bytes", dataLength);
-			}
+		case SET_SID_HEADER:
+			final int sidHeaderSize = getSidHeaderSize(dataLength);
 
-			byte[] tuneHeaderBytes = new byte[PSidHeader.SIZE];
-			for (int i = 0; i < PSidHeader.SIZE; i++) {
+			if (dataLength < PSidHeader.SIZE || dataLength != sidHeaderSize) {
+				throw new InvalidCommandException(
+						"SET_SID_HEADER needs " + Math.max(sidHeaderSize, PSidHeader.SIZE) + " bytes", dataLength);
+			}
+		
+			final byte[] tuneHeaderBytes = new byte[sidHeaderSize];
+			for (int i = 0; i < sidHeaderSize; i++) {
 				tuneHeaderBytes[i] = dataRead.get(4 + i);
 			}
-
+			
 			tuneHeader = new PSidHeader(tuneHeaderBytes);
 
 			dataWrite.put((byte) Response.OK.ordinal());
@@ -480,7 +483,15 @@ class ClientContext {
 		((Buffer) dataRead).limit(4);
 	}
 
-	private void handleDelayPacket(int sidNumber, int cycles) throws InvalidCommandException {
+	private int getSidHeaderSize(final int dataLength) {
+		if (dataLength >= PSidHeader.SIZE) {
+			return (dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD) << 8) + dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD + 1);
+		} else {
+			return dataLength;
+		}
+	}
+
+	private void handleDelayPacket(final int sidNumber, final int cycles) throws InvalidCommandException {
 		Queue<SIDWrite> q = eventConsumerThread.getSidCommandQueue();
 		inputClock += cycles;
 		q.add(SIDWrite.makePureDelay(sidNumber, cycles));
@@ -488,7 +499,7 @@ class ClientContext {
 		});
 	}
 
-	private void handleWritePacket(int dataLength) throws InvalidCommandException {
+	private void handleWritePacket(final int dataLength) throws InvalidCommandException {
 		Queue<SIDWrite> q = eventConsumerThread.getSidCommandQueue();
 		for (int i = 0; i < dataLength; i += 4) {
 			final int writeCycles = dataRead.getShort(4 + i) & 0xffff;
@@ -535,8 +546,7 @@ class ClientContext {
 	}
 
 	/**
-	 * changeDevice will change the device to the specified device for all connected
-	 * client contexts
+	 * changeDevice will change the device to the specified device for all connected client contexts
 	 * 
 	 * @param deviceInfo the device that should be used
 	 */
@@ -547,8 +557,7 @@ class ClientContext {
 	}
 
 	/**
-	 * setDigiBoost will change the digiboost setting for each 8580 device for all
-	 * connected client contexts
+	 * setDigiBoost will change the digiboost setting for each 8580 device for all connected client contexts
 	 * 
 	 * @param enabled specifies if the digiboost feature is turned on
 	 */
@@ -559,8 +568,7 @@ class ClientContext {
 	}
 
 	/**
-	 * setAudioBufferSize will change the size of the audio buffer for all
-	 * connected client contexts
+	 * setAudioBufferSize will change the size of the audio buffer for all connected client contexts
 	 * 
 	 * @param audioBufferSize specifies the size of the audio buffer (1024-16384 as a power of two)
 	 */
@@ -576,8 +584,8 @@ class ClientContext {
 	}
 
 	/**
-	 * applyConnectionConfigChanges will close all current connections and apply the
-	 * new configuration which is stored in the SIDDeviceSettings.
+	 * applyConnectionConfigChanges will close all current connections and apply the new configuration which
+	 * is stored in the SIDDeviceSettings.
 	 */
 	public static void applyConnectionConfigChanges() {
 		openNewConnection = true;
@@ -622,7 +630,7 @@ class ClientContext {
 							sc.configureBlocking(false);
 
 							sc.register(selector, SelectionKey.OP_READ);
-							IniJSIDDeviceAudioSection audio = config.audio();							
+							IniJSIDDeviceAudioSection audio = config.audio();
 							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2,
 									audio.getDevice(), audio.getAudioBufferSize());
 							ClientContext cc = new ClientContext(audioConfig, config.jsiddevice().getLatency());
