@@ -58,13 +58,13 @@ TRY_WRITE, TRY_READ and GET_VERSION. There are 8 SID devices where bit 0 sets
 6581/8580, bit 1 sets PAL/NTSC and bit 2 sets RESAMPLE/DECIMATE mode of operation.
 * Version 2
 ** contains commands TRY_SET_SAMPLING, TRY_SET_CLOCKING, GET_CONFIG_COUNT,
-GET_CONFIG_INFO, SET_SID_POSITION, SET_SID_LEVEL, TRY_SET_SID_MODEL, SET_DELAY.
+GET_CONFIG_INFO, SET_SID_POSITION, SET_SID_LEVEL, TRY_SET_SID_MODEL.
 There are multiple SID devices of type 6581 and 8580. The commands TRY_SET_SAMPLING
 and TRY_SET_CLOCKING can be used to set particular SID kind.
 * Version 3
 ** supports muting of voice number 4 (digi channel).
 * Version 4
-** contains commands SET_FADE_IN, SET_FADE_OUT and SET_SID_HEADER
+** contains commands SET_DELAY, SET_FADE_IN, SET_FADE_OUT and SET_SID_HEADER.
 
 ==== Command Overview
 
