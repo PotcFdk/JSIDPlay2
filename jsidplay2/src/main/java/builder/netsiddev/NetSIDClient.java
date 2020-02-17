@@ -139,7 +139,7 @@ public class NetSIDClient {
 
 	private SimpleImmutableEntry<ChipModel, String> sendReceiveConfig(NetSIDPkg cmd) {
 		addAndSend(cmd);
-		return new SimpleImmutableEntry<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, configName);
+		return new SimpleImmutableEntry<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, "Filter" + configName);
 	}
 
 	private byte sendReceive(NetSIDPkg cmd) {

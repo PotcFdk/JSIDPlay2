@@ -6,7 +6,7 @@ public class SetFadeIn implements NetSIDPkg {
 	private final int fadeIn;
 
 	public SetFadeIn(float fadeIn) {
-		this.fadeIn = Float.floatToIntBits(Float.valueOf(fadeIn));
+		this.fadeIn = (int) (fadeIn * 1000);
 	}
 
 	public byte[] toByteArray() {

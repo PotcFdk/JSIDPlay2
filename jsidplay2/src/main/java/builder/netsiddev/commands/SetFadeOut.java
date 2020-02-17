@@ -6,7 +6,7 @@ public class SetFadeOut implements NetSIDPkg {
 	private final int fadeOut;
 
 	public SetFadeOut(float fadeOut) {
-		this.fadeOut = Float.floatToIntBits(Float.valueOf(fadeOut));
+		this.fadeOut = (int) (fadeOut * 1000);
 	}
 
 	public byte[] toByteArray() {
