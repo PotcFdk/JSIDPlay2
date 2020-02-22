@@ -583,6 +583,11 @@ class ClientContext {
 				.collect(Collectors.toList());
 	}
 
+	
+	public static int getClientsConnectedCount() {
+		return clientContextMap.size();
+	}
+	
 	/**
 	 * applyConnectionConfigChanges will close all current connections and apply the new configuration which
 	 * is stored in the SIDDeviceSettings.

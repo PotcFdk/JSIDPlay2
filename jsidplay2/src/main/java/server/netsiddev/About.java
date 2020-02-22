@@ -49,14 +49,16 @@ public class About extends SIDDeviceStage {
 		setBackground(Color.WHITE);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		
-		initialize();
+		setCredits();
 	}
-
+	
 	private void okPressed(ActionEvent event) {
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
-	private void initialize() {
-		credits.setText(String.format(getBundle().getString("CREDITS"), LAST_MODIFIED.get(Calendar.YEAR)));
+	private void setCredits() {
+		final String javaVersion = System.getProperty("java.runtime.version");
+		final String creditsText = String.format(getBundle().getString("CREDITS"), LAST_MODIFIED.get(Calendar.YEAR), javaVersion);
+		credits.setText(creditsText);
 	}
 }

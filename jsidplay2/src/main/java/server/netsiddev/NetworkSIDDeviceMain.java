@@ -27,7 +27,7 @@ import javax.swing.Timer;
  */
 public class NetworkSIDDeviceMain {
 	private static final String TRAY_ICON = "jsidplay2.png";
-	private static final String TRAY_TOOLTIP = "SID Network Device";
+	private static final String TRAY_TOOLTIP = "SID Network Device\nClients connected: %d";
 	private static final String MENU_ABOUT = "About";
 	private static final String MENU_SETTINGS = "Settings...";
 	private static final String MENU_EXIT = "Exit";
@@ -75,7 +75,7 @@ public class NetworkSIDDeviceMain {
 		PopupMenu popup = new PopupMenu();
 		Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource(TRAY_ICON));
 
-		final TrayIcon trayIcon = new TrayIcon(image, TRAY_TOOLTIP, popup);
+		final TrayIcon trayIcon = new TrayIcon(image, getToolTip(), popup);
 		trayIcon.setImageAutoSize(true);
 
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
@@ -123,12 +123,20 @@ public class NetworkSIDDeviceMain {
 		}
 
 		new Timer(1000, event -> {
-			String toolTip = ClientContext.getTuneHeaders().stream().filter(Objects::nonNull)
-					.map(header -> Arrays.asList(header.getName(), header.getAuthor(), header.getReleased()).stream()
-							.collect(Collectors.joining(", ")))
-					.collect(Collectors.joining("\n"));
-			trayIcon.setToolTip(toolTip.isEmpty() ? null : toolTip);
+			trayIcon.setToolTip(getToolTip());
 		}).start();
 	}
 
+	private String getToolTip() {
+		String toolTipText = "";
+		final int clientsConnected = ClientContext.getClientsConnectedCount();
+		
+		if (clientsConnected > 0) {
+			toolTipText = ClientContext.getTuneHeaders().stream().filter(Objects::nonNull)
+					.map(header -> Arrays.asList(header.getName(), header.getAuthor(), header.getReleased()).stream()
+							.collect(Collectors.joining(", ")))
+					.collect(Collectors.joining("\n"));
+		}
+		return toolTipText.isEmpty() ? String.format(TRAY_TOOLTIP, clientsConnected) : toolTipText;
+	}
 }
