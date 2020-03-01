@@ -198,14 +198,13 @@ public interface Ultimate64 {
 		int port = config.getEmulationSection().getUltimate64Port();
 		try (Socket connectedSocket = new Socket()) {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
-			byte[] ram = new byte[4/*6*/];
+			byte[] ram = new byte[6];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_WAIT.value & 0xff);
 			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_WAIT.value >> 8) & 0xff);
-			// XXX Should be length as delay (delayLow delayHigh?) TEST ME!
 			ram[2] = (byte) (delay & 0xff);
 			ram[3] = (byte) ((delay >> 8) & 0xff);
-//			ram[4] = (byte) (delay & 0xff);
-//			ram[5] = (byte) ((delay >> 8) & 0xff);
+			ram[4] = (byte) (delay & 0xff);
+			ram[5] = (byte) ((delay >> 8) & 0xff);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
 			System.err.println("Ultimate64: cannot send WAIT: " + e.getMessage());
