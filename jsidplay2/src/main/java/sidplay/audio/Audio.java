@@ -37,7 +37,9 @@ public enum Audio {
 	/** MP4 file write. */
 	LIVE_MP4(ProxyDriver.class, JavaSound.class, MP4Driver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CmpMP3File.class);
+	COMPARE_MP3(CmpMP3File.class),
+	WHATS_SID(WhatsSidDriver.class),
+	WHATS_SID_MATCHER(WhatsSidMatcherDriver.class);
 
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver;
