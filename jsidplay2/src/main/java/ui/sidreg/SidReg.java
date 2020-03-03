@@ -204,7 +204,7 @@ public class SidReg extends C64VBox implements UIPart {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".csv");
 			try (PrintStream ps = new PrintStream(target)) {
-				ps.printf("\"Absolute Cycles\", \"Relative Cycles\", \"Address\", \"Description\"\n");
+				ps.printf("\"Absolute Cycles\", \"Relative Cycles\", \"Address\", \"Value\", \"Description\"\n");
 				for (SidRegWrite sidRegWrite : filteredSidRegWrites) {
 					ps.printf("\"%d\", \"%d\", \"$%04X\", \"$%02X\", \"%s\"\n", sidRegWrite.getAbsCycles(),
 							sidRegWrite.getRelCycles(), sidRegWrite.getAddress(), sidRegWrite.getValue(),
