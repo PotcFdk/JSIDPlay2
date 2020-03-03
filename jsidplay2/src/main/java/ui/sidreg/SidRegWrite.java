@@ -12,12 +12,12 @@ public class SidRegWrite {
 	private LongProperty relCycles = new SimpleLongProperty();;
 	private IntegerProperty address = new SimpleIntegerProperty();
 	private StringProperty description = new SimpleStringProperty();
-	private StringProperty value = new SimpleStringProperty();
+	private IntegerProperty value = new SimpleIntegerProperty();
 
 	public SidRegWrite() {
 	}
 
-	public SidRegWrite(Long absCycles, Long relCycles, Integer addr, String description, String value) {
+	public SidRegWrite(Long absCycles, Long relCycles, Integer addr, String description, Integer value) {
 		setAbsCycles(absCycles);
 		setRelCycles(relCycles);
 		setAddress(addr);
@@ -49,6 +49,10 @@ public class SidRegWrite {
 		address.set(value);
 	}
 
+	public String getHexAddress() {
+		return String.format("$%04X", address.get());
+	}
+
 	public String getDescription() {
 		return description.get();
 	}
@@ -57,12 +61,15 @@ public class SidRegWrite {
 		description.set(value);
 	}
 
-	public String getValue() {
+	public Integer getValue() {
 		return value.get();
 	}
 
-	public void setValue(String value) {
+	public void setValue(Integer value) {
 		this.value.set(value);
 	}
 
+	public String getHexValue() {
+		return String.format("$%02X", value.get());
+	}
 }

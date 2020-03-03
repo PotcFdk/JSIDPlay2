@@ -22,13 +22,13 @@ public abstract class SidRegExtension implements SIDListener {
 
 	@Override
 	public void write(final long time, final int addr, final byte data) {
-		
+
 		if (fTime == 0) {
 			fTime = time;
 		}
 		final long relTime = time - fTime;
-		final SidRegWrite row = new SidRegWrite(time, relTime, addr, bundle.getString(description[addr & 0xf]),
-				String.format("$%02X", data & 0xff));
+		final SidRegWrite row = new SidRegWrite(time, relTime, addr, bundle.getString(description[addr & 0x1f]),
+				data & 0xff);
 
 		sidWrite(row);
 

@@ -30,6 +30,11 @@
 					<Tooltip text="%START_STOP_RECORDING_TIP" />
 				</tooltip>
 			</ToggleButton>
+			<CheckBox text="%START_STOP_PLAYER" fx:id="startStopPlayer">
+				<tooltip>
+					<Tooltip text="%START_STOP_PLAYER_TIP" />
+				</tooltip>
+			</CheckBox>
 			<GridPane vgap="5" hgap="5">
 				<CheckBox text="%FREQ_1" selected="true" fx:id="freq1"
 					onAction="#doUpdateFilter" GridPane.rowIndex="0"
@@ -115,6 +120,16 @@
 						</ImageView>
 					</graphic>
 				</Button>
+				<Button text="%SAVE_REGS" fx:id="saveRegs" onAction="#doSaveRegs"
+					GridPane.rowIndex="4" GridPane.columnIndex="2">
+					<graphic>
+						<ImageView>
+							<image>
+								<Image url="@/ui/icons/sidreg_save.png" />
+							</image>
+						</ImageView>
+					</graphic>
+				</Button>
 			</GridPane>
 			<TableView fx:id="regTable">
 				<columns>
@@ -128,19 +143,19 @@
 							<PropertyValueFactory property="relCycles" />
 						</cellValueFactory>
 					</TableColumn>
-					<TableColumn text="%COL_ADDR" prefWidth="50">
+					<TableColumn text="%COL_ADDR" prefWidth="100">
 						<cellValueFactory>
-							<PropertyValueFactory property="address" />
+							<PropertyValueFactory property="hexAddress" />
+						</cellValueFactory>
+					</TableColumn>
+					<TableColumn text="%COL_VALUE">
+						<cellValueFactory>
+							<PropertyValueFactory property="hexValue" />
 						</cellValueFactory>
 					</TableColumn>
 					<TableColumn text="%COL_DESCRIPTION" prefWidth="300">
 						<cellValueFactory>
 							<PropertyValueFactory property="description" />
-						</cellValueFactory>
-					</TableColumn>
-					<TableColumn text="%COL_VALUE">
-						<cellValueFactory>
-							<PropertyValueFactory property="value" />
 						</cellValueFactory>
 					</TableColumn>
 				</columns>
