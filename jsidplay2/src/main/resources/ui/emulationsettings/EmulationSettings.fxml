@@ -19,6 +19,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import ui.common.KnobSkin?>
@@ -167,6 +169,15 @@
 										maxWidth="150" />
 									<Label text="%MAIN_MODEL" />
 									<ComboBox fx:id="sid1Model" onAction="#setSid1Model" />
+									<Button text="%COPY" fx:id="copy" onAction="#doCopy">
+										<graphic>
+											<ImageView>
+												<image>
+													<Image url="@/ui/icons/copy.png" />
+												</image>
+											</ImageView>
+										</graphic>
+									</Button>
 								</HBox>
 								<HBox>
 									<Label text="%FILTER_DEFINITION" />

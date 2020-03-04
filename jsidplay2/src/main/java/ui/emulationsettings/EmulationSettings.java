@@ -77,6 +77,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -136,6 +137,9 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private LineChart<Number, Number> mainFilterCurve, secondFilterCurve, thirdFilterCurve;
 
+	@FXML
+	private Button copy;
+	
 	private ObservableList<Emulation> sid1Emulations, sid2Emulations, sid3Emulations, defaultEmulations;
 	private ObservableList<ChipModel> sid1Models, sid2Models, sid3Models, defaultModels;
 	private ObservableList<String> mainFilters, secondFilters, thirdFilters;
@@ -359,6 +363,7 @@ public class EmulationSettings extends C64Window {
 		muteVoice2.setDisable(hardwareBasedSid);
 		muteVoice3.setDisable(hardwareBasedSid);
 		muteVoice4.setDisable(hardwareBasedSid);
+		copy.setDisable(hardwareBasedSid);
 		// stereo, only:
 		mainBalance.setDisable(!second || hardwareBasedSid);
 		mainDelay.setDisable(!second);
@@ -574,6 +579,38 @@ public class EmulationSettings extends C64Window {
 		updateSettingsForTune(util.getPlayer().getTune());
 	}
 
+	@FXML
+	private void doCopy() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		emulationSection.setStereoEmulation(emulationSection.getUserEmulation());
+		emulationSection.setThirdEmulation(emulationSection.getUserEmulation());
+		
+		emulationSection.setStereoSidModel(emulationSection.getUserSidModel());
+		emulationSection.setThirdSIDModel(emulationSection.getUserSidModel());
+		
+		emulationSection.setStereoFilter(emulationSection.isFilter());
+		emulationSection.setThirdSIDFilter(emulationSection.isFilter());
+
+		emulationSection.setStereoFilter6581(emulationSection.getFilter6581());
+		emulationSection.setThirdSIDFilter6581(emulationSection.getFilter6581());
+		emulationSection.setStereoFilter8580(emulationSection.getFilter8580());
+		emulationSection.setThirdSIDFilter8580(emulationSection.getFilter8580());
+		
+		emulationSection.setReSIDfpStereoFilter6581(emulationSection.getReSIDfpFilter6581());
+		emulationSection.setReSIDfpThirdSIDFilter6581(emulationSection.getReSIDfpFilter6581());		
+		emulationSection.setReSIDfpStereoFilter8580(emulationSection.getReSIDfpFilter8580());
+		emulationSection.setReSIDfpThirdSIDFilter8580(emulationSection.getReSIDfpFilter8580());
+
+		emulationSection.setNetSIDStereoFilter6581(emulationSection.getNetSIDFilter6581());
+		emulationSection.setNetSIDThirdSIDFilter6581(emulationSection.getNetSIDFilter6581());
+		emulationSection.setNetSIDStereoFilter8580(emulationSection.getNetSIDFilter8580());
+		emulationSection.setNetSIDThirdSIDFilter8580(emulationSection.getNetSIDFilter8580());
+
+		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
+		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+	}
+	
 	/**
 	 * Update SID configuration on-the-fly.
 	 */
