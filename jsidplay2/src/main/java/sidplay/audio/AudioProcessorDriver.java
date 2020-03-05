@@ -8,6 +8,7 @@ import java.util.List;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.SIDListener;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.processor.AudioProcessor;
@@ -20,7 +21,7 @@ import sidplay.audio.processor.AudioProcessor;
  * @author Ken Händel
  * 
  */
-public class AudioProcessorDriver implements AudioDriver, VideoDriver {
+public class AudioProcessorDriver implements AudioDriver, VideoDriver, SIDListener {
 
 	private AudioDriver audioDriver;
 
@@ -68,6 +69,13 @@ public class AudioProcessorDriver implements AudioDriver, VideoDriver {
 	public void accept(VIC vic) {
 		if (audioDriver instanceof VideoDriver) {
 			((VideoDriver) audioDriver).accept(vic);
+		}
+	}
+
+	@Override
+	public void write(long time, int addr, byte data) {
+		if (audioDriver instanceof SIDListener) {
+			((SIDListener) audioDriver).write(time, addr, data);
 		}
 	}
 

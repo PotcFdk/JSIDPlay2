@@ -20,6 +20,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
 import libsidutils.PathUtils;
 import sidplay.Player;
+import sidplay.audio.SidRegDriver;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -27,6 +28,25 @@ import ui.common.UIPart;
 
 public class SidReg extends C64VBox implements UIPart {
 	public static final String ID = "SIDREGISTERS";
+
+	final SidRegExtension sidRegExtension = new SidRegExtension() {
+
+		@Override
+		public void sidWrite(final SidRegWrite output) {
+			Platform.runLater(() -> {
+				allSidRegWrites.add(output);
+				if (allSidRegWrites.size() % REFRESH_RATE == 0) {
+					doUpdateFilter();
+				}
+			});
+		}
+
+		@Override
+		public void clear() {
+			Platform.runLater(() -> allSidRegWrites.clear());
+		}
+	};
+	
 	private static final int REFRESH_RATE = 1000;
 
 	@FXML
@@ -80,7 +100,7 @@ public class SidReg extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
-		util.getPlayer().getC64().setSIDListener(null);
+		util.getPlayer().removeSidListener(sidRegExtension);
 		util.getPlayer().stateProperty().removeListener(sidRegStop);
 	}
 
@@ -204,11 +224,9 @@ public class SidReg extends C64VBox implements UIPart {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".csv");
 			try (PrintStream ps = new PrintStream(target)) {
-				ps.printf("\"Absolute Cycles\", \"Relative Cycles\", \"Address\", \"Value\", \"Description\"\n");
+				SidRegDriver.writeHeader(ps);
 				for (SidRegWrite sidRegWrite : filteredSidRegWrites) {
-					ps.printf("\"%d\", \"%d\", \"$%04X\", \"$%02X\", \"%s\"\n", sidRegWrite.getAbsCycles(),
-							sidRegWrite.getRelCycles(), sidRegWrite.getAddress(), sidRegWrite.getValue(),
-							sidRegWrite.getDescription());
+					SidRegDriver.writeSidRegister(ps, sidRegWrite);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -218,28 +236,10 @@ public class SidReg extends C64VBox implements UIPart {
 
 	protected void recordSidWrites(final boolean enable) {
 		if (enable) {
-			final SidRegExtension sidRegExtension = new SidRegExtension() {
-
-				@Override
-				public void sidWrite(final SidRegWrite output) {
-					Platform.runLater(() -> {
-						allSidRegWrites.add(output);
-						if (allSidRegWrites.size() % REFRESH_RATE == 0) {
-							doUpdateFilter();
-						}
-					});
-				}
-
-				@Override
-				public void clear() {
-					Platform.runLater(() -> allSidRegWrites.clear());
-				}
-			};
-			sidRegExtension.setbundle(util.getBundle());
 			sidRegExtension.init();
-			util.getPlayer().getC64().setSIDListener(sidRegExtension);
+			util.getPlayer().addSidListener(sidRegExtension);
 		} else {
-			util.getPlayer().getC64().setSIDListener(null);
+			util.getPlayer().removeSidListener(sidRegExtension);
 		}
 	}
 }

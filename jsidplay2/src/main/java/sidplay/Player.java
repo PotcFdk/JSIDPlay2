@@ -54,6 +54,7 @@ import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
+import libsidplay.common.SIDListener;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1530.Datasette.Control;
 import libsidplay.components.mos6510.MOS6510;
@@ -90,7 +91,7 @@ import sidplay.player.Timer;
  * @author Ken Händel
  * 
  */
-public class Player extends HardwareEnsemble implements VideoDriver {
+public class Player extends HardwareEnsemble implements VideoDriver, SIDListener {
 
 	/** Build date calculated from our own modify time */
 	public static Calendar LAST_MODIFIED;
@@ -235,6 +236,11 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	protected List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<VideoDriver>();
 
 	/**
+	 * Consumer for SID register writes
+	 */
+	protected List<SIDListener> sidListeners = new CopyOnWriteArrayList<SIDListener>();
+
+	/**
 	 * Fast forward: skipped VIC frames.
 	 */
 	private int fastForwardVICFrames;
@@ -265,6 +271,9 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 				configureMixer(mixer -> mixer.start());
 				if (getAudioDriver() instanceof VideoDriver) {
 					addVideoDriver((VideoDriver) getAudioDriver());
+				}
+				if (getAudioDriver() instanceof SIDListener) {
+					addSidListener((SIDListener) getAudioDriver());
 				}
 			}
 
@@ -657,6 +666,7 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
 		configureVICs(vic -> vic.setVideoDriver(this));
 		fastForwardVICFrames = 0;
+		c64.setSIDListener(this);
 
 		stateProperty.addListener(pauseListener);
 
@@ -779,6 +789,9 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 			c64.insertSIDChips(noSIDs, sidLocator);
 			if (getAudioDriver() instanceof VideoDriver) {
 				removeVideoDriver((VideoDriver) getAudioDriver());
+			}
+			if (getAudioDriver() instanceof SIDListener) {
+				removeSidListener((SIDListener) getAudioDriver());
 			}
 			// save still unwritten sound data
 			if (stateProperty.get() == END && getAudioDriver().buffer() != null) {
@@ -1002,6 +1015,24 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 	}
 
 	/**
+	 * Add consumer of SID register writes
+	 * 
+	 * @param consumer consumer of SID register writes
+	 */
+	public void addSidListener(SIDListener consumer) {
+		sidListeners.add(consumer);
+	}
+
+	/**
+	 * Remove consumer of SID register writes
+	 * 
+	 * @param consumer consumer of SID register writes
+	 */
+	public void removeSidListener(SIDListener consumer) {
+		sidListeners.remove(consumer);
+	}
+
+	/**
 	 * Fast forward skips frames and produces output for each Xth frame (X = 1x, 2x,
 	 * 4x, ... , 32x).
 	 */
@@ -1014,6 +1045,14 @@ public class Player extends HardwareEnsemble implements VideoDriver {
 			while (iterator.hasNext()) {
 				iterator.next().accept(vic);
 			}
+		}
+	}
+
+	@Override
+	public void write(long time, int addr, byte data) {
+		Iterator<SIDListener> iterator = sidListeners.iterator();
+		while (iterator.hasNext()) {
+			iterator.next().write(time, addr, data);
 		}
 	}
 
