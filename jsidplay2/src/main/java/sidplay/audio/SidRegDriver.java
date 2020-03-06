@@ -21,7 +21,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 			"VOICE_1_PULSE_H", "VOICE_1_CTRL", "VOICE_1_AD", "VOICE_1_SR", "VOICE_2_FREQ_L", "VOICE_2_FREQ_H",
 			"VOICE_2_PULSE_L", "VOICE_2_PULSE_H", "VOICE_2_CTRL", "VOICE_2_AD", "VOICE_2_SR", "VOICE_3_FREQ_L",
 			"VOICE_3_FREQ_H", "VOICE_3_PULSE_L", "VOICE_3_PULSE_H", "VOICE_3_CTRL", "VOICE_3_AD", "VOICE_3_SR",
-			"FCUT_L", "FCUT_H", "FRES", "FVOL", "PADDLE1", "PADDLE2", "OSC3", "ENV3", };
+			"FCUT_L", "FCUT_H", "FRES", "FVOL", "PADDLE1", "PADDLE2", "OSC3", "ENV3", "UNUSED", "UNUSED", "UNUSED" };
 
 	private PrintStream printStream;
 	private long fTime;
