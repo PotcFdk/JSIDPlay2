@@ -21,6 +21,9 @@ import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import sidplay.audio.AudioDriver;
+import sidplay.audio.processor.AudioProcessor;
+import sidplay.audio.processor.delay.DelayProcessor;
+import sidplay.audio.processor.reverb.ReverbProcessor;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.
@@ -70,6 +73,7 @@ public class SIDMixer implements Mixer {
 		 * <LI>Add dithering to reduce quantization noise, when moving to a format with
 		 * less precision.
 		 * <LI>Cut-off overflow samples.
+		 * <LI>do some audio post-processing
 		 * </OL>
 		 * <B>Note:</B><BR>
 		 * Audio buffer is cleared afterwards to get refilled during next event.
@@ -101,6 +105,7 @@ public class SIDMixer implements Mixer {
 					if (resamplerR.input(valR >> fastForwardShift)) {
 						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE)).hasRemaining()) {
+							audioProcessors.stream().forEach(processor -> processor.process(buffer));
 							audioDriver.write();
 							((Buffer) buffer).clear();
 						}
@@ -199,6 +204,11 @@ public class SIDMixer implements Mixer {
 	private final boolean fadeInFadeOutEnabled;
 
 	/**
+	 * Add some audio post processing.
+	 */
+	private List<AudioProcessor> audioProcessors = new ArrayList<>();
+
+	/**
 	 * Audio driver buffer.
 	 */
 	private ByteBuffer buffer;
@@ -216,6 +226,8 @@ public class SIDMixer implements Mixer {
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
 				20000);
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
+		this.audioProcessors.add(new DelayProcessor(config));
+		this.audioProcessors.add(new ReverbProcessor(config));
 		normalSpeed();
 	}
 

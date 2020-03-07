@@ -4,12 +4,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import libsidplay.config.IAudioSection;
-import sidplay.audio.AudioConfig;
+import libsidplay.config.IConfig;
 import sidplay.audio.processor.AudioProcessor;
 
 public class DelayProcessor implements AudioProcessor {
-
-	private int sampleRate, numberOfChannels;
 
 	private short[] delayBuffer;
 	private int readIndex, writeIndex, delayBufferSize, delayOffset;
@@ -17,31 +15,23 @@ public class DelayProcessor implements AudioProcessor {
 	private Integer delayInMs;
 
 	private IAudioSection audioSection;
-	
-	@Override
-	public void configure(IAudioSection audioSection) {
-		this.audioSection = audioSection;
-	}
 
-	@Override
-	public void prepare(AudioConfig cfg) {
-		sampleRate = cfg.getFrameRate();
-		numberOfChannels = cfg.getChannels();
+	public DelayProcessor(IConfig config) {
+		this.audioSection = config.getAudioSection();
 	}
 
 	@Override
 	public void process(ByteBuffer sampleBuffer) {
-		if (delayInMs == null || delayInMs != audioSection.getDelay()) {
-			delayInMs = audioSection.getDelay();
+		if (!audioSection.getDelayBypass() && audioSection.getDelay() > 0) {
+			if (delayInMs == null || delayInMs != audioSection.getDelay()) {
+				delayInMs = audioSection.getDelay();
 
-			delayOffset = (delayInMs * sampleRate * numberOfChannels) / 1000;
-			delayBufferSize = (sampleBuffer.capacity() >> 1) + delayOffset;
-			delayBuffer = new short[delayBufferSize];
-			writeIndex = 0;
-			readIndex = sampleBuffer.capacity() >> 1;
-		}
-
-		if (!audioSection.getDelayBypass() && delayOffset > 0) {
+				delayOffset = (delayInMs * audioSection.getSamplingRate().getFrequency() * 2) / 1000;
+				delayBufferSize = (sampleBuffer.capacity() >> 1) + delayOffset;
+				delayBuffer = new short[delayBufferSize];
+				writeIndex = 0;
+				readIndex = sampleBuffer.capacity() >> 1;
+			}
 			int len = sampleBuffer.position();
 			((Buffer) sampleBuffer).flip();
 			ByteBuffer buffer = ByteBuffer.wrap(new byte[len]).order(sampleBuffer.order());
