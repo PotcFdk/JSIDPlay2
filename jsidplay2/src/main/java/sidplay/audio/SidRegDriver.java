@@ -15,67 +15,41 @@ import libsidplay.common.SIDListener;
 public class SidRegDriver implements SIDListener, AudioDriver {
 
 	public static class SidRegWrite {
-		private long absCycles;
-		private long relCycles;
-		private int address;
-		private int value;
-		private String description;
+		private long absCycles, relCycles;
+		private int address, value;
 
 		public SidRegWrite(long absCycles, long relCycles, int address, byte value) {
 			this.absCycles = absCycles;
 			this.relCycles = relCycles;
 			this.address = address;
 			this.value = value & 0xff;
-			this.description = BUNDLE.getString(DESCRIPTION[address & 0x1f]);
 		}
 
 		public Long getAbsCycles() {
 			return absCycles;
 		}
 
-		public void setAbsCycles(Long value) {
-			absCycles = value;
-		}
-
 		public long getRelCycles() {
 			return relCycles;
 		}
 
-		public void setRelCycles(long value) {
-			relCycles = value;
-		}
-
-		public int getAddress() {
-			return address;
-		}
-
-		public void setAddress(int value) {
-			address = value;
-		}
-
-		public String getHexAddress() {
+		public String getAddress() {
 			return String.format("$%04X", address);
 		}
 
-		public String getDescription() {
-			return description;
-		}
-
-		public void setDescription(String value) {
-			description = value;
-		}
-
-		public int getValue() {
-			return value;
-		}
-
-		public void setValue(int value) {
-			this.value = value;
-		}
-
-		public String getHexValue() {
+		public String getValue() {
 			return String.format("$%02X", value);
 		}
+
+		public String getDescription() {
+			return BUNDLE.getString(DESCRIPTION[address & 0x1f]);
+		}
+		
+		public void writeSidRegister(PrintStream printStream) {
+			printStream.printf("\"%d\", \"%d\", \"$%04X\", \"$%02X\", \"%s\"\n", absCycles, relCycles, address, value,
+					getDescription());
+		}
+
 	}
 
 	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.audio.SidRegDriver");
@@ -110,7 +84,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 		}
 		final long relTime = time - fTime;
 
-		writeSidRegister(printStream, new SidRegWrite(time, relTime, addr, data));
+		new SidRegWrite(time, relTime, addr, data).writeSidRegister(printStream);
 
 		fTime = time;
 	}
@@ -139,15 +113,10 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 		return ".csv";
 	}
 
-	public static void writeHeader(PrintStream ps) {
-		ps.printf("\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"\n", BUNDLE.getString("ABSOLUTE_CYCLES"),
+	public static void writeHeader(PrintStream printStream) {
+		printStream.printf("\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"\n", BUNDLE.getString("ABSOLUTE_CYCLES"),
 				BUNDLE.getString("RELATIVE_CYCLES"), BUNDLE.getString("ADDRESS"), BUNDLE.getString("VALUE"),
 				BUNDLE.getString("DESCRIPTION"));
-	}
-
-	public static void writeSidRegister(PrintStream ps, final SidRegWrite sidRegWrite) {
-		ps.printf("\"%d\", \"%d\", \"$%04X\", \"$%02X\", \"%s\"\n", sidRegWrite.absCycles, sidRegWrite.relCycles,
-				sidRegWrite.address, sidRegWrite.value, sidRegWrite.description);
 	}
 
 }

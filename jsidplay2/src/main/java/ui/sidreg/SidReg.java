@@ -47,7 +47,7 @@ public class SidReg extends C64VBox implements UIPart {
 			Platform.runLater(() -> allSidRegWrites.clear());
 		}
 	};
-	
+
 	private static final int REFRESH_RATE = 1000;
 
 	@FXML
@@ -81,6 +81,17 @@ public class SidReg extends C64VBox implements UIPart {
 
 	@FXML
 	protected void initialize() {
+		filteredSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
+		SortedList<SidRegWrite> sortedList = new SortedList<>(filteredSidRegWrites);
+		sortedList.comparatorProperty().bind(regTable.comparatorProperty());
+		regTable.setItems(sortedList);
+
+		allSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
+
+		filters = new HashSet<String>();
+
+		doUpdateFilter();
+
 		sidRegStop = event -> {
 			if (event.getNewValue() == State.END) {
 				Platform.runLater(() -> {
@@ -90,13 +101,6 @@ public class SidReg extends C64VBox implements UIPart {
 			}
 		};
 		util.getPlayer().stateProperty().addListener(sidRegStop);
-		filteredSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
-		SortedList<SidRegWrite> sortedList = new SortedList<>(filteredSidRegWrites);
-		sortedList.comparatorProperty().bind(regTable.comparatorProperty());
-		regTable.setItems(sortedList);
-		allSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
-		filters = new HashSet<String>();
-		doUpdateFilter();
 	}
 
 	@Override
@@ -226,9 +230,7 @@ public class SidReg extends C64VBox implements UIPart {
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".csv");
 			try (PrintStream ps = new PrintStream(target)) {
 				SidRegDriver.writeHeader(ps);
-				for (SidRegWrite sidRegWrite : filteredSidRegWrites) {
-					SidRegDriver.writeSidRegister(ps, sidRegWrite);
-				}
+				filteredSidRegWrites.stream().forEach(sidRegWrite -> sidRegWrite.writeSidRegister(ps));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

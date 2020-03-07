@@ -145,12 +145,12 @@
 					</TableColumn>
 					<TableColumn text="%COL_ADDR" prefWidth="100">
 						<cellValueFactory>
-							<PropertyValueFactory property="hexAddress" />
+							<PropertyValueFactory property="address" />
 						</cellValueFactory>
 					</TableColumn>
 					<TableColumn text="%COL_VALUE">
 						<cellValueFactory>
-							<PropertyValueFactory property="hexValue" />
+							<PropertyValueFactory property="value" />
 						</cellValueFactory>
 					</TableColumn>
 					<TableColumn text="%COL_DESCRIPTION" prefWidth="300">
