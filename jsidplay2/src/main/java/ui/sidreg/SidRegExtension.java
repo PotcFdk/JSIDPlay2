@@ -1,8 +1,7 @@
 package ui.sidreg;
-import static sidplay.audio.SidRegDriver.BUNDLE;
-import static sidplay.audio.SidRegDriver.DESCRIPTION;
 
 import libsidplay.common.SIDListener;
+import sidplay.audio.SidRegDriver.SidRegWrite;
 
 public abstract class SidRegExtension implements SIDListener {
 
@@ -15,10 +14,8 @@ public abstract class SidRegExtension implements SIDListener {
 			fTime = time;
 		}
 		final long relTime = time - fTime;
-		final SidRegWrite row = new SidRegWrite(time, relTime, addr, BUNDLE.getString(DESCRIPTION[addr & 0x1f]),
-				data & 0xff);
 
-		sidWrite(row);
+		sidWrite(new SidRegWrite(time, relTime, addr, data));
 
 		fTime = time;
 	}
