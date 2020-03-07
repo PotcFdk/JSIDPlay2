@@ -7,3 +7,6 @@ Save Recording to folder added
 Turn PAL emulation on/off
 Audio post processors added: delay and reverb
 Audio Settings added (audio post processors, recording quality)
+Save JPEG screenshot fixed
+emulation settings: copy first SID settings to stereo SID and 3-SID
+Record tunes as CSV of SID register writes
