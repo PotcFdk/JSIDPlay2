@@ -454,6 +454,7 @@
 							<nonavbar>true</nonavbar>
 							<quiet>true</quiet>
 							<failOnError>true</failOnError>
+							<failOnWarnings>true</failOnWarnings>
 						</configuration>
 					</execution>
 				</executions>
