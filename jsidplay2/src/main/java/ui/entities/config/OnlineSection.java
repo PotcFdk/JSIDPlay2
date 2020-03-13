@@ -6,7 +6,7 @@ import javax.persistence.Embeddable;
 public class OnlineSection {
 
 	private static final double DEFAULT_ZOOM = 1.5;
-	public static final String DEFAULT_ASSEMBLY64_URL = "http://hackerswithstyle.ddns.net:8080";
+	public static final String DEFAULT_ASSEMBLY64_URL = "https://hackerswithstyle.se";
 
 	/**
 	 * URL where the JSIDPlay2 is deployed to.
