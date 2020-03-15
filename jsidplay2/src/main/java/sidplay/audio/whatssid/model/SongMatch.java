@@ -1,6 +1,5 @@
 package sidplay.audio.whatssid.model;
 
-
 public class SongMatch{
 
     private int idSong;

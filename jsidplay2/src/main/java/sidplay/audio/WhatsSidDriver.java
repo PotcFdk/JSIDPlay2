@@ -22,9 +22,13 @@ import sidplay.audio.whatssid.database.MysqlDB;
 import sidplay.ini.IniConfigException;
 
 /**
- * Beta: Shazam like feature: Analyze tunes to recognize a currently played tune
+ * Alpha: Shazam like feature: Analyze tunes to recognize a currently played
+ * tune
  * 
  * This is the analyzing part. Use WhatsSidMatcherDriver to match.
+ * 
+ * WAV file is created if not exists containing 8KHz sample data. WAV file
+ * contents is then fingerprint'ed
  * 
  * @author ken
  *

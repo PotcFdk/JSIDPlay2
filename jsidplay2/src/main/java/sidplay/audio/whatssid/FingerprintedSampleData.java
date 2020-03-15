@@ -11,12 +11,13 @@ import libsidutils.PathUtils;
 import sidplay.audio.whatssid.fingerprint.Fingerprint;
 
 /**
- * Created by hsyecheng on 2015/6/13. Read WAV file and generate Fingerprints.
- * The sampling rate of the WAV file should be 8000.
+ * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate
+ * of the sample data should be 8000.
  */
 public class FingerprintedSampleData {
 
 	private static final int SAMPLE_RATE = 8000;
+
 	private Fingerprint fingerprint;
 	private String title, album, artist;
 	private double audioLength;

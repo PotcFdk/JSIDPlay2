@@ -16,12 +16,12 @@ import sidplay.audio.whatssid.model.SongMatch;
  */
 public class Index {
 
-	private final HashMap<Long, Match> hashMap;
-	private MysqlDB sqlDB;
-
 	private long maxId = -1;
 	private int maxCount = -1;
 	private int maxTime = -1;
+	
+	private final HashMap<Long, Match> hashMap;
+	private final MysqlDB sqlDB;
 
 	public Index(MysqlDB mysql) {
 		sqlDB = mysql;
