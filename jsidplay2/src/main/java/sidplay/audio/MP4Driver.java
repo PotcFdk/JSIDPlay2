@@ -54,7 +54,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		this.recordingFilename = recordingFilename;
 		try {
 			System.out.println("Recording, file=" + recordingFilename);

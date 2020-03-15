@@ -66,7 +66,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		System.out.println("Recording, file=" + recordingFilename);
 		printStream = new PrintStream(new File(recordingFilename));
 

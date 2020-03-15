@@ -89,10 +89,10 @@ public abstract class WAVDriver implements AudioDriver {
 	 * 
 	 * @author Ken Händel
 	 */
-	private static class WavHeader {
+	static class WavHeader {
 
 		private static final int HEADER_OFFSET = 8;
-		private static final int HEADER_LENGTH = 44;
+		static final int HEADER_LENGTH = 44;
 
 		private int length, sampleFreq,bytesPerSec, dataChunkLen;
 		private short format, channels, blockAlign, bitsPerSample;
@@ -113,7 +113,7 @@ public abstract class WAVDriver implements AudioDriver {
 			this.dataChunkLen += length;
 		}
 
-		private byte[] getBytes() {
+		byte[] getBytes() {
 			final ByteBuffer b = ByteBuffer.allocate(HEADER_LENGTH);
 			b.order(ByteOrder.LITTLE_ENDIAN);
 			b.put("RIFF".getBytes(US_ASCII));
@@ -145,7 +145,7 @@ public abstract class WAVDriver implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
 
 		out = getOut(recordingFilename);

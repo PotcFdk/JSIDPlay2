@@ -29,6 +29,7 @@ import org.monte.media.math.Rational;
 import libsidplay.common.CPUClock;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
+import libsidplay.sidtune.SidTune;
 
 public class AVIDriver implements AudioDriver, VideoDriver {
 
@@ -41,13 +42,13 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(IAudioSection audioSection) {
+	public void configure(SidTune tune, IAudioSection audioSection) {
 		aviVideoQuality = audioSection.getAviCompressionQuality();
 	}
 	
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		System.out.println("Recording, file=" + recordingFilename);
 		aviWriter = new AVIWriter(new File(recordingFilename));
 

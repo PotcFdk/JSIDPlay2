@@ -11,9 +11,9 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.config.IAudioSection;
+import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
-import sidplay.audio.CmpMP3File.MP3Termination;
 
 /**
  * Abstract base class to output an MP3 encoded tune to an output stream.
@@ -95,7 +95,7 @@ public abstract class MP3Driver implements AudioDriver {
 	protected ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(IAudioSection audioSection) {
+	public void configure(SidTune tune, IAudioSection audioSection) {
 		cbr = audioSection.getCbr();
 		vbr = audioSection.isVbr();
 		vbrQuality = audioSection.getVbrQuality();
@@ -103,7 +103,7 @@ public abstract class MP3Driver implements AudioDriver {
 	
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
@@ -121,7 +121,7 @@ public abstract class MP3Driver implements AudioDriver {
 			int bytesWritten = jump3r.encodeBuffer(sampleBuffer.array(), 0, sampleBuffer.position(), encoded);
 			out.write(encoded, 0, bytesWritten);
 		} catch (ArrayIndexOutOfBoundsException | IOException e) {
-			throw new MP3Termination(e);
+			throw new EndTuneException(e);
 		}
 	}
 

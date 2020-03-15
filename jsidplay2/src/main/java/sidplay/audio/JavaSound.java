@@ -25,7 +25,7 @@ public class JavaSound implements AudioDriver {
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		int device = cfg.getDevice();
 		List<Info> devices = getDevices();
 		open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);

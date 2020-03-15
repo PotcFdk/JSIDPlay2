@@ -142,6 +142,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
+	@Parameter(names = { "--hvsc" }, descriptionKey = "HVSC_DIR")
 	public final void setHvsc(final String hvsc) {
 		iniReader.setProperty("SIDPlay2", "HVSC Dir", hvsc);
 	}

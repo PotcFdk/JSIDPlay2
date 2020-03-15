@@ -10,6 +10,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.SIDListener;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
+import libsidplay.sidtune.SidTune;
 
 /**
  * Proxy driver to use two different sound or video drivers at the same time.
@@ -35,14 +36,14 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	}
 
 	@Override
-	public void configure(IAudioSection audioSection) {
-		driverOne.configure(audioSection);
-		driverTwo.configure(audioSection);
+	public void configure(SidTune tune, IAudioSection audioSection) {
+		driverOne.configure(tune, audioSection);
+		driverTwo.configure(tune, audioSection);
 	}
 	
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		driverOne.open(cfg, recordingFilename, cpuClock);
 		driverTwo.open(cfg, recordingFilename, cpuClock);
 	}

@@ -221,10 +221,11 @@ public class SIDMixer implements Mixer {
 		IAudioSection audioSection = config.getAudioSection();
 		SamplingMethod samplingMethod = audioSection.getSampling();
 		int samplingFrequency = audioSection.getSamplingRate().getFrequency();
+		int middleFrequency = audioSection.getSamplingRate().getMiddleFrequency();
 		this.resamplerL = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
-				20000);
+				middleFrequency);
 		this.resamplerR = Resampler.createResampler(cpuClock.getCpuFrequency(), samplingMethod, samplingFrequency,
-				20000);
+				middleFrequency);
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 		this.audioProcessors.add(new DelayProcessor(config));
 		this.audioProcessors.add(new ReverbProcessor(config));

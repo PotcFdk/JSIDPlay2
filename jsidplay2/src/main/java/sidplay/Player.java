@@ -72,8 +72,9 @@ import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.CmpMP3File.MP3Termination;
 import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.NextTuneException;
+import sidplay.audio.EndTuneException;
 import sidplay.audio.VideoDriver;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
@@ -613,8 +614,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				while (play()) {
 					interactivityHook.accept(Player.this);
 				}
-			} catch (MP3Termination e) {
+			} catch (EndTuneException e) {
 				stateProperty.set(END);
+			} catch (NextTuneException e) {
+				if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
+					nextSong();
+				}
 			} catch (IniConfigException e) {
 				System.out.println(e.getMessage());
 				stateProperty.set(RESTART);
@@ -634,8 +639,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * 
 	 * @throws LineUnavailableException audio line currently in use
 	 * @throws IOException              audio output file cannot be written
+	 * @throws InterruptedException 
 	 */
-	private void open() throws IOException, LineUnavailableException {
+	private void open() throws IOException, LineUnavailableException, InterruptedException {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final IAudioSection audioSection = config.getAudioSection();
@@ -652,7 +658,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
 		// configure audio driver
-		getAudioDriver().configure(audioSection);
+		getAudioDriver().configure(tune, audioSection);
 
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
@@ -1064,6 +1070,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
 		credits.append("Testing and Feedback: Nata, founder of proNoise\n");
 		credits.append("\thttp://www.nata.netau.net/\n");
+		credits.append("Music recognition system\n");
+		credits.append("\tCopyright (©) 2019 J. Pery <hsyecheng@hotmail.com>\n");
+		credits.append("\thttps://github.com/JPery/Audio-Fingerprinting\n");
 		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n");
 		credits.append("\t(©) 2009, 2010 Antti S. Lankila\n");
 		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n");

@@ -15,6 +15,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
+import libsidplay.sidtune.SidTune;
 import lowlevel.LameDecoder;
 import sidplay.ini.IniConfigException;
 
@@ -25,15 +26,6 @@ import sidplay.ini.IniConfigException;
  * 
  */
 public class CmpMP3File extends JavaSound {
-
-	@SuppressWarnings("serial")
-	public static class MP3Termination extends InterruptedException {
-		public MP3Termination() {
-		}
-		public MP3Termination(Exception e) {
-			super(e.getMessage());
-		}
-	}
 
 	/**
 	 * Jump3r decoder.
@@ -46,13 +38,13 @@ public class CmpMP3File extends JavaSound {
 	private IAudioSection audioSection;
 
 	@Override
-	public void configure(IAudioSection audioSection) {
+	public void configure(SidTune tune, IAudioSection audioSection) {
 		this.audioSection = audioSection;
 	}
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException {
+			throws IOException, LineUnavailableException, InterruptedException {
 		String mp3File = audioSection.getMp3File();
 		if (mp3File == null || !new File(mp3File).exists()) {
 			throw new FileNotFoundException(mp3File);
@@ -108,7 +100,7 @@ public class CmpMP3File extends JavaSound {
 		}
 		super.write();
 		if (!decoded) {
-			throw new MP3Termination();
+			throw new EndTuneException();
 		}
 	}
 

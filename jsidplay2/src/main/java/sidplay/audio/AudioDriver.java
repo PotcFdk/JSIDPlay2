@@ -22,6 +22,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.config.IAudioSection;
+import libsidplay.sidtune.SidTune;
 
 public interface AudioDriver {
 
@@ -30,7 +31,7 @@ public interface AudioDriver {
 	 * 
 	 * @param audioSection audio configuration
 	 */
-	default void configure(IAudioSection audioSection) {
+	default void configure(SidTune tune, IAudioSection audioSection) {
 	};
 
 	/**
@@ -44,7 +45,7 @@ public interface AudioDriver {
 	 * @throws LineUnavailableException
 	 */
 	void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException;
+			throws IOException, LineUnavailableException, InterruptedException;
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.
