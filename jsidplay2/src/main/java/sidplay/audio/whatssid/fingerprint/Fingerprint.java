@@ -29,7 +29,6 @@ public class Fingerprint {
 	private final float minPower = 0;
 
 	public Fingerprint(float[] data, float fs) {
-		super();
 		Spectrogram spectrogram = new Spectrogram(data, Window.HANN, fftSize, overlap, fs);
 		ArrayList<float[]> stft = spectrogram.stft;
 		freq = spectrogram.freq;
@@ -44,12 +43,12 @@ public class Fingerprint {
 					if (i % C == 0 || i == size - 1) {
 						// Filter
 						tmp.removeIf(peak -> {
-							float peakFreq = freq[peak.intFreq];
+							float peakFreq = freq[peak.getIntFreq()];
 							return peakFreq < minFreq || peakFreq > maxFreq;
 						});
-						tmp.removeIf(peak -> peak.power <= minPower);
+						tmp.removeIf(peak -> peak.getPower() <= minPower);
 
-						tmp.sort((o1, o2) -> Double.compare(o2.power, o1.power));
+						tmp.sort((o1, o2) -> Double.compare(o2.getPower(), o1.getPower()));
 
 						int end = tmp.size() < NPeaks ? tmp.size() : NPeaks;
 						peakList.addAll(tmp.subList(0, end));
@@ -65,8 +64,8 @@ public class Fingerprint {
 				System.arraycopy(fft, start, fft_band, 0, len);
 				FindPeaks find = new FindPeaks(NPeaks);
 				find.findComplexPeaks(fft_band, peakRange);
-				float[] power = find.power;
-				int[] loc = find.locate;
+				float[] power = find.getPower();
+				int[] loc = find.getLocate();
 
 				for (int j = 0; j < power.length; j++) {
 					loc[j] += Band[b];
@@ -77,16 +76,16 @@ public class Fingerprint {
 						continue;
 					}
 					Peak p = new Peak();
-					p.intFreq = loc[j];
-					p.intTime = i;
-					p.power = power[j];
+					p.setIntFreq(loc[j]);
+					p.setIntTime(i);
+					p.setPower(power[j]);
 
 					tmp.add(p);
 				}
 			}
 		}
 
-		peakList.sort((o1, o2) -> o1.intTime - o2.intTime);
+		peakList.sort((o1, o2) -> o1.getIntTime() - o2.getIntTime());
 		link(true);
 	}
 
@@ -96,8 +95,9 @@ public class Fingerprint {
 			return -1;
 		}
 		for (int i = 0; i < size - 1; i++) {
-			if (Band[i + 1] > intFreq)
+			if (Band[i + 1] > intFreq) {
 				return i;
+			}
 		}
 		return -1;
 	}
@@ -111,27 +111,24 @@ public class Fingerprint {
 			}
 
 			// time start|end
-			int tStart;
-			int tEnd;
 			int k;
 			for (k = i + 1; k < n; k++) {
-				float t = time[p1.intTime];
-				float t2 = time[peakList.get(k).intTime];
+				float t = time[p1.getIntTime()];
+				float t2 = time[peakList.get(k).getIntTime()];
 				if (t2 - t >= range_time[0])
 					break;
 			}
-			tStart = k;
+			int tStart = k;
 			for (; k < n; k++) {
-				float t = time[p1.intTime];
-				float t2 = time[peakList.get(k).intTime];
+				float t = time[p1.getIntTime()];
+				float t2 = time[peakList.get(k).getIntTime()];
 				if (t2 - t >= range_time[1])
 					break;
 			}
-			tEnd = k;
+			int tEnd = k;
 			// freq start|end
-			float fstart, fend;
-			fstart = freq[p1.intFreq] + range_freq[0];
-			fend = freq[p1.intFreq] + range_freq[1];
+			float fstart = freq[p1.getIntFreq()] + range_freq[0];
+			float fend = freq[p1.getIntFreq()] + range_freq[1];
 
 			for (int i2 = tStart; i2 < tEnd; i2++) {
 				Peak p2 = peakList.get(i2);
@@ -140,15 +137,15 @@ public class Fingerprint {
 				}
 
 				if (band) {
-					int b1 = inBand(p1.intFreq);
-					int b2 = inBand(p2.intFreq);
+					int b1 = inBand(p1.getIntFreq());
+					int b2 = inBand(p2.getIntFreq());
 
 					if (b1 == b2 && b1 != -1) {
 						Link l = new Link(p1, p2);
 						linkList.add(l);
 					}
 				} else {
-					if (freq[p2.intFreq] >= fstart && freq[p2.intFreq] <= fend) {
+					if (freq[p2.getIntFreq()] >= fstart && freq[p2.getIntFreq()] <= fend) {
 						Link l = new Link(p1, p2);
 						linkList.add(l);
 					}
@@ -163,27 +160,5 @@ public class Fingerprint {
 
 	public ArrayList<Peak> getPeakList() {
 		return peakList;
-	}
-
-	public static class Peak {
-		public int intFreq;
-		public float power;
-		public int intTime;
-	}
-
-	public static class Link {
-		public final Peak start;
-		public final Peak end;
-
-		final float[] tmp = new float[3];
-
-		public Link(Peak s, Peak e) {
-			super();
-			this.start = s;
-			this.end = e;
-			tmp[0] = s.intFreq;
-			tmp[1] = e.intFreq;
-			tmp[2] = e.intTime - s.intTime;
-		}
 	}
 }

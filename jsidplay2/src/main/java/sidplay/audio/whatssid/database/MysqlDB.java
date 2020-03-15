@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import sidplay.audio.whatssid.ReadFile;
 import sidplay.audio.whatssid.fingerprint.Fingerprint;
+import sidplay.audio.whatssid.fingerprint.Link;
 
 /**
  * Created by hsyecheng on 2015/6/12.
@@ -71,7 +72,7 @@ public class MysqlDB {
 			StringBuilder buf = new StringBuilder("INSERT INTO `HashTable` " + "(`Hash`, `id`, `Time`) " + "VALUES");
 
 			Fingerprint fp = readFile.fingerprint;
-			for (Fingerprint.Link link : fp.getLinkList()) {
+			for (Link link : fp.getLinkList()) {
 				Info info = new Info(id, link);
 				buf.append("(").append(info.hash).append(",").append(info.id).append(",").append(info.time)
 						.append("),");

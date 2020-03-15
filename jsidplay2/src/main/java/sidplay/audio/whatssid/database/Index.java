@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import sidplay.audio.whatssid.fingerprint.Fingerprint;
 import sidplay.audio.whatssid.fingerprint.Hash;
+import sidplay.audio.whatssid.fingerprint.Link;
 import sidplay.audio.whatssid.model.Match;
 import sidplay.audio.whatssid.model.SongMatch;
 
@@ -31,12 +32,12 @@ public class Index {
 	}
 
 	public SongMatch search(Fingerprint fp, int minHit) {
-		ArrayList<Fingerprint.Link> linkList = fp.getLinkList();
+		ArrayList<Link> linkList = fp.getLinkList();
 		int[] linkHash = new int[linkList.size()];
 		int[] linkTime = new int[linkList.size()];
 		for (int i = 0; i < linkHash.length; i++) {
 			linkHash[i] = Hash.hash(linkList.get(i));
-			linkTime[i] = linkList.get(i).start.intTime;
+			linkTime[i] = linkList.get(i).getStart().getIntTime();
 		}
 
 		return search(linkTime, linkHash, minHit);

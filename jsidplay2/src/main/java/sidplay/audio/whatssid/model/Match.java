@@ -1,24 +1,23 @@
 package sidplay.audio.whatssid.model;
 
-public class Match{
+public class Match {
 
-    private int count;
-    private int time;
+	private int count, time;
 
-    public Match(int count, int time) {
-        this.count = count;
-        this.time = time;
-    }
+	public Match(int count, int time) {
+		this.count = count;
+		this.time = time;
+	}
 
-    public int getCount() {
-        return count;
-    }
+	public int getCount() {
+		return count;
+	}
 
-    public void updateCount(){
-        this.count++;
-    }
+	public void updateCount() {
+		this.count++;
+	}
 
-    public int getTime() {
-        return time;
-    }
+	public int getTime() {
+		return time;
+	}
 }
