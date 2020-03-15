@@ -161,7 +161,6 @@ public class Fingerprint {
 		return linkList;
 	}
 
-	@SuppressWarnings("unused")
 	public ArrayList<Peak> getPeakList() {
 		return peakList;
 	}

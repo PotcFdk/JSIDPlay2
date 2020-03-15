@@ -51,7 +51,6 @@ public class Window {
         }
     }
 
-    @SuppressWarnings("unused")
     public static float[] window(float[] data, int pos, int windowType, int windowSize){
         int size = windowSize;
         if(pos + size > data.length){

@@ -12,7 +12,6 @@ public class Hash {
         return freq + 5000*(df + 600 * dt);
     }
 
-    @SuppressWarnings("unused")
     public static int[] hash2link(int hash){
         int freq = hash % 5000;
         int df = (hash / 5000) % 600;
