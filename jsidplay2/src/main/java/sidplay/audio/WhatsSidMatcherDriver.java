@@ -2,6 +2,7 @@ package sidplay.audio;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -57,7 +58,7 @@ public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
 	public void write() throws InterruptedException {
 		int length = sampleBuffer.position();
 		byte[] buffer = new byte[length];
-		sampleBuffer.flip();
+		((Buffer) sampleBuffer).flip();
 		sampleBuffer.get(buffer, 0, length);
 		out.write(buffer, 0, length);
 	}
@@ -78,7 +79,7 @@ public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
 				MysqlDB db = new MysqlDB(host, port, database, user, pass);
 				index.loadDB(db);
 				SongMatch song_match = index.search(readFile.fingerprint, 15);
-				if (song_match!=null && song_match.getIdSong() != -1) {
+				if (song_match != null && song_match.getIdSong() != -1) {
 					DBMatch result = db.getByID(song_match.getIdSong());
 					result.setConfidence(song_match.getMatch().getCount());
 					result.setRelativeConfidence(
