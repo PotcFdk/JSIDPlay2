@@ -154,4 +154,3 @@ libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
 - Wait for proguard to support Java11 and adopt changes
-- WhatsSid development: https://github.com/JPery/Audio-Fingerprinting

@@ -14,39 +14,21 @@ import sidplay.audio.whatssid.model.SongMatch;
  * Created by hsyecheng on 2015/6/12.
  */
 public class Index {
-	public static class Info {
-		public final int hash;
-		public final int id;
-		public final int time;
-
-		public Info(int id, Fingerprint.Link link) {
-			super();
-			this.id = id;
-			this.time = link.start.intTime;
-			this.hash = Hash.hash(link);
-		}
-
-		@Override
-		public int hashCode() {
-			return hash;
-		}
-	}
 
 	private final HashMap<Long, Match> hashMap;
 	private MysqlDB sqlDB;
 
+	private long maxId = -1;
+	private int maxCount = -1;
+	private int maxTime = -1;
+
 	public Index() {
-		super();
 		hashMap = new HashMap<>(400000);
 	}
 
 	public void loadDB(MysqlDB mysql) {
 		sqlDB = mysql;
 	}
-
-	private long maxId = -1;
-	private int maxCount = -1;
-	private int maxTime = -1;
 
 	public SongMatch search(Fingerprint fp, int minHit) {
 		ArrayList<Fingerprint.Link> linkList = fp.getLinkList();
@@ -68,7 +50,7 @@ public class Index {
 
 		ResultSet rs = sqlDB.searchAll(linkHash);
 
-		if (rs==null) {
+		if (rs == null) {
 			return null;
 		}
 		try {
