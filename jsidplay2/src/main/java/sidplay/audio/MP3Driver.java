@@ -14,6 +14,7 @@ import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import lowlevel.LameEncoder;
 import mp3.MPEGMode;
+import sidplay.audio.exceptions.EndTuneException;
 
 /**
  * Abstract base class to output an MP3 encoded tune to an output stream.

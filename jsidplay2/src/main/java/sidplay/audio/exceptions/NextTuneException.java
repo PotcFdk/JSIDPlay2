@@ -1,4 +1,4 @@
-package sidplay.audio;
+package sidplay.audio.exceptions;
 
 @SuppressWarnings("serial")
 public class NextTuneException extends RuntimeException {

@@ -17,6 +17,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import lowlevel.LameDecoder;
+import sidplay.audio.exceptions.EndTuneException;
 import sidplay.ini.IniConfigException;
 
 /**

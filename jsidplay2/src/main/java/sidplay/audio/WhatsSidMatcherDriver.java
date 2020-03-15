@@ -13,7 +13,6 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.whatssid.FingerprintedSampleData;
-import sidplay.audio.whatssid.WhatsSidBaseDriver;
 import sidplay.audio.whatssid.database.DBMatch;
 import sidplay.audio.whatssid.database.Index;
 import sidplay.audio.whatssid.database.MysqlDB;
@@ -28,7 +27,7 @@ import sidplay.ini.IniConfigException;
  * @author ken
  *
  */
-public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
+public class WhatsSidMatcherDriver implements AudioDriver {
 
 	private ByteBuffer sampleBuffer;
 
