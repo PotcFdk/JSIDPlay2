@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import sidplay.audio.whatssid.ReadFile;
+import sidplay.audio.whatssid.FingerprintedSampleData;
 import sidplay.audio.whatssid.fingerprint.Fingerprint;
 import sidplay.audio.whatssid.fingerprint.Link;
 
@@ -34,9 +34,16 @@ public class MysqlDB {
 	private Statement dbStatement;
 	private PreparedStatement insertMusic;
 
-	public MysqlDB(String host, int port, String database, String user, String password) {
+	public MysqlDB() {
 		try {
 			Class.forName(DRIVER);
+
+			String database = System.getenv().getOrDefault("YECHENG_DATABASE_NAME", "musiclibary");
+			int port = Integer.parseInt(System.getenv().getOrDefault("YECHENG_DATABASE_PORT", "3306"));
+			String host = System.getenv().getOrDefault("YECHENG_DATABASE_HOST", "localhost");
+			String user = System.getenv().getOrDefault("YECHENG_DATABASE_USER", "newuser");
+			String password = System.getenv().getOrDefault("YECHENG_DATABASE_PASS", "password");
+
 			dbConn = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + user,
 					user, password);
 			if (dbConn.isClosed()) {
@@ -53,14 +60,14 @@ public class MysqlDB {
 		}
 	}
 
-	public synchronized void insert(ReadFile readFile, String fileName) {
+	public synchronized void insert(FingerprintedSampleData fingerprintedSampleData, String fileName) {
 		try {
-			insertMusic.setString(1, readFile.Title);
-			insertMusic.setString(2, readFile.Artist);
-			insertMusic.setString(3, readFile.Album);
+			insertMusic.setString(1, fingerprintedSampleData.getTitle());
+			insertMusic.setString(2, fingerprintedSampleData.getArtist());
+			insertMusic.setString(3, fingerprintedSampleData.getAlbum());
 			insertMusic.setString(4, fileName);
 			insertMusic.setString(5, "");
-			insertMusic.setDouble(6, readFile.audio_length);
+			insertMusic.setDouble(6, fingerprintedSampleData.getAudioLength());
 			insertMusic.executeUpdate();
 
 			int id;
@@ -71,7 +78,7 @@ public class MysqlDB {
 
 			StringBuilder buf = new StringBuilder("INSERT INTO `HashTable` " + "(`Hash`, `id`, `Time`) " + "VALUES");
 
-			Fingerprint fp = readFile.fingerprint;
+			Fingerprint fp = fingerprintedSampleData.getFingerprint();
 			for (Link link : fp.getLinkList()) {
 				Info info = new Info(id, link);
 				buf.append("(").append(info.hash).append(",").append(info.id).append(",").append(info.time)

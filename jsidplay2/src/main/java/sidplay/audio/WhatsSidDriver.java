@@ -16,7 +16,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.WAVDriver.WavHeader;
-import sidplay.audio.whatssid.ReadFile;
+import sidplay.audio.whatssid.FingerprintedSampleData;
 import sidplay.audio.whatssid.WhatsSidBaseDriver;
 import sidplay.audio.whatssid.database.MysqlDB;
 import sidplay.ini.IniConfigException;
@@ -33,17 +33,17 @@ public class WhatsSidDriver extends WhatsSidBaseDriver {
 
 	private ByteBuffer sampleBuffer;
 
-	private SidTune tune;
-
-	private IAudioSection audioSection;
-
-	protected WavHeader wavHeader;
+	private WavHeader wavHeader;
 
 	private FileOutputStream wav;
 
 	private RandomAccessFile file;
 
 	private String recordingFilename;
+
+	private IAudioSection audioSection;
+
+	private SidTune tune;
 
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {
@@ -56,17 +56,18 @@ public class WhatsSidDriver extends WhatsSidBaseDriver {
 			throws IOException, LineUnavailableException, InterruptedException {
 		if (audioSection.getSamplingRate() != SamplingRate.VERY_LOW) {
 			audioSection.setSamplingRate(SamplingRate.VERY_LOW);
-			throw new IniConfigException("Sampling rate does not match " + 8000);
+			throw new IniConfigException("Sampling rate does not match 8KHz");
 		}
 		this.recordingFilename = recordingFilename;
 
-		System.out.println("Analyzing: " + recordingFilename);
 		if (new File(recordingFilename).exists()) {
 			throw new NextTuneException();
 		}
-		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
+		System.out.println("Recording: " + recordingFilename);
 
 		file = new RandomAccessFile(recordingFilename, "rw");
+
+		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
 		wav = new FileOutputStream(file.getFD());
 		wav.write(wavHeader.getBytes());
 
@@ -104,22 +105,17 @@ public class WhatsSidDriver extends WhatsSidBaseDriver {
 			try {
 				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
 				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
-				byte[] target = new byte[bytes.length - hLength];
-				System.arraycopy(bytes, hLength, target, 0, target.length);
-				if (target.length > 0) {
-					ReadFile readFile = new ReadFile();
-					readFile.readFile(target);
-					readFile.getMetaInfo(tune, recordingFilename);
+				if (bytes.length > hLength) {
+					System.out.println("BEGIN Insert Fingerprinting");
 
-					String database = System.getenv().getOrDefault("YECHENG_DATABASE_NAME", "musiclibary");
-					int port = Integer.parseInt(System.getenv().getOrDefault("YECHENG_DATABASE_PORT", "3306"));
-					String host = System.getenv().getOrDefault("YECHENG_DATABASE_HOST", "localhost");
-					String user = System.getenv().getOrDefault("YECHENG_DATABASE_USER", "newuser");
-					String pass = System.getenv().getOrDefault("YECHENG_DATABASE_PASS", "password");
-					MysqlDB db = new MysqlDB(host, port, database, user, pass);
-					System.out.println("Insert into Database");
-					db.insert(readFile, recordingFilename);
-					System.out.println("Analyzing End");
+					FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(bytes, hLength,
+							bytes.length - hLength);
+					fingerprintedSampleData.setMetaInfo(tune, recordingFilename);
+
+					MysqlDB database = new MysqlDB();
+					database.insert(fingerprintedSampleData, recordingFilename);
+
+					System.out.println("END Insert Fingerprinting");
 				}
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);

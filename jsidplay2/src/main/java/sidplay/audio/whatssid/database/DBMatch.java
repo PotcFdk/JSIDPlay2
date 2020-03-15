@@ -1,5 +1,8 @@
 package sidplay.audio.whatssid.database;
 
+import sidplay.audio.whatssid.FingerprintedSampleData;
+import sidplay.audio.whatssid.model.SongMatch;
+
 public class DBMatch {
 
 	private String title;
@@ -80,5 +83,13 @@ public class DBMatch {
 		return "title=" + title + ", artist=" + artist + ", album=" + album + ", confidence=" + confidence
 				+ ", relativeConfidence=" + relativeConfidence + ", offset=" + offset + ", offsetSeconds="
 				+ offsetSeconds;
+	}
+
+	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {
+		confidence = songMatch.getMatch().getCount();
+		relativeConfidence = (songMatch.getMatch().getCount()
+				/ (double) fingerprintedSampleData.getFingerprint().getLinkList().size()) * 100;
+		offset = songMatch.getMatch().getTime();
+		offsetSeconds = songMatch.getMatch().getTime() * 0.03225806451612903;
 	}
 }

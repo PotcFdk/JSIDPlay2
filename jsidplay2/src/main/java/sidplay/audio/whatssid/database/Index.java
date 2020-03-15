@@ -23,12 +23,9 @@ public class Index {
 	private int maxCount = -1;
 	private int maxTime = -1;
 
-	public Index() {
-		hashMap = new HashMap<>(400000);
-	}
-
-	public void loadDB(MysqlDB mysql) {
+	public Index(MysqlDB mysql) {
 		sqlDB = mysql;
+		hashMap = new HashMap<>(400000);
 	}
 
 	public SongMatch search(Fingerprint fp, int minHit) {

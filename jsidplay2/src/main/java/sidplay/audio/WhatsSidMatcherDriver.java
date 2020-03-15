@@ -12,7 +12,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.whatssid.ReadFile;
+import sidplay.audio.whatssid.FingerprintedSampleData;
 import sidplay.audio.whatssid.WhatsSidBaseDriver;
 import sidplay.audio.whatssid.database.DBMatch;
 import sidplay.audio.whatssid.database.Index;
@@ -46,7 +46,7 @@ public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
 			throws IOException, LineUnavailableException, InterruptedException {
 		if (audioSection.getSamplingRate() != SamplingRate.VERY_LOW) {
 			audioSection.setSamplingRate(SamplingRate.VERY_LOW);
-			throw new IniConfigException("Sampling rate does not match " + 8000);
+			throw new IniConfigException("Sampling rate does not match 8000");
 		}
 		out = new ByteArrayOutputStream();
 
@@ -57,9 +57,11 @@ public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
 	@Override
 	public void write() throws InterruptedException {
 		int length = sampleBuffer.position();
-		byte[] buffer = new byte[length];
 		((Buffer) sampleBuffer).flip();
+
+		byte[] buffer = new byte[length];
 		sampleBuffer.get(buffer, 0, length);
+
 		out.write(buffer, 0, length);
 	}
 
@@ -68,30 +70,23 @@ public class WhatsSidMatcherDriver extends WhatsSidBaseDriver {
 		if (out != null) {
 			byte target[] = out.toByteArray();
 			if (target.length > 0) {
-				ReadFile readFile = new ReadFile();
-				readFile.readFile(target);
-				Index index = new Index();
-				String database = System.getenv().getOrDefault("YECHENG_DATABASE_NAME", "musiclibary");
-				int port = Integer.parseInt(System.getenv().getOrDefault("YECHENG_DATABASE_PORT", "3306"));
-				String host = System.getenv().getOrDefault("YECHENG_DATABASE_HOST", "localhost");
-				String user = System.getenv().getOrDefault("YECHENG_DATABASE_USER", "newuser");
-				String pass = System.getenv().getOrDefault("YECHENG_DATABASE_PASS", "password");
-				MysqlDB db = new MysqlDB(host, port, database, user, pass);
-				index.loadDB(db);
-				SongMatch song_match = index.search(readFile.fingerprint, 15);
-				if (song_match != null && song_match.getIdSong() != -1) {
-					DBMatch result = db.getByID(song_match.getIdSong());
-					result.setConfidence(song_match.getMatch().getCount());
-					result.setRelativeConfidence(
-							(song_match.getMatch().getCount() / (double) readFile.fingerprint.getLinkList().size())
-									* 100);
-					result.setOffset(song_match.getMatch().getTime());
-					result.setOffsetSeconds(song_match.getMatch().getTime() * 0.03225806451612903);
-					System.out.println(result.toString());
+
+				FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(target, 0, target.length);
+
+				MysqlDB database = new MysqlDB();
+				Index index = new Index(database);
+
+				SongMatch songMatch = index.search(fingerprintedSampleData.getFingerprint(), 15);
+
+				if (songMatch != null && songMatch.getIdSong() != -1) {
+
+					DBMatch result = database.getByID(songMatch.getIdSong());
+					result.setSongMatch(fingerprintedSampleData, songMatch);
+
+					System.out.println("Match: " + result.toString());
 				} else {
 					System.out.println("No match!");
 				}
-				System.out.println("Matching End");
 			}
 		}
 	}
