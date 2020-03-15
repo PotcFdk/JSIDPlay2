@@ -1,6 +1,7 @@
 package sidplay.audio.whatssid;
 
 import java.io.File;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
@@ -47,7 +48,7 @@ public class ReadFile {
 
 		ByteBuffer buf = ByteBuffer.allocate(4 * len);
 		buf.put(sampleData);
-		buf.rewind();
+		((Buffer) buf).rewind();
 
 		for (int i = 0; i < len; i++) {
 			buf.order(ByteOrder.LITTLE_ENDIAN);
