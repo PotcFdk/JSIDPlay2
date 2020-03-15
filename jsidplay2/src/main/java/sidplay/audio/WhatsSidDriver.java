@@ -47,8 +47,8 @@ public class WhatsSidDriver extends WhatsSidBaseDriver {
 
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {
-		this.audioSection = audioSection;
 		this.tune = tune;
+		this.audioSection = audioSection;
 	}
 
 	@Override
@@ -103,8 +103,8 @@ public class WhatsSidDriver extends WhatsSidBaseDriver {
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
-				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
 				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
+				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
 				if (bytes.length > hLength) {
 					System.out.println("BEGIN Insert Fingerprinting");
 
