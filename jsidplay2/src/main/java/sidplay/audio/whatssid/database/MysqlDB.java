@@ -141,8 +141,7 @@ public class MysqlDB {
 		if (len > 0) {
 			len = exec.length();
 			exec.replace(len - 1, len, ");");
-			
-			ResultSet resultSet;
+
 			try {
 				return dbStatement.executeQuery(exec.toString());
 			} catch (SQLException e) {
