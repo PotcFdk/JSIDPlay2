@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -111,7 +112,10 @@ public class WhatsSidDriver implements AudioDriver {
 				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
 				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
 
-				fingerPrinting.insert(ByteBuffer.wrap(bytes, hLength, bytes.length - hLength), tune, recordingFilename);
+				ByteBuffer bb = ByteBuffer.allocate(bytes.length - hLength);
+				bb.put(bytes, hLength, bb.capacity());
+				((Buffer) bb).flip();
+				fingerPrinting.insert(bb, tune, recordingFilename);
 
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
