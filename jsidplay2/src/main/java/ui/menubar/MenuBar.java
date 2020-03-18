@@ -16,12 +16,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import builder.resid.SIDMixer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -56,6 +58,8 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.database.DBMatch;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -106,7 +110,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	/** Empty disk image */
 	private static final String EMPTY_D64 = "/libsidplay/components/c1541/empty.d64";
 	private static byte[] EMPTY_DISK;
-	
+
 	private static final String ACTION_REPLAY_MKVI = "/libsidplay/components/cart/AR_60PAL.CRT";
 
 	static {
@@ -142,6 +146,8 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected Label tracks;
+
+	private FingerPrinting fingerPrinting = new FingerPrinting();
 
 	private class StateChangeListener implements PropertyChangeListener {
 		@Override
@@ -274,7 +280,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 	}
-	
+
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
@@ -413,7 +419,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void ultimate64() {
 		new Ultimate64Window(util.getPlayer()).open();
 	}
-	
+
 	@FXML
 	private void audioSettings() {
 		new AudioSettings(util.getPlayer()).open();
@@ -686,7 +692,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void insertARMKVI() {
 		insertCartridge(MenuBar.class.getResourceAsStream(ACTION_REPLAY_MKVI));
 	}
-	
+
 	@FXML
 	private void ejectCartridge() {
 		util.getPlayer().getC64().ejectCartridge();
@@ -850,7 +856,8 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void assembly64() {
 		if (!tabAlreadyOpen(Assembly64.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Assembly64.ID), new Assembly64(util.getWindow(), util.getPlayer()));
+			Tab tab = new Tab(util.getBundle().getString(Assembly64.ID),
+					new Assembly64(util.getWindow(), util.getPlayer()));
 			tab.setId(Assembly64.ID);
 			addTab(tab);
 		}
@@ -985,6 +992,21 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
+	}
+
+	@FXML
+	private void match() {
+		util.getPlayer().configureMixer(mixer -> {
+			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
+			new Thread(() -> {
+				DBMatch result = fingerPrinting.match(whatsSidAnalyserBuffer);
+				if (result != null) {
+					System.out.println("Match: " + result.toString());
+				} else {
+					System.out.println("No match!");
+				}
+			}).start();
+		});
 	}
 
 	private void addView(String id) {

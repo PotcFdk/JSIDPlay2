@@ -1,9 +1,9 @@
-package sidplay.audio.whatssid.fingerprint;
+package libsidutils.fingerprinting.fingerprint;
 
 import java.util.ArrayList;
 
-import sidplay.audio.whatssid.spectrogram.Spectrogram;
-import sidplay.audio.whatssid.spectrogram.Window;
+import libsidutils.fingerprinting.spectrogram.Spectrogram;
+import libsidutils.fingerprinting.spectrogram.Window;
 
 /**
  * Created by hsyecheng on 2015/6/11.

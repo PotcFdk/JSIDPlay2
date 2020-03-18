@@ -12,11 +12,8 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.whatssid.FingerprintedSampleData;
-import sidplay.audio.whatssid.database.DBMatch;
-import sidplay.audio.whatssid.database.Index;
-import sidplay.audio.whatssid.database.MysqlDB;
-import sidplay.audio.whatssid.model.SongMatch;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.database.DBMatch;
 import sidplay.ini.IniConfigException;
 
 /**
@@ -34,6 +31,8 @@ public class WhatsSidMatcherDriver implements AudioDriver {
 	private ByteArrayOutputStream out;
 
 	private IAudioSection audioSection;
+
+	private FingerPrinting fingerPrinting = new FingerPrinting();
 
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {
@@ -67,25 +66,11 @@ public class WhatsSidMatcherDriver implements AudioDriver {
 	@Override
 	public void close() {
 		if (out != null) {
-			byte target[] = out.toByteArray();
-			if (target.length > 0) {
-
-				FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(target, 0, target.length);
-
-				MysqlDB database = new MysqlDB();
-				Index index = new Index(database);
-
-				SongMatch songMatch = index.search(fingerprintedSampleData.getFingerprint(), 15);
-
-				if (songMatch != null && songMatch.getIdSong() != -1) {
-
-					DBMatch result = database.getByID(songMatch.getIdSong());
-					result.setSongMatch(fingerprintedSampleData, songMatch);
-
-					System.out.println("Match: " + result.toString());
-				} else {
-					System.out.println("No match!");
-				}
+			DBMatch result = fingerPrinting.match(ByteBuffer.wrap(out.toByteArray()));
+			if (result != null) {
+				System.out.println("Match: " + result.toString());
+			} else {
+				System.out.println("No match!");
 			}
 		}
 	}

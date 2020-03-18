@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.model;
+package libsidutils.fingerprinting.model;
 
 public class Match {
 

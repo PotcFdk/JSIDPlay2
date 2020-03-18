@@ -308,6 +308,19 @@
 				</padding>
 				<Label fx:id="tracks" />
 			</HBox>
+			<Button focusTraversable="false" onAction="#match"
+				fx:id="whatssid">
+				<tooltip>
+					<Tooltip text="%WHATSSID_TIP" fx:id="whatssidToolTip" />
+				</tooltip>
+				<graphic>
+					<ImageView>
+						<image>
+							<Image url="@/ui/icons/mini/identify.png" />
+						</image>
+					</ImageView>
+				</graphic>
+			</Button>
 			<Button focusTraversable="false" onAction="#previousSong"
 				fx:id="previous2">
 				<tooltip>

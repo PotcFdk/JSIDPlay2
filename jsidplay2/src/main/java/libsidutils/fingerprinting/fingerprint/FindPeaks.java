@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.fingerprint;
+package libsidutils.fingerprinting.fingerprint;
 
 /**
  * Created by hsyec_000 on 2015/6/11. Find local peaks in fft data.

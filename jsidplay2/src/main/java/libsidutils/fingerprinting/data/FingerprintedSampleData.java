@@ -1,14 +1,13 @@
-package sidplay.audio.whatssid;
+package libsidutils.fingerprinting.data;
 
 import java.io.File;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
 
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
-import sidplay.audio.whatssid.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.fingerprint.Fingerprint;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate
@@ -42,16 +41,11 @@ public class FingerprintedSampleData {
 		return audioLength;
 	}
 
-	public FingerprintedSampleData(byte[] sampleData, int offset, int length) {
-		int len = (int) (sampleData.length / 4/* bytes * channels */);
+	public FingerprintedSampleData(ByteBuffer buf) {
 
+		int len = buf.limit() >> 2/* bytes * channels */;
 		float[] dataL = new float[len];
 		float[] dataR = new float[len];
-
-		ByteBuffer buf = ByteBuffer.allocate(4 * len);
-		buf.put(sampleData, offset, length);
-		((Buffer) buf).rewind();
-
 		for (int i = 0; i < len; i++) {
 			buf.order(ByteOrder.LITTLE_ENDIAN);
 			dataL[i] = buf.getShort() / 32768f;
@@ -69,7 +63,7 @@ public class FingerprintedSampleData {
 	}
 
 	public void setMetaInfo(SidTune tune, String recordingFilename) {
-		if (tune.getInfo().getInfoString().size() == 3) {
+		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
 			Iterator<String> description = tune.getInfo().getInfoString().iterator();
 			this.title = description.next();
 			this.artist = description.next();

@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.fingerprint;
+package libsidutils.fingerprinting.fingerprint;
 
 /**
  * Created by hsyecheng on 2015/6/19.

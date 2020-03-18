@@ -15,10 +15,9 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
+import libsidutils.fingerprinting.FingerPrinting;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.audio.whatssid.FingerprintedSampleData;
-import sidplay.audio.whatssid.database.MysqlDB;
 import sidplay.ini.IniConfigException;
 
 /**
@@ -48,6 +47,8 @@ public class WhatsSidDriver implements AudioDriver {
 	private IAudioSection audioSection;
 
 	private SidTune tune;
+
+	private FingerPrinting fingerPrinting = new FingerPrinting();
 
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {
@@ -109,18 +110,9 @@ public class WhatsSidDriver implements AudioDriver {
 			try {
 				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
 				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
-				if (bytes.length > hLength) {
-					System.out.println("BEGIN Insert Fingerprinting");
 
-					FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(bytes, hLength,
-							bytes.length - hLength);
-					fingerprintedSampleData.setMetaInfo(tune, recordingFilename);
+				fingerPrinting.insert(ByteBuffer.wrap(bytes, hLength, bytes.length - hLength), tune, recordingFilename);
 
-					MysqlDB database = new MysqlDB();
-					database.insert(fingerprintedSampleData, recordingFilename);
-
-					System.out.println("END Insert Fingerprinting");
-				}
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
 			}

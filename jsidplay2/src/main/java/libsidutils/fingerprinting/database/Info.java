@@ -1,12 +1,10 @@
-package sidplay.audio.whatssid.database;
+package libsidutils.fingerprinting.database;
 
-import sidplay.audio.whatssid.fingerprint.Hash;
-import sidplay.audio.whatssid.fingerprint.Link;
+import libsidutils.fingerprinting.fingerprint.Hash;
+import libsidutils.fingerprinting.fingerprint.Link;
 
 public class Info {
-	public final int hash;
-	public final int id;
-	public final int time;
+	public final int hash, id, time;
 
 	public Info(int id, Link link) {
 		this.id = id;

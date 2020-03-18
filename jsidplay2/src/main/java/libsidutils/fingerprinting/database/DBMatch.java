@@ -1,18 +1,13 @@
-package sidplay.audio.whatssid.database;
+package libsidutils.fingerprinting.database;
 
-import sidplay.audio.whatssid.FingerprintedSampleData;
-import sidplay.audio.whatssid.model.SongMatch;
+import libsidutils.fingerprinting.data.FingerprintedSampleData;
+import libsidutils.fingerprinting.model.SongMatch;
 
 public class DBMatch {
 
-	private String title;
-	private String artist;
-	private String album;
-	private double audioLength;
-	private int confidence;
-	private double relativeConfidence;
-	private int offset;
-	private double offsetSeconds;
+	private String title, artist, album;
+	private double audioLength, relativeConfidence, offsetSeconds;
+	private int confidence, offset;
 
 	public String getTitle() {
 		return title;

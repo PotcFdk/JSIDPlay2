@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.spectrogram;
+package libsidutils.fingerprinting.spectrogram;
 
 import org.jtransforms.fft.FloatFFT_1D;
 

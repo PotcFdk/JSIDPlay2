@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.fingerprint;
+package libsidutils.fingerprinting.fingerprint;
 
 public class Peak {
 

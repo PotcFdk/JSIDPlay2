@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.database;
+package libsidutils.fingerprinting.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import sidplay.audio.whatssid.FingerprintedSampleData;
-import sidplay.audio.whatssid.fingerprint.Fingerprint;
-import sidplay.audio.whatssid.fingerprint.Link;
+import libsidutils.fingerprinting.data.FingerprintedSampleData;
+import libsidutils.fingerprinting.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.fingerprint.Link;
 
 /**
  * Created by hsyecheng on 2015/6/12.
@@ -132,9 +132,8 @@ public class MysqlDB {
 	}
 
 	public synchronized DBMatch getByID(int id) {
-		try {
-			ResultSet resultSet = dbStatement
-					.executeQuery("SELECT Title, Artist, Album, audio_length FROM `MusicInfo` WHERE idMusicInfo=" + id);
+		try (ResultSet resultSet = dbStatement
+				.executeQuery("SELECT Title, Artist, Album, audio_length FROM `MusicInfo` WHERE idMusicInfo=" + id)) {
 			while (resultSet.next()) {
 				DBMatch dbMatch = new DBMatch();
 				dbMatch.setTitle(resultSet.getString(1));

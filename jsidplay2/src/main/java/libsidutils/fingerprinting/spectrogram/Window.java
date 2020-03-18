@@ -1,4 +1,4 @@
-package sidplay.audio.whatssid.spectrogram;
+package libsidutils.fingerprinting.spectrogram;
 
 /**
  * Created by hsyecheng on 2015/6/11.

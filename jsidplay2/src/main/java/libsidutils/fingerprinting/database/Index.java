@@ -1,31 +1,37 @@
-package sidplay.audio.whatssid.database;
+package libsidutils.fingerprinting.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sidplay.audio.whatssid.fingerprint.Fingerprint;
-import sidplay.audio.whatssid.fingerprint.Hash;
-import sidplay.audio.whatssid.fingerprint.Link;
-import sidplay.audio.whatssid.model.Match;
-import sidplay.audio.whatssid.model.SongMatch;
+import libsidutils.fingerprinting.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.fingerprint.Hash;
+import libsidutils.fingerprinting.fingerprint.Link;
+import libsidutils.fingerprinting.model.Match;
+import libsidutils.fingerprinting.model.SongMatch;
 
 /**
  * Created by hsyecheng on 2015/6/12.
  */
 public class Index {
 
-	private long maxId = -1;
-	private int maxCount = -1;
-	private int maxTime = -1;
-	
-	private final HashMap<Long, Match> hashMap;
-	private final MysqlDB sqlDB;
+	private MysqlDB sqlDB;
 
-	public Index(MysqlDB mysql) {
-		sqlDB = mysql;
+	private long maxId;
+	private int maxCount, maxTime;
+
+	private HashMap<Long, Match> hashMap;
+
+	public Index() {
 		hashMap = new HashMap<>(400000);
+		maxId = -1;
+		maxCount = -1;
+		maxTime = -1;
+	}
+
+	public void setDatabase(MysqlDB mysql) {
+		sqlDB = mysql;
 	}
 
 	public SongMatch search(Fingerprint fp, int minHit) {
@@ -46,28 +52,24 @@ public class Index {
 			linkHashMap.put(linkHash[i], linkTime[i]);
 		}
 
-		ResultSet rs = sqlDB.searchAll(linkHash);
+		try (ResultSet rs = sqlDB.searchAll(linkHash)) {
 
-		if (rs == null) {
-			return null;
-		}
-		try {
+			if (rs == null) {
+				return null;
+			}
 			while (rs.next()) {
 				int hash = rs.getInt(2);
 				int id = rs.getInt(3);
 				int time = rs.getInt(4);
 
-				// Hits hits = new Hits(id, linkHashMap.get(hash) - time);
-				Match count;
-				// if(hashMap.containsKey(hits))
 				Long idHash = idHash(id, linkHashMap.get(hash) - time);
-				count = hashMap.get(idHash);
-				if (count == null)
+				Match count = hashMap.get(idHash);
+				if (count == null) {
 					count = new Match(0, linkHashMap.get(hash) - time);
+				}
 				count.updateCount();
 				hashMap.put(idHash, count);
 			}
-			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return new SongMatch(-1, new Match(-1, -1));
