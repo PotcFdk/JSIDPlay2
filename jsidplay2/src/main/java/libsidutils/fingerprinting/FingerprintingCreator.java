@@ -1,4 +1,4 @@
-package libsidutils.whatssid;
+package libsidutils.fingerprinting;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import ui.filefilter.TuneFileFilter;
  *
  */
 @Parameters(resourceBundle = "libsidutils.whatssid.WhatsSidAnalyser")
-public class WhatsSidAnalyser implements Function<SidTune, String> {
+public class FingerprintingCreator implements Function<SidTune, String> {
 
 	private static final TuneFileFilter TUNE_FILE_FILTER = new TuneFileFilter();
 
@@ -179,7 +179,7 @@ public class WhatsSidAnalyser implements Function<SidTune, String> {
 	}
 
 	public static void main(String[] args) throws IOException, SidTuneError, InterruptedException {
-		new WhatsSidAnalyser().execute(args);
+		new FingerprintingCreator().execute(args);
 	}
 
 }

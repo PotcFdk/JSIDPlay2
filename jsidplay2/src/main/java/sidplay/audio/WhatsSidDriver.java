@@ -25,7 +25,8 @@ import sidplay.ini.IniConfigException;
  * Alpha: Shazam like feature: Analyze tunes to recognize a currently played
  * tune
  * 
- * This is the analyzing part. Use WhatsSidMatcherDriver to match.
+ * This is the analyzing part. Use
+ * {@link libsidutils.fingerprinting.FingerPrinting} to match.
  * 
  * WAV file is created if not exists containing 8KHz sample data. WAV file
  * contents is then fingerprint'ed
@@ -112,6 +113,7 @@ public class WhatsSidDriver implements AudioDriver {
 				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
 				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
 
+				System.out.println("Insert " + recordingFilename);
 				ByteBuffer bb = ByteBuffer.allocate(bytes.length - hLength);
 				bb.put(bytes, hLength, bb.capacity());
 				((Buffer) bb).flip();
