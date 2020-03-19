@@ -94,14 +94,6 @@ public class MysqlDB {
 		}
 	}
 
-	public synchronized ResultSet search(int hash) {
-		try {
-			return dbStatement.executeQuery("SELECT * from `HashTable` WHERE Hash=" + hash + ";");
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public synchronized ResultSet searchAll(int[] hash) {
 		try {
 			int len = hash.length;
@@ -118,14 +110,6 @@ public class MysqlDB {
 				return dbStatement.executeQuery(exec.toString());
 			}
 			return null;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public synchronized ResultSet listAll() {
-		try {
-			return dbStatement.executeQuery("SELECT * FROM `HashTable`");
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
