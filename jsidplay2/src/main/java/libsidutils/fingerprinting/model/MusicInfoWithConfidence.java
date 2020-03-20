@@ -1,7 +1,5 @@
-package libsidutils.fingerprinting.database;
+package libsidutils.fingerprinting.model;
 
-import libsidutils.fingerprinting.data.FingerprintedSampleData;
-import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 
 public class MusicInfoWithConfidence {
@@ -52,8 +50,8 @@ public class MusicInfoWithConfidence {
 
 	@Override
 	public String toString() {
-		return "musicInfoBean=" + musicInfoBean + ", confidence=" + confidence + ", relativeConfidence="
-				+ relativeConfidence + ", offset=" + offset + ", offsetSeconds=" + offsetSeconds;
+		return musicInfoBean + ", confidence=" + confidence + ", relativeConfidence=" + relativeConfidence + ", offset="
+				+ offset + ", offsetSeconds=" + offsetSeconds;
 	}
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {

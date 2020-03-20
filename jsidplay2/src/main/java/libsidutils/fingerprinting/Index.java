@@ -1,4 +1,4 @@
-package libsidutils.fingerprinting.database;
+package libsidutils.fingerprinting;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package libsidutils.fingerprinting.data;
+package libsidutils.fingerprinting.model;
 
 import java.io.File;
 import java.nio.ByteBuffer;

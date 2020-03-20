@@ -59,7 +59,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.database.MusicInfoWithConfidence;
+import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;

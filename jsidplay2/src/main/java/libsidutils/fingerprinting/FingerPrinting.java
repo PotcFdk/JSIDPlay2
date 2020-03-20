@@ -4,12 +4,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import libsidplay.sidtune.SidTune;
-import libsidutils.fingerprinting.data.FingerprintedSampleData;
-import libsidutils.fingerprinting.database.Index;
-import libsidutils.fingerprinting.database.MusicInfoWithConfidence;
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
 import libsidutils.fingerprinting.fingerprint.Hash;
 import libsidutils.fingerprinting.fingerprint.Link;
+import libsidutils.fingerprinting.model.FingerprintedSampleData;
+import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
 import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.FingerPrintingApi;
 import libsidutils.fingerprinting.rest.beans.HashBean;
