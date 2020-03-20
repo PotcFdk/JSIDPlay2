@@ -10,11 +10,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
-import libsidplay.common.ChipModel;
-import libsidplay.common.Emulation;
-import libsidplay.common.Engine;
-import libsidplay.config.IEmulationSection;
-import libsidplay.config.IFilterSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -39,9 +34,6 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
-
-	@Parameter(names = { "--allFilters" }, descriptionKey = "ALL_FILTERS", arity = 1)
-	private boolean allFilters;
 
 	@Parameter(descriptionKey = "DIRECTORY", required = true)
 	private String directoryPath;
@@ -72,18 +64,13 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 
 		for (File file : new File(directoryPath).listFiles()) {
 			if (TUNE_FILE_FILTER.accept(file)) {
+
 				SidTune sidTune = SidTune.load(file);
 				player.setTune(sidTune);
 				sidTune.getInfo().setSelectedSong(sidTune.getInfo().getStartSong());
-				if (allFilters) {
-					for (IFilterSection filterSection : config.getFilterSection()) {
-						currentFilterName = filterSection.getName();
-						setForceFilter(filterSection);
-						runC64();
-					}
-				} else {
-					runC64();
-				}
+
+				player.startC64();
+				player.stopC64(false);
 			}
 		}
 	}
@@ -96,68 +83,6 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			} catch (IOException e) {
 				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
 			}
-		}
-	}
-
-	private void runC64() throws IOException, SidTuneError, InterruptedException {
-		player.startC64();
-		player.stopC64(false);
-	}
-
-	private void setForceFilter(IFilterSection filterSection) {
-		IEmulationSection emulationSection = config.getEmulationSection();
-		if (filterSection.isReSIDFilter6581()) {
-			emulationSection.setUserEmulation(Emulation.RESID);
-			emulationSection.setStereoEmulation(Emulation.RESID);
-			emulationSection.setThirdEmulation(Emulation.RESID);
-			emulationSection.setUserSidModel(ChipModel.MOS6581);
-			emulationSection.setStereoSidModel(ChipModel.MOS6581);
-			emulationSection.setThirdSIDModel(ChipModel.MOS6581);
-			emulationSection.setFilterName(0, Engine.EMULATION, Emulation.RESID, ChipModel.MOS6581,
-					filterSection.getName());
-			emulationSection.setFilterName(1, Engine.EMULATION, Emulation.RESID, ChipModel.MOS6581,
-					filterSection.getName());
-			emulationSection.setFilterName(2, Engine.EMULATION, Emulation.RESID, ChipModel.MOS6581,
-					filterSection.getName());
-		} else if (filterSection.isReSIDfpFilter6581()) {
-			emulationSection.setUserEmulation(Emulation.RESIDFP);
-			emulationSection.setStereoEmulation(Emulation.RESIDFP);
-			emulationSection.setThirdEmulation(Emulation.RESIDFP);
-			emulationSection.setUserSidModel(ChipModel.MOS6581);
-			emulationSection.setStereoSidModel(ChipModel.MOS6581);
-			emulationSection.setThirdSIDModel(ChipModel.MOS6581);
-			emulationSection.setFilterName(0, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS6581,
-					filterSection.getName());
-			emulationSection.setFilterName(1, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS6581,
-					filterSection.getName());
-			emulationSection.setFilterName(2, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS6581,
-					filterSection.getName());
-		} else if (filterSection.isReSIDFilter8580()) {
-			emulationSection.setUserEmulation(Emulation.RESID);
-			emulationSection.setStereoEmulation(Emulation.RESID);
-			emulationSection.setThirdEmulation(Emulation.RESID);
-			emulationSection.setUserSidModel(ChipModel.MOS8580);
-			emulationSection.setStereoSidModel(ChipModel.MOS8580);
-			emulationSection.setThirdSIDModel(ChipModel.MOS8580);
-			emulationSection.setFilterName(0, Engine.EMULATION, Emulation.RESID, ChipModel.MOS8580,
-					filterSection.getName());
-			emulationSection.setFilterName(1, Engine.EMULATION, Emulation.RESID, ChipModel.MOS8580,
-					filterSection.getName());
-			emulationSection.setFilterName(2, Engine.EMULATION, Emulation.RESID, ChipModel.MOS8580,
-					filterSection.getName());
-		} else if (filterSection.isReSIDfpFilter8580()) {
-			emulationSection.setUserEmulation(Emulation.RESIDFP);
-			emulationSection.setStereoEmulation(Emulation.RESIDFP);
-			emulationSection.setThirdEmulation(Emulation.RESIDFP);
-			emulationSection.setUserSidModel(ChipModel.MOS8580);
-			emulationSection.setStereoSidModel(ChipModel.MOS8580);
-			emulationSection.setThirdSIDModel(ChipModel.MOS8580);
-			emulationSection.setFilterName(0, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS8580,
-					filterSection.getName());
-			emulationSection.setFilterName(1, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS8580,
-					filterSection.getName());
-			emulationSection.setFilterName(2, Engine.EMULATION, Emulation.RESIDFP, ChipModel.MOS8580,
-					filterSection.getName());
 		}
 	}
 
