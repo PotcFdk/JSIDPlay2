@@ -41,6 +41,10 @@ public enum MimeType {
 	 */
 	MIME_TYPE_JSON("application/json; charset=utf-8", ".json"),
 	/**
+	 * Xml
+	 */
+	MIME_TYPE_XML("application/xml; charset=utf-8", ".xml"),
+	/**
 	 * Html
 	 */
 	MIME_TYPE_HTML("text/html; charset=utf-8", ".html", ".vue"),

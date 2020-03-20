@@ -11,7 +11,6 @@ public class Window {
     private final int windowSize;
 
     public Window(int windowType, int windowSize) {
-        super();
         this.windowSize = windowSize;
 
         window = new float[windowSize];

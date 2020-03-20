@@ -33,7 +33,7 @@ import ui.filefilter.TuneFileFilter;
  *
  */
 @Parameters(resourceBundle = "libsidutils.whatssid.WhatsSidAnalyser")
-public class FingerprintingCreator implements Function<SidTune, String> {
+public class FingerPrintingCreator implements Function<SidTune, String> {
 
 	private static final TuneFileFilter TUNE_FILE_FILTER = new TuneFileFilter();
 
@@ -179,7 +179,7 @@ public class FingerprintingCreator implements Function<SidTune, String> {
 	}
 
 	public static void main(String[] args) throws IOException, SidTuneError, InterruptedException {
-		new FingerprintingCreator().execute(args);
+		new FingerPrintingCreator().execute(args);
 	}
 
 }

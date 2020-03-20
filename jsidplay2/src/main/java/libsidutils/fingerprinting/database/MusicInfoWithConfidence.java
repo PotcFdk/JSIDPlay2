@@ -2,43 +2,20 @@ package libsidutils.fingerprinting.database;
 
 import libsidutils.fingerprinting.data.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 
-public class DBMatch {
+public class MusicInfoWithConfidence {
 
-	private String title, artist, album;
-	private double audioLength, relativeConfidence, offsetSeconds;
+	private MusicInfoBean musicInfoBean;
+	private double relativeConfidence, offsetSeconds;
 	private int confidence, offset;
 
-	public String getTitle() {
-		return title;
+	public MusicInfoBean getMusicInfoBean() {
+		return musicInfoBean;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getArtist() {
-		return artist;
-	}
-
-	public void setArtist(String artist) {
-		this.artist = artist;
-	}
-
-	public String getAlbum() {
-		return album;
-	}
-
-	public void setAlbum(String album) {
-		this.album = album;
-	}
-
-	public double getAudioLength() {
-		return audioLength;
-	}
-
-	public void setAudioLength(double audioLength) {
-		this.audioLength = audioLength;
+	public void setMusicInfoBean(MusicInfoBean musicInfoBean) {
+		this.musicInfoBean = musicInfoBean;
 	}
 
 	public int getConfidence() {
@@ -75,9 +52,8 @@ public class DBMatch {
 
 	@Override
 	public String toString() {
-		return "title=" + title + ", artist=" + artist + ", album=" + album + ", confidence=" + confidence
-				+ ", relativeConfidence=" + relativeConfidence + ", offset=" + offset + ", offsetSeconds="
-				+ offsetSeconds;
+		return "musicInfoBean=" + musicInfoBean + ", confidence=" + confidence + ", relativeConfidence="
+				+ relativeConfidence + ", offset=" + offset + ", offsetSeconds=" + offsetSeconds;
 	}
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {

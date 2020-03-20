@@ -59,7 +59,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.database.DBMatch;
+import libsidutils.fingerprinting.database.MusicInfoWithConfidence;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -999,7 +999,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		util.getPlayer().configureMixer(mixer -> {
 			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
 			new Thread(() -> {
-				DBMatch result = fingerPrinting.match(whatsSidAnalyserBuffer);
+				MusicInfoWithConfidence result = fingerPrinting.match(whatsSidAnalyserBuffer);
 				if (result != null) {
 					System.out.println("Match: " + result.toString());
 				} else {

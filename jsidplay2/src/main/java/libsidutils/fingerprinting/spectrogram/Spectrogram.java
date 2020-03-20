@@ -15,7 +15,6 @@ public class Spectrogram {
     private final FloatFFT_1D fft;
     private final float[] fftData;
     public Spectrogram(float[] data, int windowsType, int windowSize, int overlap, float fs) {
-        super();
         int dataLen = data.length;
         int stepSize = windowSize - overlap;
         stft = new ArrayList<>();

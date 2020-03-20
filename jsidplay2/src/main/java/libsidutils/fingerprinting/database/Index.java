@@ -1,7 +1,5 @@
 package libsidutils.fingerprinting.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,13 +8,17 @@ import libsidutils.fingerprinting.fingerprint.Hash;
 import libsidutils.fingerprinting.fingerprint.Link;
 import libsidutils.fingerprinting.model.Match;
 import libsidutils.fingerprinting.model.SongMatch;
+import libsidutils.fingerprinting.rest.FingerPrintingApi;
+import libsidutils.fingerprinting.rest.beans.HashBean;
+import libsidutils.fingerprinting.rest.beans.HashBeans;
+import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 
 /**
  * Created by hsyecheng on 2015/6/12.
  */
 public class Index {
 
-	private MysqlDB sqlDB;
+	private FingerPrintingApi fingerPrintingClient;
 
 	private long maxId;
 	private int maxCount, maxTime;
@@ -30,8 +32,8 @@ public class Index {
 		maxTime = -1;
 	}
 
-	public void setDatabase(MysqlDB mysql) {
-		sqlDB = mysql;
+	public void setFingerPrintingClient(FingerPrintingApi fingerPrintingClient) {
+		this.fingerPrintingClient = fingerPrintingClient;
 	}
 
 	public SongMatch search(Fingerprint fp, int minHit) {
@@ -52,27 +54,21 @@ public class Index {
 			linkHashMap.put(linkHash[i], linkTime[i]);
 		}
 
-		try (ResultSet rs = sqlDB.searchAll(linkHash)) {
+		IntArrayBean intArray = new IntArrayBean();
+		intArray.setHash(linkHash);
+		HashBeans res = fingerPrintingClient.findAllHashes(intArray);
+		for (HashBean hashBean : res.getHashes()) {
+			int hash = hashBean.getHash();
+			int id = hashBean.getId();
+			int time = hashBean.getTime();
 
-			if (rs == null) {
-				return null;
+			Long idHash = idHash(id, linkHashMap.get(hash) - time);
+			Match count = hashMap.get(idHash);
+			if (count == null) {
+				count = new Match(0, linkHashMap.get(hash) - time);
 			}
-			while (rs.next()) {
-				int hash = rs.getInt(2);
-				int id = rs.getInt(3);
-				int time = rs.getInt(4);
-
-				Long idHash = idHash(id, linkHashMap.get(hash) - time);
-				Match count = hashMap.get(idHash);
-				if (count == null) {
-					count = new Match(0, linkHashMap.get(hash) - time);
-				}
-				count.updateCount();
-				hashMap.put(idHash, count);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return new SongMatch(-1, new Match(-1, -1));
+			count.updateCount();
+			hashMap.put(idHash, count);
 		}
 
 		hashMap.forEach((hash, countTime) -> {
@@ -93,4 +89,5 @@ public class Index {
 	public static int Hash2id(Long idHash) {
 		return (int) (idHash >> 16);
 	}
+
 }

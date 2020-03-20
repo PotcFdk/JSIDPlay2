@@ -44,6 +44,10 @@ import server.restful.servlets.DirectoryServlet;
 import server.restful.servlets.DownloadServlet;
 import server.restful.servlets.FavoritesServlet;
 import server.restful.servlets.FiltersServlet;
+import server.restful.servlets.FindHashServlet;
+import server.restful.servlets.FindTuneServlet;
+import server.restful.servlets.InsertHashesServlet;
+import server.restful.servlets.InsertTuneServlet;
 import server.restful.servlets.PhotoServlet;
 import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.StaticServlet;
@@ -110,7 +114,8 @@ public class JSIDPlay2Server {
 	 */
 	private static final List<Class<? extends JSIDPlay2Servlet>> SERVLETS = asList(FiltersServlet.class,
 			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
-			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class);
+			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
+			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class);
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -285,7 +290,7 @@ public class JSIDPlay2Server {
 		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT, sidplay2Section.getTmpDir());
 		context.addSecurityRole(ROLE_ADMIN);
 		context.addSecurityRole(ROLE_USER);
-		
+
 		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
 		jarScanner.setScanManifest(false);
 		jarScanner.setScanClassPath(false);
