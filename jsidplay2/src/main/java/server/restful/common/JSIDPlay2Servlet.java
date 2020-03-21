@@ -34,6 +34,9 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	public <T> void setOutput(HttpServletRequest request, HttpServletResponse response, T result, Class<T> tClass) {
+		if (result == null) {
+			return;
+		}
 		try {
 			ServletOutputStream out = response.getOutputStream();
 			if (request.getHeader(HttpHeaders.ACCEPT) == null

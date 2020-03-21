@@ -137,6 +137,9 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@SuppressWarnings("unchecked")
 	private <T> T receive(Class<T> theClass, HttpURLConnection connection) {
 		try {
+			if (connection.getContentLength() == 0) {
+				return null;
+			}
 			Object obj = JAXBContext.newInstance(theClass).createUnmarshaller().unmarshal(connection.getInputStream());
 			if (theClass.isInstance(obj)) {
 				return (T) obj;
