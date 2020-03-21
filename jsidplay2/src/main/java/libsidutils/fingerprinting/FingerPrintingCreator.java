@@ -5,18 +5,28 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
+import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.DebugUtil;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
+import sidplay.audio.Audio;
+import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
+import ui.entities.Database;
+import ui.entities.PersistenceProperties;
+import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
@@ -29,6 +39,10 @@ import ui.filefilter.TuneFileFilter;
  */
 @Parameters(resourceBundle = "libsidutils.whatssid.WhatsSidAnalyser")
 public class FingerPrintingCreator implements Function<SidTune, String> {
+
+	static {
+		DebugUtil.init();
+	}
 
 	private static final TuneFileFilter TUNE_FILE_FILTER = new TuneFileFilter();
 
@@ -55,6 +69,17 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			System.exit(0);
 		}
 
+		config.getAudioSection().setAudio(Audio.WHATS_SID);
+		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
+		config.getSidplay2Section().setDefaultPlayLength(180);
+		config.getSidplay2Section().setEnableDatabase(true);
+
+		// Use database directly without using REST interface for fingerprinting
+		EntityManager em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
+		WhatsSidService whatsSidService = new WhatsSidService(em);
+		((WhatsSidDriver) Audio.WHATS_SID.getAudioDriver()).setFingerPrintingDataSource(whatsSidService);
+
 		player = new Player(config);
 		player.setRecordingFilenameProvider(this);
 		setSIDDatabase();
@@ -73,6 +98,11 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 				player.stopC64(false);
 			}
 		}
+
+		if (em != null) {
+			em.close();
+		}
+		System.exit(0);
 	}
 
 	private void setSIDDatabase() {

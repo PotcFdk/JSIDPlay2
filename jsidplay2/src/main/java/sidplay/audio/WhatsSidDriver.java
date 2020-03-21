@@ -16,6 +16,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.audio.WAVDriver.WavHeader;
@@ -48,13 +49,18 @@ public class WhatsSidDriver implements AudioDriver {
 	private String recordingFilename;
 
 	private IConfig config;
-	
+
 	private SidTune tune;
+
+	private FingerPrintingDataSource fingerPrintingDataSource;
 
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
 		this.config = config;
+		if (fingerPrintingDataSource == null) {
+			this.fingerPrintingDataSource = new FingerprintingClient(config);
+		}
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class WhatsSidDriver implements AudioDriver {
 			try {
 				System.out.println("Insert " + recordingFilename);
 
-				FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient(config));
+				FingerPrinting fingerPrinting = new FingerPrinting(fingerPrintingDataSource);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 				fingerPrinting.insert(wavBean, tune, recordingFilename);
 			} catch (IOException e) {
@@ -133,5 +139,9 @@ public class WhatsSidDriver implements AudioDriver {
 	@Override
 	public String getExtension() {
 		return ".wav";
+	}
+
+	public void setFingerPrintingDataSource(FingerPrintingDataSource fingerPrintingDataSource) {
+		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 }
