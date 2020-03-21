@@ -1,8 +1,5 @@
 package ui.entities.whatssid.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
@@ -12,10 +9,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
@@ -33,8 +26,6 @@ import ui.entities.whatssid.MusicInfo;
 import ui.entities.whatssid.MusicInfo_;
 
 public class WhatsSidService implements FingerPrintingDataSource {
-
-	private static final int SAMPLE_RATE = 8000;
 
 	private EntityManager em;
 
@@ -130,28 +121,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	@Override
 	public MusicInfoWithConfidenceBean identify(WavBean wavBean) {
-		try {
-			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWavData()));
-			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
-				throw new RuntimeException("Sample size in bits must be " + Short.SIZE);
-			}
-			if (stream.getFormat().getChannels() != 2) {
-				throw new RuntimeException("Channels must be 2");
-			}
-			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-				throw new RuntimeException("Encoding must be PCM_SIGNED");
-			}
-			if (stream.getFormat().getSampleRate() != SAMPLE_RATE) {
-				throw new RuntimeException("SampleRate must be " + SAMPLE_RATE);
-			}
-
-			byte[] bytes = new byte[(int) stream.getFrameLength() << 2];
-			stream.read(bytes);
-
-			return new FingerPrinting(this).match(ByteBuffer.wrap(bytes));
-		} catch (UnsupportedAudioFileException | IOException e) {
-			throw new RuntimeException(e);
-		}
+		return new FingerPrinting(this).match(wavBean);
 	}
 
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -17,6 +16,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
@@ -111,15 +111,9 @@ public class WhatsSidDriver implements AudioDriver {
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
-				byte[] bytes = Files.readAllBytes(Paths.get(recordingFilename));
-				int hLength = WAVDriver.WavHeader.HEADER_LENGTH;
-
 				System.out.println("Insert " + recordingFilename);
-				ByteBuffer bb = ByteBuffer.allocate(bytes.length - hLength);
-				bb.put(bytes, hLength, bb.capacity());
-				((Buffer) bb).flip();
-				fingerPrinting.insert(bb, tune, recordingFilename);
-
+				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
+				fingerPrinting.insert(wavBean, tune, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
 			}

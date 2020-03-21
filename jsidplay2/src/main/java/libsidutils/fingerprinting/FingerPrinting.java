@@ -1,6 +1,5 @@
 package libsidutils.fingerprinting;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import libsidplay.sidtune.SidTune;
@@ -15,6 +14,7 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 
 public class FingerPrinting {
 
@@ -26,9 +26,9 @@ public class FingerPrinting {
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 
-	public void insert(ByteBuffer sampleData, SidTune tune, String recordingFilename) {
-		if (sampleData.limit() > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(sampleData);
+	public void insert(WavBean wavBean, SidTune tune, String recordingFilename) {
+		if (wavBean.getWavData().length > 0) {
+			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
 			fingerprintedSampleData.setMetaInfo(tune, recordingFilename);
 
 			MusicInfoBean musicInfoBean = new MusicInfoBean();
@@ -56,9 +56,9 @@ public class FingerPrinting {
 		}
 	}
 
-	public MusicInfoWithConfidenceBean match(ByteBuffer sampleData) {
-		if (sampleData.limit() > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(sampleData);
+	public MusicInfoWithConfidenceBean match(WavBean wavBean) {
+		if (wavBean.getWavData().length > 0) {
+			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
 
 			Index index = new Index();
 			index.setFingerPrintingClient(fingerPrintingDataSource);
