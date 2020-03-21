@@ -15,6 +15,9 @@ import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
@@ -53,11 +56,14 @@ import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
 import sidplay.Player;
+import ui.entities.Database;
+import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
+import ui.entities.whatssid.service.WhatsSidService;
 
 public class JSIDPlay2Server {
 
@@ -116,6 +122,10 @@ public class JSIDPlay2Server {
 			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class);
+
+	private static EntityManager em;
+
+	public static WhatsSidService whatsSidService;
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -327,6 +337,9 @@ public class JSIDPlay2Server {
 	}
 
 	private static void exit(int rc) {
+		if (em != null) {
+			em.close();
+		}
 		try {
 			System.out.println("Press <enter> to exit the player!");
 			System.in.read();
@@ -340,6 +353,13 @@ public class JSIDPlay2Server {
 	public static void main(String[] args) throws Exception {
 		try {
 			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
+
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+							new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL))
+					.createEntityManager();
+			whatsSidService = new WhatsSidService(em);
+
 			JSIDPlay2Server jsidplay2Server = getInstance(configuration);
 			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server)
 					.programName(JSIDPlay2Server.class.getName()).build();

@@ -91,4 +91,20 @@
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="whatssid-ds" transaction-type="RESOURCE_LOCAL">
+		<description>WhatsSid Entities</description>
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		<class>ui.entities.whatssid.MusicInfo</class>
+		<class>ui.entities.whatssid.HashTable</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<properties>
+			<property name="hibernate.connection.username" value="newuser"/>
+			<property name="hibernate.connection.password" value="password"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
+	</persistence-unit>
 </persistence>

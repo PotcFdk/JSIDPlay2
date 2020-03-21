@@ -72,6 +72,12 @@
 	</profiles>
     
     <dependencies>
+		<!--dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-jpamodelgen</artifactId>
+		    <version>5.2.11.Final</version>
+		</dependency-->
+
 		<!-- compile time dependencies -->
 		<dependency>
 			<groupId>jsidplay2</groupId>
@@ -379,6 +385,9 @@
 					<debuglevel>${debuglevel}</debuglevel>
 					<source>1.8</source>
 					<target>1.8</target>
+					<!--compilerArguments>
+            			<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+        			</compilerArguments-->
 				</configuration>
 			</plugin>
 			<plugin>
