@@ -29,7 +29,7 @@ public interface AudioDriver {
 	/**
 	 * Add additional configuration where appropriate.
 	 * 
-	 * @param audioSection audio configuration
+	 * @param config configuration
 	 */
 	default void configure(SidTune tune, IConfig config) {
 	};
