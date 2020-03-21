@@ -6,6 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "musicInfo")
 public class SongNoBean {
 
+	public SongNoBean() {
+	}
+	
+	public SongNoBean(int songNo) {
+		this.songNo = songNo;
+	}
+	
 	private int songNo;
 
 	public int getSongNo() {

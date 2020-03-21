@@ -5,6 +5,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "id")
 public class IdBean {
+
+	public IdBean() {
+	}
+	
+	public IdBean(int id) {
+		this.id = id;
+	}
+
 	private int id;
 
 	public int getId() {

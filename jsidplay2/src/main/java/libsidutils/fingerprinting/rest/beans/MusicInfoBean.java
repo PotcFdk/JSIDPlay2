@@ -67,7 +67,8 @@ public class MusicInfoBean {
 
 	@Override
 	public String toString() {
-		return "title=" + title + ", artist=" + artist + ", album=" + album + ", audioLength=" + audioLength;
+		return "title=" + title + ", artist=" + artist + ", album=" + album + ", fileDir=" + fileDir + ", infoDir="
+				+ infoDir + ", audioLength=" + audioLength;
 	}
 
 }

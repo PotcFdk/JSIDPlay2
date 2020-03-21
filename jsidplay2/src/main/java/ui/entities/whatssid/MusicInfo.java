@@ -18,16 +18,16 @@ import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 @Table(name = "MusicInfo", indexes = { @Index(columnList = "idMusicInfo", name = "idMusicInfo_UNIQUE", unique = true) })
 public class MusicInfo {
 
-	private long idMusicInfo;
+	private int idMusicInfo;
 
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	@Column(name = "idMusicInfo", nullable = false)
-	public long getIdMusicInfo() {
+	public int getIdMusicInfo() {
 		return idMusicInfo;
 	}
 
-	public void setIdMusicInfo(long idMusicInfo) {
+	public void setIdMusicInfo(int idMusicInfo) {
 		this.idMusicInfo = idMusicInfo;
 	}
 

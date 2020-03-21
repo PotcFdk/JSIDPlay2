@@ -53,8 +53,7 @@ public class Index {
 			linkHashMap.put(linkHash[i], linkTime[i]);
 		}
 
-		IntArrayBean intArray = new IntArrayBean();
-		intArray.setHash(linkHash);
+		IntArrayBean intArray = new IntArrayBean(linkHash);
 		HashBeans res = fingerPrintingDataSource.findAllHashes(intArray);
 		for (HashBean hashBean : res.getHashes()) {
 			int hash = hashBean.getHash();

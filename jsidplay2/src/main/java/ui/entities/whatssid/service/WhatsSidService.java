@@ -48,9 +48,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 			em.getTransaction().begin();
 			em.persist(musicInfo);
 			em.getTransaction().commit();
-			// TODO int / long?
-			result = new IdBean();
-			result.setId((int) musicInfo.getIdMusicInfo());
+			result = new IdBean(musicInfo.getIdMusicInfo());
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
