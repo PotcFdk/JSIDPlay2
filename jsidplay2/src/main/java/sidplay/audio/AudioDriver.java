@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
-import libsidplay.config.IAudioSection;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
 public interface AudioDriver {
@@ -31,7 +31,7 @@ public interface AudioDriver {
 	 * 
 	 * @param audioSection audio configuration
 	 */
-	default void configure(SidTune tune, IAudioSection audioSection) {
+	default void configure(SidTune tune, IConfig config) {
 	};
 
 	/**

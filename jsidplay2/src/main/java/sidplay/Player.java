@@ -658,7 +658,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
 		// configure audio driver
-		getAudioDriver().configure(tune, audioSection);
+		getAudioDriver().configure(tune, config);
 
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());

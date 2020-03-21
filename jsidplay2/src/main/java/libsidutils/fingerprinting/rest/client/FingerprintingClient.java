@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import libsidplay.config.IConfig;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -38,6 +39,13 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	private static final String USERNAME = "jsidplay2";
 	private static final String PASSWORD = "jsidplay2!";
 
+	@SuppressWarnings("unused")
+	private IConfig configuration;
+
+	public FingerprintingClient(IConfig configuration) {
+		this.configuration = configuration;
+	}
+	
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		try {

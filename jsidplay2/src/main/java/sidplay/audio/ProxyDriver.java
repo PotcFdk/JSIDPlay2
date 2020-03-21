@@ -9,7 +9,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDListener;
 import libsidplay.components.mos656x.VIC;
-import libsidplay.config.IAudioSection;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
 /**
@@ -36,9 +36,9 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	}
 
 	@Override
-	public void configure(SidTune tune, IAudioSection audioSection) {
-		driverOne.configure(tune, audioSection);
-		driverTwo.configure(tune, audioSection);
+	public void configure(SidTune tune, IConfig config) {
+		driverOne.configure(tune, config);
+		driverTwo.configure(tune, config);
 	}
 	
 	@Override

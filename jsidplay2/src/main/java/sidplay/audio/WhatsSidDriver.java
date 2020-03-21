@@ -13,7 +13,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.SamplingRate;
-import libsidplay.config.IAudioSection;
+import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.rest.beans.WavBean;
@@ -47,21 +47,21 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private String recordingFilename;
 
-	private IAudioSection audioSection;
-
+	private IConfig config;
+	
 	private SidTune tune;
 
 	@Override
-	public void configure(SidTune tune, IAudioSection audioSection) {
+	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
-		this.audioSection = audioSection;
+		this.config = config;
 	}
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {
-		if (audioSection.getSamplingRate() != SamplingRate.VERY_LOW) {
-			audioSection.setSamplingRate(SamplingRate.VERY_LOW);
+		if (config.getAudioSection().getSamplingRate() != SamplingRate.VERY_LOW) {
+			config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 			throw new IniConfigException("Sampling rate does not match 8KHz");
 		}
 		this.recordingFilename = recordingFilename;
@@ -111,7 +111,7 @@ public class WhatsSidDriver implements AudioDriver {
 			try {
 				System.out.println("Insert " + recordingFilename);
 
-				FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
+				FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient(config));
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 				fingerPrinting.insert(wavBean, tune, recordingFilename);
 			} catch (IOException e) {

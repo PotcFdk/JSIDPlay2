@@ -999,7 +999,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
 			new Thread(() -> {
 				WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
-				MusicInfoWithConfidenceBean result = new FingerprintingClient().identify(wavBean);
+				MusicInfoWithConfidenceBean result = new FingerprintingClient(util.getConfig()).identify(wavBean);
 				if (result != null) {
 					System.out.println("Match: " + result.toString());
 				} else {
