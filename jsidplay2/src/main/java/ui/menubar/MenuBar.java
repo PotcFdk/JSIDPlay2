@@ -60,6 +60,7 @@ import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -147,7 +148,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	protected Label tracks;
 
-	private FingerPrinting fingerPrinting = new FingerPrinting();
+	private FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
 
 	private class StateChangeListener implements PropertyChangeListener {
 		@Override

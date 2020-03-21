@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.whatsSidService;
@@ -10,31 +10,36 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import libsidutils.fingerprinting.rest.beans.HashBeans;
+import libsidutils.fingerprinting.rest.beans.IdBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class InsertHashesServlet extends JSIDPlay2Servlet {
+public class InsertTuneServlet extends JSIDPlay2Servlet {
+
+	public static final String INSERT_TUNE_PATH = "/insert-tune";
 
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
-	public InsertHashesServlet(Configuration configuration, Properties directoryProperties) {
+	public InsertTuneServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/insert-hashes";
+		return CONTEXT_ROOT_SERVLET + INSERT_TUNE_PATH;
 	}
 
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HashBeans hashes = getInput(request, HashBeans.class);
+		MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 
-		whatsSidService.insertHashes(hashes);
+		IdBean idBean = whatsSidService.insertTune(musicInfoBean);
+
+		setOutput(request, response, idBean, IdBean.class);
 	}
 }

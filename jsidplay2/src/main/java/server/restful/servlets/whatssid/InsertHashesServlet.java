@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.whatsSidService;
@@ -11,33 +11,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import libsidutils.fingerprinting.rest.beans.HashBeans;
-import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class FindHashServlet extends JSIDPlay2Servlet {
+public class InsertHashesServlet extends JSIDPlay2Servlet {
 
+	public static final String INSERT_HASHES_PATH = "/insert-hashes";
+	
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
-	public FindHashServlet(Configuration configuration, Properties directoryProperties) {
+	public InsertHashesServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/hash";
+		return CONTEXT_ROOT_SERVLET + INSERT_HASHES_PATH;
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
+		HashBeans hashes = getInput(request, HashBeans.class);
 
-		HashBeans result = whatsSidService.findHash(intArrayBean);
-
-		setOutput(request, response, result, HashBeans.class);
+		whatsSidService.insertHashes(hashes);
 	}
 }

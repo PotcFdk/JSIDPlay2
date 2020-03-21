@@ -17,6 +17,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
 import sidplay.ini.IniConfigException;
@@ -50,7 +51,7 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private SidTune tune;
 
-	private FingerPrinting fingerPrinting = new FingerPrinting();
+	private FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
 
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {

@@ -8,7 +8,6 @@ import libsidutils.fingerprinting.fingerprint.Hash;
 import libsidutils.fingerprinting.fingerprint.Link;
 import libsidutils.fingerprinting.model.Match;
 import libsidutils.fingerprinting.model.SongMatch;
-import libsidutils.fingerprinting.rest.FingerPrintingApi;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
@@ -18,7 +17,7 @@ import libsidutils.fingerprinting.rest.beans.IntArrayBean;
  */
 public class Index {
 
-	private FingerPrintingApi fingerPrintingClient;
+	private FingerPrintingDataSource fingerPrintingDataSource;
 
 	private long maxId;
 	private int maxCount, maxTime;
@@ -32,8 +31,8 @@ public class Index {
 		maxTime = -1;
 	}
 
-	public void setFingerPrintingClient(FingerPrintingApi fingerPrintingClient) {
-		this.fingerPrintingClient = fingerPrintingClient;
+	public void setFingerPrintingClient(FingerPrintingDataSource fingerPrintingClient) {
+		this.fingerPrintingDataSource = fingerPrintingClient;
 	}
 
 	public SongMatch search(Fingerprint fp, int minHit) {
@@ -56,7 +55,7 @@ public class Index {
 
 		IntArrayBean intArray = new IntArrayBean();
 		intArray.setHash(linkHash);
-		HashBeans res = fingerPrintingClient.findAllHashes(intArray);
+		HashBeans res = fingerPrintingDataSource.findAllHashes(intArray);
 		for (HashBean hashBean : res.getHashes()) {
 			int hash = hashBean.getHash();
 			int id = hashBean.getId();

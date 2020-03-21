@@ -10,6 +10,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -21,7 +22,7 @@ import ui.entities.whatssid.HashTable_;
 import ui.entities.whatssid.MusicInfo;
 import ui.entities.whatssid.MusicInfo_;
 
-public class WhatsSidService {
+public class WhatsSidService implements FingerPrintingDataSource {
 
 	private EntityManager em;
 
@@ -96,7 +97,7 @@ public class WhatsSidService {
 		return em.createQuery(query).getSingleResult().toBean();
 	}
 
-	public HashBeans findHash(IntArrayBean intArrayBean) {
+	public HashBeans findAllHashes(IntArrayBean intArrayBean) {
 		// SELECT * FROM `HashTable` WHERE Hash in()
 		HashBeans result = new HashBeans();
 		result.setHashes(new ArrayList<>());

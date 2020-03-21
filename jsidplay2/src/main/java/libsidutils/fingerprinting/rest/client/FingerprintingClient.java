@@ -1,6 +1,10 @@
 package libsidutils.fingerprinting.rest.client;
 
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
+import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
+import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
+import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
+import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -10,12 +14,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import libsidutils.fingerprinting.rest.FingerPrintingApi;
+import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
@@ -23,19 +28,22 @@ import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 import server.restful.common.MimeType;
 
-public class FingerprintingClient implements FingerPrintingApi {
+public class FingerprintingClient implements FingerPrintingDataSource {
 
-	private final static String PATH = "http://127.0.0.1:8080/jsidplay2service/JSIDPlay2REST";
+	// TODO configuration
+	private static final String PATH = "http://127.0.0.1:8080/jsidplay2service/JSIDPlay2REST";
+	private static final String USERNAME = "jsidplay2";
+	private static final String PASSWORD = "jsidplay2!";
 
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		try {
-			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, "/insert-tune", "PUT");
+			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, INSERT_TUNE_PATH, HttpMethod.PUT);
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(IdBean.class, connection);
 			}
-			throw new RuntimeException("Invalid response: " + connection.getResponseCode());
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -44,12 +52,12 @@ public class FingerprintingClient implements FingerPrintingApi {
 	@Override
 	public void insertHashes(HashBeans hashBeans) {
 		try {
-			HttpURLConnection connection = send(hashBeans, HashBeans.class, "/insert-hashes", "PUT");
+			HttpURLConnection connection = send(hashBeans, HashBeans.class, INSERT_HASHES_PATH, HttpMethod.PUT);
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return;
 			}
-			throw new RuntimeException("Invalid response: " + connection.getResponseCode());
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -58,12 +66,12 @@ public class FingerprintingClient implements FingerPrintingApi {
 	@Override
 	public HashBeans findAllHashes(IntArrayBean intArray) {
 		try {
-			HttpURLConnection connection = send(intArray, IntArrayBean.class, "/hash", "POST");
+			HttpURLConnection connection = send(intArray, IntArrayBean.class, FIND_HASH_PATH, HttpMethod.POST);
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(HashBeans.class, connection);
 			}
-			throw new RuntimeException("Invalid response: " + connection.getResponseCode());
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -72,12 +80,12 @@ public class FingerprintingClient implements FingerPrintingApi {
 	@Override
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
 		try {
-			HttpURLConnection connection = send(songNoBean, SongNoBean.class, "/tune", "POST");
+			HttpURLConnection connection = send(songNoBean, SongNoBean.class, FIND_TUNE_PATH, HttpMethod.POST);
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(MusicInfoBean.class, connection);
 			}
-			throw new RuntimeException("Invalid response: " + connection.getResponseCode());
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -90,8 +98,8 @@ public class FingerprintingClient implements FingerPrintingApi {
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod(requestMethod);
-		String encoded = Base64.getEncoder().encodeToString(("jsidplay2:jsidplay2!").getBytes(StandardCharsets.UTF_8));
-		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " " + encoded);
+		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
+				+ Base64.getEncoder().encodeToString((USERNAME + ":" + PASSWORD).getBytes(StandardCharsets.UTF_8)));
 		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MimeType.MIME_TYPE_XML.getContentType());
 		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getContentType());
 
@@ -112,7 +120,7 @@ public class FingerprintingClient implements FingerPrintingApi {
 			connection.disconnect();
 			return null;
 		} catch (Exception e) {
-				throw new RuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

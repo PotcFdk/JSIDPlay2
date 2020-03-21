@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.whatsSidService;
@@ -10,34 +10,36 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
-import libsidutils.fingerprinting.rest.beans.SongNoBean;
+import libsidutils.fingerprinting.rest.beans.HashBeans;
+import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class FindTuneServlet extends JSIDPlay2Servlet {
+public class FindHashServlet extends JSIDPlay2Servlet {
 
+	public static final String FIND_HASH_PATH = "/hash";
+	
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
-	public FindTuneServlet(Configuration configuration, Properties directoryProperties) {
+	public FindHashServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/tune";
+		return CONTEXT_ROOT_SERVLET + FIND_HASH_PATH;
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		SongNoBean songNoBean = getInput(request, SongNoBean.class);
+		IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
 
-		MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
+		HashBeans result = whatsSidService.findAllHashes(intArrayBean);
 
-		setOutput(request, response, musicInfoBean, MusicInfoBean.class);
+		setOutput(request, response, result, HashBeans.class);
 	}
 }

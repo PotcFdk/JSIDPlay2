@@ -10,19 +10,21 @@ import libsidutils.fingerprinting.fingerprint.Link;
 import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
 import libsidutils.fingerprinting.model.SongMatch;
-import libsidutils.fingerprinting.rest.FingerPrintingApi;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 
 public class FingerPrinting {
 
 	private static final int MIN_HIT = 15;
 
-	private FingerPrintingApi fingerPrintingClient = new FingerprintingClient();
+	private FingerPrintingDataSource fingerPrintingDataSource;
+
+	public FingerPrinting(FingerPrintingDataSource fingerPrintingDataSource) {
+		this.fingerPrintingDataSource = fingerPrintingDataSource;
+	}
 
 	public void insert(ByteBuffer sampleData, SidTune tune, String recordingFilename) {
 		if (sampleData.limit() > 0) {
@@ -37,7 +39,7 @@ public class FingerPrinting {
 			musicInfoBean.setInfoDir("");
 			musicInfoBean.setAudioLength(fingerprintedSampleData.getAudioLength());
 
-			IdBean id = fingerPrintingClient.insertTune(musicInfoBean);
+			IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
 
 			HashBeans hashBeans = new HashBeans();
 			hashBeans.setHashes(new ArrayList<>());
@@ -50,7 +52,7 @@ public class FingerPrinting {
 				hashBean.setTime(link.getStart().getIntTime());
 				hashBeans.getHashes().add(hashBean);
 			}
-			fingerPrintingClient.insertHashes(hashBeans);
+			fingerPrintingDataSource.insertHashes(hashBeans);
 		}
 	}
 
@@ -59,7 +61,7 @@ public class FingerPrinting {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(sampleData);
 
 			Index index = new Index();
-			index.setFingerPrintingClient(fingerPrintingClient);
+			index.setFingerPrintingClient(fingerPrintingDataSource);
 
 			SongMatch songMatch = index.search(fingerprintedSampleData.getFingerprint(), MIN_HIT);
 
@@ -67,7 +69,7 @@ public class FingerPrinting {
 
 				SongNoBean songNoBean = new SongNoBean();
 				songNoBean.setSongNo(songMatch.getIdSong());
-				MusicInfoBean musicInfoBean = fingerPrintingClient.findTune(songNoBean);
+				MusicInfoBean musicInfoBean = fingerPrintingDataSource.findTune(songNoBean);
 				MusicInfoWithConfidence result = new MusicInfoWithConfidence();
 				result.setMusicInfoBean(musicInfoBean);
 				result.setSongMatch(fingerprintedSampleData, songMatch);

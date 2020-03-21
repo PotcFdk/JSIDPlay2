@@ -47,14 +47,14 @@ import server.restful.servlets.DirectoryServlet;
 import server.restful.servlets.DownloadServlet;
 import server.restful.servlets.FavoritesServlet;
 import server.restful.servlets.FiltersServlet;
-import server.restful.servlets.FindHashServlet;
-import server.restful.servlets.FindTuneServlet;
-import server.restful.servlets.InsertHashesServlet;
-import server.restful.servlets.InsertTuneServlet;
 import server.restful.servlets.PhotoServlet;
 import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
+import server.restful.servlets.whatssid.FindHashServlet;
+import server.restful.servlets.whatssid.FindTuneServlet;
+import server.restful.servlets.whatssid.InsertHashesServlet;
+import server.restful.servlets.whatssid.InsertTuneServlet;
 import sidplay.Player;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
@@ -354,6 +354,7 @@ public class JSIDPlay2Server {
 		try {
 			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
 
+			// TODO configuration
 			em = Persistence
 					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
 							new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL))

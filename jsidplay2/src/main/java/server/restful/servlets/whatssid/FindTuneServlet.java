@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.whatsSidService;
@@ -10,34 +10,36 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.SongNoBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class InsertTuneServlet extends JSIDPlay2Servlet {
+public class FindTuneServlet extends JSIDPlay2Servlet {
 
+	public static final String FIND_TUNE_PATH = "/tune";
+	
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
-	public InsertTuneServlet(Configuration configuration, Properties directoryProperties) {
+	public FindTuneServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/insert-tune";
+		return CONTEXT_ROOT_SERVLET + FIND_TUNE_PATH;
 	}
 
 	@Override
-	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
+		SongNoBean songNoBean = getInput(request, SongNoBean.class);
 
-		IdBean idBean = whatsSidService.insertTune(musicInfoBean);
+		MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
 
-		setOutput(request, response, idBean, IdBean.class);
+		setOutput(request, response, musicInfoBean, MusicInfoBean.class);
 	}
 }

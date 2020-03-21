@@ -8,11 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "title", "artist", "album", "fileDir", "infoDir", "audioLength" })
 public class MusicInfoBean {
 
-	private String title;
-	private String artist;
-	private String album;
-	private String fileDir;
-	private String infoDir;
+	private String title, artist, album, fileDir, infoDir;
 	private double audioLength;
 
 	public String getTitle() {
