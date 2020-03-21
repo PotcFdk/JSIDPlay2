@@ -3,6 +3,7 @@ package libsidutils.fingerprinting.rest.client;
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
 import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
+import static server.restful.servlets.whatssid.IdentifyServlet.IDENTIFY_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
 import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
 
@@ -25,7 +26,9 @@ import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import server.restful.common.MimeType;
 
 public class FingerprintingClient implements FingerPrintingDataSource {
@@ -91,6 +94,20 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		}
 	}
 
+	@Override
+	public MusicInfoWithConfidenceBean identify(WavBean wavBean) {
+		try {
+			HttpURLConnection connection = send(wavBean, WavBean.class, IDENTIFY_PATH, HttpMethod.POST);
+
+			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+				return receive(MusicInfoWithConfidenceBean.class, connection);
+			}
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private <T> HttpURLConnection send(T parameter, Class<T> tClass, String requestPath, String requestMethod)
 			throws MalformedURLException, IOException, ProtocolException, JAXBException {
 
@@ -114,13 +131,13 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			Object obj = JAXBContext.newInstance(theClass).createUnmarshaller().unmarshal(connection.getInputStream());
 			if (theClass.isInstance(obj)) {
-				connection.disconnect();
 				return (T) obj;
 			}
-			connection.disconnect();
 			return null;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		} finally {
+			connection.disconnect();
 		}
 	}
 

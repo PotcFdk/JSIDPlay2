@@ -53,6 +53,7 @@ import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
 import server.restful.servlets.whatssid.FindHashServlet;
 import server.restful.servlets.whatssid.FindTuneServlet;
+import server.restful.servlets.whatssid.IdentifyServlet;
 import server.restful.servlets.whatssid.InsertHashesServlet;
 import server.restful.servlets.whatssid.InsertTuneServlet;
 import sidplay.Player;
@@ -121,7 +122,8 @@ public class JSIDPlay2Server {
 	private static final List<Class<? extends JSIDPlay2Servlet>> SERVLETS = asList(FiltersServlet.class,
 			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
-			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class);
+			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
+			IdentifyServlet.class);
 
 	private static EntityManager em;
 

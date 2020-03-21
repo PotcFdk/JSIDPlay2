@@ -1,8 +1,15 @@
-package libsidutils.fingerprinting.model;
+package libsidutils.fingerprinting.rest.beans;
 
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-public class MusicInfoWithConfidence {
+import libsidutils.fingerprinting.model.FingerprintedSampleData;
+import libsidutils.fingerprinting.model.SongMatch;
+
+@XmlRootElement(name = "musicInfoWithConfidence")
+@XmlType(propOrder = { "musicInfoBean", "confidence", "relativeConfidence", "offsetSeconds", "offset" })
+public class MusicInfoWithConfidenceBean {
 
 	private MusicInfoBean musicInfoBean;
 	private double relativeConfidence, offsetSeconds;
@@ -12,6 +19,7 @@ public class MusicInfoWithConfidence {
 		return musicInfoBean;
 	}
 
+	@XmlElement(name = "musicInfo")
 	public void setMusicInfoBean(MusicInfoBean musicInfoBean) {
 		this.musicInfoBean = musicInfoBean;
 	}
@@ -20,6 +28,7 @@ public class MusicInfoWithConfidence {
 		return confidence;
 	}
 
+	@XmlElement(name = "confidence")
 	public void setConfidence(int confidence) {
 		this.confidence = confidence;
 	}
@@ -28,6 +37,7 @@ public class MusicInfoWithConfidence {
 		return relativeConfidence;
 	}
 
+	@XmlElement(name = "relativeConfidence")
 	public void setRelativeConfidence(double relativeConfidence) {
 		this.relativeConfidence = relativeConfidence;
 	}
@@ -36,6 +46,7 @@ public class MusicInfoWithConfidence {
 		return offset;
 	}
 
+	@XmlElement(name = "offset")
 	public void setOffset(int offset) {
 		this.offset = offset;
 	}
@@ -44,6 +55,7 @@ public class MusicInfoWithConfidence {
 		return offsetSeconds;
 	}
 
+	@XmlElement(name = "offsetSeconds")
 	public void setOffsetSeconds(double offsetSeconds) {
 		this.offsetSeconds = offsetSeconds;
 	}

@@ -58,8 +58,8 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
 import sidplay.player.PlayList;
@@ -147,8 +147,6 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected Label tracks;
-
-	private FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
 
 	private class StateChangeListener implements PropertyChangeListener {
 		@Override
@@ -1000,7 +998,8 @@ public class MenuBar extends C64VBox implements UIPart {
 		util.getPlayer().configureMixer(mixer -> {
 			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
 			new Thread(() -> {
-				MusicInfoWithConfidence result = fingerPrinting.match(whatsSidAnalyserBuffer);
+				WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
+				MusicInfoWithConfidenceBean result = new FingerprintingClient().identify(wavBean);
 				if (result != null) {
 					System.out.println("Match: " + result.toString());
 				} else {

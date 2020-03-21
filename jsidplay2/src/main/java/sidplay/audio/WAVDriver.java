@@ -92,7 +92,7 @@ public abstract class WAVDriver implements AudioDriver {
 	public static class WavHeader {
 
 		private static final int HEADER_OFFSET = 8;
-		static final int HEADER_LENGTH = 44;
+		public static final int HEADER_LENGTH = 44;
 
 		private int length, sampleFreq,bytesPerSec, dataChunkLen;
 		private short format, channels, blockAlign, bitsPerSample;

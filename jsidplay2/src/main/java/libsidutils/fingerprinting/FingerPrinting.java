@@ -8,12 +8,12 @@ import libsidutils.fingerprinting.fingerprint.Fingerprint;
 import libsidutils.fingerprinting.fingerprint.Hash;
 import libsidutils.fingerprinting.fingerprint.Link;
 import libsidutils.fingerprinting.model.FingerprintedSampleData;
-import libsidutils.fingerprinting.model.MusicInfoWithConfidence;
 import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 
 public class FingerPrinting {
@@ -56,7 +56,7 @@ public class FingerPrinting {
 		}
 	}
 
-	public MusicInfoWithConfidence match(ByteBuffer sampleData) {
+	public MusicInfoWithConfidenceBean match(ByteBuffer sampleData) {
 		if (sampleData.limit() > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(sampleData);
 
@@ -70,7 +70,7 @@ public class FingerPrinting {
 				SongNoBean songNoBean = new SongNoBean();
 				songNoBean.setSongNo(songMatch.getIdSong());
 				MusicInfoBean musicInfoBean = fingerPrintingDataSource.findTune(songNoBean);
-				MusicInfoWithConfidence result = new MusicInfoWithConfidence();
+				MusicInfoWithConfidenceBean result = new MusicInfoWithConfidenceBean();
 				result.setMusicInfoBean(musicInfoBean);
 				result.setSongMatch(fingerprintedSampleData, songMatch);
 
