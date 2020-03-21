@@ -51,8 +51,6 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private SidTune tune;
 
-	private FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
-
 	@Override
 	public void configure(SidTune tune, IAudioSection audioSection) {
 		this.tune = tune;
@@ -112,6 +110,8 @@ public class WhatsSidDriver implements AudioDriver {
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
 				System.out.println("Insert " + recordingFilename);
+
+				FingerPrinting fingerPrinting = new FingerPrinting(new FingerprintingClient());
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 				fingerPrinting.insert(wavBean, tune, recordingFilename);
 			} catch (IOException e) {
