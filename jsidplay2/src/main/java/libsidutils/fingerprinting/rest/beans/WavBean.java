@@ -9,19 +9,19 @@ public class WavBean {
 	public WavBean() {
 	}
 
-	public WavBean(byte[] wavData) {
-		this.wavData = wavData;
+	public WavBean(byte[] wav) {
+		this.wav = wav;
 	}
 
-	private byte[] wavData;
+	private byte[] wav;
 
-	public byte[] getWavData() {
-		return wavData;
+	public byte[] getWav() {
+		return wav;
 	}
 
 	@XmlElement(name = "wav")
-	public void setWavData(byte[] wavData) {
-		this.wavData = wavData;
+	public void setWav(byte[] wav) {
+		this.wav = wav;
 	}
 
 }

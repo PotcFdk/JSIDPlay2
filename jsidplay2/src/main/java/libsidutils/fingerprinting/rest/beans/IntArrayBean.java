@@ -3,7 +3,7 @@ package libsidutils.fingerprinting.rest.beans;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ints")
+@XmlRootElement(name = "hashes")
 public class IntArrayBean {
 
 	public IntArrayBean() {

@@ -51,7 +51,7 @@ public class FingerprintedSampleData {
 
 	public FingerprintedSampleData(WavBean wavBean) {
 		try {
-			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWavData()));
+			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
 				throw new RuntimeException("Sample size in bits must be " + Short.SIZE);
 			}

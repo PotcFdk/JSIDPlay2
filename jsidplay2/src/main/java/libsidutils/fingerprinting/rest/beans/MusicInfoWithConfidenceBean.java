@@ -8,20 +8,20 @@ import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
 
 @XmlRootElement(name = "musicInfoWithConfidence")
-@XmlType(propOrder = { "musicInfoBean", "confidence", "relativeConfidence", "offsetSeconds", "offset" })
+@XmlType(propOrder = { "musicInfo", "confidence", "relativeConfidence", "offsetSeconds", "offset" })
 public class MusicInfoWithConfidenceBean {
 
-	private MusicInfoBean musicInfoBean;
+	private MusicInfoBean musicInfo;
 	private double relativeConfidence, offsetSeconds;
 	private int confidence, offset;
 
-	public MusicInfoBean getMusicInfoBean() {
-		return musicInfoBean;
+	public MusicInfoBean getMusicInfo() {
+		return musicInfo;
 	}
 
 	@XmlElement(name = "musicInfo")
-	public void setMusicInfoBean(MusicInfoBean musicInfoBean) {
-		this.musicInfoBean = musicInfoBean;
+	public void setMusicInfo(MusicInfoBean musicInfoBean) {
+		this.musicInfo = musicInfoBean;
 	}
 
 	public int getConfidence() {
@@ -62,7 +62,7 @@ public class MusicInfoWithConfidenceBean {
 
 	@Override
 	public String toString() {
-		return musicInfoBean + ", confidence=" + confidence + ", relativeConfidence=" + relativeConfidence + ", offset="
+		return musicInfo + ", confidence=" + confidence + ", relativeConfidence=" + relativeConfidence + ", offset="
 				+ offset + ", offsetSeconds=" + offsetSeconds;
 	}
 

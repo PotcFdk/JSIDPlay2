@@ -27,7 +27,7 @@ public class FingerPrinting {
 	}
 
 	public void insert(WavBean wavBean, SidTune tune, String recordingFilename) {
-		if (wavBean.getWavData().length > 0) {
+		if (wavBean.getWav().length > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
 			fingerprintedSampleData.setMetaInfo(tune, recordingFilename);
 
@@ -57,7 +57,7 @@ public class FingerPrinting {
 	}
 
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) {
-		if (wavBean.getWavData().length > 0) {
+		if (wavBean != null && wavBean.getWav().length > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
 
 			Index index = new Index();
@@ -71,7 +71,7 @@ public class FingerPrinting {
 				songNoBean.setSongNo(songMatch.getIdSong());
 				MusicInfoBean musicInfoBean = fingerPrintingDataSource.findTune(songNoBean);
 				MusicInfoWithConfidenceBean result = new MusicInfoWithConfidenceBean();
-				result.setMusicInfoBean(musicInfoBean);
+				result.setMusicInfo(musicInfoBean);
 				result.setSongMatch(fingerprintedSampleData, songMatch);
 
 				return result;
