@@ -1,7 +1,6 @@
 package ui.entities.whatssid.service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -60,11 +59,14 @@ public class WhatsSidService {
 		return result;
 	}
 
-	public void insertHashes(List<HashBean> hashBeans) {
+	public void insertHashes(HashBeans hashes) {
 		// INSERT INTO `HashTable` (`Hash`, `id`, `Time`) VALUES
+		if (hashes.getHashes() == null || hashes.getHashes().isEmpty()) {
+			return;
+		}
 		try {
 			em.getTransaction().begin();
-			for (HashBean hashBean : hashBeans) {
+			for (HashBean hashBean : hashes.getHashes()) {
 				HashTable hashTable = new HashTable();
 				hashTable.setHash(hashBean.getHash());
 				hashTable.setId(hashBean.getId());
@@ -98,7 +100,9 @@ public class WhatsSidService {
 		// SELECT * FROM `HashTable` WHERE Hash in()
 		HashBeans result = new HashBeans();
 		result.setHashes(new ArrayList<>());
-
+		if (intArrayBean.getHash() == null || intArrayBean.getHash().length == 0) {
+			return result;
+		}
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
 		Root<HashTable> hashTable = query.from(HashTable.class);
