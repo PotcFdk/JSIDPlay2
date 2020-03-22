@@ -64,9 +64,6 @@ public class FingerprintedSampleData {
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
 				throw new RuntimeException("Sample size in bits must be " + Short.SIZE);
 			}
-			if (stream.getFormat().getChannels() != 2) {
-				throw new RuntimeException("Channels must be 2");
-			}
 			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
 				throw new RuntimeException("Encoding must be PCM_SIGNED");
 			}
@@ -74,9 +71,29 @@ public class FingerprintedSampleData {
 				throw new RuntimeException("LittleEndian expected");
 			}
 
-			byte[] bytes = new byte[(int) stream.getFrameLength() << 2];
-			stream.read(bytes);
+			// 1. mono to stereo conversion
+			byte[] bytes;
+			if (stream.getFormat().getChannels() == 1) {
+				bytes = new byte[(int) stream.getFrameLength() << 1];
+				stream.read(bytes);
+				ShortBuffer monoSamples = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+				ByteBuffer stereoBuffer = ByteBuffer.allocate(bytes.length << 1).order(ByteOrder.LITTLE_ENDIAN);
+				ShortBuffer stereoSamples = stereoBuffer.asShortBuffer();
 
+				while (monoSamples.hasRemaining()) {
+					short mono = monoSamples.get();
+					stereoSamples.put(mono);
+					stereoSamples.put(mono);
+				}
+				bytes = stereoBuffer.array();
+			} else if (stream.getFormat().getChannels() == 2) {
+				bytes = new byte[(int) stream.getFrameLength() << 2];
+				stream.read(bytes);
+			} else {
+				throw new RuntimeException("Number of channels must be one or two");
+			}
+
+			// 2. down sampling to 8KHz
 			if (stream.getFormat().getSampleRate() != SAMPLE_RATE) {
 				Resampler downSamplerL = Resampler.createResampler(stream.getFormat().getSampleRate(),
 						SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
@@ -108,8 +125,8 @@ public class FingerprintedSampleData {
 				bytes = result.array();
 			}
 
+			// 3. convert to float mono mix
 			ByteBuffer buf = ByteBuffer.wrap(bytes);
-
 			int len = buf.limit() >> 2/* bytes * channels */;
 			float[] dataL = new float[len];
 			float[] dataR = new float[len];
@@ -118,7 +135,6 @@ public class FingerprintedSampleData {
 				dataL[i] = buf.getShort() / 32768f;
 				dataR[i] = buf.getShort() / 32768f;
 			}
-
 			float[] data = new float[len];
 			for (int i = 0; i < len; i++) {
 				data[i] = dataL[i] + dataR[i];
