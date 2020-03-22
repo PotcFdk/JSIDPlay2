@@ -70,6 +70,9 @@ public class FingerprintedSampleData {
 			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
 				throw new RuntimeException("Encoding must be PCM_SIGNED");
 			}
+			if (stream.getFormat().isBigEndian()) {
+				throw new RuntimeException("LittleEndian expected");
+			}
 
 			byte[] bytes = new byte[(int) stream.getFrameLength() << 2];
 			stream.read(bytes);
