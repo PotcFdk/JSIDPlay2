@@ -3,15 +3,21 @@ package libsidutils.fingerprinting.model;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.Iterator;
+import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import builder.resid.resample.Resampler;
+import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
@@ -28,6 +34,9 @@ public class FingerprintedSampleData {
 	private Fingerprint fingerprint;
 	private String title, album, artist;
 	private double audioLength;
+
+	private final Random RANDOM = new Random();
+	private int oldRandomValue;
 
 	public Fingerprint getFingerprint() {
 		return fingerprint;
@@ -61,12 +70,40 @@ public class FingerprintedSampleData {
 			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
 				throw new RuntimeException("Encoding must be PCM_SIGNED");
 			}
-			if (stream.getFormat().getSampleRate() != SAMPLE_RATE) {
-				throw new RuntimeException("SampleRate must be " + SAMPLE_RATE);
-			}
 
 			byte[] bytes = new byte[(int) stream.getFrameLength() << 2];
 			stream.read(bytes);
+
+			if (stream.getFormat().getSampleRate() != SAMPLE_RATE) {
+				Resampler downSamplerL = Resampler.createResampler(stream.getFormat().getSampleRate(),
+						SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+						SamplingRate.VERY_LOW.getMiddleFrequency());
+				Resampler downSamplerR = Resampler.createResampler(stream.getFormat().getSampleRate(),
+						SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+						SamplingRate.VERY_LOW.getMiddleFrequency());
+
+				ByteBuffer result = ByteBuffer.allocate(bytes.length).order(ByteOrder.LITTLE_ENDIAN);
+				ShortBuffer sb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+				while (sb.hasRemaining()) {
+					short valL = sb.get();
+					short valR = sb.get();
+
+					int downSamplerDither = triangularDithering();
+					if (downSamplerL.input(valL)) {
+						result.putShort((short) Math.max(
+								Math.min(downSamplerL.output() + downSamplerDither, Short.MAX_VALUE), Short.MIN_VALUE));
+					}
+					if (downSamplerR.input(valR)) {
+						if (!result.putShort(
+								(short) Math.max(Math.min(downSamplerR.output() + downSamplerDither, Short.MAX_VALUE),
+										Short.MIN_VALUE))
+								.hasRemaining()) {
+							((Buffer) result).flip();
+						}
+					}
+				}
+				bytes = result.array();
+			}
 
 			ByteBuffer buf = ByteBuffer.wrap(bytes);
 
@@ -105,4 +142,9 @@ public class FingerprintedSampleData {
 		}
 	}
 
+	private int triangularDithering() {
+		int prevValue = oldRandomValue;
+		oldRandomValue = RANDOM.nextInt() & 0x1;
+		return oldRandomValue - prevValue;
+	}
 }

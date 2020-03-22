@@ -33,6 +33,11 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		return CONTEXT_ROOT_SERVLET + IDENTIFY_PATH;
 	}
 
+	/**
+	 * WhatsSid? (SID tune recognition).
+	 * 
+	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/whatssid
+	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
