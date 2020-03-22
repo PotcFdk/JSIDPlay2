@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.SamplingRate;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.FingerPrinting;
@@ -21,7 +20,6 @@ import libsidutils.fingerprinting.rest.beans.WavBean;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.ini.IniConfigException;
 
 /**
  * Alpha: Shazam like feature: Analyze tunes to recognize a currently played
@@ -48,8 +46,6 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private String recordingFilename;
 
-	private IConfig config;
-
 	private SidTune tune;
 
 	private FingerPrintingDataSource fingerPrintingDataSource;
@@ -57,7 +53,6 @@ public class WhatsSidDriver implements AudioDriver {
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
-		this.config = config;
 		if (fingerPrintingDataSource == null) {
 			this.fingerPrintingDataSource = new FingerprintingClient(config);
 		}
@@ -66,10 +61,6 @@ public class WhatsSidDriver implements AudioDriver {
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {
-		if (config.getAudioSection().getSamplingRate() != SamplingRate.VERY_LOW) {
-			config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
-			throw new IniConfigException("Sampling rate does not match 8KHz");
-		}
 		this.recordingFilename = recordingFilename;
 
 		if (new File(recordingFilename).exists()) {
