@@ -18,6 +18,6 @@ public interface FingerPrintingDataSource {
 
 	MusicInfoBean findTune(SongNoBean songNoBean);
 
-	MusicInfoWithConfidenceBean identify(WavBean wavBean);
+	MusicInfoWithConfidenceBean whatsSid(WavBean wavBean);
 
 }

@@ -3,7 +3,7 @@ package libsidutils.fingerprinting.rest.client;
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
 import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
-import static server.restful.servlets.whatssid.IdentifyServlet.IDENTIFY_PATH;
+import static server.restful.servlets.whatssid.WhatsSidServlet.IDENTIFY_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
 import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
 
@@ -103,7 +103,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean identify(WavBean wavBean) {
+	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
 		try {
 			HttpURLConnection connection = send(wavBean, WavBean.class, IDENTIFY_PATH, HttpMethod.POST);
 

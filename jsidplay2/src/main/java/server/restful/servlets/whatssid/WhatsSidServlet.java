@@ -17,14 +17,14 @@ import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class IdentifyServlet extends JSIDPlay2Servlet {
+public class WhatsSidServlet extends JSIDPlay2Servlet {
 
-	public static final String IDENTIFY_PATH = "/identify";
+	public static final String IDENTIFY_PATH = "/whatssid";
 
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
-	public IdentifyServlet(Configuration configuration, Properties directoryProperties) {
+	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
 		this.util = new ServletUtil(configuration, directoryProperties);
 	}
 
@@ -38,7 +38,7 @@ public class IdentifyServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		WavBean wavBean = getInput(request, WavBean.class);
 
-		MusicInfoWithConfidenceBean musicInfoWithConfidence = whatsSidService.identify(wavBean);
+		MusicInfoWithConfidenceBean musicInfoWithConfidence = whatsSidService.whatsSid(wavBean);
 
 		setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 	}

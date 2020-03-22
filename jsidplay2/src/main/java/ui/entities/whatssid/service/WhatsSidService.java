@@ -34,9 +34,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	};
 
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
-		// INSERT INTO `MusicInfo`
-		// (`Title`, `Artist`, `Album`, `FileDir`, `InfoDir`, audio_length)
-		// VALUES ( ? , ? , ? , ? , ? , ? );
+		// INSERT INTO `MusicInfo` (`Title`, `Artist`, `Album`, `FileDir`, `InfoDir`,
+		// audio_length) VALUES
 
 		MusicInfo musicInfo = new MusicInfo();
 		musicInfo.setTitle(musicInfoBean.getTitle());
@@ -63,6 +62,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	public void insertHashes(HashBeans hashes) {
 		// INSERT INTO `HashTable` (`Hash`, `id`, `Time`) VALUES
+
 		if (hashes.getHashes() == null || hashes.getHashes().isEmpty()) {
 			return;
 		}
@@ -86,8 +86,9 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	}
 
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
-		// SELECT Title, Artist, Album, audio_length
-		// FROM `MusicInfo` WHERE idMusicInfo=songNoBean.getSongNo()
+		// SELECT Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
+		// idMusicInfo=songNoBean.getSongNo()
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
 		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
@@ -100,6 +101,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	public HashBeans findAllHashes(IntArrayBean intArrayBean) {
 		// SELECT * FROM `HashTable` WHERE Hash in()
+
 		HashBeans result = new HashBeans();
 		result.setHashes(new ArrayList<>());
 		if (intArrayBean.getHash() == null || intArrayBean.getHash().length == 0) {
@@ -120,7 +122,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean identify(WavBean wavBean) {
+	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
 		return new FingerPrinting(this).match(wavBean);
 	}
 
