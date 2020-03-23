@@ -6,6 +6,7 @@ import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
 import static server.restful.servlets.whatssid.WhatsSidServlet.IDENTIFY_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
 import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
+import static server.restful.servlets.whatssid.TuneExistsServlet.TUNE_EXISTS_PATH;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -95,6 +96,20 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(MusicInfoBean.class, connection);
+			}
+			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public boolean tuneExists(MusicInfoBean musicInfoBean) {
+		try {
+			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, TUNE_EXISTS_PATH, HttpMethod.POST);
+
+			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+				return receive(Boolean.class, connection);
 			}
 			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
 		} catch (Exception e) {

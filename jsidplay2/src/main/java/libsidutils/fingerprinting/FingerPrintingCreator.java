@@ -37,7 +37,7 @@ import ui.filefilter.TuneFileFilter;
  * @author ken
  *
  */
-@Parameters(resourceBundle = "libsidutils.whatssid.WhatsSidAnalyser")
+@Parameters(resourceBundle = "libsidutils.fingerprinting.FingerPrintingCreator")
 public class FingerPrintingCreator implements Function<SidTune, String> {
 
 	static {
@@ -49,15 +49,14 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(descriptionKey = "DIRECTORY", required = true)
-	private String directoryPath;
-
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
 
 	private Player player;
 
 	private String currentFilterName;
+
+	private File file;
 
 	private void execute(String[] args) throws IOException, SidTuneError, InterruptedException {
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
@@ -87,22 +86,31 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 		System.out.println();
 		System.out.println("Analyse...");
 
-		for (File file : new File(directoryPath).listFiles()) {
-			if (TUNE_FILE_FILTER.accept(file)) {
-
-				SidTune sidTune = SidTune.load(file);
-				player.setTune(sidTune);
-				sidTune.getInfo().setSelectedSong(sidTune.getInfo().getStartSong());
-
-				player.startC64();
-				player.stopC64(false);
-			}
-		}
+		processDirectory(new File(config.getSidplay2Section().getHvsc()));
 
 		if (em != null) {
 			em.close();
 		}
 		System.exit(0);
+	}
+
+	private void processDirectory(File dir) throws IOException, SidTuneError {
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				processDirectory(file);
+			} else {
+				if (TUNE_FILE_FILTER.accept(file)) {
+					this.file = file;
+					((WhatsSidDriver) Audio.WHATS_SID.getAudioDriver()).setFilename(file);
+					SidTune sidTune = SidTune.load(file);
+					player.setTune(sidTune);
+					sidTune.getInfo().setSelectedSong(sidTune.getInfo().getStartSong());
+					
+					player.startC64();
+					player.stopC64(false);
+				}
+			}
+		}
 	}
 
 	private void setSIDDatabase() {
@@ -120,12 +128,12 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 	public String apply(SidTune tune) {
 		String defaultName = "jsidplay2";
 		if (tune == SidTune.RESET) {
-			return new File(directoryPath, defaultName).getAbsolutePath();
+			return new File(file.getParent(), defaultName).getAbsolutePath();
 		}
 		SidTuneInfo info = tune.getInfo();
 		Iterator<String> infos = info.getInfoString().iterator();
 		String name = infos.hasNext() ? infos.next().replaceAll("[:\\\\/*?|<>]", "_") : defaultName;
-		String filename = new File(directoryPath, PathUtils.getFilenameWithoutSuffix(name)).getAbsolutePath();
+		String filename = new File(file.getParent(), PathUtils.getFilenameWithoutSuffix(name)).getAbsolutePath();
 		filename += currentFilterName != null ? "_" + currentFilterName : "";
 		if (info.getSongs() > 1) {
 			filename += String.format("-%02d", info.getCurrentSong());

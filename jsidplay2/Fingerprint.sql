@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `musiclibary`.`HashTable` (
   PRIMARY KEY (`idHashTable`),
   INDEX `Hash` (`Hash` ASC)  KEY_BLOCK_SIZE=1)
 ENGINE = InnoDB;
-ROW_FORMAT = FIXED;
+-- ROW_FORMAT = FIXED;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

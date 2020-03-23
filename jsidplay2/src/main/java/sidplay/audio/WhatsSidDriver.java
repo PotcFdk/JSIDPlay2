@@ -14,6 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
+import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.WavBean;
@@ -48,11 +49,16 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private SidTune tune;
 
+	private IConfig config;
+
 	private FingerPrintingDataSource fingerPrintingDataSource;
+
+	private File tuneFile;
 
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
+		this.config = config;
 		if (fingerPrintingDataSource == null) {
 			this.fingerPrintingDataSource = new FingerprintingClient(config);
 		}
@@ -110,7 +116,10 @@ public class WhatsSidDriver implements AudioDriver {
 
 				FingerPrinting fingerPrinting = new FingerPrinting(fingerPrintingDataSource);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
-				fingerPrinting.insert(wavBean, tune, recordingFilename);
+
+				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
+				fingerPrinting.insert(wavBean, tune, collectionName, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
 			}
@@ -134,5 +143,9 @@ public class WhatsSidDriver implements AudioDriver {
 
 	public void setFingerPrintingDataSource(FingerPrintingDataSource fingerPrintingDataSource) {
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
+	}
+
+	public void setFilename(File file) {
+		this.tuneFile = file;
 	}
 }

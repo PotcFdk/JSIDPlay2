@@ -122,6 +122,36 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	}
 
 	@Override
+	public boolean tuneExists(MusicInfoBean musicInfoBean) {
+		// SELECT * FROM MusicInfo WHERE Title=title, Artist=artist, Album=album,
+		// FileDir=fileDir, InfoDir=infoDir
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
+		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
+
+		Path<String> title = musicInfo.<String>get(MusicInfo_.title);
+		Predicate titlePredicate = cb.equal(title, musicInfoBean.getTitle());
+
+		Path<String> artist = musicInfo.<String>get(MusicInfo_.artist);
+		Predicate artistPredicate = cb.equal(artist, musicInfoBean.getArtist());
+
+		Path<String> album = musicInfo.<String>get(MusicInfo_.album);
+		Predicate albumPredicate = cb.equal(album, musicInfoBean.getAlbum());
+
+		Path<String> fileDir = musicInfo.<String>get(MusicInfo_.fileDir);
+		Predicate fileDirPredicate = cb.equal(fileDir, musicInfoBean.getFileDir());
+
+		Path<String> infoDir = musicInfo.<String>get(MusicInfo_.infoDir);
+		Predicate infoDirPredicate = cb.equal(infoDir, musicInfoBean.getInfoDir());
+
+		query.where(cb.and(titlePredicate, artistPredicate, albumPredicate, fileDirPredicate, infoDirPredicate))
+				.select(musicInfo);
+
+		return !em.createQuery(query).getResultList().isEmpty();
+	}
+
+	@Override
 	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
 		return new FingerPrinting(this).match(wavBean);
 	}

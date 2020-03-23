@@ -20,4 +20,6 @@ public interface FingerPrintingDataSource {
 
 	MusicInfoWithConfidenceBean whatsSid(WavBean wavBean);
 
+	boolean tuneExists(MusicInfoBean musicInfoBean);
+
 }

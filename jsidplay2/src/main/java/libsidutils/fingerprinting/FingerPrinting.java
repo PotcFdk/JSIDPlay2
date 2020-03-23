@@ -26,7 +26,7 @@ public class FingerPrinting {
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 
-	public void insert(WavBean wavBean, SidTune tune, String recordingFilename) {
+	public void insert(WavBean wavBean, SidTune tune, String sidFilename, String recordingFilename) {
 		if (wavBean.getWav().length > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
 			fingerprintedSampleData.setMetaInfo(tune, recordingFilename);
@@ -36,23 +36,25 @@ public class FingerPrinting {
 			musicInfoBean.setArtist(fingerprintedSampleData.getArtist());
 			musicInfoBean.setAlbum(fingerprintedSampleData.getAlbum());
 			musicInfoBean.setFileDir(recordingFilename);
-			musicInfoBean.setInfoDir("");
+			musicInfoBean.setInfoDir(sidFilename);
 			musicInfoBean.setAudioLength(fingerprintedSampleData.getAudioLength());
 
-			IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
-
-			HashBeans hashBeans = new HashBeans();
-			hashBeans.setHashes(new ArrayList<>());
-
-			Fingerprint fp = fingerprintedSampleData.getFingerprint();
-			for (Link link : fp.getLinkList()) {
-				HashBean hashBean = new HashBean();
-				hashBean.setHash(Hash.hash(link));
-				hashBean.setId(id.getId());
-				hashBean.setTime(link.getStart().getIntTime());
-				hashBeans.getHashes().add(hashBean);
+			if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
+				IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
+				
+				HashBeans hashBeans = new HashBeans();
+				hashBeans.setHashes(new ArrayList<>());
+				
+				Fingerprint fp = fingerprintedSampleData.getFingerprint();
+				for (Link link : fp.getLinkList()) {
+					HashBean hashBean = new HashBean();
+					hashBean.setHash(Hash.hash(link));
+					hashBean.setId(id.getId());
+					hashBean.setTime(link.getStart().getIntTime());
+					hashBeans.getHashes().add(hashBean);
+				}
+				fingerPrintingDataSource.insertHashes(hashBeans);
 			}
-			fingerPrintingDataSource.insertHashes(hashBeans);
 		}
 	}
 

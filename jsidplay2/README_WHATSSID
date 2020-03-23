@@ -90,18 +90,24 @@ EMAIL: hsyecheng@hotmail.com
 Prepare Database:
 =================
 sudo apt-get install mysql-server
+
 sudo mysql_secure_installation utility
 sudo ufw enable
 sudo ufw allow mysql
-sudo systemctl start mysql
-sudo systemctl enable mysql
-sudo mysql_secure_installation utility
 
-sudo /usr/bin/mysql -u root -p musiclibrary < workspace/Audio-Fingerprinting/Fingerprint.sql 
+sudo mysql -u root -p
+GRANT ALL PRIVILEGES ON *.* TO 'newuser'@'localhost' IDENTIFIED BY 'password';
+
+sudo mysql -u newuser -p
+CREATE DATABASE musiclibrary;
+
+sudo /usr/bin/mysql -u newuser -p musiclibrary < workspace/jsidplay2/Fingerprint.sql
 
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf 
  max_allowed_packet      = 64M
 
- 
+sudo systemctl start mysql
+
+sudo systemctl enable mysql
+
 sudo systemctl restart mysql
-sudo /usr/bin/mysql -u root -p
