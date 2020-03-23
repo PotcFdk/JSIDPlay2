@@ -97,9 +97,11 @@ sudo ufw allow mysql
 
 sudo mysql -u root -p
 GRANT ALL PRIVILEGES ON *.* TO 'newuser'@'localhost' IDENTIFIED BY 'password';
+quit
 
 sudo mysql -u newuser -p
 CREATE DATABASE musiclibrary;
+quit
 
 sudo /usr/bin/mysql -u newuser -p musiclibrary < workspace/jsidplay2/Fingerprint.sql
 
