@@ -2,7 +2,7 @@ package libsidutils.fingerprinting;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.function.Function;
 
 import com.beust.jcommander.JCommander;
@@ -43,12 +43,13 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
+	@Parameter(names = { "--deleteDb" }, descriptionKey = "DELETE_DB", arity = 1)
+	private Boolean deleteDb = Boolean.FALSE;
+
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
 
 	private Player player;
-
-	private String currentFilterName;
 
 	private File file;
 
@@ -66,6 +67,10 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 
 		// Use database directly without using REST interface for fingerprinting
 		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
+		
+		if (Boolean.TRUE.equals(deleteDb)) {
+			whatsSidDriver.deleteDb();
+		}
 
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
@@ -87,12 +92,14 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 		}
 
 		whatsSidDriver.dispose();
-		
+
 		System.exit(0);
 	}
 
 	private void processDirectory(File dir) throws IOException, SidTuneError {
-		for (File file : dir.listFiles()) {
+		File[] listFiles = dir.listFiles();
+		Arrays.sort(listFiles);
+		for (File file : listFiles) {
 			if (file.isDirectory()) {
 				processDirectory(file);
 			} else {
@@ -108,7 +115,7 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 				}
 				if (System.in.available() > 0) {
 					final int key = System.in.read();
-					if (key=='q') {
+					if (key == 'q') {
 						throw new IOException("Termination after pressing q");
 					}
 				}
@@ -123,10 +130,8 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			return new File(file.getParent(), defaultName).getAbsolutePath();
 		}
 		SidTuneInfo info = tune.getInfo();
-		Iterator<String> infos = info.getInfoString().iterator();
-		String name = infos.hasNext() ? infos.next().replaceAll("[:\\\\/*?|<>]", "_") : defaultName;
-		String filename = new File(file.getParent(), PathUtils.getFilenameWithoutSuffix(name)).getAbsolutePath();
-		filename += currentFilterName != null ? "_" + currentFilterName : "";
+		String filename = new File(file.getParent(), PathUtils.getFilenameWithoutSuffix(file.getName()))
+				.getAbsolutePath();
 		if (info.getSongs() > 1) {
 			filename += String.format("-%02d", info.getCurrentSong());
 		}

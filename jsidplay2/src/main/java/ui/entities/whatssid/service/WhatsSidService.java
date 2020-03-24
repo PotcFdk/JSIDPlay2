@@ -3,6 +3,7 @@ package ui.entities.whatssid.service;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -151,6 +152,29 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	@Override
 	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
 		return new FingerPrinting(this).match(wavBean);
+	}
+
+	public void deleteDb() {
+		try {
+			em.getTransaction().begin();
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+
+			CriteriaDelete<MusicInfo> criteriaDeleteMusicInfo = cb.createCriteriaDelete(MusicInfo.class);
+			criteriaDeleteMusicInfo.from(MusicInfo.class);
+			em.createQuery(criteriaDeleteMusicInfo).executeUpdate();
+
+			CriteriaDelete<HashTable> criteriaDeleteHashTable = cb.createCriteriaDelete(HashTable.class);
+			criteriaDeleteHashTable.from(HashTable.class);
+			em.createQuery(criteriaDeleteHashTable).executeUpdate();
+
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
 	}
 
 }

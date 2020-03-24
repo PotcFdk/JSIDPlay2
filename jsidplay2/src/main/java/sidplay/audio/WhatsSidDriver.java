@@ -18,7 +18,6 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
@@ -52,17 +51,27 @@ public class WhatsSidDriver implements AudioDriver {
 	private String recordingFilename;
 
 	private File tuneFile;
-	
+
 	private SidTune tune;
-	
+
 	private IConfig config;
-	
+
 	private EntityManager em;
 
-	private FingerPrintingDataSource fingerPrintingDataSource;
-	
+	private WhatsSidService whatsSidService;
+
+	public WhatsSidDriver() {
+		this.em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
+		this.whatsSidService = new WhatsSidService(em);
+	}
+
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
+	}
+
+	public void deleteDb() {
+		whatsSidService.deleteDb();
 	}
 
 	public void dispose() {
@@ -75,9 +84,6 @@ public class WhatsSidDriver implements AudioDriver {
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
 		this.config = config;
-		this.em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
-		this.fingerPrintingDataSource = new WhatsSidService(em);
 	}
 
 	@Override
@@ -129,11 +135,11 @@ public class WhatsSidDriver implements AudioDriver {
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
 				System.out.println("Insert " + recordingFilename);
-				
+
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
-				FingerPrinting fingerPrinting = new FingerPrinting(fingerPrintingDataSource);
+				FingerPrinting fingerPrinting = new FingerPrinting(whatsSidService);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 				fingerPrinting.insert(wavBean, tune, collectionName, recordingFilename);
 			} catch (IOException e) {
