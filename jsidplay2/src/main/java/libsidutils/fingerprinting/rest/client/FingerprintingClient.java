@@ -76,7 +76,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	}
 
 	@Override
-	public HashBeans findAllHashes(IntArrayBean intArray) {
+	public HashBeans findHashes(IntArrayBean intArray) {
 		try {
 			HttpURLConnection connection = send(intArray, IntArrayBean.class, FIND_HASH_PATH, HttpMethod.POST);
 

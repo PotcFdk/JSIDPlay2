@@ -2,6 +2,9 @@ package libsidutils.fingerprinting.fingerprint;
 
 import java.util.ArrayList;
 
+import libsidutils.fingerprinting.rest.beans.HashBean;
+import libsidutils.fingerprinting.rest.beans.HashBeans;
+import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.spectrogram.Spectrogram;
 import libsidutils.fingerprinting.spectrogram.Window;
 
@@ -160,5 +163,17 @@ public class Fingerprint {
 
 	public ArrayList<Peak> getPeakList() {
 		return peakList;
+	}
+
+	public HashBeans toHashBeans(IdBean id) {
+		HashBeans result = new HashBeans();
+		for (Link link : linkList) {
+			HashBean hashBean = new HashBean();
+			hashBean.setHash(Hash.hash(link));
+			hashBean.setId(id.getId());
+			hashBean.setTime(link.getStart().getIntTime());
+			result.getHashes().add(hashBean);
+		}
+		return result;
 	}
 }

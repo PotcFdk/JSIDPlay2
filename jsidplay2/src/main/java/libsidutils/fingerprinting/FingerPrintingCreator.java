@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -24,9 +21,6 @@ import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
-import ui.entities.Database;
-import ui.entities.PersistenceProperties;
-import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
@@ -58,6 +52,8 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 
 	private File file;
 
+	private WhatsSidDriver whatsSidDriver;
+
 	private void execute(String[] args) throws IOException, SidTuneError, InterruptedException {
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
 		commander.parse(args);
@@ -68,29 +64,30 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			System.exit(0);
 		}
 
+		// Use database directly without using REST interface for fingerprinting
+		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
+
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
-
-		// Use database directly without using REST interface for fingerprinting
-		EntityManager em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
-		WhatsSidService whatsSidService = new WhatsSidService(em);
-		((WhatsSidDriver) Audio.WHATS_SID.getAudioDriver()).setFingerPrintingDataSource(whatsSidService);
+		String hvsc = config.getSidplay2Section().getHvsc();
 
 		player = new Player(config);
 		player.setRecordingFilenameProvider(this);
-		setSIDDatabase();
+		player.setSidDatabase(hvsc != null ? new SidDatabase(hvsc) : null);
 
 		System.out.println();
 		System.out.println("Analyse...");
 
-		processDirectory(new File(config.getSidplay2Section().getHvsc()));
-
-		if (em != null) {
-			em.close();
+		try {
+			processDirectory(new File(hvsc));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+
+		whatsSidDriver.dispose();
+		
 		System.exit(0);
 	}
 
@@ -101,25 +98,20 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			} else {
 				if (TUNE_FILE_FILTER.accept(file)) {
 					this.file = file;
-					((WhatsSidDriver) Audio.WHATS_SID.getAudioDriver()).setFilename(file);
+					whatsSidDriver.setTuneFile(file);
 					SidTune sidTune = SidTune.load(file);
 					player.setTune(sidTune);
 					sidTune.getInfo().setSelectedSong(sidTune.getInfo().getStartSong());
-					
+
 					player.startC64();
 					player.stopC64(false);
 				}
-			}
-		}
-	}
-
-	private void setSIDDatabase() {
-		String hvscRoot = config.getSidplay2Section().getHvsc();
-		if (hvscRoot != null) {
-			try {
-				player.setSidDatabase(new SidDatabase(hvscRoot));
-			} catch (IOException e) {
-				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
+				if (System.in.available() > 0) {
+					final int key = System.in.read();
+					if (key=='q') {
+						throw new IOException("Termination after pressing q");
+					}
+				}
 			}
 		}
 	}

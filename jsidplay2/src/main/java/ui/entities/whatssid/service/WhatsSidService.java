@@ -1,7 +1,5 @@
 package ui.entities.whatssid.service;
 
-import java.util.ArrayList;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -99,11 +97,10 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		return em.createQuery(query).getSingleResult().toBean();
 	}
 
-	public HashBeans findAllHashes(IntArrayBean intArrayBean) {
+	public HashBeans findHashes(IntArrayBean intArrayBean) {
 		// SELECT * FROM `HashTable` WHERE Hash in()
 
 		HashBeans result = new HashBeans();
-		result.setHashes(new ArrayList<>());
 		if (intArrayBean.getHash() == null || intArrayBean.getHash().length == 0) {
 			return result;
 		}

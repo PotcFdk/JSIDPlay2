@@ -21,6 +21,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 
 /**
@@ -37,6 +38,10 @@ public class FingerprintedSampleData {
 
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
+
+	private String fileDir;
+
+	private String infoDir;
 
 	public Fingerprint getFingerprint() {
 		return fingerprint;
@@ -148,17 +153,30 @@ public class FingerprintedSampleData {
 		}
 	}
 
-	public void setMetaInfo(SidTune tune, String recordingFilename) {
+	public void setMetaInfo(SidTune tune, String recordingFilename, String collectionFilename) {
 		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
 			Iterator<String> description = tune.getInfo().getInfoString().iterator();
 			this.title = description.next();
 			this.artist = description.next();
 			this.album = description.next();
 		} else {
-			this.title = new File(PathUtils.getFilenameWithoutSuffix(recordingFilename)).getName();
+			this.title = new File(PathUtils.getFilenameWithoutSuffix(collectionFilename)).getName();
 			this.artist = "???";
 			this.album = "???";
 		}
+		fileDir = recordingFilename;
+		infoDir = collectionFilename;
+	}
+
+	public MusicInfoBean toMusicInfoBean() {
+		MusicInfoBean musicInfoBean = new MusicInfoBean();
+		musicInfoBean.setTitle(title);
+		musicInfoBean.setArtist(artist);
+		musicInfoBean.setAlbum(album);
+		musicInfoBean.setAudioLength(audioLength);
+		musicInfoBean.setFileDir(fileDir);
+		musicInfoBean.setInfoDir(infoDir);
+		return musicInfoBean;
 	}
 
 	private int triangularDithering() {

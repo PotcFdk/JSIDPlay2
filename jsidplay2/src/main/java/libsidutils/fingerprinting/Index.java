@@ -54,7 +54,7 @@ public class Index {
 		}
 
 		IntArrayBean intArray = new IntArrayBean(linkHash);
-		HashBeans res = fingerPrintingDataSource.findAllHashes(intArray);
+		HashBeans res = fingerPrintingDataSource.findHashes(intArray);
 		for (HashBean hashBean : res.getHashes()) {
 			int hash = hashBean.getHash();
 			int id = hashBean.getId();

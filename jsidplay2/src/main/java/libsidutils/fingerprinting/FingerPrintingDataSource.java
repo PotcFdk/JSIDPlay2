@@ -14,7 +14,7 @@ public interface FingerPrintingDataSource {
 
 	void insertHashes(HashBeans hashBeans);
 
-	HashBeans findAllHashes(IntArrayBean intArray);
+	HashBeans findHashes(IntArrayBean intArray);
 
 	MusicInfoBean findTune(SongNoBean songNoBean);
 

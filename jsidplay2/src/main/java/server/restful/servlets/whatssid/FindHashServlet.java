@@ -38,7 +38,7 @@ public class FindHashServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
 
-		HashBeans result = whatsSidService.findAllHashes(intArrayBean);
+		HashBeans result = whatsSidService.findHashes(intArrayBean);
 
 		setOutput(request, response, result, HashBeans.class);
 	}

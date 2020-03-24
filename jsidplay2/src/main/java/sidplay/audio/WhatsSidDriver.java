@@ -9,6 +9,8 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
@@ -18,9 +20,11 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.WavBean;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
+import ui.entities.Database;
+import ui.entities.PersistenceProperties;
+import ui.entities.whatssid.service.WhatsSidService;
 
 /**
  * Alpha: Shazam like feature: Analyze tunes to recognize a currently played
@@ -47,21 +51,33 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private String recordingFilename;
 
+	private File tuneFile;
+	
 	private SidTune tune;
-
+	
 	private IConfig config;
+	
+	private EntityManager em;
 
 	private FingerPrintingDataSource fingerPrintingDataSource;
+	
+	public void setTuneFile(File file) {
+		this.tuneFile = file;
+	}
 
-	private File tuneFile;
+	public void dispose() {
+		if (em != null) {
+			em.close();
+		}
+	}
 
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
 		this.config = config;
-		if (fingerPrintingDataSource == null) {
-			this.fingerPrintingDataSource = new FingerprintingClient(config);
-		}
+		this.em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
+		this.fingerPrintingDataSource = new WhatsSidService(em);
 	}
 
 	@Override
@@ -113,12 +129,12 @@ public class WhatsSidDriver implements AudioDriver {
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
 				System.out.println("Insert " + recordingFilename);
+				
+				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
 				FingerPrinting fingerPrinting = new FingerPrinting(fingerPrintingDataSource);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
-
-				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
-				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 				fingerPrinting.insert(wavBean, tune, collectionName, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
@@ -141,11 +157,4 @@ public class WhatsSidDriver implements AudioDriver {
 		return ".wav";
 	}
 
-	public void setFingerPrintingDataSource(FingerPrintingDataSource fingerPrintingDataSource) {
-		this.fingerPrintingDataSource = fingerPrintingDataSource;
-	}
-
-	public void setFilename(File file) {
-		this.tuneFile = file;
-	}
 }
