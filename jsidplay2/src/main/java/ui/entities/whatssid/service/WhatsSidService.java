@@ -1,5 +1,7 @@
 package ui.entities.whatssid.service;
 
+import java.io.IOException;
+
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -32,6 +34,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		this.em = em;
 	};
 
+	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		// INSERT INTO `MusicInfo` (`Title`, `Artist`, `Album`, `FileDir`, `InfoDir`,
 		// audio_length) VALUES
@@ -59,6 +62,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		return result;
 	}
 
+	@Override
 	public void insertHashes(HashBeans hashes) {
 		// INSERT INTO `HashTable` (`Hash`, `id`, `Time`) VALUES
 
@@ -84,6 +88,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	}
 
+	@Override
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
 		// SELECT Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
 		// idMusicInfo=songNoBean.getSongNo()
@@ -98,6 +103,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		return em.createQuery(query).getSingleResult().toBean();
 	}
 
+	@Override
 	public HashBeans findHashes(IntArrayBean intArrayBean) {
 		// SELECT * FROM `HashTable` WHERE Hash in()
 
@@ -150,7 +156,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
+	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException {
 		return new FingerPrinting(this).match(wavBean);
 	}
 

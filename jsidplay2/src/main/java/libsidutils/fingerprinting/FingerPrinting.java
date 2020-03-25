@@ -38,7 +38,7 @@ public class FingerPrinting {
 		}
 	}
 
-	public MusicInfoWithConfidenceBean match(WavBean wavBean) {
+	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
 			fingerprintedSampleData.setWav(wavBean);

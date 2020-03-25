@@ -998,12 +998,16 @@ public class MenuBar extends C64VBox implements UIPart {
 		util.getPlayer().configureMixer(mixer -> {
 			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
 			new Thread(() -> {
-				WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
-				MusicInfoWithConfidenceBean result = new FingerprintingClient(util.getConfig()).whatsSid(wavBean);
-				if (result != null) {
-					System.out.println("Match: " + result.toString());
-				} else {
-					System.out.println("No match!");
+				try {
+					WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
+					MusicInfoWithConfidenceBean result = new FingerprintingClient(util.getConfig()).whatsSid(wavBean);
+					if (result != null) {
+						System.out.println("Match: " + result.toString());
+					} else {
+						System.out.println("No match!");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}).start();
 		});

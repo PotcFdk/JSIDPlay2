@@ -1,5 +1,7 @@
 package libsidutils.fingerprinting;
 
+import java.io.IOException;
+
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
@@ -18,7 +20,7 @@ public interface FingerPrintingDataSource {
 
 	MusicInfoBean findTune(SongNoBean songNoBean);
 
-	MusicInfoWithConfidenceBean whatsSid(WavBean wavBean);
+	MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException;
 
 	boolean tuneExists(MusicInfoBean musicInfoBean);
 

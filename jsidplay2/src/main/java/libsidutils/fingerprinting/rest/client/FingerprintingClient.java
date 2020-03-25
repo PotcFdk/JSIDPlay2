@@ -118,7 +118,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) {
+	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException {
 		try {
 			HttpURLConnection connection = send(wavBean, WavBean.class, IDENTIFY_PATH, HttpMethod.POST);
 

@@ -1,8 +1,10 @@
 package sidplay.audio;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -40,7 +42,7 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private WavHeader wavHeader;
 
-	private FileOutputStream wav;
+	private OutputStream wav;
 
 	private RandomAccessFile file;
 
@@ -94,7 +96,7 @@ public class WhatsSidDriver implements AudioDriver {
 		file = new RandomAccessFile(recordingFilename, "rw");
 
 		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
-		wav = new FileOutputStream(file.getFD());
+		wav = new BufferedOutputStream(new FileOutputStream(file.getFD()), 1<<20);
 		wav.write(wavHeader.getBytes());
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
@@ -115,6 +117,7 @@ public class WhatsSidDriver implements AudioDriver {
 	public void close() {
 		if (wav != null && file != null) {
 			try {
+				wav.flush();
 				file.seek(0);
 				wav.write(wavHeader.getBytes());
 				wav.close();

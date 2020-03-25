@@ -63,17 +63,17 @@ public class FingerprintedSampleData {
 		return audioLength;
 	}
 
-	public void setWav(WavBean wavBean) {
+	public void setWav(WavBean wavBean) throws IOException {
 		try {
 			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
-				throw new RuntimeException("Sample size in bits must be " + Short.SIZE);
+				throw new IOException("Sample size in bits must be " + Short.SIZE);
 			}
 			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-				throw new RuntimeException("Encoding must be PCM_SIGNED");
+				throw new IOException("Encoding must be PCM_SIGNED");
 			}
 			if (stream.getFormat().isBigEndian()) {
-				throw new RuntimeException("LittleEndian expected");
+				throw new IOException("LittleEndian expected");
 			}
 
 			// 1. mono to stereo conversion
