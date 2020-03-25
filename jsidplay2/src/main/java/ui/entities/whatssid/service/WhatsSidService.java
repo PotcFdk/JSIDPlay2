@@ -154,7 +154,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		return new FingerPrinting(this).match(wavBean);
 	}
 
-	public void deleteDb() {
+	public void deleteAll() {
 		try {
 			em.getTransaction().begin();
 
@@ -175,6 +175,10 @@ public class WhatsSidService implements FingerPrintingDataSource {
 				em.getTransaction().rollback();
 			}
 		}
+	}
+
+	public void close() {
+		em.close();
 	}
 
 }

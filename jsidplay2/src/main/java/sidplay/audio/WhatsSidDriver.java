@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.sound.sampled.LineUnavailableException;
 
@@ -18,7 +15,6 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.rest.beans.WavBean;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
 import ui.entities.Database;
@@ -56,27 +52,19 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private IConfig config;
 
-	private EntityManager em;
-
 	private WhatsSidService whatsSidService;
-
-	public WhatsSidDriver() {
-		this.em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-				new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL)).createEntityManager();
-		this.whatsSidService = new WhatsSidService(em);
-	}
 
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
 	}
 
-	public void deleteDb() {
-		whatsSidService.deleteDb();
+	public void deleteAll() {
+		whatsSidService.deleteAll();
 	}
 
 	public void dispose() {
-		if (em != null) {
-			em.close();
+		if (whatsSidService != null) {
+			whatsSidService.close();
 		}
 	}
 
@@ -84,6 +72,13 @@ public class WhatsSidDriver implements AudioDriver {
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
 		this.config = config;
+		// TODO configuration
+		if (whatsSidService == null) {
+			this.whatsSidService = new WhatsSidService(Persistence
+					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+							new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL))
+					.createEntityManager());
+		}
 	}
 
 	@Override
@@ -140,8 +135,7 @@ public class WhatsSidDriver implements AudioDriver {
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
 				FingerPrinting fingerPrinting = new FingerPrinting(whatsSidService);
-				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
-				fingerPrinting.insert(wavBean, tune, collectionName, recordingFilename);
+				fingerPrinting.insert(tune, collectionName, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
 			}

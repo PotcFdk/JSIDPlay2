@@ -3,7 +3,6 @@ package libsidutils.fingerprinting;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.function.Function;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -13,7 +12,6 @@ import com.beust.jcommander.ParametersDelegate;
 import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DebugUtil;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
@@ -32,7 +30,7 @@ import ui.filefilter.TuneFileFilter;
  *
  */
 @Parameters(resourceBundle = "libsidutils.fingerprinting.FingerPrintingCreator")
-public class FingerPrintingCreator implements Function<SidTune, String> {
+public class FingerPrintingCreator {
 
 	static {
 		DebugUtil.init();
@@ -43,15 +41,13 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--deleteDb" }, descriptionKey = "DELETE_DB", arity = 1)
-	private Boolean deleteDb = Boolean.FALSE;
+	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_DB", arity = 1)
+	private Boolean deleteAll = Boolean.FALSE;
 
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
 
 	private Player player;
-
-	private File file;
 
 	private WhatsSidDriver whatsSidDriver;
 
@@ -64,14 +60,6 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 			System.in.read();
 			System.exit(0);
 		}
-
-		// Use database directly without using REST interface for fingerprinting
-		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
-		
-		if (Boolean.TRUE.equals(deleteDb)) {
-			whatsSidDriver.deleteDb();
-		}
-
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 		config.getSidplay2Section().setDefaultPlayLength(180);
@@ -79,18 +67,22 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 		String hvsc = config.getSidplay2Section().getHvsc();
 
 		player = new Player(config);
-		player.setRecordingFilenameProvider(this);
 		player.setSidDatabase(hvsc != null ? new SidDatabase(hvsc) : null);
 
-		System.out.println();
-		System.out.println("Analyse...");
+		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
+
+		if (Boolean.TRUE.equals(deleteAll)) {
+			System.out.println("Delete all fingerprintings...");
+			whatsSidDriver.deleteAll();
+		}
+
+		System.out.println("Create fingerprintings... (press q <return> to abort)");
 
 		try {
 			processDirectory(new File(hvsc));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		whatsSidDriver.dispose();
 
 		System.exit(0);
@@ -102,14 +94,18 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 		for (File file : listFiles) {
 			if (file.isDirectory()) {
 				processDirectory(file);
-			} else {
+			} else if (file.isFile()) {
 				if (TUNE_FILE_FILTER.accept(file)) {
-					this.file = file;
 					whatsSidDriver.setTuneFile(file);
-					SidTune sidTune = SidTune.load(file);
-					player.setTune(sidTune);
-					sidTune.getInfo().setSelectedSong(sidTune.getInfo().getStartSong());
-
+					player.setRecordingFilenameProvider(tune -> {
+						String filename = PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath());
+						if (tune.getInfo().getSongs() > 1) {
+							filename += String.format("-%02d", tune.getInfo().getCurrentSong());
+						}
+						return filename;
+					});
+					player.setTune(SidTune.load(file));
+					player.getTune().getInfo().setSelectedSong(player.getTune().getInfo().getStartSong());
 					player.startC64();
 					player.stopC64(false);
 				}
@@ -121,21 +117,6 @@ public class FingerPrintingCreator implements Function<SidTune, String> {
 				}
 			}
 		}
-	}
-
-	@Override
-	public String apply(SidTune tune) {
-		String defaultName = "jsidplay2";
-		if (tune == SidTune.RESET) {
-			return new File(file.getParent(), defaultName).getAbsolutePath();
-		}
-		SidTuneInfo info = tune.getInfo();
-		String filename = new File(file.getParent(), PathUtils.getFilenameWithoutSuffix(file.getName()))
-				.getAbsolutePath();
-		if (info.getSongs() > 1) {
-			filename += String.format("-%02d", info.getCurrentSong());
-		}
-		return filename;
 	}
 
 	public static void main(String[] args) throws IOException, SidTuneError, InterruptedException {

@@ -1,5 +1,9 @@
 package libsidutils.fingerprinting;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
@@ -15,18 +19,19 @@ public class FingerPrinting {
 
 	private FingerPrintingDataSource fingerPrintingDataSource;
 
-	
 	public FingerPrinting(FingerPrintingDataSource fingerPrintingDataSource) {
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 
-	public void insert(WavBean wavBean, SidTune tune, String collectionFilename, String recordingFilename) {
-		if (wavBean.getWav().length > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
-			fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);
-			MusicInfoBean musicInfoBean = fingerprintedSampleData.toMusicInfoBean();
+	public void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException {
+		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
+		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);
+		MusicInfoBean musicInfoBean = fingerprintedSampleData.toMusicInfoBean();
 
-			if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
+		if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
+			WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
+			if (wavBean.getWav().length > 0) {
+				fingerprintedSampleData.setWav(wavBean);
 				IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
 				fingerPrintingDataSource.insertHashes(fingerprintedSampleData.getFingerprint().toHashBeans(id));
 			}
@@ -35,7 +40,8 @@ public class FingerPrinting {
 
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) {
 		if (wavBean != null && wavBean.getWav().length > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(wavBean);
+			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
+			fingerprintedSampleData.setWav(wavBean);
 
 			Index index = new Index();
 			index.setFingerPrintingClient(fingerPrintingDataSource);

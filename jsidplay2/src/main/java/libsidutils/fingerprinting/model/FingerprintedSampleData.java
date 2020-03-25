@@ -63,7 +63,7 @@ public class FingerprintedSampleData {
 		return audioLength;
 	}
 
-	public FingerprintedSampleData(WavBean wavBean) {
+	public void setWav(WavBean wavBean) {
 		try {
 			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
