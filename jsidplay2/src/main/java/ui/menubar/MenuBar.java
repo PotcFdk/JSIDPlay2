@@ -16,14 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import builder.resid.SIDMixer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -58,9 +56,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -991,26 +986,6 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
-	}
-
-	@FXML
-	private void match() {
-		util.getPlayer().configureMixer(mixer -> {
-			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
-			new Thread(() -> {
-				try {
-					WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
-					MusicInfoWithConfidenceBean result = new FingerprintingClient(util.getConfig()).whatsSid(wavBean);
-					if (result != null) {
-						System.out.println("Match: " + result.toString());
-					} else {
-						System.out.println("No match!");
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}).start();
-		});
 	}
 
 	private void addView(String id) {

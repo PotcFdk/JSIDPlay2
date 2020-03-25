@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +16,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import builder.resid.SIDMixer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -33,6 +35,10 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DesktopIntegration;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import libsidutils.psid64.PSid64TuneInfo;
 import libsidutils.psid64.Psid64;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
@@ -40,6 +46,7 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
+import ui.common.Toast;
 import ui.common.UIPart;
 import ui.entities.config.C1541Section;
 import ui.entities.config.EmulationSection;
@@ -93,6 +100,15 @@ public class StatusBar extends C64VBox implements UIPart {
 				if (event.getNewValue() == State.START) {
 					setPlayerIdAndInfos(sidTune);
 					recalculateScrollText();
+					
+					
+					final Duration duration = Duration.millis(10000);
+					final KeyFrame oneFrame = new KeyFrame(duration, evt -> {
+						match();
+					});
+					timer = new Timeline(oneFrame);
+					timer.setCycleCount(1);
+					timer.playFromStart();
 				}
 			});
 		}
@@ -126,6 +142,32 @@ public class StatusBar extends C64VBox implements UIPart {
 				}
 			}
 		}
+	}
+
+	private void match() {
+		util.getPlayer().configureMixer(mixer -> {
+			final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
+			new Thread(() -> {
+				try {
+					WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
+					MusicInfoWithConfidenceBean result = new FingerprintingClient(util.getConfig()).whatsSid(wavBean);
+					if (result != null) {
+						Platform.runLater(() -> {
+							MusicInfoBean musicInfo = result.getMusicInfo();
+							String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - "
+									+ musicInfo.getAlbum();
+							int toastMsgTime = 3500; // 3.5 seconds
+							int fadeInTime = 500; // 0.5 seconds
+							int fadeOutTime = 500; // 0.5 seconds
+							Toast.makeText(util.getWindow().getStage(), toastMsg, toastMsgTime, fadeInTime,
+									fadeOutTime);
+						});
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}).start();
+		});
 	}
 
 	public StatusBar() {
