@@ -8,7 +8,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.persistence.Persistence;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
@@ -18,8 +17,6 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
-import ui.entities.Database;
-import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
 
 /**
@@ -59,27 +56,18 @@ public class WhatsSidDriver implements AudioDriver {
 		this.tuneFile = file;
 	}
 
+	public void setWhatsSidService(WhatsSidService whatsSidService) {
+		this.whatsSidService = whatsSidService;
+	}
+	
 	public void deleteAll() {
 		whatsSidService.deleteAll();
-	}
-
-	public void dispose() {
-		if (whatsSidService != null) {
-			whatsSidService.close();
-		}
 	}
 
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
 		this.config = config;
-		// TODO configuration
-		if (whatsSidService == null) {
-			this.whatsSidService = new WhatsSidService(Persistence
-					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, new PersistenceProperties(
-							"127.0.0.1:3306/musiclibary", "newuser", "password", Database.MSSQL))
-					.createEntityManager());
-		}
 	}
 
 	@Override

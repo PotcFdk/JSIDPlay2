@@ -4,4 +4,3 @@ WHATSSID_DATABASE_URL=Datenbank Jdbc Url
 WHATSSID_DATABASE_USERNAME=Datenbank Benutzername
 WHATSSID_DATABASE_PASSWORD=Datenbank Passwort
 WHATSSID_DATABASE_DIALECT=Datenbank Dialekt
-DELETE_ALL=Datenbank löschen

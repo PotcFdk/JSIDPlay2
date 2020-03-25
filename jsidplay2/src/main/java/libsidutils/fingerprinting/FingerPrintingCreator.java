@@ -3,6 +3,10 @@ package libsidutils.fingerprinting;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -19,6 +23,8 @@ import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
+import ui.entities.PersistenceProperties;
+import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
@@ -40,6 +46,21 @@ public class FingerPrintingCreator {
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
+
+	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
+	private String whatsSidDatabaseDriver;
+
+	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
+	private String whatsSidDatabaseUrl;
+
+	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
+	private String whatsSidDatabaseUsername;
+
+	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
+	private String whatsSidDatabasePassword;
+
+	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
+	private String whatsSidDatabaseDialect;
 
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
@@ -71,6 +92,11 @@ public class FingerPrintingCreator {
 
 		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
 
+		EntityManager em = Persistence
+				.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, createDatabaseMap())
+				.createEntityManager();
+		whatsSidDriver.setWhatsSidService(new WhatsSidService(em));
+
 		if (Boolean.TRUE.equals(deleteAll)) {
 			System.out.println("Delete all fingerprintings...");
 			whatsSidDriver.deleteAll();
@@ -83,9 +109,19 @@ public class FingerPrintingCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		whatsSidDriver.dispose();
 
+		whatsSidDriver.close();
 		System.exit(0);
+	}
+
+	private HashMap<String, String> createDatabaseMap() {
+		HashMap<String, String> result = new HashMap<>();
+		result.put("hibernate.connection.driver_class", whatsSidDatabaseDriver);
+		result.put("hibernate.connection.url", whatsSidDatabaseUrl);
+		result.put("hibernate.connection.username", whatsSidDatabaseUsername);
+		result.put("hibernate.connection.password", whatsSidDatabasePassword);
+		result.put("hibernate.dialect", whatsSidDatabaseDialect);
+		return result;
 	}
 
 	private void processDirectory(File dir) throws IOException, SidTuneError {

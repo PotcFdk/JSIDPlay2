@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,6 +37,7 @@ import org.apache.tomcat.util.scan.StandardJarScanner;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.sidtune.SidTuneError;
@@ -53,12 +55,11 @@ import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
 import server.restful.servlets.whatssid.FindHashServlet;
 import server.restful.servlets.whatssid.FindTuneServlet;
-import server.restful.servlets.whatssid.WhatsSidServlet;
 import server.restful.servlets.whatssid.InsertHashesServlet;
 import server.restful.servlets.whatssid.InsertTuneServlet;
 import server.restful.servlets.whatssid.TuneExistsServlet;
+import server.restful.servlets.whatssid.WhatsSidServlet;
 import sidplay.Player;
-import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
@@ -67,6 +68,7 @@ import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 import ui.entities.whatssid.service.WhatsSidService;
 
+@Parameters(resourceBundle = "server.restful.JSIDPlay2Server")
 public class JSIDPlay2Server {
 
 	static {
@@ -126,12 +128,25 @@ public class JSIDPlay2Server {
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class);
 
-	private static EntityManager em;
-
 	public static WhatsSidService whatsSidService;
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
+
+	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
+	private String whatsSidDatabaseDriver;
+
+	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
+	private String whatsSidDatabaseUrl;
+
+	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
+	private String whatsSidDatabaseUsername;
+
+	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
+	private String whatsSidDatabasePassword;
+
+	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
+	private String whatsSidDatabaseDialect;
 
 	@ParametersDelegate
 	private Configuration configuration;
@@ -339,9 +354,19 @@ public class JSIDPlay2Server {
 		}
 	}
 
+	private HashMap<String, String> createDatabaseMap() {
+		HashMap<String, String> result = new HashMap<>();
+		result.put("hibernate.connection.driver_class", whatsSidDatabaseDriver);
+		result.put("hibernate.connection.url", whatsSidDatabaseUrl);
+		result.put("hibernate.connection.username", whatsSidDatabaseUsername);
+		result.put("hibernate.connection.password", whatsSidDatabasePassword);
+		result.put("hibernate.dialect", whatsSidDatabaseDialect);
+		return result;
+	}
+
 	private static void exit(int rc) {
-		if (em != null) {
-			em.close();
+		if (whatsSidService != null) {
+			whatsSidService.close();
 		}
 		try {
 			System.out.println("Press <enter> to exit the player!");
@@ -357,12 +382,6 @@ public class JSIDPlay2Server {
 		try {
 			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
 
-			// TODO configuration
-			em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-					new PersistenceProperties("127.0.0.1:3306/musiclibary", "newuser", "password", Database.MSSQL))
-					.createEntityManager();
-			whatsSidService = new WhatsSidService(em);
-
 			JSIDPlay2Server jsidplay2Server = getInstance(configuration);
 			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server)
 					.programName(JSIDPlay2Server.class.getName()).build();
@@ -371,6 +390,11 @@ public class JSIDPlay2Server {
 				commander.usage();
 				exit(0);
 			}
+			EntityManager em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, jsidplay2Server.createDatabaseMap())
+					.createEntityManager();
+			whatsSidService = new WhatsSidService(em);
+
 			jsidplay2Server.start();
 		} catch (ParameterException | IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
