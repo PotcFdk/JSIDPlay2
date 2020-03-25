@@ -41,7 +41,7 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_DB", arity = 1)
+	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
 	@ParametersDelegate
