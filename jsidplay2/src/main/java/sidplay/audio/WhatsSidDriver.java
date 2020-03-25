@@ -1,6 +1,5 @@
 package sidplay.audio;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -91,12 +90,12 @@ public class WhatsSidDriver implements AudioDriver {
 		if (new File(recordingFilename).exists()) {
 			throw new NextTuneException();
 		}
-		System.out.println("Recording: " + recordingFilename);
+		System.out.println("Create: " + recordingFilename);
 
 		file = new RandomAccessFile(recordingFilename, "rw");
 
 		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
-		wav = new BufferedOutputStream(new FileOutputStream(file.getFD()), 1<<20);
+		wav = new FileOutputStream(file.getFD());
 		wav.write(wavHeader.getBytes());
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
@@ -117,7 +116,6 @@ public class WhatsSidDriver implements AudioDriver {
 	public void close() {
 		if (wav != null && file != null) {
 			try {
-				wav.flush();
 				file.seek(0);
 				wav.write(wavHeader.getBytes());
 				wav.close();
@@ -132,7 +130,7 @@ public class WhatsSidDriver implements AudioDriver {
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
-				System.out.println("Insert " + recordingFilename);
+				System.out.println("Insert Fingerprint");
 
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
