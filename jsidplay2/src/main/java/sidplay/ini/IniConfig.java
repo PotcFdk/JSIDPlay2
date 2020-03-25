@@ -31,6 +31,7 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.config.IFilterSection;
 import libsidplay.config.IPrinterSection;
 import libsidplay.config.ISidPlay2Section;
+import libsidplay.config.IWhatsSidSection;
 
 /**
  * INI configuration file support responsible to load and save all emulator
@@ -57,6 +58,8 @@ public class IniConfig implements IConfig {
 	private IAudioSection audioSection;
 	@ParametersDelegate
 	private IEmulationSection emulationSection;
+	@ParametersDelegate
+	private IWhatsSidSection whatsSidSection;
 
 	protected IniReader iniReader;
 
@@ -67,6 +70,7 @@ public class IniConfig implements IConfig {
 		consoleSection = new IniConsoleSection(iniReader);
 		audioSection = new IniAudioSection(iniReader);
 		emulationSection = new IniEmulationSection(iniReader);
+		whatsSidSection = new IniWhatsSidSection(iniReader);
 	}
 
 	@Override
@@ -224,6 +228,11 @@ public class IniConfig implements IConfig {
 	@Override
 	public final IEmulationSection getEmulationSection() {
 		return emulationSection;
+	}
+
+	@Override
+	public IWhatsSidSection getWhatsSidSection() {
+		return whatsSidSection;
 	}
 
 }

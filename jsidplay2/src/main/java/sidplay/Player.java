@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,6 +44,7 @@ import javax.sound.sampled.LineUnavailableException;
 import builder.hardsid.HardSIDBuilder;
 import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
+import builder.resid.SIDMixer;
 import builder.sidblaster.SidBlasterBuilder;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
@@ -66,6 +68,9 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
@@ -73,9 +78,9 @@ import sidplay.audio.Audio;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.EndTuneException;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.audio.VideoDriver;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
@@ -167,6 +172,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * Called each time a chunk of music has been played.
 	 */
 	private Consumer<Player> interactivityHook = player -> {
+	};
+	/**
+	 * Called after WhatsSid has detected a tune.
+	 */
+	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 	};
 	/**
 	 * Currently used audio and corresponding audio driver.
@@ -272,6 +282,38 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				}
 				if (getAudioDriver() instanceof SIDListener) {
 					addSidListener((SIDListener) getAudioDriver());
+				}
+				if (config.getWhatsSidSection().isEnable()) {
+					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
+
+						@Override
+						public void event() throws InterruptedException {
+							configureMixer(mixer -> {
+								final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer)
+										.getWhatsSidAnalyserBuffer();
+								new Thread(() -> {
+									try {
+										FingerprintingClient fingerPrintingClient = new FingerprintingClient(config);
+										WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
+										MusicInfoWithConfidenceBean result = fingerPrintingClient.whatsSid(wavBean);
+										if (result != null) {
+											c64.getEventScheduler()
+													.scheduleThreadSafe(new Event("WhatsSidResultEvent") {
+
+														@Override
+														public void event() throws InterruptedException {
+															whatsSidHook.accept(result);
+														}
+													});
+										}
+									} catch (Exception e) {
+										System.err.println(e.getMessage());
+									}
+								}).start();
+							});
+						}
+
+					}, (long) (config.getWhatsSidSection().getMatchStartTime() * c64.getClock().getCpuFrequency()));
 				}
 			}
 
@@ -587,6 +629,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
+	 * Set a hook to be called when WhatsSid has detected a tune.
+	 * 
+	 * @param whatsSidHook
+	 */
+	public void setWhatsSidHook(Consumer<MusicInfoWithConfidenceBean> whatsSidHook) {
+		this.whatsSidHook = whatsSidHook;
+	}
+
+	/**
 	 * Get the player's state,
 	 * 
 	 * @return the player's state
@@ -639,7 +690,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * 
 	 * @throws LineUnavailableException audio line currently in use
 	 * @throws IOException              audio output file cannot be written
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private void open() throws IOException, LineUnavailableException, InterruptedException {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();

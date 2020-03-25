@@ -3,10 +3,10 @@ package libsidutils.fingerprinting.rest.client;
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
 import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
-import static server.restful.servlets.whatssid.WhatsSidServlet.IDENTIFY_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
 import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
 import static server.restful.servlets.whatssid.TuneExistsServlet.TUNE_EXISTS_PATH;
+import static server.restful.servlets.whatssid.WhatsSidServlet.IDENTIFY_PATH;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -23,6 +23,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import libsidplay.config.IConfig;
+import libsidplay.config.IWhatsSidSection;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -35,18 +36,12 @@ import server.restful.common.MimeType;
 
 public class FingerprintingClient implements FingerPrintingDataSource {
 
-	// TODO configuration
-	private static final String PATH = "http://127.0.0.1:8080/jsidplay2service/JSIDPlay2REST";
-	private static final String USERNAME = "jsidplay2";
-	private static final String PASSWORD = "jsidplay2!";
-
-	@SuppressWarnings("unused")
 	private IConfig configuration;
 
 	public FingerprintingClient(IConfig configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		try {
@@ -55,7 +50,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(IdBean.class, connection);
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -69,7 +64,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return;
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -83,7 +78,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(HashBeans.class, connection);
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -97,7 +92,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(MusicInfoBean.class, connection);
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -111,7 +106,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(Boolean.class, connection);
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -125,7 +120,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(MusicInfoWithConfidenceBean.class, connection);
 			}
-			throw new RuntimeException(connection.getResponseCode() + "\n" + connection.getResponseMessage());
+			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -133,13 +128,18 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 
 	private <T> HttpURLConnection send(T parameter, Class<T> tClass, String requestPath, String requestMethod)
 			throws MalformedURLException, IOException, ProtocolException, JAXBException {
+		IWhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
 
-		HttpURLConnection connection = (HttpURLConnection) new URL(PATH + requestPath).openConnection();
+		HttpURLConnection connection = (HttpURLConnection) new URL(whatsSidSection.getUrl() + requestPath)
+				.openConnection();
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod(requestMethod);
-		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
-				+ Base64.getEncoder().encodeToString((USERNAME + ":" + PASSWORD).getBytes(StandardCharsets.UTF_8)));
+		connection.setRequestProperty(HttpHeaders.AUTHORIZATION,
+				BASIC_AUTH + " "
+						+ Base64.getEncoder()
+								.encodeToString((whatsSidSection.getUsername() + ":" + whatsSidSection.getPassword())
+										.getBytes(StandardCharsets.UTF_8)));
 		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MimeType.MIME_TYPE_XML.getContentType());
 		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getContentType());
 

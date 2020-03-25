@@ -13,6 +13,7 @@ import libsidplay.config.IC1541Section;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IPrinterSection;
 import libsidplay.config.ISidPlay2Section;
+import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.Audio;
 
 /**
@@ -47,9 +48,9 @@ public interface IniDefaults {
 	float DEFAULT_BLUR = SIDPLAY2_SECTION.getBlur();
 	float DEFAULT_BLEED = SIDPLAY2_SECTION.getBleed();
 	boolean DEFAULT_TURBO_TAPE = SIDPLAY2_SECTION.isTurboTape();
-	
+
 	// C1541 Section
-	
+
 	IC1541Section C1541_SECTION = DEFAULTS.getC1541Section();
 	boolean DEFAULT_DRIVE_ON = C1541_SECTION.isDriveOn();
 	boolean DEFAULT_PARALLEL_CABLE = C1541_SECTION.isParallelCable();
@@ -67,7 +68,7 @@ public interface IniDefaults {
 	boolean DEFAULT_PRINTER_ON = PRINTER_SECTION.isPrinterOn();
 
 	// Console Section
-	
+
 	IniConsoleSection CONSOLE_SECTION = DEFAULTS.getConsoleSection();
 	char DEFAULT_CHAR_TOP_LEFT = CONSOLE_SECTION.getTopLeft();
 	char DEFAULT_CHAR_TOP_RIGHT = CONSOLE_SECTION.getTopRight();
@@ -79,7 +80,7 @@ public interface IniDefaults {
 	char DEFAULT_CHAR_JUNCTION_RIGHT = CONSOLE_SECTION.getJunctionRight();
 
 	// Audio Section
-	
+
 	IAudioSection AUDIO_SECTION = DEFAULTS.getAudioSection();
 	Audio DEFAULT_AUDIO = AUDIO_SECTION.getAudio();
 	int DEFAULT_DEVICE = AUDIO_SECTION.getDevice();
@@ -102,8 +103,7 @@ public interface IniDefaults {
 	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
 	String DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3File();
 	float DEFAULT_AVI_COMPRESSION_QUALITY = AUDIO_SECTION.getAviCompressionQuality();
-	
-	
+
 	boolean DEFAULT_DELAY_BYPASS = AUDIO_SECTION.getDelayBypass();
 	int DEFAULT_DELAY = AUDIO_SECTION.getDelay();
 	int DEFAULT_DELAY_WET_LEVEL = AUDIO_SECTION.getDelayWetLevel();
@@ -184,4 +184,14 @@ public interface IniDefaults {
 	String DEFAULT_ReSIDfp_FILTER_8580 = EMULATOR_SECTION.getReSIDfpFilter8580();
 	String DEFAULT_ReSIDfp_STEREO_FILTER_8580 = EMULATOR_SECTION.getReSIDfpStereoFilter8580();
 	String DEFAULT_ReSIDfp_3SID_FILTER_8580 = EMULATOR_SECTION.getReSIDfpThirdSIDFilter8580();
+
+	// WhatsSid Section
+
+	IWhatsSidSection WHATSSID_SECTION = DEFAULTS.getWhatsSidSection();
+	boolean DEFAULT_WHATSSID_ENABLE = WHATSSID_SECTION.isEnable();
+	String DEFAULT_WHATSSID_URL = WHATSSID_SECTION.getUrl();
+	String DEFAULT_WHATSSID_USERNAME = WHATSSID_SECTION.getUsername();
+	String DEFAULT_WHATSSID_PASSWORD = WHATSSID_SECTION.getPassword();
+	int DEFAULT_WHATSSID_CAPTURE_TIME = WHATSSID_SECTION.getCaptureTime();
+	int DEFAULT_WHATSSID_MATCH_START_TIME = WHATSSID_SECTION.getMatchStartTime();
 }

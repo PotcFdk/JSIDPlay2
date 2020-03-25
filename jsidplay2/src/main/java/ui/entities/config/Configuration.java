@@ -251,6 +251,19 @@ public class Configuration implements IConfig {
 		return emulationSection;
 	}
 
+	@ParametersDelegate
+	private WhatsSidSection whatsSidSection = new WhatsSidSection();
+
+	public void setWhatsSidSection(WhatsSidSection whatsSidSection) {
+		this.whatsSidSection = whatsSidSection;
+	}
+
+	@Embedded
+	@Override
+	public WhatsSidSection getWhatsSidSection() {
+		return whatsSidSection;
+	}
+
 	private String currentFavorite;
 
 	public void setCurrentFavorite(String currentFavorite) {

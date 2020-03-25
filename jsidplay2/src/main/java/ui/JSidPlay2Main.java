@@ -15,6 +15,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -23,8 +24,11 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DebugUtil;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import sidplay.Player;
 import ui.common.Convenience;
+import ui.common.Toast;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
@@ -91,16 +95,29 @@ public class JSidPlay2Main extends Application {
 		}
 	};
 
+	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
+		Platform.runLater(() -> {
+			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
+			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum();
+			int toastMsgTime = 3500; // in ms
+			int fadeInTime = 500; // in ms
+			int fadeOutTime = 500; // in ms
+			Toast.makeText(jSidplay2.getStage(), toastMsg, toastMsgTime, fadeInTime, fadeOutTime);
+		});
+	};
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			player = new Player(getConfigurationFromCommandLineArgs());
 			player.setMenuHook(menuHook);
+			player.setWhatsSidHook(whatsSidHook);
 			// automatically load tune on start-up
 			Optional<String> filename = filenames.stream().findFirst();
 			if (filename.isPresent()) {
 				try {
-					new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA, null);
+					new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA,
+							null);
 				} catch (IOException | SidTuneError | URISyntaxException e) {
 					System.err.println(e.getMessage());
 				}
@@ -122,8 +139,10 @@ public class JSidPlay2Main extends Application {
 						.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
 				window.heightProperty()
 						.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
-				window.xProperty().addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
-				window.yProperty().addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
+				window.xProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
+				window.yProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
 			}
 			jSidplay2.open();
 		} catch (Throwable t) {
@@ -196,8 +215,7 @@ public class JSidPlay2Main extends Application {
 	/**
 	 * Main method. Create an application frame and start emulation.
 	 * 
-	 * @param args
-	 *            command line arguments
+	 * @param args command line arguments
 	 */
 	public static void main(final String[] args) {
 		launch(args);

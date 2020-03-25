@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import ui.common.KnobSkin?>
+<?import ui.common.TypeTextField?>
+<?scenebuilder-preview-i18n-resource AudioSettings.properties?>
+
+<!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
+
+<Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@WhatsSidSettings.css">
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@WhatsSidSettings.css" 
+		fx:controller="ui.audiosettings.WhatsSidSettings"> -->
+	<ScrollPane>
+		<VBox>
+			<TitledPane text="%WHATSSID">
+				<VBox>
+					<CheckBox fx:id="enable" text="%ENABLE"></CheckBox>
+					<Label text="%URL" alignment="CENTER_RIGHT" />
+					<TextField fx:id="url">
+						<tooltip>
+							<Tooltip text="%DEFAULT_URL_TIP" />
+						</tooltip>
+					</TextField>
+					<Label text="%USERNAME" />
+					<TextField fx:id="username">
+						<tooltip>
+							<Tooltip text="%USERNAME_TIP" />
+						</tooltip>
+					</TextField>
+					<Label text="%PASSWORD" />
+					<PasswordField fx:id="password">
+						<tooltip>
+							<Tooltip text="%PASSWORD_TIP" />
+						</tooltip>
+					</PasswordField>
+					<Label text="%CAPTURE_TIME" />
+					<TypeTextField type="Integer" fx:id="captureTime">
+						<tooltip>
+							<Tooltip text="%CAPTURE_TIME_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%MATCH_START_TIME" />
+					<TypeTextField type="Integer" fx:id="matchStartTime">
+						<tooltip>
+							<Tooltip text="%MATCH_START_TIME_TIP" />
+						</tooltip>
+					</TypeTextField>
+				</VBox>
+			</TitledPane>
+		</VBox>
+	</ScrollPane>
+</Scene>

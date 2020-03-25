@@ -98,6 +98,7 @@ import ui.update.Update;
 import ui.videoscreen.Video;
 import ui.webview.WebView;
 import ui.webview.WebViewType;
+import ui.whatssidsettings.WhatsSidSettings;
 
 public class MenuBar extends C64VBox implements UIPart {
 	/** NUVIE video player */
@@ -422,6 +423,11 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void emulationSettings() {
 		new EmulationSettings(util.getPlayer()).open();
+	}
+
+	@FXML
+	private void whatsSidSettings() {
+		new WhatsSidSettings(util.getPlayer()).open();
 	}
 
 	@FXML

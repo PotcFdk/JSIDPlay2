@@ -20,6 +20,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
+import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.WAVDriver;
 import sidplay.audio.WAVDriver.WavHeader;
@@ -108,15 +109,15 @@ public class SIDMixer implements Mixer {
 						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE)).hasRemaining()) {
 
-							// TODO WhatsSid enabled?
-							ByteBuffer source = buffer.duplicate().asReadOnlyBuffer();
-							((Buffer) source).flip();
-							while (source.hasRemaining()) {
-								if (!whatsSidBuffer.put(source.get()).hasRemaining()) {
-									((Buffer) whatsSidBuffer).flip();
+							if (config.getWhatsSidSection().isEnable()) {
+								ByteBuffer source = buffer.duplicate().asReadOnlyBuffer();
+								((Buffer) source).flip();
+								while (source.hasRemaining()) {
+									if (!whatsSidBuffer.put(source.get()).hasRemaining()) {
+										((Buffer) whatsSidBuffer).flip();
+									}
 								}
 							}
-
 							audioProcessors.stream().forEach(processor -> processor.process(buffer));
 							audioDriver.write();
 							((Buffer) buffer).clear();
@@ -253,9 +254,10 @@ public class SIDMixer implements Mixer {
 		this.buffer = audioDriver.buffer();
 
 		IAudioSection audioSection = config.getAudioSection();
+		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 
-		// TODO 15 seconds configurable?
-		int whatsSidBufferSize = Integer.BYTES * audioSection.getSamplingRate().getFrequency() * 15;
+		int whatsSidBufferSize = Integer.BYTES * audioSection.getSamplingRate().getFrequency()
+				* whatsSidSection.getCaptureTime();
 		this.whatsSidBuffer = ByteBuffer.allocate(whatsSidBufferSize).order(ByteOrder.nativeOrder());
 
 		this.bufferSize = audioSection.getBufferSize();
