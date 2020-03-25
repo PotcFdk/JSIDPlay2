@@ -358,9 +358,8 @@ public class JSIDPlay2Server {
 			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
 
 			// TODO configuration
-			em = Persistence
-					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-							new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL))
+			em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+					new PersistenceProperties("127.0.0.1:3306/musiclibary", "newuser", "password", Database.MSSQL))
 					.createEntityManager();
 			whatsSidService = new WhatsSidService(em);
 

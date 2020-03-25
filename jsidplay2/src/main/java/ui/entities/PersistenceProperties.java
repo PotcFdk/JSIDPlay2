@@ -10,9 +10,12 @@ public class PersistenceProperties extends HashMap<String, String> {
 	public static final String CGSC_DS = "cgsc-ds";
 	public static final String GAMEBASE_DS = "gamebase-ds";
 	public static final String WHATSSID_DS = "whatssid-ds";
-	public PersistenceProperties(String name, Database type) {
+
+	public PersistenceProperties(String url, String username, String password, Database type) {
 		put("hibernate.connection.driver_class", type.getJdbcDriver());
-		put("hibernate.connection.url", type.getJdbcUrl().replace("${name}", name));
+		put("hibernate.connection.url", type.getJdbcUrl().replace("${name}", url));
+		put("hibernate.connection.username", username);
+		put("hibernate.connection.password", password);
 	}
 
 }

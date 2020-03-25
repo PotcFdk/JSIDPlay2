@@ -563,7 +563,8 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 			closeDatabase();
 			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
-			PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), Database.HSQL_FILE);
+			PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), "", "",
+					Database.HSQL_FILE);
 			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(), pp);
 			em = emFactory.createEntityManager();
 			versionService = new VersionService(em);

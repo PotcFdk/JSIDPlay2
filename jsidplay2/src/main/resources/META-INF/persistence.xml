@@ -27,8 +27,6 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
 		<properties>
-			<property name="hibernate.connection.username" value=""/>
-			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 			<property name="hibernate.show_sql" value="false"/>
@@ -50,8 +48,6 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
-			<property name="hibernate.connection.username" value=""/>
-			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.show_sql" value="false"/>
 		</properties>
@@ -67,8 +63,6 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
-			<property name="hibernate.connection.username" value=""/>
-			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 			<property name="hibernate.show_sql" value="false"/>
@@ -85,10 +79,9 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
-			<property name="hibernate.connection.username" value=""/>
-			<property name="hibernate.connection.password" value=""/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			<property name="hibernate.show_sql" value="false"/>
 		</properties>
 	</persistence-unit>
 	<persistence-unit name="whatssid-ds" transaction-type="RESOURCE_LOCAL">
@@ -101,10 +94,9 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
-			<property name="hibernate.connection.username" value="newuser"/>
-			<property name="hibernate.connection.password" value="password"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			<property name="hibernate.show_sql" value="false"/>
 		</properties>
 	</persistence-unit>
 </persistence>

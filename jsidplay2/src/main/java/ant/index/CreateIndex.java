@@ -66,7 +66,7 @@ public class CreateIndex {
 		File rootFile = new TFile(filename);
 
 		File dbFilename = new File(rootFile.getParentFile(), collectionType.toString());
-		PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), Database.HSQL_FILE);
+		PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), "", "", Database.HSQL_FILE);
 		EntityManagerFactory emFactory = Persistence
 				.createEntityManagerFactory(collectionType == CGSC ? CGSC_DS : HVSC_DS, pp);
 		EntityManager em = emFactory.createEntityManager();

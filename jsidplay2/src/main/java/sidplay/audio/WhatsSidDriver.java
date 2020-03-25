@@ -76,8 +76,8 @@ public class WhatsSidDriver implements AudioDriver {
 		// TODO configuration
 		if (whatsSidService == null) {
 			this.whatsSidService = new WhatsSidService(Persistence
-					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-							new PersistenceProperties("127.0.0.1:3306/musiclibary", Database.MSSQL))
+					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, new PersistenceProperties(
+							"127.0.0.1:3306/musiclibary", "newuser", "password", Database.MSSQL))
 					.createEntityManager());
 		}
 	}

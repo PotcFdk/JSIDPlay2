@@ -252,8 +252,10 @@ public class GameBase extends C64VBox implements UIPart {
 			em.close();
 			em.getEntityManagerFactory().close();
 		}
-		em = Persistence.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,
-				new PersistenceProperties(dbFile.getAbsolutePath(), Database.MSACCESS)).createEntityManager();
+		em = Persistence
+				.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,
+						new PersistenceProperties(dbFile.getAbsolutePath(), "", "", Database.MSACCESS))
+				.createEntityManager();
 		gamesService = new GamesService(em);
 	}
 

@@ -59,16 +59,15 @@ public class ConfigService {
 	public Configuration load() {
 		switch (configurationType) {
 		case DATABASE:
-			em = Persistence
-					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
-							PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), Database.HSQL_FILE))
+			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
+					PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), "", "", Database.HSQL_FILE))
 					.createEntityManager();
 			return get();
 
 		case XML:
 		default:
 			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(CONFIG_FILE, Database.HSQL_MEM)).createEntityManager();
+					new PersistenceProperties(CONFIG_FILE, "", "", Database.HSQL_MEM)).createEntityManager();
 			return importCfg(getConfigPath());
 		}
 	}
@@ -133,8 +132,7 @@ public class ConfigService {
 	/**
 	 * Remove configuration database.
 	 * 
-	 * @param configuration
-	 *            configuration to remove
+	 * @param configuration configuration to remove
 	 */
 	private void remove(Configuration configuration) {
 		try {
@@ -152,8 +150,7 @@ public class ConfigService {
 	/**
 	 * Persist configuration database.
 	 * 
-	 * @param config
-	 *            configuration to persist
+	 * @param config configuration to persist
 	 */
 	private void persist(Configuration config) {
 		try {
@@ -182,8 +179,7 @@ public class ConfigService {
 	 * 
 	 * If absent or invalid, create a new one.
 	 * 
-	 * @param file
-	 *            XML file to import
+	 * @param file XML file to import
 	 * @return imported configuration
 	 */
 	private Configuration importCfg(File file) {
@@ -214,10 +210,8 @@ public class ConfigService {
 	/**
 	 * Export configuration database into an XML file.
 	 * 
-	 * @param configuration
-	 *            configuration to export
-	 * @param file
-	 *            target file of the export
+	 * @param configuration configuration to export
+	 * @param file          target file of the export
 	 */
 	private void exportCfg(Configuration configuration, File file) {
 		try {
@@ -249,10 +243,8 @@ public class ConfigService {
 	/**
 	 * Create a backup of the current configuration.
 	 * 
-	 * @param configuration
-	 *            configuration to backup
-	 * @param configPath
-	 *            path to save the backup
+	 * @param configuration configuration to backup
+	 * @param configPath    path to save the backup
 	 */
 	private void createBackup(Configuration configuration, File configPath) {
 		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
