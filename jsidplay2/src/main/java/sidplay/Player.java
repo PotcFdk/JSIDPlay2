@@ -297,14 +297,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrintingClient.whatsSid(wavBean);
 										if (result != null) {
-											c64.getEventScheduler()
-													.scheduleThreadSafe(new Event("WhatsSidResultEvent") {
-
-														@Override
-														public void event() throws InterruptedException {
-															whatsSidHook.accept(result);
-														}
-													});
+											whatsSidHook.accept(result);
 										}
 									} catch (Exception e) {
 										System.err.println(e.getMessage());
