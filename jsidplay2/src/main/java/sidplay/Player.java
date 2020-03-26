@@ -301,7 +301,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										} else {
 											// better luck next time
 											c64.getEventScheduler().schedule(this,
-													config.getWhatsSidSection().getMatchStartTime());
+													(long) (config.getWhatsSidSection().getMatchStartTime()
+															* c64.getClock().getCpuFrequency()));
 										}
 									} catch (Exception e) {
 										System.err.println(e.getMessage());
@@ -310,7 +311,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							});
 						}
 
-					}, config.getWhatsSidSection().getMatchStartTime());
+					}, (long) (config.getWhatsSidSection().getMatchStartTime() * c64.getClock().getCpuFrequency()));
 				}
 			}
 
