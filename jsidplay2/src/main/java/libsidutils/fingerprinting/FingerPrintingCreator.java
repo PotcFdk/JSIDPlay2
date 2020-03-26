@@ -64,6 +64,9 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
+	@Parameter(description = "directory", required = true)
+	private String directory;
+
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
 
@@ -82,6 +85,7 @@ public class FingerPrintingCreator {
 		}
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
+		config.getWhatsSidSection().setEnable(false);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
 		String hvsc = config.getSidplay2Section().getHvsc();
@@ -105,13 +109,13 @@ public class FingerPrintingCreator {
 		System.out.println("Create fingerprintings... (press q <return> to abort)");
 
 		try {
-			processDirectory(new File(hvsc));
+			processDirectory(new File(directory));
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			whatsSidDriver.close();
+			System.exit(0);
 		}
-
-		whatsSidDriver.close();
-		System.exit(0);
 	}
 
 	private void processDirectory(File dir) throws IOException, SidTuneError {
