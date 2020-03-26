@@ -118,7 +118,7 @@ public class WhatsSidDriver implements AudioDriver {
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
-				System.out.println("Insert Fingerprint");
+				System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath());
 
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);

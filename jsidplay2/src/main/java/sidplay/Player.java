@@ -298,6 +298,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										MusicInfoWithConfidenceBean result = fingerPrintingClient.whatsSid(wavBean);
 										if (result != null) {
 											whatsSidHook.accept(result);
+										} else {
+											// better luck next time
+											c64.getEventScheduler().schedule(this,
+													config.getWhatsSidSection().getMatchStartTime());
 										}
 									} catch (Exception e) {
 										System.err.println(e.getMessage());
@@ -306,7 +310,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							});
 						}
 
-					}, (long) (config.getWhatsSidSection().getMatchStartTime() * c64.getClock().getCpuFrequency()));
+					}, config.getWhatsSidSection().getMatchStartTime());
 				}
 			}
 

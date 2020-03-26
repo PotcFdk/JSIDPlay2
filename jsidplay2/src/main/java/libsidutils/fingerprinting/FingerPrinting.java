@@ -26,13 +26,12 @@ public class FingerPrinting {
 	public void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException {
 		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
 		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);
-		MusicInfoBean musicInfoBean = fingerprintedSampleData.toMusicInfoBean();
 
-		if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
+		if (!fingerPrintingDataSource.tuneExists(fingerprintedSampleData.toMusicInfoBean())) {
 			WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 			if (wavBean.getWav().length > 0) {
 				fingerprintedSampleData.setWav(wavBean);
-				IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
+				IdBean id = fingerPrintingDataSource.insertTune(fingerprintedSampleData.toMusicInfoBean());
 				fingerPrintingDataSource.insertHashes(fingerprintedSampleData.getFingerprint().toHashBeans(id));
 			}
 		}

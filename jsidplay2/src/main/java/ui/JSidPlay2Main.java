@@ -98,7 +98,8 @@ public class JSidPlay2Main extends Application {
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 		Platform.runLater(() -> {
 			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum();
+			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum() + "\n"
+					+ musicInfo.getInfoDir();
 			int toastMsgTime = 3500; // in ms
 			int fadeInTime = 500; // in ms
 			int fadeOutTime = 500; // in ms
