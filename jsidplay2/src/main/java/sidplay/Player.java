@@ -288,7 +288,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					if (sidDatabase != null && tune != RESET) {
 						double tuneLength = sidDatabase.getTuneLength(tune);
 						if (tuneLength > 0 && tuneLength < matchStartTime) {
-							matchStartTime = Math.min((int) (tuneLength * 0.66), matchStartTime);
+							matchStartTime = Math.min((int) (tuneLength * 0.9), matchStartTime);
 						}
 					}
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
