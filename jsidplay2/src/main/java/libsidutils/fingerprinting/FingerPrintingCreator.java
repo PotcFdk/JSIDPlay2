@@ -3,7 +3,6 @@ package libsidutils.fingerprinting;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -92,8 +91,9 @@ public class FingerPrintingCreator {
 
 		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
 
-		EntityManager em = Persistence
-				.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, createDatabaseMap())
+		EntityManager em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+				new PersistenceProperties(whatsSidDatabaseDriver, whatsSidDatabaseUrl, whatsSidDatabaseUsername,
+						whatsSidDatabasePassword, whatsSidDatabaseDialect))
 				.createEntityManager();
 		whatsSidDriver.setWhatsSidService(new WhatsSidService(em));
 
@@ -112,16 +112,6 @@ public class FingerPrintingCreator {
 
 		whatsSidDriver.close();
 		System.exit(0);
-	}
-
-	private HashMap<String, String> createDatabaseMap() {
-		HashMap<String, String> result = new HashMap<>();
-		result.put("hibernate.connection.driver_class", whatsSidDatabaseDriver);
-		result.put("hibernate.connection.url", whatsSidDatabaseUrl);
-		result.put("hibernate.connection.username", whatsSidDatabaseUsername);
-		result.put("hibernate.connection.password", whatsSidDatabasePassword);
-		result.put("hibernate.dialect", whatsSidDatabaseDialect);
-		return result;
 	}
 
 	private void processDirectory(File dir) throws IOException, SidTuneError {

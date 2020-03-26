@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -354,16 +353,6 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	private HashMap<String, String> createDatabaseMap() {
-		HashMap<String, String> result = new HashMap<>();
-		result.put("hibernate.connection.driver_class", whatsSidDatabaseDriver);
-		result.put("hibernate.connection.url", whatsSidDatabaseUrl);
-		result.put("hibernate.connection.username", whatsSidDatabaseUsername);
-		result.put("hibernate.connection.password", whatsSidDatabasePassword);
-		result.put("hibernate.dialect", whatsSidDatabaseDialect);
-		return result;
-	}
-
 	private static void exit(int rc) {
 		if (whatsSidService != null) {
 			whatsSidService.close();
@@ -391,7 +380,10 @@ public class JSIDPlay2Server {
 				exit(0);
 			}
 			EntityManager em = Persistence
-					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS, jsidplay2Server.createDatabaseMap())
+					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+							new PersistenceProperties(jsidplay2Server.whatsSidDatabaseDriver,
+									jsidplay2Server.whatsSidDatabaseUrl, jsidplay2Server.whatsSidDatabaseUsername,
+									jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect))
 					.createEntityManager();
 			whatsSidService = new WhatsSidService(em);
 

@@ -12,10 +12,14 @@ public class PersistenceProperties extends HashMap<String, String> {
 	public static final String WHATSSID_DS = "whatssid-ds";
 
 	public PersistenceProperties(String url, String username, String password, Database type) {
-		put("hibernate.connection.driver_class", type.getJdbcDriver());
-		put("hibernate.connection.url", type.getJdbcUrl().replace("${name}", url));
-		put("hibernate.connection.username", username);
-		put("hibernate.connection.password", password);
+		this(type.getJdbcDriver(), type.getJdbcUrl().replace("${name}", url), username, password, type.getSqlDialect());
 	}
 
+	public PersistenceProperties(String driver, String url, String username, String password, String dialect) {
+		put("hibernate.connection.driver_class", driver);
+		put("hibernate.connection.url", url);
+		put("hibernate.connection.username", username);
+		put("hibernate.connection.password", password);
+		put("hibernate.dialect", dialect);
+	}
 }
