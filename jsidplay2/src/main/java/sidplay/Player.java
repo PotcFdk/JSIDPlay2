@@ -284,6 +284,13 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (config.getWhatsSidSection().isEnable()) {
+					int matchStartTime = config.getWhatsSidSection().getMatchStartTime();
+					if (sidDatabase != null && tune != RESET) {
+						double tuneLength = sidDatabase.getTuneLength(tune);
+						if (tuneLength > 0 && tuneLength < matchStartTime) {
+							matchStartTime = Math.min((int) (tuneLength * 0.66), matchStartTime);
+						}
+					}
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
 
 						@Override
@@ -311,7 +318,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							});
 						}
 
-					}, (long) (config.getWhatsSidSection().getMatchStartTime() * c64.getClock().getCpuFrequency()));
+					}, (long) (matchStartTime * c64.getClock().getCpuFrequency()));
 				}
 			}
 

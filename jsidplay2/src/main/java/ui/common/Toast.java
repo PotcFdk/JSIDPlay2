@@ -8,6 +8,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -16,6 +17,7 @@ public final class Toast {
 	public static void makeText(Stage ownerStage, String toastMsg, int toastDelay, int fadeInDelay, int fadeOutDelay) {
 		Stage toastStage = new Stage();
 		toastStage.initOwner(ownerStage);
+		toastStage.initModality(Modality.APPLICATION_MODAL); 
 		toastStage.setResizable(false);
 		toastStage.initStyle(StageStyle.TRANSPARENT);
 

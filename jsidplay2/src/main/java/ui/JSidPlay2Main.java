@@ -98,6 +98,8 @@ public class JSidPlay2Main extends Application {
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 		Platform.runLater(() -> {
 			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
+			System.out.println("WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
+			System.out.println("          " + musicInfo.getInfoDir());
 			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum() + "\n"
 					+ musicInfo.getInfoDir();
 			int toastMsgTime = 3500; // in ms
