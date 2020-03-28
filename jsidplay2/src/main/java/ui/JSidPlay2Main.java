@@ -98,11 +98,13 @@ public class JSidPlay2Main extends Application {
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 		Platform.runLater(() -> {
 			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-			System.out.println("WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
+			System.out.println(
+					"WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
 			System.out.println("          " + musicInfo.getInfoDir());
 			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum() + "\n"
-					+ musicInfo.getInfoDir();
-			int toastMsgTime = 3500; // in ms
+					+ musicInfo.getInfoDir() + "\nconfidence=" + musicInfoWithConfidence.getConfidence()
+					+ "\nrelativeConfidence=" + musicInfoWithConfidence.getRelativeConfidence();
+			int toastMsgTime = 5000; // in ms
 			int fadeInTime = 500; // in ms
 			int fadeOutTime = 500; // in ms
 			Toast.makeText(jSidplay2.getStage(), toastMsg, toastMsgTime, fadeInTime, fadeOutTime);

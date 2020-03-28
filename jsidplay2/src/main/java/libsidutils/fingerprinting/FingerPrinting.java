@@ -15,7 +15,7 @@ import libsidutils.fingerprinting.rest.beans.WavBean;
 
 public class FingerPrinting {
 
-	private static final int MIN_HIT = 15;
+	private static final int MIN_HIT = 20;
 
 	private FingerPrintingDataSource fingerPrintingDataSource;
 

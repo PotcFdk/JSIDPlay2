@@ -111,6 +111,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
+	 * Minimum confidence for a match
+	 */
+	private double MIN_RELATIVE_CONFIDENCE = 2.0;
+	/**
 	 * Timeout (in ms) for sleeping, if player is paused.
 	 */
 	private static final int PAUSE_SLEEP_TIME = 250;
@@ -260,11 +264,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private FingerPrinting fingerPrinting;
 
 	/**
-	 * WhatsSid? thread for tune detection
-	 */
-	private Thread whatsSidMatcherThread;
-
-	/**
 	 * WhatsSid? Last match
 	 */
 	private MusicInfoWithConfidenceBean lastWhatsSidMatch;
@@ -312,23 +311,27 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 						@Override
 						public void event() throws InterruptedException {
-							c64.getEventScheduler().schedule(this, whatsSidMatchTime);
-							if (config.getWhatsSidSection().isEnable()
-									&& (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive())) {
-								whatsSidMatcherThread = new Thread(() -> {
+							if (config.getWhatsSidSection().isEnable()) {
+								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
-										ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
+										final ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
+										final SidTune sidTune = getTune();
 										WavBean wavBean = new WavBean(whatsSidBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
-										if (result != null && !result.equals(lastWhatsSidMatch)) {
-											lastWhatsSidMatch = result;
-											whatsSidHook.accept(result);
+										if (result != null && !result.equals(lastWhatsSidMatch)
+												&& result.getRelativeConfidence() > MIN_RELATIVE_CONFIDENCE) {
+											if (sidTune == getTune()) {
+												lastWhatsSidMatch = result;
+												whatsSidHook.accept(result);
+											}
 										}
 									} catch (Exception e) {
 										// server not available? silently ignore!
+									} finally {
+										c64.getEventScheduler().schedule(this, whatsSidMatchTime);
 									}
 								});
-								whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+								whatsSidMatcherThread.setPriority(Thread.NORM_PRIORITY);
 								whatsSidMatcherThread.start();
 							}
 						}
