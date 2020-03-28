@@ -68,6 +68,7 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
@@ -254,6 +255,16 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private int fastForwardVICFrames;
 
 	/**
+	 * WhatsSid?
+	 */
+	private FingerPrinting fingerPrinting;
+
+	/**
+	 * WhatsSid? Last match
+	 */
+	private MusicInfoWithConfidenceBean lastWhatsSidMatch;
+
+	/**
 	 * Create a Music Player.
 	 * 
 	 * @param config configuration
@@ -291,34 +302,30 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							matchStartTime = Math.min((int) (tuneLength * 0.9), matchStartTime);
 						}
 					}
+					final long whatsSidMatchTime = (long) (matchStartTime * c64.getClock().getCpuFrequency());
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
 
 						@Override
 						public void event() throws InterruptedException {
 							configureMixer(mixer -> {
-								final ByteBuffer whatsSidAnalyserBuffer = ((SIDMixer) mixer)
-										.getWhatsSidAnalyserBuffer();
+								final ByteBuffer whatsSidBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
 								new Thread(() -> {
+									c64.getEventScheduler().schedule(this, whatsSidMatchTime);
 									try {
-										FingerprintingClient fingerPrintingClient = new FingerprintingClient(config);
-										WavBean wavBean = new WavBean(whatsSidAnalyserBuffer.array());
-										MusicInfoWithConfidenceBean result = fingerPrintingClient.whatsSid(wavBean);
-										if (result != null) {
+										WavBean wavBean = new WavBean(whatsSidBuffer.array());
+										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
+										if (result != null && !result.equals(lastWhatsSidMatch)) {
 											whatsSidHook.accept(result);
-										} else {
-											// better luck next time
-											c64.getEventScheduler().schedule(this,
-													(long) (config.getWhatsSidSection().getMatchStartTime()
-															* c64.getClock().getCpuFrequency()));
+											lastWhatsSidMatch = result;
 										}
 									} catch (Exception e) {
-										System.err.println(e.getMessage());
+										// server not available? silently ignore!
 									}
 								}).start();
 							});
 						}
 
-					}, (long) (matchStartTime * c64.getClock().getCpuFrequency()));
+					}, whatsSidMatchTime);
 				}
 			}
 
@@ -728,6 +735,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		c64.setSIDListener(this);
 
 		stateProperty.addListener(pauseListener);
+
+		lastWhatsSidMatch = null;
+		fingerPrinting = new FingerPrinting(new FingerprintingClient(config));
 
 		reset();
 	}

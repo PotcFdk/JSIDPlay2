@@ -77,7 +77,7 @@ public class Index {
 			}
 		});
 		Integer offset = -maxTime;
-		return new SongMatch(Hash2id(maxId), new Match(maxCount, offset));
+		return new SongMatch(Hash2id(maxId), maxCount, offset);
 	}
 
 	public static Long idHash(int id, int time) {

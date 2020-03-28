@@ -61,16 +61,32 @@ public class MusicInfoWithConfidenceBean {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof MusicInfoWithConfidenceBean)) {
+			return false;
+		}
+		MusicInfoWithConfidenceBean otherMusicInfoWithConfidence = (MusicInfoWithConfidenceBean) obj;
+		MusicInfoBean otherMusicInfo = otherMusicInfoWithConfidence.getMusicInfo();
+
+		// Whatever confidence the tune matches, if metadata matches
+		return musicInfo.getTitle().equals(otherMusicInfo.getTitle())
+				&& musicInfo.getArtist().equals(otherMusicInfo.getArtist())
+				&& musicInfo.getAlbum().equals(otherMusicInfo.getAlbum())
+				&& musicInfo.getFileDir().equals(otherMusicInfo.getFileDir())
+				&& musicInfo.getInfoDir().equals(otherMusicInfo.getInfoDir());
+	}
+
+	@Override
 	public String toString() {
 		return musicInfo + ", confidence=" + confidence + ", relativeConfidence=" + relativeConfidence + ", offset="
 				+ offset + ", offsetSeconds=" + offsetSeconds;
 	}
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {
-		confidence = songMatch.getMatch().getCount();
-		relativeConfidence = (songMatch.getMatch().getCount()
+		confidence = songMatch.getCount();
+		relativeConfidence = (songMatch.getCount()
 				/ (double) fingerprintedSampleData.getFingerprint().getLinkList().size()) * 100;
-		offset = songMatch.getMatch().getTime();
-		offsetSeconds = songMatch.getMatch().getTime() * 0.03225806451612903;
+		offset = songMatch.getTime();
+		offsetSeconds = songMatch.getTime() * 0.03225806451612903;
 	}
 }

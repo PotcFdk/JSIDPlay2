@@ -1,20 +1,16 @@
 package libsidutils.fingerprinting.model;
 
-public class SongMatch{
+public class SongMatch extends Match {
 
     private int idSong;
-    private Match match;
 
-    public SongMatch(int idSong, Match match) {
+    public SongMatch(int idSong, int count, int time) {
+    	super(count, time);
         this.idSong = idSong;
-        this.match = match;
     }
 
     public int getIdSong() {
         return idSong;
     }
 
-    public Match getMatch() {
-        return match;
-    }
 }
