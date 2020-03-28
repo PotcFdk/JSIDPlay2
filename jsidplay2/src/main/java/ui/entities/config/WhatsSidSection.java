@@ -2,7 +2,9 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_PASSWORD;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_URL;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_USERNAME;
@@ -121,4 +123,37 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return matchStartTimeProperty;
 	}
 
+	private ObjectProperty<Integer> matchRetryTimeProperty = new SimpleObjectProperty<Integer>(
+			DEFAULT_WHATSSID_MATCH_RETRY_TIME);
+
+	@Override
+	public int getMatchRetryTime() {
+		return matchRetryTimeProperty.get();
+	}
+
+	@Override
+	public void setMatchRetryTime(int matchRetryTime) {
+		matchRetryTimeProperty.set(matchRetryTime);
+	}
+
+	public ObjectProperty<Integer> matchRetryTimeProperty() {
+		return matchRetryTimeProperty;
+	}
+
+	private ObjectProperty<Float> minimumRelativeConfidenceProperty = new SimpleObjectProperty<Float>(
+			DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
+
+	@Override
+	public float getMinimumRelativeConfidence() {
+		return minimumRelativeConfidenceProperty.get();
+	}
+
+	@Override
+	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
+		minimumRelativeConfidenceProperty.set(minimumRelativeConfidence);
+	}
+
+	public ObjectProperty<Float> minimumRelativeConfidenceProperty() {
+		return minimumRelativeConfidenceProperty;
+	}
 }

@@ -85,4 +85,32 @@ public interface IWhatsSidSection {
 	 * @param matchStartTime the match start time
 	 */
 	void setMatchStartTime(int matchStartTime);
+
+	/**
+	 * Getter of the match retry time.
+	 * 
+	 * @return the match retry time
+	 */
+	int getMatchRetryTime();
+
+	/**
+	 * Setter of the match retry time.
+	 * 
+	 * @param matchStartTime the match retry time
+	 */
+	void setMatchRetryTime(int matchRetryTime);
+
+	/**
+	 * Getter of the minimum relative confidence.
+	 * 
+	 * @return the minimum relative confidence
+	 */
+	float getMinimumRelativeConfidence();
+
+	/**
+	 * Setter of the minimum relative confidence.
+	 * 
+	 * @param minimumRelativeConfidence the minimum relative confidence
+	 */
+	void setMinimumRelativeConfidence(float minimumRelativeConfidence);
 }

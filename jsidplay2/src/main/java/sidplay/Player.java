@@ -66,6 +66,7 @@ import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.fingerprinting.FingerPrinting;
@@ -110,10 +111,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		}
 	}
 
-	/**
-	 * Minimum confidence for a match
-	 */
-	private double MIN_RELATIVE_CONFIDENCE = 2.0;
 	/**
 	 * Timeout (in ms) for sleeping, if player is paused.
 	 */
@@ -290,6 +287,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 			@Override
 			public void start() {
+				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
 				if (getAudioDriver() instanceof VideoDriver) {
@@ -299,7 +298,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					int matchStartTimeInSeconds = config.getWhatsSidSection().getMatchStartTime();
+					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 					if (sidDatabase != null && tune != RESET) {
 						double tuneLength = sidDatabase.getTuneLength(tune);
 						if (tuneLength > 0 && tuneLength < matchStartTimeInSeconds) {
@@ -307,11 +306,13 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						}
 					}
 					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
+					long whatsSidRetryTime = (long) (whatsSidSection.getMatchRetryTime()
+							* c64.getClock().getCpuFrequency());
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
 
 						@Override
 						public void event() throws InterruptedException {
-							if (config.getWhatsSidSection().isEnable()) {
+							if (whatsSidSection.isEnable()) {
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										final ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
@@ -319,7 +320,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										WavBean wavBean = new WavBean(whatsSidBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)
-												&& result.getRelativeConfidence() > MIN_RELATIVE_CONFIDENCE) {
+												&& result.getRelativeConfidence() > whatsSidSection
+														.getMinimumRelativeConfidence()) {
 											if (sidTune == getTune()) {
 												lastWhatsSidMatch = result;
 												whatsSidHook.accept(result);
@@ -328,7 +330,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 									} catch (Exception e) {
 										// server not available? silently ignore!
 									} finally {
-										c64.getEventScheduler().schedule(this, whatsSidMatchTime);
+										c64.getEventScheduler().schedule(this, whatsSidRetryTime);
 									}
 								});
 								whatsSidMatcherThread.setPriority(Thread.NORM_PRIORITY);
