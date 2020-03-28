@@ -19,7 +19,6 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.debug.MOS6510Debug;
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.audio.JavaSound;
 import sidplay.consoleplayer.ConsoleIO;
@@ -69,12 +68,8 @@ final public class ConsolePlayer {
 			player.setTune(tune);
 			final ConsoleIO consoleIO = new ConsoleIO(config, filename.get());
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
-			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj));
-			player.setWhatsSidHook(musicInfoWithConfidence -> {
-				MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-				System.out.println("WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
-				System.out.println("          " + musicInfo.getInfoDir());
-			});
+			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj, System.in));
+			player.setWhatsSidHook(obj -> consoleIO.whatsSid(obj, quiet, System.out));
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
 			}
