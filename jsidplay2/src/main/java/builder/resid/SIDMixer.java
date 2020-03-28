@@ -256,15 +256,15 @@ public class SIDMixer implements Mixer {
 		IAudioSection audioSection = config.getAudioSection();
 		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 
-		int whatsSidBufferSize = Integer.BYTES * audioSection.getSamplingRate().getFrequency()
-				* whatsSidSection.getCaptureTime();
-		this.whatsSidBuffer = ByteBuffer.allocate(whatsSidBufferSize).order(ByteOrder.nativeOrder());
-
 		this.bufferSize = audioSection.getBufferSize();
 		this.audioBufferL = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
 				.asIntBuffer();
 		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(ByteOrder.nativeOrder())
 				.asIntBuffer();
+
+		int whatsSidBufferSize = Integer.BYTES * audioSection.getSamplingRate().getFrequency()
+				* whatsSidSection.getCaptureTime();
+		this.whatsSidBuffer = ByteBuffer.allocate(whatsSidBufferSize).order(ByteOrder.nativeOrder());
 	}
 
 	/**
@@ -441,8 +441,8 @@ public class SIDMixer implements Mixer {
 		return mixerAudio.fastForwardBitMask;
 	}
 
-	public ByteBuffer getWhatsSidAnalyserBuffer() {
-		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.limit());
+	public ByteBuffer getWhatsSidBuffer() {
+		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
 
 		WavHeader wavHeader = new WavHeader(2, config.getAudioSection().getSamplingRate().getFrequency());
 		wavHeader.advance(whatsSidBuffer.limit());

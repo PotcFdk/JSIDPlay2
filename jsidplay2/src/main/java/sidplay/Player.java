@@ -260,6 +260,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private FingerPrinting fingerPrinting;
 
 	/**
+	 * WhatsSid? thread for tune detection
+	 */
+	private Thread whatsSidMatcherThread;
+
+	/**
 	 * WhatsSid? Last match
 	 */
 	private MusicInfoWithConfidenceBean lastWhatsSidMatch;
@@ -294,24 +299,25 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				if (getAudioDriver() instanceof SIDListener) {
 					addSidListener((SIDListener) getAudioDriver());
 				}
-				if (config.getWhatsSidSection().isEnable()) {
-					int matchStartTime = config.getWhatsSidSection().getMatchStartTime();
+				if (sidBuilder instanceof SIDMixer) {
+					int matchStartTimeInSeconds = config.getWhatsSidSection().getMatchStartTime();
 					if (sidDatabase != null && tune != RESET) {
 						double tuneLength = sidDatabase.getTuneLength(tune);
-						if (tuneLength > 0 && tuneLength < matchStartTime) {
-							matchStartTime = Math.min((int) (tuneLength * 0.9), matchStartTime);
+						if (tuneLength > 0 && tuneLength < matchStartTimeInSeconds) {
+							matchStartTimeInSeconds = Math.min((int) (tuneLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
-					final long whatsSidMatchTime = (long) (matchStartTime * c64.getClock().getCpuFrequency());
+					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
 
 						@Override
 						public void event() throws InterruptedException {
-							configureMixer(mixer -> {
-								final ByteBuffer whatsSidBuffer = ((SIDMixer) mixer).getWhatsSidAnalyserBuffer();
-								new Thread(() -> {
-									c64.getEventScheduler().schedule(this, whatsSidMatchTime);
+							c64.getEventScheduler().schedule(this, whatsSidMatchTime);
+							if (config.getWhatsSidSection().isEnable()
+									&& (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive())) {
+								whatsSidMatcherThread = new Thread(() -> {
 									try {
+										ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
 										WavBean wavBean = new WavBean(whatsSidBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)) {
@@ -321,8 +327,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 									} catch (Exception e) {
 										// server not available? silently ignore!
 									}
-								}).start();
-							});
+								});
+								whatsSidMatcherThread.start();
+							}
 						}
 
 					}, whatsSidMatchTime);
