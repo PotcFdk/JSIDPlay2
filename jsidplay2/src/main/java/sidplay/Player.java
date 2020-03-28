@@ -321,13 +321,14 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										WavBean wavBean = new WavBean(whatsSidBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)) {
-											whatsSidHook.accept(result);
 											lastWhatsSidMatch = result;
+											whatsSidHook.accept(result);
 										}
 									} catch (Exception e) {
 										// server not available? silently ignore!
 									}
 								});
+								whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
 								whatsSidMatcherThread.start();
 							}
 						}
