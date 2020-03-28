@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.apache.catalina.Context;
@@ -65,7 +66,6 @@ import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
-import ui.entities.whatssid.service.WhatsSidService;
 
 @Parameters(resourceBundle = "server.restful.JSIDPlay2Server")
 public class JSIDPlay2Server {
@@ -127,7 +127,9 @@ public class JSIDPlay2Server {
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class);
 
-	public static WhatsSidService whatsSidService;
+	private static final ThreadLocal<EntityManager> threadLocalEntityManager = new ThreadLocal<EntityManager>();
+
+	private static EntityManagerFactory entityManagerFactory;
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -354,8 +356,8 @@ public class JSIDPlay2Server {
 	}
 
 	private static void exit(int rc) {
-		if (whatsSidService != null) {
-			whatsSidService.close();
+		if (entityManagerFactory != null) {
+			entityManagerFactory.close();
 		}
 		try {
 			System.out.println("Press <enter> to exit the player!");
@@ -379,14 +381,10 @@ public class JSIDPlay2Server {
 				commander.usage();
 				exit(0);
 			}
-			EntityManager em = Persistence
-					.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-							new PersistenceProperties(jsidplay2Server.whatsSidDatabaseDriver,
-									jsidplay2Server.whatsSidDatabaseUrl, jsidplay2Server.whatsSidDatabaseUsername,
-									jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect))
-					.createEntityManager();
-			whatsSidService = new WhatsSidService(em);
-
+			entityManagerFactory = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+					new PersistenceProperties(jsidplay2Server.whatsSidDatabaseDriver,
+							jsidplay2Server.whatsSidDatabaseUrl, jsidplay2Server.whatsSidDatabaseUsername,
+							jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect));
 			jsidplay2Server.start();
 		} catch (ParameterException | IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
@@ -394,4 +392,13 @@ public class JSIDPlay2Server {
 		}
 	}
 
+	public static EntityManager getEntityManager() {
+		EntityManager em = threadLocalEntityManager.get();
+
+		if (em == null) {
+			em = entityManagerFactory.createEntityManager();
+			threadLocalEntityManager.set(em);
+		}
+		return em;
+	}
 }

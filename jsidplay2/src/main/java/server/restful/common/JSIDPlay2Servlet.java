@@ -17,8 +17,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInput(HttpServletRequest request, Class<T> tClass) {
-		try {
-			ServletInputStream inputStream = request.getInputStream();
+		try (ServletInputStream inputStream = request.getInputStream()) {
 			if (request.getContentType() == null
 					|| MimeType.MIME_TYPE_JSON.getContentType().startsWith(request.getContentType())) {
 				return new ObjectMapper().readValue(inputStream, tClass);
@@ -37,8 +36,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		if (result == null) {
 			return;
 		}
-		try {
-			ServletOutputStream out = response.getOutputStream();
+		try (ServletOutputStream out = response.getOutputStream()) {
 			if (request.getHeader(HttpHeaders.ACCEPT) == null
 					|| MimeType.MIME_TYPE_JSON.getContentType().startsWith(request.getHeader(HttpHeaders.ACCEPT))) {
 				response.setContentType(MimeType.MIME_TYPE_JSON.getContentType());

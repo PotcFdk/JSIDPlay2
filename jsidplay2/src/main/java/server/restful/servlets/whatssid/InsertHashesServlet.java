@@ -1,7 +1,7 @@
 package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
-import static server.restful.JSIDPlay2Server.whatsSidService;
+import static server.restful.JSIDPlay2Server.getEntityManager;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -14,12 +14,13 @@ import libsidutils.fingerprinting.rest.beans.HashBeans;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
+import ui.entities.whatssid.service.WhatsSidService;
 
 @SuppressWarnings("serial")
 public class InsertHashesServlet extends JSIDPlay2Servlet {
 
 	public static final String INSERT_HASHES_PATH = "/insert-hashes";
-	
+
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
@@ -37,6 +38,7 @@ public class InsertHashesServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		HashBeans hashes = getInput(request, HashBeans.class);
 
+		final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 		whatsSidService.insertHashes(hashes);
 	}
 }
