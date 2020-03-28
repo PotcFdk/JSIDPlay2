@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.NumberStringConverter;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.entities.config.WhatsSidSection;
@@ -29,6 +30,12 @@ public class WhatsSidSettings extends C64Window {
 	@FXML
 	private TextField matchStartTime;
 
+	@FXML
+	private TextField matchRetryTime;
+
+	@FXML
+	private TextField minimumRelativeConfidence;
+
 	public WhatsSidSettings() {
 		super();
 	}
@@ -49,6 +56,10 @@ public class WhatsSidSettings extends C64Window {
 				new IntegerStringConverter());
 		Bindings.bindBidirectional(matchStartTime.textProperty(), whatsSidSection.matchStartTimeProperty(),
 				new IntegerStringConverter());
+		Bindings.bindBidirectional(matchRetryTime.textProperty(), whatsSidSection.matchRetryTimeProperty(),
+				new IntegerStringConverter());
+		Bindings.bindBidirectional(minimumRelativeConfidence.textProperty(),
+				whatsSidSection.minimumRelativeConfidenceProperty(), new NumberStringConverter());
 
 	}
 

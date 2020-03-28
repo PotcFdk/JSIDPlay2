@@ -14,8 +14,10 @@ import javax.persistence.Embeddable;
 import com.beust.jcommander.Parameters;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -140,7 +142,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return matchRetryTimeProperty;
 	}
 
-	private ObjectProperty<Float> minimumRelativeConfidenceProperty = new SimpleObjectProperty<Float>(
+	private FloatProperty minimumRelativeConfidenceProperty = new SimpleFloatProperty(
 			DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 
 	@Override
@@ -153,7 +155,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		minimumRelativeConfidenceProperty.set(minimumRelativeConfidence);
 	}
 
-	public ObjectProperty<Float> minimumRelativeConfidenceProperty() {
+	public FloatProperty minimumRelativeConfidenceProperty() {
 		return minimumRelativeConfidenceProperty;
 	}
 }

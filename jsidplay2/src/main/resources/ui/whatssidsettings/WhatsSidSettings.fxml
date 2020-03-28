@@ -56,6 +56,18 @@
 							<Tooltip text="%MATCH_START_TIME_TIP" />
 						</tooltip>
 					</TypeTextField>
+					<Label text="%MATCH_RETRY_TIME" />
+					<TypeTextField type="Integer" fx:id="matchRetryTime">
+						<tooltip>
+							<Tooltip text="%MATCH_RETRY_TIME_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%MINIMUM_RELATIVE_CONFIDENCE" />
+					<TypeTextField type="Float" fx:id="minimumRelativeConfidence">
+						<tooltip>
+							<Tooltip text="%MINIMUM_RELATIVE_CONFIDENCE_TIP" />
+						</tooltip>
+					</TypeTextField>
 				</VBox>
 			</TitledPane>
 		</VBox>
