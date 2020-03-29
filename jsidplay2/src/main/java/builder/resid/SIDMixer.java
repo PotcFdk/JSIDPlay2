@@ -110,7 +110,7 @@ public class SIDMixer implements Mixer {
 								Short.MIN_VALUE)).hasRemaining()) {
 
 							if (config.getWhatsSidSection().isEnable()) {
-								ByteBuffer source = buffer.duplicate().asReadOnlyBuffer();
+								ByteBuffer source = buffer.asReadOnlyBuffer();
 								((Buffer) source).flip();
 								while (source.hasRemaining()) {
 									if (!whatsSidBuffer.put(source.get()).hasRemaining()) {
