@@ -10,7 +10,7 @@ import java.nio.ShortBuffer;
 import java.util.Iterator;
 import java.util.Random;
 
-import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -69,8 +69,8 @@ public class FingerprintedSampleData {
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
 				throw new IOException("Sample size in bits must be " + Short.SIZE);
 			}
-			if (stream.getFormat().getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-				throw new IOException("Encoding must be PCM_SIGNED");
+			if (stream.getFormat().getEncoding() != Encoding.PCM_SIGNED) {
+				throw new IOException("Encoding must be " + Encoding.PCM_SIGNED);
 			}
 			if (stream.getFormat().isBigEndian()) {
 				throw new IOException("LittleEndian expected");
@@ -95,7 +95,7 @@ public class FingerprintedSampleData {
 				bytes = new byte[(int) stream.getFrameLength() << 2];
 				stream.read(bytes);
 			} else {
-				throw new RuntimeException("Number of channels must be one or two");
+				throw new IOException("Number of channels must be one or two");
 			}
 
 			// 2. down sampling to 8KHz
@@ -149,7 +149,7 @@ public class FingerprintedSampleData {
 			this.audioLength = len / (float) SAMPLE_RATE;
 			this.fingerprint = new Fingerprint(data, SAMPLE_RATE);
 		} catch (UnsupportedAudioFileException | IOException e) {
-			throw new RuntimeException(e);
+			throw new IOException(e);
 		}
 	}
 
