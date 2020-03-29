@@ -102,22 +102,18 @@ public class SIDMixer implements Mixer {
 					int dither = triangularDithering();
 
 					if (resamplerL.input(valL >> fastForwardShift)) {
-						buffer.putShort((short) Math.max(Math.min(resamplerL.output() + dither, Short.MAX_VALUE),
-								Short.MIN_VALUE));
+						short outputL = (short) Math.max(Math.min(resamplerL.output() + dither, Short.MAX_VALUE),
+								Short.MIN_VALUE);
+						whatsSidBuffer.putShort(outputL);
+						buffer.putShort(outputL);
 					}
 					if (resamplerR.input(valR >> fastForwardShift)) {
-						if (!buffer.putShort((short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
-								Short.MIN_VALUE)).hasRemaining()) {
-
-							if (config.getWhatsSidSection().isEnable()) {
-								ByteBuffer source = buffer.asReadOnlyBuffer();
-								((Buffer) source).flip();
-								while (source.hasRemaining()) {
-									if (!whatsSidBuffer.put(source.get()).hasRemaining()) {
-										((Buffer) whatsSidBuffer).flip();
-									}
-								}
-							}
+						short outputR = (short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
+								Short.MIN_VALUE);
+						if (!whatsSidBuffer.putShort(outputR).hasRemaining()) {
+							((Buffer) whatsSidBuffer).clear();
+						}
+						if (!buffer.putShort(outputR).hasRemaining()) {
 							audioProcessors.stream().forEach(processor -> processor.process(buffer));
 							audioDriver.write();
 							((Buffer) buffer).clear();
