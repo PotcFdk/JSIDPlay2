@@ -299,6 +299,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				}
 				if (sidBuilder instanceof SIDMixer) {
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
+					int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
 					if (sidDatabase != null && tune != RESET) {
 						double tuneLength = sidDatabase.getSongLength(tune);
 						if (tuneLength > 0 && tuneLength < matchStartTimeInSeconds) {
@@ -306,8 +307,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						}
 					}
 					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
-					long whatsSidRetryTime = (long) (whatsSidSection.getMatchRetryTime()
-							* c64.getClock().getCpuFrequency());
+					long whatsSidRetryTime = (long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency());
 					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
 
 						@Override
