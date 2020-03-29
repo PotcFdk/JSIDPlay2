@@ -189,8 +189,6 @@ public class SIDMixer implements Mixer {
 	 */
 	private final Resampler resamplerL, resamplerR;
 
-	private volatile ByteBuffer whatsSidSamples;
-
 	/**
 	 * Audio driver
 	 */
@@ -264,7 +262,7 @@ public class SIDMixer implements Mixer {
 
 		int whatsSidBufferSize = Integer.BYTES * audioSection.getSamplingRate().getFrequency()
 				* whatsSidSection.getCaptureTime();
-		this.whatsSidBuffer = ByteBuffer.allocate(whatsSidBufferSize).order(ByteOrder.nativeOrder());
+		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.nativeOrder());
 	}
 
 	/**
@@ -441,16 +439,19 @@ public class SIDMixer implements Mixer {
 		return mixerAudio.fastForwardBitMask;
 	}
 
-	public ByteBuffer getWhatsSidBuffer() {
-		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
-
+	public byte[] getWhatsSidSamples() {
 		WavHeader wavHeader = new WavHeader(2, config.getAudioSection().getSamplingRate().getFrequency());
 		wavHeader.advance(whatsSidBuffer.capacity());
-		result.put(wavHeader.getBytes());
-		result.put(whatsSidBuffer.array());
 
-		((Buffer) result).flip();
-		whatsSidSamples = result;
-		return whatsSidSamples;
+		int save = whatsSidBuffer.position();
+		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
+		result.put(wavHeader.getBytes());
+		do {
+			result.put(whatsSidBuffer.get());
+			if (!whatsSidBuffer.hasRemaining()) {
+				((Buffer) whatsSidBuffer).flip();
+			}
+		} while (whatsSidBuffer.position() != save);
+		return result.array();
 	}
 }

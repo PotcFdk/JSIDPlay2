@@ -25,7 +25,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Calendar;
 import java.util.Date;
@@ -313,10 +312,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						@Override
 						public void event() throws InterruptedException {
 							if (whatsSidSection.isEnable()) {
+								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
-										final ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
-										WavBean wavBean = new WavBean(whatsSidBuffer.array());
+										WavBean wavBean = new WavBean(whatsSidSamples);
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)
 												&& result.getRelativeConfidence() > whatsSidSection
