@@ -316,16 +316,13 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										final ByteBuffer whatsSidBuffer = ((SIDMixer) sidBuilder).getWhatsSidBuffer();
-										final SidTune sidTune = getTune();
 										WavBean wavBean = new WavBean(whatsSidBuffer.array());
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)
 												&& result.getRelativeConfidence() > whatsSidSection
 														.getMinimumRelativeConfidence()) {
-											if (sidTune == getTune()) {
-												lastWhatsSidMatch = result;
-												whatsSidHook.accept(result);
-											}
+											lastWhatsSidMatch = result;
+											whatsSidHook.accept(result);
 										}
 									} catch (Exception e) {
 										// server not available? silently ignore!
