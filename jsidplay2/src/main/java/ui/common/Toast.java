@@ -3,14 +3,12 @@ package ui.common;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -22,6 +20,8 @@ public final class Toast {
 		toastStage.initModality(Modality.APPLICATION_MODAL);
 		toastStage.setResizable(false);
 		toastStage.initStyle(StageStyle.TRANSPARENT);
+		toastStage.setX(0);
+		toastStage.setY(0);
 
 		Text text = new Text(toastMsg);
 		text.setFont(Font.font("Verdana", 40));
@@ -42,9 +42,6 @@ public final class Toast {
 		fadeInTimeline.getKeyFrames().add(fadeInKey1);
 		fadeInTimeline.setOnFinished((ae) -> {
 			new Thread(() -> {
-				Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-				toastStage.setX((primScreenBounds.getWidth() - toastStage.getWidth()) / 2);
-				toastStage.setY(0);
 				try {
 					Thread.sleep(toastDelay);
 				} catch (InterruptedException e) {

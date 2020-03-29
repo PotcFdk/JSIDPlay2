@@ -67,8 +67,10 @@ public class MusicInfoWithConfidenceBean {
 		}
 		MusicInfoWithConfidenceBean otherMusicInfoWithConfidence = (MusicInfoWithConfidenceBean) obj;
 		MusicInfoBean otherMusicInfo = otherMusicInfoWithConfidence.getMusicInfo();
-
-		// Whatever confidence the tune matches, if metadata matches
+		if (otherMusicInfo == null) {
+			return false;
+		}
+		// No matter the confidence, if metadata matches then the tune matches
 		return musicInfo.getTitle().equals(otherMusicInfo.getTitle())
 				&& musicInfo.getArtist().equals(otherMusicInfo.getArtist())
 				&& musicInfo.getAlbum().equals(otherMusicInfo.getAlbum())

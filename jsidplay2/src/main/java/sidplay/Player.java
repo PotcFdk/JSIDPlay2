@@ -286,8 +286,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 			@Override
 			public void start() {
-				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
-
 				c64.insertSIDChips(requiredSIDs, sidLocator);
 				configureMixer(mixer -> mixer.start());
 				if (getAudioDriver() instanceof VideoDriver) {
@@ -297,6 +295,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
+					IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 					int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
 					if (sidDatabase != null && tune != RESET) {
