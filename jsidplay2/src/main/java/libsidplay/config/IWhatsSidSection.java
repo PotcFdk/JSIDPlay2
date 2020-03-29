@@ -12,7 +12,7 @@ public interface IWhatsSidSection {
 	/**
 	 * Setter of the WhatsSid enable.
 	 * 
-	 * @param url the WhatsSid enable
+	 * @param enable the WhatsSid enable
 	 */
 	void setEnable(boolean enable);
 	
@@ -96,7 +96,7 @@ public interface IWhatsSidSection {
 	/**
 	 * Setter of the match retry time.
 	 * 
-	 * @param matchStartTime the match retry time
+	 * @param matchRetryTime the match retry time
 	 */
 	void setMatchRetryTime(int matchRetryTime);
 
