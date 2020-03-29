@@ -445,7 +445,7 @@ public class SIDMixer implements Mixer {
 		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
 
 		WavHeader wavHeader = new WavHeader(2, config.getAudioSection().getSamplingRate().getFrequency());
-		wavHeader.advance(whatsSidBuffer.limit());
+		wavHeader.advance(whatsSidBuffer.capacity());
 		result.put(wavHeader.getBytes());
 		result.put(whatsSidBuffer.array());
 

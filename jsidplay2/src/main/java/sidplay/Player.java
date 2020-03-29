@@ -300,7 +300,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				if (sidBuilder instanceof SIDMixer) {
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 					if (sidDatabase != null && tune != RESET) {
-						double tuneLength = sidDatabase.getTuneLength(tune);
+						double tuneLength = sidDatabase.getSongLength(tune);
 						if (tuneLength > 0 && tuneLength < matchStartTimeInSeconds) {
 							matchStartTimeInSeconds = Math.min((int) (tuneLength * 0.9), matchStartTimeInSeconds);
 						}
