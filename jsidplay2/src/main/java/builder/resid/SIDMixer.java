@@ -440,18 +440,16 @@ public class SIDMixer implements Mixer {
 	}
 
 	public byte[] getWhatsSidSamples() {
+		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
 		WavHeader wavHeader = new WavHeader(2, config.getAudioSection().getSamplingRate().getFrequency());
 		wavHeader.advance(whatsSidBuffer.capacity());
-
-		int save = whatsSidBuffer.position();
-		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBuffer.capacity());
 		result.put(wavHeader.getBytes());
-		do {
-			result.put(whatsSidBuffer.get());
-			if (!whatsSidBuffer.hasRemaining()) {
-				((Buffer) whatsSidBuffer).flip();
-			}
-		} while (whatsSidBuffer.position() != save);
+		((Buffer) whatsSidBuffer).mark();
+		result.put(whatsSidBuffer);
+		((Buffer) whatsSidBuffer).reset();
+		((Buffer) whatsSidBuffer).flip();
+		result.put(whatsSidBuffer);
+		((Buffer) whatsSidBuffer).limit(whatsSidBuffer.capacity());
 		return result.array();
 	}
 }
