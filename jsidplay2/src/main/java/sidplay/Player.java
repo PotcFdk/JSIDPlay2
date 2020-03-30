@@ -307,7 +307,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					}
 					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
 					long whatsSidRetryTime = (long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency());
-					c64.getEventScheduler().schedule(new Event("WhatsSidRequestEvent") {
+					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
 						@Override
 						public void event() throws InterruptedException {
