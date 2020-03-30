@@ -312,12 +312,14 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						@Override
 						public void event() throws InterruptedException {
 							if (whatsSidSection.isEnable()) {
+								// We need the state of the emulation time, therefore
 								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
+								final MusicInfoWithConfidenceBean lastMatch = lastWhatsSidMatch;
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										WavBean wavBean = new WavBean(whatsSidSamples);
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
-										if (result != null && !result.equals(lastWhatsSidMatch)
+										if (result != null && !result.equals(lastMatch)
 												&& result.getRelativeConfidence() > whatsSidSection
 														.getMinimumRelativeConfidence()) {
 											lastWhatsSidMatch = result;
