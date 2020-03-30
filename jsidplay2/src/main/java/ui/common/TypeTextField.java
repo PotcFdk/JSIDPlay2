@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 public class TypeTextField extends TextField {
 
 	private static final String NUMBERS = "[\\-0-9]";
-	private static final String FLOATS = "[\\-0-9.]";
+	private static final String FLOATS = "[\\-0-9.,]";
 	private static final String LOCAL_DATE = "[\\-0-9]";
 
 	private StringProperty type = new SimpleStringProperty();

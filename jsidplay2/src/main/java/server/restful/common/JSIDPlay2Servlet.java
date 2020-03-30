@@ -48,7 +48,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			}
 			out.flush();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			// ignore client aborts
 		}
 	}
 }
