@@ -6,6 +6,7 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +39,10 @@ public class TuneExistsServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 
-		final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+		EntityManager entityManager = getEntityManager();
+		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
 		Boolean exists = whatsSidService.tuneExists(musicInfoBean);
+		entityManager.clear();
 
 		setOutput(request, response, exists, Boolean.class);
 	}

@@ -6,6 +6,7 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,8 +45,10 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		WavBean wavBean = getInput(request, WavBean.class);
 
-		final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+		EntityManager entityManager = getEntityManager();
+		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
 		MusicInfoWithConfidenceBean musicInfoWithConfidence = whatsSidService.whatsSid(wavBean);
+		entityManager.clear();
 
 		setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 	}

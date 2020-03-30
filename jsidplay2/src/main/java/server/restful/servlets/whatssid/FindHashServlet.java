@@ -6,6 +6,7 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,8 +40,10 @@ public class FindHashServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
 
-		final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+		EntityManager entityManager = getEntityManager();
+		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
 		HashBeans result = whatsSidService.findHashes(intArrayBean);
+		entityManager.clear();
 
 		setOutput(request, response, result, HashBeans.class);
 	}
