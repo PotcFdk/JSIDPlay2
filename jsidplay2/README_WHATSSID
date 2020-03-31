@@ -113,3 +113,11 @@ sudo systemctl start mysql
 sudo systemctl enable mysql
 
 sudo systemctl restart mysql
+
+estimate row count:
+===================
+select  table_rows
+from    information_schema.tables
+where   table_schema = 'musiclibrary'
+  and   table_name = 'HashTable' ;
+  
