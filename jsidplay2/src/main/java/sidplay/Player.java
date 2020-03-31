@@ -300,9 +300,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 					int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
 					if (sidDatabase != null && tune != RESET) {
-						double tuneLength = sidDatabase.getSongLength(tune);
-						if (tuneLength > 0 && tuneLength < matchStartTimeInSeconds) {
-							matchStartTimeInSeconds = Math.min((int) (tuneLength * 0.9), matchStartTimeInSeconds);
+						double songLength = sidDatabase.getSongLength(tune);
+						if (songLength > 0 && songLength < matchStartTimeInSeconds) {
+							// song too short, start at 90%
+							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
 					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
@@ -312,7 +313,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						@Override
 						public void event() throws InterruptedException {
 							if (whatsSidSection.isEnable()) {
-								// We need the state of the emulation time, therefore
+								// We need the state of the emulation time, therefore here
 								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
 								final MusicInfoWithConfidenceBean lastMatch = lastWhatsSidMatch;
 								final Thread whatsSidMatcherThread = new Thread(() -> {
@@ -331,7 +332,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										c64.getEventScheduler().schedule(this, whatsSidRetryTime);
 									}
 								});
-								whatsSidMatcherThread.setPriority(Thread.NORM_PRIORITY);
 								whatsSidMatcherThread.start();
 							} else {
 								c64.getEventScheduler().schedule(this, whatsSidRetryTime);
