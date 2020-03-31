@@ -262,7 +262,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * WhatsSid? Last match
 	 */
-	private MusicInfoWithConfidenceBean lastWhatsSidMatch;
+	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
 
 	/**
 	 * Create a Music Player.
@@ -315,12 +315,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							if (whatsSidSection.isEnable()) {
 								// We need the state of the emulation time, therefore here
 								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
-								final MusicInfoWithConfidenceBean lastMatch = lastWhatsSidMatch;
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										WavBean wavBean = new WavBean(whatsSidSamples);
 										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
-										if (result != null && !result.equals(lastMatch)
+										if (result != null && !result.equals(lastWhatsSidMatch)
 												&& result.getRelativeConfidence() > whatsSidSection
 														.getMinimumRelativeConfidence()) {
 											lastWhatsSidMatch = result;
@@ -748,7 +747,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 		stateProperty.addListener(pauseListener);
 
-		lastWhatsSidMatch = null;
 		fingerPrinting = new FingerPrinting(new FingerprintingClient(config));
 
 		reset();
