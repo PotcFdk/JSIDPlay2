@@ -313,9 +313,6 @@ public class Settings extends SIDDeviceStage {
 
 	private void okPressed() {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
-		settings.saveWhatsSidUrl(settings.getWhatsSidUrl());
-		settings.saveWhatsSidUsername(settings.getWhatsSidUsername());
-		settings.saveWhatsSidPassword(settings.getWhatsSidPassword());
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 	
