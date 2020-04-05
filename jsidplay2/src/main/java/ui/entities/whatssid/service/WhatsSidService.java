@@ -32,7 +32,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	public WhatsSidService(EntityManager em) {
 		this.em = em;
-	};
+	}
 
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
