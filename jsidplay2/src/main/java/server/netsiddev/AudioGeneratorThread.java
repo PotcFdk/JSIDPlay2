@@ -1,5 +1,7 @@
 package server.netsiddev;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -25,6 +27,7 @@ import builder.resid.resample.Resampler;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 
@@ -35,6 +38,50 @@ import sidplay.audio.JavaSound;
  * @author Antti Lankila
  */
 public class AudioGeneratorThread extends Thread {
+	private static class WavHeader {
+
+		private static final int HEADER_OFFSET = 8;
+		public static final int HEADER_LENGTH = 44;
+
+		private int length, sampleFreq,bytesPerSec, dataChunkLen;
+		private short format, channels, blockAlign, bitsPerSample;
+
+		public WavHeader(int channels, int frameRate) {
+			this.length = HEADER_LENGTH - HEADER_OFFSET;
+			this.format = 1;
+			this.channels = (short) channels;
+			this.sampleFreq = frameRate;
+			this.bytesPerSec = frameRate * Short.BYTES * channels;
+			this.blockAlign = (short) (Short.BYTES * channels);
+			this.bitsPerSample = 16;
+			this.dataChunkLen = 0;
+		}
+
+		public void advance(int length) {
+			this.length += length;
+			this.dataChunkLen += length;
+		}
+
+		public byte[] getBytes() {
+			final ByteBuffer b = ByteBuffer.allocate(HEADER_LENGTH);
+			b.order(ByteOrder.LITTLE_ENDIAN);
+			b.put("RIFF".getBytes(US_ASCII));
+			b.putInt(length);
+			b.put("WAVE".getBytes(US_ASCII));
+			b.put("fmt ".getBytes(US_ASCII));
+			b.putInt(16);
+			b.putShort(format);
+			b.putShort(channels);
+			b.putInt(sampleFreq);
+			b.putInt(bytesPerSec);
+			b.putShort(blockAlign);
+			b.putShort(bitsPerSample);
+			b.put("data".getBytes(US_ASCII));
+			b.putInt(dataChunkLen);
+			return b.array();
+		}
+	}
+
 	/** Random source for triangular dithering */
 	private static final Random RANDOM = new Random();
 
@@ -56,6 +103,8 @@ public class AudioGeneratorThread extends Thread {
 	/** SID resampler */
 	private Resampler resamplerL, resamplerR;
 
+	private Resampler downSamplerL, downSamplerR;
+	
 	/** Currently active clocking value */
 	private CPUClock sidClocking;
 
@@ -103,6 +152,14 @@ public class AudioGeneratorThread extends Thread {
 	/** Audio output driver. */
 	private JavaSound driver = new JavaSound();
 
+	private int whatsSidBufferSize;
+
+	private ByteBuffer whatsSidBuffer;
+
+	private int captureTime;
+	
+	private boolean whatsSidEnabled;
+	
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.
@@ -126,6 +183,8 @@ public class AudioGeneratorThread extends Thread {
 		digiBoostEnabled = settings.getDigiBoostEnabled();
 		audioConfig.setAudioBufferSize(settings.getAudioBufferSize());
 		audioConfig.setBufferFrames(settings.getAudioBufferSize());
+		captureTime = settings.getWhatsSidCaptureTime();
+		whatsSidEnabled = settings.isWhatsSidEnable();
 	}
 
 	@Override
@@ -154,7 +213,10 @@ public class AudioGeneratorThread extends Thread {
 			}
 			Collections.sort(audioDevices, cmp);
 			driver.open(audioConfig, mixerInfo);
-			
+
+			this.whatsSidBufferSize = Short.BYTES * audioConfig.getChannels() * SamplingRate.VERY_LOW.getFrequency() * captureTime;
+			this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
 			/* Allocate audio buffer for two channels (stereo) */
@@ -260,6 +322,10 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
+						if (whatsSidEnabled && downSamplerL.input(value)) {
+							whatsSidBuffer.putShort((short) Math.max(
+									Math.min(downSamplerL.output() + dithering, Short.MAX_VALUE), Short.MIN_VALUE));
+						}
 						outAudioBuffer[i << 1 | 0] = 0;
 						value = outAudioBuffer[i << 1 | 1];
 						if (resamplerR.input(value)) {
@@ -272,6 +338,14 @@ public class AudioGeneratorThread extends Thread {
 								value = -32768;
 							}
 							output.putShort((short) value);
+						}
+						if (whatsSidEnabled && downSamplerR.input(value)) {
+							if (!whatsSidBuffer.putShort(
+									(short) Math.max(Math.min(downSamplerR.output() + dithering, Short.MAX_VALUE),
+											Short.MIN_VALUE))
+									.hasRemaining()) {
+								((Buffer) whatsSidBuffer).flip();
+							}
 						}
 						outAudioBuffer[i << 1 | 1] = 0;
 
@@ -392,6 +466,13 @@ public class AudioGeneratorThread extends Thread {
 				20000);
 		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
 				20000);
+
+		downSamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(),
+				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+				SamplingRate.VERY_LOW.getMiddleFrequency());
+		downSamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(),
+				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+				SamplingRate.VERY_LOW.getMiddleFrequency());
 	}
 
 	public void setPosition(int sidNumber, int position) {
@@ -546,4 +627,21 @@ public class AudioGeneratorThread extends Thread {
 		}
 	}
 	
+	public byte[] getWhatsSidSamples() {
+		if (whatsSidBuffer == null) {
+			return new byte[0];
+		}
+		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
+		ByteBuffer result = ByteBuffer.allocate(WavHeader.HEADER_LENGTH + whatsSidBufferSize);
+		WavHeader wavHeader = new WavHeader(2, SamplingRate.VERY_LOW.getFrequency());
+		wavHeader.advance(whatsSidBufferSize);
+		result.put(wavHeader.getBytes());
+		((Buffer) copy).mark();
+		result.put(copy);
+		((Buffer) copy).reset();
+		((Buffer) copy).flip();
+		result.put(copy);
+		((Buffer) copy).limit(whatsSidBufferSize);
+		return result.array();
+	}
 }

@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
@@ -20,9 +21,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -34,7 +37,11 @@ public class Settings extends SIDDeviceStage {
 
 	private JComboBox<Integer> audioBuffer;
 
-	private JCheckBox allowExternalConnections, digiBoost;
+	private JCheckBox allowExternalConnections, digiBoost, whatsSidEnable;
+
+	private JTextField whatsSidURl, whatsSidUsername, whatsSidPassword;
+
+	private JFormattedTextField whatsSidCaptureTime, whatsSidMatchRetryTime, whatsSidMinimumRelativeConfidence;
 
 	private JButton okButton;
 
@@ -116,6 +123,77 @@ public class Settings extends SIDDeviceStage {
 
 		getContentPane().add(emulationPane, gridBagConstants);
 
+		JPanel whatsSidPane = new JPanel();
+		whatsSidPane.setLayout(new BoxLayout(whatsSidPane, BoxLayout.Y_AXIS));
+		whatsSidPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		TitledBorder whatsSidBorder = new TitledBorder(util.getBundle().getString("WHATSSID_SETTINGS"));
+		whatsSidPane.setBorder(whatsSidBorder);
+
+		whatsSidEnable = new JCheckBox();
+		whatsSidEnable.setText(util.getBundle().getString("WHATSSID_ENABLE"));
+		whatsSidEnable.addActionListener(event -> setWhatsSidEnable());
+		whatsSidPane.add(whatsSidEnable);
+
+		JLabel urlLabel = new JLabel(util.getBundle().getString("WHATSSID_URL"));
+		urlLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(urlLabel);
+
+		whatsSidURl = new JTextField();
+		whatsSidURl.addActionListener(event -> setWhatsSidUrl());
+		whatsSidURl.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidURl);
+
+		JLabel usernameLabel = new JLabel(util.getBundle().getString("WHATSSID_USERNAME"));
+		usernameLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(usernameLabel);
+
+		whatsSidUsername = new JTextField();
+		whatsSidUsername.addActionListener(event -> setWhatsSidUsername());
+		whatsSidUsername.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidUsername);
+
+		JLabel passwordLabel = new JLabel(util.getBundle().getString("WHATSSID_PASSWORD"));
+		passwordLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(passwordLabel);
+
+		whatsSidPassword = new JTextField();
+		whatsSidPassword.addActionListener(event -> setWhatsSidPassword());
+		whatsSidPassword.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidPassword);
+
+		JLabel captureTimeLabel = new JLabel(util.getBundle().getString("WHATSSID_CAPTURE_TIME"));
+		captureTimeLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(captureTimeLabel);
+
+		whatsSidCaptureTime = new JFormattedTextField(NumberFormat.getIntegerInstance());
+		whatsSidCaptureTime.setColumns(2);
+		whatsSidCaptureTime.addActionListener(event -> setWhatsSidCaptureTime());
+		whatsSidCaptureTime.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidCaptureTime);
+
+		JLabel matchRetryTimeLabel = new JLabel(util.getBundle().getString("WHATSSID_MATCH_RETRY_TIME"));
+		matchRetryTimeLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(matchRetryTimeLabel);
+
+		whatsSidMatchRetryTime = new JFormattedTextField(NumberFormat.getIntegerInstance());
+		whatsSidMatchRetryTime.setColumns(2);
+		whatsSidMatchRetryTime.addActionListener(event -> setWhatsSidMatchRetryTime());
+		whatsSidMatchRetryTime.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidMatchRetryTime);
+
+		JLabel minimumRelativeConfidenceLabel = new JLabel(
+				util.getBundle().getString("WHATSSID_MINIMUM_RELATIVE_CONFIDENCE"));
+		minimumRelativeConfidenceLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(minimumRelativeConfidenceLabel);
+
+		whatsSidMinimumRelativeConfidence = new JFormattedTextField(NumberFormat.getNumberInstance());
+		whatsSidMinimumRelativeConfidence.addActionListener(event -> setWhatsSidMinimumRelativeConfidence());
+		whatsSidMinimumRelativeConfidence.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidMinimumRelativeConfidence);
+
+		getContentPane().add(whatsSidPane, gridBagConstants);
+
 		okButton = new JButton(util.getBundle().getString("OK"));
 		okButton.addActionListener(event -> okPressed());
 
@@ -151,6 +229,13 @@ public class Settings extends SIDDeviceStage {
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
 		digiBoost.setSelected(settings.getDigiBoostEnabled());
 		audioBuffer.setSelectedItem(settings.getAudioBufferSize());
+		whatsSidEnable.setSelected(settings.isWhatsSidEnable());
+		whatsSidURl.setText(settings.getWhatsSidUrl());
+		whatsSidUsername.setText(settings.getWhatsSidUsername());
+		whatsSidPassword.setText(settings.getWhatsSidPassword());
+		whatsSidCaptureTime.setValue(settings.getWhatsSidCaptureTime());
+		whatsSidMatchRetryTime.setValue(settings.getWhatsSidMatchRetryTime());
+		whatsSidMinimumRelativeConfidence.setValue(settings.getWhatsSidMinimumRelativeConfidence());
 	}
 	
 	public void open() throws IOException {
@@ -191,8 +276,46 @@ public class Settings extends SIDDeviceStage {
 		settings.saveDigiBoost(isDigiBoost);
 	}
 
+	private void setWhatsSidEnable() {
+		boolean whatsSidEnable = this.whatsSidEnable.isSelected();
+		settings.saveWhatsSidEnable(whatsSidEnable);
+	}
+
+	private void setWhatsSidUrl() {
+		String whatsSidUrl = this.whatsSidURl.getText();
+		settings.saveWhatsSidUrl(whatsSidUrl);
+	}
+
+	private void setWhatsSidUsername() {
+		String whatsSidUserName = this.whatsSidUsername.getText();
+		settings.saveWhatsSidUsername(whatsSidUserName);
+	}
+
+	private void setWhatsSidPassword() {
+		String whatsSidPasswd = this.whatsSidPassword.getText();
+		settings.saveWhatsSidPassword(whatsSidPasswd);
+	}
+
+	private void setWhatsSidCaptureTime() {
+		Number whatsSidCaptureTime = (Number) this.whatsSidCaptureTime.getValue();
+		settings.saveWhatsSidCaptureTime(whatsSidCaptureTime.intValue());
+	}
+
+	private void setWhatsSidMatchRetryTime() {
+		Number whatsSidMatchRetryTime = (Number) this.whatsSidMatchRetryTime.getValue();
+		settings.saveWhatsSidMatchRetryTime(whatsSidMatchRetryTime.intValue());
+	}
+
+	private void setWhatsSidMinimumRelativeConfidence() {
+		Number whatsSidMinimumRelativeConfidence = (Number) this.whatsSidMinimumRelativeConfidence.getValue();
+		settings.saveWhatsSidMinimumRelativeConfidence(whatsSidMinimumRelativeConfidence.doubleValue());
+	}
+
 	private void okPressed() {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
+		settings.saveWhatsSidUrl(settings.getWhatsSidUrl());
+		settings.saveWhatsSidUsername(settings.getWhatsSidUsername());
+		settings.saveWhatsSidPassword(settings.getWhatsSidPassword());
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 	

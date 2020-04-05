@@ -22,8 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import libsidplay.config.IConfig;
-import libsidplay.config.IWhatsSidSection;
 import libsidutils.fingerprinting.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -36,10 +34,14 @@ import server.restful.common.MimeType;
 
 public class FingerprintingClient implements FingerPrintingDataSource {
 
-	private IConfig configuration;
+	private String url;
+	private String username;
+	private Object password;
 
-	public FingerprintingClient(IConfig configuration) {
-		this.configuration = configuration;
+	public FingerprintingClient(String url, String username, String password) {
+		this.url = url;
+		this.username = username;
+		this.password = password;
 	}
 
 	@Override
@@ -128,18 +130,12 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 
 	private <T> HttpURLConnection send(T parameter, Class<T> tClass, String requestPath, String requestMethod)
 			throws MalformedURLException, IOException, ProtocolException, JAXBException {
-		IWhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
-
-		HttpURLConnection connection = (HttpURLConnection) new URL(whatsSidSection.getUrl() + requestPath)
-				.openConnection();
+		HttpURLConnection connection = (HttpURLConnection) new URL(url + requestPath).openConnection();
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod(requestMethod);
-		connection.setRequestProperty(HttpHeaders.AUTHORIZATION,
-				BASIC_AUTH + " "
-						+ Base64.getEncoder()
-								.encodeToString((whatsSidSection.getUsername() + ":" + whatsSidSection.getPassword())
-										.getBytes(StandardCharsets.UTF_8)));
+		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
+				+ Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
 		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MimeType.MIME_TYPE_XML.getContentType());
 		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getContentType());
 

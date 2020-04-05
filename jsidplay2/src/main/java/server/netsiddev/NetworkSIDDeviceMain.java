@@ -124,6 +124,10 @@ public class NetworkSIDDeviceMain {
 
 		new Timer(1000, event -> {
 			trayIcon.setToolTip(getToolTip());
+			String recognizedTunes = ClientContext.getRecognizedTunes();
+			if (!recognizedTunes.isEmpty()) {
+				trayIcon.displayMessage("WhatsSid?", recognizedTunes, TrayIcon.MessageType.NONE);
+			}
 		}).start();
 	}
 

@@ -5,6 +5,7 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
 import libsidplay.common.SamplingMethod;
+import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
@@ -104,19 +106,29 @@ public class SIDMixer implements Mixer {
 					if (resamplerL.input(valL >> fastForwardShift)) {
 						short outputL = (short) Math.max(Math.min(resamplerL.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE);
-						whatsSidBuffer.putShort(outputL);
 						buffer.putShort(outputL);
 					}
 					if (resamplerR.input(valR >> fastForwardShift)) {
 						short outputR = (short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE);
-						if (!whatsSidBuffer.putShort(outputR).hasRemaining()) {
-							((Buffer) whatsSidBuffer).clear();
-						}
 						if (!buffer.putShort(outputR).hasRemaining()) {
 							audioProcessors.stream().forEach(processor -> processor.process(buffer));
 							audioDriver.write();
 							((Buffer) buffer).clear();
+						}
+					}
+					if (whatsSidEnabled) {
+						if (downSamplerL.input(valL >> fastForwardShift)) {
+							whatsSidBuffer.putShort((short) Math.max(
+									Math.min(downSamplerL.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE));
+						}
+						if (downSamplerR.input(valR >> fastForwardShift)) {
+							if (!whatsSidBuffer.putShort(
+									(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE),
+											Short.MIN_VALUE))
+									.hasRemaining()) {
+								((Buffer) whatsSidBuffer).flip();
+							}
 						}
 					}
 					// zero accumulator
@@ -189,6 +201,11 @@ public class SIDMixer implements Mixer {
 	 * Resampler of sample output for two channels (stereo).
 	 */
 	private final Resampler resamplerL, resamplerR;
+	
+	/**
+	 * WhatsSid? Resampler to 8Khz
+	 */
+	private Resampler downSamplerL, downSamplerR;
 
 	/**
 	 * Audio driver
@@ -216,6 +233,11 @@ public class SIDMixer implements Mixer {
 	 * Fade-in/fade-out enabled.
 	 */
 	private final boolean fadeInFadeOutEnabled;
+	
+	/**
+	 * WhatsSid? Is enabled?
+	 */
+	private final boolean whatsSidEnabled;
 
 	/**
 	 * Add some audio post processing.
@@ -230,6 +252,7 @@ public class SIDMixer implements Mixer {
 	public SIDMixer(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		IAudioSection audioSection = config.getAudioSection();
+		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 
 		double cpuFrequency = cpuClock.getCpuFrequency();
 		SamplingMethod samplingMethod = audioSection.getSampling();
@@ -244,6 +267,15 @@ public class SIDMixer implements Mixer {
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 		this.audioProcessors.add(new DelayProcessor(config));
 		this.audioProcessors.add(new ReverbProcessor(config));
+		
+		this.whatsSidEnabled = whatsSidSection.isEnable();
+		this.downSamplerL = Resampler.createResampler(cpuFrequency,
+				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+				SamplingRate.VERY_LOW.getMiddleFrequency());
+		this.downSamplerR = Resampler.createResampler(cpuFrequency,
+				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
+				SamplingRate.VERY_LOW.getMiddleFrequency());
+
 		normalSpeed();
 	}
 
@@ -252,16 +284,13 @@ public class SIDMixer implements Mixer {
 		IAudioSection audioSection = config.getAudioSection();
 		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 
-		int samplingFrequency = audioSection.getSamplingRate().getFrequency();
-		int captureTime = whatsSidSection.getCaptureTime();
-
 		this.audioDriver = audioDriver;
 		this.bufferSize = audioSection.getBufferSize();
 		this.buffer = audioDriver.buffer();
 		this.audioBufferL = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(nativeOrder()).asIntBuffer();
 		this.audioBufferR = ByteBuffer.allocateDirect(Integer.BYTES * bufferSize).order(nativeOrder()).asIntBuffer();
-		this.whatsSidBufferSize = Integer.BYTES * samplingFrequency * captureTime;
-		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(nativeOrder());
+		this.whatsSidBufferSize = Integer.BYTES * SamplingRate.VERY_LOW.getFrequency() * whatsSidSection.getCaptureTime();
+		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	/**
@@ -439,8 +468,8 @@ public class SIDMixer implements Mixer {
 	}
 
 	public byte[] getWhatsSidSamples() {
-		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBufferSize);
-		WavHeader wavHeader = new WavHeader(2, config.getAudioSection().getSamplingRate().getFrequency());
+		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+		WavHeader wavHeader = new WavHeader(2, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
 		((Buffer) whatsSidBuffer).mark();

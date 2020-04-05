@@ -312,7 +312,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 						@Override
 						public void event() throws InterruptedException {
-							if (whatsSidSection.isEnable()) {
+							if (whatsSidSection.isEnable() && sidBuilder instanceof SIDMixer) {
 								// We need the state of the emulation time, therefore here
 								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
@@ -719,6 +719,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final IAudioSection audioSection = config.getAudioSection();
+		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+
+		String url = whatsSidSection.getUrl();
+		String username = whatsSidSection.getUsername();
+		String password = whatsSidSection.getPassword();
 
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());
@@ -747,7 +752,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 		stateProperty.addListener(pauseListener);
 
-		fingerPrinting = new FingerPrinting(new FingerprintingClient(config));
+		fingerPrinting = new FingerPrinting(new FingerprintingClient(url, username, password));
 
 		reset();
 	}

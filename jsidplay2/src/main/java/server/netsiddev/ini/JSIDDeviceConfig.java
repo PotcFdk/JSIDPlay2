@@ -54,6 +54,8 @@ public class JSIDDeviceConfig {
 
 	private IniJSIDDeviceAudioSection audioSection;
 
+	private IniJSIDDeviceWhatsSidSection whatsSidSection;
+
 	protected IniReader iniReader;
 
 	private String[] filterList;
@@ -90,6 +92,7 @@ public class JSIDDeviceConfig {
 	private void clear() {
 		jsiddeviceSection = new IniJSIDDeviceSection(iniReader);
 		audioSection = new IniJSIDDeviceAudioSection(iniReader);
+		whatsSidSection = new IniJSIDDeviceWhatsSidSection(iniReader);
 
 		final List<String> filters = new ArrayList<String>();
 		final List<String> filtersResidfp = new ArrayList<String>();
@@ -227,4 +230,7 @@ public class JSIDDeviceConfig {
 		return audioSection;
 	}
 
+	public final IniJSIDDeviceWhatsSidSection whatsSidSection() {
+		return whatsSidSection;
+	}
 }

@@ -10,6 +10,13 @@ public class SIDDeviceSettings {
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
 	private final static String PROPERTY_DIGI_BOOST = "digiBoost";
+	private final static String PROPERTY_WHATSSID_URL = "whatsSidUrl";
+	private final static String PROPERTY_WHATSSID_ENABLE = "whatsSidEnable";
+	private final static String PROPERTY_WHATSSID_USERNAME = "whatsSidUsername";
+	private final static String PROPERTY_WHATSSID_PASSWORD = "whatsSidPassword";
+	private final static String PROPERTY_WHATSSID_CAPTURE_TIME = "whatsSidCaptureTime";
+	private final static String PROPERTY_WHATSSID_MATCH_RETRY_TIME = "whatsSidMatchRetryTime";
+	private final static String PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE = "whatsSidMinimumRelativeConfidence";
 	private final static String PROPERTY_AUDIO_BUFFER_SIZE = "audioBufferSize";
 	private final static String ALLOW_EXTERNAL_CONNECTIONS = "allowExternalConnections";
 	private final static String PROPERTY_DEVICE_INDEX_COMMENT = "JSIDDevice settings";
@@ -61,6 +68,55 @@ public class SIDDeviceSettings {
 	}
 
 	/**
+	 * @return WhatsSid enable from the settings.
+	 */
+	public synchronized boolean isWhatsSidEnable() {
+		return Boolean.TRUE.equals(Boolean.valueOf(props.getProperty(PROPERTY_WHATSSID_ENABLE, "false")));
+	}
+
+	/**
+	 * @return WhatsSid URL from the settings.
+	 */
+	public synchronized String getWhatsSidUrl() {
+		return props.getProperty(PROPERTY_WHATSSID_URL, "https://haendel.ddns.net:8443/jsidplay2service/JSIDPlay2REST");
+	}
+
+	/**
+	 * @return WhatsSid username from the settings.
+	 */
+	public synchronized String getWhatsSidUsername() {
+		return props.getProperty(PROPERTY_WHATSSID_USERNAME, "jsidplay2");
+	}
+
+	/**
+	 * @return WhatsSid password from the settings.
+	 */
+	public synchronized String getWhatsSidPassword() {
+		return props.getProperty(PROPERTY_WHATSSID_PASSWORD, "jsidplay2!");
+	}
+
+	/**
+	 * @return WhatsSid capture time from the settings.
+	 */
+	public synchronized int getWhatsSidCaptureTime() {
+		return Integer.valueOf(props.getProperty(PROPERTY_WHATSSID_CAPTURE_TIME, "15"));
+	}
+
+	/**
+	 * @return WhatsSid match retry time from the settings.
+	 */
+	public synchronized int getWhatsSidMatchRetryTime() {
+		return Integer.valueOf(props.getProperty(PROPERTY_WHATSSID_MATCH_RETRY_TIME, "15"));
+	}
+
+	/**
+	 * @return WhatsSid match retry time from the settings.
+	 */
+	public synchronized double getWhatsSidMinimumRelativeConfidence() {
+		return Double.valueOf(props.getProperty(PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE, "4.5"));
+	}
+
+	/**
 	 * @return if external connections are allowed.
 	 */
 	public synchronized boolean getAllowExternalConnections() {
@@ -91,6 +147,41 @@ public class SIDDeviceSettings {
 	 */
 	public synchronized void saveDigiBoost(boolean digiBoost) {
 		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
+		save();
+	}
+
+	public void saveWhatsSidEnable(boolean whatsSidEnable) {
+		props.setProperty(PROPERTY_WHATSSID_ENABLE, String.valueOf(whatsSidEnable));
+		save();
+	}
+
+	public void saveWhatsSidUrl(String whatsSidUrl) {
+		props.setProperty(PROPERTY_WHATSSID_URL, String.valueOf(whatsSidUrl));
+		save();
+	}
+
+	public void saveWhatsSidUsername(String whatsSidUsername) {
+		props.setProperty(PROPERTY_WHATSSID_USERNAME, String.valueOf(whatsSidUsername));
+		save();
+	}
+
+	public void saveWhatsSidPassword(String whatsSidPassword) {
+		props.setProperty(PROPERTY_WHATSSID_PASSWORD, String.valueOf(whatsSidPassword));
+		save();
+	}
+
+	public void saveWhatsSidCaptureTime(int whatsSidCaptureTime) {
+		props.setProperty(PROPERTY_WHATSSID_CAPTURE_TIME, String.valueOf(whatsSidCaptureTime));
+		save();
+	}
+
+	public void saveWhatsSidMatchRetryTime(int whatsSidMatchRetryTime) {
+		props.setProperty(PROPERTY_WHATSSID_MATCH_RETRY_TIME, String.valueOf(whatsSidMatchRetryTime));
+		save();
+	}
+
+	public void saveWhatsSidMinimumRelativeConfidence(double whatsSidMinimumRelativeConfidence) {
+		props.setProperty(PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE, String.valueOf(whatsSidMinimumRelativeConfidence));
 		save();
 	}
 

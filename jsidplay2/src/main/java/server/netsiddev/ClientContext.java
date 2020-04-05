@@ -4,7 +4,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -12,11 +14,17 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer;
@@ -102,6 +110,55 @@ class ClientContext {
 
 	/** Map which holds all instances of each client connection. */
 	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
+
+	private static class Match {
+
+		private double relativeConfidence;
+		private String title;
+		private String artist;
+		private String album;
+		private String infoDir;
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof Match)) {
+				return false;
+			}
+			return infoDir != null && infoDir.equals(((Match) obj).infoDir);
+		}
+	}
+
+	private static Match lastMatch;
+
+	private Match whatsSidResult;
+
+	private static int clientContextNumToCheck;
+
+	private static Thread whatsSidThread;
+
+	public byte[] getWhatsSidSamples() {
+		return eventConsumerThread.getWhatsSidSamples();
+	}
+
+	public static String getRecognizedTunes() {
+		return clientContextMap.values().stream().map(cc -> toWhatsSidAnswer(cc)).collect(Collectors.joining("\n"));
+	}
+
+	private static String toWhatsSidAnswer(ClientContext cc) {
+		StringBuilder result = new StringBuilder();
+		if (cc.whatsSidResult != null) {
+			result.append(" ");
+			result.append(cc.whatsSidResult.title);
+			result.append(" - ");
+			result.append(cc.whatsSidResult.artist);
+			result.append(" - ");
+			result.append(cc.whatsSidResult.album);
+			result.append(" - ");
+			result.append(cc.whatsSidResult.infoDir);
+		}
+		cc.whatsSidResult = null;
+		return result.toString();
+	}
 
 	/** Construct a new audio player for connected client */
 	private ClientContext(AudioConfig config, int latency) {
@@ -604,11 +661,15 @@ class ClientContext {
 			/* check for new connections. */
 			openNewConnection = true;
 
+			SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
+			startWhatsSidThread(settings);
+			
 			while (openNewConnection) {
+				lastMatch = null;
+				
 				ssc = ServerSocketChannel.open();
 				ssc.configureBlocking(false);
 
-				SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
 				boolean allowExternalIpConnections = settings.getAllowExternalConnections();
 
 				String ipAddress = allowExternalIpConnections ? "0.0.0.0" : config.jsiddevice().getHostname();
@@ -716,6 +777,129 @@ class ClientContext {
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private static void startWhatsSidThread(SIDDeviceSettings settings) {
+		clientContextNumToCheck = 0;
+		whatsSidThread = new Thread(() -> {
+			do {
+				try {
+					Thread.sleep(settings.getWhatsSidMatchRetryTime() * 1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if (settings.isWhatsSidEnable()) {
+					Collection<ClientContext> clientContexts = clientContextMap.values();
+					Optional<ClientContext> clientContextToCheck = clientContexts.stream()
+							.skip(clientContextNumToCheck).findFirst();
+					if (++clientContextNumToCheck >= clientContexts.size()) {
+						clientContextNumToCheck = 0;
+					}
+					if (clientContextToCheck.isPresent()) {
+						ClientContext clientContext = clientContextToCheck.get();
+						try {
+							byte[] bytes = clientContext.getWhatsSidSamples();
+							if (bytes.length > 0) {
+								HttpURLConnection connection = sendJson(settings, bytes);
+								if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
+									Match match = receiveJson(connection);
+									if (!match.equals(lastMatch) && match.relativeConfidence > settings
+											.getWhatsSidMinimumRelativeConfidence()) {
+										lastMatch = match;
+										clientContext.whatsSidResult = match;
+									}
+								}
+							}
+						} catch (Throwable e) {
+							e.printStackTrace();
+							// server not available? silently ignore!
+						}
+					}
+				}
+			} while (true);
+		});
+		whatsSidThread.setPriority(Thread.MIN_PRIORITY);
+		whatsSidThread.start();
+	}
+
+	private static HttpURLConnection sendJson(SIDDeviceSettings settings, byte[] bytes) {
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) new URL(settings.getWhatsSidUrl() + "/whatssid")
+					.openConnection();
+			connection.setDoOutput(true);
+			connection.setInstanceFollowRedirects(false);
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Authorization",
+					"Basic " + Base64.getEncoder()
+							.encodeToString((settings.getWhatsSidUsername() + ":" + settings.getWhatsSidPassword())
+									.getBytes(StandardCharsets.UTF_8)));
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("Accept", "application/json");
+			
+			String request = "{\"wav\": \"" + Base64.getEncoder().encodeToString(bytes)
+					+ "\"}";
+			connection.getOutputStream().write(request.getBytes(StandardCharsets.UTF_8));
+			connection.getOutputStream().flush();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return null;
+		}
+		return connection;
+	}
+
+	private static Match receiveJson(HttpURLConnection connection) {
+		try {
+			String response = null;
+			try (Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.name())) {
+				response = scanner.useDelimiter("\\A").next();
+			}
+			Match match = new Match();
+			{
+				// match string values
+				Matcher m = Pattern.compile("\"[^\"]*\":\"[^\"]*\"").matcher(response);
+				while (m.find()) {
+					String[] keyValue = m.group().split(":");
+					setMatch(keyValue[0], keyValue[1], match);
+				}
+			}
+			{
+				// match numeric values
+				Matcher m = Pattern.compile("\"[^\"]*\":[0-9.]+").matcher(response);
+				while (m.find()) {
+					String[] keyValue = m.group().split(":");
+					setMatch(keyValue[0], keyValue[1], match);
+				}
+			}
+			return match;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return new Match();
+		} finally {
+			connection.disconnect();
+		}
+	}
+
+	private static void setMatch(String key, String value, Match match) {
+		switch (key) {
+		case "\"title\"":
+			match.title = value.substring(1, value.length() - 1);
+			break;
+		case "\"artist\"":
+			match.artist = value.substring(1, value.length() - 1);
+			break;
+		case "\"album\"":
+			match.album = value.substring(1, value.length() - 1);
+			break;
+		case "\"infoDir\"":
+			match.infoDir = value.substring(1, value.length() - 1);
+			break;
+		case "\"relativeConfidence\"":
+			match.relativeConfidence = Double.parseDouble(value);
+			break;
+		default:
+			break;
 		}
 	}
 
