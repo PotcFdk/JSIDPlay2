@@ -27,9 +27,11 @@ import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
- * Beta: Shazam like feature: Analyze tunes to recognize a currently played tune
+ * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
+ * played tune
  * 
- * This is the test program.
+ * This is the program to create the fingerprintings for all tunes of a
+ * collection.
  * 
  * @author ken
  *
@@ -106,7 +108,7 @@ public class FingerPrintingCreator {
 			whatsSidDriver.deleteAll();
 		}
 
-		System.out.println("Create fingerprintings... (press q <return> to abort)");
+		System.out.println("Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
 
 		try {
 			processDirectory(new File(directory));

@@ -15,18 +15,19 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.FingerPrintingCreator;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
 import ui.entities.whatssid.service.WhatsSidService;
 
 /**
- * Alpha: Shazam like feature: Analyze tunes to recognize a currently played
- * tune
+ * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
+ * played tune
  * 
- * This is the analyzing part. Use
- * {@link libsidutils.fingerprinting.FingerPrinting} to match.
- * 
- * WAV file is created if not exists containing 8KHz sample data. WAV file
+ * This is the audio driver to create a fingerprint for a tune. Use
+ * {@link FingerPrintingCreator} to create the whole database.
+ * <BR>
+ * <B>Note:</B> WAV file is created if not exists containing 8KHz sample data. WAV file
  * contents is then fingerprint'ed
  * 
  * @author ken

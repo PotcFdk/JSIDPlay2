@@ -72,6 +72,12 @@
 	</profiles>
 
 	<dependencies>
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-jpamodelgen</artifactId>
+		    <version>5.4.2.Final</version>
+		</dependency>
+
 		<!-- compile time dependencies -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
@@ -442,7 +448,29 @@
 					<debuglevel>${debuglevel}</debuglevel>
 					<source>1.8</source>
 					<target>1.8</target>
+					<compilerArguments>
+            			<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+        			</compilerArguments>
 				</configuration>
+			</plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>build-helper-maven-plugin</artifactId>
+			    <version>1.8</version>
+			    <executions>
+			        <execution>
+			            <id>add-source</id>
+			            <phase>generate-sources</phase>
+			            <goals>
+			                <goal>add-source</goal>
+			            </goals>
+			            <configuration>
+			                <sources>
+			                    <source>${project.build.directory}/generated-sources/annotations/</source>
+			                </sources>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -451,7 +479,7 @@
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
-						<phase>generate-resources</phase>
+						<phase>compile</phase>
 						<goals>
 							<goal>javadoc</goal>
 						</goals>
@@ -515,7 +543,7 @@
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<excludeScope>provided</excludeScope>
-							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
+							<excludeArtifactIds>jinput-platform,hibernate-jpamodelgen</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
@@ -1125,6 +1153,27 @@
 									</pluginExecutionFilter>
 									<action>
 										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>build-helper-maven-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>parse-version</goal>
+											<goal>add-source</goal>
+											<goal>maven-version</goal>
+											<goal>add-resource</goal>
+											<goal>add-test-resource</goal>
+											<goal>add-test-source</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnConfiguration>true</runOnConfiguration>
+											<runOnIncremental>true</runOnIncremental>
+										</execute>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

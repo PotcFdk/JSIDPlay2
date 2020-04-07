@@ -96,7 +96,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
 		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
-		Path<Long> idMusicInfo = musicInfo.<Long>get(MusicInfo_.idMusicInfo);
+		Path<Integer> idMusicInfo = musicInfo.<Integer>get(MusicInfo_.idMusicInfo);
 		Predicate predicate = cb.equal(idMusicInfo, songNoBean.getSongNo());
 		query.where(predicate).select(musicInfo);
 
