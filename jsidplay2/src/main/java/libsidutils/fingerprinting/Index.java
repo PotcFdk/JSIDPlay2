@@ -8,6 +8,7 @@ import libsidutils.fingerprinting.fingerprint.Hash;
 import libsidutils.fingerprinting.fingerprint.Link;
 import libsidutils.fingerprinting.model.Match;
 import libsidutils.fingerprinting.model.SongMatch;
+import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;

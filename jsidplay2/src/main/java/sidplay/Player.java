@@ -68,10 +68,6 @@ import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
@@ -82,6 +78,9 @@ import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.EndTuneException;
 import sidplay.audio.exceptions.NextTuneException;
+import sidplay.fingerprinting.FingerPrintMatcher;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
@@ -257,7 +256,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * WhatsSid?
 	 */
-	private FingerPrinting fingerPrinting;
+	private FingerPrintMatcher fingerPrintMatcher;
 
 	/**
 	 * WhatsSid? Last match
@@ -312,13 +311,14 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 						@Override
 						public void event() throws InterruptedException {
-							if (whatsSidSection.isEnable() && sidBuilder instanceof SIDMixer) {
+							if (whatsSidSection.isEnable() && fingerPrintMatcher != null
+									&& sidBuilder instanceof SIDMixer) {
 								// We need the state of the emulation time, therefore here
 								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										WavBean wavBean = new WavBean(whatsSidSamples);
-										MusicInfoWithConfidenceBean result = fingerPrinting.match(wavBean);
+										MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
 										if (result != null && !result.equals(lastWhatsSidMatch)
 												&& result.getRelativeConfidence() > whatsSidSection
 														.getMinimumRelativeConfidence()) {
@@ -405,6 +405,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
 		}
+	}
+
+	/**
+	 * Set a fingerprint matcher.
+	 * 
+	 * @param fingerPrintMatcher a fingerprint matcher
+	 */
+	public void setFingerPrintMatcher(FingerPrintMatcher fingerPrintMatcher) {
+		this.fingerPrintMatcher = fingerPrintMatcher;
 	}
 
 	/**
@@ -719,12 +728,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final IAudioSection audioSection = config.getAudioSection();
-		IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
-
-		String url = whatsSidSection.getUrl();
-		String username = whatsSidSection.getUsername();
-		String password = whatsSidSection.getPassword();
-
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());
 
@@ -751,8 +754,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		c64.setSIDListener(this);
 
 		stateProperty.addListener(pauseListener);
-
-		fingerPrinting = new FingerPrinting(new FingerprintingClient(url, username, password));
 
 		reset();
 	}

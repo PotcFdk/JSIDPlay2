@@ -11,7 +11,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import sidplay.fingerprinting.MusicInfoBean;
 
 @Entity
 @Access(AccessType.PROPERTY)

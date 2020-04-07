@@ -15,10 +15,13 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.components.mos6510.MOS6510;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.debug.MOS6510Debug;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.audio.JavaSound;
 import sidplay.consoleplayer.ConsoleIO;
@@ -62,6 +65,11 @@ final public class ConsolePlayer {
 				printSoundcardDevices();
 				exit(1);
 			}
+			IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+			String url = whatsSidSection.getUrl();
+			String username = whatsSidSection.getUsername();
+			String password = whatsSidSection.getPassword();
+
 			final SidTune tune = SidTune.load(new File(filename.get()));
 			tune.getInfo().setSelectedSong(song);
 			final Player player = new Player(config, cpuDebug ? MOS6510Debug.class : MOS6510.class);
@@ -70,6 +78,8 @@ final public class ConsolePlayer {
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj, System.in));
 			player.setWhatsSidHook(obj -> consoleIO.whatsSid(obj, quiet, System.out));
+			player.setFingerPrintMatcher(new FingerPrinting(new FingerprintingClient(url, username, password)));
+
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
 			}

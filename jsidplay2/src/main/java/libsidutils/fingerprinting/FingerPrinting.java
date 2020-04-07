@@ -7,13 +7,15 @@ import java.nio.file.Paths;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
+import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.IdBean;
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import sidplay.fingerprinting.FingerPrintMatcher;
+import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
 
-public class FingerPrinting {
+public class FingerPrinting implements FingerPrintMatcher {
 
 	private static final int MIN_HIT = 20;
 

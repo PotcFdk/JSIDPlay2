@@ -22,15 +22,15 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import libsidutils.fingerprinting.FingerPrintingDataSource;
+import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
 import server.restful.common.MimeType;
+import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
 
 public class FingerprintingClient implements FingerPrintingDataSource {
 

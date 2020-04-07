@@ -20,13 +20,16 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import libsidplay.components.c1541.C1541;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DebugUtil;
-import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
+import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import ui.common.Convenience;
 import ui.common.Toast;
 import ui.entities.config.Configuration;
@@ -113,9 +116,18 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			player = new Player(getConfigurationFromCommandLineArgs());
+			Configuration configuration = getConfigurationFromCommandLineArgs();
+
+			IWhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+			String url = whatsSidSection.getUrl();
+			String username = whatsSidSection.getUsername();
+			String password = whatsSidSection.getPassword();
+
+			player = new Player(configuration);
 			player.setMenuHook(menuHook);
 			player.setWhatsSidHook(whatsSidHook);
+			player.setFingerPrintMatcher(new FingerPrinting(new FingerprintingClient(url, username, password)));
+
 			// automatically load tune on start-up
 			Optional<String> filename = filenames.stream().findFirst();
 			if (filename.isPresent()) {

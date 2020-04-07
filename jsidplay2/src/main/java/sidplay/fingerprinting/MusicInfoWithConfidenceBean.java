@@ -1,4 +1,4 @@
-package libsidutils.fingerprinting.rest.beans;
+package sidplay.fingerprinting;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

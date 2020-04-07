@@ -11,10 +11,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 
