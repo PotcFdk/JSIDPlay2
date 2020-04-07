@@ -118,6 +118,6 @@ estimate row count:
 ===================
 select  table_rows
 from    information_schema.tables
-where   table_schema = 'musiclibrary'
+where   table_schema = 'musiclibary'
   and   table_name = 'HashTable' ;
   
