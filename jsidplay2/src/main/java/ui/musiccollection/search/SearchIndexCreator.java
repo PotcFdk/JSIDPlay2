@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 
 import libsidutils.PathUtils;
 import sidplay.Player;
+import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.service.HVSCEntryService;
 import ui.entities.collection.service.STILService;
 import ui.entities.collection.service.VersionService;
@@ -66,7 +67,8 @@ public final class SearchIndexCreator {
 			try {
 				String collectionRelName = PathUtils.getCollectionName(root, file);
 				if (collectionRelName != null) {
-					hvscEntryService.add(player, collectionRelName, file);
+					HVSCEntry hvscEntry = hvscEntryService.add(player, collectionRelName, file);
+					stilService.add(stilPath -> player.getStilEntry(stilPath), hvscEntry);
 				}
 			} catch (final Exception e) {
 				System.err.println("Indexing failure on: " + file.getAbsolutePath() + ": " + e.getMessage());

@@ -17,7 +17,7 @@ public class STILService {
 
 	public STILService(EntityManager em) {
 		this.em = em;
-	};
+	}
 
 	public void add(Function<String, STILEntry> stilFnct, final HVSCEntry hvscEntry) {
 		STILEntry stilEntry = stilFnct.apply(hvscEntry.getPath());

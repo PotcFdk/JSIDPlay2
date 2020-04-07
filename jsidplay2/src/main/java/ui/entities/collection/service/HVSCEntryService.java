@@ -62,19 +62,15 @@ public class HVSCEntryService {
 	}
 
 	private EntityManager em;
-	private STILService stilService;
 
 	public HVSCEntryService(EntityManager em) {
 		this.em = em;
-		this.stilService = new STILService(em);
-	};
+	}
 
 	public HVSCEntry add(Player player, final String path, final File tuneFile) throws IOException, SidTuneError {
 		SidTune tune = tuneFile.isFile() ? SidTune.load(tuneFile) : null;
 		HVSCEntry hvscEntry = new HVSCEntry(() -> player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.), path,
 				tuneFile, tune);
-		stilService.add(stilPath -> player.getStilEntry(stilPath), hvscEntry);
-
 		try {
 			em.persist(hvscEntry);
 		} catch (Throwable e) {

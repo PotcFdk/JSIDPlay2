@@ -14,7 +14,7 @@ public class VersionService {
 
 	public VersionService(EntityManager em) {
 		this.em = em;
-	};
+	}
 
 	@SuppressWarnings("unchecked")
 	public boolean isExpectedVersion() {
