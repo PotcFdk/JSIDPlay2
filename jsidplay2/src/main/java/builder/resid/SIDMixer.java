@@ -24,7 +24,6 @@ import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.WAVDriver;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.processor.AudioProcessor;
 import sidplay.audio.processor.delay.DelayProcessor;
@@ -468,16 +467,21 @@ public class SIDMixer implements Mixer {
 	}
 
 	public byte[] getWhatsSidSamples() {
-		ByteBuffer result = ByteBuffer.allocate(WAVDriver.WavHeader.HEADER_LENGTH + whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+		if (whatsSidBuffer == null) {
+			return new byte[0];
+		}
+		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
+		ByteBuffer result = ByteBuffer.allocate(WavHeader.HEADER_LENGTH + whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 		WavHeader wavHeader = new WavHeader(2, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
-		((Buffer) whatsSidBuffer).mark();
-		result.put(whatsSidBuffer);
-		((Buffer) whatsSidBuffer).reset();
-		((Buffer) whatsSidBuffer).flip();
-		result.put(whatsSidBuffer);
-		((Buffer) whatsSidBuffer).limit(whatsSidBufferSize);
+		((Buffer) copy).mark();
+		result.put(copy);
+		((Buffer) copy).reset();
+		((Buffer) copy).flip();
+		result.put(copy);
+		((Buffer) copy).limit(whatsSidBufferSize);
 		return result.array();
 	}
+	
 }

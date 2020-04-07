@@ -331,6 +331,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										c64.getEventScheduler().schedule(this, whatsSidRetryTime);
 									}
 								});
+								whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
 								whatsSidMatcherThread.start();
 							} else {
 								c64.getEventScheduler().schedule(this, whatsSidRetryTime);
