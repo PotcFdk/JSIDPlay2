@@ -39,6 +39,7 @@ public class FingerPrinting implements FingerPrintMatcher {
 		}
 	}
 
+	@Override
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
 			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();

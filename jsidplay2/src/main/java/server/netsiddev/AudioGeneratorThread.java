@@ -322,6 +322,7 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
+						value = outAudioBuffer[i << 1 | 0];
 						if (whatsSidEnabled && downSamplerL.input(value)) {
 							whatsSidBuffer.putShort((short) Math.max(
 									Math.min(downSamplerL.output() + dithering, Short.MAX_VALUE), Short.MIN_VALUE));
@@ -339,6 +340,7 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
+						value = outAudioBuffer[i << 1 | 1];
 						if (whatsSidEnabled && downSamplerR.input(value)) {
 							if (!whatsSidBuffer.putShort(
 									(short) Math.max(Math.min(downSamplerR.output() + dithering, Short.MAX_VALUE),
