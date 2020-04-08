@@ -72,12 +72,6 @@
 	</profiles>
     
     <dependencies>
-		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-jpamodelgen</artifactId>
-		    <version>5.2.11.Final</version>
-		</dependency>
-
 		<!-- compile time dependencies -->
 		<dependency>
 			<groupId>jsidplay2</groupId>
@@ -118,6 +112,11 @@
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-jpamodelgen</artifactId>
+		    <version>5.2.11.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
