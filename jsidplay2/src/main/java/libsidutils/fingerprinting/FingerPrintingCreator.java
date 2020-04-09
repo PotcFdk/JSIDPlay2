@@ -90,7 +90,6 @@ public class FingerPrintingCreator {
 		}
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
-		config.getWhatsSidSection().setEnable(false);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
 		String hvsc = config.getSidplay2Section().getHvsc();
