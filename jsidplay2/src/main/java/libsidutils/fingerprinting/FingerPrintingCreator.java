@@ -22,6 +22,7 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
+import sidplay.fingerprinting.FingerprintInserter;
 import sidplay.ini.IniConfig;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
@@ -103,12 +104,14 @@ public class FingerPrintingCreator {
 				new PersistenceProperties(whatsSidDatabaseDriver, whatsSidDatabaseUrl, whatsSidDatabaseUsername,
 						whatsSidDatabasePassword, whatsSidDatabaseDialect))
 				.createEntityManager();
-		whatsSidDriver.setWhatsSidService(new WhatsSidService(em));
-		whatsSidDriver.setFingerprintConfig(fingerprintConfig);
+
+		WhatsSidService whatsSidService = new WhatsSidService(em);
+		FingerprintInserter fingerprintInserter = new FingerPrinting(fingerprintConfig, whatsSidService);
+		whatsSidDriver.setFingerprintInserter(fingerprintInserter);
 
 		if (Boolean.TRUE.equals(deleteAll)) {
 			System.out.println("Delete all fingerprintings...");
-			whatsSidDriver.deleteAll();
+			whatsSidService.deleteAll();
 		}
 
 		System.out.println("Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");

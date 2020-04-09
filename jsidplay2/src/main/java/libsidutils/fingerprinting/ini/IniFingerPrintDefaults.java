@@ -1,7 +1,5 @@
 package libsidutils.fingerprinting.ini;
 
-import sidplay.fingerprinting.ini.IFingerprintSection;
-
 public interface IniFingerPrintDefaults {
 	IniFingerprintConfig DEFAULTS = IniFingerprintConfig.getDefault();
 

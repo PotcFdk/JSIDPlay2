@@ -12,7 +12,6 @@ import static libsidutils.fingerprinting.ini.IniFingerPrintDefaults.DEFAULT_RANG
 import static libsidutils.fingerprinting.ini.IniFingerPrintDefaults.DEFAULT_RANGE_TIME;
 
 import libsidplay.config.IConfig;
-import sidplay.fingerprinting.ini.IFingerprintSection;
 import sidplay.ini.IniReader;
 import sidplay.ini.IniSection;
 

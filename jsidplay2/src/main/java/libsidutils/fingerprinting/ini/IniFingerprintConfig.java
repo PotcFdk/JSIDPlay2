@@ -9,8 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import sidplay.fingerprinting.ini.IFingerprintConfig;
-import sidplay.fingerprinting.ini.IFingerprintSection;
 import sidplay.ini.IniReader;
 
 /**

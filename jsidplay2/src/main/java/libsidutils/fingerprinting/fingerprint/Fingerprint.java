@@ -2,13 +2,13 @@ package libsidutils.fingerprinting.fingerprint;
 
 import java.util.ArrayList;
 
+import libsidutils.fingerprinting.ini.IFingerprintConfig;
+import libsidutils.fingerprinting.ini.IFingerprintSection;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.spectrogram.Spectrogram;
 import libsidutils.fingerprinting.spectrogram.Window;
-import sidplay.fingerprinting.ini.IFingerprintConfig;
-import sidplay.fingerprinting.ini.IFingerprintSection;
 
 /**
  * <B>Working principle:</B><BR>

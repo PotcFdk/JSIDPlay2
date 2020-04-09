@@ -1,4 +1,4 @@
-package sidplay.fingerprinting.ini;
+package libsidutils.fingerprinting.ini;
 
 public interface IFingerprintConfig {
 

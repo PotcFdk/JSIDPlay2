@@ -21,9 +21,9 @@ import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.ini.IFingerprintConfig;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.WavBean;
-import sidplay.fingerprinting.ini.IFingerprintConfig;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate

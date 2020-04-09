@@ -5,18 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import libsidplay.sidtune.SidTune;
+import libsidutils.fingerprinting.ini.IFingerprintConfig;
 import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import sidplay.fingerprinting.FingerPrintMatcher;
+import sidplay.fingerprinting.FingerprintInserter;
+import sidplay.fingerprinting.FingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
-import sidplay.fingerprinting.ini.IFingerprintConfig;
 
-public class FingerPrinting implements FingerPrintMatcher {
+public class FingerPrinting implements FingerprintMatcher, FingerprintInserter {
 
 	private static final int MIN_HIT = 20;
 
@@ -29,6 +30,7 @@ public class FingerPrinting implements FingerPrintMatcher {
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 
+	@Override
 	public void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException {
 		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
 		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);

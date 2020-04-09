@@ -14,12 +14,10 @@ import libsidplay.common.CPUClock;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
-import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.FingerPrintingCreator;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.fingerprinting.ini.IFingerprintConfig;
-import ui.entities.whatssid.service.WhatsSidService;
+import sidplay.fingerprinting.FingerprintInserter;
 
 /**
  * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
@@ -52,26 +50,16 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private IConfig config;
 
-	private WhatsSidService whatsSidService;
+	private FingerprintInserter fingerprintInserter;
 	
-	private IFingerprintConfig fingerprintConfig;
-
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
 	}
 
-	public void setWhatsSidService(WhatsSidService whatsSidService) {
-		this.whatsSidService = whatsSidService;
+	public void setFingerprintInserter(FingerprintInserter fingerprintInserter) {
+		this.fingerprintInserter = fingerprintInserter;
 	}
 	
-	public void setFingerprintConfig(IFingerprintConfig fingerprintConfig) {
-		this.fingerprintConfig = fingerprintConfig;
-	}
-	
-	public void deleteAll() {
-		whatsSidService.deleteAll();
-	}
-
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
@@ -131,8 +119,7 @@ public class WhatsSidDriver implements AudioDriver {
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
-				FingerPrinting fingerPrinting = new FingerPrinting(fingerprintConfig, whatsSidService);
-				fingerPrinting.insert(tune, collectionName, recordingFilename);
+				fingerprintInserter.insert(tune, collectionName, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);
 			}

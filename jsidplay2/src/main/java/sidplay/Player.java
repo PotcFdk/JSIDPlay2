@@ -78,7 +78,7 @@ import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.EndTuneException;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.fingerprinting.FingerPrintMatcher;
+import sidplay.fingerprinting.FingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
 import sidplay.ini.IniConfig;
@@ -256,7 +256,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * WhatsSid?
 	 */
-	private FingerPrintMatcher fingerPrintMatcher;
+	private FingerprintMatcher fingerPrintMatcher;
 
 	/**
 	 * WhatsSid? Last match
@@ -413,7 +413,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * 
 	 * @param fingerPrintMatcher a fingerprint matcher
 	 */
-	public void setFingerPrintMatcher(FingerPrintMatcher fingerPrintMatcher) {
+	public void setFingerPrintMatcher(FingerprintMatcher fingerPrintMatcher) {
 		this.fingerPrintMatcher = fingerPrintMatcher;
 	}
 
