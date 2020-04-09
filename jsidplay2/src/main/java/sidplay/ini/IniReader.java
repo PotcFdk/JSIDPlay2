@@ -17,10 +17,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,10 +183,67 @@ public class IniReader {
 		return defaultValue;
 	}
 
+	public float[] getPropertyFloats(final String section, final String key, final float[] defaultValue) {
+		final String s = getPropertyString(section, key, null);
+		if (s != null) {
+			List<Float> floats = new ArrayList<>();
+			try (Scanner scanner = new Scanner(s)) {
+				scanner.useDelimiter(",");
+				while (scanner.hasNext()) {
+					floats.add(Float.parseFloat(scanner.next().trim()));
+				}
+			}
+			float[] result = new float[floats.size()];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = floats.get(i);
+			}
+			return result;
+		}
+		return defaultValue;
+	}
+
 	public float getPropertyFloat(final String section, final String key, final float defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Float.parseFloat(s);
+		}
+		return defaultValue;
+	}
+
+	public float[] getFloats(final String section, final String key, final float[] defaultValue) {
+		final String s = getPropertyString(section, key, null);
+		if (s != null) {
+			List<Float> floats = new ArrayList<>();
+			try (Scanner scanner = new Scanner(s)) {
+				scanner.useDelimiter(",");
+				while (scanner.hasNext()) {
+					floats.add(Float.parseFloat(scanner.next().trim()));
+				}
+			}
+			float[] result = new float[floats.size()];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = floats.get(i);
+			}
+			return result;
+		}
+		return defaultValue;
+	}
+
+	public int[] getPropertyInts(final String section, final String key, final int[] defaultValue) {
+		final String s = getPropertyString(section, key, null);
+		if (s != null) {
+			List<Integer> ints = new ArrayList<>();
+			try (Scanner scanner = new Scanner(s)) {
+				scanner.useDelimiter(",");
+				while (scanner.hasNext()) {
+					ints.add(Integer.parseInt(scanner.next().trim()));
+				}
+			}
+			int[] result = new int[ints.size()];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = ints.get(i);
+			}
+			return result;
 		}
 		return defaultValue;
 	}
@@ -234,6 +294,17 @@ public class IniReader {
 		return defaultValue;
 	}
 
+	public void setPropertyArray(String section, String key, Object... value) {
+		StringBuilder valueAsString = new StringBuilder();
+		for (int i = 0; i < value.length; i++) {
+			valueAsString.append(value[i]);
+			if (i != value.length - 1) {
+				valueAsString.append(",");
+			}
+		}
+		setProperty(section, key, valueAsString);
+	}
+	
 	public void setProperty(String section, String key, Object value) {
 		Map<String, String> settings = sections.get(section);
 		if (settings == null) {

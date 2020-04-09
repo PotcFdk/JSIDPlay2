@@ -18,6 +18,7 @@ import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.FingerPrintingCreator;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
+import sidplay.fingerprinting.ini.IFingerprintConfig;
 import ui.entities.whatssid.service.WhatsSidService;
 
 /**
@@ -52,6 +53,8 @@ public class WhatsSidDriver implements AudioDriver {
 	private IConfig config;
 
 	private WhatsSidService whatsSidService;
+	
+	private IFingerprintConfig fingerprintConfig;
 
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
@@ -59,6 +62,10 @@ public class WhatsSidDriver implements AudioDriver {
 
 	public void setWhatsSidService(WhatsSidService whatsSidService) {
 		this.whatsSidService = whatsSidService;
+	}
+	
+	public void setFingerprintConfig(IFingerprintConfig fingerprintConfig) {
+		this.fingerprintConfig = fingerprintConfig;
 	}
 	
 	public void deleteAll() {
@@ -124,7 +131,7 @@ public class WhatsSidDriver implements AudioDriver {
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
-				FingerPrinting fingerPrinting = new FingerPrinting(whatsSidService);
+				FingerPrinting fingerPrinting = new FingerPrinting(fingerprintConfig, whatsSidService);
 				fingerPrinting.insert(tune, collectionName, recordingFilename);
 			} catch (IOException e) {
 				throw new RuntimeException("Error reading WAV audio stream", e);

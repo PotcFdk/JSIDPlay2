@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
@@ -27,6 +28,8 @@ import ui.entities.whatssid.MusicInfo;
 import ui.entities.whatssid.MusicInfo_;
 
 public class WhatsSidService implements FingerPrintingDataSource {
+
+	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig();
 
 	private EntityManager em;
 
@@ -157,7 +160,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	@Override
 	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException {
-		return new FingerPrinting(this).match(wavBean);
+		return new FingerPrinting(fingerprintConfig, this).match(wavBean);
 	}
 
 	public void deleteAll() {

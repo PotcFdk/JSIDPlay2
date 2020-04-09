@@ -14,19 +14,23 @@ import sidplay.fingerprinting.FingerPrintMatcher;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
+import sidplay.fingerprinting.ini.IFingerprintConfig;
 
 public class FingerPrinting implements FingerPrintMatcher {
 
 	private static final int MIN_HIT = 20;
 
+	private IFingerprintConfig config;
+	
 	private FingerPrintingDataSource fingerPrintingDataSource;
 
-	public FingerPrinting(FingerPrintingDataSource fingerPrintingDataSource) {
+	public FingerPrinting(IFingerprintConfig config, FingerPrintingDataSource fingerPrintingDataSource) {
+		this.config = config;
 		this.fingerPrintingDataSource = fingerPrintingDataSource;
 	}
 
 	public void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException {
-		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
+		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
 		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);
 
 		if (!fingerPrintingDataSource.tuneExists(fingerprintedSampleData.toMusicInfoBean())) {
@@ -42,7 +46,7 @@ public class FingerPrinting implements FingerPrintMatcher {
 	@Override
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData();
+			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
 			fingerprintedSampleData.setWav(wavBean);
 
 			Index index = new Index();

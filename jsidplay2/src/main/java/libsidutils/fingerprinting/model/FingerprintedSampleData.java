@@ -23,6 +23,7 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.WavBean;
+import sidplay.fingerprinting.ini.IFingerprintConfig;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate
@@ -43,6 +44,12 @@ public class FingerprintedSampleData {
 
 	private String infoDir;
 
+	private IFingerprintConfig config;
+
+	public FingerprintedSampleData(IFingerprintConfig config) {
+		this.config = config;
+	}
+	
 	public Fingerprint getFingerprint() {
 		return fingerprint;
 	}
@@ -147,7 +154,7 @@ public class FingerprintedSampleData {
 			}
 
 			this.audioLength = len / (float) SAMPLE_RATE;
-			this.fingerprint = new Fingerprint(data, SAMPLE_RATE);
+			this.fingerprint = new Fingerprint(config, data, SAMPLE_RATE);
 		} catch (UnsupportedAudioFileException | IOException e) {
 			throw new IOException(e);
 		}

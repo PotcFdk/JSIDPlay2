@@ -21,6 +21,7 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.debug.MOS6510Debug;
 import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.audio.JavaSound;
@@ -55,6 +56,8 @@ final public class ConsolePlayer {
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true);
 
+	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig();
+
 	private ConsolePlayer(final String[] args) {
 		try {
 			JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
@@ -78,7 +81,8 @@ final public class ConsolePlayer {
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj, System.in));
 			player.setWhatsSidHook(obj -> consoleIO.whatsSid(obj, quiet, System.out));
-			player.setFingerPrintMatcher(new FingerPrinting(new FingerprintingClient(url, username, password)));
+			player.setFingerPrintMatcher(
+					new FingerPrinting(fingerprintConfig, new FingerprintingClient(url, username, password)));
 
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);

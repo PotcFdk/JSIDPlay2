@@ -17,6 +17,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
 import libsidutils.PathUtils;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.Audio;
@@ -72,6 +73,8 @@ public class FingerPrintingCreator {
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
 
+	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig(true);
+
 	private Player player;
 
 	private WhatsSidDriver whatsSidDriver;
@@ -102,6 +105,7 @@ public class FingerPrintingCreator {
 						whatsSidDatabasePassword, whatsSidDatabaseDialect))
 				.createEntityManager();
 		whatsSidDriver.setWhatsSidService(new WhatsSidService(em));
+		whatsSidDriver.setFingerprintConfig(fingerprintConfig);
 
 		if (Boolean.TRUE.equals(deleteAll)) {
 			System.out.println("Delete all fingerprintings...");

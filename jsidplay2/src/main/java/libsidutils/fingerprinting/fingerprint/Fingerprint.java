@@ -7,31 +7,94 @@ import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.spectrogram.Spectrogram;
 import libsidutils.fingerprinting.spectrogram.Window;
+import sidplay.fingerprinting.ini.IFingerprintConfig;
+import sidplay.fingerprinting.ini.IFingerprintSection;
 
 /**
- * Created by hsyecheng on 2015/6/11.
+ * <B>Working principle:</B><BR>
+ * 
+ * The algorithm is similar to Shazam. First, I calculate the spectrum of the
+ * audio. The spectrum is divided into several sub-bands according to the
+ * frequency, and several peak points are searched for each sub-band. The
+ * subband of the algorithm is based on the Mel frequency.
+ * 
+ * The peak points to be obtained are grouped according to the frequency and
+ * time range.
+ * 
+ * The point-to-frequency range of the algorithm is within the sub-band, the
+ * purpose of which is to reduce the number of pairs of points and improve the
+ * distributed capability. The time range for taking a pair is 1s-4s. You can
+ * modify these parameters as needed.<BR>
+ * <BR>
+ * 
+ * <B>Performance and effects:</B><BR>
+ * <i> Data volume: </i>The music library is 1500 songs, the number of
+ * fingerprints is about 24 million, and the server takes up about 340M after
+ * being stable. <BR>
+ * <BR>
+ * <i> Speed: </i>Processor i7-3632QM, adding 1500 songs takes about 1919
+ * seconds, and a song takes about 1.3 seconds. It takes about 0.2 seconds to
+ * find a 10s song using the server (regardless of the time the client reads the
+ * file). <BR>
+ * <BR>
+ * <i> Accuracy: </i> has a high recognition rate for low-noise audio, and close
+ * to commercial accuracy for higher noise, but relatively speaking, if there is
+ * a song that does not appear in the music library, there is a certain error.
+ * Report rate. <BR>
+ * <BR>
+ * <i> Anti-noise: </i> can resist strong distortion and noise, you can refer to
+ * the test audio I gave.<BR>
+ * <BR>
+ * <B>Contact information:</B><BR>
+ * EMAIL: hsyecheng@hotmail.com<BR>
+ * <BR>
+ * <B>Note:</B> A music fingerprinting system that uses JAVA and requires a
+ * MySQL database (although it is not required, but the system uses it to save
+ * fingerprints and music information). You may need to modify the
+ * max_allowed_packet parameter, because adding a song requires sending a larger
+ * package. The parameter I am using is 32M
+ * 
+ * @see <a href=
+ *      "https://github.com/JPery/Audio-Fingerprinting">Audio-Fingerprinting</a>
+ * @see <a href=
+ *      "http://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf">Shazam</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Mel_scale">Mel scale</a>
+ * 
+ * @author hsyecheng on 2015/6/11.
  */
 public class Fingerprint {
-	private final int NPeaks = 3;
-	private final int fftSize = 512;
-	private final int overlap = 256;
-	private final int C = 32;
-	private final int peakRange = 5;
+
+	private int NPeaks;
+	private int fftSize;
+	private int overlap;
+	private int C;
+	private int peakRange;
+	private float[] range_time;
+	private float[] range_freq;
+	private int[] Band;
+	private int minFreq;
+	private int maxFreq;
+	private int minPower;
 
 	private final ArrayList<Peak> peakList = new ArrayList<>();
 	private final ArrayList<Link> linkList = new ArrayList<>();
 	private final float[] freq;
 	private final float[] time;
 
-	private final float[] range_time = { 1f, 3f };
-	private final float[] range_freq = { -600f, 600f };
-	private final int[] Band = { 11, 22, 35, 50, 69, 91, 117, 149, 187, 231 };
+	public Fingerprint(IFingerprintConfig config, float[] data, float fs) {
+		IFingerprintSection fingerPrintSection = config.getFingerPrintSection();
+		NPeaks = fingerPrintSection.getNPeaks();
+		fftSize = fingerPrintSection.getFftSize();
+		overlap = fingerPrintSection.getOverlap();
+		C = fingerPrintSection.getC();
+		peakRange = fingerPrintSection.getPeakRange();
+		range_time = fingerPrintSection.getRangeTime();
+		range_freq = fingerPrintSection.getRangeFreq();
+		Band = fingerPrintSection.getBand();
+		minFreq = fingerPrintSection.getMinFreq();
+		maxFreq = fingerPrintSection.getMaxFreq();
+		minPower = fingerPrintSection.getMinPower();
 
-	private final float minFreq = 100;
-	private final float maxFreq = 2000;
-	private final float minPower = 0;
-
-	public Fingerprint(float[] data, float fs) {
 		Spectrogram spectrogram = new Spectrogram(data, Window.HANN, fftSize, overlap, fs);
 		ArrayList<float[]> stft = spectrogram.stft;
 		freq = spectrogram.freq;
