@@ -35,6 +35,12 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_6581;
+import static sidplay.ini.IniDefaults.DEFAULT_NETSID_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
@@ -575,6 +581,13 @@ public class EmulationSettings extends C64Window {
 		emulationSection.setReSIDfpStereoFilter8580(DEFAULT_ReSIDfp_STEREO_FILTER_8580);
 		emulationSection.setReSIDfpThirdSIDFilter6581(DEFAULT_ReSIDfp_3SID_FILTER_6581);
 		emulationSection.setReSIDfpThirdSIDFilter8580(DEFAULT_ReSIDfp_3SID_FILTER_8580);
+
+		emulationSection.setNetSIDFilter6581(DEFAULT_NETSID_FILTER_6581);
+		emulationSection.setNetSIDFilter8580(DEFAULT_NETSID_FILTER_8580);
+		emulationSection.setNetSIDStereoFilter6581(DEFAULT_NETSID_STEREO_FILTER_6581);
+		emulationSection.setNetSIDStereoFilter8580(DEFAULT_NETSID_STEREO_FILTER_8580);
+		emulationSection.setNetSIDThirdSIDFilter6581(DEFAULT_NETSID_3SID_FILTER_6581);
+		emulationSection.setNetSIDThirdSIDFilter8580(DEFAULT_NETSID_3SID_FILTER_8580);
 
 		updateSettingsForTune(util.getPlayer().getTune());
 	}

@@ -113,11 +113,12 @@ class ClientContext {
 
 	private static class Match {
 
-		private double relativeConfidence;
 		private String title;
 		private String artist;
 		private String album;
 		private String infoDir;
+		private double confidence;
+		private double relativeConfidence;
 
 		@Override
 		public boolean equals(Object obj) {
@@ -155,6 +156,10 @@ class ClientContext {
 			result.append(cc.whatsSidResult.album);
 			result.append(" - ");
 			result.append(cc.whatsSidResult.infoDir);
+			result.append(" - ");
+			result.append(cc.whatsSidResult.confidence);
+			result.append(" - ");
+			result.append(cc.whatsSidResult.relativeConfidence);
 		}
 		cc.whatsSidResult = null;
 		return result.toString();
@@ -897,6 +902,9 @@ class ClientContext {
 			break;
 		case "\"relativeConfidence\"":
 			match.relativeConfidence = Double.parseDouble(value);
+			break;
+		case "\"confidence\"":
+			match.confidence = Double.parseDouble(value);
 			break;
 		default:
 			break;
