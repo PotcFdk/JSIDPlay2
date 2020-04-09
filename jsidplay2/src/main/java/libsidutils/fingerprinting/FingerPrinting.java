@@ -11,13 +11,13 @@ import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import sidplay.fingerprinting.FingerprintInserter;
-import sidplay.fingerprinting.FingerprintMatcher;
+import sidplay.fingerprinting.IFingerprintInserter;
+import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
 
-public class FingerPrinting implements FingerprintMatcher, FingerprintInserter {
+public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 
 	private static final int MIN_HIT = 20;
 

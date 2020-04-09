@@ -17,7 +17,7 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
 import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
-import sidplay.fingerprinting.FingerprintInserter;
+import sidplay.fingerprinting.IFingerprintInserter;
 
 /**
  * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
@@ -50,13 +50,13 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private IConfig config;
 
-	private FingerprintInserter fingerprintInserter;
+	private IFingerprintInserter fingerprintInserter;
 	
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
 	}
 
-	public void setFingerprintInserter(FingerprintInserter fingerprintInserter) {
+	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
 		this.fingerprintInserter = fingerprintInserter;
 	}
 	

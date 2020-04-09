@@ -22,7 +22,7 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
-import sidplay.fingerprinting.FingerprintInserter;
+import sidplay.fingerprinting.IFingerprintInserter;
 import sidplay.ini.IniConfig;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
@@ -106,7 +106,7 @@ public class FingerPrintingCreator {
 				.createEntityManager();
 
 		WhatsSidService whatsSidService = new WhatsSidService(em);
-		FingerprintInserter fingerprintInserter = new FingerPrinting(fingerprintConfig, whatsSidService);
+		IFingerprintInserter fingerprintInserter = new FingerPrinting(fingerprintConfig, whatsSidService);
 		whatsSidDriver.setFingerprintInserter(fingerprintInserter);
 
 		if (Boolean.TRUE.equals(deleteAll)) {
