@@ -43,6 +43,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		// audio_length) VALUES
 
 		MusicInfo musicInfo = new MusicInfo();
+		musicInfo.setSongNo(musicInfoBean.getSongNo());
 		musicInfo.setTitle(musicInfoBean.getTitle());
 		musicInfo.setArtist(musicInfoBean.getArtist());
 		musicInfo.setAlbum(musicInfoBean.getAlbum());
@@ -137,6 +138,9 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
 		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
 
+		Path<Integer> songNo = musicInfo.<Integer>get(MusicInfo_.songNo);
+		Predicate songNoPredicate = cb.equal(songNo, musicInfoBean.getSongNo());
+
 		Path<String> title = musicInfo.<String>get(MusicInfo_.title);
 		Predicate titlePredicate = cb.equal(title, musicInfoBean.getTitle());
 
@@ -152,8 +156,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		Path<String> infoDir = musicInfo.<String>get(MusicInfo_.infoDir);
 		Predicate infoDirPredicate = cb.equal(infoDir, musicInfoBean.getInfoDir());
 
-		query.where(cb.and(titlePredicate, artistPredicate, albumPredicate, fileDirPredicate, infoDirPredicate))
-				.select(musicInfo);
+		query.where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate, fileDirPredicate,
+				infoDirPredicate)).select(musicInfo);
 
 		return !em.createQuery(query).getResultList().isEmpty();
 	}

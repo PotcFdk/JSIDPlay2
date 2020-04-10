@@ -102,11 +102,11 @@ public class JSidPlay2Main extends Application {
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 		Platform.runLater(() -> {
 			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum() + "\n\t"
-					+ musicInfo.getInfoDir() + "\n\tconfidence=" + musicInfoWithConfidence.getConfidence()
-					+ "\n\trelativeConfidence=" + musicInfoWithConfidence.getRelativeConfidence();
-			System.out.println(
-					"WhatsSid? " + toastMsg);
+			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum()
+					+ "\n\t" + musicInfo.getInfoDir() + "(" + musicInfo.getSongNo() + ")" + "\n\tconfidence="
+					+ musicInfoWithConfidence.getConfidence() + "\n\trelativeConfidence="
+					+ musicInfoWithConfidence.getRelativeConfidence();
+			System.out.println("WhatsSid? " + toastMsg);
 			int toastMsgTime = 5000; // in ms
 			int fadeInTime = 500; // in ms
 			int fadeOutTime = 500; // in ms
@@ -127,8 +127,8 @@ public class JSidPlay2Main extends Application {
 			player = new Player(configuration);
 			player.setMenuHook(menuHook);
 			player.setWhatsSidHook(whatsSidHook);
-			player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(),
-					new FingerprintingClient(url, username, password)));
+			player.setFingerPrintMatcher(
+					new FingerPrinting(new IniFingerprintConfig(), new FingerprintingClient(url, username, password)));
 
 			// automatically load tune on start-up
 			Optional<String> filename = filenames.stream().findFirst();

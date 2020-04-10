@@ -34,6 +34,7 @@ public class FingerprintedSampleData {
 	private static final int SAMPLE_RATE = 8000;
 
 	private Fingerprint fingerprint;
+	private int songNo;
 	private String title, album, artist;
 	private double audioLength;
 
@@ -161,6 +162,7 @@ public class FingerprintedSampleData {
 	}
 
 	public void setMetaInfo(SidTune tune, String recordingFilename, String collectionFilename) {
+		this.songNo = tune.getInfo().getCurrentSong();
 		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
 			Iterator<String> description = tune.getInfo().getInfoString().iterator();
 			this.title = description.next();
@@ -177,6 +179,7 @@ public class FingerprintedSampleData {
 
 	public MusicInfoBean toMusicInfoBean() {
 		MusicInfoBean musicInfoBean = new MusicInfoBean();
+		musicInfoBean.setSongNo(songNo);
 		musicInfoBean.setTitle(title);
 		musicInfoBean.setArtist(artist);
 		musicInfoBean.setAlbum(album);

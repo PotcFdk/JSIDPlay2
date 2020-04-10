@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Scanner;
@@ -113,6 +114,7 @@ class ClientContext {
 
 	private static class Match {
 
+		private int songNo;
 		private String title;
 		private String artist;
 		private String album;
@@ -125,7 +127,8 @@ class ClientContext {
 			if (!(obj instanceof Match)) {
 				return false;
 			}
-			return infoDir != null && infoDir.equals(((Match) obj).infoDir);
+			Match otherMatch = (Match) obj;
+			return Objects.equals(songNo, otherMatch.songNo) && Objects.equals(infoDir, otherMatch.infoDir);
 		}
 	}
 
@@ -156,6 +159,9 @@ class ClientContext {
 			result.append(cc.whatsSidResult.album);
 			result.append(" - ");
 			result.append(cc.whatsSidResult.infoDir);
+			result.append("(");
+			result.append(cc.whatsSidResult.songNo);
+			result.append(")");
 			result.append(" - ");
 			result.append(cc.whatsSidResult.confidence);
 			result.append(" - ");
@@ -888,6 +894,9 @@ class ClientContext {
 
 	private static void setMatch(String key, String value, Match match) {
 		switch (key) {
+		case "\"songNo\"":
+			match.songNo = Integer.parseInt(value);
+			break;
 		case "\"title\"":
 			match.title = value.substring(1, value.length() - 1);
 			break;

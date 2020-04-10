@@ -5,11 +5,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "musicInfo")
-@XmlType(propOrder = { "title", "artist", "album", "fileDir", "infoDir", "audioLength" })
+@XmlType(propOrder = { "songNo", "title", "artist", "album", "fileDir", "infoDir", "audioLength" })
 public class MusicInfoBean {
 
+	private Integer songNo;
 	private String title, artist, album, fileDir, infoDir;
 	private double audioLength;
+
+	public Integer getSongNo() {
+		return songNo;
+	}
+
+	@XmlElement(name = "song")
+	public void setSongNo(Integer songNo) {
+		this.songNo = songNo;
+	}
 
 	public String getTitle() {
 		return title;
@@ -67,8 +77,8 @@ public class MusicInfoBean {
 
 	@Override
 	public String toString() {
-		return "title=" + title + ", artist=" + artist + ", album=" + album + ", fileDir=" + fileDir + ", infoDir="
-				+ infoDir + ", audioLength=" + audioLength;
+		return "songNo=" + songNo + ", title=" + title + ", artist=" + artist + ", album=" + album + ", fileDir="
+				+ fileDir + ", infoDir=" + infoDir + ", audioLength=" + audioLength;
 	}
 
 }

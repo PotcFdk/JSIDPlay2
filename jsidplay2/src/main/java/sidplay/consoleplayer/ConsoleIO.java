@@ -236,7 +236,7 @@ public class ConsoleIO {
 		}
 		MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
 		out.println("WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
-		out.println("          " + musicInfo.getInfoDir());
+		out.println("          " + musicInfo.getInfoDir() + "(" + musicInfo.getSongNo() + ")");
 	}
 
 	private void printTopLine(PrintStream out, final IniConsoleSection console) {

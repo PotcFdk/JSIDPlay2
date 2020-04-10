@@ -15,13 +15,14 @@ import sidplay.fingerprinting.MusicInfoBean;
 
 @Entity
 @Access(AccessType.PROPERTY)
-@Table(name = "MusicInfo", indexes = { @Index(columnList = "idMusicInfo", name = "idMusicInfo_UNIQUE", unique = true) })
+@Table(name = "MusicInfo", indexes = { @Index(columnList = "idMusicInfo", name = "idMusicInfo_UNIQUE", unique = true),
+		@Index(columnList = "songNo", name = "songNo", unique = false) })
 public class MusicInfo {
 
 	private int idMusicInfo;
 
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idMusicInfo", nullable = false)
 	public int getIdMusicInfo() {
 		return idMusicInfo;
@@ -29,6 +30,17 @@ public class MusicInfo {
 
 	public void setIdMusicInfo(int idMusicInfo) {
 		this.idMusicInfo = idMusicInfo;
+	}
+
+	private Integer songNo;
+
+	@Column(name = "songNo")
+	public Integer getSongNo() {
+		return songNo;
+	}
+
+	public void setSongNo(Integer songNo) {
+		this.songNo = songNo;
 	}
 
 	private String title;
@@ -100,6 +112,7 @@ public class MusicInfo {
 	@Transient
 	public MusicInfoBean toBean() {
 		MusicInfoBean result = new MusicInfoBean();
+		result.setSongNo(songNo);
 		result.setTitle(title);
 		result.setArtist(artist);
 		result.setAlbum(album);
