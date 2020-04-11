@@ -61,6 +61,8 @@ class ClientContext {
 	/** Maximum time to wait for queue in milliseconds. */
 	private static final long MAX_TIME_TO_WAIT_FOR_QUEUE = 50;
 
+	private static final boolean SHOW_EACH_MATCH = Boolean.valueOf(System.getProperty("jsidplay2.showEachMatch"));
+
 	/** Expected buffer fill rate */
 	private final int latency;
 
@@ -125,6 +127,9 @@ class ClientContext {
 		@Override
 		public boolean equals(Object obj) {
 			if (!(obj instanceof Match)) {
+				return false;
+			}
+			if (SHOW_EACH_MATCH) {
 				return false;
 			}
 			Match otherMatch = (Match) obj;
