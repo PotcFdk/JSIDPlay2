@@ -8,12 +8,16 @@ Optional: Configure Firewall
 sudo ufw enable
 sudo ufw allow mysql
 
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+==========================================
+max_allowed_packet      = 64M
+innodb_buffer_pool_size = 8G
+sql-mode="ANSI_QUOTES"
+
 sudo mysql -u root -p
 GRANT ALL PRIVILEGES ON *.* TO 'newuser'@'localhost' IDENTIFIED BY 'password';
 quit
 
-sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf 
- max_allowed_packet      = 64M
 
 sudo systemctl start mysql
 
