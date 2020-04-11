@@ -548,9 +548,11 @@
 								<include>libsidplay/common/SIDChip.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
+								<include>sidplay/fingerprinting/MusicInfo*.class</include>
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
 								<include>sidplay/audio/JavaSound.class</include>
+								<include>sidplay/audio/WavHeader.class</include>
 								<include>sidplay/ini/IniSection.class</include>
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>

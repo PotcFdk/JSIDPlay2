@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Scanner;
@@ -41,6 +40,8 @@ import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 
 /**
  * Container for client-specific data.
@@ -60,8 +61,6 @@ class ClientContext {
 
 	/** Maximum time to wait for queue in milliseconds. */
 	private static final long MAX_TIME_TO_WAIT_FOR_QUEUE = 50;
-
-	private static final boolean SHOW_EACH_MATCH = Boolean.valueOf(System.getProperty("jsidplay2.showEachMatch"));
 
 	/** Expected buffer fill rate */
 	private final int latency;
@@ -114,32 +113,9 @@ class ClientContext {
 	/** Map which holds all instances of each client connection. */
 	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
 
-	private static class Match {
+	private static MusicInfoWithConfidenceBean lastMatch;
 
-		private int songNo;
-		private String title;
-		private String artist;
-		private String album;
-		private String infoDir;
-		private double confidence;
-		private double relativeConfidence;
-
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof Match)) {
-				return false;
-			}
-			if (SHOW_EACH_MATCH) {
-				return false;
-			}
-			Match otherMatch = (Match) obj;
-			return Objects.equals(songNo, otherMatch.songNo) && Objects.equals(infoDir, otherMatch.infoDir);
-		}
-	}
-
-	private static Match lastMatch;
-
-	private Match whatsSidResult;
+	private MusicInfoWithConfidenceBean whatsSidResult;
 
 	private static int clientContextNumToCheck;
 
@@ -157,20 +133,21 @@ class ClientContext {
 		StringBuilder result = new StringBuilder();
 		if (cc.whatsSidResult != null) {
 			result.append(" ");
-			result.append(cc.whatsSidResult.title);
+			MusicInfoBean musicInfo = cc.whatsSidResult.getMusicInfo();
+			result.append(musicInfo.getTitle());
 			result.append(" - ");
-			result.append(cc.whatsSidResult.artist);
+			result.append(musicInfo.getArtist());
 			result.append(" - ");
-			result.append(cc.whatsSidResult.album);
+			result.append(musicInfo.getAlbum());
 			result.append(" - ");
-			result.append(cc.whatsSidResult.infoDir);
+			result.append(musicInfo.getInfoDir());
 			result.append("(");
-			result.append(cc.whatsSidResult.songNo);
+			result.append(musicInfo.getSongNo());
 			result.append(")");
 			result.append(" - ");
-			result.append(cc.whatsSidResult.confidence);
+			result.append(cc.whatsSidResult.getConfidence());
 			result.append(" - ");
-			result.append(cc.whatsSidResult.relativeConfidence);
+			result.append(cc.whatsSidResult.getRelativeConfidence());
 		}
 		cc.whatsSidResult = null;
 		return result.toString();
@@ -819,9 +796,10 @@ class ClientContext {
 							if (bytes.length > 0) {
 								HttpURLConnection connection = sendJson(settings, bytes);
 								if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
-									Match match = receiveJson(connection);
-									if (!match.equals(lastMatch) && match.relativeConfidence > settings
-											.getWhatsSidMinimumRelativeConfidence()) {
+									MusicInfoWithConfidenceBean match = receiveJson(connection);
+									if (match != null && !match.equals(lastMatch)
+											&& match.getRelativeConfidence() > settings
+													.getWhatsSidMinimumRelativeConfidence()) {
 										lastMatch = match;
 										clientContext.whatsSidResult = match;
 									}
@@ -865,13 +843,14 @@ class ClientContext {
 		return connection;
 	}
 
-	private static Match receiveJson(HttpURLConnection connection) {
+	private static MusicInfoWithConfidenceBean receiveJson(HttpURLConnection connection) {
 		try {
 			String response = null;
 			try (Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.name())) {
 				response = scanner.useDelimiter("\\A").next();
 			}
-			Match match = new Match();
+			MusicInfoWithConfidenceBean match = new MusicInfoWithConfidenceBean();
+			match.setMusicInfo(new MusicInfoBean());
 			{
 				// match string values
 				Matcher m = Pattern.compile("\"[^\"]*\":\"[^\"]*\"").matcher(response);
@@ -891,34 +870,46 @@ class ClientContext {
 			return match;
 		} catch (Throwable e) {
 			e.printStackTrace();
-			return new Match();
+			return null;
 		} finally {
 			connection.disconnect();
 		}
 	}
 
-	private static void setMatch(String key, String value, Match match) {
+	private static void setMatch(String key, String value, MusicInfoWithConfidenceBean match) {
 		switch (key) {
 		case "\"songNo\"":
-			match.songNo = Integer.parseInt(value);
+			match.getMusicInfo().setSongNo(Integer.parseInt(value));
 			break;
 		case "\"title\"":
-			match.title = value.substring(1, value.length() - 1);
+			match.getMusicInfo().setTitle(value.substring(1, value.length() - 1));
 			break;
 		case "\"artist\"":
-			match.artist = value.substring(1, value.length() - 1);
+			match.getMusicInfo().setArtist(value.substring(1, value.length() - 1));
 			break;
 		case "\"album\"":
-			match.album = value.substring(1, value.length() - 1);
+			match.getMusicInfo().setAlbum(value.substring(1, value.length() - 1));
+			break;
+		case "\"fileDir\"":
+			match.getMusicInfo().setFileDir(value.substring(1, value.length() - 1));
 			break;
 		case "\"infoDir\"":
-			match.infoDir = value.substring(1, value.length() - 1);
+			match.getMusicInfo().setInfoDir(value.substring(1, value.length() - 1));
 			break;
-		case "\"relativeConfidence\"":
-			match.relativeConfidence = Double.parseDouble(value);
+		case "\"audioLength\"":
+			match.getMusicInfo().setAudioLength(Double.parseDouble(value));
 			break;
 		case "\"confidence\"":
-			match.confidence = Double.parseDouble(value);
+			match.setConfidence(Integer.parseInt(value));
+			break;
+		case "\"relativeConfidence\"":
+			match.setRelativeConfidence(Double.parseDouble(value));
+			break;
+		case "\"offset\"":
+			match.setOffset(Integer.parseInt(value));
+			break;
+		case "\"offsetSeconds\"":
+			match.setOffsetSeconds(Double.parseDouble(value));
 			break;
 		default:
 			break;

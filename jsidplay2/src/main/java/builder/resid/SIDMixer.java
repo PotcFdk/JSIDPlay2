@@ -24,7 +24,7 @@ import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.WAVDriver.WavHeader;
+import sidplay.audio.WavHeader;
 import sidplay.audio.processor.AudioProcessor;
 import sidplay.audio.processor.delay.DelayProcessor;
 import sidplay.audio.processor.reverb.ReverbProcessor;

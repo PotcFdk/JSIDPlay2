@@ -79,11 +79,11 @@ public class MusicInfoWithConfidenceBean {
 		}
 		// No matter the confidence, if metadata matches then the tune matches
 		return Objects.equals(musicInfo.getSongNo(), otherMusicInfo.getSongNo())
-				&& musicInfo.getTitle().equals(otherMusicInfo.getTitle())
-				&& musicInfo.getArtist().equals(otherMusicInfo.getArtist())
-				&& musicInfo.getAlbum().equals(otherMusicInfo.getAlbum())
-				&& musicInfo.getFileDir().equals(otherMusicInfo.getFileDir())
-				&& musicInfo.getInfoDir().equals(otherMusicInfo.getInfoDir());
+				&& Objects.equals(musicInfo.getTitle(), otherMusicInfo.getTitle())
+				&& Objects.equals(musicInfo.getArtist(), otherMusicInfo.getArtist())
+				&& Objects.equals(musicInfo.getAlbum(), otherMusicInfo.getAlbum())
+				&& Objects.equals(musicInfo.getFileDir(), otherMusicInfo.getFileDir())
+				&& Objects.equals(musicInfo.getInfoDir(), otherMusicInfo.getInfoDir());
 	}
 
 	@Override

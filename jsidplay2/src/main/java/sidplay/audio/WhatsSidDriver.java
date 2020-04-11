@@ -15,7 +15,6 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
-import sidplay.audio.WAVDriver.WavHeader;
 import sidplay.audio.exceptions.NextTuneException;
 import sidplay.fingerprinting.IFingerprintInserter;
 
