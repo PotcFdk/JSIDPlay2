@@ -16,7 +16,7 @@ import sidplay.audio.WAVHeader;
  * @author ken
  *
  */
-public class WhatsSidBuffer {
+public final class WhatsSidBuffer {
 
 	/**
 	 * Number of channels.
@@ -71,7 +71,7 @@ public class WhatsSidBuffer {
 		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
 		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize)
 				.order(ByteOrder.LITTLE_ENDIAN);
-		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
+		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
 		((Buffer) copy).mark();
