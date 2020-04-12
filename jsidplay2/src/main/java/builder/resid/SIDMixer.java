@@ -24,7 +24,7 @@ import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.WavHeader;
+import sidplay.audio.WAVHeader;
 import sidplay.audio.processor.AudioProcessor;
 import sidplay.audio.processor.delay.DelayProcessor;
 import sidplay.audio.processor.reverb.ReverbProcessor;
@@ -471,8 +471,8 @@ public class SIDMixer implements Mixer {
 			return new byte[0];
 		}
 		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
-		ByteBuffer result = ByteBuffer.allocate(WavHeader.HEADER_LENGTH + whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
-		WavHeader wavHeader = new WavHeader(2, SamplingRate.VERY_LOW.getFrequency());
+		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
 		((Buffer) copy).mark();

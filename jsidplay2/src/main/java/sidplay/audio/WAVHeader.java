@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
  * 
  * @author Ken Händel
  */
-public class WavHeader {
+public class WAVHeader {
 
 	private static final int HEADER_OFFSET = 8;
 	public static final int HEADER_LENGTH = 44;
@@ -18,7 +18,7 @@ public class WavHeader {
 	private int length, sampleFreq,bytesPerSec, dataChunkLen;
 	private short format, channels, blockAlign, bitsPerSample;
 
-	public WavHeader(int channels, int frameRate) {
+	public WAVHeader(int channels, int frameRate) {
 		this.length = HEADER_LENGTH - HEADER_OFFSET;
 		this.format = 1;
 		this.channels = (short) channels;

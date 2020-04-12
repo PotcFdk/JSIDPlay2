@@ -16,25 +16,7 @@ public class WhatsSidSettings extends C64Window {
 	private CheckBox enable;
 
 	@FXML
-	private TextField url;
-
-	@FXML
-	private TextField username;
-
-	@FXML
-	private TextField password;
-
-	@FXML
-	private TextField captureTime;
-
-	@FXML
-	private TextField matchStartTime;
-
-	@FXML
-	private TextField matchRetryTime;
-
-	@FXML
-	private TextField minimumRelativeConfidence;
+	private TextField url, username, password, captureTime, matchStartTime, matchRetryTime, minimumRelativeConfidence;
 
 	public WhatsSidSettings() {
 		super();

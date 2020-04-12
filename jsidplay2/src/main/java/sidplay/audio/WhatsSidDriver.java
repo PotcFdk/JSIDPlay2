@@ -35,7 +35,7 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private ByteBuffer sampleBuffer;
 
-	private WavHeader wavHeader;
+	private WAVHeader wavHeader;
 
 	private OutputStream wav;
 
@@ -77,7 +77,7 @@ public class WhatsSidDriver implements AudioDriver {
 
 		file = new RandomAccessFile(recordingFilename, "rw");
 
-		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
+		wavHeader = new WAVHeader(cfg.getChannels(), cfg.getFrameRate());
 		wav = new FileOutputStream(file.getFD());
 		wav.write(wavHeader.getBytes());
 

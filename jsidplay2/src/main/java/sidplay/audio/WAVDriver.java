@@ -87,14 +87,14 @@ public abstract class WAVDriver implements AudioDriver {
 	 */
 	protected OutputStream out;
 
-	protected WavHeader wavHeader;
+	protected WAVHeader wavHeader;
 
 	private ByteBuffer sampleBuffer;
 
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {
-		wavHeader = new WavHeader(cfg.getChannels(), cfg.getFrameRate());
+		wavHeader = new WAVHeader(cfg.getChannels(), cfg.getFrameRate());
 
 		out = getOut(recordingFilename);
 		out.write(wavHeader.getBytes());

@@ -28,7 +28,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
-import sidplay.audio.WavHeader;
+import sidplay.audio.WAVHeader;
 
 /**
  * Audio generating thread which communicates with SIDWrite source over a
@@ -589,8 +589,8 @@ public class AudioGeneratorThread extends Thread {
 			return new byte[0];
 		}
 		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
-		ByteBuffer result = ByteBuffer.allocate(WavHeader.HEADER_LENGTH + whatsSidBufferSize);
-		WavHeader wavHeader = new WavHeader(2, SamplingRate.VERY_LOW.getFrequency());
+		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize);
+		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
 		((Buffer) copy).mark();
