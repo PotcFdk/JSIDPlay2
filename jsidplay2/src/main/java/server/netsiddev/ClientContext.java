@@ -121,10 +121,6 @@ class ClientContext {
 
 	private static Thread whatsSidThread;
 
-	public byte[] getWhatsSidSamples() {
-		return eventConsumerThread.getWhatsSidSamples();
-	}
-
 	public static String getRecognizedTunes() {
 		return clientContextMap.values().stream().map(cc -> toWhatsSidAnswer(cc)).collect(Collectors.joining("\n"));
 	}
@@ -792,7 +788,7 @@ class ClientContext {
 					if (clientContextToCheck.isPresent()) {
 						ClientContext clientContext = clientContextToCheck.get();
 						try {
-							byte[] bytes = clientContext.getWhatsSidSamples();
+							byte[] bytes = clientContext.eventConsumerThread.getWhatsSidBuffer().getWAV();
 							if (bytes.length > 0) {
 								HttpURLConnection connection = sendJson(settings, bytes);
 								if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {

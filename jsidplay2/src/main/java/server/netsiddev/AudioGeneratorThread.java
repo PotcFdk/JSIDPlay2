@@ -25,10 +25,9 @@ import builder.resid.resample.Resampler;
 import libsidplay.common.CPUClock;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
-import libsidplay.common.SamplingRate;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
-import sidplay.audio.WAVHeader;
+import sidplay.fingerprinting.WhatsSidBuffer;
 
 /**
  * Audio generating thread which communicates with SIDWrite source over a
@@ -58,8 +57,6 @@ public class AudioGeneratorThread extends Thread {
 	/** SID resampler */
 	private Resampler resamplerL, resamplerR;
 
-	private Resampler downSamplerL, downSamplerR;
-	
 	/** Currently active clocking value */
 	private CPUClock sidClocking;
 
@@ -107,13 +104,14 @@ public class AudioGeneratorThread extends Thread {
 	/** Audio output driver. */
 	private JavaSound driver = new JavaSound();
 
-	private int whatsSidBufferSize;
-
-	private ByteBuffer whatsSidBuffer;
-
+	/** WhatsSid capture time in seconds */
 	private int captureTime;
 	
+	/** WhatsSid enabled? */
 	private boolean whatsSidEnabled;
+	
+	/** WhatsSid buffer */
+	private WhatsSidBuffer whatsSidBuffer;
 	
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
@@ -168,9 +166,6 @@ public class AudioGeneratorThread extends Thread {
 			}
 			Collections.sort(audioDevices, cmp);
 			driver.open(audioConfig, mixerInfo);
-
-			this.whatsSidBufferSize = Short.BYTES * audioConfig.getChannels() * SamplingRate.VERY_LOW.getFrequency() * captureTime;
-			this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
@@ -278,9 +273,8 @@ public class AudioGeneratorThread extends Thread {
 							output.putShort((short) value);
 						}
 						value = outAudioBuffer[i << 1 | 0];
-						if (whatsSidEnabled && downSamplerL.input(value)) {
-							whatsSidBuffer.putShort((short) Math.max(
-									Math.min(downSamplerL.output() + dithering, Short.MAX_VALUE), Short.MIN_VALUE));
+						if (whatsSidEnabled) {
+							whatsSidBuffer.outputL(value, dithering);
 						}
 						outAudioBuffer[i << 1 | 0] = 0;
 						value = outAudioBuffer[i << 1 | 1];
@@ -296,13 +290,8 @@ public class AudioGeneratorThread extends Thread {
 							output.putShort((short) value);
 						}
 						value = outAudioBuffer[i << 1 | 1];
-						if (whatsSidEnabled && downSamplerR.input(value)) {
-							if (!whatsSidBuffer.putShort(
-									(short) Math.max(Math.min(downSamplerR.output() + dithering, Short.MAX_VALUE),
-											Short.MIN_VALUE))
-									.hasRemaining()) {
-								((Buffer) whatsSidBuffer).flip();
-							}
+						if (whatsSidEnabled) {
+							whatsSidBuffer.outputR(value, dithering);
 						}
 						outAudioBuffer[i << 1 | 1] = 0;
 
@@ -423,13 +412,7 @@ public class AudioGeneratorThread extends Thread {
 				20000);
 		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
 				20000);
-
-		downSamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(),
-				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
-				SamplingRate.VERY_LOW.getMiddleFrequency());
-		downSamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(),
-				SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
-				SamplingRate.VERY_LOW.getMiddleFrequency());
+		whatsSidBuffer = new WhatsSidBuffer(sidClocking.getCpuFrequency(), captureTime);
 	}
 
 	public void setPosition(int sidNumber, int position) {
@@ -583,22 +566,9 @@ public class AudioGeneratorThread extends Thread {
 			}
 		}
 	}
-	
-	public byte[] getWhatsSidSamples() {
-		if (whatsSidBuffer == null) {
-			return new byte[0];
-		}
-		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
-		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize);
-		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
-		wavHeader.advance(whatsSidBufferSize);
-		result.put(wavHeader.getBytes());
-		((Buffer) copy).mark();
-		result.put(copy);
-		((Buffer) copy).reset();
-		((Buffer) copy).flip();
-		result.put(copy);
-		((Buffer) copy).limit(whatsSidBufferSize);
-		return result.array();
+
+	public WhatsSidBuffer getWhatsSidBuffer() {
+		return whatsSidBuffer;
 	}
+
 }

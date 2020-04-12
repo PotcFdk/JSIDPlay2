@@ -314,7 +314,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							if (whatsSidSection.isEnable() && fingerPrintMatcher != null
 									&& sidBuilder instanceof SIDMixer) {
 								// We need the state of the emulation time, therefore here
-								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidSamples();
+								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidBuffer().getWAV();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
 										WavBean wavBean = new WavBean(whatsSidSamples);
