@@ -42,6 +42,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WhatsSidBuffer;
 
 /**
  * Container for client-specific data.
@@ -773,8 +774,9 @@ class ClientContext {
 					if (clientContextToCheck.isPresent()) {
 						ClientContext clientContext = clientContextToCheck.get();
 						try {
-							byte[] bytes = clientContext.eventConsumerThread.getWhatsSidBuffer().getWAV();
-							if (bytes.length > 0) {
+							WhatsSidBuffer whatsSidBuffer = clientContext.eventConsumerThread.getWhatsSidBuffer();
+							if (whatsSidBuffer != null && whatsSidBuffer.getWAV().length > 0) {
+								byte[] bytes = whatsSidBuffer.getWAV();
 								HttpURLConnection connection = sendJson(settings, bytes);
 								if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
 									MusicInfoWithConfidenceBean match = receiveJson(connection);

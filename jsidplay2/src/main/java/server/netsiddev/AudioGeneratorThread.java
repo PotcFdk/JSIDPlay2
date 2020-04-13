@@ -350,7 +350,10 @@ public class AudioGeneratorThread extends Thread {
 	
 	public void reopen() {
 		// Fix for Linux ALSA audio systems, only
-		deviceChanged=true;
+		deviceChanged = true;
+		if (whatsSidBuffer != null) {
+			whatsSidBuffer.clear();
+		}
 	}
 
 	/**

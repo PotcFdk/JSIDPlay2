@@ -83,4 +83,12 @@ public final class WhatsSidBuffer {
 		return result.array();
 	}
 
+	public void clear() {
+		if (whatsSidBuffer == null) {
+			return;
+		}
+		((Buffer) whatsSidBuffer).clear();
+		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
+	}
+
 }
