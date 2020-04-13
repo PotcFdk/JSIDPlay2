@@ -19,14 +19,13 @@ import sidplay.audio.exceptions.NextTuneException;
 import sidplay.fingerprinting.IFingerprintInserter;
 
 /**
- * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
- * played tune
+ * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a
+ * currently played tune
  * 
  * This is the audio driver to create a fingerprint for a tune. Use
- * {@link FingerPrintingCreator} to create the whole database.
- * <BR>
- * <B>Note:</B> WAV file is created if not exists containing 8KHz sample data. WAV file
- * contents is then fingerprint'ed
+ * {@link FingerPrintingCreator} to create the whole database. <BR>
+ * <B>Note:</B> WAV file is created if not exists containing 8KHz sample data.
+ * WAV file contents is then fingerprint'ed
  * 
  * @author ken
  *
@@ -50,7 +49,7 @@ public class WhatsSidDriver implements AudioDriver {
 	private IConfig config;
 
 	private IFingerprintInserter fingerprintInserter;
-	
+
 	public void setTuneFile(File file) {
 		this.tuneFile = file;
 	}
@@ -58,7 +57,7 @@ public class WhatsSidDriver implements AudioDriver {
 	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
 		this.fingerprintInserter = fingerprintInserter;
 	}
-	
+
 	@Override
 	public void configure(SidTune tune, IConfig config) {
 		this.tune = tune;
@@ -113,7 +112,8 @@ public class WhatsSidDriver implements AudioDriver {
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
 			try {
-				System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath());
+				String song = tune != SidTune.RESET ? " (" + tune.getInfo().getCurrentSong() + ")" : "";
+				System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath() + song);
 
 				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
