@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -232,18 +233,7 @@ public class IniReader {
 	public int[] getPropertyInts(final String section, final String key, final int[] defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
-			List<Integer> ints = new ArrayList<>();
-			try (Scanner scanner = new Scanner(s)) {
-				scanner.useDelimiter(",");
-				while (scanner.hasNext()) {
-					ints.add(Integer.parseInt(scanner.next().trim()));
-				}
-			}
-			int[] result = new int[ints.size()];
-			for (int i = 0; i < result.length; i++) {
-				result[i] = ints.get(i);
-			}
-			return result;
+			return Arrays.asList(s.split(",")).stream().map(String::trim).mapToInt(Integer::parseInt).toArray();
 		}
 		return defaultValue;
 	}
