@@ -51,19 +51,18 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		musicInfo.setInfoDir(musicInfoBean.getInfoDir());
 		musicInfo.setAudioLength(musicInfoBean.getAudioLength());
 
-		IdBean result = null;
 		try {
 			em.getTransaction().begin();
 			em.persist(musicInfo);
 			em.getTransaction().commit();
-			result = new IdBean(musicInfo.getIdMusicInfo());
+			return new IdBean(musicInfo.getIdMusicInfo());
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
 				em.getTransaction().rollback();
 			}
 		}
-		return result;
+		return null;
 	}
 
 	@Override
