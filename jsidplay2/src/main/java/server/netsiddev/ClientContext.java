@@ -128,22 +128,7 @@ class ClientContext {
 	private static String toWhatsSidAnswer(ClientContext cc) {
 		StringBuilder result = new StringBuilder();
 		if (cc.whatsSidResult != null) {
-			result.append(" ");
-			MusicInfoBean musicInfo = cc.whatsSidResult.getMusicInfo();
-			result.append(musicInfo.getTitle());
-			result.append(" - ");
-			result.append(musicInfo.getArtist());
-			result.append(" - ");
-			result.append(musicInfo.getAlbum());
-			result.append(" - ");
-			result.append(musicInfo.getInfoDir());
-			result.append("(");
-			result.append(musicInfo.getSongNo());
-			result.append(")");
-			result.append(" - ");
-			result.append(cc.whatsSidResult.getConfidence());
-			result.append(" - ");
-			result.append(cc.whatsSidResult.getRelativeConfidence());
+			result.append(cc.whatsSidResult.toString());
 		}
 		cc.whatsSidResult = null;
 		return result.toString();

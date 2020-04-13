@@ -29,7 +29,6 @@ import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
-import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import ui.common.Convenience;
 import ui.common.Toast;
@@ -101,16 +100,12 @@ public class JSidPlay2Main extends Application {
 
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 		Platform.runLater(() -> {
-			MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-			String toastMsg = musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum()
-					+ "\n\t" + musicInfo.getInfoDir() + "(" + musicInfo.getSongNo() + ")" + "\n\tconfidence="
-					+ musicInfoWithConfidence.getConfidence() + "\n\trelativeConfidence="
-					+ musicInfoWithConfidence.getRelativeConfidence();
-			System.out.println("WhatsSid? " + toastMsg);
+			System.out.println("WhatsSid? " + musicInfoWithConfidence.toString());
 			int toastMsgTime = 5000; // in ms
 			int fadeInTime = 500; // in ms
 			int fadeOutTime = 500; // in ms
-			Toast.makeText(jSidplay2.getStage(), toastMsg, toastMsgTime, fadeInTime, fadeOutTime);
+			Toast.makeText(jSidplay2.getStage(), musicInfoWithConfidence.toString(), toastMsgTime, fadeInTime,
+					fadeOutTime);
 		});
 	};
 

@@ -88,8 +88,8 @@ public class MusicInfoWithConfidenceBean {
 
 	@Override
 	public String toString() {
-		return musicInfo + ", confidence=" + confidence + ", relativeConfidence=" + relativeConfidence + ", offset="
-				+ offset + ", offsetSeconds=" + offsetSeconds;
+		return musicInfo
+				+ String.format(" - (%d - %.2f [%d - %.2f]", confidence, relativeConfidence, offset, offsetSeconds);
 	}
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {

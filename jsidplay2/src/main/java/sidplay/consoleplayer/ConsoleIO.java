@@ -13,7 +13,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
-import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConsoleSection;
@@ -234,9 +233,7 @@ public class ConsoleIO {
 		if (quiet) {
 			return;
 		}
-		MusicInfoBean musicInfo = musicInfoWithConfidence.getMusicInfo();
-		out.println("WhatsSid? " + musicInfo.getTitle() + " - " + musicInfo.getArtist() + " - " + musicInfo.getAlbum());
-		out.println("          " + musicInfo.getInfoDir() + "(" + musicInfo.getSongNo() + ")");
+		out.println("WhatsSid? " + musicInfoWithConfidence.toString());
 	}
 
 	private void printTopLine(PrintStream out, final IniConsoleSection console) {
