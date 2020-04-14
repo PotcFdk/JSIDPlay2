@@ -1,5 +1,7 @@
 package sidplay.ini;
 
+import static java.util.Arrays.asList;
+
 /*
  * Copyright (c) 2002 Stefan Matthias Aust.  All Rights Reserved.
  *
@@ -18,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -187,16 +188,11 @@ public class IniReader {
 	public float[] getPropertyFloats(final String section, final String key, final float[] defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
-			List<Float> floats = new ArrayList<>();
-			try (Scanner scanner = new Scanner(s)) {
-				scanner.useDelimiter(",");
-				while (scanner.hasNext()) {
-					floats.add(Float.parseFloat(scanner.next().trim()));
-				}
-			}
-			float[] result = new float[floats.size()];
-			for (int i = 0; i < result.length; i++) {
-				result[i] = floats.get(i);
+			double[] doubles = asList(s.split(",")).stream().map(String::trim).mapToDouble(Double::parseDouble)
+					.toArray();
+			float[] result = new float[doubles.length];
+			for (int i = 0; i < doubles.length; i++) {
+				result[i] = (float) doubles[i];
 			}
 			return result;
 		}
@@ -233,7 +229,7 @@ public class IniReader {
 	public int[] getPropertyInts(final String section, final String key, final int[] defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
-			return Arrays.asList(s.split(",")).stream().map(String::trim).mapToInt(Integer::parseInt).toArray();
+			return asList(s.split(",")).stream().map(String::trim).mapToInt(Integer::parseInt).toArray();
 		}
 		return defaultValue;
 	}
@@ -294,7 +290,7 @@ public class IniReader {
 		}
 		setProperty(section, key, valueAsString);
 	}
-	
+
 	public void setProperty(String section, String key, Object value) {
 		Map<String, String> settings = sections.get(section);
 		if (settings == null) {

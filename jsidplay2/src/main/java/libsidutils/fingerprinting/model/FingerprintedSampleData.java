@@ -162,13 +162,14 @@ public class FingerprintedSampleData {
 	}
 
 	public void setMetaInfo(SidTune tune, String recordingFilename, String collectionFilename) {
-		this.songNo = tune.getInfo().getCurrentSong();
 		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
 			Iterator<String> description = tune.getInfo().getInfoString().iterator();
+			this.songNo = tune.getInfo().getCurrentSong();
 			this.title = description.next();
 			this.artist = description.next();
 			this.album = description.next();
 		} else {
+			this.songNo = 1;
 			this.title = new File(PathUtils.getFilenameWithoutSuffix(collectionFilename)).getName();
 			this.artist = "???";
 			this.album = "???";
