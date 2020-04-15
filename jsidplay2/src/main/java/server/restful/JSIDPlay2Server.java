@@ -134,19 +134,19 @@ public class JSIDPlay2Server {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
+	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER")
 	private String whatsSidDatabaseDriver;
 
-	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
+	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL")
 	private String whatsSidDatabaseUrl;
 
-	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
+	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME")
 	private String whatsSidDatabaseUsername;
 
-	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
+	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD")
 	private String whatsSidDatabasePassword;
 
-	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
+	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT")
 	private String whatsSidDatabaseDialect;
 
 	@ParametersDelegate
@@ -381,10 +381,12 @@ public class JSIDPlay2Server {
 				commander.usage();
 				exit(0);
 			}
-			entityManagerFactory = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
-					new PersistenceProperties(jsidplay2Server.whatsSidDatabaseDriver,
-							jsidplay2Server.whatsSidDatabaseUrl, jsidplay2Server.whatsSidDatabaseUsername,
-							jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect));
+			if (jsidplay2Server.whatsSidDatabaseDriver != null) {
+				entityManagerFactory = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
+						new PersistenceProperties(jsidplay2Server.whatsSidDatabaseDriver,
+								jsidplay2Server.whatsSidDatabaseUrl, jsidplay2Server.whatsSidDatabaseUsername,
+								jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect));
+			}
 			jsidplay2Server.start();
 		} catch (ParameterException | IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
@@ -392,7 +394,10 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	public static EntityManager getEntityManager() {
+	public static EntityManager getEntityManager() throws IOException {
+		if (entityManagerFactory == null) {
+			throw new IOException("WhatsSid? database unknown, please specify command line parameters!");
+		}
 		EntityManager em = threadLocalEntityManager.get();
 
 		if (em == null) {

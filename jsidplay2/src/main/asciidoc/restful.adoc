@@ -214,6 +214,56 @@ sudo chmod 755 ~/server.sh
 
 Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
+=== Launch JSIDPlay2 AppServer with WhatsSid? tune recognition
+
+Now lets explain how to start JSIDPlay2 AppServer providing Shazam like tune recognition:
+
+To start the JSIPlay2 AppServer with a WhatsSid database:
+[source,subs="attributes+"]
+----
+#!/bin/bash -x
+cd /home/ken/Downloads/{artifactId}-{version}
+pkill -f server.restful.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
+	--appServerKeystore /etc/jsidplay2.ks \
+	--appServerKeystorePassword jsidplay2 \
+	--appServerKeyAlias jsidplay2 \
+	--appServerKeyPassword jsidplay2 \
+	--appServerConnectors HTTPS
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
+	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary
+	--whatsSidDatabaseUsername <username>
+	--whatsSidDatabasePassword <password>
+	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
+----
+<1> Launch the JSIDPlay2 AppServer using WhatsSid? tune recognition
+
+*Note:* To make use of WhatsSid? tune recognition you must first create the database!
+
+=== Create database for WhatsSid? tune recognition
+
+Now lets explain how to create the database for Shazam like tune recognition:
+
+To start the WhatsSid database creator containing the tune fingerprintings:
+[source,subs="attributes+"]
+----
+#!/bin/bash -x
+cd /home/ken/Downloads/{artifactId}-{version}
+pkill -f server.restful.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
+	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
+	--whatsSidDatabaseUsername <username>
+	--whatsSidDatabasePassword <password>
+	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
+	--hvsc <pathToHVSC># <1>
+	<pathToMusicCollection> & # <2>
+----
+<1> pathToHVSC is used to read song length file database contained in HVSC
+<2> pathToMusicCollection is the base directory to recursively create audio fingerprintings. This can be pathToHVSC or the path for CGSC!
+
+*Note:* The pathToMusicCollection is traversed recursively and every song is converted to a KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
+
 === Autostart JSIDPlay2 AppServer on system startup
 
 To start JSIPlay2 AppServer on system startup, please type 'vi /lib/systemd/system/jsidplay2.service':
