@@ -251,7 +251,6 @@ public class SIDMixer implements Mixer {
 		this.fadeInFadeOutEnabled = sidplay2Section.getFadeInTime() != 0 || sidplay2Section.getFadeOutTime() != 0;
 		this.audioProcessors.add(new DelayProcessor(config));
 		this.audioProcessors.add(new ReverbProcessor(config));
-
 		this.whatsSidEnabled = whatsSidSection.isEnable();
 		this.whatsSidBuffer = new WhatsSidBuffer(cpuFrequency, whatsSidSection.getCaptureTime());
 
