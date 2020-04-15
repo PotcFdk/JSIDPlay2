@@ -214,9 +214,76 @@ sudo chmod 755 ~/server.sh
 
 Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
-=== Launch JSIDPlay2 AppServer with WhatsSid? tune recognition
+=== Create database for WhatsSid? tune recognition
 
-Now lets explain how to start JSIDPlay2 AppServer providing Shazam like tune recognition:
+Now lets explain how to create the database for Shazam like tune recognition:
+
+First install and configure a database. Create a user with a desired password:
+
+[source,subs="attributes+"]
+----
+sudo apt-get install mysql-server
+sudo mysql_secure_installation utility
+
+sudo mysql -u root -p
+GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' IDENTIFIED BY '<password>'; # <1>
+quit
+
+sudo systemctl enable mysql # <2>
+sudo systemctl restart mysql # <3>
+----
+<1> grant priviledges to the newly created user
+<2> launch mysql on startup
+<3> restart mysql service
+
+Eventually open the firewall:
+[source,subs="attributes+"]
+----
+sudo ufw enable
+sudo ufw allow mysql
+----
+
+Prepare database configuration:
+
+[source,subs="attributes+"]
+----
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+
+max_allowed_packet      = 64M # <1>
+innodb_buffer_pool_size = 8G # <2>
+sql-mode="ANSI_QUOTES" # <3>
+----
+<1> increase packet size (because adding a song requires sending a larger package)
+<2> use 75% of your physical RAM for the database (to keep it preferably entirely in memory).
+<3> use ANSI quotes for SQL statements (in case you want to use org.hsqldb.util.DatabaseManagerSwing to have a look into your database)
+
+Now start the WhatsSid database creator to create and insert the tune fingerprintings for your music collection:
+[source,subs="attributes+"]
+----
+#!/bin/bash -x
+cd /home/ken/Downloads/{artifactId}-{version}
+pkill -f server.restful.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
+	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
+	--whatsSidDatabaseUsername <username>
+	--whatsSidDatabasePassword <password>
+	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
+	--hvsc <pathToHVSC># <1>
+	<pathToMusicCollection> & # <2>
+----
+<1> pathToHVSC is used to read song length file database contained in HVSC
+<2> pathToMusicCollection is the base directory to recursively create audio fingerprintings. This can be pathToHVSC or the path for CGSC!
+
+*Note:* The pathToMusicCollection is traversed recursively and every song is converted to a 8KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
+
+Now you can use WhatsSid? tune recognition.
+
+=== Launch JSIDPlay2 AppServer with additional WhatsSid? tune recognition
+
+Now lets explain how to start JSIDPlay2 AppServer providing Shazam like tune recognition.
+
+You only have to add additional WhatsSid database parameters.
 
 To start the JSIPlay2 AppServer with a WhatsSid database:
 [source,subs="attributes+"]
@@ -237,32 +304,6 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 ----
 <1> Launch the JSIDPlay2 AppServer using WhatsSid? tune recognition
-
-*Note:* To make use of WhatsSid? tune recognition you must first create the database!
-
-=== Create database for WhatsSid? tune recognition
-
-Now lets explain how to create the database for Shazam like tune recognition:
-
-To start the WhatsSid database creator containing the tune fingerprintings:
-[source,subs="attributes+"]
-----
-#!/bin/bash -x
-cd /home/ken/Downloads/{artifactId}-{version}
-pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
-	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
-	--whatsSidDatabaseUsername <username>
-	--whatsSidDatabasePassword <password>
-	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
-	--hvsc <pathToHVSC># <1>
-	<pathToMusicCollection> & # <2>
-----
-<1> pathToHVSC is used to read song length file database contained in HVSC
-<2> pathToMusicCollection is the base directory to recursively create audio fingerprintings. This can be pathToHVSC or the path for CGSC!
-
-*Note:* The pathToMusicCollection is traversed recursively and every song is converted to a KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
 
 === Autostart JSIDPlay2 AppServer on system startup
 
