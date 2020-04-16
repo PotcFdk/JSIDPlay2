@@ -64,29 +64,21 @@ import libsidutils.fingerprinting.spectrogram.Window;
  */
 public class Fingerprint {
 
-	private int NPeaks;
-	private int fftSize;
-	private int overlap;
-	private int C;
-	private int peakRange;
-	private float[] range_time;
-	private float[] range_freq;
+	private int nPeaks, fftSize, overlap, c, peakRange;
+	private float[] range_time, range_freq;
 	private int[] Band;
-	private int minFreq;
-	private int maxFreq;
-	private int minPower;
+	private int minFreq, maxFreq, minPower;
 
 	private final ArrayList<Peak> peakList = new ArrayList<>();
 	private final ArrayList<Link> linkList = new ArrayList<>();
-	private final float[] freq;
-	private final float[] time;
+	private final float[] freq, time;
 
 	public Fingerprint(IFingerprintConfig config, float[] data, float fs) {
 		IFingerprintSection fingerPrintSection = config.getFingerPrintSection();
-		NPeaks = fingerPrintSection.getNPeaks();
+		nPeaks = fingerPrintSection.getNPeaks();
 		fftSize = fingerPrintSection.getFftSize();
 		overlap = fingerPrintSection.getOverlap();
-		C = fingerPrintSection.getC();
+		c = fingerPrintSection.getC();
 		peakRange = fingerPrintSection.getPeakRange();
 		range_time = fingerPrintSection.getRangeTime();
 		range_freq = fingerPrintSection.getRangeFreq();
@@ -100,13 +92,13 @@ public class Fingerprint {
 		freq = spectrogram.freq;
 		time = spectrogram.time;
 
-		ArrayList<Peak> tmp = new ArrayList<>(C * NPeaks);
+		ArrayList<Peak> tmp = new ArrayList<>(c * nPeaks);
 		int size = stft.size();
 		int bandNum = Band.length - 1;
 		for (int b = 0; b < bandNum; b++) {
 			for (int i = 0; i < size; i++) {
 				if (i != 0) {
-					if (i % C == 0 || i == size - 1) {
+					if (i % c == 0 || i == size - 1) {
 						// Filter
 						tmp.removeIf(peak -> {
 							float peakFreq = freq[peak.getIntFreq()];
@@ -116,7 +108,7 @@ public class Fingerprint {
 
 						tmp.sort((o1, o2) -> Double.compare(o2.getPower(), o1.getPower()));
 
-						int end = tmp.size() < NPeaks ? tmp.size() : NPeaks;
+						int end = tmp.size() < nPeaks ? tmp.size() : nPeaks;
 						peakList.addAll(tmp.subList(0, end));
 						tmp.clear();
 					}
@@ -128,7 +120,7 @@ public class Fingerprint {
 				len *= 2;
 				float[] fft_band = new float[len];
 				System.arraycopy(fft, start, fft_band, 0, len);
-				FindPeaks find = new FindPeaks(NPeaks);
+				FindPeaks find = new FindPeaks(nPeaks);
 				find.findComplexPeaks(fft_band, peakRange);
 				float[] power = find.getPower();
 				int[] loc = find.getLocate();
@@ -137,7 +129,7 @@ public class Fingerprint {
 					loc[j] += Band[b];
 				}
 
-				for (int j = 0; j < NPeaks; j++) {
+				for (int j = 0; j < nPeaks; j++) {
 					if (loc[j] == -1) {
 						continue;
 					}
