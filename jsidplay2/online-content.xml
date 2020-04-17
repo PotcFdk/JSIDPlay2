@@ -50,9 +50,9 @@
 		<exec executable="${java.home}/bin/pack200" failonerror="true">
 			<arg value="--repack" />
 			<arg value="--strip-debug" />
-			<arg value="${deploy_dir}/${jsiddevice}-proguard.jar" />
+			<arg value="${deploy_dir}/jsiddevice-${project.version}-proguard.jar" />
 		</exec>
-		<move file="${deploy_dir}/${jsiddevice}-proguard.jar" tofile="${deploy_dir}/${jsiddevice}.jar" />
+		<move file="${deploy_dir}/jsiddevice-${project.version}-proguard.jar" tofile="${deploy_dir}/jsiddevice-${project.version}.jar" />
 	</target>
 
 	<!-- ================================= 
@@ -68,7 +68,7 @@
 		<exec executable="${upx.home}/upx" failonerror="true">
 			<arg value="--lzma" />
 			<arg value="--best" />
-			<arg value="${deploy_dir}/${jsiddevice}.exe" />
+			<arg value="${deploy_dir}/jsiddevice-${project.version}.exe" />
 		</exec>
 	</target>
 
@@ -84,7 +84,7 @@
 				<filter token = "project.version" value = "${project.version}"/>
 			</filterset>
 		</copy>
-		<zip level="9" destfile="${deploy_dir}/${jsiddevice}.zip" compress="true" zip64mode="always">
+		<zip level="9" destfile="${deploy_dir}/jsiddevice-${project.version}.zip" compress="true" zip64mode="always">
 			<fileset dir="${deploy_dir}">
 				<include name="JSIDDevice*.desktop" />
 			</fileset>
@@ -92,8 +92,8 @@
 				<include name="jsidplay2.png" />
 			</fileset>
 			<fileset dir="${deploy_dir}">
-				<include name="${jsiddevice}.*" />
-				<exclude name="${jsiddevice}.zip" />
+				<include name="jsiddevice-${project.version}.*" />
+				<exclude name="jsiddevice-${project.version}.zip" />
 			</fileset>
 		</zip>
 		<delete>

@@ -259,11 +259,6 @@
 		    <artifactId>JTransforms</artifactId>
 		    <version>3.1</version>
 		</dependency>
-		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>5.1.33</version>
-		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -311,6 +306,12 @@
 			<artifactId>jackcess</artifactId>
 			<version>2.1.11</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.33</version>
+		    <scope>runtime</scope>
 		</dependency>
 		<!-- test dependencies -->
 		<dependency>
@@ -443,7 +444,7 @@
 				<version>2.3.2</version>
 				<configuration>
 					<debug>${debug}</debug>
-					<encoding>UTF-8</encoding>
+					<encoding>${project.build.sourceEncoding}</encoding>
 					<debuglevel>${debuglevel}</debuglevel>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -862,7 +863,6 @@
 									<property name="runtime_classpath" refid="maven.runtime.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
 									<property name="deploy_dir" value="${project.build.directory}/deploy" />
-									<property name="jsiddevice" value="jsiddevice-${project.version}" />
 									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
 									<property name="hvsc.7z" value="${hvsc.7z}" />
 									<property name="zip7.home" value="${zip7.home}" />
