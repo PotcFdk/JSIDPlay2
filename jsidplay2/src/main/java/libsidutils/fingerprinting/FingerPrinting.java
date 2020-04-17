@@ -19,7 +19,7 @@ import sidplay.fingerprinting.WavBean;
 
 public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 
-	private static final int MIN_HIT = 20;
+	private static final int MIN_HIT = 10;
 
 	private IFingerprintConfig config;
 	
