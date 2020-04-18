@@ -117,7 +117,20 @@ select  table_rows
 from    information_schema.tables
 where   table_schema = 'musiclibary'
   and   table_name = 'HashTable' ;
-  
+
+This will display list of all tables that has minimum of 500MB of unused space:
+select table_name,
+round(data_length/1024/1024) as data_length_mb, 
+round(data_free/1024/1024) as data_free_mb 
+ from information_schema.tables 
+ where round(data_free/1024/1024) > 500 
+ order by data_free_mb;
+ 
+optimize table:
+mysql -u newuser -p"password"
+use musiclibary
+OPTIMIZE TABLE HashTable
+
 Heap Memory Analyzer:
 To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
