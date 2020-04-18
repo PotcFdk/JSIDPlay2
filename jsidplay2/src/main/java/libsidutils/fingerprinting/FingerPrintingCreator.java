@@ -117,7 +117,7 @@ public class FingerPrintingCreator {
 		System.out.println("Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
 
 		try {
-			processDirectory(new File(directory));
+			processDirectory(new File(directory), em);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -126,12 +126,12 @@ public class FingerPrintingCreator {
 		}
 	}
 
-	private void processDirectory(File dir) throws IOException, SidTuneError {
+	private void processDirectory(File dir, EntityManager em) throws IOException, SidTuneError {
 		File[] listFiles = dir.listFiles();
 		Arrays.sort(listFiles);
 		for (File file : listFiles) {
 			if (file.isDirectory()) {
-				processDirectory(file);
+				processDirectory(file, em);
 			} else if (file.isFile()) {
 				if (TUNE_FILE_FILTER.accept(file)) {
 					whatsSidDriver.setTuneFile(file);
@@ -146,6 +146,7 @@ public class FingerPrintingCreator {
 					player.getTune().getInfo().setSelectedSong(player.getTune().getInfo().getStartSong());
 					player.startC64();
 					player.stopC64(false);
+					em.clear();
 				}
 				if (System.in.available() > 0) {
 					final int key = System.in.read();
