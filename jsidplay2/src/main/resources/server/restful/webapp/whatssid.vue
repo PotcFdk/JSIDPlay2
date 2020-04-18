@@ -36,6 +36,7 @@
         },
         methods: {
             fileChange(fileList) {
+                this.files = new FormData();
                 this.files.append("file", fileList[0], fileList[0].name);
             },
             upload() {
@@ -46,7 +47,6 @@
 	               	} else {
 	               		this.match = 'Sorry, no match!';
 	               	}
-                    this.files = new FormData();
                 }, error => {
                     console.error(error);
                 });
