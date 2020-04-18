@@ -121,8 +121,7 @@ public class FingerPrintingCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			whatsSidDriver.close();
-			System.exit(0);
+			whatsSidService.close();
 		}
 	}
 

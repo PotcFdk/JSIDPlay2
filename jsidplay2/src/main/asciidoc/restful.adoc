@@ -276,6 +276,7 @@ java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.Fi
 <2> pathToMusicCollection is the base directory to recursively create audio fingerprintings. This can be pathToHVSC or the path for CGSC!
 
 *Note:* The pathToMusicCollection is traversed recursively and every song is converted to a 8KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
+After every created WAV file an audio fingerprint is created and stored in the database.
 
 Now you can use WhatsSid? tune recognition.
 
@@ -322,7 +323,12 @@ ExecStart=/usr/bin/java -server \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
-	--appServerConnectors HTTP_HTTPS
+	--appServerConnectors HTTP_HTTPS \
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
+	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary
+	--whatsSidDatabaseUsername <username>
+	--whatsSidDatabasePassword <password>
+	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 User=ken
 
 [Install]
@@ -455,6 +461,104 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 For example defaultLength=180 sets the default song length.
 
 *Info:* The audio parameter let you choose AVI as an alternative, but beware of a much bigger file size.
+
+==== Upload WAV for tune recognition
+
+*Info:* This service method does only work, if server has been started with additional WhatsSid database parameters.
+
+link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid]
+
+Request:
+
+[source,subs="attributes+"]
+----
+Http-Method: POST
+Content-Type: application/json
+Accept: application/json
+----
+[source,subs="attributes+"]
+----
+{
+"wav": "<Base64encodedWAV>" # <1>
+}
+----
+<1> replace <Base64encodedWAV> with the WAV file contents encoded with Base64
+
+This is a POST request to upload a WAV recording (short audio recording max. 20 seconds should be enough).
+
+The WAV file must meet the following requirement:
+
+* Sample size must be 16 bits
+* encoding must be signed (one short per sample -32768..32767)
+* expected endianess is little endian
+
+You are flexible to send:
+
+* mono or stereo
+* sampling frequencies 8KHz, 44.1KHz, 48KHz or 96KHz (use 8KHz to reduce size of the request)
+
+Response:
+
+[source,subs="attributes+"]
+----
+{
+  "musicInfo": {
+    "title": "Lightspeed",
+    "artist": "Ari Yliaho (Agemixer)",
+    "album": "2001 Scallop",
+    "fileDir": "/media/nas2/Ken/C64/C64Music/MUSICIANS/A/Agemixer/Lightspeed.sid",
+    "infoDir": "/C64Music/MUSICIANS/A/Agemixer/Lightspeed.sid",
+    "audioLength": 332.0562438964844
+  },
+  "relativeConfidence": 18.2648401826484,
+  "offsetSeconds": 72.12903225806451,
+  "confidence": 80,
+  "offset": 2236
+} 
+----
+
+MusicInfo consists of HVSC entries title, author and release mapped to
+title, artist and album fields. InfoDir is the path within the HVSC.
+
+As an alternative you can send XML as well:
+
+Request:
+
+[source,subs="attributes+"]
+----
+Http-Method: POST
+Content-Type: application/xml
+Accept: application/xml
+----
+[source,subs="attributes+"]
+----
+<wav><wav><Base64encodedWAV></wav></wav> # <1>
+----
+<1> replace <Base64encodedWAV> with the WAV file contents encoded with Base64
+
+Response:
+
+[source,subs="attributes+"]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<musicInfoWithConfidence>
+  <musicInfo>
+    <title>Lightspeed</title>
+    <artist>Ari Yliaho (Agemixer)</artist>
+    <album>2001 Scallop</album>
+<fileDir>/media/nas2/Ken/C64/C64Music/MUSICIANS/A/Agemixer/Lightspeed.sid</fileDir>
+<infoDir>/C64Music/MUSICIANS/A/Agemixer/Lightspeed.sid</infoDir>
+    <audioLength>332.0562438964844</audioLength>
+  </musicInfo>
+  <confidence>80</confidence>
+<relativeConfidence>18.2648401826484</relativeConfidence>
+  <offsetSeconds>72.12903225806451</offsetSeconds>
+  <offset>2236</offset>
+</musicInfoWithConfidence>
+----
+
+As a second alternative you can upload the WAV file as a mime/multipart like a file upload does.
+Only the first file gets analyzed, though.
 
 === Android Client for JSIDPlay2 AppServer
 
