@@ -122,6 +122,7 @@ public class FingerPrintingCreator {
 			e.printStackTrace();
 		} finally {
 			whatsSidService.close();
+			System.exit(0);
 		}
 	}
 
