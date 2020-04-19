@@ -8,6 +8,8 @@ import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -15,6 +17,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
@@ -29,12 +32,21 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.VICChipModel;
 import libsidplay.components.mos656x.PALEmulation;
 import libsidplay.components.mos656x.Palette;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
+import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.fingerprinting.IFingerprintMatcher;
+import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
+import sidplay.fingerprinting.WhatsSidBuffer;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
+import ui.common.Toast;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 
@@ -53,8 +65,18 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+			IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
+			String url = whatsSidSection.getUrl();
+			String username = whatsSidSection.getUsername();
+			String password = whatsSidSection.getPassword();
 
 			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, -1, audioBufferSize.getValue()), null);
+			
+			whatsSidEnabled = whatsSidSection.isEnable();
+			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime());
+			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
+					new FingerprintingClient(url, username, password));
+
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(SOCKET_CONNECT_TIMEOUT);
 			startStreaming(emulationSection, SOCKET_CMD_AUDIOSTREAM_ON, emulationSection.getUltimate64StreamingTarget()
@@ -63,6 +85,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void play() throws IOException, InterruptedException {
+			IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
+
 			byte[] receiveData = new byte[2
 					/* header */ + AUDIO_BUFFER_SIZE * 2/* channels */ * 16 / 8/* bits, signed, LE */];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -75,6 +99,50 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 					javaSound.buffer().clear();
 				}
 			}
+			short[] shorts = new short[(receiveData.length - 2)/2];
+			ByteBuffer.wrap(receiveData, 2, receiveData.length-2).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+
+			if (whatsSidEnabled) {
+				int i=0;
+				for (short sh : shorts) {
+					if (i % 2 == 0) {
+						whatsSidBuffer.outputL(sh, 0);
+					} else {
+						if (whatsSidBuffer.outputR(sh, 0)) {
+							matchTune(whatsSidSection);
+						}
+					}
+					i++;
+				}
+			}
+		}
+
+		private void matchTune(IWhatsSidSection whatsSidSection) {
+			// We need the state of the emulation time, therefore here
+			final byte[] whatsSidSamples = whatsSidBuffer.getWAV();
+			final Thread whatsSidMatcherThread = new Thread(() -> {
+				try {
+					WavBean wavBean = new WavBean(whatsSidSamples);
+					MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
+					if (result != null && !result.equals(lastWhatsSidMatch)
+							&& result.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
+						lastWhatsSidMatch = result;
+						Platform.runLater(() -> {
+							System.out.println("WhatsSid? " + result);
+							int toastMsgTime = 5000; // in ms
+							int fadeInTime = 500; // in ms
+							int fadeOutTime = 500; // in ms
+							Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime,
+									fadeOutTime);
+						});
+					}
+				} catch (Exception e) {
+					// server not available? silently ignore!
+					e.printStackTrace();
+				}
+			});
+			whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+			whatsSidMatcherThread.start();
 		}
 
 		@Override
@@ -196,9 +264,14 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	@FXML
 	private ComboBox<Integer> audioBufferSize;
-	
+
 	@FXML
 	private CheckBox enablePalEmulation;
+
+	private boolean whatsSidEnabled;
+	private WhatsSidBuffer whatsSidBuffer;
+	private IFingerprintMatcher fingerPrintMatcher;
+	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
 
 	private PALEmulation palEmulation;
 
@@ -220,7 +293,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		// TODO configure values
-		audioBufferSize.setValue(192);
+		audioBufferSize.setValue(2048);
 		enablePalEmulation.setSelected(true);
 
 		pauseTransition = new PauseTransition();
@@ -269,7 +342,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			audioStreaming.setSelected(true);
 		}
 	}
-	
+
 	@FXML
 	private void setEnablePalEmulation() {
 		palEmulation.setPalEmulationEnable(enablePalEmulation.isSelected());

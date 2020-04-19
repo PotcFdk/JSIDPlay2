@@ -54,14 +54,16 @@ public final class WhatsSidBuffer {
 		}
 	}
 
-	public void outputR(int valR, int dither) {
+	public boolean outputR(int valR, int dither) {
 		if (downSamplerR.input(valR)) {
 			if (!whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
 				((Buffer) whatsSidBuffer).flip();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public byte[] getWAV() {
