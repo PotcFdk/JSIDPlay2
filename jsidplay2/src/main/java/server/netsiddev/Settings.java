@@ -3,6 +3,8 @@ package server.netsiddev;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -25,6 +27,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
@@ -39,7 +42,9 @@ public class Settings extends SIDDeviceStage {
 
 	private JCheckBox allowExternalConnections, digiBoost, whatsSidEnable;
 
-	private JTextField whatsSidURl, whatsSidUsername, whatsSidPassword;
+	private JTextField whatsSidURl, whatsSidUsername;
+	
+	private JPasswordField whatsSidPassword;
 
 	private JFormattedTextField whatsSidCaptureTime, whatsSidMatchRetryTime, whatsSidMinimumRelativeConfidence;
 
@@ -140,6 +145,12 @@ public class Settings extends SIDDeviceStage {
 		whatsSidPane.add(urlLabel);
 
 		whatsSidURl = new JTextField();
+		whatsSidURl.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidUrl();
+			}
+		});
 		whatsSidURl.addActionListener(event -> setWhatsSidUrl());
 		whatsSidURl.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidURl);
@@ -149,7 +160,12 @@ public class Settings extends SIDDeviceStage {
 		whatsSidPane.add(usernameLabel);
 
 		whatsSidUsername = new JTextField();
-		whatsSidUsername.addActionListener(event -> setWhatsSidUsername());
+		whatsSidUsername.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidUsername();
+			}
+		});
 		whatsSidUsername.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidUsername);
 
@@ -157,8 +173,13 @@ public class Settings extends SIDDeviceStage {
 		passwordLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(passwordLabel);
 
-		whatsSidPassword = new JTextField();
-		whatsSidPassword.addActionListener(event -> setWhatsSidPassword());
+		whatsSidPassword = new JPasswordField();
+		whatsSidPassword.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidPassword();
+			}
+		});
 		whatsSidPassword.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidPassword);
 
@@ -168,7 +189,12 @@ public class Settings extends SIDDeviceStage {
 
 		whatsSidCaptureTime = new JFormattedTextField(NumberFormat.getIntegerInstance());
 		whatsSidCaptureTime.setColumns(2);
-		whatsSidCaptureTime.addActionListener(event -> setWhatsSidCaptureTime());
+		whatsSidCaptureTime.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidCaptureTime();
+			}
+		});
 		whatsSidCaptureTime.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidCaptureTime);
 
@@ -178,7 +204,12 @@ public class Settings extends SIDDeviceStage {
 
 		whatsSidMatchRetryTime = new JFormattedTextField(NumberFormat.getIntegerInstance());
 		whatsSidMatchRetryTime.setColumns(2);
-		whatsSidMatchRetryTime.addActionListener(event -> setWhatsSidMatchRetryTime());
+		whatsSidMatchRetryTime.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidMatchRetryTime();
+			}
+		});
 		whatsSidMatchRetryTime.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidMatchRetryTime);
 
@@ -188,7 +219,12 @@ public class Settings extends SIDDeviceStage {
 		whatsSidPane.add(minimumRelativeConfidenceLabel);
 
 		whatsSidMinimumRelativeConfidence = new JFormattedTextField(NumberFormat.getNumberInstance());
-		whatsSidMinimumRelativeConfidence.addActionListener(event -> setWhatsSidMinimumRelativeConfidence());
+		whatsSidMinimumRelativeConfidence.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidMinimumRelativeConfidence();
+			}
+		});
 		whatsSidMinimumRelativeConfidence.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidMinimumRelativeConfidence);
 
@@ -292,7 +328,7 @@ public class Settings extends SIDDeviceStage {
 	}
 
 	private void setWhatsSidPassword() {
-		String whatsSidPasswd = this.whatsSidPassword.getText();
+		String whatsSidPasswd = new String(this.whatsSidPassword.getPassword());
 		settings.saveWhatsSidPassword(whatsSidPasswd);
 	}
 

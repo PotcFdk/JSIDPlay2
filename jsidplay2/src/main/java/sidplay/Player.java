@@ -749,10 +749,13 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		verifyConfiguration(sidplay2Section);
 
 		sidBuilder = createSIDBuilder(c64.getClock());
+		
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
 		configureVICs(vic -> vic.setVideoDriver(this));
-		fastForwardVICFrames = 0;
 		c64.setSIDListener(this);
+		
+		fastForwardVICFrames = 0;
+		lastWhatsSidMatch = null;
 
 		stateProperty.addListener(pauseListener);
 

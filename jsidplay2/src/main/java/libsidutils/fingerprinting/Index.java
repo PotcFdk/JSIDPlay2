@@ -78,15 +78,14 @@ public class Index {
 			}
 		});
 		Integer offset = -maxTime;
-		return new SongMatch(Hash2id(maxId), maxCount, offset);
+		return new SongMatch(hash2id(maxId), maxCount, offset);
 	}
 
-	// XXX fixed, original: (long) ((id << 16) + time + (1 << 15));
-	public static Long idHash(int id, int time) {
+	private static Long idHash(int id, int time) {
 		return (((long) id << 16) + time + (1 << 15));
 	}
 
-	public static int Hash2id(Long idHash) {
+	private static int hash2id(Long idHash) {
 		return (int) (idHash >> 16);
 	}
 
