@@ -105,9 +105,6 @@ public class SIDMixer implements Mixer {
 								Short.MIN_VALUE);
 						buffer.putShort(outputL);
 					}
-					if (whatsSidEnabled) {
-						whatsSidBuffer.outputL(valL >> fastForwardShift, dither);
-					}
 					if (resamplerR.input(valR >> fastForwardShift)) {
 						short outputR = (short) Math.max(Math.min(resamplerR.output() + dither, Short.MAX_VALUE),
 								Short.MIN_VALUE);
@@ -118,6 +115,7 @@ public class SIDMixer implements Mixer {
 						}
 					}
 					if (whatsSidEnabled) {
+						whatsSidBuffer.outputL(valL >> fastForwardShift, dither);
 						whatsSidBuffer.outputR(valR >> fastForwardShift, dither);
 					}
 					// zero accumulator

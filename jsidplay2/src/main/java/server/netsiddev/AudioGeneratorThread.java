@@ -272,11 +272,6 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
-						value = outAudioBuffer[i << 1 | 0];
-						if (whatsSidEnabled) {
-							whatsSidBuffer.outputL(value, dithering);
-						}
-						outAudioBuffer[i << 1 | 0] = 0;
 						value = outAudioBuffer[i << 1 | 1];
 						if (resamplerR.input(value)) {
 							value = resamplerR.output() + dithering;
@@ -289,10 +284,11 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
-						value = outAudioBuffer[i << 1 | 1];
 						if (whatsSidEnabled) {
-							whatsSidBuffer.outputR(value, dithering);
+							whatsSidBuffer.outputL(outAudioBuffer[i << 1 | 0], dithering);
+							whatsSidBuffer.outputR(outAudioBuffer[i << 1 | 1], dithering);
 						}
+						outAudioBuffer[i << 1 | 0] = 0;
 						outAudioBuffer[i << 1 | 1] = 0;
 
 						if (!output.hasRemaining()) {
