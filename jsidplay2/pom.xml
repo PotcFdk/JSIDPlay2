@@ -476,7 +476,7 @@
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<excludeScope>provided</excludeScope>
-							<excludeArtifactIds>jinput-platform,hibernate-jpamodelgen</excludeArtifactIds>
+							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>

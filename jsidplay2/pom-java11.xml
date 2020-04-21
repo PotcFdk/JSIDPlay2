@@ -137,6 +137,7 @@
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-jpamodelgen</artifactId>
 		    <version>5.4.2.Final</version>
+		    <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -543,7 +544,7 @@
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<excludeScope>provided</excludeScope>
-							<excludeArtifactIds>jinput-platform,hibernate-jpamodelgen</excludeArtifactIds>
+							<excludeArtifactIds>jinput-platform</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
@@ -1164,12 +1165,7 @@
 										<artifactId>build-helper-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
-											<goal>parse-version</goal>
 											<goal>add-source</goal>
-											<goal>maven-version</goal>
-											<goal>add-resource</goal>
-											<goal>add-test-resource</goal>
-											<goal>add-test-source</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
