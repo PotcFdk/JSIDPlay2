@@ -271,11 +271,6 @@
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
-				<version>1.0</version>
-			</extension>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh</artifactId>
 				<version>2.8</version>
 			</extension>
@@ -297,14 +292,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M3</version>
-				<configuration>
-					<enableAssertions>false</enableAssertions>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -717,6 +704,7 @@
 						<configuration>
 							<target>
 								<ant antfile="${basedir}/online-content.xml">
+									<property name="project.version" value="${project.version}" />
 									<property name="compile_classpath" refid="maven.compile.classpath" />
 									<property name="runtime_classpath" refid="maven.runtime.classpath" />
 									<property name="test_src" location="${basedir}/src/test/resources" />
@@ -727,9 +715,6 @@
 									<property name="cgsc.7z" value="${cgsc.7z}" />
 									<property name="hvmec.bz2" value="${hvmec.bz2}" />
 									<property name="upx.home" value="${upx.home}" />
-									<property name="result_dir"
-										location="${project.build.directory}/deploy/online" />
-									<property name="project.version" value="${project.version}" />
 								</ant>
 							</target>
 						</configuration>

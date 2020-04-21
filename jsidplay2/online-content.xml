@@ -6,26 +6,26 @@
     </description>
 
 	<!-- HVSC -->
-	<property name="hvsc_dir" location="${result_dir}/hvsc" />
+	<property name="hvsc_dir" location="${deploy_dir}/online/hvsc" />
 	<property name="hvsc_zip" value="C64Music.zip" />
 	<property name="hvsc_crc" value="C64Music.crc" />
 	<property name="hvsc_subfolder" value="C64Music" />
 	<property name="hvsc_max_size" value="37748736" />
 	<!-- CGSC -->
-	<property name="cgsc_dir" location="${result_dir}/cgsc" />
+	<property name="cgsc_dir" location="${deploy_dir}/online/cgsc" />
 	<property name="cgsc_zip" value="CGSC.zip" />
 	<property name="cgsc_crc" value="CGSC.crc" />
 	<property name="cgsc_subfolder" value="CGSC" />
 	<!-- HVMEC -->
-	<property name="hvmec_dir" location="${result_dir}/hvmec" />
+	<property name="hvmec_dir" location="${deploy_dir}/online/hvmec" />
 	<property name="hvmec_zip" value="HVMEC.zip" />
 	<property name="hvmec_crc" value="HVMEC.crc" />
 	<!-- Demos -->
-	<property name="demos_dir" location="${result_dir}/demos" />
+	<property name="demos_dir" location="${deploy_dir}/online/demos" />
 	<property name="demos_zip" value="Demos.zip" />
 	<property name="demos_crc" value="Demos.crc" />
 	<!-- Gamebase64 -->
-	<property name="gamebase_dir" location="${result_dir}/gamebase" />
+	<property name="gamebase_dir" location="${deploy_dir}/online/gamebase" />
 	<property name="gamebase_zip" value="GameBase64.zip" />
 	<property name="gamebase_crc" value="GameBase64.crc" />
 	<property name="gamebase_name" value="GameBase64" />

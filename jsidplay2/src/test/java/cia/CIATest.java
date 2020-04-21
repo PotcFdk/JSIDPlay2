@@ -32,7 +32,7 @@ public class CIATest extends JSIDPlay2Test {
 
 	@Before
 	public void before() {
-		config.getSidplay2Section().setLastDirectory("target/test-classes/cia");
+		config.getSidplay2Section().setLastDirectory("src/test/resources/cia");
 	}
 
 	@Test

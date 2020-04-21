@@ -32,8 +32,8 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Before
 	public void before() {
-		config.getSidplay2Section().setLastDirectory("target/test-classes/cpu/Frodo4");
-	};
+		config.getSidplay2Section().setLastDirectory("src/test/resources/cpu/Frodo4");
+	}
 
 	@Test
 	public void testDADB() {
