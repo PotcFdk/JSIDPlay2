@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.Random;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -67,15 +66,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		private JavaSound javaSound = new JavaSound();
 		private Thread whatsSidMatcherThread;
 
-		/**
-		 * Random source for triangular dithering
-		 */
-		private final Random RANDOM = new Random();
-		/**
-		 * State of HP-TPDF.
-		 */
-		private int oldRandomValue;
-
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
@@ -101,8 +91,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		protected void play() throws IOException, InterruptedException {
 			IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
 
-			byte[] receiveData = new byte[2
-					/* header */ + AUDIO_BUFFER_SIZE * 2/* channels */ * 16 / 8/* bits, signed, LE */];
+			byte[] receiveData = new byte[2 + (AUDIO_BUFFER_SIZE << 2)];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 //			int sequenceNo = ((receivePacket.getData()[1] & 0xff) << 8) | (receivePacket.getData()[0] & 0xff);
@@ -110,34 +99,19 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			ShortBuffer shortBuffer = ByteBuffer.wrap(receiveData, 2, receiveData.length - 2)
 					.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
 			while (shortBuffer.hasRemaining()) {
-				javaSound.buffer().putShort(shortBuffer.get());
-				if (!javaSound.buffer().putShort(shortBuffer.get()).hasRemaining()) {
+				short valL = shortBuffer.get();
+				short valR = shortBuffer.get();
+				javaSound.buffer().putShort(valL);
+				if (!javaSound.buffer().putShort(valR).hasRemaining()) {
 					javaSound.write();
 					javaSound.buffer().clear();
 				}
-			}
-			shortBuffer.flip();
-			if (whatsSidEnabled) {
-				while (shortBuffer.hasRemaining()) {
-					int dither = triangularDithering();
-
-					if (whatsSidBuffer.output(shortBuffer.get(), shortBuffer.get(), dither)) {
+				if (whatsSidEnabled) {
+					if (whatsSidBuffer.output(valL, valR)) {
 						matchTune(whatsSidSection);
 					}
 				}
 			}
-		}
-
-		/**
-		 * Triangularly shaped noise source for audio applications. Output of this PRNG
-		 * is between ]-1, 1[.
-		 * 
-		 * @return triangular noise sample
-		 */
-		private int triangularDithering() {
-			int prevValue = oldRandomValue;
-			oldRandomValue = RANDOM.nextInt() & 0x1;
-			return oldRandomValue - prevValue;
 		}
 
 		private void matchTune(IWhatsSidSection whatsSidSection) {
@@ -153,10 +127,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 							lastWhatsSidMatch = result;
 							Platform.runLater(() -> {
 								System.out.println("WhatsSid? " + result);
-								int toastMsgTime = 5000; // in ms
-								int fadeInTime = 500; // in ms
-								int fadeOutTime = 500; // in ms
-								Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime, fadeOutTime);
+								Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
 							});
 						}
 					} catch (Exception e) {
@@ -178,6 +149,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 				serverSocket.close();
 			}
 			audioStreaming.setSelected(false);
+			whatsSidMatcherThread = null;
 		}
 	};
 

@@ -3,6 +3,7 @@ package sidplay.fingerprinting;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Random;
 
 import builder.resid.resample.Resampler;
 import libsidplay.common.SamplingMethod;
@@ -29,6 +30,15 @@ public final class WhatsSidBuffer {
 	private final Resampler downSamplerL, downSamplerR;
 
 	/**
+	 * Random source for triangular dithering
+	 */
+	private final Random RANDOM = new Random();
+	/**
+	 * State of HP-TPDF.
+	 */
+	private int oldRandomValue;
+
+	/**
 	 * WhatsSid capture buffer.
 	 */
 	private ByteBuffer whatsSidBuffer;
@@ -47,7 +57,8 @@ public final class WhatsSidBuffer {
 		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 	}
 
-	public boolean output(int valL, int valR, int dither) {
+	public boolean output(int valL, int valR) {
+		int dither = triangularDithering();
 		if (downSamplerL.input(valL)) {
 			whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerL.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE));
@@ -88,6 +99,18 @@ public final class WhatsSidBuffer {
 		}
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
+	}
+
+	/**
+	 * Triangularly shaped noise source for audio applications. Output of this PRNG
+	 * is between ]-1, 1[.
+	 * 
+	 * @return triangular noise sample
+	 */
+	private int triangularDithering() {
+		int prevValue = oldRandomValue;
+		oldRandomValue = RANDOM.nextInt() & 0x1;
+		return oldRandomValue - prevValue;
 	}
 
 }

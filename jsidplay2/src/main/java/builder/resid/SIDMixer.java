@@ -115,7 +115,7 @@ public class SIDMixer implements Mixer {
 						}
 					}
 					if (whatsSidEnabled) {
-						whatsSidBuffer.output(valL >> fastForwardShift, valR >> fastForwardShift, dither);
+						whatsSidBuffer.output(valL >> fastForwardShift, valR >> fastForwardShift);
 					}
 					// zero accumulator
 					valL = valR = 0;

@@ -22,15 +22,14 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
-import sidplay.fingerprinting.IFingerprintInserter;
 import sidplay.ini.IniConfig;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
- * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a currently
- * played tune
+ * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a
+ * currently played tune
  * 
  * This is the program to create the fingerprintings for all tunes of a
  * collection.
@@ -65,6 +64,9 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
 	private String whatsSidDatabaseDialect;
 
+	@Parameter(names = { "--createIni" }, descriptionKey = "CREATE_INI", arity = 1)
+	private Boolean createIni = Boolean.FALSE;
+
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
@@ -73,8 +75,6 @@ public class FingerPrintingCreator {
 
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
-
-	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig(true);
 
 	private Player player;
 
@@ -98,23 +98,22 @@ public class FingerPrintingCreator {
 		player = new Player(config);
 		player.setSidDatabase(hvsc != null ? new SidDatabase(hvsc) : null);
 
-		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
-
 		EntityManager em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
 				new PersistenceProperties(whatsSidDatabaseDriver, whatsSidDatabaseUrl, whatsSidDatabaseUsername,
 						whatsSidDatabasePassword, whatsSidDatabaseDialect))
 				.createEntityManager();
-
 		WhatsSidService whatsSidService = new WhatsSidService(em);
-		IFingerprintInserter fingerprintInserter = new FingerPrinting(fingerprintConfig, whatsSidService);
-		whatsSidDriver.setFingerprintInserter(fingerprintInserter);
+
+		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
+		whatsSidDriver.setFingerprintInserter(new FingerPrinting(new IniFingerprintConfig(createIni), whatsSidService));
 
 		if (Boolean.TRUE.equals(deleteAll)) {
 			System.out.println("Delete all fingerprintings...");
 			whatsSidService.deleteAll();
 		}
 
-		System.out.println("Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
+		System.out.println(
+				"Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
 
 		try {
 			processDirectory(new File(directory), em);
