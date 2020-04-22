@@ -53,38 +53,28 @@ import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 
 public class Ultimate64Window extends C64Window implements Ultimate64 {
-	private static final int FRAME_RATE = 48000;
-	private static final int CHANNELS = 2;
-	private static final int AUDIO_BUFFER_SIZE = 192;
 
 	private static final int SCREEN_HEIGHT = 272;
 	private static final int SCREEN_WIDTH = 384;
 
-	/**
-	 * Random source for triangular dithering
-	 */
-	private final Random RANDOM = new Random();
-	/**
-	 * State of HP-TPDF.
-	 */
-	private int oldRandomValue;
-
-	/**
-	 * Triangularly shaped noise source for audio applications. Output of this PRNG
-	 * is between ]-1, 1[.
-	 * 
-	 * @return triangular noise sample
-	 */
-	private int triangularDithering() {
-		int prevValue = oldRandomValue;
-		oldRandomValue = RANDOM.nextInt() & 0x1;
-		return oldRandomValue - prevValue;
-	}
+	private static final int FRAME_RATE = 48000;
+	private static final int CHANNELS = 2;
+	private static final int AUDIO_BUFFER_SIZE = 192;
 
 	private StreamingPlayer audioPlayer = new StreamingPlayer() {
+
 		private DatagramSocket serverSocket;
 		private JavaSound javaSound = new JavaSound();
 		private Thread whatsSidMatcherThread;
+
+		/**
+		 * Random source for triangular dithering
+		 */
+		private final Random RANDOM = new Random();
+		/**
+		 * State of HP-TPDF.
+		 */
+		private int oldRandomValue;
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
@@ -95,7 +85,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			String password = whatsSidSection.getPassword();
 
 			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, 0, audioBufferSize.getValue()), null);
-			
+
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime());
 			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
@@ -138,10 +128,22 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			}
 		}
 
+		/**
+		 * Triangularly shaped noise source for audio applications. Output of this PRNG
+		 * is between ]-1, 1[.
+		 * 
+		 * @return triangular noise sample
+		 */
+		private int triangularDithering() {
+			int prevValue = oldRandomValue;
+			oldRandomValue = RANDOM.nextInt() & 0x1;
+			return oldRandomValue - prevValue;
+		}
+
 		private void matchTune(IWhatsSidSection whatsSidSection) {
 			// We need the state of the emulation time, therefore here
 			final byte[] whatsSidSamples = whatsSidBuffer.getWAV();
-			if (whatsSidMatcherThread==null || !whatsSidMatcherThread.isAlive()) {
+			if (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive()) {
 				whatsSidMatcherThread = new Thread(() -> {
 					try {
 						WavBean wavBean = new WavBean(whatsSidSamples);
@@ -154,8 +156,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 								int toastMsgTime = 5000; // in ms
 								int fadeInTime = 500; // in ms
 								int fadeOutTime = 500; // in ms
-								Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime,
-										fadeOutTime);
+								Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime, fadeOutTime);
 							});
 						}
 					} catch (Exception e) {
