@@ -239,9 +239,11 @@ sudo systemctl restart mysql # <3>
 Eventually open the firewall:
 [source,subs="attributes+"]
 ----
-sudo ufw enable
-sudo ufw allow mysql
+sudo ufw enable # <1>
+sudo ufw allow mysql # <2>
 ----
+<1> enable firewall
+<2> open firewall for mysql
 
 Prepare database configuration:
 
