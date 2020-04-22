@@ -3,6 +3,7 @@ package server.restful.common;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.Objects;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBContext;
 
+import org.apache.http.entity.ContentType;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
@@ -28,13 +30,13 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	public <T> T getInput(HttpServletRequest request, Class<T> tClass) {
 		try (ServletInputStream inputStream = request.getInputStream()) {
-			if (request.getContentType() == null
-					|| MimeType.MIME_TYPE_JSON.getContentType().startsWith(request.getContentType())) {
+			String contentType = request.getContentType();
+			if (contentType == null || equals(MimeType.MIME_TYPE_JSON, contentType)) {
 				return new ObjectMapper().readValue(inputStream, tClass);
-			} else if (MimeType.MIME_TYPE_XML.getContentType().startsWith(request.getContentType())) {
-				// MimeType.MIME_XML
+			} else if (equals(MimeType.MIME_TYPE_XML, contentType)) {
 				return (T) JAXBContext.newInstance(tClass).createUnmarshaller().unmarshal(inputStream);
-			} else if (tClass.equals(WavBean.class)) {
+			} else if (ServletFileUpload.isMultipartContent(request) && tClass.equals(WavBean.class)) {
+				// file upload (multipart/mixed)
 				StringBuilder result = new StringBuilder();
 				result.append("{ \"wav\": \"");
 				ServletFileUpload fileUpload = new ServletFileUpload();
@@ -51,7 +53,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 				result.append("\"}");
 				return new ObjectMapper().readValue(result.toString(), tClass);
 			} else {
-				throw new RuntimeException("Unsupported content type: " + request.getContentType());
+				throw new RuntimeException("Unsupported content type: " + contentType);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -65,12 +67,11 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		try (ServletOutputStream out = response.getOutputStream()) {
 			String[] acceptedHeaders = request.getHeader(HttpHeaders.ACCEPT).split(",");
 			for (String acceptedHeader : acceptedHeaders) {
-				if (acceptedHeader == null
-						|| MimeType.MIME_TYPE_JSON.getContentType().startsWith(acceptedHeader)) {
+				if (acceptedHeader == null || equals(MimeType.MIME_TYPE_JSON, acceptedHeader)) {
 					response.setContentType(MimeType.MIME_TYPE_JSON.getContentType());
 					new ObjectMapper().writeValue(out, result);
 					break;
-				} else if (MimeType.MIME_TYPE_XML.getContentType().startsWith(acceptedHeader)) {
+				} else if (equals(MimeType.MIME_TYPE_XML, acceptedHeader)) {
 					// MimeType.MIME_XML
 					response.setContentType(MimeType.MIME_TYPE_XML.getContentType());
 					JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
@@ -82,4 +83,15 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			// ignore client aborts
 		}
 	}
+
+	private boolean equals(MimeType mimeType, String contentTypeString) {
+		ContentType contentType = ContentType.parse(contentTypeString);
+		if (contentType.getCharset() != null) {
+			return Objects.equals(mimeType.getCharset(), contentType.getCharset())
+					&& Objects.equals(mimeType.getMimeType(), contentType.getMimeType());
+		} else {
+			return Objects.equals(mimeType.getMimeType(), contentType.getMimeType());
+		}
+	}
+
 }

@@ -1,7 +1,10 @@
 package server.restful.common;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
+
+import org.apache.http.entity.ContentType;
 
 public enum MimeType {
 	/**
@@ -63,6 +66,14 @@ public enum MimeType {
 
 	public String getContentType() {
 		return contentType;
+	}
+	
+	public String getMimeType() {
+		return ContentType.parse(contentType).getMimeType();
+	}
+
+	public Charset getCharset() {
+		return ContentType.parse(contentType).getCharset();
 	}
 
 	public String[] getExtensions() {

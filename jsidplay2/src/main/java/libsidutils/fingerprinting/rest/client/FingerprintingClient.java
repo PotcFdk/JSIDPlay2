@@ -137,7 +137,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
 				+ Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
 		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MimeType.MIME_TYPE_XML.getContentType());
-		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getContentType());
+		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getMimeType());
 
 		JAXBContext.newInstance(tClass).createMarshaller().marshal(parameter, connection.getOutputStream());
 		connection.getOutputStream().flush();
