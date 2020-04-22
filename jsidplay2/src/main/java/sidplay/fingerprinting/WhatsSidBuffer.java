@@ -47,14 +47,11 @@ public final class WhatsSidBuffer {
 		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 	}
 
-	public void outputL(int valL, int dither) {
+	public boolean output(int valL, int valR, int dither) {
 		if (downSamplerL.input(valL)) {
 			whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerL.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE));
 		}
-	}
-
-	public boolean outputR(int valR, int dither) {
 		if (downSamplerR.input(valR)) {
 			if (!whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))

@@ -11,6 +11,8 @@ import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.Random;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -58,9 +60,31 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private static final int SCREEN_HEIGHT = 272;
 	private static final int SCREEN_WIDTH = 384;
 
+	/**
+	 * Random source for triangular dithering
+	 */
+	private final Random RANDOM = new Random();
+	/**
+	 * State of HP-TPDF.
+	 */
+	private int oldRandomValue;
+
+	/**
+	 * Triangularly shaped noise source for audio applications. Output of this PRNG
+	 * is between ]-1, 1[.
+	 * 
+	 * @return triangular noise sample
+	 */
+	private int triangularDithering() {
+		int prevValue = oldRandomValue;
+		oldRandomValue = RANDOM.nextInt() & 0x1;
+		return oldRandomValue - prevValue;
+	}
+
 	private StreamingPlayer audioPlayer = new StreamingPlayer() {
 		private DatagramSocket serverSocket;
 		private JavaSound javaSound = new JavaSound();
+		private Thread whatsSidMatcherThread;
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException {
@@ -93,26 +117,23 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			serverSocket.receive(receivePacket);
 //			int sequenceNo = ((receivePacket.getData()[1] & 0xff) << 8) | (receivePacket.getData()[0] & 0xff);
 			/* left ch, right ch (16 bits each) */
-			for (int i = 2; i < receiveData.length - 2; i++) {
-				if (!javaSound.buffer().put(receivePacket.getData()[i]).hasRemaining()) {
+			ShortBuffer shortBuffer = ByteBuffer.wrap(receiveData, 2, receiveData.length - 2)
+					.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+			while (shortBuffer.hasRemaining()) {
+				javaSound.buffer().putShort(shortBuffer.get());
+				if (!javaSound.buffer().putShort(shortBuffer.get()).hasRemaining()) {
 					javaSound.write();
 					javaSound.buffer().clear();
 				}
 			}
-			short[] shorts = new short[(receiveData.length - 2)/2];
-			ByteBuffer.wrap(receiveData, 2, receiveData.length-2).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
-
+			shortBuffer.flip();
 			if (whatsSidEnabled) {
-				int i=0;
-				for (short sh : shorts) {
-					if (i % 2 == 0) {
-						whatsSidBuffer.outputL(sh, 0);
-					} else {
-						if (whatsSidBuffer.outputR(sh, 0)) {
-							matchTune(whatsSidSection);
-						}
+				while (shortBuffer.hasRemaining()) {
+					int dither = triangularDithering();
+
+					if (whatsSidBuffer.output(shortBuffer.get(), shortBuffer.get(), dither)) {
+						matchTune(whatsSidSection);
 					}
-					i++;
 				}
 			}
 		}
@@ -120,29 +141,30 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		private void matchTune(IWhatsSidSection whatsSidSection) {
 			// We need the state of the emulation time, therefore here
 			final byte[] whatsSidSamples = whatsSidBuffer.getWAV();
-			final Thread whatsSidMatcherThread = new Thread(() -> {
-				try {
-					WavBean wavBean = new WavBean(whatsSidSamples);
-					MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-					if (result != null && !result.equals(lastWhatsSidMatch)
-							&& result.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
-						lastWhatsSidMatch = result;
-						Platform.runLater(() -> {
-							System.out.println("WhatsSid? " + result);
-							int toastMsgTime = 5000; // in ms
-							int fadeInTime = 500; // in ms
-							int fadeOutTime = 500; // in ms
-							Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime,
-									fadeOutTime);
-						});
+			if (whatsSidMatcherThread==null || !whatsSidMatcherThread.isAlive()) {
+				whatsSidMatcherThread = new Thread(() -> {
+					try {
+						WavBean wavBean = new WavBean(whatsSidSamples);
+						MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
+						if (result != null && !result.equals(lastWhatsSidMatch)
+								&& result.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
+							lastWhatsSidMatch = result;
+							Platform.runLater(() -> {
+								System.out.println("WhatsSid? " + result);
+								int toastMsgTime = 5000; // in ms
+								int fadeInTime = 500; // in ms
+								int fadeOutTime = 500; // in ms
+								Toast.makeText(getStage(), result.toString(), toastMsgTime, fadeInTime,
+										fadeOutTime);
+							});
+						}
+					} catch (Exception e) {
+						// server not available? silently ignore!
 					}
-				} catch (Exception e) {
-					// server not available? silently ignore!
-					e.printStackTrace();
-				}
-			});
-			whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
-			whatsSidMatcherThread.start();
+				});
+				whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+				whatsSidMatcherThread.start();
+			}
 		}
 
 		@Override
