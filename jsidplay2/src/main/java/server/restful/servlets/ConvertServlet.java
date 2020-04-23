@@ -6,8 +6,8 @@ import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
-import static server.restful.common.MimeType.getMimeType;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AVIDriver;
@@ -90,7 +89,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		try {
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
-				
+
 				IConfig config = new IniConfig(false, null);
 
 				String[] args = getRequestParameters(request);
@@ -99,11 +98,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
-				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
+				response.setContentType(getMimeType(driver.getExtension()).toString());
 				convertAudio(config, file, driver);
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
-				
+
 				IConfig config = new IniConfig(false, null);
 
 				String[] args = getRequestParameters(request);
@@ -112,17 +111,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
-				response.setContentType(MimeType.getMimeType(driver.getExtension()).getContentType());
+				response.setContentType(getMimeType(driver.getExtension()).toString());
 				File videoFile = convertVideo(config, file, driver);
 				copy(videoFile, response.getOutputStream());
 				videoFile.delete();
 			} else {
-				response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
+				response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			}
 		} catch (Exception e) {
-			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			response.setContentType(MIME_TYPE_TEXT.toString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

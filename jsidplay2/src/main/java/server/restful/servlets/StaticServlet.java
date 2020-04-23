@@ -1,7 +1,8 @@
 package server.restful.servlets;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +20,6 @@ import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.MimeType;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
 
@@ -46,10 +46,10 @@ public class StaticServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
 		try (InputStream source = getResourceAsStream(filePath)) {
-			response.setContentType(MimeType.getMimeType(PathUtils.getFilenameSuffix(filePath)).getContentType());
+			response.setContentType(getMimeType(PathUtils.getFilenameSuffix(filePath)).toString());
 			response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
 		} catch (IOException e) {
-			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			response.setContentType(MIME_TYPE_TEXT.toString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

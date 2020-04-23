@@ -1,9 +1,11 @@
 package server.restful.common;
 
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.Objects;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -13,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBContext;
 
-import org.apache.http.entity.ContentType;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
@@ -31,9 +32,9 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public <T> T getInput(HttpServletRequest request, Class<T> tClass) {
 		try (ServletInputStream inputStream = request.getInputStream()) {
 			String contentType = request.getContentType();
-			if (contentType == null || equals(MimeType.MIME_TYPE_JSON, contentType)) {
+			if (contentType == null || MIME_TYPE_JSON.isCompatible(contentType)) {
 				return new ObjectMapper().readValue(inputStream, tClass);
-			} else if (equals(MimeType.MIME_TYPE_XML, contentType)) {
+			} else if (MIME_TYPE_XML.isCompatible(contentType)) {
 				return (T) JAXBContext.newInstance(tClass).createUnmarshaller().unmarshal(inputStream);
 			} else if (ServletFileUpload.isMultipartContent(request) && tClass.equals(WavBean.class)) {
 				// file upload (multipart/mixed)
@@ -67,13 +68,13 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		try (ServletOutputStream out = response.getOutputStream()) {
 			String[] acceptedHeaders = request.getHeader(HttpHeaders.ACCEPT).split(",");
 			for (String acceptedHeader : acceptedHeaders) {
-				if (acceptedHeader == null || equals(MimeType.MIME_TYPE_JSON, acceptedHeader)) {
-					response.setContentType(MimeType.MIME_TYPE_JSON.getContentType());
+				if (acceptedHeader == null || MIME_TYPE_JSON.isCompatible(acceptedHeader)) {
+					response.setContentType(MIME_TYPE_JSON.toString());
 					new ObjectMapper().writeValue(out, result);
 					break;
-				} else if (equals(MimeType.MIME_TYPE_XML, acceptedHeader)) {
-					// MimeType.MIME_XML
-					response.setContentType(MimeType.MIME_TYPE_XML.getContentType());
+				} else if (MIME_TYPE_XML.isCompatible(acceptedHeader)) {
+					// MIME_XML
+					response.setContentType(MIME_TYPE_XML.toString());
 					JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
 					break;
 				}
@@ -81,16 +82,6 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			out.flush();
 		} catch (Exception e) {
 			// ignore client aborts
-		}
-	}
-
-	private boolean equals(MimeType mimeType, String contentTypeString) {
-		ContentType contentType = ContentType.parse(contentTypeString);
-		if (contentType.getCharset() != null) {
-			return Objects.equals(mimeType.getCharset(), contentType.getCharset())
-					&& Objects.equals(mimeType.getMimeType(), contentType.getMimeType());
-		} else {
-			return Objects.equals(mimeType.getMimeType(), contentType.getMimeType());
 		}
 	}
 

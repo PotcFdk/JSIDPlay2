@@ -6,8 +6,8 @@ import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
-import static server.restful.common.MimeType.getMimeType;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,11 +46,11 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
 		try {
-			response.setContentType(getMimeType(getFilenameSuffix(filePath)).getContentType());
+			response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 			response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 			copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 		} catch (Exception e) {
-			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			response.setContentType(MIME_TYPE_TEXT.toString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

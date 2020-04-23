@@ -3,8 +3,8 @@ package server.restful.servlets;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.ZipFileUtils.convertStreamToString;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT;
-import static server.restful.common.MimeType.MIME_TYPE_HTML;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,10 +53,10 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 
 		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
 			if (is != null) {
-				response.setContentType(MIME_TYPE_HTML.getContentType());
+				response.setContentType(MIME_TYPE_HTML.toString());
 				response.getWriter().println(is != null ? convertStreamToString(is, UTF_8.name(), replacements) : "");
 			} else {
-				response.setContentType(MIME_TYPE_TEXT.getContentType());
+				response.setContentType(MIME_TYPE_TEXT.toString());
 				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
 			}
 		}

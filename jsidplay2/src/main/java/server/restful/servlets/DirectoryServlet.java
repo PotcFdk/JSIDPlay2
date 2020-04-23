@@ -2,7 +2,7 @@ package server.restful.servlets;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_JSON;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +45,7 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 
 		List<String> files = util.getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
 
-		response.setContentType(MIME_TYPE_JSON.getContentType());
+		response.setContentType(MIME_TYPE_JSON.toString());
 		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

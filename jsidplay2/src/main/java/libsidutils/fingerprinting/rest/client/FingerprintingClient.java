@@ -1,6 +1,7 @@
 package libsidutils.fingerprinting.rest.client;
 
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
 import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
@@ -27,7 +28,6 @@ import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import server.restful.common.MimeType;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
@@ -136,8 +136,8 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		connection.setRequestMethod(requestMethod);
 		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
 				+ Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
-		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MimeType.MIME_TYPE_XML.getContentType());
-		connection.setRequestProperty(HttpHeaders.ACCEPT, MimeType.MIME_TYPE_XML.getMimeType());
+		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MIME_TYPE_XML.toString());
+		connection.setRequestProperty(HttpHeaders.ACCEPT, MIME_TYPE_XML.getMimeType());
 
 		JAXBContext.newInstance(tClass).createMarshaller().marshal(parameter, connection.getOutputStream());
 		connection.getOutputStream().flush();

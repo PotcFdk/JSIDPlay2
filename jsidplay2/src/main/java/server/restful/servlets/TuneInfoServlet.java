@@ -2,8 +2,8 @@ package server.restful.servlets;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_JSON;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
 		try {
-			response.setContentType(MIME_TYPE_JSON.getContentType());
+			response.setContentType(MIME_TYPE_JSON.toString());
 			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
@@ -62,7 +62,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 		} catch (Exception e) {
-			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			response.setContentType(MIME_TYPE_TEXT.toString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);

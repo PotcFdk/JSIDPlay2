@@ -2,8 +2,8 @@ package server.restful.servlets;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
-import static server.restful.common.MimeType.MIME_TYPE_JPG;
-import static server.restful.common.MimeType.MIME_TYPE_TEXT;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JPG;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,7 +47,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
 		try {
-			response.setContentType(MIME_TYPE_JPG.getContentType());
+			response.setContentType(MIME_TYPE_JPG.toString());
 			File absoluteFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
@@ -56,7 +56,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 			response.getOutputStream().write(photo);
 			response.setContentLength(photo.length);
 		} catch (Exception e) {
-			response.setContentType(MIME_TYPE_TEXT.getContentType());
+			response.setContentType(MIME_TYPE_TEXT.toString());
 			e.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
