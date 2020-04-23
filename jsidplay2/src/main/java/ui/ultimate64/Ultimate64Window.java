@@ -107,7 +107,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 					javaSound.buffer().clear();
 				}
 				if (whatsSidEnabled) {
-					if (!whatsSidBuffer.output(valL, valR)) {
+					if (whatsSidBuffer.output(valL, valR)) {
 						matchTune(whatsSidSection);
 					}
 				}
