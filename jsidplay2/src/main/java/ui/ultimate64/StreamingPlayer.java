@@ -33,7 +33,7 @@ public abstract class StreamingPlayer {
 		}
 	};
 
-	protected abstract void open() throws IOException, LineUnavailableException;
+	protected abstract void open() throws IOException, LineUnavailableException, InterruptedException;
 
 	protected abstract void play() throws IOException, InterruptedException;
 

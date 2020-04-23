@@ -67,14 +67,15 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		private Thread whatsSidMatcherThread;
 
 		@Override
-		protected void open() throws IOException, LineUnavailableException {
+		protected void open() throws IOException, LineUnavailableException, InterruptedException {
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 			IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
 
-			javaSound.open(new AudioConfig(FRAME_RATE, CHANNELS, 0, audioBufferSize.getValue()), null);
+			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, 0, audioBufferSize.getValue());
+			javaSound.open(audioConfig, null, CPUClock.PAL);
 
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime());
