@@ -231,7 +231,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {
 					imageQueue.add(image);
-					image = new WritableImage(SCREEN_WIDTH, SCREEN_HEIGHT);
 				}
 			}
 			if (isLastPacketOfFrame) {
