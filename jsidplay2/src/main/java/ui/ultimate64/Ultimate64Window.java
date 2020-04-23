@@ -79,6 +79,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime());
+			whatsSidBuffer.init(whatsSidSection.getMinimumRelativeConfidence());
 			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
 					new FingerprintingClient(url, username, password));
 
@@ -124,9 +125,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						if (whatsSidSamples.length > 0) {
 							WavBean wavBean = new WavBean(whatsSidSamples);
 							MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-							if (result != null && !result.equals(lastWhatsSidMatch) && result
-									.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
-								lastWhatsSidMatch = result;
+							if (whatsSidBuffer.match(result)) {
 								Platform.runLater(() -> {
 									System.out.println("WhatsSid? " + result);
 									Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
@@ -268,7 +267,6 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private boolean whatsSidEnabled;
 	private WhatsSidBuffer whatsSidBuffer;
 	private IFingerprintMatcher fingerPrintMatcher;
-	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
 
 	private PALEmulation palEmulation;
 

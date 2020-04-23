@@ -114,8 +114,6 @@ class ClientContext {
 	/** Map which holds all instances of each client connection. */
 	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
 
-	private static MusicInfoWithConfidenceBean lastMatch;
-
 	private MusicInfoWithConfidenceBean whatsSidResult;
 
 	private static int clientContextNumToCheck;
@@ -640,7 +638,6 @@ class ClientContext {
 			startWhatsSidThread(settings);
 			
 			while (openNewConnection) {
-				lastMatch = null;
 				
 				ssc = ServerSocketChannel.open();
 				ssc.configureBlocking(false);
@@ -781,10 +778,7 @@ class ClientContext {
 									HttpURLConnection connection = sendJson(settings, bytes);
 									if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
 										MusicInfoWithConfidenceBean match = receiveJson(connection);
-										if (match != null && !match.equals(lastMatch)
-												&& match.getRelativeConfidence() > settings
-												.getWhatsSidMinimumRelativeConfidence()) {
-											lastMatch = match;
+										if (whatsSidBuffer.match(match)) {
 											clientContext.whatsSidResult = match;
 										}
 									}

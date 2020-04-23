@@ -13,8 +13,6 @@ import libsidutils.fingerprinting.model.SongMatch;
 @XmlType(propOrder = { "musicInfo", "confidence", "relativeConfidence", "offsetSeconds", "offset" })
 public class MusicInfoWithConfidenceBean {
 
-	private static final boolean SHOW_EACH_MATCH = Boolean.valueOf(System.getProperty("jsidplay2.showEachMatch"));
-
 	private MusicInfoBean musicInfo;
 	private double relativeConfidence, offsetSeconds;
 	private int confidence, offset;
@@ -72,9 +70,6 @@ public class MusicInfoWithConfidenceBean {
 		MusicInfoWithConfidenceBean otherMusicInfoWithConfidence = (MusicInfoWithConfidenceBean) obj;
 		MusicInfoBean otherMusicInfo = otherMusicInfoWithConfidence.getMusicInfo();
 		if (otherMusicInfo == null) {
-			return false;
-		}
-		if (SHOW_EACH_MATCH) {
 			return false;
 		}
 		// No matter the confidence, if metadata matches then the tune matches

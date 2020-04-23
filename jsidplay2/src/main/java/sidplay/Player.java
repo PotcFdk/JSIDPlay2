@@ -259,11 +259,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private IFingerprintMatcher fingerPrintMatcher;
 
 	/**
-	 * WhatsSid? Last match
-	 */
-	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
-
-	/**
 	 * Create a Music Player.
 	 * 
 	 * @param config configuration
@@ -306,6 +301,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
+					sidMixer.getWhatsSidBuffer().init(whatsSidSection.getMinimumRelativeConfidence());
 					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
 						@Override
@@ -318,10 +314,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 											&& whatsSidSamples.length > 0) {
 										WavBean wavBean = new WavBean(whatsSidSamples);
 										MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-										if (result != null && !result.equals(lastWhatsSidMatch)
-												&& result.getRelativeConfidence() > whatsSidSection
-														.getMinimumRelativeConfidence()) {
-											lastWhatsSidMatch = result;
+										if (sidMixer.getWhatsSidBuffer().match(result)) {
 											whatsSidHook.accept(result);
 										}
 									}
@@ -753,7 +746,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		c64.setSIDListener(this);
 
 		fastForwardVICFrames = 0;
-		lastWhatsSidMatch = null;
 
 		stateProperty.addListener(pauseListener);
 

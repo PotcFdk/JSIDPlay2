@@ -49,6 +49,16 @@ public final class WhatsSidBuffer {
 	private int whatsSidBufferSize;
 
 	/**
+	 * WhatsSid? Last match
+	 */
+	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
+
+	/**
+	 * WhatsSid? minimum confidence to detect a match
+	 */
+	private double minimumRelativeConfidence;
+
+	/**
 	 * WhatsSid buffer WAV sample data
 	 */
 	public byte[] whatsSidBufferSamples;
@@ -86,11 +96,21 @@ public final class WhatsSidBuffer {
 	}
 
 	public void clear() {
-		if (whatsSidBuffer == null) {
-			return;
-		}
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
+	}
+
+	public void init(double minimumRelativeConfidence) {
+		this.minimumRelativeConfidence = minimumRelativeConfidence;
+		lastWhatsSidMatch = null;
+	}
+
+	public boolean match(MusicInfoWithConfidenceBean result) {
+		if (result != null && !result.equals(lastWhatsSidMatch) && result.getRelativeConfidence() > minimumRelativeConfidence) {
+			lastWhatsSidMatch = result;
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -110,7 +130,7 @@ public final class WhatsSidBuffer {
 		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		System.arraycopy(wavHeader.getBytes(), 0, result, 0, wavHeader.getBytes().length);
-		((Buffer)whatsSidBuffer).rewind();
+		((Buffer) whatsSidBuffer).rewind();
 		whatsSidBuffer.get(result, WAVHeader.HEADER_LENGTH, whatsSidBufferSize);
 		return result;
 	}

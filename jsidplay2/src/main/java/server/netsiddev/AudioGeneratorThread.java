@@ -110,6 +110,9 @@ public class AudioGeneratorThread extends Thread {
 	/** WhatsSid enabled? */
 	private boolean whatsSidEnabled;
 	
+	/** WhatsSid minimum confidence to match */
+	private double minimumRelativeConfidence;
+	
 	/** WhatsSid buffer */
 	private WhatsSidBuffer whatsSidBuffer;
 	
@@ -138,6 +141,7 @@ public class AudioGeneratorThread extends Thread {
 		audioConfig.setBufferFrames(settings.getAudioBufferSize());
 		captureTime = settings.getWhatsSidCaptureTime();
 		whatsSidEnabled = settings.isWhatsSidEnable();
+		minimumRelativeConfidence = settings.getWhatsSidMinimumRelativeConfidence();
 	}
 
 	@Override
@@ -346,9 +350,12 @@ public class AudioGeneratorThread extends Thread {
 	public void reopen() {
 		// Fix for Linux ALSA audio systems, only
 		deviceChanged = true;
-		if (whatsSidBuffer != null) {
+		if (whatsSidBuffer == null) {
+			whatsSidBuffer = new WhatsSidBuffer(sidClocking.getCpuFrequency(), captureTime);
+		} else {
 			whatsSidBuffer.clear();
 		}
+		whatsSidBuffer.init(minimumRelativeConfidence);
 	}
 
 	/**
@@ -410,7 +417,6 @@ public class AudioGeneratorThread extends Thread {
 				20000);
 		resamplerR = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
 				20000);
-		whatsSidBuffer = new WhatsSidBuffer(sidClocking.getCpuFrequency(), captureTime);
 	}
 
 	public void setPosition(int sidNumber, int position) {
