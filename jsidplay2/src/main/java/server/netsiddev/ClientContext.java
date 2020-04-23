@@ -775,16 +775,18 @@ class ClientContext {
 						ClientContext clientContext = clientContextToCheck.get();
 						try {
 							WhatsSidBuffer whatsSidBuffer = clientContext.eventConsumerThread.getWhatsSidBuffer();
-							if (whatsSidBuffer != null && whatsSidBuffer.getWAV().length > 0) {
-								byte[] bytes = whatsSidBuffer.getWAV();
-								HttpURLConnection connection = sendJson(settings, bytes);
-								if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
-									MusicInfoWithConfidenceBean match = receiveJson(connection);
-									if (match != null && !match.equals(lastMatch)
-											&& match.getRelativeConfidence() > settings
-													.getWhatsSidMinimumRelativeConfidence()) {
-										lastMatch = match;
-										clientContext.whatsSidResult = match;
+							if (whatsSidBuffer != null) {
+								byte[] bytes = whatsSidBuffer.getWhatsSidBufferSamples();
+								if (bytes.length > 0) {
+									HttpURLConnection connection = sendJson(settings, bytes);
+									if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
+										MusicInfoWithConfidenceBean match = receiveJson(connection);
+										if (match != null && !match.equals(lastMatch)
+												&& match.getRelativeConfidence() > settings
+												.getWhatsSidMinimumRelativeConfidence()) {
+											lastMatch = match;
+											clientContext.whatsSidResult = match;
+										}
 									}
 								}
 							}

@@ -107,7 +107,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 					javaSound.buffer().clear();
 				}
 				if (whatsSidEnabled) {
-					if (whatsSidBuffer.output(valL, valR)) {
+					if (!whatsSidBuffer.output(valL, valR)) {
 						matchTune(whatsSidSection);
 					}
 				}
@@ -116,19 +116,21 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		private void matchTune(IWhatsSidSection whatsSidSection) {
 			// We need the state of the emulation time, therefore here
-			final byte[] whatsSidSamples = whatsSidBuffer.getWAV();
+			final byte[] whatsSidSamples = whatsSidBuffer.getWhatsSidBufferSamples();
 			if (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive()) {
 				whatsSidMatcherThread = new Thread(() -> {
 					try {
-						WavBean wavBean = new WavBean(whatsSidSamples);
-						MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-						if (result != null && !result.equals(lastWhatsSidMatch)
-								&& result.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
-							lastWhatsSidMatch = result;
-							Platform.runLater(() -> {
-								System.out.println("WhatsSid? " + result);
-								Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
-							});
+						if (whatsSidSamples.length > 0) {
+							WavBean wavBean = new WavBean(whatsSidSamples);
+							MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
+							if (result != null && !result.equals(lastWhatsSidMatch) && result
+									.getRelativeConfidence() > whatsSidSection.getMinimumRelativeConfidence()) {
+								lastWhatsSidMatch = result;
+								Platform.runLater(() -> {
+									System.out.println("WhatsSid? " + result);
+									Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
+								});
+							}
 						}
 					} catch (Exception e) {
 						// server not available? silently ignore!

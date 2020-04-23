@@ -314,16 +314,19 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							if (whatsSidSection.isEnable() && fingerPrintMatcher != null
 									&& sidBuilder instanceof SIDMixer) {
 								// We need the state of the emulation time, therefore here
-								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidBuffer().getWAV();
+								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidBuffer()
+										.getWhatsSidBufferSamples();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
-										WavBean wavBean = new WavBean(whatsSidSamples);
-										MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-										if (result != null && !result.equals(lastWhatsSidMatch)
-												&& result.getRelativeConfidence() > whatsSidSection
-														.getMinimumRelativeConfidence()) {
-											lastWhatsSidMatch = result;
-											whatsSidHook.accept(result);
+										if (whatsSidSamples.length > 0) {
+											WavBean wavBean = new WavBean(whatsSidSamples);
+											MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
+											if (result != null && !result.equals(lastWhatsSidMatch)
+													&& result.getRelativeConfidence() > whatsSidSection
+															.getMinimumRelativeConfidence()) {
+												lastWhatsSidMatch = result;
+												whatsSidHook.accept(result);
+											}
 										}
 									} catch (Exception e) {
 										// server not available? silently ignore!
@@ -749,11 +752,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		verifyConfiguration(sidplay2Section);
 
 		sidBuilder = createSIDBuilder(c64.getClock());
-		
+
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
 		configureVICs(vic -> vic.setVideoDriver(this));
 		c64.setSIDListener(this);
-		
+
 		fastForwardVICFrames = 0;
 		lastWhatsSidMatch = null;
 
