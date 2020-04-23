@@ -302,45 +302,40 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					if (sidDatabase != null) {
 						double songLength = sidDatabase.getSongLength(tune);
 						if (songLength > 0 && songLength < matchStartTimeInSeconds) {
-							// song too short, start at 90%
+							// song too short? start at 90%
 							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
-					long whatsSidMatchTime = (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency());
-					long whatsSidRetryTime = (long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency());
 					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
 						@Override
 						public void event() throws InterruptedException {
-							if (whatsSidSection.isEnable()) {
-								// We need the state of the emulation time, therefore here
-								final byte[] whatsSidSamples = sidMixer.getWhatsSidBuffer()
-										.getWhatsSidBufferSamples();
-								final Thread whatsSidMatcherThread = new Thread(() -> {
-									try {
-										if (fingerPrintMatcher != null && whatsSidSamples.length > 0) {
-											WavBean wavBean = new WavBean(whatsSidSamples);
-											MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-											if (result != null && !result.equals(lastWhatsSidMatch)
-													&& result.getRelativeConfidence() > whatsSidSection
-															.getMinimumRelativeConfidence()) {
-												lastWhatsSidMatch = result;
-												whatsSidHook.accept(result);
-											}
+							// We need the state of the emulation time, therefore here
+							final byte[] whatsSidSamples = sidMixer.getWhatsSidBuffer().getWhatsSidBufferSamples();
+							final Thread whatsSidMatcherThread = new Thread(() -> {
+								try {
+									if (whatsSidSection.isEnable() && fingerPrintMatcher != null
+											&& whatsSidSamples.length > 0) {
+										WavBean wavBean = new WavBean(whatsSidSamples);
+										MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
+										if (result != null && !result.equals(lastWhatsSidMatch)
+												&& result.getRelativeConfidence() > whatsSidSection
+														.getMinimumRelativeConfidence()) {
+											lastWhatsSidMatch = result;
+											whatsSidHook.accept(result);
 										}
-									} catch (Exception e) {
-										// server not available? silently ignore!
-									} finally {
-										c64.getEventScheduler().schedule(this, whatsSidRetryTime);
 									}
-								});
-								whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
-								whatsSidMatcherThread.start();
-							} else {
-								c64.getEventScheduler().schedule(this, whatsSidRetryTime);
-							}
+								} catch (Exception e) {
+									// server not available? silently ignore!
+								} finally {
+									c64.getEventScheduler().schedule(this,
+											(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
+								}
+							});
+							whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+							whatsSidMatcherThread.start();
 						}
-					}, whatsSidMatchTime);
+					}, (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
 				}
 			}
 
