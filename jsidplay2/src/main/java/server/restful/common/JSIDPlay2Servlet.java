@@ -62,17 +62,18 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	public <T> void setOutput(HttpServletRequest request, HttpServletResponse response, T result, Class<T> tClass) {
-		if (result == null) {
-			return;
-		}
 		try (ServletOutputStream out = response.getOutputStream()) {
-			String[] acceptedHeaders = request.getHeader(HttpHeaders.ACCEPT).split(",");
-			for (String acceptedHeader : acceptedHeaders) {
-				if (acceptedHeader == null || MIME_TYPE_JSON.isCompatible(acceptedHeader)) {
+			if (result == null) {
+				return;
+			}
+			String acceptedHeader = request.getHeader(HttpHeaders.ACCEPT);
+			String[] contentTypes = acceptedHeader != null ? acceptedHeader.split(",") : new String[] { null };
+			for (String contentType : contentTypes) {
+				if (contentType == null || MIME_TYPE_JSON.isCompatible(contentType)) {
 					response.setContentType(MIME_TYPE_JSON.toString());
 					new ObjectMapper().writeValue(out, result);
 					break;
-				} else if (MIME_TYPE_XML.isCompatible(acceptedHeader)) {
+				} else if (MIME_TYPE_XML.isCompatible(contentType)) {
 					// MIME_XML
 					response.setContentType(MIME_TYPE_XML.toString());
 					JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
