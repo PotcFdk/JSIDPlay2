@@ -73,7 +73,7 @@ public final class WhatsSidBuffer {
 			if (!whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
-				whatsSidBufferSamples = getWAV();
+				whatsSidBufferSamples = WhatsSidBufferSamples();
 				((Buffer) whatsSidBuffer).clear();
 				return true;
 			}
@@ -105,7 +105,7 @@ public final class WhatsSidBuffer {
 		return oldRandomValue - prevValue;
 	}
 
-	private byte[] getWAV() {
+	private byte[] WhatsSidBufferSamples() {
 		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
 		((Buffer) copy).flip();
 		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize)

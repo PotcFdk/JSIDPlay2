@@ -294,11 +294,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+					final SIDMixer sidMixer = ((SIDMixer) sidBuilder);
 
+					IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 					int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
-					if (sidDatabase != null && tune != RESET) {
+					if (sidDatabase != null) {
 						double songLength = sidDatabase.getSongLength(tune);
 						if (songLength > 0 && songLength < matchStartTimeInSeconds) {
 							// song too short, start at 90%
@@ -311,14 +312,13 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 						@Override
 						public void event() throws InterruptedException {
-							if (whatsSidSection.isEnable() && fingerPrintMatcher != null
-									&& sidBuilder instanceof SIDMixer) {
+							if (whatsSidSection.isEnable()) {
 								// We need the state of the emulation time, therefore here
-								final byte[] whatsSidSamples = ((SIDMixer) sidBuilder).getWhatsSidBuffer()
+								final byte[] whatsSidSamples = sidMixer.getWhatsSidBuffer()
 										.getWhatsSidBufferSamples();
 								final Thread whatsSidMatcherThread = new Thread(() -> {
 									try {
-										if (whatsSidSamples.length > 0) {
+										if (fingerPrintMatcher != null && whatsSidSamples.length > 0) {
 											WavBean wavBean = new WavBean(whatsSidSamples);
 											MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
 											if (result != null && !result.equals(lastWhatsSidMatch)
