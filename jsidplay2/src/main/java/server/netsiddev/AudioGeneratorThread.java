@@ -351,11 +351,10 @@ public class AudioGeneratorThread extends Thread {
 		// Fix for Linux ALSA audio systems, only
 		deviceChanged = true;
 		if (whatsSidBuffer == null) {
-			whatsSidBuffer = new WhatsSidBuffer(sidClocking.getCpuFrequency(), captureTime);
+			whatsSidBuffer = new WhatsSidBuffer(sidClocking.getCpuFrequency(), captureTime, minimumRelativeConfidence);
 		} else {
 			whatsSidBuffer.clear();
 		}
-		whatsSidBuffer.init(minimumRelativeConfidence);
 	}
 
 	/**

@@ -78,8 +78,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			javaSound.open(audioConfig, null, CPUClock.PAL);
 
 			whatsSidEnabled = whatsSidSection.isEnable();
-			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime());
-			whatsSidBuffer.init(whatsSidSection.getMinimumRelativeConfidence());
+			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime(),
+					whatsSidSection.getMinimumRelativeConfidence());
+			whatsSidBuffer.init();
 			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
 					new FingerprintingClient(url, username, password));
 

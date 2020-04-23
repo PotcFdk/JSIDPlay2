@@ -301,7 +301,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
-					sidMixer.getWhatsSidBuffer().init(whatsSidSection.getMinimumRelativeConfidence());
+					sidMixer.getWhatsSidBuffer().init();
 					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
 						@Override

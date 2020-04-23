@@ -249,7 +249,8 @@ public class SIDMixer implements Mixer {
 		this.audioProcessors.add(new DelayProcessor(config));
 		this.audioProcessors.add(new ReverbProcessor(config));
 		this.whatsSidEnabled = whatsSidSection.isEnable();
-		this.whatsSidBuffer = new WhatsSidBuffer(cpuFrequency, whatsSidSection.getCaptureTime());
+		this.whatsSidBuffer = new WhatsSidBuffer(cpuFrequency, whatsSidSection.getCaptureTime(),
+				whatsSidSection.getMinimumRelativeConfidence());
 
 		normalSpeed();
 	}

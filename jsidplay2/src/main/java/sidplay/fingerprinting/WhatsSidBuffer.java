@@ -63,7 +63,7 @@ public final class WhatsSidBuffer {
 	 */
 	public byte[] whatsSidBufferSamples;
 
-	public WhatsSidBuffer(double cpuFrequency, int captureTimeInS) {
+	public WhatsSidBuffer(double cpuFrequency, int captureTimeInS, double minimumRelativeConfidence) {
 		this.downSamplerL = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
 				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
 		this.downSamplerR = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
@@ -71,6 +71,7 @@ public final class WhatsSidBuffer {
 		this.whatsSidBufferSize = Short.BYTES * CHANNELS * SamplingRate.VERY_LOW.getFrequency() * captureTimeInS;
 		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
 		this.whatsSidBufferSamples = new byte[0];
+		this.minimumRelativeConfidence = minimumRelativeConfidence;
 	}
 
 	public boolean output(int valL, int valR) {
@@ -98,10 +99,10 @@ public final class WhatsSidBuffer {
 	public void clear() {
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
+		init();
 	}
 
-	public void init(double minimumRelativeConfidence) {
-		this.minimumRelativeConfidence = minimumRelativeConfidence;
+	public void init() {
 		lastWhatsSidMatch = null;
 	}
 
