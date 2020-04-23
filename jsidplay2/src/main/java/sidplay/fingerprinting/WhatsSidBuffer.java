@@ -106,15 +106,13 @@ public final class WhatsSidBuffer {
 	}
 
 	private byte[] WhatsSidBufferSamples() {
-		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
-		((Buffer) copy).flip();
-		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize)
-				.order(ByteOrder.LITTLE_ENDIAN);
+		byte[] result = new byte[WAVHeader.HEADER_LENGTH + whatsSidBufferSize];
 		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
-		result.put(wavHeader.getBytes(), 0, wavHeader.getBytes().length);
-		result.put(copy);
-		return result.array();
+		System.arraycopy(wavHeader.getBytes(), 0, result, 0, wavHeader.getBytes().length);
+		((Buffer)whatsSidBuffer).rewind();
+		whatsSidBuffer.get(result, WAVHeader.HEADER_LENGTH, whatsSidBufferSize);
+		return result;
 	}
 
 }
