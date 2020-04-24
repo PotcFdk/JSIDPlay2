@@ -59,11 +59,6 @@ public final class WhatsSidSupport {
 	 */
 	private double minimumRelativeConfidence;
 
-	/**
-	 * WAV sample data to match
-	 */
-	public byte[] whatsSidBufferSamples;
-
 	public WhatsSidSupport(double cpuFrequency, int captureTimeInS, double minimumRelativeConfidence) {
 		this.downSamplerL = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
 				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
@@ -71,7 +66,6 @@ public final class WhatsSidSupport {
 				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
 		this.whatsSidBufferSize = Short.BYTES * CHANNELS * SamplingRate.VERY_LOW.getFrequency() * captureTimeInS;
 		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
-		this.whatsSidBufferSamples = new byte[0];
 		this.minimumRelativeConfidence = minimumRelativeConfidence;
 	}
 
@@ -92,7 +86,6 @@ public final class WhatsSidSupport {
 			if (!whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
-				whatsSidBufferSamples = createWhatsSidBufferSamples();
 				((Buffer) whatsSidBuffer).clear();
 				return true;
 			}
@@ -108,8 +101,9 @@ public final class WhatsSidSupport {
 	 * @throws IOException I/O error
 	 */
 	public MusicInfoWithConfidenceBean match(IFingerprintMatcher matcher) throws IOException {
-		if (whatsSidBufferSamples.length > 0) {
-			MusicInfoWithConfidenceBean result = matcher.match(new WavBean(whatsSidBufferSamples));
+		byte[] wav = createWAV();
+		if (wav.length > 0) {
+			MusicInfoWithConfidenceBean result = matcher.match(new WavBean(wav));
 			if (result != null && !result.equals(lastWhatsSidMatch)
 					&& result.getRelativeConfidence() > minimumRelativeConfidence) {
 				lastWhatsSidMatch = result;
@@ -140,14 +134,25 @@ public final class WhatsSidSupport {
 		return oldRandomValue - prevValue;
 	}
 
-	private byte[] createWhatsSidBufferSamples() {
-		byte[] result = new byte[WAVHeader.HEADER_LENGTH + whatsSidBufferSize];
-		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
+	/**
+	 * Create WAV sample data form ring-buffer.
+	 * 
+	 * @return WAV bytes
+	 */
+	private byte[] createWAV() {
+		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize)
+				.order(ByteOrder.LITTLE_ENDIAN);
+		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
-		System.arraycopy(wavHeader.getBytes(), 0, result, 0, wavHeader.getBytes().length);
-		((Buffer) whatsSidBuffer).rewind();
-		whatsSidBuffer.get(result, WAVHeader.HEADER_LENGTH, whatsSidBufferSize);
-		return result;
+		result.put(wavHeader.getBytes());
+		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
+		((Buffer) copy).mark();
+		result.put(copy);
+		((Buffer) copy).reset();
+		((Buffer) copy).flip();
+		result.put(copy);
+		((Buffer) copy).limit(whatsSidBufferSize);
+		return result.array();
 	}
 
 }

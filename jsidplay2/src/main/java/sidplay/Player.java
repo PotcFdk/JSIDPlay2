@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -310,7 +311,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						public void event() throws InterruptedException {
 							final Thread whatsSidMatcherThread = new Thread(() -> {
 								// do not check tunes not played anymore!
-								if (tuneToCheck.equals(tune)) {
+								if (Objects.equals(tuneToCheck, tune)) {
 									try {
 										if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
 											MusicInfoWithConfidenceBean result = whatsSidSupport
