@@ -1,5 +1,6 @@
 package sidplay.fingerprinting;
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -84,7 +85,7 @@ public final class WhatsSidBuffer {
 			if (!whatsSidBuffer.putShort(
 					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
-				whatsSidBufferSamples = WhatsSidBufferSamples();
+				whatsSidBufferSamples = createWhatsSidBufferSamples();
 				((Buffer) whatsSidBuffer).clear();
 				return true;
 			}
@@ -92,28 +93,24 @@ public final class WhatsSidBuffer {
 		return false;
 	}
 
-	public byte[] getWhatsSidBufferSamples() {
-		return whatsSidBufferSamples;
+	public MusicInfoWithConfidenceBean match(IFingerprintMatcher matcher) throws IOException {
+		if (whatsSidBufferSamples.length > 0) {
+			MusicInfoWithConfidenceBean result = matcher.match(new WavBean(whatsSidBufferSamples));
+			if (result != null && !result.equals(lastWhatsSidMatch)
+					&& result.getRelativeConfidence() > minimumRelativeConfidence) {
+				lastWhatsSidMatch = result;
+				return result;
+			}
+		}
+		return null;
 	}
 
 	public void clear() {
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
-		init();
-	}
-
-	public void init() {
 		lastWhatsSidMatch = null;
 	}
-
-	public boolean match(MusicInfoWithConfidenceBean result) {
-		if (result != null && !result.equals(lastWhatsSidMatch) && result.getRelativeConfidence() > minimumRelativeConfidence) {
-			lastWhatsSidMatch = result;
-			return true;
-		}
-		return false;
-	}
-
+	
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.
@@ -126,7 +123,7 @@ public final class WhatsSidBuffer {
 		return oldRandomValue - prevValue;
 	}
 
-	private byte[] WhatsSidBufferSamples() {
+	private byte[] createWhatsSidBufferSamples() {
 		byte[] result = new byte[WAVHeader.HEADER_LENGTH + whatsSidBufferSize];
 		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);

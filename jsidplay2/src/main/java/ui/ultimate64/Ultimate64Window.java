@@ -43,7 +43,6 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
 import sidplay.fingerprinting.WhatsSidBuffer;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
@@ -80,7 +79,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime(),
 					whatsSidSection.getMinimumRelativeConfidence());
-			whatsSidBuffer.init();
+			whatsSidBuffer.clear();
 			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
 					new FingerprintingClient(url, username, password));
 
@@ -118,20 +117,15 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		}
 
 		private void matchTune(IWhatsSidSection whatsSidSection) {
-			// We need the state of the emulation time, therefore here
-			final byte[] whatsSidSamples = whatsSidBuffer.getWhatsSidBufferSamples();
 			if (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive()) {
 				whatsSidMatcherThread = new Thread(() -> {
 					try {
-						if (whatsSidSamples.length > 0) {
-							WavBean wavBean = new WavBean(whatsSidSamples);
-							MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-							if (whatsSidBuffer.match(result)) {
-								Platform.runLater(() -> {
-									System.out.println("WhatsSid? " + result);
-									Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
-								});
-							}
+						MusicInfoWithConfidenceBean result = whatsSidBuffer.match(fingerPrintMatcher);
+						if (result != null) {
+							Platform.runLater(() -> {
+								System.out.println("WhatsSid? " + result);
+								Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
+							});
 						}
 					} catch (Exception e) {
 						// server not available? silently ignore!

@@ -80,7 +80,7 @@ import sidplay.audio.exceptions.EndTuneException;
 import sidplay.audio.exceptions.NextTuneException;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
+import sidplay.fingerprinting.WhatsSidBuffer;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
@@ -301,28 +301,30 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
-					sidMixer.getWhatsSidBuffer().init();
+					WhatsSidBuffer whatsSidBuffer = sidMixer.getWhatsSidBuffer();
+					whatsSidBuffer.clear();
+					final SidTune tuneToCheck = tune;
 					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
 						@Override
 						public void event() throws InterruptedException {
-							// We need the state of the emulation time, therefore here
-							final byte[] whatsSidSamples = sidMixer.getWhatsSidBuffer().getWhatsSidBufferSamples();
 							final Thread whatsSidMatcherThread = new Thread(() -> {
-								try {
-									if (whatsSidSection.isEnable() && fingerPrintMatcher != null
-											&& whatsSidSamples.length > 0) {
-										WavBean wavBean = new WavBean(whatsSidSamples);
-										MusicInfoWithConfidenceBean result = fingerPrintMatcher.match(wavBean);
-										if (sidMixer.getWhatsSidBuffer().match(result)) {
-											whatsSidHook.accept(result);
+								// do not check tunes not played anymore!
+								if (tuneToCheck.equals(tune)) {
+									try {
+										if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
+											MusicInfoWithConfidenceBean result = whatsSidBuffer
+													.match(fingerPrintMatcher);
+											if (result != null) {
+												whatsSidHook.accept(result);
+											}
 										}
+									} catch (Exception e) {
+										// server not available? silently ignore!
+									} finally {
+										c64.getEventScheduler().schedule(this,
+												(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
 									}
-								} catch (Exception e) {
-									// server not available? silently ignore!
-								} finally {
-									c64.getEventScheduler().schedule(this,
-											(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
 								}
 							});
 							whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);

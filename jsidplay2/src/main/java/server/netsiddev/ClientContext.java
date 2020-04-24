@@ -40,8 +40,10 @@ import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
+import sidplay.fingerprinting.WavBean;
 import sidplay.fingerprinting.WhatsSidBuffer;
 
 /**
@@ -76,8 +78,8 @@ class ClientContext {
 	private SIDChip[] sidRead;
 
 	/**
-	 * Allocate read buffer. Maximum command + maximum socket buffer size
-	 * (assumed to be per request 16K)
+	 * Allocate read buffer. Maximum command + maximum socket buffer size (assumed
+	 * to be per request 16K)
 	 */
 	private final ByteBuffer dataRead = ByteBuffer.allocateDirect(65536 + 4 + 16384);
 
@@ -107,7 +109,8 @@ class ClientContext {
 	private PSidHeader tuneHeader;
 
 	/**
-	 * Indicates if a new connection should be opened in case of connection settings changes.
+	 * Indicates if a new connection should be opened in case of connection settings
+	 * changes.
 	 */
 	private static boolean openNewConnection = true;
 
@@ -486,12 +489,12 @@ class ClientContext {
 				throw new InvalidCommandException(
 						"SET_SID_HEADER needs " + Math.max(sidHeaderSize, PSidHeader.SIZE) + " bytes", dataLength);
 			}
-		
+
 			final byte[] tuneHeaderBytes = new byte[sidHeaderSize];
 			for (int i = 0; i < sidHeaderSize; i++) {
 				tuneHeaderBytes[i] = dataRead.get(4 + i);
 			}
-			
+
 			tuneHeader = new PSidHeader(tuneHeaderBytes);
 
 			dataWrite.put((byte) Response.OK.ordinal());
@@ -515,7 +518,8 @@ class ClientContext {
 
 	private int getSidHeaderSize(final int dataLength) {
 		if (dataLength >= PSidHeader.SIZE) {
-			return (dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD) << 8) + dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD + 1);
+			return (dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD) << 8)
+					+ dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD + 1);
 		} else {
 			return dataLength;
 		}
@@ -576,7 +580,8 @@ class ClientContext {
 	}
 
 	/**
-	 * changeDevice will change the device to the specified device for all connected client contexts
+	 * changeDevice will change the device to the specified device for all connected
+	 * client contexts
 	 * 
 	 * @param deviceInfo the device that should be used
 	 */
@@ -587,7 +592,8 @@ class ClientContext {
 	}
 
 	/**
-	 * setDigiBoost will change the digiboost setting for each 8580 device for all connected client contexts
+	 * setDigiBoost will change the digiboost setting for each 8580 device for all
+	 * connected client contexts
 	 * 
 	 * @param enabled specifies if the digiboost feature is turned on
 	 */
@@ -598,9 +604,11 @@ class ClientContext {
 	}
 
 	/**
-	 * setAudioBufferSize will change the size of the audio buffer for all connected client contexts
+	 * setAudioBufferSize will change the size of the audio buffer for all connected
+	 * client contexts
 	 * 
-	 * @param audioBufferSize specifies the size of the audio buffer (1024-16384 as a power of two)
+	 * @param audioBufferSize specifies the size of the audio buffer (1024-16384 as
+	 *                        a power of two)
 	 */
 	public static void setAudioBufferSize(final Integer audioBufferSize) {
 		for (ClientContext clientContext : clientContextMap.values()) {
@@ -613,14 +621,13 @@ class ClientContext {
 				.collect(Collectors.toList());
 	}
 
-	
 	public static int getClientsConnectedCount() {
 		return clientContextMap.size();
 	}
-	
+
 	/**
-	 * applyConnectionConfigChanges will close all current connections and apply the new configuration which
-	 * is stored in the SIDDeviceSettings.
+	 * applyConnectionConfigChanges will close all current connections and apply the
+	 * new configuration which is stored in the SIDDeviceSettings.
 	 */
 	public static void applyConnectionConfigChanges() {
 		openNewConnection = true;
@@ -636,9 +643,9 @@ class ClientContext {
 
 			SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
 			startWhatsSidThread(settings);
-			
+
 			while (openNewConnection) {
-				
+
 				ssc = ServerSocketChannel.open();
 				ssc.configureBlocking(false);
 
@@ -763,30 +770,32 @@ class ClientContext {
 				}
 				if (settings.isWhatsSidEnable()) {
 					Collection<ClientContext> clientContexts = clientContextMap.values();
-					Optional<ClientContext> clientContextToCheck = clientContexts.stream()
-							.skip(clientContextNumToCheck).findFirst();
+					Optional<ClientContext> clientContextToCheck = clientContexts.stream().skip(clientContextNumToCheck)
+							.findFirst();
 					if (++clientContextNumToCheck >= clientContexts.size()) {
 						clientContextNumToCheck = 0;
 					}
 					if (clientContextToCheck.isPresent()) {
-						ClientContext clientContext = clientContextToCheck.get();
-						try {
-							WhatsSidBuffer whatsSidBuffer = clientContext.eventConsumerThread.getWhatsSidBuffer();
-							if (whatsSidBuffer != null) {
-								byte[] bytes = whatsSidBuffer.getWhatsSidBufferSamples();
-								if (bytes.length > 0) {
-									HttpURLConnection connection = sendJson(settings, bytes);
-									if (connection!=null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
-										MusicInfoWithConfidenceBean match = receiveJson(connection);
-										if (whatsSidBuffer.match(match)) {
-											clientContext.whatsSidResult = match;
-										}
-									}
-								}
+						IFingerprintMatcher fingerPrintMatcher = wav -> {
+							HttpURLConnection connection = sendJson(settings, wav);
+							if (connection != null && connection.getResponseCode() == 200
+									&& connection.getContentLength() > 0) {
+								return receiveJson(connection);
 							}
-						} catch (Throwable e) {
-							e.printStackTrace();
-							// server not available? silently ignore!
+							return null;
+						};
+						ClientContext clientContext = clientContextToCheck.get();
+						WhatsSidBuffer whatsSidBuffer = clientContext.eventConsumerThread.getWhatsSidBuffer();
+						if (whatsSidBuffer != null) {
+							try {
+								MusicInfoWithConfidenceBean result = whatsSidBuffer.match(fingerPrintMatcher);
+								if (result != null) {
+									clientContext.whatsSidResult = result;
+								}
+							} catch (Throwable e) {
+								e.printStackTrace();
+								// server not available? silently ignore!
+							}
 						}
 					}
 				}
@@ -796,11 +805,10 @@ class ClientContext {
 		whatsSidThread.start();
 	}
 
-	private static HttpURLConnection sendJson(SIDDeviceSettings settings, byte[] bytes) {
+	private static HttpURLConnection sendJson(SIDDeviceSettings settings, WavBean wavBean) {
 		HttpURLConnection connection;
 		try {
-			connection = (HttpURLConnection) new URL(settings.getWhatsSidUrl() + "/whatssid")
-					.openConnection();
+			connection = (HttpURLConnection) new URL(settings.getWhatsSidUrl() + "/whatssid").openConnection();
 			connection.setDoOutput(true);
 			connection.setInstanceFollowRedirects(false);
 			connection.setRequestMethod("POST");
@@ -810,10 +818,9 @@ class ClientContext {
 									.getBytes(StandardCharsets.UTF_8)));
 			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestProperty("Accept", "application/json");
-			
-			String request = "{\"wav\": \"" + Base64.getEncoder().encodeToString(bytes)
-					+ "\"}";
-			connection.getOutputStream().write(request.getBytes(StandardCharsets.UTF_8));
+			connection.getOutputStream()
+					.write(("{\"wav\": \"" + Base64.getEncoder().encodeToString(wavBean.getWav()) + "\"}")
+							.getBytes(StandardCharsets.UTF_8));
 			connection.getOutputStream().flush();
 		} catch (Throwable e) {
 			e.printStackTrace();
