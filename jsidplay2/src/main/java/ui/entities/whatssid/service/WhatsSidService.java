@@ -99,9 +99,10 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
 		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
+
 		Path<Integer> idMusicInfo = musicInfo.<Integer>get(MusicInfo_.idMusicInfo);
-		Predicate predicate = cb.equal(idMusicInfo, songNoBean.getSongNo());
-		query.where(predicate).select(musicInfo);
+
+		query.select(musicInfo).where(cb.equal(idMusicInfo, songNoBean.getSongNo()));
 
 		return em.createQuery(query).getSingleResult().toBean();
 	}
@@ -117,24 +118,24 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
 		Root<HashTable> hashTable = query.from(HashTable.class);
+
 		In<Integer> in = cb.in(hashTable.<Integer>get(HashTable_.hash));
 		for (int hash : intArrayBean.getHash()) {
 			in.value(hash);
 		}
-		query.where(in).select(hashTable);
+		query.select(hashTable).where(in);
 
-		em.createQuery(query).getResultList().stream().map(hash -> hash.toBean())
-				.forEach(hashBean -> result.getHashes().add(hashBean));
+		em.createQuery(query).getResultList().stream().map(hash -> hash.toBean()).forEach(result.getHashes()::add);
 		return result;
 	}
 
 	@Override
 	public boolean tuneExists(MusicInfoBean musicInfoBean) {
-		// SELECT * FROM MusicInfo WHERE Title=title, Artist=artist, Album=album,
-		// FileDir=fileDir, InfoDir=infoDir
+		// SELECT count(*) FROM MusicInfo WHERE Title=title AND Artist=artist AND
+		// Album=album AND FileDir=fileDir AND InfoDir=infoDir
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
 		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
 
 		Path<Integer> songNo = musicInfo.<Integer>get(MusicInfo_.songNo);
@@ -155,10 +156,10 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		Path<String> infoDir = musicInfo.<String>get(MusicInfo_.infoDir);
 		Predicate infoDirPredicate = cb.equal(infoDir, musicInfoBean.getInfoDir());
 
-		query.where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate, fileDirPredicate,
-				infoDirPredicate)).select(musicInfo);
+		query.select(cb.count(musicInfo)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
+				fileDirPredicate, infoDirPredicate));
 
-		return !em.createQuery(query).getResultList().isEmpty();
+		return em.createQuery(query).getSingleResult() > 0;
 	}
 
 	@Override
