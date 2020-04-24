@@ -18,7 +18,7 @@ import sidplay.audio.WAVHeader;
  * @author ken
  *
  */
-public final class WhatsSidBuffer {
+public final class WhatsSidSupport {
 
 	/**
 	 * Number of channels.
@@ -26,7 +26,7 @@ public final class WhatsSidBuffer {
 	private static final int CHANNELS = 2;
 
 	/**
-	 * WhatsSid resampler to 8Khz.
+	 * Resampler to 8Khz.
 	 */
 	private final Resampler downSamplerL, downSamplerR;
 
@@ -40,31 +40,31 @@ public final class WhatsSidBuffer {
 	private int oldRandomValue;
 
 	/**
-	 * WhatsSid capture buffer.
+	 * Capture buffer.
 	 */
 	private ByteBuffer whatsSidBuffer;
 
 	/**
-	 * Capacity of the WhatsSid buffer.
+	 * Capacity of the capture buffer.
 	 */
 	private int whatsSidBufferSize;
 
 	/**
-	 * WhatsSid? Last match
+	 * Last match
 	 */
 	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
 
 	/**
-	 * WhatsSid? minimum confidence to detect a match
+	 * Minimum confidence to detect a match
 	 */
 	private double minimumRelativeConfidence;
 
 	/**
-	 * WhatsSid buffer WAV sample data
+	 * WAV sample data to match
 	 */
 	public byte[] whatsSidBufferSamples;
 
-	public WhatsSidBuffer(double cpuFrequency, int captureTimeInS, double minimumRelativeConfidence) {
+	public WhatsSidSupport(double cpuFrequency, int captureTimeInS, double minimumRelativeConfidence) {
 		this.downSamplerL = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
 				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
 		this.downSamplerR = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
@@ -75,6 +75,13 @@ public final class WhatsSidBuffer {
 		this.minimumRelativeConfidence = minimumRelativeConfidence;
 	}
 
+	/**
+	 * Output sample data to fill WhatsSid capture buffer
+	 * 
+	 * @param valL left channel sample data
+	 * @param valR right channel sample data
+	 * @return capture buffer full
+	 */
 	public boolean output(int valL, int valR) {
 		int dither = triangularDithering();
 		if (downSamplerL.input(valL)) {
@@ -93,6 +100,13 @@ public final class WhatsSidBuffer {
 		return false;
 	}
 
+	/**
+	 * Match WhatsSid capture buffer using the given matcher
+	 * 
+	 * @param matcher matcher used to match the capture buffer contents
+	 * @return matched music info or null (no match)
+	 * @throws IOException I/O error
+	 */
 	public MusicInfoWithConfidenceBean match(IFingerprintMatcher matcher) throws IOException {
 		if (whatsSidBufferSamples.length > 0) {
 			MusicInfoWithConfidenceBean result = matcher.match(new WavBean(whatsSidBufferSamples));
@@ -105,12 +119,15 @@ public final class WhatsSidBuffer {
 		return null;
 	}
 
-	public void clear() {
+	/**
+	 * Reset the capture buffer (call for a new tune to play)
+	 */
+	public void reset() {
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
 		lastWhatsSidMatch = null;
 	}
-	
+
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.

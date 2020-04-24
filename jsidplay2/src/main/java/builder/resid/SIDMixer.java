@@ -25,7 +25,7 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.processor.AudioProcessor;
 import sidplay.audio.processor.delay.DelayProcessor;
 import sidplay.audio.processor.reverb.ReverbProcessor;
-import sidplay.fingerprinting.WhatsSidBuffer;
+import sidplay.fingerprinting.WhatsSidSupport;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.
@@ -115,7 +115,7 @@ public class SIDMixer implements Mixer {
 						}
 					}
 					if (whatsSidEnabled) {
-						whatsSidBuffer.output(valL >> fastForwardShift, valR >> fastForwardShift);
+						whatsSidSupport.output(valL >> fastForwardShift, valR >> fastForwardShift);
 					}
 					// zero accumulator
 					valL = valR = 0;
@@ -216,9 +216,9 @@ public class SIDMixer implements Mixer {
 	private final boolean whatsSidEnabled;
 
 	/**
-	 * WhatsSid buffer
+	 * WhatsSid
 	 */
-	private final WhatsSidBuffer whatsSidBuffer;
+	private final WhatsSidSupport whatsSidSupport;
 
 	/**
 	 * Add some audio post processing.
@@ -249,7 +249,7 @@ public class SIDMixer implements Mixer {
 		this.audioProcessors.add(new DelayProcessor(config));
 		this.audioProcessors.add(new ReverbProcessor(config));
 		this.whatsSidEnabled = whatsSidSection.isEnable();
-		this.whatsSidBuffer = new WhatsSidBuffer(cpuFrequency, whatsSidSection.getCaptureTime(),
+		this.whatsSidSupport = new WhatsSidSupport(cpuFrequency, whatsSidSection.getCaptureTime(),
 				whatsSidSection.getMinimumRelativeConfidence());
 
 		normalSpeed();
@@ -440,8 +440,8 @@ public class SIDMixer implements Mixer {
 		return mixerAudio.fastForwardBitMask;
 	}
 
-	public WhatsSidBuffer getWhatsSidBuffer() {
-		return whatsSidBuffer;
+	public WhatsSidSupport getWhatsSidSupport() {
+		return whatsSidSupport;
 	}
 
 }

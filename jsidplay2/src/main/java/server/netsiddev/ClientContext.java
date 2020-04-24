@@ -44,7 +44,7 @@ import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WavBean;
-import sidplay.fingerprinting.WhatsSidBuffer;
+import sidplay.fingerprinting.WhatsSidSupport;
 
 /**
  * Container for client-specific data.
@@ -785,10 +785,10 @@ class ClientContext {
 							return null;
 						};
 						ClientContext clientContext = clientContextToCheck.get();
-						WhatsSidBuffer whatsSidBuffer = clientContext.eventConsumerThread.getWhatsSidBuffer();
-						if (whatsSidBuffer != null) {
+						WhatsSidSupport whatsSidSupport = clientContext.eventConsumerThread.getWhatsSidSupport();
+						if (whatsSidSupport != null) {
 							try {
-								MusicInfoWithConfidenceBean result = whatsSidBuffer.match(fingerPrintMatcher);
+								MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
 								if (result != null) {
 									clientContext.whatsSidResult = result;
 								}

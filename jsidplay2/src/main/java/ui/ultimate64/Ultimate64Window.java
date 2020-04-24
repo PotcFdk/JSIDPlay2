@@ -43,7 +43,7 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WhatsSidBuffer;
+import sidplay.fingerprinting.WhatsSidSupport;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.common.Toast;
@@ -77,9 +77,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			javaSound.open(audioConfig, null, CPUClock.PAL);
 
 			whatsSidEnabled = whatsSidSection.isEnable();
-			whatsSidBuffer = new WhatsSidBuffer(FRAME_RATE, whatsSidSection.getCaptureTime(),
+			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),
 					whatsSidSection.getMinimumRelativeConfidence());
-			whatsSidBuffer.clear();
+			whatsSidSupport.reset();
 			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
 					new FingerprintingClient(url, username, password));
 
@@ -109,7 +109,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 					javaSound.buffer().clear();
 				}
 				if (whatsSidEnabled) {
-					if (whatsSidBuffer.output(valL, valR)) {
+					if (whatsSidSupport.output(valL, valR)) {
 						matchTune(whatsSidSection);
 					}
 				}
@@ -120,7 +120,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			if (whatsSidMatcherThread == null || !whatsSidMatcherThread.isAlive()) {
 				whatsSidMatcherThread = new Thread(() -> {
 					try {
-						MusicInfoWithConfidenceBean result = whatsSidBuffer.match(fingerPrintMatcher);
+						MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
 						if (result != null) {
 							Platform.runLater(() -> {
 								System.out.println("WhatsSid? " + result);
@@ -260,7 +260,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private CheckBox enablePalEmulation;
 
 	private boolean whatsSidEnabled;
-	private WhatsSidBuffer whatsSidBuffer;
+	private WhatsSidSupport whatsSidSupport;
 	private IFingerprintMatcher fingerPrintMatcher;
 
 	private PALEmulation palEmulation;

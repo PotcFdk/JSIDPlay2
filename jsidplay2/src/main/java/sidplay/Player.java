@@ -80,7 +80,7 @@ import sidplay.audio.exceptions.EndTuneException;
 import sidplay.audio.exceptions.NextTuneException;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WhatsSidBuffer;
+import sidplay.fingerprinting.WhatsSidSupport;
 import sidplay.ini.IniConfig;
 import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
@@ -301,8 +301,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 						}
 					}
-					WhatsSidBuffer whatsSidBuffer = sidMixer.getWhatsSidBuffer();
-					whatsSidBuffer.clear();
+					WhatsSidSupport whatsSidSupport = sidMixer.getWhatsSidSupport();
+					whatsSidSupport.reset();
 					final SidTune tuneToCheck = tune;
 					c64.getEventScheduler().schedule(new Event("WhatsSid") {
 
@@ -313,7 +313,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 								if (tuneToCheck.equals(tune)) {
 									try {
 										if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
-											MusicInfoWithConfidenceBean result = whatsSidBuffer
+											MusicInfoWithConfidenceBean result = whatsSidSupport
 													.match(fingerPrintMatcher);
 											if (result != null) {
 												whatsSidHook.accept(result);
