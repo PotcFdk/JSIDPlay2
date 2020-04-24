@@ -12,8 +12,8 @@ import libsidplay.common.SamplingRate;
 import sidplay.audio.WAVHeader;
 
 /**
- * WhatsSid buffer containing always the last N seconds of sound samples in a
- * ring buffer.
+ * Use a WhatsSid capture buffer to match a currently played tune. Capture
+ * buffer contains always the last N seconds of sound samples in a ring buffer.
  * 
  * @author ken
  *
