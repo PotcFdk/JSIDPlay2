@@ -605,11 +605,7 @@
 								<include>libsidplay/common/SIDChip.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
-								<include>sidplay/fingerprinting/IFingerprintMatcher.class</include>
-								<include>sidplay/fingerprinting/MusicInfoBean.class</include>
-								<include>sidplay/fingerprinting/MusicInfoWithConfidenceBean.class</include>
-								<include>sidplay/fingerprinting/WavBean.class</include>
-								<include>sidplay/fingerprinting/WhatsSidSupport.class</include>
+								<include>sidplay/fingerprinting/*.class</include>
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
 								<include>sidplay/audio/JavaSound.class</include>

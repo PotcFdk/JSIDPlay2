@@ -161,7 +161,7 @@ public class FingerprintedSampleData {
 		}
 	}
 
-	public void setMetaInfo(SidTune tune, String recordingFilename, String collectionFilename) {
+	public void setMetaInfo(SidTune tune, String recordingFilename, String infoDir) {
 		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
 			Iterator<String> description = tune.getInfo().getInfoString().iterator();
 			this.songNo = tune.getInfo().getCurrentSong();
@@ -170,12 +170,12 @@ public class FingerprintedSampleData {
 			this.album = description.next();
 		} else {
 			this.songNo = 1;
-			this.title = new File(PathUtils.getFilenameWithoutSuffix(collectionFilename)).getName();
+			this.title = new File(PathUtils.getFilenameWithoutSuffix(infoDir)).getName();
 			this.artist = "???";
 			this.album = "???";
 		}
-		fileDir = recordingFilename;
-		infoDir = collectionFilename;
+		this.fileDir = recordingFilename;
+		this.infoDir = infoDir;
 	}
 
 	public MusicInfoBean toMusicInfoBean() {

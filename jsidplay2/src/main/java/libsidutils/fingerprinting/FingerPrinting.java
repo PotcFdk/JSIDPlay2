@@ -19,6 +19,8 @@ import sidplay.fingerprinting.WavBean;
 
 public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 
+	// private static final int MIN_HIT = 15;
+	// KEN:
 	private static final int MIN_HIT = 10;
 
 	private IFingerprintConfig config;
@@ -31,9 +33,9 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	}
 
 	@Override
-	public void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException {
+	public void insert(SidTune tune, String infoDir, String recordingFilename) throws IOException {
 		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
-		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, collectionFilename);
+		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, infoDir);
 
 		if (!fingerPrintingDataSource.tuneExists(fingerprintedSampleData.toMusicInfoBean())) {
 			WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));

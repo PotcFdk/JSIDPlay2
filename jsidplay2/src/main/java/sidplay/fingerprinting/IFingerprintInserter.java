@@ -6,6 +6,6 @@ import libsidplay.sidtune.SidTune;
 
 public interface IFingerprintInserter {
 
-	void insert(SidTune tune, String collectionFilename, String recordingFilename) throws IOException;
+	void insert(SidTune tune, String infoDir, String recordingFilename) throws IOException;
 
 }

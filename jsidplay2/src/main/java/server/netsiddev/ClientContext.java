@@ -4,9 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -14,17 +12,12 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer;
@@ -40,10 +33,9 @@ import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.fingerprinting.IFingerprintMatcher;
-import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
 import sidplay.fingerprinting.WhatsSidSupport;
 
 /**
@@ -776,19 +768,14 @@ class ClientContext {
 						clientContextNumToCheck = 0;
 					}
 					if (clientContextToCheck.isPresent()) {
-						IFingerprintMatcher fingerPrintMatcher = wav -> {
-							HttpURLConnection connection = sendJson(settings, wav);
-							if (connection != null && connection.getResponseCode() == 200
-									&& connection.getContentLength() > 0) {
-								return receiveJson(connection);
-							}
-							return null;
-						};
 						ClientContext clientContext = clientContextToCheck.get();
 						WhatsSidSupport whatsSidSupport = clientContext.eventConsumerThread.getWhatsSidSupport();
 						if (whatsSidSupport != null) {
 							try {
-								MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
+								IFingerprintMatcher fingerprintMatcher = new FingerprintJsonClient(
+										settings.getWhatsSidUrl(), settings.getWhatsSidUsername(),
+										settings.getWhatsSidPassword());
+								MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerprintMatcher);
 								if (result != null) {
 									clientContext.whatsSidResult = result;
 								}
@@ -805,104 +792,7 @@ class ClientContext {
 		whatsSidThread.start();
 	}
 
-	private static HttpURLConnection sendJson(SIDDeviceSettings settings, WavBean wavBean) {
-		HttpURLConnection connection;
-		try {
-			connection = (HttpURLConnection) new URL(settings.getWhatsSidUrl() + "/whatssid").openConnection();
-			connection.setDoOutput(true);
-			connection.setInstanceFollowRedirects(false);
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Authorization",
-					"Basic " + Base64.getEncoder()
-							.encodeToString((settings.getWhatsSidUsername() + ":" + settings.getWhatsSidPassword())
-									.getBytes(StandardCharsets.UTF_8)));
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("Accept", "application/json");
-			connection.getOutputStream()
-					.write(("{\"wav\": \"" + Base64.getEncoder().encodeToString(wavBean.getWav()) + "\"}")
-							.getBytes(StandardCharsets.UTF_8));
-			connection.getOutputStream().flush();
-		} catch (Throwable e) {
-			e.printStackTrace();
-			return null;
-		}
-		return connection;
-	}
-
-	private static MusicInfoWithConfidenceBean receiveJson(HttpURLConnection connection) {
-		try {
-			String response = null;
-			try (Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.name())) {
-				response = scanner.useDelimiter("\\A").next();
-			}
-			MusicInfoWithConfidenceBean match = new MusicInfoWithConfidenceBean();
-			match.setMusicInfo(new MusicInfoBean());
-			{
-				// match string values
-				Matcher m = Pattern.compile("\"[^\"]*\":\"[^\"]*\"").matcher(response);
-				while (m.find()) {
-					String[] keyValue = m.group().split(":");
-					setMatch(keyValue[0], keyValue[1], match);
-				}
-			}
-			{
-				// match numeric values
-				Matcher m = Pattern.compile("\"[^\"]*\":[0-9.]+").matcher(response);
-				while (m.find()) {
-					String[] keyValue = m.group().split(":");
-					setMatch(keyValue[0], keyValue[1], match);
-				}
-			}
-			return match;
-		} catch (Throwable e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			connection.disconnect();
-		}
-	}
-
-	private static void setMatch(String key, String value, MusicInfoWithConfidenceBean match) {
-		switch (key) {
-		case "\"songNo\"":
-			match.getMusicInfo().setSongNo(Integer.parseInt(value));
-			break;
-		case "\"title\"":
-			match.getMusicInfo().setTitle(value.substring(1, value.length() - 1));
-			break;
-		case "\"artist\"":
-			match.getMusicInfo().setArtist(value.substring(1, value.length() - 1));
-			break;
-		case "\"album\"":
-			match.getMusicInfo().setAlbum(value.substring(1, value.length() - 1));
-			break;
-		case "\"fileDir\"":
-			match.getMusicInfo().setFileDir(value.substring(1, value.length() - 1));
-			break;
-		case "\"infoDir\"":
-			match.getMusicInfo().setInfoDir(value.substring(1, value.length() - 1));
-			break;
-		case "\"audioLength\"":
-			match.getMusicInfo().setAudioLength(Double.parseDouble(value));
-			break;
-		case "\"confidence\"":
-			match.setConfidence(Integer.parseInt(value));
-			break;
-		case "\"relativeConfidence\"":
-			match.setRelativeConfidence(Double.parseDouble(value));
-			break;
-		case "\"offset\"":
-			match.setOffset(Integer.parseInt(value));
-			break;
-		case "\"offsetSeconds\"":
-			match.setOffsetSeconds(Double.parseDouble(value));
-			break;
-		default:
-			break;
-		}
-	}
-
-	private static void closeClientConnections() throws IOException {
+		private static void closeClientConnections() throws IOException {
 		for (ClientContext cc : clientContextMap.values()) {
 			System.out.println("Cleaning up client: " + cc);
 			cc.dispose();
