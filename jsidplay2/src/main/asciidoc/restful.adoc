@@ -229,15 +229,11 @@ sudo mysql -u root -p
 CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>';
 GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' IDENTIFIED BY '<password>'; # <1>
 quit
-
-sudo systemctl enable mysql # <2>
-sudo systemctl restart mysql # <3>
 ----
 <1> grant priviledges to the newly created user
-<2> launch mysql on startup
-<3> restart mysql service
 
 Eventually open the firewall:
+
 [source,subs="attributes+"]
 ----
 sudo ufw enable # <1>
@@ -245,6 +241,14 @@ sudo ufw allow mysql # <2>
 ----
 <1> enable firewall
 <2> open firewall for mysql
+
+Eventually allow remote connections:
+
+[source,subs="attributes+"]
+----
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+bind-address            = 0.0.0.0
+----
 
 Prepare database configuration:
 
@@ -259,6 +263,18 @@ sql-mode="ANSI_QUOTES" # <3>
 <1> increase packet size (because adding a song requires sending a larger package)
 <2> use 75% of your physical RAM for the database (to keep it preferably entirely in memory).
 <3> use ANSI quotes for SQL statements (in case you want to use org.hsqldb.util.DatabaseManagerSwing to have a look into your database)
+
+Enable autostart on boot time and restart service:
+
+[source,subs="attributes+"]
+----
+sudo systemctl enable mysql # <1>
+sudo systemctl restart mysql # <2>
+----
+<1> launch mysql on startup
+<2> restart mysql service
+
+
 
 Now start the WhatsSid database creator to create and insert the tune fingerprintings for your music collection:
 [source,subs="attributes+"]
