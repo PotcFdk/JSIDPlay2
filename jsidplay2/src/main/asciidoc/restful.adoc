@@ -226,6 +226,7 @@ sudo apt-get install mysql-server
 sudo mysql_secure_installation utility
 
 sudo mysql -u root -p
+CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>';
 GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' IDENTIFIED BY '<password>'; # <1>
 quit
 
