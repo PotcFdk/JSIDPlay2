@@ -316,7 +316,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
 											MusicInfoWithConfidenceBean result = whatsSidSupport
 													.match(fingerPrintMatcher);
-											if (result != null) {
+											if (result != null && Objects.equals(tuneToCheck, tune)) {
 												whatsSidHook.accept(result);
 											}
 										}
