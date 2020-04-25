@@ -70,7 +70,7 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
-	@Parameter(description = "directory", required = true)
+	@Parameter(description = "directory")
 	private String directory;
 
 	@ParametersDelegate
@@ -112,11 +112,13 @@ public class FingerPrintingCreator {
 			whatsSidService.deleteAll();
 		}
 
-		System.out.println(
-				"Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
-
 		try {
-			processDirectory(new File(directory), em);
+			if (directory != null) {
+				System.out.println(
+						"Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
+				
+				processDirectory(new File(directory), em);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
