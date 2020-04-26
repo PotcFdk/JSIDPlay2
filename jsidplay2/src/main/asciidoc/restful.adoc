@@ -283,11 +283,11 @@ Now start the WhatsSid database creator to create and insert the tune fingerprin
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
-	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
-	--whatsSidDatabaseUsername <username>
-	--whatsSidDatabasePassword <password>
-	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSidDatabaseUsername <username> \
+	--whatsSidDatabasePassword <password> \
+	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
 	--hvsc <pathToHVSC># <1>
 	<pathToMusicCollection> & # <2>
 ----
@@ -316,11 +316,11 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
-	--appServerConnectors HTTPS
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
-	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary
-	--whatsSidDatabaseUsername <username>
-	--whatsSidDatabasePassword <password>
+	--appServerConnectors HTTPS \
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSidDatabaseUsername <username> \
+	--whatsSidDatabasePassword <password> \
 	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 ----
 <1> Launch the JSIDPlay2 AppServer using WhatsSid? tune recognition
@@ -335,18 +335,19 @@ Wants=network-online.target
 After=network.target network-online.target
 
 [Service]
-ExecStart=/usr/bin/java -server \
-	-classpath /home/ken/Downloads/jsidplay2-{version}/jsidplay2-{version}.jar \
+ExecStart=java \
+	-server \
+	-classpath /home/ken/Downloads/{artifactId}-{version}/jsidplay2-{version}.jar \
 	server.restful.JSIDPlay2Server \
 	--appServerKeystore /etc/jsidplay2.ks \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver
-	--whatsSidDatabaseUrl jdbc:mysql://<ipAddress>:3306/musiclibary
-	--whatsSidDatabaseUsername <username>
-	--whatsSidDatabasePassword <password>
+	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSidDatabaseUsername <username> \
+	--whatsSidDatabasePassword <password> \
 	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 User=ken
 
@@ -358,8 +359,8 @@ Now, grant permission and enable jsidplay2.service to autostart:
 [source,subs="attributes+"]
 ----
 chmod 644 /lib/systemd/system/jsidplay2.service
-sudo systemctl daemon-reload
 sudo systemctl enable jsidplay2.service
+sudo systemctl daemon-reload
 ----
 
 === Access from the Internet

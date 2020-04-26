@@ -9,7 +9,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="server.restful.JSIDPlay2Server"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--appServerConnectors HTTP --whatsSidDatabaseDriver com.mysql.jdbc.Driver --whatsSidDatabaseUrl jdbc:mysql://127.0.0.1:3306/musiclibary --whatsSidDatabaseUsername newuser --whatsSidDatabasePassword password --whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--appServerConnectors HTTP --whatsSidDatabaseDriver com.mysql.jdbc.Driver --whatsSidDatabaseUrl jdbc:mysql://127.0.0.1:3306/whatssid --whatsSidDatabaseUsername newuser --whatsSidDatabasePassword password --whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>

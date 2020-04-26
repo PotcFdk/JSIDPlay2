@@ -115,7 +115,7 @@ How to find out available JavaFX style classes of a node in the scene graph?
 get estimate row count of database:
 select  table_rows
 from    information_schema.tables
-where   table_schema = 'musiclibary'
+where   table_schema = 'whatssid'
   and   table_name = 'HashTable' ;
 
 This will display list of all tables that has minimum of 500MB of unused space:
@@ -128,7 +128,7 @@ round(data_free/1024/1024) as data_free_mb
  
 optimize table:
 mysql -u newuser -p"password"
-use musiclibary
+use whatssid
 OPTIMIZE TABLE HashTable
 
 Heap Memory Analyzer:
