@@ -28,7 +28,7 @@
 		<javafx.main.class>ui.JSidPlay2Main</javafx.main.class>
 		<!-- Optional: FTP upload coordinates -->
 		<serverId></serverId>
-		<serverUrl>scp://ken:haendel@haendel.ddns.net/home/ken</serverUrl>
+		<serverUrl>scp://ken:haendel@192.168.1.183/home/ken</serverUrl>
 		<remoteDir>public_html</remoteDir>
 		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
