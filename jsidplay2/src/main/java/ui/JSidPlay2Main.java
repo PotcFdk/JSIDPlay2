@@ -25,10 +25,8 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DebugUtil;
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.ini.IniFingerprintConfig;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
+import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import ui.common.Convenience;
 import ui.common.Toast;
@@ -118,8 +116,9 @@ public class JSidPlay2Main extends Application {
 			player = new Player(configuration);
 			player.setMenuHook(menuHook);
 			player.setWhatsSidHook(whatsSidHook);
-			player.setFingerPrintMatcher(
-					new FingerPrinting(new IniFingerprintConfig(), new FingerprintingClient(url, username, password)));
+			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
+//			player.setFingerPrintMatcher(
+//					new FingerPrinting(new IniFingerprintConfig(), new FingerprintingClient(url, username, password)));
 
 			// automatically load tune on start-up
 			Optional<String> filename = filenames.stream().findFirst();

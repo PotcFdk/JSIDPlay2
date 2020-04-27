@@ -1,6 +1,7 @@
 package libsidutils.fingerprinting.rest.client;
 
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;
 import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
@@ -23,6 +24,8 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -38,6 +41,8 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	private String username;
 	private Object password;
 
+	private boolean useXml;
+	
 	public FingerprintingClient(String url, String username, String password) {
 		this.url = url;
 		this.username = username;
@@ -136,10 +141,16 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		connection.setRequestMethod(requestMethod);
 		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, BASIC_AUTH + " "
 				+ Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8)));
-		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MIME_TYPE_XML.toString());
-		connection.setRequestProperty(HttpHeaders.ACCEPT, MIME_TYPE_XML.getMimeType());
 
-		JAXBContext.newInstance(tClass).createMarshaller().marshal(parameter, connection.getOutputStream());
+		if (useXml) {
+			connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MIME_TYPE_XML.toString());
+			connection.setRequestProperty(HttpHeaders.ACCEPT, MIME_TYPE_XML.getMimeType());
+			JAXBContext.newInstance(tClass).createMarshaller().marshal(parameter, connection.getOutputStream());
+		} else {
+			connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MIME_TYPE_JSON.toString());
+			connection.setRequestProperty(HttpHeaders.ACCEPT, MIME_TYPE_JSON.getMimeType());
+			connection.getOutputStream().write(new ObjectMapper().writeValueAsBytes(parameter));
+		}
 		connection.getOutputStream().flush();
 
 		return connection;
@@ -151,7 +162,12 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 			if (connection.getContentLength() == 0) {
 				return null;
 			}
-			Object obj = JAXBContext.newInstance(theClass).createUnmarshaller().unmarshal(connection.getInputStream());
+			Object obj;
+			if (useXml) {
+				obj = JAXBContext.newInstance(theClass).createUnmarshaller().unmarshal(connection.getInputStream());
+			} else {
+				obj = new ObjectMapper().readValue(connection.getInputStream(), theClass);
+			}
 			if (theClass.isInstance(obj)) {
 				return (T) obj;
 			}
