@@ -35,12 +35,10 @@ import libsidplay.components.mos656x.PALEmulation;
 import libsidplay.components.mos656x.Palette;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.ini.IniFingerprintConfig;
-import libsidutils.fingerprinting.rest.client.FingerprintingClient;
 import sidplay.Player;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
+import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WhatsSidSupport;
@@ -80,8 +78,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),
 					whatsSidSection.getMinimumRelativeConfidence());
 			whatsSidSupport.reset();
-			fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(),
-					new FingerprintingClient(url, username, password));
+			fingerPrintMatcher = new FingerprintJsonClient(url, username, password);
 
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(SOCKET_CONNECT_TIMEOUT);
