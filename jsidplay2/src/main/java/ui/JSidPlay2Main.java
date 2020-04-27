@@ -117,8 +117,6 @@ public class JSidPlay2Main extends Application {
 			player.setMenuHook(menuHook);
 			player.setWhatsSidHook(whatsSidHook);
 			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
-//			player.setFingerPrintMatcher(
-//					new FingerPrinting(new IniFingerprintConfig(), new FingerprintingClient(url, username, password)));
 
 			// automatically load tune on start-up
 			Optional<String> filename = filenames.stream().findFirst();

@@ -78,8 +78,6 @@ final public class ConsolePlayer {
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj, System.in));
 			player.setWhatsSidHook(obj -> consoleIO.whatsSid(obj, quiet, System.out));
 			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
-//			player.setFingerPrintMatcher(
-//					new FingerPrinting(new IniFingerprintConfig(), new FingerprintingClient(url, username, password)));
 
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
