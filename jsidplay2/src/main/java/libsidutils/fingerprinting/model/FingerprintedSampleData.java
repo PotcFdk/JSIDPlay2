@@ -87,7 +87,7 @@ public class FingerprintedSampleData {
 			// 1. stereo to mono conversion
 			byte[] bytes;
 			if (stream.getFormat().getChannels() == 2) {
-				bytes = new byte[(int) stream.getFrameLength()];
+				bytes = new byte[(int) stream.getFrameLength() * stream.getFormat().getChannels() * Short.BYTES];
 				stream.read(bytes);
 				ShortBuffer stereoSamples = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
 				ByteBuffer monoBuffer = ByteBuffer.allocate(bytes.length >> 1).order(ByteOrder.LITTLE_ENDIAN);
