@@ -23,12 +23,12 @@ public final class WhatsSidSupport {
 	/**
 	 * Number of channels.
 	 */
-	private static final int CHANNELS = 2;
+	private static final int CHANNELS = 1;
 
 	/**
 	 * Resampler to 8Khz.
 	 */
-	private final Resampler downSamplerL, downSamplerR;
+	private final Resampler downSampler;
 
 	/**
 	 * Random source for triangular dithering
@@ -60,9 +60,7 @@ public final class WhatsSidSupport {
 	private double minimumRelativeConfidence;
 
 	public WhatsSidSupport(double cpuFrequency, int captureTimeInS, double minimumRelativeConfidence) {
-		this.downSamplerL = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
-				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
-		this.downSamplerR = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
+		this.downSampler = Resampler.createResampler(cpuFrequency, SamplingMethod.RESAMPLE,
 				SamplingRate.VERY_LOW.getFrequency(), SamplingRate.VERY_LOW.getMiddleFrequency());
 		this.whatsSidBufferSize = Short.BYTES * CHANNELS * SamplingRate.VERY_LOW.getFrequency() * captureTimeInS;
 		this.whatsSidBuffer = ByteBuffer.allocateDirect(whatsSidBufferSize).order(ByteOrder.LITTLE_ENDIAN);
@@ -78,13 +76,9 @@ public final class WhatsSidSupport {
 	 */
 	public boolean output(int valL, int valR) {
 		int dither = triangularDithering();
-		if (downSamplerL.input(valL)) {
-			whatsSidBuffer.putShort(
-					(short) Math.max(Math.min(downSamplerL.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE));
-		}
-		if (downSamplerR.input(valR)) {
+		if (downSampler.input((valL + valR) >> 1)) {
 			if (!whatsSidBuffer.putShort(
-					(short) Math.max(Math.min(downSamplerR.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
+					(short) Math.max(Math.min(downSampler.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
 				((Buffer) whatsSidBuffer).clear();
 				return true;
@@ -142,7 +136,7 @@ public final class WhatsSidSupport {
 	private byte[] createWAV() {
 		ByteBuffer result = ByteBuffer.allocate(WAVHeader.HEADER_LENGTH + whatsSidBufferSize)
 				.order(ByteOrder.LITTLE_ENDIAN);
-		WAVHeader wavHeader = new WAVHeader(2, SamplingRate.VERY_LOW.getFrequency());
+		WAVHeader wavHeader = new WAVHeader(CHANNELS, SamplingRate.VERY_LOW.getFrequency());
 		wavHeader.advance(whatsSidBufferSize);
 		result.put(wavHeader.getBytes());
 		ByteBuffer copy = whatsSidBuffer.asReadOnlyBuffer();
