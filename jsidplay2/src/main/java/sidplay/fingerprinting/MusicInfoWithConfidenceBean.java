@@ -1,7 +1,5 @@
 package sidplay.fingerprinting;
 
-import java.util.Objects;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -68,17 +66,9 @@ public class MusicInfoWithConfidenceBean {
 			return false;
 		}
 		MusicInfoWithConfidenceBean otherMusicInfoWithConfidence = (MusicInfoWithConfidenceBean) obj;
-		MusicInfoBean otherMusicInfo = otherMusicInfoWithConfidence.getMusicInfo();
-		if (otherMusicInfo == null) {
-			return false;
-		}
+
 		// No matter the confidence, if metadata matches then the tune matches
-		return Objects.equals(musicInfo.getSongNo(), otherMusicInfo.getSongNo())
-				&& Objects.equals(musicInfo.getTitle(), otherMusicInfo.getTitle())
-				&& Objects.equals(musicInfo.getArtist(), otherMusicInfo.getArtist())
-				&& Objects.equals(musicInfo.getAlbum(), otherMusicInfo.getAlbum())
-				&& Objects.equals(musicInfo.getFileDir(), otherMusicInfo.getFileDir())
-				&& Objects.equals(musicInfo.getInfoDir(), otherMusicInfo.getInfoDir());
+		return musicInfo.equals(otherMusicInfoWithConfidence.getMusicInfo());
 	}
 
 	@Override

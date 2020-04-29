@@ -1,5 +1,7 @@
 package sidplay.fingerprinting;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -73,6 +75,21 @@ public class MusicInfoBean {
 	@XmlElement(name = "audioLength")
 	public void setAudioLength(double audioLength) {
 		this.audioLength = audioLength;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof MusicInfoBean)) {
+			return false;
+		}
+		MusicInfoBean otherMusicInfo = (MusicInfoBean) obj;
+
+		return Objects.equals(getSongNo(), otherMusicInfo.getSongNo())
+				&& Objects.equals(getTitle(), otherMusicInfo.getTitle())
+				&& Objects.equals(getArtist(), otherMusicInfo.getArtist())
+				&& Objects.equals(getAlbum(), otherMusicInfo.getAlbum())
+				&& Objects.equals(getFileDir(), otherMusicInfo.getFileDir())
+				&& Objects.equals(getInfoDir(), otherMusicInfo.getInfoDir());
 	}
 
 	@Override
