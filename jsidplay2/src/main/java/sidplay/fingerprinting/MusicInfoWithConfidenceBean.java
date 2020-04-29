@@ -73,8 +73,8 @@ public class MusicInfoWithConfidenceBean {
 
 	@Override
 	public String toString() {
-		return musicInfo
-				+ String.format(" - (%d - %.2f [%d - %.2f]", confidence, relativeConfidence, offset, offsetSeconds);
+		return String.format("WhatsSid? %s\n\t%d - %.2f [%d - %.2f]\n", musicInfo, confidence, relativeConfidence,
+				offset, offsetSeconds);
 	}
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {

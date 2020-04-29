@@ -15,7 +15,6 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -27,9 +26,7 @@ import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.DebugUtil;
 import sidplay.Player;
 import sidplay.fingerprinting.FingerprintJsonClient;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import ui.common.Convenience;
-import ui.common.Toast;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
@@ -96,13 +93,6 @@ public class JSidPlay2Main extends Application {
 		}
 	};
 
-	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
-		Platform.runLater(() -> {
-			System.out.println("WhatsSid? " + musicInfoWithConfidence);
-			Toast.makeText(jSidplay2.getStage(), musicInfoWithConfidence.toString(), 5000, 500, 500);
-		});
-	};
-
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -115,7 +105,6 @@ public class JSidPlay2Main extends Application {
 
 			player = new Player(configuration);
 			player.setMenuHook(menuHook);
-			player.setWhatsSidHook(whatsSidHook);
 			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
 
 			// automatically load tune on start-up

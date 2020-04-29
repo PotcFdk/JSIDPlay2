@@ -94,7 +94,7 @@ public class MusicInfoBean {
 
 	@Override
 	public String toString() {
-		return String.format("%s/%s/%s - \n\t%s (%d)", title, artist, album, infoDir, songNo);
+		return String.format("%s / %s / %s\n\t%s (%d)", title, artist, album, infoDir, songNo);
 	}
 
 }

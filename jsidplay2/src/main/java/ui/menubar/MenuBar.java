@@ -32,6 +32,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
@@ -68,6 +69,7 @@ import ui.audiosettings.AudioSettings;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
+import ui.common.Toast;
 import ui.common.UIPart;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
@@ -127,8 +129,13 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	protected CheckMenuItem pauseContinue, turboTape, driveOn, driveSoundOn, parCable, installJiffyDos, expand2000,
 			expand4000, expand6000, expand8000, expandA000, turnPrinterOn;
+
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
+	
+	@FXML
+	protected Menu help;
+	
 	@FXML
 	protected MenuItem save, previous, next;
 
@@ -142,7 +149,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	protected Tooltip previous2ToolTip, next2ToolTip;
 
 	@FXML
-	protected Label tracks;
+	protected Label tracks, whatssidPositioner;
 
 	private class StateChangeListener implements PropertyChangeListener {
 		@Override
@@ -268,6 +275,13 @@ public class MenuBar extends C64VBox implements UIPart {
 			});
 			jSidPlay2.getTabbedPane().requestFocus();
 		}
+
+		util.getPlayer().setWhatsSidHook(musicInfoWithConfidence -> {
+			Platform.runLater(() -> {
+				System.out.println(musicInfoWithConfidence);
+				Toast.makeText(whatssidPositioner, musicInfoWithConfidence.toString(), 5);
+			});
+		});
 		util.getPlayer().startC64();
 	}
 

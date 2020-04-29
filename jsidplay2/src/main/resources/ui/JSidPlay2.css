@@ -1,3 +1,13 @@
+#whatssid {
+	-fx-opacity: 0.8;
+	-fx-background-color: cornsilk;
+    -fx-padding: 10;
+    -fx-border-color: blue; 
+    -fx-border-width: 2;
+    -fx-font-size: 16;
+    -fx-text-fill: blue;
+}
+
 .button {
 	-fx-effect: null;
 }

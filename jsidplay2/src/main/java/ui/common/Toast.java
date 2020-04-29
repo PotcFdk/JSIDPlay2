@@ -1,60 +1,35 @@
 package ui.common;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Duration;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javafx.application.Platform;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.stage.Popup;
 
 public final class Toast {
-	public static void makeText(Stage ownerStage, String toastMsg, int toastDelay, int fadeInDelay, int fadeOutDelay) {
-		Stage toastStage = new Stage();
-		toastStage.initOwner(ownerStage);
-		toastStage.initModality(Modality.APPLICATION_MODAL);
-		toastStage.setResizable(false);
-		toastStage.initStyle(StageStyle.TRANSPARENT);
-		toastStage.setX(0);
-		toastStage.setY(0);
 
-		Text text = new Text(toastMsg);
-		text.setFont(Font.font("Verdana", 25));
-		text.setFill(Color.RED);
+	public static void makeText(Node ownerNode, String toastMsg, int seconds) {
+		Popup popup = new Popup();
+		popup.setAutoFix(true);
+		popup.setAutoHide(true);
+		popup.setHideOnEscape(true);
 
-		StackPane root = new StackPane(text);
-		root.setStyle("-fx-background-radius: 10; -fx-background-color: rgba(0, 0, 0, 0.2); -fx-padding: 25px;");
-		root.setOpacity(0);
+		Label label = new Label();
+		label.setId("whatssid");
+		label.setText(toastMsg);
+		label.setOnMouseClicked(evt -> popup.hide());
+		popup.getContent().add(label);
 
-		Scene scene = new Scene(root);
-		scene.setFill(Color.TRANSPARENT);
-		toastStage.setScene(scene);
-		toastStage.show();
+		Bounds userTextFieldBounds = ownerNode.getBoundsInLocal();
+		Point2D popupLocation = ownerNode.localToScreen(userTextFieldBounds.getMaxX(), userTextFieldBounds.getMinY());
+		popup.show(ownerNode, popupLocation.getX(), popupLocation.getY());
 
-		Timeline fadeInTimeline = new Timeline();
-		KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(fadeInDelay),
-				new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 1));
-		fadeInTimeline.getKeyFrames().add(fadeInKey1);
-		fadeInTimeline.setOnFinished((ae) -> {
-			new Thread(() -> {
-				try {
-					Thread.sleep(toastDelay);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				Timeline fadeOutTimeline = new Timeline();
-				KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(fadeOutDelay),
-						new KeyValue(toastStage.getScene().getRoot().opacityProperty(), 0));
-				fadeOutTimeline.getKeyFrames().add(fadeOutKey1);
-				fadeOutTimeline.setOnFinished((aeb) -> toastStage.close());
-				fadeOutTimeline.play();
-			}).start();
-		});
-		fadeInTimeline.play();
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		executor.schedule(() -> Platform.runLater(() -> popup.hide()), seconds, TimeUnit.SECONDS);
 	}
 }

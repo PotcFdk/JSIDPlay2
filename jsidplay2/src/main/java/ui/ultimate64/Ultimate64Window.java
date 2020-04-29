@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
@@ -120,8 +121,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
 						if (result != null) {
 							Platform.runLater(() -> {
-								System.out.println("WhatsSid? " + result);
-								Toast.makeText(getStage(), result.toString(), 5000, 500, 500);
+								System.out.println(result);
+								Toast.makeText(whatssidPositioner, result.toString(), 5);
 							});
 						}
 					} catch (Exception e) {
@@ -255,6 +256,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	@FXML
 	private CheckBox enablePalEmulation;
+
+	@FXML
+	protected Label whatssidPositioner;
 
 	private boolean whatsSidEnabled;
 	private WhatsSidSupport whatsSidSupport;
