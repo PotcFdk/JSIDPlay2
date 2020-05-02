@@ -288,7 +288,7 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
-						if (whatsSidEnabled) {
+						if (whatsSidEnabled && whatsSidSupport != null) {
 							whatsSidSupport.output(outAudioBuffer[i << 1 | 0], outAudioBuffer[i << 1 | 1]);
 						}
 						outAudioBuffer[i << 1 | 0] = 0;
