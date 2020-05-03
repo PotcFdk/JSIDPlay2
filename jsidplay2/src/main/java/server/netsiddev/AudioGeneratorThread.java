@@ -288,7 +288,7 @@ public class AudioGeneratorThread extends Thread {
 							}
 							output.putShort((short) value);
 						}
-						if (whatsSidEnabled && whatsSidSupport != null) {
+						if (whatsSidEnabled) {
 							whatsSidSupport.output(outAudioBuffer[i << 1 | 0], outAudioBuffer[i << 1 | 1]);
 						}
 						outAudioBuffer[i << 1 | 0] = 0;
@@ -350,11 +350,6 @@ public class AudioGeneratorThread extends Thread {
 	public void reopen() {
 		// Fix for Linux ALSA audio systems, only
 		deviceChanged = true;
-		if (whatsSidSupport == null) {
-			whatsSidSupport = new WhatsSidSupport(sidClocking.getCpuFrequency(), captureTime, minimumRelativeConfidence);
-		} else {
-			whatsSidSupport.reset();
-		}
 	}
 
 	/**
@@ -548,6 +543,7 @@ public class AudioGeneratorThread extends Thread {
 			}
 			setDelay(i, 0);
 		}
+		whatsSidSupport = new WhatsSidSupport(sidClocking.getCpuFrequency(), captureTime, minimumRelativeConfidence);
 	}
 
 	public void setSID(int sidNumber, SIDChip sidConfig) {
