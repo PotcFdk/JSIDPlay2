@@ -1,7 +1,6 @@
 package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
-import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_CBR;
@@ -41,6 +40,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
+import sidplay.audio.AudioConfig;
 
 /**
  * Audio section of the INI file.
@@ -260,7 +260,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public int getAudioBufferSize() {
-		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", DEFAULT_AUDIO_BUFFER_SIZE);
+		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", AudioConfig.getDefaultBufferSize());
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package server.netsiddev.ini;
 
 import libsidplay.common.SamplingRate;
+import sidplay.audio.AudioConfig;
 import sidplay.ini.IniReader;
 import sidplay.ini.IniSection;
 
@@ -43,10 +44,7 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 	}
 
 	public int getAudioBufferSize() {
-		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", 16384);
+		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", AudioConfig.getDefaultBufferSize());
 	}
 
-	public void setAudioBufferSize(int audioBufferSize) {
-		iniReader.setProperty("Audio", "Audio Buffer Size", audioBufferSize);
-	}
 }

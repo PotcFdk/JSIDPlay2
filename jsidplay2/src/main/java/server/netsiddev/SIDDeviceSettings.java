@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import sidplay.audio.AudioConfig;
+
 public class SIDDeviceSettings {
 	private final static String FILE_NAME_PROPERTIES = "jsiddevice.properties";
 	private final static String PROPERTY_DEVICE_INDEX = "deviceIndex";
@@ -56,7 +58,7 @@ public class SIDDeviceSettings {
 		try {
 			return Integer.valueOf(props.getProperty(PROPERTY_AUDIO_BUFFER_SIZE));
 		} catch (NumberFormatException nfe) {
-			return 16384;
+			return AudioConfig.getDefaultBufferSize();
 		}
 	}
 
@@ -71,7 +73,7 @@ public class SIDDeviceSettings {
 	 * @return WhatsSID enable from the settings.
 	 */
 	public synchronized boolean isWhatsSidEnable() {
-		return Boolean.TRUE.equals(Boolean.valueOf(props.getProperty(PROPERTY_WHATSSID_ENABLE, "false")));
+		return Boolean.TRUE.equals(Boolean.valueOf(props.getProperty(PROPERTY_WHATSSID_ENABLE, "true")));
 	}
 
 	/**

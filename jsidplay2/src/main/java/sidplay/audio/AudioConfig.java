@@ -32,11 +32,6 @@ public class AudioConfig {
 	/**
 	 * This instance represents the requested audio configuration.<BR>
 	 * 
-	 * <B>Note:</B> Java Linux ALSA Sound System is awful!<BR>
-	 * Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x
-	 * fast forward)<BR>
-	 * 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
-	 * 
 	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
 	 * @param deviceIdx       The sound device number.
@@ -133,6 +128,23 @@ public class AudioConfig {
 	 */
 	public final int getDevice() {
 		return deviceIdx;
+	}
+
+	/**
+	 * <B>Note:</B> Java Linux ALSA Sound System is awful!<BR>
+	 * Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x
+	 * fast forward)<BR>
+	 * 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
+	 * 
+	 * @return platform dependent default buffer size
+	 */
+	public static final int getDefaultBufferSize() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		if (OS.indexOf("nux") >= 0) {
+			return 16384;
+		} else {
+			return 2048;
+		}
 	}
 
 }

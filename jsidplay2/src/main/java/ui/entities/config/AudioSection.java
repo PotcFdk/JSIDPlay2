@@ -1,7 +1,6 @@
 package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
-import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_CBR;
@@ -56,6 +55,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
+import sidplay.audio.AudioConfig;
 import ui.common.FileToStringConverter;
 
 @Embeddable
@@ -292,7 +292,7 @@ public class AudioSection implements IAudioSection {
 		this.bufferSize.set(bufferSize);
 	}
 
-	private ObjectProperty<Integer> audioBufferSize = new SimpleObjectProperty<>(DEFAULT_AUDIO_BUFFER_SIZE);
+	private ObjectProperty<Integer> audioBufferSize = new SimpleObjectProperty<>(AudioConfig.getDefaultBufferSize());
 
 	public ObjectProperty<Integer> audioBufferSizeProperty() {
 		return audioBufferSize;
