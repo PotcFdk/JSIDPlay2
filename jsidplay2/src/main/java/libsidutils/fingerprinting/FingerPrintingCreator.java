@@ -28,7 +28,7 @@ import ui.entities.whatssid.service.WhatsSidService;
 import ui.filefilter.TuneFileFilter;
 
 /**
- * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a
+ * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
  * currently played tune
  * 
  * This is the program to create the fingerprintings for all tunes of a
@@ -49,19 +49,19 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
+	@Parameter(names = { "--whatsSIDDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
 	private String whatsSidDatabaseDriver;
 
-	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
+	@Parameter(names = { "--whatsSIDDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
 	private String whatsSidDatabaseUrl;
 
-	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
+	@Parameter(names = { "--whatsSIDDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
 	private String whatsSidDatabaseUsername;
 
-	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
+	@Parameter(names = { "--whatsSIDDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
 	private String whatsSidDatabasePassword;
 
-	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
+	@Parameter(names = { "--whatsSIDDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
 	private String whatsSidDatabaseDialect;
 
 	@Parameter(names = { "--createIni" }, descriptionKey = "CREATE_INI", arity = 1)

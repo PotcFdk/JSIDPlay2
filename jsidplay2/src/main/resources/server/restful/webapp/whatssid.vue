@@ -2,14 +2,14 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<title>WhatsSid</title>
+<title>WhatsSID</title>
 </head>
 <body>
 	<!--script src="https://unpkg.com/vue"></script-->
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-	<h1>WhatsSid?</h1>
+	<h1>WhatsSID?</h1>
 	<span>Please use username='jsidplay2', password='jsidplay2!'</span>
 
 	<div id="app">

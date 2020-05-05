@@ -233,7 +233,7 @@ public class ConsoleIO {
 		if (quiet) {
 			return;
 		}
-		out.println("WhatsSid? " + musicInfoWithConfidence.toString());
+		out.println("WhatsSID? " + musicInfoWithConfidence.toString());
 	}
 
 	private void printTopLine(PrintStream out, final IniConsoleSection console) {

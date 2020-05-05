@@ -185,7 +185,7 @@ public interface IniDefaults {
 	String DEFAULT_ReSIDfp_STEREO_FILTER_8580 = EMULATOR_SECTION.getReSIDfpStereoFilter8580();
 	String DEFAULT_ReSIDfp_3SID_FILTER_8580 = EMULATOR_SECTION.getReSIDfpThirdSIDFilter8580();
 
-	// WhatsSid Section
+	// WhatsSID Section
 
 	IWhatsSidSection WHATSSID_SECTION = DEFAULTS.getWhatsSidSection();
 	boolean DEFAULT_WHATSSID_ENABLE = WHATSSID_SECTION.isEnable();

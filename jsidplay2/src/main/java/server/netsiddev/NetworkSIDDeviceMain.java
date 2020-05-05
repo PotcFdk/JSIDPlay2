@@ -127,7 +127,7 @@ public class NetworkSIDDeviceMain {
 			String recognizedTunes = ClientContext.getRecognizedTunes();
 			if (!recognizedTunes.trim().isEmpty()) {
 				System.out.println(recognizedTunes);
-				trayIcon.displayMessage("WhatsSid?", recognizedTunes, TrayIcon.MessageType.NONE);
+				trayIcon.displayMessage("WhatsSID?", recognizedTunes, TrayIcon.MessageType.NONE);
 			}
 		}).start();
 	}

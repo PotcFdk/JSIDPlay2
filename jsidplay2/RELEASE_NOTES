@@ -11,4 +11,4 @@ Save JPEG screenshot fixed
 emulation settings: revert settings to default
 emulation settings: copy first SID settings to stereo SID and 3-SID
 Record tunes as CSV (SID register writes)
-WhatsSid? Shazam like audio recognition added to JSIDPlay2 and JSIDDevice
+WhatsSID? Shazam like audio recognition added to JSIDPlay2 and JSIDDevice

@@ -134,19 +134,19 @@ public class JSIDPlay2Server {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--whatsSidDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER")
+	@Parameter(names = { "--whatsSIDDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER")
 	private String whatsSidDatabaseDriver;
 
-	@Parameter(names = { "--whatsSidDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL")
+	@Parameter(names = { "--whatsSIDDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL")
 	private String whatsSidDatabaseUrl;
 
-	@Parameter(names = { "--whatsSidDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME")
+	@Parameter(names = { "--whatsSIDDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME")
 	private String whatsSidDatabaseUsername;
 
-	@Parameter(names = { "--whatsSidDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD")
+	@Parameter(names = { "--whatsSIDDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD")
 	private String whatsSidDatabasePassword;
 
-	@Parameter(names = { "--whatsSidDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT")
+	@Parameter(names = { "--whatsSIDDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT")
 	private String whatsSidDatabaseDialect;
 
 	@ParametersDelegate
@@ -396,7 +396,7 @@ public class JSIDPlay2Server {
 
 	public static EntityManager getEntityManager() throws IOException {
 		if (entityManagerFactory == null) {
-			throw new IOException("WhatsSid? database unknown, please specify command line parameters!");
+			throw new IOException("WhatsSID? database unknown, please specify command line parameters!");
 		}
 		EntityManager em = threadLocalEntityManager.get();
 

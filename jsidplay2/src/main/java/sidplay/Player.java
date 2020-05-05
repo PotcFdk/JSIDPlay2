@@ -175,7 +175,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private Consumer<Player> interactivityHook = player -> {
 	};
 	/**
-	 * Called after WhatsSid has detected a tune.
+	 * Called after WhatsSID has detected a tune.
 	 */
 	private Consumer<MusicInfoWithConfidenceBean> whatsSidHook = musicInfoWithConfidence -> {
 	};
@@ -255,7 +255,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private int fastForwardVICFrames;
 
 	/**
-	 * WhatsSid?
+	 * WhatsSID?
 	 */
 	private IFingerprintMatcher fingerPrintMatcher;
 
@@ -305,7 +305,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					WhatsSidSupport whatsSidSupport = sidMixer.getWhatsSidSupport();
 					whatsSidSupport.reset();
 					final SidTune tuneToCheck = tune;
-					c64.getEventScheduler().schedule(new Event("WhatsSid") {
+					c64.getEventScheduler().schedule(new Event("WhatsSID") {
 
 						@Override
 						public void event() throws InterruptedException {

@@ -41,7 +41,7 @@ link:https://haendel.ddns.net:8443/static/hvsc.vue[JSIDPlay2 HVSC Online Player]
 
 link:https://haendel.ddns.net:8443/static/favorites.vue[JSIDPlay2 Favorites Online Player]
 
-link:https://haendel.ddns.net:8443/static/whatssid.vue[WhatsSid? tune recognition]
+link:https://haendel.ddns.net:8443/static/whatssid.vue[WhatsSID? tune recognition]
 
 == User Guide
 Please read manual here:

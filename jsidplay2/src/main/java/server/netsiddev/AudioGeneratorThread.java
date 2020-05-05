@@ -104,16 +104,16 @@ public class AudioGeneratorThread extends Thread {
 	/** Audio output driver. */
 	private JavaSound driver = new JavaSound();
 
-	/** WhatsSid capture time in seconds */
+	/** WhatsSID capture time in seconds */
 	private int captureTime;
 	
-	/** WhatsSid enabled? */
+	/** WhatsSID enabled? */
 	private boolean whatsSidEnabled;
 	
-	/** WhatsSid minimum confidence to match */
+	/** WhatsSID minimum confidence to match */
 	private double minimumRelativeConfidence;
 	
-	/** WhatsSid */
+	/** WhatsSID */
 	private WhatsSidSupport whatsSidSupport;
 	
 	/**

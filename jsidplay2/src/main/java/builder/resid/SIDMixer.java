@@ -216,7 +216,7 @@ public class SIDMixer implements Mixer {
 	private final boolean whatsSidEnabled;
 
 	/**
-	 * WhatsSid
+	 * WhatsSID
 	 */
 	private final WhatsSidSupport whatsSidSupport;
 

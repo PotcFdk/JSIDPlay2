@@ -19,7 +19,7 @@ import sidplay.audio.exceptions.NextTuneException;
 import sidplay.fingerprinting.IFingerprintInserter;
 
 /**
- * WhatsSid? is a Shazam like feature. It analyzes tunes to recognize a
+ * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
  * currently played tune
  * 
  * This is the audio driver to create a fingerprint for a tune. Use

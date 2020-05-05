@@ -214,7 +214,7 @@ sudo chmod 755 ~/server.sh
 
 Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
-=== Create database for WhatsSid? tune recognition
+=== Create database for WhatsSID? tune recognition
 
 Now lets explain how to create the database for Shazam like tune recognition:
 
@@ -276,18 +276,18 @@ sudo systemctl restart mysql # <2>
 
 
 
-Now start the WhatsSid database creator to create and insert the tune fingerprintings for your music collection:
+Now start the WhatsSID database creator to create and insert the tune fingerprintings for your music collection:
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
-	--whatsSidDatabaseUsername <username> \
-	--whatsSidDatabasePassword <password> \
-	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
+	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseUsername <username> \
+	--whatsSIDDatabasePassword <password> \
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
 	--hvsc <pathToHVSC># <1>
 	<pathToMusicCollection> & # <2>
 ----
@@ -297,15 +297,15 @@ java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.Fi
 *Note:* The pathToMusicCollection is traversed recursively and every song is converted to a 8KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
 After every created WAV file an audio fingerprint is created and stored in the database.
 
-Now you can use WhatsSid? tune recognition.
+Now you can use WhatsSID? tune recognition.
 
-=== Launch JSIDPlay2 AppServer with additional WhatsSid? tune recognition
+=== Launch JSIDPlay2 AppServer with additional WhatsSID? tune recognition
 
 Now lets explain how to start JSIDPlay2 AppServer providing Shazam like tune recognition.
 
-You only have to add additional WhatsSid database parameters.
+You only have to add additional WhatsSID database parameters.
 
-To start the JSIPlay2 AppServer with a WhatsSid database:
+To start the JSIPlay2 AppServer with a WhatsSID database:
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
@@ -317,13 +317,13 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTPS \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
-	--whatsSidDatabaseUsername <username> \
-	--whatsSidDatabasePassword <password> \
-	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
+	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseUsername <username> \
+	--whatsSIDDatabasePassword <password> \
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 ----
-<1> Launch the JSIDPlay2 AppServer using WhatsSid? tune recognition
+<1> Launch the JSIDPlay2 AppServer using WhatsSID? tune recognition
 
 === Autostart JSIDPlay2 AppServer on system startup
 
@@ -344,11 +344,11 @@ ExecStart=java \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS \
-	--whatsSidDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSidDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
-	--whatsSidDatabaseUsername <username> \
-	--whatsSidDatabasePassword <password> \
-	--whatsSidDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
+	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseUsername <username> \
+	--whatsSIDDatabasePassword <password> \
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
 User=ken
 
 [Install]
@@ -484,7 +484,7 @@ For example defaultLength=180 sets the default song length.
 
 ==== Upload WAV for tune recognition
 
-*Info:* This service method does only work, if server has been started with additional WhatsSid database parameters.
+*Info:* This service method does only work, if server has been started with additional WhatsSID database parameters.
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid]
 
