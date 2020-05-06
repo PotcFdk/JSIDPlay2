@@ -2,7 +2,10 @@ package libsidutils.fingerprinting;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -13,6 +16,7 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.common.SamplingRate;
+import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.DebugUtil;
@@ -70,6 +74,9 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
+	@Parameter(names = { "--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY")
+	private String previousDirectory;
+
 	@Parameter(description = "directory")
 	private String directory;
 
@@ -79,6 +86,8 @@ public class FingerPrintingCreator {
 	private Player player;
 
 	private WhatsSidDriver whatsSidDriver;
+
+	private SidDatabase previousSidDatabase;
 
 	private void execute(String[] args) throws IOException, SidTuneError, InterruptedException {
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
@@ -98,6 +107,10 @@ public class FingerPrintingCreator {
 		player = new Player(config);
 		player.setSidDatabase(hvsc != null ? new SidDatabase(hvsc) : null);
 
+		if (previousDirectory != null) {
+			previousSidDatabase = new SidDatabase(previousDirectory);
+		}
+
 		EntityManager em = Persistence.createEntityManagerFactory(PersistenceProperties.WHATSSID_DS,
 				new PersistenceProperties(whatsSidDatabaseDriver, whatsSidDatabaseUrl, whatsSidDatabaseUsername,
 						whatsSidDatabasePassword, whatsSidDatabaseDialect))
@@ -116,7 +129,7 @@ public class FingerPrintingCreator {
 			if (directory != null) {
 				System.out.println(
 						"Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
-				
+
 				processDirectory(new File(directory), em);
 			}
 		} catch (IOException e) {
@@ -135,15 +148,14 @@ public class FingerPrintingCreator {
 				processDirectory(file, em);
 			} else if (file.isFile()) {
 				if (TUNE_FILE_FILTER.accept(file)) {
+					SidTune tune = SidTune.load(file);
+					if (previousDirectory != null) {
+						copyRecordingsOfPreviousDirectory(file, tune);
+					}
 					whatsSidDriver.setTuneFile(file);
-					player.setRecordingFilenameProvider(tune -> {
-						String filename = PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath());
-						if (tune.getInfo().getSongs() > 1) {
-							filename += String.format("-%02d", tune.getInfo().getCurrentSong());
-						}
-						return filename;
-					});
-					player.setTune(SidTune.load(file));
+					player.setRecordingFilenameProvider(
+							theTune -> getRecordingFilename(file, theTune, theTune.getInfo().getCurrentSong()));
+					player.setTune(tune);
 					player.getTune().getInfo().setSelectedSong(player.getTune().getInfo().getStartSong());
 					player.startC64();
 					player.stopC64(false);
@@ -157,6 +169,37 @@ public class FingerPrintingCreator {
 				}
 			}
 		}
+	}
+
+	private void copyRecordingsOfPreviousDirectory(File file, SidTune tune) throws IOException, SidTuneError {
+		File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+		String collectionName = PathUtils.getCollectionName(theCollectionFile, file);
+		File previousFile = new File(previousDirectory, collectionName);
+		if (previousFile.exists()) {
+			SidTune previousTune = SidTune.load(previousFile);
+			if (Objects.equals(tune.getMD5Digest(MD5Method.MD5_CONTENTS),
+					previousTune.getMD5Digest(MD5Method.MD5_CONTENTS))
+					&& player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.) == previousSidDatabase
+							.getTuneLength(previousTune)) {
+				for (int i = 1; i < tune.getInfo().getSongs(); i++) {
+					File wavFile = new File(getRecordingFilename(file, tune, i) + whatsSidDriver.getExtension());
+					File previousWavFile = new File(
+							getRecordingFilename(previousFile, previousTune, i) + whatsSidDriver.getExtension());
+					if (!wavFile.exists() && previousWavFile.exists()) {
+						System.out.println("Tune is still unchanged, copy previous: " + previousWavFile);
+						Files.copy(previousFile.toPath(), wavFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					}
+				}
+			}
+		}
+	}
+
+	private String getRecordingFilename(File file, SidTune theTune, int song) {
+		String filename = PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath());
+		if (theTune.getInfo().getSongs() > 1) {
+			filename += String.format("-%02d", song);
+		}
+		return filename;
 	}
 
 	public static void main(String[] args) throws IOException, SidTuneError, InterruptedException {
