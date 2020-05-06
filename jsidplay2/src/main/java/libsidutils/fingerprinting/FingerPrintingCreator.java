@@ -98,14 +98,17 @@ public class FingerPrintingCreator {
 			System.in.read();
 			System.exit(0);
 		}
+		if (config.getSidplay2Section().getHvsc() == null) {
+			System.out.println("Parameter --hvsc must be present!");
+			System.exit(1);
+		}
 		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
-		String hvsc = config.getSidplay2Section().getHvsc();
 
 		player = new Player(config);
-		player.setSidDatabase(hvsc != null ? new SidDatabase(hvsc) : null);
+		player.setSidDatabase(new SidDatabase(config.getSidplay2Section().getHvsc()));
 
 		if (previousDirectory != null) {
 			previousSidDatabase = new SidDatabase(previousDirectory);
@@ -174,6 +177,7 @@ public class FingerPrintingCreator {
 	private void copyRecordingsOfPreviousDirectory(File file, SidTune tune) throws IOException, SidTuneError {
 		File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
 		String collectionName = PathUtils.getCollectionName(theCollectionFile, file);
+
 		File previousFile = new File(previousDirectory, collectionName);
 		if (previousFile.exists()) {
 			SidTune previousTune = SidTune.load(previousFile);
@@ -186,7 +190,7 @@ public class FingerPrintingCreator {
 					File previousWavFile = new File(
 							getRecordingFilename(previousFile, previousTune, i) + whatsSidDriver.getExtension());
 					if (!wavFile.exists() && previousWavFile.exists()) {
-						System.out.println("Tune is still unchanged, copy previous: " + previousWavFile);
+						System.out.println(String.format("Tune is unchanged, copy %s to %s", previousWavFile, wavFile));
 						Files.copy(previousFile.toPath(), wavFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 					}
 				}
