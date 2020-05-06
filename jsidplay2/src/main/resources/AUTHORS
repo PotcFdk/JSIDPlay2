@@ -7,7 +7,6 @@ contains the following contributed or derived work.  In the order they first
 supplied contributions or code was derived from their work:
 
     Dag Lem           - reSID library
-	Antti S. Lankila  - Distortion simulation and calculation of combined waveforms
     Michael Schwendt  - initial implementation of SidTune library,
                         Sid2Wav support, OSS/Free and SPARC audio
                         drivers
@@ -15,6 +14,7 @@ supplied contributions or code was derived from their work:
     Jarno Paananen    - 16 bit mixer code, Windows
                         MMSYSTEM Drivers
     Ken Händel        - source code conversion to Java
+	Antti S. Lankila  - Distortion simulation and calculation of combined waveforms
 
 Credit where credit is due, so if I missed anyone please let me know.
 
