@@ -122,50 +122,50 @@ public class OnlineContent {
 					System.exit(exitVal);
 				}
 			}
-			
+
 			exitVal = zipJSIDDevice(deployDir, projectVersion);
 			if (exitVal != 0) {
 				System.exit(exitVal);
 			}
-			
+
 			exitVal = createDemos(deployDir, baseDir);
 			if (exitVal != 0) {
 				System.exit(exitVal);
 			}
-			
+
 			if (gb64 != null) {
 				exitVal = gb64(deployDir, gb64);
 				if (exitVal != 0) {
 					System.exit(exitVal);
 				}
 			}
-			
+
 			if (hvmec != null) {
 				exitVal = hvmec(deployDir, hvmec);
 				if (exitVal != 0) {
 					System.exit(exitVal);
 				}
 			}
-			
+
 			if (cgsc != null) {
 				exitVal = cgsc(deployDir, cgsc);
 				if (exitVal != 0) {
 					System.exit(exitVal);
 				}
 			}
-			
+
 			if (hvsc != null) {
 				exitVal = hvsc(deployDir, hvsc);
 				if (exitVal != 0) {
 					System.exit(exitVal);
 				}
 			}
-			
+
 			File versionFile = new File(baseDir, "latest.properties");
+			versionFile.delete();
+			versionFile.createNewFile();
 			try (Writer writer = new PrintWriter(versionFile, StandardCharsets.ISO_8859_1.toString())) {
-				Properties properties = new Properties();
-				properties.setProperty("version", projectVersion);
-				properties.store(writer, null);
+				writer.append("version=" + projectVersion);
 			}
 		} else {
 			throw new RuntimeException("parameter 'phase' must be equal to 'package' or 'install'!");
@@ -374,7 +374,7 @@ public class OnlineContent {
 			doCreateIndex(MusicCollectionType.HVSC, hvscZipFile.getAbsolutePath());
 
 			doSplit(37748736, hvscZipFile.getAbsolutePath());
-		
+
 			hvscZipFile.delete();
 		}
 		return 0;
