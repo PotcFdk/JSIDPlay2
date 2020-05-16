@@ -279,7 +279,7 @@ public class OnlineContent {
 			long fileSize = hvmecZipFile.length();
 			try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
 				Properties properties = new Properties();
-				properties.setProperty("filename", "GameBase64.zip");
+				properties.setProperty("filename", "HVMEC.zip");
 				properties.setProperty("size", String.valueOf(fileSize));
 				properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
 				properties.store(writer, null);
