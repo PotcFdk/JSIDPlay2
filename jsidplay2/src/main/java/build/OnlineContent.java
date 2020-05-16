@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -96,6 +97,8 @@ public class OnlineContent {
 	private volatile boolean ready;
 
 	private void create(String[] args) throws Exception {
+		args = Arrays.asList(args).stream().map(arg -> arg == null ? "" : arg).toArray(String[]::new);
+
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
 		commander.parse(args);
 		if (help) {
