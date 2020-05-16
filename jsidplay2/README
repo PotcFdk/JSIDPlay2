@@ -18,7 +18,7 @@ Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
 -Dhvsc.7z=<pathToHVSC.7z>
 -Dcgsc.7z=<pathToCGSZ.7z>
--Dhvmec.zip=<pathToHVMEC.tar.bz2>
+-Dhvmec.zip=<pathToHVMEC.zip>
 -Dupx.exe=<pathToUPX>
 
 Use Oracle Java8
