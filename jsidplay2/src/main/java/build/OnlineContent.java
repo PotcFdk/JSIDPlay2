@@ -425,6 +425,7 @@ public class OnlineContent {
 		}
 		if (em != null) {
 			em.close();
+			em.getEntityManagerFactory().close();
 		}
 		ready = false;
 		// Really persist the databases
