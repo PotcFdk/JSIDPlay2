@@ -32,11 +32,10 @@
 		<remoteDir>public_html</remoteDir>
 		<!-- Optional: extra online content -->
 		<gb64.mdbfile />
-		<zip7.home />
 		<hvsc.7z />
 		<cgsc.7z />
-		<hvmec.bz2 />
-		<upx.home />
+		<hvmec.zip />
+		<upx.exe />
 	</properties>
 
 	<scm>
@@ -635,6 +634,20 @@
 										<exclude>**/*.txt</exclude>
 									</excludes>
 								</resource>
+								<resource>
+									<directory>src/main/linux</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.desktop</include>
+									</includes>
+								</resource>
+								<resource>
+									<directory>src/main/linux</directory>
+									<filtering>false</filtering>
+									<excludes>
+										<exclude>**/*.desktop</exclude>
+									</excludes>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -674,47 +687,57 @@
 				</dependencies>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1.1</version>
 				<executions>
 					<execution>
-						<id>pack-jsiddevice-jar</id>
+						<id>move</id>
 						<phase>package</phase>
 						<goals>
-							<goal>run</goal>
+							<goal>java</goal>
 						</goals>
 						<configuration>
-							<target>
-								<ant antfile="${basedir}/online-content.xml" target="shrink_jsiddevice">
-									<property name="deploy_dir" value="${project.build.directory}/deploy" />
-									<property name="jsiddevice" value="jsiddevice-${project.version}" />
-								</ant>
-							</target>
+							<mainClass>build.OnlineContent</mainClass>
+							<arguments>
+								<argument>--phase</argument>
+								<argument>package</argument>
+								<argument>--deployDir</argument>
+								<argument>${project.build.directory}/deploy</argument>
+								<argument>--projectVersion</argument>
+								<argument>${project.version}</argument>
+							</arguments>
 						</configuration>
 					</execution>
 					<execution>
 						<id>online-content</id>
 						<phase>install</phase>
 						<goals>
-							<goal>run</goal>
+							<goal>java</goal>
 						</goals>
 						<configuration>
-							<target>
-								<ant antfile="${basedir}/online-content.xml">
-									<property name="project.version" value="${project.version}" />
-									<property name="compile_classpath" refid="maven.compile.classpath" />
-									<property name="runtime_classpath" refid="maven.runtime.classpath" />
-									<property name="test_src" location="${basedir}/src/test/resources" />
-									<property name="deploy_dir" value="${project.build.directory}/deploy" />
-									<property name="gb64.mdbfile" value="${gb64.mdbfile}" />
-									<property name="hvsc.7z" value="${hvsc.7z}" />
-									<property name="zip7.home" value="${zip7.home}" />
-									<property name="cgsc.7z" value="${cgsc.7z}" />
-									<property name="hvmec.bz2" value="${hvmec.bz2}" />
-									<property name="upx.home" value="${upx.home}" />
-								</ant>
-							</target>
+							<mainClass>build.OnlineContent</mainClass>
+							<arguments>
+								<argument>--phase</argument>
+								<argument>install</argument>
+								<argument>--deployDir</argument>
+								<argument>${project.build.directory}/deploy</argument>
+								<argument>--projectVersion</argument>
+								<argument>${project.version}</argument>
+								<argument>--upxExe</argument>
+								<argument>${upx.exe}</argument>
+								<argument>--baseDir</argument>
+								<argument>${basedir}</argument>
+								<argument>--gb64</argument>
+								<argument>${gb64.mdbfile}</argument>
+								<argument>--hvmec</argument>
+								<argument>${hvmec.zip}</argument>
+								<argument>--cgsc</argument>
+								<argument>${cgsc.7z}</argument>
+								<argument>--hvsc</argument>
+								<argument>${hvsc.7z}</argument>
+							</arguments>
+							<classpathScope>runtime</classpathScope>
 						</configuration>
 					</execution>
 				</executions>

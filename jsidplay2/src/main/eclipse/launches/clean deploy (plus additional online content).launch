@@ -8,10 +8,9 @@
 <listAttribute key="M2_PROPERTIES">
 <listEntry value="gb64.mdbfile=${gb64.mdbfile}"/>
 <listEntry value="hvsc.7z=${hvsc.7z}"/>
-<listEntry value="zip7.home=${zip7.home}"/>
 <listEntry value="cgsc.7z=${cgsc.7z}"/>
-<listEntry value="hvmec.bz2=${hvmec.bz2}"/>
-<listEntry value="upx.home=${upx.home}"/>
+<listEntry value="hvmec.zip=${hvmec.zip}"/>
+<listEntry value="upx.exe=${upx.exe}"/>
 </listAttribute>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="false"/>
