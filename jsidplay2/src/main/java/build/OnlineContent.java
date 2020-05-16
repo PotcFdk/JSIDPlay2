@@ -107,60 +107,30 @@ public class OnlineContent {
 			System.in.read();
 			System.exit(0);
 		}
-
-		int exitVal;
-
+		
 		if ("package".equals(phase)) {
-			exitVal = moveProguardJar(deployDir, projectVersion);
-			if (exitVal != 0) {
-				System.exit(exitVal);
-			}
+			moveProguardJar(deployDir, projectVersion);
+
 		} else if ("install".equals(phase)) {
 			if (upxExe != null) {
-				exitVal = upx(upxExe, deployDir, projectVersion);
-				if (exitVal != 0) {
-					System.exit(exitVal);
-				}
+				upx(upxExe, deployDir, projectVersion);
 			}
+			zipJSIDDevice(deployDir, projectVersion);
 
-			exitVal = zipJSIDDevice(deployDir, projectVersion);
-			if (exitVal != 0) {
-				System.exit(exitVal);
-			}
-
-			exitVal = createDemos(deployDir, baseDir);
-			if (exitVal != 0) {
-				System.exit(exitVal);
-			}
+			createDemos(deployDir, baseDir);
 
 			if (gb64 != null) {
-				exitVal = gb64(deployDir, gb64);
-				if (exitVal != 0) {
-					System.exit(exitVal);
-				}
+				gb64(deployDir, gb64);
 			}
-
 			if (hvmec != null) {
-				exitVal = hvmec(deployDir, hvmec);
-				if (exitVal != 0) {
-					System.exit(exitVal);
-				}
+				hvmec(deployDir, hvmec);
 			}
-
 			if (cgsc != null) {
-				exitVal = cgsc(deployDir, cgsc);
-				if (exitVal != 0) {
-					System.exit(exitVal);
-				}
+				cgsc(deployDir, cgsc);
 			}
-
 			if (hvsc != null) {
-				exitVal = hvsc(deployDir, hvsc);
-				if (exitVal != 0) {
-					System.exit(exitVal);
-				}
+				hvsc(deployDir, hvsc);
 			}
-
 			File versionFile = new File(baseDir, "latest.properties");
 			versionFile.delete();
 			versionFile.createNewFile();
@@ -172,14 +142,13 @@ public class OnlineContent {
 		}
 	}
 
-	private int moveProguardJar(String deployDir, String projectVersion) throws IOException {
+	private void moveProguardJar(String deployDir, String projectVersion) throws IOException {
 		String proguardJar = deployDir + "/jsiddevice-" + projectVersion + "-proguard.jar";
 		String jsidDeviceJar = deployDir + "/jsiddevice-" + projectVersion + ".jar";
 		Files.move(Paths.get(proguardJar), Paths.get(jsidDeviceJar), StandardCopyOption.REPLACE_EXISTING);
-		return 0;
 	}
 
-	private int upx(String upxExe, String deployDir, String projectVersion) throws IOException, InterruptedException {
+	private void upx(String upxExe, String deployDir, String projectVersion) throws IOException, InterruptedException {
 		if (!new File(upxExe).exists() || !new File(upxExe).canExecute()) {
 			throw new RuntimeException("UPX Program not found: " + upxExe);
 		}
@@ -187,7 +156,7 @@ public class OnlineContent {
 				new String[] { upxExe, "--lzma", "--best", deployDir + "/jsiddevice-" + projectVersion + ".exe" });
 		print(proc.getErrorStream());
 		print(proc.getInputStream());
-		return proc.waitFor();
+		proc.waitFor();
 	}
 
 	private void print(InputStream stderr) throws IOException {
@@ -198,10 +167,8 @@ public class OnlineContent {
 			System.out.println(line);
 	}
 
-	private int zipJSIDDevice(String deployDir, String projectVersion) throws IOException {
-
+	private void zipJSIDDevice(String deployDir, String projectVersion) throws IOException {
 		TFile zipFile = new TFile(deployDir, "jsiddevice-" + projectVersion + ".zip");
-
 		TFile src;
 		src = new TFile(deployDir, "JSIDDevice (Java11).desktop");
 		src.mv(new TFile(zipFile, src.getName()));
@@ -214,11 +181,9 @@ public class OnlineContent {
 		src = new TFile(deployDir, "jsiddevice-" + projectVersion + ".exe", TArchiveDetector.NULL);
 		src.cp(new TFile(zipFile, src.getName()));
 		TVFS.umount();
-
-		return 0;
 	}
 
-	private int createDemos(String deployDir, String baseDir) throws IOException {
+	private void createDemos(String deployDir, String baseDir) throws IOException {
 		File demosFile = new File(deployDir, "online/demos/Demos.zip");
 		File crcFile = new File(deployDir, "online/demos/Demos.crc");
 
@@ -235,10 +200,9 @@ public class OnlineContent {
 			properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
 			properties.store(writer, null);
 		}
-		return 0;
 	}
 
-	private int gb64(String deployDir, String mdbFilename) throws IOException {
+	private void gb64(String deployDir, String mdbFilename) throws IOException {
 		File mdbFile = new File(mdbFilename);
 		if (mdbFile.exists()) {
 			new File(deployDir, "online/gamebase").mkdirs();
@@ -260,10 +224,9 @@ public class OnlineContent {
 				properties.store(writer, null);
 			}
 		}
-		return 0;
 	}
 
-	private int hvmec(String deployDir, String hvmecFilename) throws IOException {
+	private void hvmec(String deployDir, String hvmecFilename) throws IOException {
 		File hvmecFile = new File(hvmecFilename);
 		if (hvmecFile.exists()) {
 			new File(deployDir, "online/hvmec").mkdirs();
@@ -285,10 +248,9 @@ public class OnlineContent {
 				properties.store(writer, null);
 			}
 		}
-		return 0;
 	}
 
-	private int cgsc(String deployDir, String cgsc7zFilename) throws Exception {
+	private void cgsc(String deployDir, String cgsc7zFilename) throws Exception {
 		File cgsc7zFile = new File(cgsc7zFilename);
 		if (cgsc7zFile.exists()) {
 			new File(deployDir, "online/cgsc").mkdirs();
@@ -329,10 +291,9 @@ public class OnlineContent {
 			}
 			doCreateIndex(MusicCollectionType.CGSC, cgscZipFile.getAbsolutePath());
 		}
-		return 0;
 	}
 
-	private int hvsc(String deployDir, String hvsc7zFilename) throws Exception {
+	private void hvsc(String deployDir, String hvsc7zFilename) throws Exception {
 		File hvsc7zFile = new File(hvsc7zFilename);
 		if (hvsc7zFile.exists()) {
 			new File(deployDir, "online/hvsc").mkdirs();
@@ -377,7 +338,6 @@ public class OnlineContent {
 
 			hvscZipFile.delete();
 		}
-		return 0;
 	}
 
 	private void doCreateIndex(MusicCollectionType collectionType, String filename) throws Exception {
