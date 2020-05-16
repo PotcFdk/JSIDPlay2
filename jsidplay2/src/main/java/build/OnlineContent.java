@@ -210,9 +210,9 @@ public class OnlineContent {
 		src = new TFile(deployDir, "jsidplay2.png");
 		src.cp(new TFile(zipFile, src.getName()));
 		src = new TFile(deployDir, "jsiddevice-" + projectVersion + ".jar", TArchiveDetector.NULL);
-		src.mv(new TFile(zipFile, src.getName()));
+		src.cp(new TFile(zipFile, src.getName()));
 		src = new TFile(deployDir, "jsiddevice-" + projectVersion + ".exe", TArchiveDetector.NULL);
-		src.mv(new TFile(zipFile, src.getName()));
+		src.cp(new TFile(zipFile, src.getName()));
 		TVFS.umount();
 
 		return 0;
