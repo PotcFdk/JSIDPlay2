@@ -465,7 +465,7 @@
 				<version>3.0.1</version>
 				<executions>
 					<execution>
-						<id>copy-dependencies</id>
+						<id>javadoc</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>javadoc</goal>
