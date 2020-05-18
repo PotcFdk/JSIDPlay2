@@ -1,20 +1,20 @@
 package build;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static ui.entities.PersistenceProperties.CGSC_DS;
 import static ui.entities.PersistenceProperties.HVSC_DS;
 import static ui.musiccollection.MusicCollectionType.CGSC;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Properties;
@@ -43,6 +42,7 @@ import de.schlichtherle.truezip.file.TVFS;
 import libsidutils.DebugUtil;
 import libsidutils.Extract7Zip;
 import libsidutils.PathUtils;
+import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
@@ -107,7 +107,8 @@ public class OnlineContent {
 			System.in.read();
 			System.exit(0);
 		}
-		
+//		System.out.println("BEGIN OnlineContent.create()");
+
 		if ("package".equals(phase)) {
 			moveProguardJar(deployDir, projectVersion);
 
@@ -140,35 +141,38 @@ public class OnlineContent {
 		} else {
 			throw new RuntimeException("parameter 'phase' must be equal to 'package' or 'install'!");
 		}
+//		System.out.println("END OnlineContent.create()");
 	}
 
 	private void moveProguardJar(String deployDir, String projectVersion) throws IOException {
-		String proguardJar = deployDir + "/jsiddevice-" + projectVersion + "-proguard.jar";
-		String jsidDeviceJar = deployDir + "/jsiddevice-" + projectVersion + ".jar";
-		Files.move(Paths.get(proguardJar), Paths.get(jsidDeviceJar), StandardCopyOption.REPLACE_EXISTING);
+//		System.out.println("BEGIN OnlineContent.moveProguardJar()");
+		String source = deployDir + "/jsiddevice-" + projectVersion + "-proguard.jar";
+		String target = deployDir + "/jsiddevice-" + projectVersion + ".jar";
+		Files.move(Paths.get(source), Paths.get(target), REPLACE_EXISTING);
+//		System.out.println("END OnlineContent.moveProguardJar()");
 	}
 
 	private void upx(String upxExe, String deployDir, String projectVersion) throws IOException, InterruptedException {
 		if (!new File(upxExe).exists() || !new File(upxExe).canExecute()) {
-			throw new RuntimeException("UPX Program not found: " + upxExe);
+			System.err.println("Warning: UPX Program not found or not executable: " + upxExe);
+			return;
 		}
+//		System.out.println("BEGIN OnlineContent.upx()");
 		Process proc = Runtime.getRuntime().exec(
 				new String[] { upxExe, "--lzma", "--best", deployDir + "/jsiddevice-" + projectVersion + ".exe" });
-		print(proc.getErrorStream());
-		print(proc.getInputStream());
-		proc.waitFor();
-	}
 
-	private void print(InputStream stderr) throws IOException {
-		InputStreamReader isr = new InputStreamReader(stderr);
-		BufferedReader br = new BufferedReader(isr);
-		String line = null;
-		while ((line = br.readLine()) != null)
-			System.out.println(line);
+		ZipFileUtils.copy(proc.getErrorStream(), System.err);
+		ZipFileUtils.copy(proc.getInputStream(), System.out);
+
+		proc.waitFor();
+//		System.out.println("END OnlineContent.upx()");
 	}
 
 	private void zipJSIDDevice(String deployDir, String projectVersion) throws IOException {
-		TFile zipFile = new TFile(deployDir, "jsiddevice-" + projectVersion + ".zip");
+//		System.out.println("BEGIN OnlineContent.zipJSIDDevice()");
+		String jsidDeviceArtifact = "jsiddevice-" + projectVersion;
+
+		TFile zipFile = new TFile(deployDir, jsidDeviceArtifact + ".zip");
 		TFile src;
 		src = new TFile(deployDir, "JSIDDevice (Java11).desktop");
 		src.mv(new TFile(zipFile, src.getName()));
@@ -176,88 +180,66 @@ public class OnlineContent {
 		src.mv(new TFile(zipFile, src.getName()));
 		src = new TFile(deployDir, "jsidplay2.png");
 		src.cp(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, "jsiddevice-" + projectVersion + ".jar", TArchiveDetector.NULL);
+		src = new TFile(deployDir, jsidDeviceArtifact + ".jar", TArchiveDetector.NULL);
 		src.cp(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, "jsiddevice-" + projectVersion + ".exe", TArchiveDetector.NULL);
+		src = new TFile(deployDir, jsidDeviceArtifact + ".exe", TArchiveDetector.NULL);
 		src.cp(new TFile(zipFile, src.getName()));
 		TVFS.umount();
+//		System.out.println("END OnlineContent.zipJSIDDevice()");
 	}
 
 	private void createDemos(String deployDir, String baseDir) throws IOException {
-		File demosFile = new File(deployDir, "online/demos/Demos.zip");
-		File crcFile = new File(deployDir, "online/demos/Demos.crc");
-
+//		System.out.println("BEGIN OnlineContent.createDemos()");
 		new File(deployDir, "online/demos").mkdirs();
 
-		Files.copy(Paths.get(new File(baseDir, "src/test/resources/demos/Demos.zip").toURI()),
-				Paths.get(demosFile.toURI()), StandardCopyOption.REPLACE_EXISTING);
-		long checksum = DownloadThread.calculateCRC32(demosFile);
-		long fileSize = demosFile.length();
-		try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
-			Properties properties = new Properties();
-			properties.setProperty("filename", "Demos.zip");
-			properties.setProperty("size", String.valueOf(fileSize));
-			properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
-			properties.store(writer, null);
-		}
+		File demosZipFile = new File(deployDir, "online/demos/Demos.zip");
+		File source = new File(baseDir, "src/test/resources/demos/Demos.zip");
+		Files.copy(Paths.get(source.toURI()), Paths.get(demosZipFile.toURI()), REPLACE_EXISTING);
+
+		createCRC(demosZipFile, new File(deployDir, "online/demos/Demos.crc"));
+//		System.out.println("END OnlineContent.createDemos()");
 	}
 
 	private void gb64(String deployDir, String mdbFilename) throws IOException {
 		File mdbFile = new File(mdbFilename);
 		if (mdbFile.exists()) {
+//			System.out.println("BEGIN OnlineContent.gb64()");
 			new File(deployDir, "online/gamebase").mkdirs();
 
 			File mdbZipFile = new File(deployDir, "/online/gamebase/GameBase64.zip");
-			File crcFile = new File(deployDir, "online/gamebase/GameBase64.crc");
-
 			mdbZipFile.delete();
-			TFile.cp_r(mdbFile, new TFile(mdbZipFile, "GameBase64.mdb"), TArchiveDetector.ALL);
+			TFile.cp_rp(mdbFile, new TFile(mdbZipFile, mdbFile.getName()), TArchiveDetector.ALL);
 			TVFS.umount();
 
-			long checksum = DownloadThread.calculateCRC32(mdbZipFile);
-			long fileSize = mdbZipFile.length();
-			try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
-				Properties properties = new Properties();
-				properties.setProperty("filename", "GameBase64.zip");
-				properties.setProperty("size", String.valueOf(fileSize));
-				properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
-				properties.store(writer, null);
-			}
+			createCRC(mdbZipFile, new File(deployDir, "online/gamebase/GameBase64.crc"));
+//			System.out.println("END OnlineContent.gb64()");
 		}
 	}
 
 	private void hvmec(String deployDir, String hvmecFilename) throws IOException {
 		File hvmecFile = new File(hvmecFilename);
 		if (hvmecFile.exists()) {
+//			System.out.println("BEGIN OnlineContent.hvmec()");
 			new File(deployDir, "online/hvmec").mkdirs();
 
 			File hvmecZipFile = new File(deployDir, "/online/hvmec/HVMEC.zip");
-			File crcFile = new File(deployDir, "online/hvmec/HVMEC.crc");
-
 			hvmecZipFile.delete();
 			TFile.cp_rp(hvmecFile, hvmecZipFile, TArchiveDetector.ALL);
 			TVFS.umount();
 
-			long checksum = DownloadThread.calculateCRC32(hvmecZipFile);
-			long fileSize = hvmecZipFile.length();
-			try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
-				Properties properties = new Properties();
-				properties.setProperty("filename", "HVMEC.zip");
-				properties.setProperty("size", String.valueOf(fileSize));
-				properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
-				properties.store(writer, null);
-			}
+			createCRC(hvmecZipFile, new File(deployDir, "online/hvmec/HVMEC.crc"));
+//			System.out.println("END OnlineContent.hvmec()");
 		}
 	}
 
 	private void cgsc(String deployDir, String cgsc7zFilename) throws Exception {
 		File cgsc7zFile = new File(cgsc7zFilename);
 		if (cgsc7zFile.exists()) {
+//			System.out.println("BEGIN OnlineContent.cgsc()");
 			new File(deployDir, "online/cgsc").mkdirs();
 
+			System.out.println("Extracting archive, please wait a moment...");
 			File cgscZipFile = new File(deployDir, "/online/cgsc/CGSC.zip");
-			File crcFile = new File(deployDir, "online/cgsc/CGSC.crc");
-
 			Extract7Zip extract7Zip = new Extract7Zip(new File(cgsc7zFilename), new File(deployDir, "online/cgsc"));
 			extract7Zip.extract();
 
@@ -265,42 +247,23 @@ public class OnlineContent {
 			TFile.cp_rp(new File(deployDir, "online/cgsc/CGSC"), new TFile(cgscZipFile), TArchiveDetector.ALL);
 			TVFS.umount();
 
-			Files.walkFileTree(Paths.get(new File(deployDir, "online/cgsc/CGSC").toURI()),
-					new SimpleFileVisitor<Path>() {
-						@Override
-						public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-							Files.delete(dir);
-							return FileVisitResult.CONTINUE;
-						}
+			deleteDirectory(new File(deployDir, "online/cgsc/CGSC"));
 
-						@Override
-						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-							Files.delete(file);
-							return FileVisitResult.CONTINUE;
-						}
-					});
+			createCRC(cgscZipFile, new File(deployDir, "online/cgsc/CGSC.crc"));
 
-			long checksum = DownloadThread.calculateCRC32(cgscZipFile);
-			long fileSize = cgscZipFile.length();
-			try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
-				Properties properties = new Properties();
-				properties.setProperty("filename", "CGSC.zip");
-				properties.setProperty("size", String.valueOf(fileSize));
-				properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
-				properties.store(writer, null);
-			}
 			doCreateIndex(MusicCollectionType.CGSC, cgscZipFile.getAbsolutePath());
+//			System.out.println("END OnlineContent.cgsc()");
 		}
 	}
 
 	private void hvsc(String deployDir, String hvsc7zFilename) throws Exception {
 		File hvsc7zFile = new File(hvsc7zFilename);
 		if (hvsc7zFile.exists()) {
+//			System.out.println("BEGIN OnlineContent.hvsc()");
 			new File(deployDir, "online/hvsc").mkdirs();
 
+			System.out.println("Extracting archive, please wait a moment...");
 			File hvscZipFile = new File(deployDir, "/online/hvsc/C64Music.zip");
-			File crcFile = new File(deployDir, "online/hvsc/C64Music.crc");
-
 			Extract7Zip extract7Zip = new Extract7Zip(new File(hvsc7zFilename), new File(deployDir, "online/hvsc"));
 			extract7Zip.extract();
 
@@ -308,40 +271,21 @@ public class OnlineContent {
 			TFile.cp_rp(new File(deployDir, "online/hvsc/C64Music"), new TFile(hvscZipFile), TArchiveDetector.ALL);
 			TVFS.umount();
 
-			Files.walkFileTree(Paths.get(new File(deployDir, "online/hvsc/C64Music").toURI()),
-					new SimpleFileVisitor<Path>() {
-						@Override
-						public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-							Files.delete(dir);
-							return FileVisitResult.CONTINUE;
-						}
+			deleteDirectory(new File(deployDir, "online/hvsc/C64Music"));
 
-						@Override
-						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-							Files.delete(file);
-							return FileVisitResult.CONTINUE;
-						}
-					});
+			createCRC(hvscZipFile, new File(deployDir, "online/hvsc/C64Music.crc"));
 
-			long checksum = DownloadThread.calculateCRC32(hvscZipFile);
-			long fileSize = hvscZipFile.length();
-			try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
-				Properties properties = new Properties();
-				properties.setProperty("filename", "C64Music.zip");
-				properties.setProperty("size", String.valueOf(fileSize));
-				properties.setProperty("crc32", String.format("%8X", checksum).replace(' ', '0'));
-				properties.store(writer, null);
-			}
 			doCreateIndex(MusicCollectionType.HVSC, hvscZipFile.getAbsolutePath());
 
 			doSplit(37748736, hvscZipFile.getAbsolutePath());
 
 			hvscZipFile.delete();
+//			System.out.println("END OnlineContent.hvsc()");
 		}
 	}
 
-	private void doCreateIndex(MusicCollectionType collectionType, String filename) throws Exception {
-		File rootFile = new TFile(filename);
+	private void doCreateIndex(MusicCollectionType collectionType, String zipFile) throws Exception {
+		File rootFile = new TFile(zipFile);
 
 		File dbFilename = new File(rootFile.getParentFile(), collectionType.toString());
 		PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), "", "", Database.HSQL_FILE);
@@ -352,13 +296,13 @@ public class OnlineContent {
 		IniConfig config = IniDefaults.DEFAULTS;
 		Player player = new Player(config);
 		try {
-			player.setSidDatabase(new SidDatabase(filename));
+			player.setSidDatabase(new SidDatabase(zipFile));
 		} catch (IOException e) {
 			if (collectionType == MusicCollectionType.HVSC) {
 				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
 			}
 		}
-		try (InputStream input = new TFileInputStream(new TFile(filename, STIL.STIL_FILE))) {
+		try (InputStream input = new TFileInputStream(new TFile(zipFile, STIL.STIL_FILE))) {
 			player.setSTIL(new STIL(input));
 		} catch (IOException e) {
 			if (collectionType == MusicCollectionType.HVSC) {
@@ -431,6 +375,33 @@ public class OnlineContent {
 
 	private BufferedOutputStream createOutputStream(String filename) throws FileNotFoundException {
 		return new BufferedOutputStream(new FileOutputStream(new File(filename)), CHUNK_SIZE);
+	}
+
+	private void createCRC(File demosZipFile, File crcFile)
+			throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		try (Writer writer = new PrintWriter(crcFile, StandardCharsets.ISO_8859_1.toString())) {
+			Properties properties = new Properties();
+			properties.setProperty("filename", demosZipFile.getName());
+			properties.setProperty("size", String.valueOf(demosZipFile.length()));
+			properties.setProperty("crc32", DownloadThread.calculateCRC32(demosZipFile));
+			properties.store(writer, null);
+		}
+	}
+
+	private void deleteDirectory(File directory) throws IOException {
+		Files.walkFileTree(Paths.get(directory.toURI()), new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				Files.delete(dir);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.delete(file);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 
 	public static void main(String[] args) throws Exception {

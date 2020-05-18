@@ -266,7 +266,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			properties.load(stream);
 		}
 		try {
-			long crc = Long.valueOf(properties.getProperty("crc32"), 16);
+			String crc = properties.getProperty("crc32");
 			long fileLength = Integer.valueOf(properties.getProperty("size"));
 			String filename = properties.getProperty("filename");
 			return download.getName().equals(filename) && download.length() == fileLength
@@ -276,12 +276,12 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 		}
 	}
 
-	public static long calculateCRC32(File file) throws IOException {
+	public static String calculateCRC32(File file) throws IOException {
 		try (CheckedInputStream cis = new CheckedInputStream(new FileInputStream(file), new CRC32())) {
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			while (cis.read(buffer) >= 0) {
 			}
-			return cis.getChecksum().getValue();
+			return String.format("%8X", cis.getChecksum().getValue()).replace(' ', '0');
 		}
 	}
 
