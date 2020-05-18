@@ -327,10 +327,7 @@ public class OnlineContent {
 				System.err.println("Interrupted while sleeping!");
 			}
 		}
-		if (em != null) {
-			em.close();
-			em.getEntityManagerFactory().close();
-		}
+		em.getEntityManagerFactory().close();
 		ready = false;
 		// Really persist the databases
 		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
