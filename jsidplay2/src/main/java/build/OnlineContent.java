@@ -58,6 +58,8 @@ import ui.musiccollection.search.SearchIndexerThread;
 @Parameters(resourceBundle = "build.OnlineContent")
 public class OnlineContent {
 
+	private static final int MAX_ZIP_FILESIZE = 37748736;
+
 	private static final int CHUNK_SIZE = 1 << 20;
 
 	static {
@@ -97,67 +99,56 @@ public class OnlineContent {
 	private volatile boolean ready;
 
 	private void create(String[] args) throws Exception {
-		args = Arrays.asList(args).stream().map(arg -> arg == null ? "" : arg).toArray(String[]::new);
-
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
-		commander.parse(args);
+		commander.parse(Arrays.asList(args).stream().map(arg -> arg == null ? "" : arg).toArray(String[]::new));
 		if (help) {
 			commander.usage();
 			System.out.println("Press <enter> to exit!");
 			System.in.read();
 			System.exit(0);
 		}
-//		System.out.println("BEGIN OnlineContent.create()");
 
 		if ("package".equals(phase)) {
-			moveProguardJar(deployDir, projectVersion);
+			moveProguardJar();
 
 		} else if ("install".equals(phase)) {
 			if (upxExe != null) {
-				upx(upxExe, deployDir, projectVersion);
+				upx();
 			}
-			zipJSIDDevice(deployDir, projectVersion);
+			zipJSidDevice();
 
-			createDemos(deployDir, baseDir);
+			createDemos();
 
 			if (gb64 != null) {
-				gb64(deployDir, gb64);
+				gb64();
 			}
 			if (hvmec != null) {
-				hvmec(deployDir, hvmec);
+				hvmec();
 			}
 			if (cgsc != null) {
-				cgsc(deployDir, cgsc);
+				cgsc();
 			}
 			if (hvsc != null) {
-				hvsc(deployDir, hvsc);
+				hvsc();
 			}
-			File versionFile = new File(baseDir, "latest.properties");
-			versionFile.delete();
-			versionFile.createNewFile();
-			try (Writer writer = new PrintWriter(versionFile, StandardCharsets.ISO_8859_1.toString())) {
-				writer.append("version=" + projectVersion);
-			}
+			latestVersion();
+
 		} else {
 			throw new RuntimeException("parameter 'phase' must be equal to 'package' or 'install'!");
 		}
-//		System.out.println("END OnlineContent.create()");
 	}
 
-	private void moveProguardJar(String deployDir, String projectVersion) throws IOException {
-//		System.out.println("BEGIN OnlineContent.moveProguardJar()");
+	private void moveProguardJar() throws IOException {
 		String source = deployDir + "/jsiddevice-" + projectVersion + "-proguard.jar";
 		String target = deployDir + "/jsiddevice-" + projectVersion + ".jar";
 		Files.move(Paths.get(source), Paths.get(target), REPLACE_EXISTING);
-//		System.out.println("END OnlineContent.moveProguardJar()");
 	}
 
-	private void upx(String upxExe, String deployDir, String projectVersion) throws IOException, InterruptedException {
+	private void upx() throws IOException, InterruptedException {
 		if (!new File(upxExe).exists() || !new File(upxExe).canExecute()) {
 			System.err.println("Warning: UPX Program not found or not executable: " + upxExe);
 			return;
 		}
-//		System.out.println("BEGIN OnlineContent.upx()");
 		Process proc = Runtime.getRuntime().exec(
 				new String[] { upxExe, "--lzma", "--best", deployDir + "/jsiddevice-" + projectVersion + ".exe" });
 
@@ -165,11 +156,9 @@ public class OnlineContent {
 		ZipFileUtils.copy(proc.getInputStream(), System.out);
 
 		proc.waitFor();
-//		System.out.println("END OnlineContent.upx()");
 	}
 
-	private void zipJSIDDevice(String deployDir, String projectVersion) throws IOException {
-//		System.out.println("BEGIN OnlineContent.zipJSIDDevice()");
+	private void zipJSidDevice() throws IOException {
 		String jsidDeviceArtifact = "jsiddevice-" + projectVersion;
 
 		TFile zipFile = new TFile(deployDir, jsidDeviceArtifact + ".zip");
@@ -185,11 +174,9 @@ public class OnlineContent {
 		src = new TFile(deployDir, jsidDeviceArtifact + ".exe", TArchiveDetector.NULL);
 		src.cp(new TFile(zipFile, src.getName()));
 		TVFS.umount();
-//		System.out.println("END OnlineContent.zipJSIDDevice()");
 	}
 
-	private void createDemos(String deployDir, String baseDir) throws IOException {
-//		System.out.println("BEGIN OnlineContent.createDemos()");
+	private void createDemos() throws IOException {
 		new File(deployDir, "online/demos").mkdirs();
 
 		File demosZipFile = new File(deployDir, "online/demos/Demos.zip");
@@ -197,13 +184,11 @@ public class OnlineContent {
 		Files.copy(Paths.get(source.toURI()), Paths.get(demosZipFile.toURI()), REPLACE_EXISTING);
 
 		createCRC(demosZipFile, new File(deployDir, "online/demos/Demos.crc"));
-//		System.out.println("END OnlineContent.createDemos()");
 	}
 
-	private void gb64(String deployDir, String mdbFilename) throws IOException {
-		File mdbFile = new File(mdbFilename);
+	private void gb64() throws IOException {
+		File mdbFile = new File(gb64);
 		if (mdbFile.exists()) {
-//			System.out.println("BEGIN OnlineContent.gb64()");
 			new File(deployDir, "online/gamebase").mkdirs();
 
 			File mdbZipFile = new File(deployDir, "/online/gamebase/GameBase64.zip");
@@ -212,14 +197,12 @@ public class OnlineContent {
 			TVFS.umount();
 
 			createCRC(mdbZipFile, new File(deployDir, "online/gamebase/GameBase64.crc"));
-//			System.out.println("END OnlineContent.gb64()");
 		}
 	}
 
-	private void hvmec(String deployDir, String hvmecFilename) throws IOException {
-		File hvmecFile = new File(hvmecFilename);
+	private void hvmec() throws IOException {
+		File hvmecFile = new File(hvmec);
 		if (hvmecFile.exists()) {
-//			System.out.println("BEGIN OnlineContent.hvmec()");
 			new File(deployDir, "online/hvmec").mkdirs();
 
 			File hvmecZipFile = new File(deployDir, "/online/hvmec/HVMEC.zip");
@@ -228,19 +211,17 @@ public class OnlineContent {
 			TVFS.umount();
 
 			createCRC(hvmecZipFile, new File(deployDir, "online/hvmec/HVMEC.crc"));
-//			System.out.println("END OnlineContent.hvmec()");
 		}
 	}
 
-	private void cgsc(String deployDir, String cgsc7zFilename) throws Exception {
-		File cgsc7zFile = new File(cgsc7zFilename);
+	private void cgsc() throws Exception {
+		File cgsc7zFile = new File(cgsc);
 		if (cgsc7zFile.exists()) {
-//			System.out.println("BEGIN OnlineContent.cgsc()");
 			new File(deployDir, "online/cgsc").mkdirs();
 
 			System.out.println("Extracting archive, please wait a moment...");
 			File cgscZipFile = new File(deployDir, "/online/cgsc/CGSC.zip");
-			Extract7Zip extract7Zip = new Extract7Zip(new File(cgsc7zFilename), new File(deployDir, "online/cgsc"));
+			Extract7Zip extract7Zip = new Extract7Zip(new File(cgsc), new File(deployDir, "online/cgsc"));
 			extract7Zip.extract();
 
 			cgscZipFile.delete();
@@ -252,19 +233,17 @@ public class OnlineContent {
 			createCRC(cgscZipFile, new File(deployDir, "online/cgsc/CGSC.crc"));
 
 			doCreateIndex(MusicCollectionType.CGSC, cgscZipFile.getAbsolutePath());
-//			System.out.println("END OnlineContent.cgsc()");
 		}
 	}
 
-	private void hvsc(String deployDir, String hvsc7zFilename) throws Exception {
-		File hvsc7zFile = new File(hvsc7zFilename);
+	private void hvsc() throws Exception {
+		File hvsc7zFile = new File(hvsc);
 		if (hvsc7zFile.exists()) {
-//			System.out.println("BEGIN OnlineContent.hvsc()");
 			new File(deployDir, "online/hvsc").mkdirs();
 
 			System.out.println("Extracting archive, please wait a moment...");
 			File hvscZipFile = new File(deployDir, "/online/hvsc/C64Music.zip");
-			Extract7Zip extract7Zip = new Extract7Zip(new File(hvsc7zFilename), new File(deployDir, "online/hvsc"));
+			Extract7Zip extract7Zip = new Extract7Zip(new File(hvsc), new File(deployDir, "online/hvsc"));
 			extract7Zip.extract();
 
 			hvscZipFile.delete();
@@ -277,10 +256,18 @@ public class OnlineContent {
 
 			doCreateIndex(MusicCollectionType.HVSC, hvscZipFile.getAbsolutePath());
 
-			doSplit(37748736, hvscZipFile.getAbsolutePath());
+			doSplit(MAX_ZIP_FILESIZE, hvscZipFile.getAbsolutePath());
 
 			hvscZipFile.delete();
-//			System.out.println("END OnlineContent.hvsc()");
+		}
+	}
+
+	private void latestVersion() throws IOException, FileNotFoundException, UnsupportedEncodingException {
+		File versionFile = new File(baseDir, "latest.properties");
+		versionFile.delete();
+		versionFile.createNewFile();
+		try (Writer writer = new PrintWriter(versionFile, StandardCharsets.ISO_8859_1.toString())) {
+			writer.append("version=" + projectVersion);
 		}
 	}
 
