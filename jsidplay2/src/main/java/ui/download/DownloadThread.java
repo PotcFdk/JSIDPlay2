@@ -269,6 +269,9 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			String crc = properties.getProperty("crc32");
 			long fileLength = Integer.valueOf(properties.getProperty("size"));
 			String filename = properties.getProperty("filename");
+			System.out.println("Check name: " + download.getName()+" with " + filename);
+			System.out.println("Check size: " + download.length()+" with " + fileLength);
+			System.out.println("Check  crc: " + calculateCRC32(download)+" with " + crc);
 			return download.getName().equals(filename) && download.length() == fileLength
 					&& calculateCRC32(download).equals(crc);
 		} catch (NumberFormatException e) {
