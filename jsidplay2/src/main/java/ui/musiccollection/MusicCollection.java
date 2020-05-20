@@ -420,7 +420,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 															}
 														});
 													}
-												}, new URL(url), false).start();
+												}, new URL(url)).start();
 									} catch (MalformedURLException e) {
 										e.printStackTrace();
 									}
@@ -430,7 +430,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 							e.printStackTrace();
 						}
 					}
-				}, new URL(urlSearchIndex)).start();
+				}, new URL(urlSearchIndex), false).start();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
