@@ -111,16 +111,18 @@ public class WhatsSidDriver implements AudioDriver {
 			}
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
-			try {
-				String song = tune != SidTune.RESET ? " (" + tune.getInfo().getCurrentSong() + ")" : "";
-				System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath() + song);
+			if (tuneFile != null && fingerprintInserter != null) {
+				try {
+					String song = tune != SidTune.RESET ? " (" + tune.getInfo().getCurrentSong() + ")" : "";
+					System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath() + song);
 
-				File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
-				String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
+					File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+					String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
-				fingerprintInserter.insert(tune, collectionName, recordingFilename);
-			} catch (IOException e) {
-				throw new RuntimeException("Error reading WAV audio stream", e);
+					fingerprintInserter.insert(tune, collectionName, recordingFilename);
+				} catch (IOException e) {
+					throw new RuntimeException("Error reading WAV audio stream", e);
+				}
 			}
 		}
 	}
