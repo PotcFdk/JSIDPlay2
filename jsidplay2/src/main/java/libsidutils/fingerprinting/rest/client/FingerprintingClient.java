@@ -1,6 +1,6 @@
 package libsidutils.fingerprinting.rest.client;
 
-import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
+import static jakarta.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 import static server.restful.servlets.whatssid.FindHashServlet.FIND_HASH_PATH;

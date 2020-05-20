@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;

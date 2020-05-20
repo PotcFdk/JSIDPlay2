@@ -70,7 +70,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
-				hardSID = (HardSID) Native.loadLibrary("hardsid_usb", HardSID.class);
+				hardSID = (HardSID) Native.load("hardsid_usb", HardSID.class);
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: 32-bit Java for Windows is required to use " + HARDSID + " soundcard!");
 				throw e;

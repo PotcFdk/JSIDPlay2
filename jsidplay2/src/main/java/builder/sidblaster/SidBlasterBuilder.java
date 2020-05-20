@@ -72,7 +72,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
-				hardSID = (HardSID) Native.loadLibrary("hardsid", HardSID.class);
+				hardSID = (HardSID) Native.load("hardsid", HardSID.class);
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows is required to use " + SIDBLASTER + " soundcard!");
 				throw e;
