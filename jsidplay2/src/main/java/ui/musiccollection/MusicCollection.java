@@ -420,12 +420,12 @@ public class MusicCollection extends C64VBox implements UIPart {
 															}
 														});
 													}
-												}, new URL(url)).start();
+												}, new URL(url), false).start();
 									} catch (MalformedURLException e) {
 										e.printStackTrace();
 									}
 								}
-							}, new URL(urlSearchIndexProperties)).start();
+							}, new URL(urlSearchIndexProperties), false).start();
 						} catch (MalformedURLException e) {
 							e.printStackTrace();
 						}

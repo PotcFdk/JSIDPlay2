@@ -246,7 +246,7 @@ public class Favorites extends C64VBox implements UIPart {
 								}
 							});
 						}
-					}, new URL(OnlineSection.JSIDPLAY2_JS2_URL));
+					}, new URL(OnlineSection.JSIDPLAY2_JS2_URL), false);
 			downloadThread.start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
