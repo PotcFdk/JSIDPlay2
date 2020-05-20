@@ -307,6 +307,7 @@ public class JSIDPlay2Server {
 		certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
 		certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
 		sslHostConfig.addCertificate(certificate);
+		protocol.addSslHostConfig(sslHostConfig);
 		return httpsConnector;
 	}
 
