@@ -28,6 +28,7 @@ import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
@@ -298,15 +299,14 @@ public class JSIDPlay2Server {
 		protocol.setSecure(true);
 		protocol.setSSLEnabled(true);
 
-		asList(protocol.findSslHostConfigs()).stream().findFirst().ifPresent(sslHostConfig -> {
-			SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.RSA);
-			certificate.setCertificateKeystoreType(KeyStore.getDefaultType());
-			certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile());
-			certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
-			certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
-			certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
-			sslHostConfig.addCertificate(certificate);
-		});
+		SSLHostConfig sslHostConfig = new SSLHostConfig();
+		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.RSA);
+		certificate.setCertificateKeystoreType(KeyStore.getDefaultType());
+		certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile());
+		certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
+		certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
+		certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
+		sslHostConfig.addCertificate(certificate);
 		return httpsConnector;
 	}
 
