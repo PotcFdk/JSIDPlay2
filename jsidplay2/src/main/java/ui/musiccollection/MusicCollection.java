@@ -361,25 +361,25 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private void startDownload6581R2() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R2();
-		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(url, 49);
 	}
 
 	@FXML
 	private void startDownload6581R3() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R3();
-		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(url, 49);
 	}
 
 	@FXML
 	private void startDownload6581R4() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R4();
-		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(url, 49);
 	}
 
 	@FXML
 	private void startDownload8580R5() {
 		final String url = util.getConfig().getOnlineSection().getSoasc8580R5();
-		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
+		downloadStart(url, 49);
 	}
 
 	@FXML
@@ -774,27 +774,34 @@ public class MusicCollection extends C64VBox implements UIPart {
 		util.getConfig().getFavorites().add(newFavorites);
 	}
 
-	private void downloadStart(String hvscname, String url) {
-		System.out.println("Download URL: <" + url + ">");
+	private void downloadStart(final String url, final int hvscVersion) {
+		String realUrl = MessageFormat.format(url, hvscVersion, hvscName, selectedSong).trim();
+		System.out.println("Download URL: <" + realUrl + ">");
 		try {
 			new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
 
 				@Override
 				public void downloaded(final File downloadedFile) {
 					if (downloadedFile != null) {
-						downloadedFile.deleteOnExit();
-						Platform.runLater(() -> {
-							Configuration config = util.getConfig();
-							SidPlay2Section sidplay2Section = config.getSidplay2Section();
-							AudioSection audioSection = config.getAudioSection();
-							audioSection.setMp3File(downloadedFile.getAbsolutePath());
-							audioSection.setPlayOriginal(true);
-							audioSection.setAudio(Audio.COMPARE_MP3);
-							playTune(PathUtils.getFile(hvscname + ".sid", sidplay2Section.getHvscFile(), null));
-						});
+						if (downloadedFile.length() < 1000 && hvscVersion < 100) {
+							// skip errors, try to guess HVSC version
+							downloadedFile.delete();
+							downloadStart(url, hvscVersion + 1);
+						} else {
+							downloadedFile.deleteOnExit();
+							Platform.runLater(() -> {
+								Configuration config = util.getConfig();
+								SidPlay2Section sidplay2Section = config.getSidplay2Section();
+								AudioSection audioSection = config.getAudioSection();
+								audioSection.setMp3File(downloadedFile.getAbsolutePath());
+								audioSection.setPlayOriginal(true);
+								audioSection.setAudio(Audio.COMPARE_MP3);
+								playTune(PathUtils.getFile(hvscName + ".sid", sidplay2Section.getHvscFile(), null));
+							});
+						}
 					}
 				}
-			}, new URL(url), false).start();
+			}, new URL(realUrl), false).start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
