@@ -205,7 +205,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 									}
 								});
 							}
-						}, new URL(downloadUrl));
+						}, new URL(downloadUrl), true);
 				downloadThread.start();
 			} catch (MalformedURLException e2) {
 				e2.printStackTrace();

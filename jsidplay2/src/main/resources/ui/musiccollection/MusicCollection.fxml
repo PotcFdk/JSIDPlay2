@@ -81,6 +81,8 @@
 								<Menu fx:id="addToFavoritesMenu" text="%ADD_TO_FAVORITES" />
 								<MenuItem fx:id="soasc6581R2" text="%DOWNLOAD_R2"
 									onAction="#startDownload6581R2" disable="true" />
+								<MenuItem fx:id="soasc6581R3" text="%DOWNLOAD_R3"
+									onAction="#startDownload6581R3" disable="true" />
 								<MenuItem fx:id="soasc6581R4" text="%DOWNLOAD_R4"
 									onAction="#startDownload6581R4" disable="true" />
 								<MenuItem fx:id="soasc8580R5" text="%DOWNLOAD_R5"

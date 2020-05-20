@@ -74,10 +74,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private boolean handleCrcAndSplits;
 
-	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url) {
-		this(cfg, listener, url, true);
-	}
-
 	public DownloadThread(Configuration cfg, IDownloadListener listener, URL url, boolean handleCrcAndSplits) {
 		this.config = cfg;
 		this.url = url;

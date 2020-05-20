@@ -177,7 +177,7 @@ public class GameBase extends C64VBox implements UIPart {
 			try {
 				final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
 				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
-						new GameBaseListener(util, letter.getScene()), url);
+						new GameBaseListener(util, letter.getScene()), url, true);
 				downloadThread.start();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();

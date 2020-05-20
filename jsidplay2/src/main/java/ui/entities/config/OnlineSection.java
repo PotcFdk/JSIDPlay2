@@ -120,9 +120,9 @@ public class OnlineSection {
 		this.gamebaseUrl = gamebaseUrl;
 	}
 
-	private static final String SOASC_BASE = "http://www.se2a1.net/soasc/dl.php?d=";
+	private static final String SOASC_BASE = "http://www.6581-8580.com/socse/dl.php?d=";
 
-	private String soasc6581R2 = SOASC_BASE + "soasc/hvsc/049{0}_T{1,number,00}.sid_MOS6581R2.mp3";
+	private String soasc6581R2 = SOASC_BASE + "soasc/hvsc/049/MP3{0}_T{1,number,000}.sid_MOS6581R2.mp3";
 
 	public String getSoasc6581R2() {
 		return soasc6581R2;
@@ -132,7 +132,17 @@ public class OnlineSection {
 		soasc6581R2 = soasc6581r2;
 	}
 
-	private String soasc6581R4 = SOASC_BASE + "soasc/hvsc/049{0}_T{1,number,00}.sid_MOS6581R4.mp3";
+	private String soasc6581R3 = SOASC_BASE + "soasc/hvsc/049/MP3{0}_T{1,number,000}.sid_MOS6581R3.mp3";
+
+	public String getSoasc6581R3() {
+		return soasc6581R3;
+	}
+
+	public void setSoasc6581R3(String soasc6581r3) {
+		soasc6581R3 = soasc6581r3;
+	}
+
+	private String soasc6581R4 = SOASC_BASE + "soasc/hvsc/049/MP3{0}_T{1,number,000}.sid_MOS6581R4.mp3";
 
 	public String getSoasc6581R4() {
 		return soasc6581R4;
@@ -142,7 +152,7 @@ public class OnlineSection {
 		soasc6581R4 = soasc6581r4;
 	}
 
-	private String soasc8580R5 = SOASC_BASE + "soasc/hvsc/049{0}_T{1,number,00}.sid_CSG8580R5.mp3";
+	private String soasc8580R5 = SOASC_BASE + "soasc/hvsc/049/MP3{0}_T{1,number,000}.sid_CSG8580R5.mp3";
 
 	public String getSoasc8580R5() {
 		return soasc8580R5;

@@ -147,7 +147,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private ContextMenu contextMenu;
 	@FXML
-	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R4, soasc8580R5;
+	private MenuItem showStil, convertToPSID64, soasc6581R2, soasc6581R3, soasc6581R4, soasc8580R5;
 	@FXML
 	private Menu addToFavoritesMenu;
 
@@ -365,6 +365,12 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	private void startDownload6581R3() {
+		final String url = util.getConfig().getOnlineSection().getSoasc6581R3();
+		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
+	}
+
+	@FXML
 	private void startDownload6581R4() {
 		final String url = util.getConfig().getOnlineSection().getSoasc6581R4();
 		downloadStart(hvscName, MessageFormat.format(url, hvscName, selectedSong).trim());
@@ -420,7 +426,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 															}
 														});
 													}
-												}, new URL(url)).start();
+												}, new URL(url), true).start();
 									} catch (MalformedURLException e) {
 										e.printStackTrace();
 									}
@@ -788,7 +794,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 						});
 					}
 				}
-			}, new URL(url)).start();
+			}, new URL(url), false).start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -796,6 +802,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	private void enableSOASC(SidTuneInfo tuneInfo, File tuneFile) {
 		soasc6581R2.setDisable(true);
+		soasc6581R3.setDisable(true);
 		soasc6581R4.setDisable(true);
 		soasc8580R5.setDisable(true);
 		File hvscFile = util.getConfig().getSidplay2Section().getHvscFile();
@@ -804,6 +811,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			hvscName = hvscName.replace(".sid", "");
 			selectedSong = tuneInfo.getSelectedSong();
 			soasc6581R2.setDisable(false);
+			soasc6581R3.setDisable(false);
 			soasc6581R4.setDisable(false);
 			soasc8580R5.setDisable(false);
 		}
