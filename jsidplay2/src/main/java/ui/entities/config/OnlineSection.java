@@ -120,7 +120,7 @@ public class OnlineSection {
 		this.gamebaseUrl = gamebaseUrl;
 	}
 
-	private static final String SOASC_BASE = "http://www.6581-8580.com/socse/dl.php?d=";
+	private static final String SOASC_BASE = "https://www.6581-8580.com/socse/dl.php?d=";
 
 	private String soasc6581R2 = SOASC_BASE + "soasc/hvsc/{0,number,000}/MP3{1}_T{2,number,000}.sid_MOS6581R2.mp3";
 
