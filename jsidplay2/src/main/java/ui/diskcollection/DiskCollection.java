@@ -262,12 +262,10 @@ public class DiskCollection extends C64VBox implements UIPart {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".pdf")) {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, file.getName());
-			if (!dst.exists()) {
-				try {
-					TFile.cp(file, dst);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			try {
+				TFile.cp(file, dst);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 			dst.deleteOnExit();
 			DesktopIntegration.open(dst);
@@ -332,9 +330,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 		} else {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, file.getName());
-			if (!dst.exists()) {
-				TFile.cp(file, dst);
-			}
+			TFile.cp(file, dst);
 			dst.deleteOnExit();
 			return dst;
 		}
@@ -345,9 +341,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
 			try (InputStream is = new GZIPInputStream(ZipFileUtils.newFileInputStream(file))) {
-				if (!dst.exists()) {
-					TFile.cp(is, dst);
-				}
+				TFile.cp(is, dst);
 			} catch (IOException e) {
 				return file;
 			}
