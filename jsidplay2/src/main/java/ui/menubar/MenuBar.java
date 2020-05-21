@@ -913,17 +913,6 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void sidOth4Com() {
-		if (!tabAlreadyOpen(WebViewType.SID_OTH4_COM.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.SID_OTH4_COM);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.SID_OTH4_COM.name()), collection);
-			tab.setId(WebViewType.SID_OTH4_COM.name());
-			addTab(tab);
-		}
-	}
-
-	@FXML
 	private void c64() {
 		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
 			WebView collection = new WebView(util.getWindow(), util.getPlayer());
@@ -1049,8 +1038,6 @@ public class MenuBar extends C64VBox implements UIPart {
 			codebase64();
 		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
 			remixKweqOrg();
-		} else if (WebViewType.SID_OTH4_COM.name().equals(id)) {
-			sidOth4Com();
 		} else if (WebViewType.C64_SK.name().equals(id)) {
 			c64();
 		} else if (WebViewType.FORUM64_DE.name().equals(id)) {

@@ -21,10 +21,6 @@ public enum WebViewType {
 	 */
 	REMIX_KWED_ORG("https://remix.kwed.org/"),
 	/**
-	 * The SID 6581/8580 Recordings Archive
-	 */
-	SID_OTH4_COM("https://sid.oth4.com/"),
-	/**
 	 * C-64 Portal
 	 */
 	C64_SK("http://www.c64.sk/"),
@@ -39,7 +35,7 @@ public enum WebViewType {
 	/**
 	 * Stone Oakvalley's Authentic SID Collection (SOASC=)
 	 */
-	SOASC("http://se2a1.bigbox.info:40000/soasc/"),
+	SOASC("https://www.6581-8580.com/"),
 	/**
 	 * JSIDPlay2 Source Code
 	 */
