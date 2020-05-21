@@ -87,6 +87,6 @@ public enum WebViewType {
 		static final String JAR_URL = "jar:file:";
 		static final String DOC_RESOURCE_DIR = "/doc/";
 		static final String DOC_IMAGES_DIR = "images/";
-		static final String JAVADOC_RESOURCE_DIR = "/javadoc/";
+		static final String JAVADOC_RESOURCE_DIR = "/";
 	}
 }

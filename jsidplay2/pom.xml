@@ -409,14 +409,13 @@
 						<id>javadoc</id>
 						<phase>compile</phase>
 						<goals>
-							<goal>javadoc</goal>
+							<goal>jar</goal>
 						</goals>
 						<configuration>
 							<!-- additionalOptions>-html5</additionalOptions-->
 							<!-- javadocExecutable>${java.home}/bin/javadoc</javadocExecutable-->
 							<doclint>${doclint}</doclint>
-							<reportOutputDirectory>${project.build.directory}/classes</reportOutputDirectory>
-							<destDir>javadoc</destDir>
+							<jarOutputDirectory>${project.build.directory}/standalone</jarOutputDirectory>
 							<nonavbar>true</nonavbar>
 							<quiet>true</quiet>
 							<failOnError>true</failOnError>
@@ -495,6 +494,9 @@
 									<addClasspath>true</addClasspath>
 									<mainClass>${javafx.main.class}</mainClass>
 								</manifest>
+								<manifestEntries>
+									<Class-Path>${project.artifactId}-${project.version}-javadoc.jar</Class-Path>
+								</manifestEntries>
 							</archive>
 							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
 						</configuration>
@@ -979,7 +981,7 @@
 											[3.0.1,)
 										</versionRange>
 										<goals>
-											<goal>javadoc</goal>
+											<goal>jar</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
