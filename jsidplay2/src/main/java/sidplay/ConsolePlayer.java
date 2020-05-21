@@ -65,6 +65,7 @@ final public class ConsolePlayer {
 				exit(1);
 			}
 			IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+			whatsSidSection.setEnable(false);
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();

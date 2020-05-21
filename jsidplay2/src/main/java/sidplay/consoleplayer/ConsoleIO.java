@@ -9,8 +9,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
+import builder.resid.SIDMixer;
 import libsidplay.common.ChipModel;
 import libsidplay.config.IEmulationSection;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.Player;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
@@ -79,6 +81,7 @@ public class ConsoleIO {
 			}
 			final int key = in.read();
 			IEmulationSection emulation = config.getEmulationSection();
+			IWhatsSidSection whatsSid = config.getWhatsSidSection();
 			switch (key) {
 			case 'h':
 				player.firstSong();
@@ -217,6 +220,17 @@ public class ConsoleIO {
 				break;
 			}
 
+			case 'w': {
+				boolean whatsSidEnable = whatsSid.isEnable() ^ true;
+				whatsSid.setEnable(whatsSidEnable);
+				player.configureMixer(mixer -> {
+					if (mixer instanceof SIDMixer) {
+						((SIDMixer) mixer).setWhatsSidEnabled(whatsSidEnable);
+					}
+				});
+				break;
+			}
+
 			case 'q':
 				player.quit();
 				break;
@@ -233,7 +247,7 @@ public class ConsoleIO {
 		if (quiet) {
 			return;
 		}
-		out.println("WhatsSID? " + musicInfoWithConfidence.toString());
+		out.println(musicInfoWithConfidence);
 	}
 
 	private void printTopLine(PrintStream out, final IniConsoleSection console) {
@@ -379,6 +393,7 @@ public class ConsoleIO {
 		out.println(BUNDLE.getString("FILTER_ENABLE"));
 		out.println(BUNDLE.getString("STEREO_FILTER_ENABLE"));
 		out.println(BUNDLE.getString("3RD_SID_FILTER_ENABLE"));
+		out.println(BUNDLE.getString("WHATSSID_ENABLE"));
 		out.println(BUNDLE.getString("QUIT"));
 	}
 

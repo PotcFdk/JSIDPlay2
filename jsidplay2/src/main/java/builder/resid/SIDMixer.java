@@ -213,7 +213,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * WhatsSid enabled?
 	 */
-	private final boolean whatsSidEnabled;
+	private boolean whatsSidEnabled;
 
 	/**
 	 * WhatsSID
@@ -444,4 +444,8 @@ public class SIDMixer implements Mixer {
 		return whatsSidSupport;
 	}
 
+	public void setWhatsSidEnabled(boolean whatsSidEnabled) {
+		this.whatsSidEnabled = whatsSidEnabled;
+	}
+	
 }
