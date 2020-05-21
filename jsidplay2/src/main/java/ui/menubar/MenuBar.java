@@ -132,10 +132,10 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
-	
+
 	@FXML
 	protected Menu help;
-	
+
 	@FXML
 	protected MenuItem save, previous, next;
 
@@ -241,8 +241,10 @@ public class MenuBar extends C64VBox implements UIPart {
 		}
 
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			getScene().lookup("#tabbedPane").setVisible(!newValue);
-			getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
+			if (getScene() != null) {
+				getScene().lookup("#tabbedPane").setVisible(!newValue);
+				getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
+			}
 		});
 		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
 		if (getScene() != null) {
@@ -1077,7 +1079,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		});
 		jSidPlay2.getTabbedPane().getTabs().add(tab);
 		jSidPlay2.getTabbedPane().getSelectionModel().select(tab);
-		minimizeMaximize.setSelected(false);
 	}
 
 	private boolean tabAlreadyOpen(String fxId) {
