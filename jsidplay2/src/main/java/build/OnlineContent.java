@@ -149,8 +149,8 @@ public class OnlineContent {
 			System.err.println("Warning: UPX Program not found or not executable: " + upxExe);
 			return;
 		}
-		Process proc = Runtime.getRuntime().exec(
-				new String[] { upxExe, "--lzma", "--best", deployDir + "/jsiddevice-" + projectVersion + ".exe" });
+		Process proc = Runtime.getRuntime().exec(new String[] { upxExe, "--lzma", "--best",
+				/* "--ultra-brute", */deployDir + "/jsiddevice-" + projectVersion + ".exe" });
 
 		ZipFileUtils.copy(proc.getErrorStream(), System.err);
 		ZipFileUtils.copy(proc.getInputStream(), System.out);

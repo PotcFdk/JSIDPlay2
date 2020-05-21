@@ -25,26 +25,6 @@ Use Oracle Java8
 ================
 This is my recommendation, because JavaFX is already included!
 
-Optional: You can use OpenJDK For Linux users and PulseAudio for sound output:
-==============================================================================
-OpenJDK + OpenJFX + PulseAudio Mixer is required!
-Execute the following commands:
-sudo apt-get install openjdk-8-jdk
-sudo apt-get install openjfx (must then be openfx8 - NOT openjfx11 - Is it no more available on Ubuntu?)
-sudo apt-get install pavucontrol
-
-Some soundcards don't work well with the default pulseaudio settings:
-read here: https://askubuntu.com/questions/371595/for-pulseaudio-what-does-tsched-do-and-what-are-the-defaults
-Therefore, if you have trouble with crackling sound, please enter in a terminal:
-"sudo vi /etc/pulse/default.pa"
-and replace line:
-"load-module module-udev-detect"
-with
-"load-module module-udev-detect tsched=0"
-Now stop and start pulseaudio again without root rights:
-"pulseaudio -k"
-"pulseaudio -D"
-
 Hard-wire HardSID4U: connect mixed/out into the Microfone-in connector of your computer:
 ========================================================================================
 In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
@@ -62,12 +42,12 @@ mvn -Djavafx.platform=linux -f pom-java11.xml clean install		"(Specify platform:
 instead of:
 mvn clean install
 
-Java9 and successor versions require the configured required modules and since Java11
+Java9 and successor versions require the configured required modules and
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
 However to use this new launch in Eclipse you must
 1st: use Java11 with Eclipse and
-2nd: Copy the contents of pom-java11.xml to pom.xml and
+2nd: Copy the contents of pom-java11.xml to pom.xml (Eclipse will always use pom.xml) and
 3rd: Launch "mvn clean install (Java11)".
 Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
 
@@ -97,9 +77,6 @@ Open with...
 Choose a different one...
 /home/ken/Downloads/jdk1.8.0_211/bin/java -jar
 X Remember file type assignment
-
-Shrink jsiddevice using packer UPX (done in the release build automatically):
-upx.exe --lzma --best --ultra-brute jsiddevice.exe
 
 How to find out available JavaFX style classes of a node in the scene graph?
 	private void dump(Node n, int depth) {
