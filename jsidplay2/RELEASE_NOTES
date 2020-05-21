@@ -1,13 +1,14 @@
 Release Notes:
 ==============
 JSIDDevice: configurable audio buffer size added
-Ultimate64 Audio-/Video Streaming added, PAL emulation for video output
+Ultimate64 Audio-/Video Streaming: PAL emulation for video output added
 AVI recording driver added
-Save Recording to folder toolbar icon added
+toolbar icon added: Save Recording to folder 
 Turn PAL emulation on/off
 Audio post processors added: delay and Schroeder reverb
 Audio Settings added (audio post processors, recording quality)
 Save JPEG screenshot fixed
+SOASC download strategy fixed
 emulation settings: revert settings to default
 emulation settings: copy first SID settings to stereo SID and 3-SID
 Record tunes as CSV (SID register writes)
