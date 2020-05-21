@@ -92,7 +92,6 @@
 							<MenuItem text="%ASSEMBLY64" onAction="#assembly64" />
 							<MenuItem text="%CSDB" onAction="#csdb" />
 							<MenuItem text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
-							<MenuItem text="%SID_OTH4_COM" onAction="#sidOth4Com" />
 							<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
 							<MenuItem text="%FORUM64_DE" onAction="#forum64" />
 							<MenuItem text="%C64_SK" onAction="#c64" />
