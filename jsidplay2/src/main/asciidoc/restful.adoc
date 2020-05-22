@@ -283,8 +283,8 @@ Now start the WhatsSID database creator to create and insert the tune fingerprin
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
-	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
@@ -317,8 +317,8 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTPS \
-	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
@@ -327,7 +327,7 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 
 === Autostart JSIDPlay2 AppServer on system startup
 
-To start JSIPlay2 AppServer on system startup, please type 'vi /lib/systemd/system/jsidplay2.service':
+To start JSIPlay2 AppServer on system startup, please type 'vi /etc/systemd/system/jsidplay2.service':
 [source,subs="attributes+"]
 ----
 [Unit]
@@ -344,11 +344,11 @@ ExecStart=java \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS \
-	--whatsSIDDatabaseDriver com.mysql.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8" \
+	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
-	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
 User=ken
 
 [Install]
@@ -358,10 +358,15 @@ WantedBy=default.target
 Now, grant permission and enable jsidplay2.service to autostart:
 [source,subs="attributes+"]
 ----
-chmod 644 /lib/systemd/system/jsidplay2.service
-sudo systemctl enable jsidplay2.service
-sudo systemctl daemon-reload
+sudo chmod u+x /etc/systemd/system/jsidplay2.service # <1>
+sudo systemctl start jsidplay2.service # <2>
+sudo systemctl enable jsidplay2.service # <3>
+sudo systemctl stop jsidplay2.service # <4>
 ----
+<1> Make script executable
+<2> Start service
+<3> Enable service to run at boot
+<4> Stop service
 
 === Access from the Internet
 
