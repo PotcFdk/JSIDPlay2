@@ -1,35 +1,48 @@
 == [[RESTful]]RESTful web-services in JSIDPlay2
 
-You can implement your own client to access this emulator.
+The emulator can be started in server mode and gives access to various
+functionalities like real-time streaming of SIDs or audio recognition
+and more. You can implement your own client to access this emulator.
+The server mode of JSIDPlay2 is called "JSIDPlay2 AppServer"
 
-You can access this emulator by using the following service methods to stream music or browse music collection directories.
-
-The service methods are available as soon as you click start in the built-in AppServer in JSIDPlay2.
+The service methods are available running the server as a command-line tool explained in this document
+or as an alternative by clicking start in JSIDPlay2 user interface version.
 
 *Info*: All commands showed here have been verified on Ubuntu 18.
+
+*Info*: If a script in this document has a backslash at the end of
+a line, this is for better readability and must not be entered for real.
 
 === Preparation
 
 ==== General
 
-All the following RESTful service methods of JSIDPlay2 AppServer are using your configured music collections HVSC and CGSC.
+All the following RESTful service methods of JSIDPlay2 AppServer are
+using your configured music collections HVSC and CGSC.
 
-To make the following examples to work, first configure HVSC and CGSC music collection in JSIDPlay2, properly!
+To make the following examples to work, first configure HVSC and
+CGSC music collection in JSIDPlay2, properly!
 
-If you can browse these music collections in JSIDPlay2 the service methods can browse and stream the contained tune files as well.
+If you can browse these music collections in JSIDPlay2 the service
+methods can browse and stream the contained tune files as well.
 
 ==== Security
 
-Basic authentication is used calling the services with the following pre-configured credentials:
+Basic authentication is used calling the services with
+the following pre-configured credentials:
 
 * *Username:* jsidplay2
 * *Password:* jsidplay2!
 
-You can change the password of the user or add an administrative user by an external configuration file.
+You can change the password of the user or add an administrative user
+by an external configuration file.
 
-The file must be named: "tomcat-users.xml" located in your home directory and be readable on startup of the server.
+The file must be named: "tomcat-users.xml" located in your home
+directory and be readable on startup of the server.
 
-The reason why you can add an administrative user is to grant access to additional private music collections which normal users are not able to access.
+The reason why you can add an administrative user is to grant access
+to additional private music collections which normal users are
+not able to access.
 
 Example:
 [source,subs="attributes+"]
@@ -44,32 +57,40 @@ Example:
 ---- 
 All known roles are user and admin.
 
-The built-in AppServer in JSIDPlay2 supports HTTP and/or HTTPS protocol for client to server communication.
+The built-in AppServer in JSIDPlay2 supports HTTP and/or HTTPS protocol
+for client to server communication.
 
 ==== Use Self-signed certificate
 
-*Info*: This step is only required, if you want to make use of the HTTPS protocol.
+*Info*: This step is only required, if you want to make use of
+the HTTPS protocol.
 
-To create a self-signed certificate you must use the keytool command of the java installation
+To create a self-signed certificate you must use the keytool command
+of the java installation.
+
 [source,subs="attributes+"]
 ----
 keytool -genkey -alias jsidplay2 -keyalg RSA -keystore /etc/jsidplay2.ks -keysize 2048 <1>
 ----
-<1> *Warning:* A self-signed certificate is only a temporary solution, since
-it creates a warning message in the browser window and is
-unaccepted by iPhones and mobiles running Android9 and later versions!
+<1> *Warning:* A self-signed certificate is only a temporary solution,
+since it creates a warning message in the browser window and
+is unaccepted by iPhones and mobiles running Android9 and later versions!
 
 ==== Use trusted certificate
-*Info*: This step is only required, if you want to make use of the HTTPS protocol.
+*Info*: This step is only required, if you want to make use of the
+HTTPS protocol.
 
-*Info*: This example is related to Let’s Encrypt and Apache2 installation on Linux according to my situation here.
+*Info*: This example is related to Let’s Encrypt and Apache2
+installation on Linux according to my situation here.
 
-If you as well, already have a web-server and want to host JSIDPlay2-server on the same machine, then you can use HTTPS using the same certificate for both: your web-server and JSIDPlay2 AppServer.
-This is a step by step instruction of how it works.
+If you as well, already have a web-server and want to host
+JSIDPlay2-server on the same machine, then you can use HTTPS using
+the same certificate for both: your web-server and JSIDPlay2 AppServer.
+This is a step by step instruction of how it works:
 
-If i can assume you already use Apache2 as a web server, then do the following:
+First lets make the Apache2 web-server secure, which is
+very easy with Let's Encrypt, these days.
 
-First lets make the Apache2 web-server secure, which is very easy with Let's Encrypt, these days:
 [source,subs="attributes+"]
 ----
 sudo apt-get install software-properties-common
@@ -84,10 +105,14 @@ for automatic renewal a cron job is created by Let's Encrypt.
 Let's Encrypt already adds the certbot script to renew the certificates regularly.
 
 *Important:*
-In order to re-use these renewed certificates for JSIDPlay2 we add a cronjob as well (script /usr/bin/jsidplay2cert).
-Our cronjob creates the Java keystore (/etc/jsidplay2.ks) out of the certificates renewed by Let's Encrypt.
+In order to re-use these renewed certificates for JSIDPlay2 we add
+a cronjob as well (script /usr/bin/jsidplay2cert).
+Our cronjob creates the Java keystore (/etc/jsidplay2.ks) out of
+the certificates renewed by Let's Encrypt.
 
-To configure that cronjob type 'sudo crontab -e' and add the last line containing jsidplay2cert:
+To configure that cronjob type 'sudo crontab -e' and
+add the last line containing jsidplay2cert.
+
 [source,subs="attributes+"]
 ----
 # 
@@ -114,9 +139,12 @@ To configure that cronjob type 'sudo crontab -e' and add the last line containin
 40 3 * * 0 certbot -q renew
 @weekly root jsidplay2cert # <1>
 ----
-<1> jsidplay2cert is a script we have to execute in order to create our keystore (/etc/jsidplay2.ks), weekly
+<1> jsidplay2cert is a script we have to execute in order to create
+our keystore (/etc/jsidplay2.ks), weekly
 
-Now create the script to be executed by cronjob typing 'sudo vi /usr/bin/jsidplay2cert':
+Now create the script to be executed by
+cronjob typing 'sudo vi /usr/bin/jsidplay2cert'.
+
 [source,subs="attributes+"]
 ----
 #!/bin/bash
@@ -150,7 +178,8 @@ keytool -keystore /etc/jsidplay2.ks -changealias -alias 1 -destalias jsidplay2 \
 	
 sudo -i -u ken /home/ken/server.sh >> /var/log/jsidplay2cert.log 2>&1 # <1>
 ----
-<1> At last our server gets restarted with the renewed certificate, please refer to
+<1> At last our server gets restarted with the renewed certificate,
+please refer to
 <<restful.ad#LaunchHttps,Launch JSIDPlay2 AppServer using HTTPS>>
 
 Now, grant permission to execute that script by our cronjob:
@@ -159,15 +188,22 @@ Now, grant permission to execute that script by our cronjob:
 sudo chmod 755 /usr/bin/jsidplay2cert
 ----
 
-As a result we get weekly a fresh new keystore (/etc/jsidplay2.ks). A log file for troubleshooting is placed here (/var/log/jsidplay2cert.log)
+As a result we get weekly a fresh new keystore (/etc/jsidplay2.ks).
+A log file for troubleshooting is placed here (/var/log/jsidplay2cert.log)
 
 === Launch JSIDPlay2 AppServer using HTTP
 
-First lets explain how to start JSIDPlay2 AppServer in general for unencrypted HTTP connections and without the created keystore above:
+First lets explain how to start JSIDPlay2 AppServer in general
+for unencrypted HTTP connections and without
+the created keystore above.
 
-*Info:* You can start the built-in AppServer standalone using the following command in a console window, instead of starting the UI version of JSIDPlay2:
+*Info:* You can start the built-in AppServer standalone using
+the following command in a console window, instead of starting
+the UI version of JSIDPlay2.
 
-To start the JSIPlay2 AppServer without HTTPS, but only HTTP, please use the following command
+To start the JSIPlay2 AppServer without HTTPS, but only HTTP,
+please use the following command.
+
 [source,subs="attributes+"]
 ----
 java -classpath jsidplay2-{version}.jar server.restful.JSIDPlay2Server # <1>
@@ -185,9 +221,13 @@ java -classpath jsidplay2-{version}.jar server.restful.JSIDPlay2Server --help # 
 
 [[LaunchHttps]]
 
-Now lets explain how to start JSIDPlay2 AppServer using encrypted HTTPS connections with the keystore created above:
+Now lets explain how to start JSIDPlay2 AppServer using
+encrypted HTTPS connections with the keystore created above.
 
-To start the JSIPlay2 AppServer with HTTPS using the formerly created keystore, you can use the following script, please type 'vi ~/server.sh':
+To start the JSIPlay2 AppServer with HTTPS using the formerly
+created keystore, you can use the following script,
+please type 'vi ~/server.sh'.
+
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
@@ -202,9 +242,12 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 ----
 <1> Launch the JSIDPlay2 AppServer using HTTPS standalone
 
-*Note:* Parameter appServerConnectors controls if we want to support HTTP, HTTPS or both!
+*Note:* Parameter appServerConnectors controls if we want
+to support HTTP, HTTPS or both!
 
-*Warning:* The passwords will always be deleted after exit of JSIDPlay2 to not appear in the configuration file of JSIDPlay2 for security reasons!
+*Warning:* The passwords will always be deleted after
+exit of JSIDPlay2 to not appear in the configuration file
+of JSIDPlay2 for security reasons!
 
 Now, grant permission to execute that script:
 [source,subs="attributes+"]
@@ -216,9 +259,16 @@ Now, we are finished to launch JSIDPlay2 using HTTP or HTTPS
 
 === Create database for WhatsSID? tune recognition
 
-Now lets explain how to create the database for Shazam like tune recognition:
+JSIDPlay2 AppServer can optionally serve audio recognition requests
+to answer the question: What tune is currently played.
+This is similar to what the commercial Shazam app does.
 
-First install and configure a database. Create a user with a desired password:
+As a preparation to handle these requests you must create a
+database beforehand. You can choose your own database,
+but in these examples I will use mysql.
+
+First install and configure a database and
+create a user with a desired password.
 
 [source,subs="attributes+"]
 ----
@@ -226,23 +276,14 @@ sudo apt-get install mysql-server
 sudo mysql_secure_installation utility
 
 sudo mysql -u root -p
-CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>';
-GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' IDENTIFIED BY '<password>'; # <1>
+CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>'; # <1>
+GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' IDENTIFIED BY '<password>'; # <2>
 quit
 ----
-<1> grant priviledges to the newly created user
+<1> Replace <username> and <password> according to your own choice
+<2> grant priviledges to the newly created user
 
-Eventually open the firewall:
-
-[source,subs="attributes+"]
-----
-sudo ufw enable # <1>
-sudo ufw allow mysql # <2>
-----
-<1> enable firewall
-<2> open firewall for mysql
-
-Eventually allow remote connections:
+Allow remote connections:
 
 [source,subs="attributes+"]
 ----
@@ -260,9 +301,13 @@ max_allowed_packet      = 64M # <1>
 innodb_buffer_pool_size = 8G # <2>
 sql-mode="ANSI_QUOTES" # <3>
 ----
-<1> increase packet size (because adding a song requires sending a larger package)
-<2> use 75% of your physical RAM for the database (to keep it preferably entirely in memory).
-<3> use ANSI quotes for SQL statements (in case you want to use org.hsqldb.util.DatabaseManagerSwing to have a look into your database)
+<1> increase packet size (because adding a song requires sending
+a larger package)
+<2> use 75% of your physical RAM for the database
+to keep it preferably entirely in memory.
+<3> use ANSI quotes for SQL statements in case you want to use
+client software like org.hsqldb.util.DatabaseManagerSwing
+to have a look into your database, because these use ANSI quoted sql.
 
 Enable autostart on boot time and restart service:
 
@@ -274,9 +319,15 @@ sudo systemctl restart mysql # <2>
 <1> launch mysql on startup
 <2> restart mysql service
 
+Now start the WhatsSID database creator to create and
+insert the tune fingerprintings for your music collection.
+But be warned, this process will run very very long
+around 30 days on my machine for HVSC, because this will
+create WAV files of the entire collection (8KHz mono recordings) before
+adding the fingerprint. However, it is safe to stop and restart
+the process if required, because it checks if WAV is already present
+and if database already contains the song.
 
-
-Now start the WhatsSID database creator to create and insert the tune fingerprintings for your music collection:
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
@@ -292,20 +343,26 @@ java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.Fi
 	<pathToMusicCollection> & # <2>
 ----
 <1> pathToHVSC is used to read song length file database contained in HVSC
-<2> pathToMusicCollection is the base directory to recursively create audio fingerprintings. This can be pathToHVSC or the path for CGSC!
+<2> pathToMusicCollection is the base directory to recursively create
+audio fingerprintings. This can be pathToHVSC or the path for CGSC!
 
-*Note:* The pathToMusicCollection is traversed recursively and every song is converted to a 8KHz WAV recording. You will need a lot of disk space to store them (around hundreds of MB)!
+*Note:* The pathToMusicCollection is traversed recursively and every
+song is converted to a 8KHz WAV recording. You will need a lot of
+disk space to store them (around hundreds of MB)!
 After every created WAV file an audio fingerprint is created and stored in the database.
 
 Now you can use WhatsSID? tune recognition.
 
 === Launch JSIDPlay2 AppServer with additional WhatsSID? tune recognition
 
-Now lets explain how to start JSIDPlay2 AppServer providing Shazam like tune recognition.
+Now lets explain how to start JSIDPlay2 AppServer providing audio
+recognition.
+
+*Note:* You must create a database beforehand, that was explained
+in the previous section.
 
 You only have to add additional WhatsSID database parameters.
 
-To start the JSIPlay2 AppServer with a WhatsSID database:
 [source,subs="attributes+"]
 ----
 #!/bin/bash -x
@@ -327,7 +384,9 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 
 === Autostart JSIDPlay2 AppServer on system startup
 
-To start JSIPlay2 AppServer on system startup, please type 'vi /etc/systemd/system/jsidplay2.service':
+To start JSIPlay2 AppServer on system startup, please type
+'vi /etc/systemd/system/jsidplay2.service'.
+
 [source,subs="attributes+"]
 ----
 [Unit]
@@ -364,46 +423,78 @@ sudo systemctl enable jsidplay2.service # <3>
 sudo systemctl stop jsidplay2.service # <4>
 ----
 <1> Make script executable
-<2> Start service
+<2> Optional: start service for testing
 <3> Enable service to run at boot
-<4> Stop service
+<4> Optional: stop service after testing
 
 === Access from the Internet
 
-To use your client from within your private local area network does not require additional preparations, you just need to know and reach the IP address, where JSIDPlay2 is running on.
+To use your client from within your private local area network
+does not require additional preparations, you just need to know and
+reach the IP address, where JSIDPlay2 is running on.
 
-But, if you want to use a client from any location in the internet, that would require some additional preparations:
+But, if you want to use a client from any location in the internet,
+that would require some additional preparations:
 
-. You will need a hostname which resolves to the IP-address of your always reachable server, where JSIDPlay2 is running on (e.g. using a provider like https://freeddns.noip.com and configure dynamic DNS inside your router)
-. You will need to configure your router to redirect requests to that server: port forwarding. You should forward requests using the port, that you configured for the built-in AppServer in JSIDPlay2 (8080 and 8443). This will make it necessary to configure a fixed IP address for your server within your local area network, beforehand. Now you can forward all related traffic to your server where JSIDPlay2 is running on.
+. You will need a hostname which resolves to the IP-address of
+your always reachable server, where JSIDPlay2 is running on
+(e.g. using a provider like https://freeddns.noip.com and
+configure dynamic DNS inside your router)
 
-*Warning:* Keep in mind, that opening ports in your firewall will raise the security risk. You will make yourself vulnerable to attacks from hackers.
+. You will need to configure your router to redirect requests to
+that server: I mean port forwarding. You should forward requests using
+the port, that you configured for the built-in AppServer in JSIDPlay2
+(8080 and 8443). This will make it necessary to configure a fixed
+IP address for your server within your local area network, beforehand.
+Now you can forward all related traffic to your server where
+JSIDPlay2 is running on.
 
-*Note:* I will not take responsability for any risks or damages. Do this on your own risk!
+*Warning:* Keep in mind, that opening ports in your firewall
+will raise the security risk. You will make yourself vulnerable to
+attacks from hackers.
+
+*Note:* I will not take responsability for any risks or damages.
+Do this on your own risk!
 
 === JSIDPlay2 AppServer Usage of the RESTful services
 
-*Info:* Depending on the connection type of JSIDPlay2 AppServer you have to use HTTP or HTTPS as protocol and port 8080 (HTTP) or 8443 (HTTPS). Please refer the command-line parameters appServerConnectors, appServerPort and appServerSecurePort!
+*Info:* Depending on the connection type of JSIDPlay2 AppServer you
+have to use HTTP or HTTPS as protocol and port 8080 (HTTP) or
+8443 (HTTPS). Please refer the command-line parameters
+appServerConnectors, appServerPort and appServerSecurePort!
 
 ==== Get all SID filter names (required to stream SID as MP3 later)
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/filters[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/filters]
 
-Note: SID filter names are prefixed with the emulation engine (RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and appended by their name, e.g. RESID_MOS8580_FilterAverage8580, That way filters can be grouped or sorted on the client side.
+Note: SID filter names are prefixed with the emulation engine
+(RESID or RESIDFP) and the SID model (MOS6581 or MOS8580) and
+appended by their name, e.g. RESID_MOS8580_FilterAverage8580,
+That way filters can be grouped or sorted on the client side.
 
 ==== Get music collection directory
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS/D/DRAX/]
 
-You can access any sub-directory of your music collection to navigate to the tunes you want to play on the client side.
-HVSC music collection root path starts with "/C64Music/" and CGSC music collection starts with "/CGSC/". Please append any sub-directory behind that root path to get the desired directory contents.
-Directory type entries are appended by a slash, whereas file type entries like tunes ends with their file extensions.
-To each directory contents a parent folder entry will be added appended by "../". Following that directory entry, you can easily navigate back to the parent directory.
-Additionally you can specify a file extension filter using the parameter filter, e.g. ".*\\.(sid|dat|mus|str|p00|prg|d64|mp3|mp4)$"
+You can access any sub-directory of your music collection to
+navigate to the tunes you want to play on the client side.
+HVSC music collection root path starts with "/C64Music/" and
+CGSC music collection starts with "/CGSC/". Please append
+any sub-directory behind that root path to get the desired
+directory contents.
+Directory type entries are appended by a slash, whereas file type
+entries like tunes ends with their file extensions.
+To each directory contents a parent folder entry will
+be added appended by "../". Following that directory entry, you can
+easily navigate back to the parent directory.
+Additionally you can specify a file extension filter using
+the parameter filter, e.g. ".*\\.(sid|dat|mus|str|p00|prg|d64|mp3|mp4)$"
 
-You can add more collections by creating an external configuration file located in your home directory.
+You can add more collections by creating an external configuration file
+located in your home directory.
 
-The file must be named: "directoryServlet.properties" and be readable on startup of the server.
+The file must be named: "directoryServlet.properties" and be readable
+on startup of the server.
 
 Example:
 [source,subs="attributes+"]
@@ -413,7 +504,9 @@ Example:
 ---- 
 <1> Syntax is: "<localDirectoryNameInTheRequest>" = "<realDirectoryName>", "<adminRoleRequired>"
 
-In the request above simply use the URL "/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your collection
+In the request above simply use the URL
+"/jsidplay2service/JSIDPlay2REST/directory/MP3" to access your
+collection.
 
 ==== Get tune infos
 
@@ -431,7 +524,8 @@ Return a list of favorite tune files.
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid]
 
-Return a photo of a well-known tune composer to be displayed on the client side.
+Return a photo of a well-known tune composer to be displayed on
+the client side.
 
 ==== Download SID
 
@@ -443,16 +537,29 @@ Download a tune file of your music collection to the client.
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/C64Music/MUSICIANS/D/DRAX/Acid.sid?defaultLength=03:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true]
 
-Return a mp3 stream of the specified tune. On the server side the emulator is started and streams the sound output back to the client.
+Return a mp3 stream of the specified tune. On the server side the
+emulator is started and streams the sound output back to the client.
 All parameters are used to specify emulation settings that should be used.
-Especially the MP3 parameters control the quality and size of the returned mp3 stream (vbr, cbr and vbrQuality).
-Using these parameter gives you the control about mobile phone transfer data volume and especially the costs that arise, if you stream over the internet using your specific mobile phone provider contract (as nobody has an unlimited flat rate these days). It is recommended to use less data volume with less precision (lower quality) for connections over the internet and higher data volume with more precision (higher quality) inside your private local network, e.g. WLAN connection.
-I have implemented an example android app as a client for the built-in AppServer of JSIDPlay2.
-My android app uses constant bitrate of 64K for the internet and variable bitrate and highest quality for my private WLAN.
+Especially the MP3 parameters control the quality and size of
+the returned mp3 stream (vbr, cbr and vbrQuality).
+Using these parameter gives you the control about mobile phone
+transfer data volume and especially the costs that arise, if you
+stream over the internet using your specific mobile phone provider
+contract (as nobody has an unlimited flat rate these days). It is
+recommended to use less data volume with less precision
+(lower quality) for connections over the internet and higher data
+volume with more precision (higher quality) inside your private
+local network, e.g. WLAN connection.
+I have implemented an example android app as a client for the built-in
+AppServer of JSIDPlay2.
+My android app uses constant bitrate of 64K for the internet
+and variable bitrate and highest quality for my private WLAN.
 This is according to my recommendation above.
 
-For a description of all possible parameters please call console player's usage, because
-they are exactly the same. But keep in mind you must use the gnu-style parameter syntax and leave away "--":
+For a description of all possible parameters please call
+console player's usage, because
+they are exactly the same. But keep in mind you must use the gnu-style
+parameter syntax and leave away "--":
 [source,subs="attributes+"]
 ----
 cd Downloads/jsidplay2-{version}
@@ -460,19 +567,26 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
 <1> Show ConsolePlayer's usage for a description of all parameters
 
-*Info:* The audio parameter let you choose WAV as an alternative, but beware of a much bigger file size.
+*Info:* The audio parameter let you choose WAV as an alternative, but
+beware of a much bigger file size.
 
 ==== Stream Demo as MP4
 
-*Info:* This service method does only work, if directoryServlet had been configured before to grant access to "/Demos"!
+*Info:* This service method does only work, if directoryServlet
+had been configured before to grant access to "/Demos"!
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/Demos/ALGODANCER2/ALGODANCER2.d64?defaultLength=00:30&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/convert/Demos/ALGODANCER2/ALGODANCER2.d64?defaultLength=00:30&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60]
-Return a mp4 stream of the specified demo. On the server side the emulator is started and streams the video output back to the client.
+Return a mp4 stream of the specified demo. On the server side the
+emulator is started and streams the video output back to the client.
 All parameters are used to specify emulation settings that should be used.
-For technical reasons the video is rendered first completely at the server side and afterwards returned. So, this is not really streaming. I hope i will change that in the future.
+For technical reasons the video is rendered first completely at
+the server side and afterwards returned. So, this is not
+really streaming. I hope i will change that in the future.
 
-For a description of all possible parameters please call console player's usage, because
-they are exactly the same. But keep in mind you must use the gnu-style parameter syntax and leave away "--":
+For a description of all possible parameters please call
+console player's usage, because
+they are exactly the same. But keep in mind you must use the gnu-style
+parameter syntax and leave away "--":
 [source,subs="attributes+"]
 ----
 cd Downloads/jsidplay2-{version}
@@ -480,16 +594,20 @@ java -jar jsidplay2_console-{version}.jar --help # <1>
 ---- 
 <1> Show ConsolePlayer's usage for a description of all parameters
 
-*Note:* I will not take responsability for any costs, that arise from streaming sound or video files from the internet!
+*Note:* I will not take responsability for any costs, that arise from
+streaming sound or video files from the internet!
 
-*Info:* All Parameter names match exactly the command line parameter names of the console player in gnu style (prepended by --).
+*Info:* All Parameter names match exactly the command line parameter
+names of the console player in gnu style (prepended by --).
 For example defaultLength=180 sets the default song length.
 
-*Info:* The audio parameter let you choose AVI as an alternative, but beware of a much bigger file size.
+*Info:* The audio parameter let you choose AVI as an alternative, but
+beware of a much bigger file size.
 
 ==== Upload WAV for tune recognition
 
-*Info:* This service method does only work, if server has been started with additional WhatsSID database parameters.
+*Info:* This service method does only work, if server has been started
+with additional WhatsSID database parameters.
 
 link:{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid[{protocol}://{hostname}:{port}/jsidplay2service/JSIDPlay2REST/whatssid]
 
@@ -507,9 +625,11 @@ Accept: application/json
 "wav": "<Base64encodedWAV>" # <1>
 }
 ----
-<1> replace <Base64encodedWAV> with the WAV file contents encoded with Base64
+<1> replace <Base64encodedWAV> with the WAV file contents encoded
+with Base64.
 
-This is a POST request to upload a WAV recording (short audio recording max. 20 seconds should be enough).
+This is a POST request to upload a WAV recording
+(short audio recording max. 20 seconds should be enough).
 
 The WAV file must meet the following requirement:
 
@@ -520,7 +640,8 @@ The WAV file must meet the following requirement:
 You are flexible to send:
 
 * mono or stereo
-* sampling frequencies 8KHz, 44.1KHz, 48KHz or 96KHz (use 8KHz to reduce size of the request)
+* sampling frequencies 8KHz, 44.1KHz, 48KHz or 96KHz
+(please use 8KHz to reduce size of the request)
 
 Response:
 
@@ -582,14 +703,18 @@ Response:
 </musicInfoWithConfidence>
 ----
 
-As a second alternative you can upload the WAV file as a mime/multipart like a file upload does.
+As a second alternative you can upload the WAV file as a mime/multipart
+like a file upload does.
 Only the first file gets analyzed, though.
 
 === Android Client for JSIDPlay2 AppServer
 
-Source code of the example Android app using the RESTful web-service interface can be found link:https://github.com/kenchis/JSIDPlay2[here].
+Source code of the example Android app using the RESTful web-service
+interface can be found link:https://github.com/kenchis/JSIDPlay2[here].
 
-Click here to link:{codebase}jsidplay2app.apk[Get the Installer for] JSIDPlay2 App. +
+Click here to link:{codebase}jsidplay2app.apk[Get the Installer for]
+JSIDPlay2 App. +
 *Please note: Streaming music using your mobile can cause additional costs!*
 
-As an alternative you can use a browser enabled client like link:https://haendel.ddns.net:8443/static/hvsc.vue[here]
+As an alternative you can use a browser enabled client like
+link:https://haendel.ddns.net:8443/static/hvsc.vue[here]
