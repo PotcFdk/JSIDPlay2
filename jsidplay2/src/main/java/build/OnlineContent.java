@@ -141,7 +141,9 @@ public class OnlineContent {
 	private void moveProguardJar() throws IOException {
 		String source = deployDir + "/jsiddevice-" + projectVersion + "-proguard.jar";
 		String target = deployDir + "/jsiddevice-" + projectVersion + ".jar";
-		Files.move(Paths.get(source), Paths.get(target), REPLACE_EXISTING);
+		if (new File(source).exists()) {
+			Files.move(Paths.get(source), Paths.get(target), REPLACE_EXISTING);
+		}
 	}
 
 	private void upx() throws IOException, InterruptedException {
