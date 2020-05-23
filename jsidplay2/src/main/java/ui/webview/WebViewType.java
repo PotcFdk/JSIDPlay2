@@ -57,8 +57,19 @@ public enum WebViewType {
 
 	public String getUrl() {
 		if (url.startsWith(JAR_URL)) {
-			URL resource = getClass().getResource(url.replace(JAR_URL, ""));
-			return resource != null ? resource.toExternalForm() : "";
+			if (this == JSIDPLAY2_JAVADOC) {
+				String userGuideUrl = USERGUIDE.url.replace(JAR_URL, "");
+				URL resource = getClass().getResource(userGuideUrl);
+				String result = resource != null ? resource.toExternalForm() : "";
+				result = result.replace(userGuideUrl, "/index.html");
+				result = result.replace("/jsidplay2-", "/jsidplay2_doc-");
+				result = result.replace(".jar", "-javadoc.jar");
+				return result;
+			} else {
+				URL resource = getClass().getResource(url.replace(JAR_URL, ""));
+				String result = resource != null ? resource.toExternalForm() : "";
+				return result;
+			}
 		}
 		return url;
 	}
