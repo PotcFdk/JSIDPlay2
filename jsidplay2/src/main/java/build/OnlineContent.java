@@ -46,7 +46,6 @@ import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
-import sidplay.ini.IniConfig;
 import sidplay.ini.IniDefaults;
 import ui.download.DownloadThread;
 import ui.entities.Database;
@@ -276,36 +275,26 @@ public class OnlineContent {
 	private void doCreateIndex(MusicCollectionType collectionType, String zipFile) throws Exception {
 		File rootFile = new TFile(zipFile);
 
+		String persistenceUnitName = collectionType == CGSC ? CGSC_DS : HVSC_DS;
 		File dbFilename = new File(rootFile.getParentFile(), collectionType.toString());
-		PersistenceProperties pp = new PersistenceProperties(dbFilename.getAbsolutePath(), "", "", Database.HSQL_FILE);
-		EntityManagerFactory emFactory = Persistence
-				.createEntityManagerFactory(collectionType == CGSC ? CGSC_DS : HVSC_DS, pp);
+		EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
+				new PersistenceProperties(dbFilename.getAbsolutePath(), "", "", Database.HSQL_FILE));
 		EntityManager em = emFactory.createEntityManager();
 
-		IniConfig config = IniDefaults.DEFAULTS;
-		Player player = new Player(config);
-		try {
-			player.setSidDatabase(new SidDatabase(zipFile));
-		} catch (IOException e) {
-			if (collectionType == MusicCollectionType.HVSC) {
-				System.err.println("WARNING: song length database can not be read: " + e.getMessage());
-			}
-		}
-		try (InputStream input = new TFileInputStream(new TFile(zipFile, STIL.STIL_FILE))) {
-			player.setSTIL(new STIL(input));
-		} catch (IOException e) {
-			if (collectionType == MusicCollectionType.HVSC) {
-				System.err.println("WARNING: STIL can not be read: " + e.getMessage());
-			}
+		Player player = new Player(IniDefaults.DEFAULTS);
+		if (collectionType == MusicCollectionType.HVSC) {
+			setSIDDatabase(player, zipFile);
+			setSTIL(player, zipFile);
 		}
 
 		SearchIndexCreator searchIndexCreator = new SearchIndexCreator(rootFile, player, em);
-		Consumer<Void> searchStart = (x) -> searchIndexCreator.getSearchStart().accept(x);
+		Consumer<Void> searchStart = v -> searchIndexCreator.getSearchStart().accept(v);
 		Consumer<File> searchHit = searchIndexCreator.getSearchHit();
-		Consumer<Boolean> searchStop = (cancelled) -> {
+		Consumer<Boolean> searchStop = cancelled -> {
 			searchIndexCreator.getSearchStop().accept(cancelled);
 			ready = true;
 		};
+		ready = false;
 		new SearchIndexerThread(rootFile, searchStart, searchHit, searchStop).start();
 
 		System.out.println("Creating index, please wait a moment...");
@@ -316,10 +305,25 @@ public class OnlineContent {
 				System.err.println("Interrupted while sleeping!");
 			}
 		}
-		em.getEntityManagerFactory().close();
-		ready = false;
+		emFactory.close();
 		// Really persist the databases
 		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
+	}
+
+	private void setSTIL(Player player, String zipFile) throws NoSuchFieldException, IllegalAccessException {
+		try (InputStream input = new TFileInputStream(new TFile(zipFile, STIL.STIL_FILE))) {
+			player.setSTIL(new STIL(input));
+		} catch (IOException e) {
+			System.err.println("WARNING: STIL can not be read: " + e.getMessage());
+		}
+	}
+
+	private void setSIDDatabase(Player player, String zipFile) {
+		try {
+			player.setSidDatabase(new SidDatabase(zipFile));
+		} catch (IOException e) {
+			System.err.println("WARNING: song length database can not be read: " + e.getMessage());
+		}
 	}
 
 	private void doSplit(int maxFileSize, String filename) throws IOException {
