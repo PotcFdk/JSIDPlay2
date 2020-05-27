@@ -33,7 +33,7 @@ public class SIDDeviceSettings {
 
 	/**
 	 * getInstance gets the instance of SIDDeviceSettings
-	 * 
+	 *
 	 * @return instance of SIDDeviceSettings
 	 */
 	public static SIDDeviceSettings getInstance() {
@@ -126,8 +126,7 @@ public class SIDDeviceSettings {
 	}
 
 	/**
-	 * @param deviceIndex
-	 *            the device index to be saved
+	 * @param deviceIndex the device index to be saved
 	 */
 	public synchronized void saveDeviceIndex(final Integer deviceIndex) {
 		props.setProperty(PROPERTY_DEVICE_INDEX, String.valueOf(deviceIndex));
@@ -135,8 +134,7 @@ public class SIDDeviceSettings {
 	}
 
 	/**
-	 * @param audioBufferSize
-	 *            the audio buffer size to be saved
+	 * @param audioBufferSize the audio buffer size to be saved
 	 */
 	public synchronized void saveAudioBufferSize(final Integer audioBufferSize) {
 		props.setProperty(PROPERTY_AUDIO_BUFFER_SIZE, String.valueOf(audioBufferSize));
@@ -144,8 +142,7 @@ public class SIDDeviceSettings {
 	}
 
 	/**
-	 * @param digiBoost
-	 *            specifies if digiBoost should be enabled for 8580 model
+	 * @param digiBoost specifies if digiBoost should be enabled for 8580 model
 	 */
 	public synchronized void saveDigiBoost(boolean digiBoost) {
 		props.setProperty(PROPERTY_DIGI_BOOST, String.valueOf(digiBoost));
@@ -183,13 +180,13 @@ public class SIDDeviceSettings {
 	}
 
 	public void saveWhatsSidMinimumRelativeConfidence(double whatsSidMinimumRelativeConfidence) {
-		props.setProperty(PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE, String.valueOf(whatsSidMinimumRelativeConfidence));
+		props.setProperty(PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE,
+				String.valueOf(whatsSidMinimumRelativeConfidence));
 		save();
 	}
 
 	/**
-	 * @param allowExternalConnections
-	 *            specifies if external connection are allowed
+	 * @param allowExternalConnections specifies if external connection are allowed
 	 */
 	public synchronized void saveAllowExternalConnections(boolean allowExternalConnections) {
 		props.setProperty(ALLOW_EXTERNAL_CONNECTIONS, String.valueOf(allowExternalConnections));

@@ -29,7 +29,7 @@ import sidplay.fingerprinting.WhatsSidSupport;
 
 /**
  * Mixer to mix SIDs sample data into the audio buffer.
- * 
+ *
  * @author ken
  *
  */
@@ -41,7 +41,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * The mixer mixes the generated sound samples into the drivers audio buffer.
-	 * 
+	 *
 	 * @author ken
 	 *
 	 */
@@ -132,7 +132,7 @@ public class SIDMixer implements Mixer {
 		/**
 		 * Triangularly shaped noise source for audio applications. Output of this PRNG
 		 * is between ]-1, 1[.
-		 * 
+		 *
 		 * @return triangular noise sample
 		 */
 		private int triangularDithering() {
@@ -161,7 +161,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * SIDs to mix their sound output.
 	 */
-	protected final List<ReSIDBase> sids = new ArrayList<ReSIDBase>(MAX_SIDS);
+	protected final List<ReSIDBase> sids = new ArrayList<>(MAX_SIDS);
 
 	/**
 	 * Mixer clocking SID chips and producing audio output.
@@ -276,7 +276,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Fade-in start time reached, audio volume should be increased to the max.
-	 * 
+	 *
 	 * @param fadeIn Fade-in time in seconds
 	 */
 	@Override
@@ -289,7 +289,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Fade-out start time reached, audio volume should be lowered to zero.
-	 * 
+	 *
 	 * @param fadeOut Fade-out time in seconds
 	 */
 	@Override
@@ -302,7 +302,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Add a SID to the mix.
-	 * 
+	 *
 	 * @param sidNum SID chip number
 	 * @param sid    SID to add
 	 */
@@ -320,7 +320,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Remove SID from the mix.
-	 * 
+	 *
 	 * @param sid SID to remove
 	 */
 	public void remove(ReSIDBase sid) {
@@ -331,7 +331,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Volume of the SID chip.
-	 * 
+	 *
 	 * @param sidNum     SID chip number
 	 * @param volumeInDB volume in DB -6(-6db)..6(+6db)
 	 */
@@ -345,7 +345,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * db-to-linear(x) = 10^(x / 20)
-	 * 
+	 *
 	 * @param decibel decibel value to convert
 	 * @return converted linear value
 	 */
@@ -355,7 +355,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Set left/right speaker balance for each SID.
-	 * 
+	 *
 	 * @param sidNum  SID chip number
 	 * @param balance balance 0(left speaker)..0.5(centered)..1(right speaker)
 	 */
@@ -370,7 +370,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Delay feature: Delaying SID chip sound samples by time in milliseconds
-	 * 
+	 *
 	 * @param sidNum SID chip number
 	 * @param delay  delay in ms
 	 */
@@ -384,7 +384,7 @@ public class SIDMixer implements Mixer {
 
 	/**
 	 * Create a new sample value mixer and assign to SID chip.
-	 * 
+	 *
 	 * @param sid SID chip that requires a sample mixer.
 	 */
 	private void createSampleMixer(ReSIDBase sid, int sidNum) {
@@ -457,5 +457,5 @@ public class SIDMixer implements Mixer {
 	public void setWhatsSidEnabled(boolean whatsSidEnabled) {
 		this.whatsSidEnabled = whatsSidEnabled;
 	}
-	
+
 }

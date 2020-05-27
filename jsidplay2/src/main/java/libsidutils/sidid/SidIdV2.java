@@ -13,17 +13,17 @@ import libsidutils.stringsearch.BNDMWildcards;
 /**
  * Scan tune files to find out the player ID. A configuration file is used with
  * patterns of well-known players.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * This is a single pattern to match a player.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	private static class Pattern {
 		/**
@@ -41,13 +41,10 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Create a new pattern.
-		 * 
-		 * @param p
-		 *            pattern of the player
-		 * @param pre
-		 *            pre-processed pattern
-		 * @param subPattern
-		 *            Is this a splitted sub pattern to match?
+		 *
+		 * @param p          pattern of the player
+		 * @param pre        pre-processed pattern
+		 * @param subPattern Is this a splitted sub pattern to match?
 		 */
 		public Pattern(final byte[] p, final Object pre, final boolean subPattern) {
 			this.pattern = p;
@@ -57,7 +54,7 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Get search pattern.
-		 * 
+		 *
 		 * @return pattern of the player
 		 */
 		public byte[] getPattern() {
@@ -66,7 +63,7 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Get pre-processed search pattern.
-		 * 
+		 *
 		 * @return pre-processed pattern
 		 */
 		public Object getPreProcessedPattern() {
@@ -75,7 +72,7 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Is this a splitted sub pattern to match?
-		 * 
+		 *
 		 * @return true -for sub-patterns, else false
 		 */
 		public boolean isSubPattern() {
@@ -85,9 +82,9 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Player section of the SID-ID configuration file.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	private static class PlayerSection {
 
@@ -103,19 +100,18 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Create a new section. This creates the pattern lists, also.
-		 * 
-		 * @param name
-		 *            player name
+		 *
+		 * @param name player name
 		 */
 		public PlayerSection(final String name) {
 			this.playerName = name;
-			this.orList = new ArrayList<ArrayList<Pattern>>();
+			this.orList = new ArrayList<>();
 			this.orList.add(new ArrayList<Pattern>());
 		}
 
 		/**
 		 * Get the players name.
-		 * 
+		 *
 		 * @return player name
 		 */
 		public final String getPlayerName() {
@@ -124,7 +120,7 @@ public final class SidIdV2 extends SidIdBase {
 
 		/**
 		 * Get pattern list: OR(AND(bytes, ...), ...).
-		 * 
+		 *
 		 * @return pattern list
 		 */
 		public final ArrayList<ArrayList<Pattern>> getOrList() {
@@ -170,9 +166,8 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Scan file for multiple player IDs.
-	 * 
-	 * @param m
-	 *            on/off multi scan
+	 *
+	 * @param m on/off multi scan
 	 */
 	public void setMultiScan(final boolean m) {
 		this.multiScan = m;
@@ -187,12 +182,10 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Search player ID of a tune file.
-	 * 
-	 * @param filename
-	 *            file name
+	 *
+	 * @param filename file name
 	 * @return list of players (depending of multiScan one or more entries)
-	 * @throws IOException
-	 *             read error
+	 * @throws IOException read error
 	 */
 	public ArrayList<String> identify(final String filename) throws IOException {
 		return identify(load(filename));
@@ -200,13 +193,12 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Search player ID of a program.
-	 * 
-	 * @param prg
-	 *            program to identify
+	 *
+	 * @param prg program to identify
 	 * @return list of players (depending of multiScan one or more entries)
 	 */
 	public ArrayList<String> identify(final byte[] prg) {
-		final ArrayList<String> result = new ArrayList<String>();
+		final ArrayList<String> result = new ArrayList<>();
 		for (final PlayerSection section : sections) {
 			if (matchOneOf(section.getOrList(), prg)) {
 				result.add(section.getPlayerName());
@@ -220,11 +212,9 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Match one of the patterns in the list.
-	 * 
-	 * @param orList
-	 *            the list of patterns to match
-	 * @param prg
-	 *            the byte array containing the text
+	 *
+	 * @param orList the list of patterns to match
+	 * @param prg    the byte array containing the text
 	 * @return true - one of the patterns have matched, false otherwise
 	 */
 	private boolean matchOneOf(final ArrayList<ArrayList<Pattern>> orList, final byte[] prg) {
@@ -238,11 +228,9 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Match all patterns in the list.
-	 * 
-	 * @param andList
-	 *            the list of patterns to match
-	 * @param prg
-	 *            the byte array containing the text
+	 *
+	 * @param andList the list of patterns to match
+	 * @param prg     the byte array containing the text
 	 * @return true - all patterns have matched, false otherwise
 	 */
 	private boolean matchAllOf(final ArrayList<Pattern> andList, final byte[] prg) {
@@ -277,14 +265,14 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Read configuration file and configure the SID-ID class.
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws NumberFormatException
 	 */
 	public void readconfig() throws NumberFormatException, IOException {
-		sections = new ArrayList<PlayerSection>();
+		sections = new ArrayList<>();
 		PlayerSection section = null;
-		final ArrayList<Byte> byteList = new ArrayList<Byte>();
+		final ArrayList<Byte> byteList = new ArrayList<>();
 		String line;
 		try (final BufferedReader br = new BufferedReader(
 				new InputStreamReader(new ByteArrayInputStream(readConfiguration(FNAME, SID_ID_PKG))))) {
@@ -304,7 +292,7 @@ public final class SidIdV2 extends SidIdBase {
 							andBytes(section, byteList);
 
 							// Append a new orList entry for further contents
-							final ArrayList<Pattern> orList = new ArrayList<Pattern>();
+							final ArrayList<Pattern> orList = new ArrayList<>();
 							section.getOrList().add(orList);
 						} else if ("and".equals(token)) {
 							assert section != null;
@@ -336,11 +324,9 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Add all bytes of the byte list to the last element of the orList.
-	 * 
-	 * @param section
-	 *            the current section
-	 * @param byteList
-	 *            the bytes to add
+	 *
+	 * @param section  the current section
+	 * @param byteList the bytes to add
 	 */
 	private void andBytes(final PlayerSection section, final ArrayList<Byte> byteList) {
 		// get last orList entry
@@ -366,18 +352,13 @@ public final class SidIdV2 extends SidIdBase {
 
 	/**
 	 * Add a pattern to the pattern search list.
-	 * 
-	 * @param ptnList
-	 *            the pattern list to add a new pattern for
-	 * @param byteList
-	 *            the list of bytes to add
-	 * @param byteListOffset
-	 *            Current offset of the bytes to add
-	 * @param byteCount
-	 *            length of bytes to add (will become the search pattern length,
-	 *            and must not exceed the maximum pattern length)
-	 * @param isSubPattern
-	 *            is this a splitted sub-pattern?
+	 *
+	 * @param ptnList        the pattern list to add a new pattern for
+	 * @param byteList       the list of bytes to add
+	 * @param byteListOffset Current offset of the bytes to add
+	 * @param byteCount      length of bytes to add (will become the search pattern
+	 *                       length, and must not exceed the maximum pattern length)
+	 * @param isSubPattern   is this a splitted sub-pattern?
 	 */
 	private void andBytesMaxPtnLength(final ArrayList<Pattern> ptnList, final ArrayList<Byte> byteList,
 			final int byteListOffset, final int byteCount, final boolean isSubPattern) {

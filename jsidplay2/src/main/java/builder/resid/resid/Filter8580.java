@@ -2,11 +2,11 @@ package builder.resid.resid;
 
 /**
  * Filter for 8580 chip based on simple linear approximation of the FC control.
- * 
+ *
  * This is like the original reSID filter except the phase of BP output has been
  * inverted. I saw samplings on the internet that indicated it would genuinely
  * happen like this.
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -55,7 +55,7 @@ public class Filter8580 extends Filter {
 		float dVlp = w0 * Vbp;
 		Vbp -= dVbp;
 		Vlp -= dVlp;
-		Vhp = (Vbp * _1_div_Q) - Vlp - Vi + (float) Math.random();
+		Vhp = Vbp * _1_div_Q - Vlp - Vi + (float) Math.random();
 
 		if (lp) {
 			Vo += Vlp;

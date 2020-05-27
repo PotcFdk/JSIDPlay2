@@ -13,7 +13,7 @@ import sidplay.audio.WAVDriver.WavFile;
 
 /**
  * Audio output.
- * 
+ *
  * @author ken
  *
  */
@@ -50,7 +50,7 @@ public enum Audio {
 
 	/**
 	 * Create audio output using the audio driver
-	 * 
+	 *
 	 * @param audioDriver audio driver
 	 */
 	@SafeVarargs
@@ -61,10 +61,10 @@ public enum Audio {
 
 	/**
 	 * Get audio driver.
-	 * 
+	 *
 	 * <B>Note:</B> Audio drivers are instantiated at runtime on demand. We do not
 	 * want to load unused libraries like jump3r, if not required!<BR>
-	 * 
+	 *
 	 * @return audio driver
 	 */
 	public final AudioDriver getAudioDriver() {
@@ -90,7 +90,7 @@ public enum Audio {
 	/**
 	 * Get audio driver for tune.<BR>
 	 * <B>Note:</B>Use MP3 comparison driver for MP3 play-back.
-	 * 
+	 *
 	 * @param audioSection configuration
 	 * @param tune         SID tune
 	 */

@@ -17,13 +17,13 @@ public class GamesService {
 
 	public GamesService(EntityManager em) {
 		this.em = em;
-	};
+	}
 
 	public List<Games> select(char firstLetter) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Games> query = cb.createQuery(Games.class);
 		Root<Games> games = query.from(Games.class);
-		Path<String> name = games.<String> get(Games_.name);
+		Path<String> name = games.<String>get(Games_.name);
 		final Predicate predicate;
 		if (Character.isLetter(firstLetter)) {
 			predicate = cb.like(cb.lower(name), Character.toLowerCase(firstLetter) + "%");

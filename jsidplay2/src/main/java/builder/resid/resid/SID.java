@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -30,7 +30,7 @@ import libsidplay.common.SIDChip;
 /**
  * MOS6581/MOS8580 emulation. Based on reSID 1.0beta by Dag Lem, ported to Java
  * by Antti S. Lankila. Slight changes by Ken händel.
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -91,24 +91,20 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely
-	 * errors in the resistor lengths which result in errors depending on the
-	 * bits chosen.
+	 * errors in the resistor lengths which result in errors depending on the bits
+	 * chosen.
 	 * <P>
-	 * This model was derived by Dag Lem, and is port of the upcoming reSID
-	 * version. In average, it shows a value higher than the target by a value
-	 * that depends on the _2R_div_R parameter. It differs from the version
-	 * written by Antti Lankila chiefly in the emulation of the lacking
-	 * termination of the 2R ladder, which destroys the output with respect to
-	 * the low bits of the DAC.
+	 * This model was derived by Dag Lem, and is port of the upcoming reSID version.
+	 * In average, it shows a value higher than the target by a value that depends
+	 * on the _2R_div_R parameter. It differs from the version written by Antti
+	 * Lankila chiefly in the emulation of the lacking termination of the 2R ladder,
+	 * which destroys the output with respect to the low bits of the DAC.
 	 * <P>
 	 * Returns the analog value as modeled from the R-2R network.
 	 *
-	 * @param dac
-	 *            digital value to convert to analog
-	 * @param _2R_div_R
-	 *            nonlinearity parameter, 1.0 for perfect linearity.
-	 * @param term
-	 *            is the dac terminated by a 2R resistor? (6581 DACs are not)
+	 * @param dac       digital value to convert to analog
+	 * @param _2R_div_R nonlinearity parameter, 1.0 for perfect linearity.
+	 * @param term      is the dac terminated by a 2R resistor? (6581 DACs are not)
 	 */
 	static void kinkedDac(final double[] dac, final double _2R_div_R, final boolean term) {
 		final double INFINITY = 1e6;
@@ -158,8 +154,8 @@ public final class SID implements SIDChip {
 
 		/* Normalize to integerish behavior */
 		double Vsum = 0;
-		for (int i = 0; i < dac.length; i++) {
-			Vsum += dac[i];
+		for (double element : dac) {
+			Vsum += element;
 		}
 		Vsum /= 1 << dac.length;
 		for (int i = 0; i < dac.length; i++) {
@@ -177,9 +173,8 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Set chip model.
-	 * 
-	 * @param model
-	 *            chip model to use
+	 *
+	 * @param model chip model to use
 	 */
 	@Override
 	public void setChipModel(final ChipModel model) {
@@ -243,13 +238,12 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * 16-bit input (EXT IN). Write 16-bit sample to audio input. NB! The caller
-	 * is responsible for keeping the value within 16 bits. Note that to mix in
-	 * an external audio signal, the signal should be resampled to 1MHz first to
-	 * avoid sampling noise.
-	 * 
-	 * @param value
-	 *            input level to set
+	 * 16-bit input (EXT IN). Write 16-bit sample to audio input. NB! The caller is
+	 * responsible for keeping the value within 16 bits. Note that to mix in an
+	 * external audio signal, the signal should be resampled to 1MHz first to avoid
+	 * sampling noise.
+	 *
+	 * @param value input level to set
 	 */
 	@Override
 	public void input(final int value) {
@@ -261,20 +255,18 @@ public final class SID implements SIDChip {
 	 * Read registers.
 	 * <P>
 	 * Reading a write only register returns the last byte written to any SID
-	 * register. The individual bits in this value start to fade down towards
-	 * zero after a few cycles. All bits reach zero within approximately $2000 -
-	 * $4000 cycles. It has been claimed that this fading happens in an orderly
-	 * fashion, however sampling of write only registers reveals that this is
-	 * not the case. NB! This is not correctly modeled. The actual use of write
-	 * only registers has largely been made in the belief that all SID registers
-	 * are readable. To support this belief the read would have to be done
-	 * immediately after a write to the same register (remember that an
-	 * intermediate write to another register would yield that value instead).
-	 * With this in mind we return the last value written to any SID register
-	 * for $2000 cycles without modeling the bit fading.
-	 * 
-	 * @param offset
-	 *            SID register to read
+	 * register. The individual bits in this value start to fade down towards zero
+	 * after a few cycles. All bits reach zero within approximately $2000 - $4000
+	 * cycles. It has been claimed that this fading happens in an orderly fashion,
+	 * however sampling of write only registers reveals that this is not the case.
+	 * NB! This is not correctly modeled. The actual use of write only registers has
+	 * largely been made in the belief that all SID registers are readable. To
+	 * support this belief the read would have to be done immediately after a write
+	 * to the same register (remember that an intermediate write to another register
+	 * would yield that value instead). With this in mind we return the last value
+	 * written to any SID register for $2000 cycles without modeling the bit fading.
+	 *
+	 * @param offset SID register to read
 	 * @return value read from chip
 	 */
 	@Override
@@ -305,11 +297,9 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Write registers.
-	 * 
-	 * @param offset
-	 *            chip register to write
-	 * @param value
-	 *            value to write
+	 *
+	 * @param offset chip register to write
+	 * @param value  value to write
 	 */
 	@Override
 	public void write(final int offset, final byte value) {
@@ -410,11 +400,9 @@ public final class SID implements SIDChip {
 
 	/**
 	 * SID voice muting.
-	 * 
-	 * @param channel
-	 *            channel to modify
-	 * @param mute
-	 *            is muted?
+	 *
+	 * @param channel channel to modify
+	 * @param mute    is muted?
 	 */
 	@Override
 	public void mute(final int channel, final boolean mute) {
@@ -427,9 +415,8 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Setting of clock frequency.
-	 * 
-	 * @param clockFrequency
-	 *            System clock frequency at Hz
+	 *
+	 * @param clockFrequency System clock frequency at Hz
 	 */
 	@Override
 	public void setClockFrequency(final double clockFrequency) {
@@ -450,14 +437,12 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Clock SID forward using chosen output sampling algorithm.
-	 * 
-	 * @param cycles
-	 *            c64 clocks to clock
-	 * @param sample
-	 *            sample consumer
+	 *
+	 * @param cycles c64 clocks to clock
+	 * @param sample sample consumer
 	 */
 	@Override
-	public final void clock(int cycles, IntConsumer sample) {
+	public void clock(int cycles, IntConsumer sample) {
 		ageBusValue(cycles);
 
 		while (cycles != 0) {
@@ -499,8 +484,8 @@ public final class SID implements SIDChip {
 	}
 
 	/**
-	 * Return the number of cycles according to current parameters that it takes
-	 * to reach sync.
+	 * Return the number of cycles according to current parameters that it takes to
+	 * reach sync.
 	 */
 	private void voiceSync(boolean sync) {
 		if (sync) {
@@ -520,7 +505,7 @@ public final class SID implements SIDChip {
 				continue;
 			}
 
-			int thisVoiceSync = ((0x7fffff - accumulator) & 0xffffff) / freq + 1;
+			int thisVoiceSync = (0x7fffff - accumulator & 0xffffff) / freq + 1;
 			if (thisVoiceSync < nextVoiceSync) {
 				nextVoiceSync = thisVoiceSync;
 			}
@@ -529,7 +514,7 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Get chip's 6581 filter.
-	 * 
+	 *
 	 * @return filter
 	 */
 	public Filter6581 getFilter6581() {
@@ -538,7 +523,7 @@ public final class SID implements SIDChip {
 
 	/**
 	 * Get chip's 8580 filter.
-	 * 
+	 *
 	 * @return filter
 	 */
 	public Filter8580 getFilter8580() {

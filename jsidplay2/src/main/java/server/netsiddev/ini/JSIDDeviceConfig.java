@@ -31,9 +31,9 @@ import sidplay.ini.IniReader;
 /**
  * INI configuration file support responsible to load and save all emulator
  * settings.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class JSIDDeviceConfig {
 	/**
@@ -95,9 +95,9 @@ public class JSIDDeviceConfig {
 		audioSection = new IniJSIDDeviceAudioSection(iniReader);
 		whatsSidSection = new IniJSIDDeviceWhatsSidSection(iniReader);
 
-		final List<String> filters = new ArrayList<String>();
-		final List<String> filtersResidfp = new ArrayList<String>();
-		final List<String> filtersResid = new ArrayList<String>();
+		final List<String> filters = new ArrayList<>();
+		final List<String> filtersResidfp = new ArrayList<>();
+		final List<String> filtersResid = new ArrayList<>();
 
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
@@ -171,7 +171,7 @@ public class JSIDDeviceConfig {
 	 * <LI>If INI file exists in the user directory, then use it, else
 	 * <LI>use INI file in the current working directory
 	 * </OL>
-	 * 
+	 *
 	 * @return the absolute path name of the INI file to use
 	 */
 	private File getINIPath() {
@@ -191,9 +191,8 @@ public class JSIDDeviceConfig {
 
 	/**
 	 * Create backup of old INI file
-	 * 
-	 * @param iniFile
-	 *            the INI file to backup
+	 *
+	 * @param iniFile the INI file to backup
 	 */
 	private void createINIBackup(final File iniFile) {
 		iniFile.renameTo(new File(iniFile.getParent(), FILE_NAME + ".bak"));

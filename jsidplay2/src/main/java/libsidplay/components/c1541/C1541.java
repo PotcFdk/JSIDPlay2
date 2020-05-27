@@ -26,10 +26,10 @@ import libsidplay.components.mos6510.MOS6510;
  * http://www.ffd2.com/fridge/docs/1541dis.html<br>
  * or<br>
  * http://www.the-dreams.de/aay1541.txt<br>
- * 
+ *
  * TODO Half-tracks are not supported, yet maybe the code looks like it does,
  * but this is not the case.
- * 
+ *
  * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  * @author Ken Händel
  */
@@ -130,13 +130,10 @@ public final class C1541 {
 
 	/**
 	 * Create a new C1541 instance.
-	 * 
-	 * @param iecBus
-	 *            IEC bus
-	 * @param deviceID
-	 *            floppy device number (8-11)
-	 * @param type
-	 *            C1541 or C1541-II?
+	 *
+	 * @param iecBus   IEC bus
+	 * @param deviceID floppy device number (8-11)
+	 * @param type     C1541 or C1541-II?
 	 */
 	public C1541(final IECBus iecBus, final int deviceID, final FloppyType type) {
 		this.id = deviceID;
@@ -196,10 +193,9 @@ public final class C1541 {
 		};
 
 		/**
-		 * The V flag is connected to the disk controller's byte ready -line.
-		 * The controller sets the overflow flag during disk rotation whenever 8
-		 * bits have passed under the R/W head and the control line isn't
-		 * masked.
+		 * The V flag is connected to the disk controller's byte ready -line. The
+		 * controller sets the overflow flag during disk rotation whenever 8 bits have
+		 * passed under the R/W head and the control line isn't masked.
 		 */
 		cpu.setVFlagHandler(flagV -> {
 			viaDc.rotateDisk();
@@ -208,19 +204,16 @@ public final class C1541 {
 		cpu.setMemoryHandler(address -> {
 			/**
 			 * Read from address
-			 * 
-			 * Implementing chips: 74LS42 (binary-to-decimal decoder, with 4
-			 * input bins of A10, A11, A12, A15 and 10 output values, where: 0,
-			 * 1 -> RAM, 6 -> BC, 7 -> DC, giving the mapping 0, 0x400, 0x1800
-			 * and 0x1c00 for the A0-A12 lines, and excluding the 74LS42 for A15
-			 * lines (ROM).
-			 * 
-			 * Address lines such as 0x8000 - 0xffff result in select of ROM,
-			 * with A13 line controlling which ROM image. CPU line A14 is not
-			 * connected.
-			 * 
-			 * @param address
-			 *            memory address
+			 *
+			 * Implementing chips: 74LS42 (binary-to-decimal decoder, with 4 input bins of
+			 * A10, A11, A12, A15 and 10 output values, where: 0, 1 -> RAM, 6 -> BC, 7 ->
+			 * DC, giving the mapping 0, 0x400, 0x1800 and 0x1c00 for the A0-A12 lines, and
+			 * excluding the 74LS42 for A15 lines (ROM).
+			 *
+			 * Address lines such as 0x8000 - 0xffff result in select of ROM, with A13 line
+			 * controlling which ROM image. CPU line A14 is not connected.
+			 *
+			 * @param address memory address
 			 */
 			final int ramExpSelect = address >> 13;
 			if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS && getRAMExpEnabled()[ramExpSelect - 1]) {
@@ -243,12 +236,11 @@ public final class C1541 {
 			} else {
 				return getROM()[address & 0x3fff];
 			}
-		} , (address, data) -> {
+		}, (address, data) -> {
 			/**
 			 * Write to address
-			 * 
-			 * @param address
-			 *            memory address
+			 *
+			 * @param address memory address
 			 */
 			final int ramExpSelect = address >> 13;
 			if (ramExpSelect > 0 && ramExpSelect <= EXP_RAM_BANKS && getRAMExpEnabled()[ramExpSelect - 1]) {
@@ -279,129 +271,124 @@ public final class C1541 {
 
 	/**
 	 * Get event scheduler.
-	 * 
+	 *
 	 * @return event scheduler
 	 */
-	public final EventScheduler getEventScheduler() {
+	public EventScheduler getEventScheduler() {
 		return context;
 	}
 
 	/**
 	 * Get CPU of the floppy.
-	 * 
+	 *
 	 * @return CPU of this floppy
 	 */
-	public final MOS6510 getCPU() {
+	public MOS6510 getCPU() {
 		return cpu;
 	}
 
 	/**
 	 * Get Bus controller of this floppy.
-	 * 
+	 *
 	 * @return bus controller of this floppy
 	 */
-	public final VIA6522BC getBusController() {
+	public VIA6522BC getBusController() {
 		return viaBc;
 	}
 
 	/**
 	 * Get disk controller of the floppy.
-	 * 
+	 *
 	 * @return disk controller of this floppy
 	 */
-	public final VIA6522DC getDiskController() {
+	public VIA6522DC getDiskController() {
 		return viaDc;
 	}
 
 	/**
 	 * Get RAM of this floppy.
-	 * 
+	 *
 	 * @return RAM of this floppy
 	 */
-	public final byte[] getRAM() {
+	public byte[] getRAM() {
 		return ram;
 	}
 
 	/**
 	 * Get ROM of this floppy.
-	 * 
+	 *
 	 * @return ROM of this floppy
 	 */
-	public final byte[] getROM() {
+	public byte[] getROM() {
 		return rom;
 	}
 
 	/**
 	 * Is RAM expand enabled of this floppy.
-	 * 
+	 *
 	 * @return RAM expand enabled of this floppy
 	 */
-	public final boolean[] getRAMExpEnabled() {
+	public boolean[] getRAMExpEnabled() {
 		return ramExpEnabled;
 	}
 
 	/**
 	 * Is RAM expansion of this floppy.
-	 * 
+	 *
 	 * @return RAM expansion of this floppy
 	 */
-	public final byte[][] getRAMExpand() {
+	public byte[][] getRAMExpand() {
 		return ramExpand;
 	}
 
 	/**
 	 * Return the drive ID.
-	 * 
+	 *
 	 * @return floppy device number (8-11)
 	 */
-	public final int getID() {
+	public int getID() {
 		return id;
 	}
 
 	/**
 	 * The floppy has been turned on/off.
-	 * 
-	 * @param on
-	 *            power on?
+	 *
+	 * @param on power on?
 	 */
-	public final void setPowerOn(final boolean on) {
+	public void setPowerOn(final boolean on) {
 		powerOn = on;
 	}
 
 	public boolean isPowerOn() {
 		return powerOn;
 	}
-	
+
 	/**
 	 * Set the actual type of floppy to be used (change ROM).
-	 * 
-	 * @param type
-	 *            the type of the floppy
+	 *
+	 * @param type the type of the floppy
 	 */
-	public final void setFloppyType(final FloppyType type) {
+	public void setFloppyType(final FloppyType type) {
 		floppyType = type;
 		setRom();
 	}
 
 	/**
 	 * Enable 8K Ram expansion.
-	 * 
-	 * @param select
-	 *            which 8KB RAM bank to expand (0-5), starting at 0x2000
-	 *            increasing in 8KB steps up to 0xA000.
-	 * @param expand
-	 *            enable 8K Ram expansion
+	 *
+	 * @param select which 8KB RAM bank to expand (0-5), starting at 0x2000
+	 *               increasing in 8KB steps up to 0xA000.
+	 * @param expand enable 8K Ram expansion
 	 */
-	public final void setRamExpansion(final int select, final boolean expand) {
+	public void setRamExpansion(final int select, final boolean expand) {
 		assert select < EXP_RAM_BANKS;
 		this.ramExpEnabled[select] = expand;
 	}
 
 	/**
 	 * Set/clear CPU IRQ state.
-	 * 
-	 * @param state
-	 *            CPU IRQ state
+	 *
+	 * @param state CPU IRQ state
 	 */
 	protected void signalIRQ(final boolean state) {
 		if (state) {
@@ -418,7 +405,7 @@ public final class C1541 {
 	/**
 	 * Reset normally.
 	 */
-	public final void reset() {
+	public void reset() {
 		context.reset();
 		cpu.triggerRST();
 		viaBc.reset();
@@ -454,20 +441,19 @@ public final class C1541 {
 
 	/**
 	 * Set a custom Kernal ROM to be used.
-	 * 
-	 * @param c1541Rom
-	 *            kernal Rom (null means default Kernal)
+	 *
+	 * @param c1541Rom kernal Rom (null means default Kernal)
 	 */
-	public final void setCustomKernalRom(final byte[] c1541Rom) {
+	public void setCustomKernalRom(final byte[] c1541Rom) {
 		customC1541Rom = c1541Rom;
 	}
 
 	/**
 	 * Get a status icon to display the floppies activity.
-	 * 
+	 *
 	 * @return icon to show
 	 */
-	public final FloppyStatus getStatus() {
+	public FloppyStatus getStatus() {
 		if (powerOn) {
 			if (viaDc.isLEDOn()) {
 				return FloppyStatus.LOAD;

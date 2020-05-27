@@ -40,7 +40,7 @@ public class Petscii {
 
 	/**
 	 * Petscii to ISO-8859-1 conversion table.<BR>
-	 * 
+	 *
 	 * CHR$ conversion table (0x01 = no output)
 	 */
 	private static final int PETSCII_TO_ISO8859_1[] = { 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1,
@@ -63,7 +63,7 @@ public class Petscii {
 
 	/**
 	 * Convert ISO-8859-1 to PETSCII characters.
-	 * 
+	 *
 	 * @param c ISO-8859-1 character
 	 * @return PETSCII byte
 	 */
@@ -73,7 +73,7 @@ public class Petscii {
 
 	/**
 	 * Convert PETSCII to ISO-8859-1 characters.
-	 * 
+	 *
 	 * @param c PETSCII byte
 	 * @return ISO-8859-1 character (unmapped characters are converted to space)
 	 */
@@ -84,18 +84,18 @@ public class Petscii {
 
 	/**
 	 * Converts PETSCII to ISO-8859-1 characters.
-	 * 
+	 *
 	 * @param petscii PETSCII bytes. (zero byte terminates the string)
-	 * 
+	 *
 	 * @return ISO-8859-1 characters.
 	 */
 	public static final String petsciiToIso88591(final byte[] petscii) {
 		StringBuilder result = new StringBuilder();
-		for (int idx = 0; idx < petscii.length; idx++) {
-			if (petscii[idx] == 0) {
+		for (byte element : petscii) {
+			if (element == 0) {
 				break;
 			}
-			result.append(petsciiToIso88591(petscii[idx]));
+			result.append(petsciiToIso88591(element));
 		}
 		return result.toString();
 	}

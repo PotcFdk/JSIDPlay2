@@ -16,13 +16,13 @@ import libsidplay.sidtune.SidTune;
 /**
  * Makes use of the Ultimate64 (FPGA-C64) debug interface to use JSIDPlay2 and
  * Ultimate64 simultaneously.
- * 
+ *
  * https://github.com/GideonZ/1541ultimate/blob/master/software/network/socket_dma.cc
- * 
+ *
  * https://github.com/GideonZ/1541ultimate/blob/master/python/sock.py
- * 
+ *
  * https://1541u-documentation.readthedocs.io/en/latest/data_streams.html
- * 
+ *
  * @author ken
  *
  */
@@ -67,10 +67,10 @@ public interface Ultimate64 {
 
 	/**
 	 * Send RAM to Ultimate64 C64-RAM and type Run.<BR>
-	 * 
+	 *
 	 * <B>Note:</B> whole RAM is currently transfered, no matter how long the
 	 * program is.
-	 * 
+	 *
 	 * @param config configuration
 	 * @param tune   tune to play
 	 * @param c64Ram C64 emulator RAM
@@ -86,11 +86,11 @@ public interface Ultimate64 {
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 6];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_DMARUN.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_DMARUN.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.SOCKET_CMD_DMARUN.value >> 8 & 0xff);
 			ram[2] = (byte) (ram.length & 0xff);
-			ram[3] = (byte) ((ram.length >> 8) & 0xff);
+			ram[3] = (byte) (ram.length >> 8 & 0xff);
 			ram[4] = (byte) (ramStart & 0xff);
-			ram[5] = (byte) ((ramStart >> 8) & 0xff);
+			ram[5] = (byte) (ramStart >> 8 & 0xff);
 			System.arraycopy(c64Ram, ramStart, ram, 6, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -101,10 +101,10 @@ public interface Ultimate64 {
 
 	/**
 	 * Send RAM to Ultimate64 C64-RAM and start machine code.<BR>
-	 * 
+	 *
 	 * <B>Note:</B> whole RAM is currently transfered, no matter how long the
 	 * program is.
-	 * 
+	 *
 	 * @param config    configuration
 	 * @param tune      tune to play
 	 * @param c64Ram    C64 emulator RAM
@@ -121,13 +121,13 @@ public interface Ultimate64 {
 			int ramEnd = 0x10000;
 			byte[] ram = new byte[ramEnd - ramStart + 8];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_DMAJUMP.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_DMAJUMP.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.SOCKET_CMD_DMAJUMP.value >> 8 & 0xff);
 			ram[2] = (byte) (ram.length & 0xff);
-			ram[3] = (byte) ((ram.length >> 8) & 0xff);
+			ram[3] = (byte) (ram.length >> 8 & 0xff);
 			ram[4] = (byte) (startAddr & 0xff);
-			ram[5] = (byte) ((startAddr >> 8) & 0xff);
+			ram[5] = (byte) (startAddr >> 8 & 0xff);
 			ram[6] = (byte) (ramStart & 0xff);
-			ram[7] = (byte) ((ramStart >> 8) & 0xff);
+			ram[7] = (byte) (ramStart >> 8 & 0xff);
 			System.arraycopy(c64Ram, ramStart, ram, 8, ramEnd - ramStart);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -138,7 +138,7 @@ public interface Ultimate64 {
 
 	/**
 	 * Send Reset to Ultimate64.<BR>
-	 * 
+	 *
 	 * @param config configuration
 	 * @param tune   tune to play
 	 */
@@ -149,7 +149,7 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[4];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_RESET.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_RESET.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.SOCKET_CMD_RESET.value >> 8 & 0xff);
 			ram[2] = 0;
 			ram[3] = 0;
 			connectedSocket.getOutputStream().write(ram);
@@ -160,12 +160,12 @@ public interface Ultimate64 {
 
 	/**
 	 * Send a keyboard command, as if a user pressed these keys.<BR>
-	 * 
+	 *
 	 * <B>Note:</B> command length is limited to max. 16 characters. You can
 	 * simulate a return press by sending carriage return (e.g.
 	 * "LOAD\"*\",8,1\rRUN\r"). Sending special characters or pressing additional
 	 * keys like shift is not supported.
-	 * 
+	 *
 	 * @param config  configuration
 	 * @param command command to send
 	 */
@@ -177,9 +177,9 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[length + 4];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_KEYB.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_KEYB.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.SOCKET_CMD_KEYB.value >> 8 & 0xff);
 			ram[2] = (byte) (length & 0xff);
-			ram[3] = (byte) ((length >> 8) & 0xff);
+			ram[3] = (byte) (length >> 8 & 0xff);
 			System.arraycopy(command.toUpperCase(Locale.US).getBytes(US_ASCII), 0, ram, 4, length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -189,7 +189,7 @@ public interface Ultimate64 {
 
 	/**
 	 * Wait on the Ultimate64 server side
-	 * 
+	 *
 	 * @param config configuration
 	 * @param delay  delay to wait (600 ~ 3 seconds)
 	 */
@@ -200,11 +200,11 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[6];
 			ram[0] = (byte) (SocketCommand.SOCKET_CMD_WAIT.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.SOCKET_CMD_WAIT.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.SOCKET_CMD_WAIT.value >> 8 & 0xff);
 			ram[2] = (byte) (delay & 0xff);
-			ram[3] = (byte) ((delay >> 8) & 0xff);
+			ram[3] = (byte) (delay >> 8 & 0xff);
 			ram[4] = (byte) (delay & 0xff);
-			ram[5] = (byte) ((delay >> 8) & 0xff);
+			ram[5] = (byte) (delay >> 8 & 0xff);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
 			System.err.println("Ultimate64: cannot send WAIT: " + e.getMessage());
@@ -213,7 +213,7 @@ public interface Ultimate64 {
 
 	/**
 	 * Insert D64 image into Ultimate64 floppy disk drive.
-	 * 
+	 *
 	 * @param config configuration
 	 * @param file   d64 file
 	 * @throws IOException I/O error
@@ -226,10 +226,10 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[diskContents.length + 5];
 			ram[0] = (byte) (SocketCommand.INSERT_DISK.value & 0xff);
-			ram[1] = (byte) ((SocketCommand.INSERT_DISK.value >> 8) & 0xff);
+			ram[1] = (byte) (SocketCommand.INSERT_DISK.value >> 8 & 0xff);
 			ram[2] = (byte) (diskContents.length & 0xff);
-			ram[3] = (byte) ((diskContents.length >> 8) & 0xff);
-			ram[4] = (byte) ((diskContents.length >> 16) & 0xff);
+			ram[3] = (byte) (diskContents.length >> 8 & 0xff);
+			ram[4] = (byte) (diskContents.length >> 16 & 0xff);
 			System.arraycopy(diskContents, 0, ram, 5, diskContents.length);
 			connectedSocket.getOutputStream().write(ram);
 		} catch (IOException e) {
@@ -239,7 +239,7 @@ public interface Ultimate64 {
 
 	/**
 	 * Start streaming.
-	 * 
+	 *
 	 * <pre>
 	 * 192.168.0.119:11000 unicast address on the local network, port number 11000
 	 * myserver.com unicast address, using DNS and default port number
@@ -247,7 +247,7 @@ public interface Ultimate64 {
 	 * 239.0.1.64 multicast address, using default port number
 	 * 239.0.2.77:64738 multicast address with port number specified
 	 * </pre>
-	 * 
+	 *
 	 * @param emulationSection emulation configuration
 	 * @param command          streaming VIC/SID
 	 * @param target           network target to receive the stream
@@ -261,9 +261,9 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[target.length() + 6];
 			ram[0] = (byte) (command.value & 0xff);
-			ram[1] = (byte) ((command.value >> 8) & 0xff);
-			ram[2] = (byte) ((target.length() + 2) & 0xff);
-			ram[3] = (byte) (((target.length() + 2) >> 8) & 0xff);
+			ram[1] = (byte) (command.value >> 8 & 0xff);
+			ram[2] = (byte) (target.length() + 2 & 0xff);
+			ram[3] = (byte) (target.length() + 2 >> 8 & 0xff);
 			ram[4] = 0;
 			ram[5] = (byte) (duration & 0xff);
 			System.arraycopy(target.getBytes(US_ASCII), 0, ram, 6, target.length());
@@ -275,7 +275,7 @@ public interface Ultimate64 {
 
 	/**
 	 * Stop streaming.
-	 * 
+	 *
 	 * @param emulationSection emulation configuration
 	 * @param command          streaming VIC/SID
 	 */
@@ -286,7 +286,7 @@ public interface Ultimate64 {
 			connectedSocket.connect(new InetSocketAddress(hostname, port), SOCKET_CONNECT_TIMEOUT);
 			byte[] ram = new byte[4];
 			ram[0] = (byte) (command.value & 0xff);
-			ram[1] = (byte) ((command.value >> 8) & 0xff);
+			ram[1] = (byte) (command.value >> 8 & 0xff);
 			ram[2] = 0;
 			ram[3] = 0;
 			connectedSocket.getOutputStream().write(ram);

@@ -2,18 +2,17 @@ package ui.directory;
 
 import java.io.InputStream;
 
-import ui.JSidPlay2Main;
-
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
+import ui.JSidPlay2Main;
 
 /**
  * Classify SidDump table cells for CSS styling.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class DirectoryCellFactory
 		implements Callback<TableColumn<DirectoryItem, String>, TableCell<DirectoryItem, String>> {

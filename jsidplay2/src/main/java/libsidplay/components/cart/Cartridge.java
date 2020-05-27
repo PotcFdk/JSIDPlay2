@@ -27,7 +27,7 @@ import libsidplay.components.pla.PLA;
 
 /**
  * Cartridge base class.
- * 
+ *
  * @author Antti Lankila
  */
 public class Cartridge {
@@ -52,7 +52,7 @@ public class Cartridge {
 			if (!new String(header, 0, 0x10, ISO88591).equals("C64 CARTRIDGE   ")) {
 				throw new RuntimeException("File is not a .CRT file");
 			}
-			return values()[(header[0x16] & 0xff) << 8 | (header[0x17] & 0xff)];
+			return values()[(header[0x16] & 0xff) << 8 | header[0x17] & 0xff];
 
 		}
 	}
@@ -74,7 +74,7 @@ public class Cartridge {
 
 	/**
 	 * Get currently active ROML bank.
-	 * 
+	 *
 	 * @return ROML bank
 	 */
 	public Bank getRoml() {
@@ -83,7 +83,7 @@ public class Cartridge {
 
 	/**
 	 * Get currently active ROMH bank.
-	 * 
+	 *
 	 * @return ROMH bank
 	 */
 	public Bank getRomh() {
@@ -94,7 +94,7 @@ public class Cartridge {
 	 * In Ultimax mode, the main memory between 0x1000-0xffff is disconnected. This
 	 * allows carts to export their own memory for those regions, excluding the
 	 * areas that will be mapped to ROML, IO and ROMH, though.
-	 * 
+	 *
 	 * @return Memory bank for Ultimax mode
 	 */
 	public Bank getUltimaxMemory() {
@@ -103,7 +103,7 @@ public class Cartridge {
 
 	/**
 	 * Acquire the IO1 bank
-	 * 
+	 *
 	 * @return The bank responding to IO1 line.
 	 */
 	public Bank getIO1() {
@@ -112,7 +112,7 @@ public class Cartridge {
 
 	/**
 	 * Acquire the IO2 bank.
-	 * 
+	 *
 	 * @return The bank responding to IO2 line.
 	 */
 	public Bank getIO2() {
@@ -121,7 +121,7 @@ public class Cartridge {
 
 	/**
 	 * Create a cartridge.
-	 * 
+	 *
 	 * @param pla      Instance of the system's PLA chip
 	 * @param cartType cartridge type
 	 * @param sizeKB   size in KB
@@ -142,7 +142,7 @@ public class Cartridge {
 
 	/**
 	 * Load a cartridge.
-	 * 
+	 *
 	 * @param pla      Instance of the system's PLA chip
 	 * @param cartType cartridge type
 	 * @param file     file to load from
@@ -166,9 +166,9 @@ public class Cartridge {
 
 	/**
 	 * Load a cartridge of type CRT.
-	 * 
-	 * @param pla      Instance of the system's PLA chip
-	 * @param is       input stream to load from
+	 *
+	 * @param pla Instance of the system's PLA chip
+	 * @param is  input stream to load from
 	 * @return a cartridge instance
 	 */
 	public static Cartridge readCRT(final PLA pla, final DataInputStream is) throws IOException {
@@ -211,7 +211,7 @@ public class Cartridge {
 	/**
 	 * If the cartridge needs to listen to write activity on specific banks, it can
 	 * install the requisite hooks into the bank here.
-	 * 
+	 *
 	 * @param cpuReadMap
 	 * @param cpuWriteMap
 	 */
@@ -220,7 +220,7 @@ public class Cartridge {
 
 	/**
 	 * Return an instance of cartridge when no real cartridge is connected.
-	 * 
+	 *
 	 * @return the null cartridge
 	 */
 	public static Cartridge nullCartridge(final PLA pla) {
@@ -243,10 +243,10 @@ public class Cartridge {
 
 	/**
 	 * Push cartridge's "freeze" button.
-	 * 
+	 *
 	 * Because this is an UI-method, we use thread-safe scheduling to delay the
 	 * freezing to occur at some safe later time.
-	 * 
+	 *
 	 * Subclasses need to override doFreeze().
 	 */
 	public final void freeze() {
@@ -267,7 +267,7 @@ public class Cartridge {
 	/**
 	 * Callback to notify cartridge of current state of NMI signal on the system
 	 * bus. The boolean value is active high.
-	 * 
+	 *
 	 * @param state
 	 */
 	public void changedNMI(boolean state) {
@@ -276,7 +276,7 @@ public class Cartridge {
 	/**
 	 * Callback to notify cartridge of current state of IRQ signal on the system
 	 * bus. The boolean value is active high.
-	 * 
+	 *
 	 * @param state
 	 */
 	public void changedIRQ(boolean state) {
@@ -294,7 +294,7 @@ public class Cartridge {
 	/**
 	 * Assert NMI (= electrically pull NMI low) on the system bus. The boolean value
 	 * is active high. Method is meant for subclasses only.
-	 * 
+	 *
 	 * @param state
 	 */
 	public void setNMI(boolean state) {
@@ -307,7 +307,7 @@ public class Cartridge {
 	/**
 	 * Assert IRQ (= electrically pull IRQ low) on the system bus. The boolean value
 	 * is active high. Method is meant for subclasses only.
-	 * 
+	 *
 	 * @param state
 	 */
 	public void setIRQ(boolean state) {

@@ -10,12 +10,10 @@ public class SidIdBase {
 
 	/**
 	 * Load byte array containing the text to be searched in.
-	 * 
-	 * @param name
-	 *            the filename to load
+	 *
+	 * @param name the filename to load
 	 * @return the byte array with the file contents
-	 * @throws IOException
-	 *             read error
+	 * @throws IOException read error
 	 */
 	protected byte[] load(final String name) throws IOException {
 		try (final DataInputStream in = new DataInputStream(new FileInputStream(name))) {
@@ -28,10 +26,10 @@ public class SidIdBase {
 
 	/**
 	 * Load configuration file.
-	 * 
+	 *
 	 * @param fname
 	 * @param pkg
-	 * 
+	 *
 	 * @return the configuration file entries
 	 */
 	protected byte[] readConfiguration(String fname, String pkg) {
@@ -50,10 +48,10 @@ public class SidIdBase {
 
 	/**
 	 * Read from internal SID-ID configuration file.
-	 * 
+	 *
 	 * @param fname
 	 * @param pkg
-	 * 
+	 *
 	 * @return the contents
 	 */
 	private byte[] readInternal(String fname, String pkg) {
@@ -83,9 +81,9 @@ public class SidIdBase {
 	 * <LI>current working dir
 	 * <LI>user home dir
 	 * </OL>
-	 * 
+	 *
 	 * @param fname
-	 * 
+	 *
 	 * @return the configuration file or null (not found)
 	 */
 	private File getLocation(String fname) {
@@ -102,9 +100,8 @@ public class SidIdBase {
 
 	/**
 	 * Locate configuration file at the given path.
-	 * 
-	 * @param location
-	 *            the path to search in
+	 *
+	 * @param location the path to search in
 	 * @param fname
 	 * @return the file (caller should check exists)
 	 */

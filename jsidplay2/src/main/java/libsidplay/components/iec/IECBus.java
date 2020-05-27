@@ -32,9 +32,9 @@ import libsidplay.components.c1541.VIACore;
 
 /**
  * IEC Bus Implementation.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IECBus {
 	/**
@@ -77,9 +77,8 @@ public class IECBus {
 
 	/**
 	 * Set Floppy Disk Drives.
-	 * 
-	 * @param drvs
-	 *            Floppies
+	 *
+	 * @param drvs Floppies
 	 */
 	public final void setFloppies(final C1541[] drvs) {
 		this.drives = drvs;
@@ -87,9 +86,8 @@ public class IECBus {
 
 	/**
 	 * Set Serial Devices.
-	 * 
-	 * @param devices
-	 *            Serial Devices
+	 *
+	 * @param devices Serial Devices
 	 */
 	public final void setSerialDevices(final SerialIECDevice[] devices) {
 		serialDevices = devices;
@@ -98,7 +96,7 @@ public class IECBus {
 	// triggered by CIA
 	/**
 	 * Read from IEC bus.
-	 * 
+	 *
 	 * @return bus value
 	 */
 	public final byte readFromIECBus() {
@@ -111,9 +109,8 @@ public class IECBus {
 	// triggered by CIA
 	/**
 	 * Write to IEC bus.
-	 * 
-	 * @param data
-	 *            write value
+	 *
+	 * @param data write value
 	 */
 	public final void writeToIECBus(final byte data) {
 		for (final SerialIECDevice serialDevice : serialDevices) {

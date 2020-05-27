@@ -22,8 +22,9 @@ public class FinalV1 extends Cartridge {
 		super(pla);
 		final byte[] chipHeader = new byte[0x10];
 		dis.readFully(chipHeader);
-		if (chipHeader[0xc] != (byte) 0x80 || chipHeader[0xe] != 0x40)
+		if (chipHeader[0xc] != (byte) 0x80 || chipHeader[0xe] != 0x40) {
 			throw new RuntimeException("Unexpected Chip header!");
+		}
 		dis.readFully(roml);
 		dis.readFully(romh);
 	}

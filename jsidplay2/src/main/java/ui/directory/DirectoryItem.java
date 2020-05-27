@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import libsidutils.directory.DirEntry;
 
 public class DirectoryItem {
-	private ObjectProperty<DirEntry> dirEntry = new SimpleObjectProperty<DirEntry>();
+	private ObjectProperty<DirEntry> dirEntry = new SimpleObjectProperty<>();
 	private String text;
 
 	public DirEntry getDirEntry() {

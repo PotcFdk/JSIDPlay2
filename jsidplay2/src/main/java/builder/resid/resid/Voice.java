@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -23,7 +23,7 @@ package builder.resid.resid;
 
 /**
  * Representation of SID voice block.
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -39,13 +39,12 @@ public final class Voice {
 	 * The waveform DAC generates a voltage between 5 and 12 V corresponding to
 	 * oscillator state 0 .. 4095.
 	 *
-	 * The envelope DAC generates a voltage between waveform gen output and the
-	 * 5V level, corresponding to envelope state 0 .. 255.
+	 * The envelope DAC generates a voltage between waveform gen output and the 5V
+	 * level, corresponding to envelope state 0 .. 255.
 	 *
 	 * Ideal range [-2048*255, 2047*255].
 	 *
-	 * @param ringModulator
-	 *            Ring-modulator for waveform
+	 * @param ringModulator Ring-modulator for waveform
 	 * @return waveformgenerator output
 	 */
 	protected int output(final WaveformGenerator ringModulator) {
@@ -65,8 +64,7 @@ public final class Voice {
 	/**
 	 * Register functions.
 	 *
-	 * @param control
-	 *            Control register value.
+	 * @param control Control register value.
 	 */
 	public void writeCONTROL_REG(final byte control) {
 		wave.writeCONTROL_REG(control);

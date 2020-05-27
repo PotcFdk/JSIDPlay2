@@ -36,32 +36,32 @@ import libsidplay.components.mos6510.MOS6510;
 
 /**
  * Handling of the Disk Controller.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class VIA6522DC extends VIACore {
 	/**
 	 * Number of cycles before an attached disk becomes visible to the R/W head.
 	 * This is mostly to make routines that auto-detect disk changes happy.
-	 * 
+	 *
 	 */
-	private static final int DRIVE_ATTACH_DELAY = (3 * 600000);
+	private static final int DRIVE_ATTACH_DELAY = 3 * 600000;
 	/**
 	 * Number of cycles the write protection is activated on detach.
 	 */
-	private static final int DRIVE_DETACH_DELAY = (3 * 200000);
+	private static final int DRIVE_DETACH_DELAY = 3 * 200000;
 	/**
 	 * Number of cycles the after a disk can be inserted after a disk has been
 	 * detached.
 	 */
-	private static final int DRIVE_ATTACH_DETACH_DELAY = (3 * 400000);
+	private static final int DRIVE_ATTACH_DETACH_DELAY = 3 * 400000;
 
 	/**
 	 * Current mode read or write.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	enum Mode {
 		READ, WRITE
@@ -76,8 +76,7 @@ public abstract class VIA6522DC extends VIACore {
 	 */
 	private long detachClk;
 	/**
-	 * Tick when the disk image was attached, but an old image was just
-	 * detached.
+	 * Tick when the disk image was attached, but an old image was just detached.
 	 */
 	private long attachDetachClk;
 	/**
@@ -119,11 +118,9 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Creates a new instance of VIA6522DC.
-	 * 
-	 * @param deviceID
-	 *            the C1541 device ID
-	 * @param cpu
-	 *            drive CPU
+	 *
+	 * @param deviceID the C1541 device ID
+	 * @param cpu      drive CPU
 	 */
 	public VIA6522DC(final int deviceID, final MOS6510 cpu) {
 		super("1541Drive" + deviceID + "VIA6522DC");
@@ -201,7 +198,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Get attached disk image (null if nothing attached).
-	 * 
+	 *
 	 * @return attached disk image
 	 */
 	protected DiskImage getImage() {
@@ -211,12 +208,10 @@ public abstract class VIA6522DC extends VIACore {
 	/**
 	 * Insert Disk.<BR>
 	 * A previously inserted disk will be ejected first.
-	 * 
-	 * @param file
-	 *            disk image file
+	 *
+	 * @param file disk image file
 	 * @return attached disk image
-	 * @throws IOException
-	 *             cannot read disk image file
+	 * @throws IOException cannot read disk image file
 	 */
 	public DiskImage insertDisk(final File file) throws IOException {
 		ejectDisk();
@@ -235,10 +230,9 @@ public abstract class VIA6522DC extends VIACore {
 	/**
 	 * Detach Disk.<BR>
 	 * A previously inserted disk will be ejected.
-	 * 
-	 * @throws IOException
-	 *             cannot write disk file
-	 * 
+	 *
+	 * @throws IOException cannot write disk file
+	 *
 	 */
 	public void ejectDisk() throws IOException {
 		if (image != null) {
@@ -255,7 +249,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Ticks when the disk image was attached.
-	 * 
+	 *
 	 * @return when the disk was attached
 	 */
 	public long getAttachClk() {
@@ -263,11 +257,10 @@ public abstract class VIA6522DC extends VIACore {
 	}
 
 	/**
-	 * Reposition the read/write head to the parameterized half-track accounting
-	 * for potential change in speed zone (= track length).
-	 * 
-	 * @param num
-	 *            half-track to set
+	 * Reposition the read/write head to the parameterized half-track accounting for
+	 * potential change in speed zone (= track length).
+	 *
+	 * @param num half-track to set
 	 */
 	protected void setHalfTrack(final int num) {
 		final int oldTrackSize = rot.getCurrentTrackSize();
@@ -277,7 +270,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Get current half track on which the R/W head is positioned.
-	 * 
+	 *
 	 * @return current half-track
 	 */
 	public int getHalfTrack() {
@@ -320,7 +313,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Is LED on?
-	 * 
+	 *
 	 * @return LED on
 	 */
 	public final boolean isLEDOn() {
@@ -329,7 +322,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Is disk motor on?
-	 * 
+	 *
 	 * @return motor on
 	 */
 	public final boolean isMotorOn() {
@@ -360,7 +353,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Get recently written GCR byte.
-	 * 
+	 *
 	 * @return GCR byte
 	 */
 	protected final byte getLastGCRWrite() {
@@ -408,9 +401,9 @@ public abstract class VIA6522DC extends VIACore {
 		byteRead();
 
 		/*
-		 * the bus is shared between the read/write modes. The schematic says
-		 * that during write mode, the read circuitry is disconnected and
-		 * therefore it's likely that you will read 0xff if you change the DDR.
+		 * the bus is shared between the read/write modes. The schematic says that
+		 * during write mode, the read circuitry is disconnected and therefore it's
+		 * likely that you will read 0xff if you change the DDR.
 		 */
 		byte encoderDecoderValue = readWriteMode == Mode.READ ? gcrRead : (byte) 0xff;
 
@@ -419,9 +412,8 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Set recently read GCR byte.
-	 * 
-	 * @param lastReadData
-	 *            GCR byte
+	 *
+	 * @param lastReadData GCR byte
 	 */
 	protected final void setLastGCRRead(final byte lastReadData) {
 		gcrRead = lastReadData;
@@ -436,7 +428,7 @@ public abstract class VIA6522DC extends VIACore {
 
 	/**
 	 * Is byte ready to be processed?
-	 * 
+	 *
 	 * @return byte ready active
 	 */
 	protected final boolean isByteReadyActive() {
@@ -481,13 +473,12 @@ public abstract class VIA6522DC extends VIACore {
 	/**
 	 * Implements write protect sense, in respect to the disk currently being
 	 * attached/detached.
-	 * 
+	 *
 	 * @return 0x0 (write protected), 0x10 (read/write)
 	 */
 	private byte writeProtectSense() {
 		/*
-		 * Clear the write protection bit for the time the disk is pulled out on
-		 * detach.
+		 * Clear the write protection bit for the time the disk is pulled out on detach.
 		 */
 		if (detachClk != 0) {
 			if (cpuClk() - detachClk < DRIVE_DETACH_DELAY) {
@@ -496,8 +487,8 @@ public abstract class VIA6522DC extends VIACore {
 			detachClk = 0;
 		}
 		/*
-		 * Set the write protection bit for the minimum time until a new disk
-		 * can be inserted.
+		 * Set the write protection bit for the minimum time until a new disk can be
+		 * inserted.
 		 */
 		if (attachDetachClk != 0) {
 			if (cpuClk() - attachDetachClk < DRIVE_ATTACH_DETACH_DELAY) {
@@ -506,8 +497,7 @@ public abstract class VIA6522DC extends VIACore {
 			attachDetachClk = 0;
 		}
 		/*
-		 * Clear the write protection bit for the time the disk is put in on
-		 * attach.
+		 * Clear the write protection bit for the time the disk is put in on attach.
 		 */
 		if (attachClk != 0) {
 			if (cpuClk() - attachClk < DRIVE_ATTACH_DELAY) {

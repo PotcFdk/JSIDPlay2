@@ -14,7 +14,7 @@ public class SchroederReverb {
 
 	// Parameters below were chosen to simulate the characteristics of
 	// a medium-sized concert hall. See book quoted above for details.
-	
+
 	private static final double COMB1DELAYMSDEF = 29.7;
 	private static final double COMB2DELAYMSDEF = 37.1;
 	private static final double COMB3DELAYMSDEF = 41.1;
@@ -67,8 +67,9 @@ public class SchroederReverb {
 
 		// Allocate buffer as required. Buffer must be initialized
 		// to zeros.
-		if (length != -1)
+		if (length != -1) {
 			dBuffer = new double[length];
+		}
 
 		// Apply the combs in parallel, get the possibly new length.
 		// All combs should return the same length.
@@ -78,12 +79,13 @@ public class SchroederReverb {
 		comb3.doFilter(inBuf, dBuffer, length);
 		comb4.doFilter(inBuf, dBuffer, length);
 
-		boolean inputExhausted = (newLength == -1);
+		boolean inputExhausted = newLength == -1;
 
 		if (!inputExhausted) {
 			// Scale the data
-			for (int i = 0; i < newLength; i++)
+			for (int i = 0; i < newLength; i++) {
 				dBuffer[i] *= 0.25;
+			}
 
 		} else {
 			newLength = dBuffer.length;
@@ -99,7 +101,7 @@ public class SchroederReverb {
 		if (!inputExhausted) {
 			// Mix the dry input samples with the processed samples
 			for (int i = 0; i < length; i++) {
-				double s = (inBuf[i] * (1.0 - mix)) + (dBuffer[i] * mix);
+				double s = inBuf[i] * (1.0 - mix) + dBuffer[i] * mix;
 				inBuf[i] = (short) Math.max(Math.min(s, Short.MAX_VALUE), Short.MIN_VALUE);
 			}
 		} else {

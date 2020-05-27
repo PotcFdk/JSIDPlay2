@@ -33,7 +33,7 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get directory contents containing music collections.
-	 * 
+	 *
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/directory/C64Music/MUSICIANS?filter=.*%5C.(sid%7Cdat%7Cmus%7Cstr%7Cmp3%7Cmp4%7Cjpg%7Cprg%7Cd64)$
 	 */

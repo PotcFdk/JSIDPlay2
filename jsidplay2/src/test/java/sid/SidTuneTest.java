@@ -203,9 +203,9 @@ public class SidTuneTest extends JSIDPlay2Test {
 		press(KeyCode.CONTROL);
 		type(KeyCode.A);
 		release(KeyCode.CONTROL);
-		press(SHIFT).type(A).release(SHIFT).type(R, C, A, D, E).press(SHIFT).type(UNDERSCORE).type(M)
-				.release(SHIFT).type(E, M, O, R, I, E, S).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(DIGIT3)
-				.press(SHIFT).type(S, I, D).release(SHIFT).type(PERIOD, S, I, D);
+		press(SHIFT).type(A).release(SHIFT).type(R, C, A, D, E).press(SHIFT).type(UNDERSCORE).type(M).release(SHIFT)
+				.type(E, M, O, R, I, E, S).press(SHIFT).type(UNDERSCORE).release(SHIFT).type(DIGIT3).press(SHIFT)
+				.type(S, I, D).release(SHIFT).type(PERIOD, S, I, D);
 		push(ENTER);
 		sleep(C64_RESET_TIMEOUT);
 

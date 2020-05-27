@@ -25,7 +25,7 @@ public class T64Directory {
 			System.arraycopy(data, 0, diskName, 0, diskName.length);
 			dir.setTitle(diskName);
 
-			int totalEntries = ((data[35] & 0xff) << 8) | (data[34] & 0xff);
+			int totalEntries = (data[35] & 0xff) << 8 | data[34] & 0xff;
 			final Collection<DirEntry> dirEntries = dir.getDirEntries();
 			for (int entryNum = 1; entryNum <= totalEntries; entryNum++) {
 				try {

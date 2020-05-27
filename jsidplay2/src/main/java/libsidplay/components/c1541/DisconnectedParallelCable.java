@@ -2,13 +2,13 @@ package libsidplay.components.c1541;
 
 /**
  * This class represents a disconnected parallel port.
- * 
+ *
  * @author Antti Lankila
  */
 public class DisconnectedParallelCable implements IParallelCable {
 	/**
 	 * Writes of the floppy go to nowhere.
-	 * 
+	 *
 	 * @see libsidplay.components.c1541.IParallelCable#driveWrite(byte, boolean,
 	 *      int)
 	 */
@@ -18,7 +18,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 
 	/**
 	 * Reads of the floppy always 0xff.
-	 * 
+	 *
 	 * @see libsidplay.components.c1541.IParallelCable#driveRead(boolean)
 	 */
 	@Override
@@ -28,7 +28,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 
 	/**
 	 * Writes of the CPU go to nowhere.
-	 * 
+	 *
 	 * @see libsidplay.components.c1541.IParallelCable#c64Write(byte)
 	 */
 	@Override
@@ -37,7 +37,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 
 	/**
 	 * Reads of the CPU always 0xff.
-	 * 
+	 *
 	 * @see libsidplay.components.c1541.IParallelCable#c64Read()
 	 */
 	@Override
@@ -47,7 +47,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 
 	/**
 	 * CIA signals are ignored.
-	 * 
+	 *
 	 * @see libsidplay.components.c1541.IParallelCable#pulse()
 	 */
 	@Override

@@ -43,7 +43,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get SID tune infos.
-	 * 
+	 *
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */

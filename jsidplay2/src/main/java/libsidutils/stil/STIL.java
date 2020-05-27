@@ -30,7 +30,7 @@ public class STIL {
 	public static class TuneEntry {
 		public String globalComment;
 		public int tuneNo = -1;
-		public ArrayList<Info> infos = new ArrayList<Info>();
+		public ArrayList<Info> infos = new ArrayList<>();
 
 		@Override
 		public String toString() {
@@ -42,8 +42,8 @@ public class STIL {
 		public String comment;
 		public String filename;
 		public String globalComment;
-		public ArrayList<TuneEntry> subtunes = new ArrayList<TuneEntry>();
-		public ArrayList<Info> infos = new ArrayList<Info>();
+		public ArrayList<TuneEntry> subtunes = new ArrayList<>();
+		public ArrayList<Info> infos = new ArrayList<>();
 
 		public STILEntry(String name) {
 			filename = name;
@@ -55,7 +55,7 @@ public class STIL {
 		}
 	}
 
-	private final HashMap<String, STILEntry> fastMap = new HashMap<String, STILEntry>();
+	private final HashMap<String, STILEntry> fastMap = new HashMap<>();
 
 	public STIL(InputStream input) throws IOException, NoSuchFieldException, IllegalAccessException {
 		fastMap.clear();

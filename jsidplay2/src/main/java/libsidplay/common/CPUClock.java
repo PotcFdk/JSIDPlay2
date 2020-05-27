@@ -32,11 +32,11 @@ public enum CPUClock {
 	 * Detect CPU clock of a specific tune in the following order:
 	 * <OL>
 	 * <LI>CPU clock forced by user configuration
-	 * <LI>CPU clock provided by tune information (auto detected) and if
-	 * unknown, then
+	 * <LI>CPU clock provided by tune information (auto detected) and if unknown,
+	 * then
 	 * <LI>default CPU clock
 	 * </OL>
-	 * 
+	 *
 	 * @return CPU clock to be used for the tune
 	 */
 	public static CPUClock getCPUClock(IEmulationSection emulation, SidTune tune) {

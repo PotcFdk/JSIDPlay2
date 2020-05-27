@@ -17,8 +17,8 @@ public final class Filter6581 extends Filter {
 	private static final float OSC_TO_FC = 1 / 512f;
 
 	/*
-	 * 1024 because real chip has disconnected line #0. 128 seems to suffice for
-	 * the size of approximation: the bound is exceeded only during most extreme
+	 * 1024 because real chip has disconnected line #0. 128 seems to suffice for the
+	 * size of approximation: the bound is exceeded only during most extreme
 	 * distortion.
 	 */
 	private final float[][] type3_w0s = new float[1024][256];
@@ -51,7 +51,7 @@ public final class Filter6581 extends Filter {
 	}
 
 	@Override
-	protected final float clock(final float voice1, final float voice2, final float voice3, final float ext_in) {
+	protected float clock(final float voice1, final float voice2, final float voice3, final float ext_in) {
 		float Vi = 0, Vf = 0;
 
 		// Route voices into or around filter.
@@ -183,9 +183,9 @@ public final class Filter6581 extends Filter {
 	protected void updatedResonance() {
 		/*
 		 * XXX: resonance tuned by ear, based on a few observations:
-		 * 
-		 * - there's a small notch even in allpass mode - size of resonance hump
-		 * is about 8 dB
+		 *
+		 * - there's a small notch even in allpass mode - size of resonance hump is
+		 * about 8 dB
 		 */
 		_1_div_Q = 1.f / (0.5f + resonanceFactor * res / 18f);
 	}

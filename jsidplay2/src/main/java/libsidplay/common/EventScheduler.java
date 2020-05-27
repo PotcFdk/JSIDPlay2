@@ -24,20 +24,20 @@ import libsidplay.common.Event.Phase;
  * Fast EventScheduler, which maintains a linked list of Events. This scheduler
  * takes neglible time even when it is used to schedule events for nearly every
  * clock.
- * 
+ *
  * Events occur on an internal clock which is 2x the visible clock. The visible
  * clock is divided to two phases called phi1 and phi2.
- * 
+ *
  * The phi1 clocks are used by VIC and CIA chips, phi2 clocks by CPU.
- * 
+ *
  * Scheduling an event for a phi1 clock when system is in phi2 causes the event
  * to be moved to the next phi1 cycle. Correspondingly, requesting a phi1 time
  * when system is in phi2 returns the value of the next phi1.
- * 
+ *
  * @author Antti S. Lankila
  */
 public final class EventScheduler {
-	
+
 	/**
 	 * Interval to check thread-safe queue for key-events
 	 */
@@ -53,8 +53,8 @@ public final class EventScheduler {
 
 	private double cyclesPerSecond;
 
-	private List<Event> threadSafeKeyQueue = new ArrayList<Event>();
-	private List<Event> threadSafeQueue = new ArrayList<Event>();
+	private List<Event> threadSafeKeyQueue = new ArrayList<>();
+	private List<Event> threadSafeQueue = new ArrayList<>();
 
 	/**
 	 * The tail event, always after every other event.
@@ -116,13 +116,11 @@ public final class EventScheduler {
 
 	/**
 	 * Schedule a key event in a thread-safe manner.
-	 * 
-	 * The thread-safe queue is moved to the unsafe queue periodically, and
-	 * specific execution time is unpredictable, but will always occur during
-	 * the PHI1 phase.
-	 * 
-	 * @param event
-	 *            The event to schedule.
+	 *
+	 * The thread-safe queue is moved to the unsafe queue periodically, and specific
+	 * execution time is unpredictable, but will always occur during the PHI1 phase.
+	 *
+	 * @param event The event to schedule.
 	 */
 	public void scheduleThreadSafeKeyEvent(final Event event) {
 		synchronized (threadSafeKeyQueue) {
@@ -132,13 +130,11 @@ public final class EventScheduler {
 
 	/**
 	 * Schedule an event in a thread-safe manner.
-	 * 
-	 * The thread-safe queue is moved to the unsafe queue periodically, and
-	 * specific execution time is unpredictable, but will always occur during
-	 * the PHI1 phase.
-	 * 
-	 * @param event
-	 *            The event to schedule.
+	 *
+	 * The thread-safe queue is moved to the unsafe queue periodically, and specific
+	 * execution time is unpredictable, but will always occur during the PHI1 phase.
+	 *
+	 * @param event The event to schedule.
 	 */
 	public void scheduleThreadSafe(final Event event) {
 		synchronized (threadSafeQueue) {
@@ -152,15 +148,12 @@ public final class EventScheduler {
 
 	/**
 	 * Add event to pending queue.
-	 * 
+	 *
 	 * At PHI2, specify cycles=0 and Phase=PHI1 to fire on the very next PHI1.
-	 * 
-	 * @param event
-	 *            The event to add
-	 * @param cycles
-	 *            How many cycles from now to fire
-	 * @param phase
-	 *            The phase when to fire the event.
+	 *
+	 * @param event  The event to add
+	 * @param cycles How many cycles from now to fire
+	 * @param phase  The phase when to fire the event.
 	 */
 	public void schedule(final Event event, final long cycles, final Event.Phase phase) {
 		// this strange formulation always selects the next available slot
@@ -171,11 +164,9 @@ public final class EventScheduler {
 
 	/**
 	 * Add event to pending queue in the same phase as current event.
-	 * 
-	 * @param event
-	 *            The event to add
-	 * @param cycles
-	 *            How many cycles from now to fire.
+	 *
+	 * @param event  The event to add
+	 * @param cycles How many cycles from now to fire.
 	 */
 	public void schedule(final Event event, final long cycles) {
 		event.triggerTime = (cycles << 1) + currentTime;
@@ -184,13 +175,10 @@ public final class EventScheduler {
 
 	/**
 	 * Schedule event to occur at some absolute time.
-	 * 
-	 * @param event
-	 *            The event to add
-	 * @param absoluteCycles
-	 *            When to fire
-	 * @param phase
-	 *            Phase when event fires
+	 *
+	 * @param event          The event to add
+	 * @param absoluteCycles When to fire
+	 * @param phase          Phase when event fires
 	 */
 	public void scheduleAbsolute(Event event, long absoluteCycles, Phase phase) {
 		event.triggerTime = (absoluteCycles << 1) + (phase == Phase.PHI2 ? 1 : 0);
@@ -199,9 +187,8 @@ public final class EventScheduler {
 
 	/**
 	 * Scan the event queue and schedule event for execution.
-	 * 
-	 * @param event
-	 *            The event to add
+	 *
+	 * @param event The event to add
 	 */
 	private void addEventToSchedule(final Event event) {
 		Event scan = firstEvent;
@@ -219,9 +206,8 @@ public final class EventScheduler {
 
 	/**
 	 * Cancel the specified event.
-	 * 
-	 * @param event
-	 *            The event to cancel
+	 *
+	 * @param event The event to cancel
 	 */
 	public void cancel(final Event event) {
 		Event prev = firstEvent;
@@ -249,7 +235,7 @@ public final class EventScheduler {
 
 	/**
 	 * Fire next event, advance system time to that event
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void clock() throws InterruptedException {
@@ -261,7 +247,7 @@ public final class EventScheduler {
 
 	/**
 	 * Process next thread-save event
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void clockThreadSafeEvents() throws InterruptedException {
@@ -274,9 +260,8 @@ public final class EventScheduler {
 
 	/**
 	 * Is the event pending in this scheduler?
-	 * 
-	 * @param event
-	 *            the event
+	 *
+	 * @param event the event
 	 * @return true when pending
 	 */
 	public boolean isPending(final Event event) {
@@ -293,9 +278,8 @@ public final class EventScheduler {
 
 	/**
 	 * Get time with respect to a specific clock phase
-	 * 
-	 * @param phase
-	 *            The phase
+	 *
+	 * @param phase The phase
 	 * @return the time according to specified phase.
 	 */
 	public long getTime(final Event.Phase phase) {
@@ -304,7 +288,7 @@ public final class EventScheduler {
 
 	/**
 	 * Return current clock phase
-	 * 
+	 *
 	 * @return The current phase
 	 */
 	public Event.Phase phase() {

@@ -14,7 +14,7 @@ public class NetworkSIDDevice {
 
 	/**
 	 * Gets the number of known configurations.
-	 * 
+	 *
 	 * @return The number of known SID configurations.
 	 */
 	public static byte getSidCount() {
@@ -24,9 +24,8 @@ public class NetworkSIDDevice {
 
 	/**
 	 * Return the name of the requested SID.
-	 * 
-	 * @param sidNum
-	 *            The SID to get the name of.
+	 *
+	 * @param sidNum The SID to get the name of.
 	 * @return SID name string
 	 */
 	protected static String getSidName(int sidNum) {
@@ -36,7 +35,7 @@ public class NetworkSIDDevice {
 
 	/**
 	 * Construct the SID object suite.
-	 * 
+	 *
 	 * @param sidNumber
 	 */
 	protected static SIDChip getSidConfig(int sidNumber) {

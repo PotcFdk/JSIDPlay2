@@ -53,7 +53,7 @@ public class Disassembler extends C64VBox implements UIPart {
 
 	public Disassembler() {
 	}
-	
+
 	public Disassembler(final C64Window window, final Player player) {
 		super(window, player);
 	}
@@ -61,7 +61,7 @@ public class Disassembler extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		assemblyLines = FXCollections.<AssemblyLine> observableArrayList();
+		assemblyLines = FXCollections.<AssemblyLine>observableArrayList();
 		SortedList<AssemblyLine> sortedList = new SortedList<>(assemblyLines);
 		sortedList.comparatorProperty().bind(memoryTable.comparatorProperty());
 		memoryTable.setItems(sortedList);

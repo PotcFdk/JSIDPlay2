@@ -10,7 +10,7 @@ public class ErrorMessage {
 
 	public ErrorMessage() {
 	}
-	
+
 	public String getTimestamp() {
 		return timestamp;
 	}

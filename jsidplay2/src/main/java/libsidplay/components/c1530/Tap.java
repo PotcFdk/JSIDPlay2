@@ -38,9 +38,9 @@ import java.nio.charset.Charset;
 
 /**
  * TAP filetype implementation.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class Tap {
 	private static final Charset ISO88591 = Charset.forName("ISO-8859-1");
@@ -137,7 +137,7 @@ public class Tap {
 
 	/**
 	 * Read TAP header.
-	 * 
+	 *
 	 * @return Is the file descriptor a valid TAP file?
 	 */
 	public final boolean readHeader() {
@@ -161,12 +161,10 @@ public class Tap {
 
 	/**
 	 * Open tape image.
-	 * 
-	 * @param tapeFile
-	 *            tape file to open
+	 *
+	 * @param tapeFile tape file to open
 	 * @return Is this image a TAP image file?
-	 * @throws IOException
-	 *             tape image read error
+	 * @throws IOException tape image read error
 	 */
 	public final boolean open(final File tapeFile) throws IOException {
 		if (!readOnly) {
@@ -196,9 +194,8 @@ public class Tap {
 
 	/**
 	 * Close tape image.
-	 * 
-	 * @throws IOException
-	 *             tape image read error
+	 *
+	 * @throws IOException tape image read error
 	 */
 	public final void close() throws IOException {
 		if (fd != null) {
@@ -213,11 +210,9 @@ public class Tap {
 
 	/**
 	 * Write a filesize to the tape image, if the image contents has changed.
-	 * 
-	 * @param buf
-	 *            array containing one int with the file size
-	 * @throws IOException
-	 *             tape image write error
+	 *
+	 * @param buf array containing one int with the file size
+	 * @throws IOException tape image write error
 	 */
 	private void writeFilesize(final int[] buf) throws IOException {
 		ByteBuffer b = ByteBuffer.wrap(new byte[1 << 2]).order(ByteOrder.LITTLE_ENDIAN);
@@ -228,9 +223,8 @@ public class Tap {
 
 	/**
 	 * Got to the start position of the tape image.
-	 * 
-	 * @throws IOException
-	 *             tape image write error
+	 *
+	 * @throws IOException tape image write error
 	 */
 	final void seekStart() throws IOException {
 		currentFilePosition = 0;

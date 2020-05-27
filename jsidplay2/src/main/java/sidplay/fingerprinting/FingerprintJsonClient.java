@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 /**
  * Send WAV to a server to identify a tune by WhatsSID.
- * 
+ *
  * @author ken
  *
  */

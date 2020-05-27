@@ -6,9 +6,9 @@ import libsidplay.config.IPrinterSection;
 
 /**
  * C1541 section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniPrinterSection extends IniSection implements IPrinterSection {
 
@@ -18,7 +18,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 
 	/**
 	 * Printer turned on?
-	 * 
+	 *
 	 * @return printer turned on?
 	 */
 	@Override
@@ -28,7 +28,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 
 	/**
 	 * Turn printer on.
-	 * 
+	 *
 	 * @param on printer turned on?
 	 */
 	@Override

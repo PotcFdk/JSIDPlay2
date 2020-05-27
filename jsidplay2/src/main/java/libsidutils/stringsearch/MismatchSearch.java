@@ -1,21 +1,21 @@
-/* 
+/*
  * MismatchSearch.java
- * 
+ *
  * Created on 12.11.2003.
  *
  * eaio: StringSearch - high-performance pattern matching algorithms in Java
  * Copyright (c) 2003, 2004 Johann Burkard (jb@eaio.com) http://eaio.com
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package libsidutils.stringsearch;
 
@@ -35,13 +35,13 @@ package libsidutils.stringsearch;
  * position. <br>
  * <br>
  * Example:
- * 
+ *
  * <pre>
  * int[] positions = new ShiftOrMismatches().searchString(&quot;this is null&quot;, &quot;nall&quot;, 1);
  * </pre>
- * 
+ *
  * positions[0] would be 8, positions[1] (the number of mismatches) would be 1.
- * 
+ *
  * @author <a href="mailto:jb@eaio.com">Johann Burkard</a>
  * @version 1.2
  */
@@ -54,10 +54,9 @@ abstract class MismatchSearch extends StringSearch {
 	 * Pre-process the pattern, allowing <b>zero</b> errors. <br>
 	 * <br>
 	 * Identical to <code>process(pattern, 0)</code>
-	 * 
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
+	 *
+	 * @param pattern the <code>byte</code> array containing the pattern, may not be
+	 *                <code>null</code>
 	 * @see StringSearch#processBytes(byte[])
 	 * @see #processBytes(byte[], int)
 	 */
@@ -68,12 +67,10 @@ abstract class MismatchSearch extends StringSearch {
 
 	/**
 	 * Pre-processes the pattern, allowing k errors.
-	 * 
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 *
+	 * @param pattern the <code>byte</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param k       the editing distance
 	 * @return an Object
 	 */
 	public abstract Object processBytes(byte[] pattern, int k);
@@ -82,10 +79,9 @@ abstract class MismatchSearch extends StringSearch {
 	 * Pre-processes the pattern, allowing <b>zero</b> errors. <br>
 	 * <br>
 	 * Identical to <code>process(pattern, 0)</code>.
-	 * 
-	 * @param pattern
-	 *            a <code>char</code> array containing the pattern, may not be
-	 *            <code>null</code>
+	 *
+	 * @param pattern a <code>char</code> array containing the pattern, may not be
+	 *                <code>null</code>
 	 * @return an Object
 	 * @see #processChars(char[], int)
 	 * @see StringSearch#processChars(char[])
@@ -97,12 +93,10 @@ abstract class MismatchSearch extends StringSearch {
 
 	/**
 	 * Pre-processes a <code>char</code> array, allowing k errors.
-	 * 
-	 * @param pattern
-	 *            a <code>char</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 *
+	 * @param pattern a <code>char</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param k       the editing distance
 	 * @return an Object
 	 */
 	public abstract Object processChars(char[] pattern, int k);
@@ -111,12 +105,10 @@ abstract class MismatchSearch extends StringSearch {
 	 * Pre-processes a String, allowing k errors. This method should not be used
 	 * directly because it is implicitly called in the
 	 * {@link #searchString(String, String)} methods.
-	 * 
-	 * @param pattern
-	 *            the String containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 *
+	 * @param pattern the String containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param k       the editing distance
 	 * @return an Object
 	 */
 	public final Object processString(String pattern, int k) {
@@ -138,17 +130,14 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            the <code>byte</code> array containing the text, may not be
-	 *            <code>null</code>
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text    the <code>byte</code> array containing the text, may not be
+	 *                <code>null</code>
+	 * @param pattern the <code>byte</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param k       the editing distance
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
@@ -157,20 +146,17 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            the <code>byte</code> array containing the text, may not be
-	 *            <code>null</code>
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processBytes(byte[], int)},
-	 *            may not be <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text      the <code>byte</code> array containing the text, may not be
+	 *                  <code>null</code>
+	 * @param pattern   the <code>byte</code> array containing the pattern, may not
+	 *                  be <code>null</code>
+	 * @param processed an Object as returned from
+	 *                  {@link #processBytes(byte[], int)}, may not be
+	 *                  <code>null</code>
+	 * @param k         the editing distance
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
@@ -180,19 +166,15 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            the <code>byte</code> array containing the text, may not be
-	 *            <code>null</code>
-	 * @param textEnd
-	 *            at which position in the text the comparing should end
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text    the <code>byte</code> array containing the text, may not be
+	 *                <code>null</code>
+	 * @param textEnd at which position in the text the comparing should end
+	 * @param pattern the <code>byte</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param k       the editing distance
 	 * @return int the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
@@ -203,19 +185,15 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            the <code>byte</code> array containing the text, may not be
-	 *            <code>null</code>
-	 * @param textEnd
-	 *            at which position in the text the comparing should end
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text      the <code>byte</code> array containing the text, may not be
+	 *                  <code>null</code>
+	 * @param textEnd   at which position in the text the comparing should end
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
 	 * @param processed
-	 * @param k
-	 *            the editing distance
+	 * @param k         the editing distance
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
@@ -226,21 +204,16 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            text the <code>byte</code> array containing the text, may not
-	 *            be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param textEnd
-	 *            at which position in the text comparing should stop
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text      text the <code>byte</code> array containing the text, may
+	 *                  not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param textEnd   at which position in the text comparing should stop
+	 * @param pattern   the <code>byte</code> array containing the pattern, may not
+	 *                  be <code>null</code>
+	 * @param k         the editing distance
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchBytes(byte[], int, int, byte[], Object, int)
 	 */
@@ -251,23 +224,18 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Returns the position in the text at which the pattern was found. Returns
-	 * -1 if the pattern was not found.
-	 * 
-	 * @param text
-	 *            text the <code>byte</code> array containing the text, may not
-	 *            be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param textEnd
-	 *            at which position in the text comparing should stop
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processBytes(byte[], int)},
-	 *            may not be <code>null</code>
-	 * @param k
-	 *            the editing distance
+	 * Returns the position in the text at which the pattern was found. Returns -1
+	 * if the pattern was not found.
+	 *
+	 * @param text      text the <code>byte</code> array containing the text, may
+	 *                  not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param textEnd   at which position in the text comparing should stop
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param processed an Object as returned from
+	 *                  {@link #processBytes(byte[], int)}, may not be
+	 *                  <code>null</code>
+	 * @param k         the editing distance
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #processBytes(byte[], int)
 	 */
@@ -278,9 +246,9 @@ abstract class MismatchSearch extends StringSearch {
 	 */
 
 	/**
-	 * Finder for the given pattern in the text, starting at textStart and
-	 * comparing to at most textEnd, allowing zero errors.
-	 * 
+	 * Finder for the given pattern in the text, starting at textStart and comparing
+	 * to at most textEnd, allowing zero errors.
+	 *
 	 * @see StringSearch#searchChars(char[], int, int, char[], Object)
 	 * @see #processChars(char[], int)
 	 */
@@ -292,13 +260,10 @@ abstract class MismatchSearch extends StringSearch {
 
 	/**
 	 * Finder for the given pattern in the text, allowing k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 *
+	 * @param text    the String containing the text, may not be <code>null</code>
+	 * @param pattern the pattern to search for, may not be <code>null</code>
+	 * @param k       the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
@@ -308,17 +273,14 @@ abstract class MismatchSearch extends StringSearch {
 
 	/**
 	 * Finder for the given pattern in the text, allowing k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[], int)}
-	 *            or {@link #processString(String, int)}, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 *
+	 * @param text      the String containing the text, may not be <code>null</code>
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param processed an Object as returned from
+	 *                  {@link #processChars(char[], int)} or
+	 *                  {@link #processString(String, int)}, may not be
+	 *                  <code>null</code>
+	 * @param k         the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
@@ -329,17 +291,13 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Finder for the given pattern in the text, starting at textStart, allowing
-	 * k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 * Finder for the given pattern in the text, starting at textStart, allowing k
+	 * errors.
+	 *
+	 * @param text      the String containing the text, may not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param k         the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object)
 	 */
@@ -350,21 +308,17 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Finder for the given pattern in the text, starting at textStart, allowing
-	 * k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[], int)}
-	 *            or {@link #processString(String, int)}, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 * Finder for the given pattern in the text, starting at textStart, allowing k
+	 * errors.
+	 *
+	 * @param text      the String containing the text, may not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param processed an Object as returned from
+	 *                  {@link #processChars(char[], int)} or
+	 *                  {@link #processString(String, int)}, may not be
+	 *                  <code>null</code>
+	 * @param k         the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 * @see #searchChars(char[], int, int, char[], Object, int)
 	 */
@@ -375,19 +329,14 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Finder for the given pattern in the text, starting at textStart and
-	 * comparing to at most textEnd, allowing k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param textEnd
-	 *            at which position in the text comparing should stop
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 * Finder for the given pattern in the text, starting at textStart and comparing
+	 * to at most textEnd, allowing k errors.
+	 *
+	 * @param text      the String containing the text, may not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param textEnd   at which position in the text comparing should stop
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param k         the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 */
 	public final int[] searchChars(char[] text, int textStart, int textEnd, char[] pattern, int k) {
@@ -396,23 +345,18 @@ abstract class MismatchSearch extends StringSearch {
 	}
 
 	/**
-	 * Finder for the given pattern in the text, starting at textStart and
-	 * comparing to at most textEnd, allowing k errors.
-	 * 
-	 * @param text
-	 *            the String containing the text, may not be <code>null</code>
-	 * @param textStart
-	 *            at which position in the text the comparing should start
-	 * @param textEnd
-	 *            at which position in the text comparing should stop
-	 * @param pattern
-	 *            the pattern to search for, may not be <code>null</code>
-	 * @param processed
-	 *            an Object as returned from {@link #processChars(char[], int)}
-	 *            or {@link #processString(String, int)}, may not be
-	 *            <code>null</code>
-	 * @param k
-	 *            the maximum number of mismatches (the editing distance)
+	 * Finder for the given pattern in the text, starting at textStart and comparing
+	 * to at most textEnd, allowing k errors.
+	 *
+	 * @param text      the String containing the text, may not be <code>null</code>
+	 * @param textStart at which position in the text the comparing should start
+	 * @param textEnd   at which position in the text comparing should stop
+	 * @param pattern   the pattern to search for, may not be <code>null</code>
+	 * @param processed an Object as returned from
+	 *                  {@link #processChars(char[], int)} or
+	 *                  {@link #processString(String, int)}, may not be
+	 *                  <code>null</code>
+	 * @param k         the maximum number of mismatches (the editing distance)
 	 * @return the position in the text or -1 if the pattern was not found
 	 */
 	public abstract int[] searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed, int k);

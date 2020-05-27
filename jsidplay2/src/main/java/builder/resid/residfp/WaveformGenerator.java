@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -29,9 +29,9 @@ import libsidplay.common.ChipModel;
  * zero when TEST is set, and starts counting when TEST is cleared. The noise
  * waveform is taken from intermediate bits of a 23 bit shift register. This
  * register is clocked by bit 19 of the accumulator.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public final class WaveformGenerator {
 	private float[][] wftable;
@@ -98,11 +98,11 @@ public final class WaveformGenerator {
 		accumulator_prev = accumulator;
 
 		// Calculate new accumulator value;
-		accumulator = (accumulator + freq) & 0xffffff;
+		accumulator = accumulator + freq & 0xffffff;
 
 		// Shift noise register once for each time accumulator bit 19 is set
 		// high.
-		if (((~accumulator_prev) & accumulator & 0x080000) != 0) {
+		if ((~accumulator_prev & accumulator & 0x080000) != 0) {
 			clockNoise(true);
 		} // Shift noise register once for each time accumulator bit 19 is set
 	}
@@ -110,30 +110,26 @@ public final class WaveformGenerator {
 	/**
 	 * Synchronize oscillators. This must be done after all the oscillators have
 	 * been clock()'ed since the oscillators operate in parallel. Note that the
-	 * oscillators must be clocked exactly on the cycle when the MSB is set high
-	 * for hard sync to operate correctly. See SID.clock().
+	 * oscillators must be clocked exactly on the cycle when the MSB is set high for
+	 * hard sync to operate correctly. See SID.clock().
 	 *
-	 * @param syncDest
-	 *            The oscillator I am syncing
-	 * @param syncSource
-	 *            The oscillator syncing me.
+	 * @param syncDest   The oscillator I am syncing
+	 * @param syncSource The oscillator syncing me.
 	 */
-	protected final void synchronize(final WaveformGenerator syncDest, final WaveformGenerator syncSource) {
+	protected void synchronize(final WaveformGenerator syncDest, final WaveformGenerator syncSource) {
 		// A special case occurs when a sync source is synced itself on the same
 		// cycle as when its MSB is set high. In this case the destination will
 		// not be synced. This has been verified by sampling OSC3.
-		if (syncDest.sync && ((~accumulator_prev) & accumulator & 0x800000) != 0
-				&& !(sync && ((~syncSource.accumulator_prev) & syncSource.accumulator & 0x800000) != 0)) {
+		if (syncDest.sync && (~accumulator_prev & accumulator & 0x800000) != 0
+				&& !(sync && (~syncSource.accumulator_prev & syncSource.accumulator & 0x800000) != 0)) {
 			syncDest.accumulator = 0;
 		}
 	}
 
 	/**
-	 * 12-bit waveform output. Select one of 16 possible combinations of
-	 * waveforms.
-	 * 
-	 * @param ring_modulator
-	 *            The oscillator ring-modulating me.
+	 * 12-bit waveform output. Select one of 16 possible combinations of waveforms.
+	 *
+	 * @param ring_modulator The oscillator ring-modulating me.
 	 * @return output from waveformgenerator
 	 */
 	public float output(final WaveformGenerator ring_modulator) {
@@ -148,10 +144,9 @@ public final class WaveformGenerator {
 		final int variant = waveform >= 4 && (test || phase >= pw) ? 3 : -1;
 
 		/*
-		 * triangle waveform XOR circuit. Since the table already makes a
-		 * triangle wave internally, we only need to account for the sync source
-		 * here. Flipping the top bit suffices to reproduce the original SID
-		 * ringmod
+		 * triangle waveform XOR circuit. Since the table already makes a triangle wave
+		 * internally, we only need to account for the sync source here. Flipping the
+		 * top bit suffices to reproduce the original SID ringmod
 		 */
 		phase ^= ring && 0 != (ring_modulator.accumulator & 0x800000) ? 0x800 : 0x00;
 
@@ -166,9 +161,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param freq_lo
-	 *            low 8 bits of frequency
+	 *
+	 * @param freq_lo low 8 bits of frequency
 	 */
 	protected void writeFREQ_LO(final byte freq_lo) {
 		freq = freq & 0xff00 | freq_lo & 0xff;
@@ -176,9 +170,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param freq_hi
-	 *            high 8 bits of frequency
+	 *
+	 * @param freq_hi high 8 bits of frequency
 	 */
 	protected void writeFREQ_HI(final byte freq_hi) {
 		freq = freq_hi << 8 & 0xff00 | freq & 0xff;
@@ -186,13 +179,12 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * The original form was (acc &gt;&gt; 12) &gt;= pw, where truth value is not
-	 * affected by the contents of the low 12 bits. Therefore the lowest bits
-	 * must be zero in the new formulation acc &gt;= (pw &lt;&lt; 12).
-	 * 
-	 * @param pw_lo
-	 *            low 8 bits of pulse width
+	 * affected by the contents of the low 12 bits. Therefore the lowest bits must
+	 * be zero in the new formulation acc &gt;= (pw &lt;&lt; 12).
+	 *
+	 * @param pw_lo low 8 bits of pulse width
 	 */
 	protected void writePW_LO(final byte pw_lo) {
 		pw = pw & 0xf00 | pw_lo & 0x0ff;
@@ -200,9 +192,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param pw_hi
-	 *            high 8 bits of pulse width
+	 *
+	 * @param pw_hi high 8 bits of pulse width
 	 */
 	protected void writePW_HI(final byte pw_hi) {
 		pw = pw_hi << 8 & 0xf00 | pw & 0x0ff;
@@ -210,16 +201,14 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param ring_modulator
-	 *            ring-modulator modulating me.
-	 * @param control
-	 *            control register value
+	 *
+	 * @param ring_modulator ring-modulator modulating me.
+	 * @param control        control register value
 	 */
 	protected void writeCONTROL_REG(final WaveformGenerator ring_modulator, final byte control) {
 		/*
-		 * when selecting the 0 waveform, the previous output is held for a time
-		 * in the DAC MOSFET gates. clock_noise deals with waveform values >= 8.
+		 * when selecting the 0 waveform, the previous output is held for a time in the
+		 * DAC MOSFET gates. clock_noise deals with waveform values >= 8.
 		 */
 		final int waveform_next = control >> 4 & 0x0f;
 		if (waveform_next == 0 && waveform >= 1 && waveform <= 7) {
@@ -252,9 +241,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Read OSC3 value (6581, not latched/delayed version)
-	 * 
-	 * @param ring_modulator
-	 *            The ring modulating partner of this waveform
+	 *
+	 * @param ring_modulator The ring modulating partner of this waveform
 	 * @return OSC3 value
 	 */
 	protected byte readOSC6581(final WaveformGenerator ring_modulator) {
@@ -262,12 +250,11 @@ public final class WaveformGenerator {
 	}
 
 	/**
-	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and
-	 * above are not appropriately delayed by 1 clock. It should not be
-	 * noticeable for 0 and &gt; 8, but noise is not correctly delayed.
-	 * 
-	 * @param ring_modulator
-	 *            The ring modulating partner of this waveform
+	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and above
+	 * are not appropriately delayed by 1 clock. It should not be noticeable for 0
+	 * and &gt; 8, but noise is not correctly delayed.
+	 *
+	 * @param ring_modulator The ring modulating partner of this waveform
 	 * @return OSC3 value
 	 */
 	protected byte readOSC8580(final WaveformGenerator ring_modulator) {
@@ -284,7 +271,7 @@ public final class WaveformGenerator {
 
 	/**
 	 * Calculate OSC3 bitstate from the analog values.
-	 * 
+	 *
 	 * @param ringAccumulator
 	 * @param accumulator
 	 * @return
@@ -300,10 +287,9 @@ public final class WaveformGenerator {
 		final int variant = waveform >= 4 && (test || phase >= pw) ? 3 : -1;
 
 		/*
-		 * triangle waveform XOR circuit. Since the table already makes a
-		 * triangle wave internally, we only need to account for the sync source
-		 * here. Flipping the top bit suffices to reproduce the original SID
-		 * ringmod
+		 * triangle waveform XOR circuit. Since the table already makes a triangle wave
+		 * internally, we only need to account for the sync source here. Flipping the
+		 * top bit suffices to reproduce the original SID ringmod
 		 */
 		phase ^= ring && 0 != (ringAccumulator & 0x800000) ? 0x800 : 0x00;
 
@@ -340,7 +326,7 @@ public final class WaveformGenerator {
 	 * actually delayed 2 cycles after bit 19 is set high. This is not modeled.
 	 * <P>
 	 * Operation: Calculate EOR result, shift register, set bit 0 = result.
-	 * 
+	 *
 	 * <pre>
 	 *                         ------------------------&gt;--------------------
 	 *                         |                                            |
@@ -351,7 +337,7 @@ public final class WaveformGenerator {
 	 *                    |   |       |     |   |       |     |   |
 	 *  OSC3 bits  :      7   6       5     4   3       2     1   0
 	 * </pre>
-	 * 
+	 *
 	 * Since waveform output is 12 bits the output is left-shifted 4 times.
 	 */
 	private byte calculateCurrentNoiseValue() {
@@ -378,7 +364,7 @@ public final class WaveformGenerator {
 
 	/**
 	 * Return the waveform offset. The zero level is ideally 0x800.
-	 * 
+	 *
 	 * @return the waveform offset
 	 */
 	public float getZeroLevel() {

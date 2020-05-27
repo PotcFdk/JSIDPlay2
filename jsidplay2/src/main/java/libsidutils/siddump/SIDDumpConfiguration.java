@@ -27,12 +27,11 @@ public class SIDDumpConfiguration {
 	private static final String FILE_NAME = "siddump.xml";
 
 	public enum SIDDumpReg {
-		FREQ_LO_1(0x00), FREQ_HI_1(0x01), PULSE_LO_1(0x02), PULSE_HI_1(0x03), WAVEFORM_1(0x04), ATTACK_DECAY_1(
-				0x05), SUSTAIN_RELEASE_1(0x06), FREQ_LO_2(0x07), FREQ_HI_2(0x08), PULSE_LO_2(0x09), PULSE_HI_2(
-						0x0a), WAVEFORM_2(0x0b), ATTACK_DECAY_2(0x0c), SUSTAIN_RELEASE_2(0x0d), FREQ_LO_3(
-								0x0e), FREQ_HI_3(0x0f), PULSE_LO_3(0x10), PULSE_HI_3(0x11), WAVEFORM_3(
-										0x12), ATTACK_DECAY_3(0x13), SUSTAIN_RELEASE_3(0x14), FILTERFREQ_LO(
-												0x15), FILTERFREQ_HI(0x16), FILTERCTRL(0x17), VOL(0x18);
+		FREQ_LO_1(0x00), FREQ_HI_1(0x01), PULSE_LO_1(0x02), PULSE_HI_1(0x03), WAVEFORM_1(0x04), ATTACK_DECAY_1(0x05),
+		SUSTAIN_RELEASE_1(0x06), FREQ_LO_2(0x07), FREQ_HI_2(0x08), PULSE_LO_2(0x09), PULSE_HI_2(0x0a), WAVEFORM_2(0x0b),
+		ATTACK_DECAY_2(0x0c), SUSTAIN_RELEASE_2(0x0d), FREQ_LO_3(0x0e), FREQ_HI_3(0x0f), PULSE_LO_3(0x10),
+		PULSE_HI_3(0x11), WAVEFORM_3(0x12), ATTACK_DECAY_3(0x13), SUSTAIN_RELEASE_3(0x14), FILTERFREQ_LO(0x15),
+		FILTERFREQ_HI(0x16), FILTERCTRL(0x17), VOL(0x18);
 
 		private byte register;
 
@@ -51,7 +50,7 @@ public class SIDDumpConfiguration {
 
 		public SIDDumpPlayer(String name) {
 			this.name = name;
-			this.regs = new ArrayList<SIDDumpReg>();
+			this.regs = new ArrayList<>();
 		}
 
 		public String getName() {
@@ -108,7 +107,7 @@ public class SIDDumpConfiguration {
 	private void parse(Document siddump) {
 		Element root = siddump.getDocumentElement();
 		NodeList player = root.getElementsByTagName("PLAYER");
-		fPlayers = new ArrayList<SIDDumpPlayer>();
+		fPlayers = new ArrayList<>();
 		for (int i = 0; i < player.getLength(); i++) {
 			fPlayers.add(createPlayer((Element) player.item(i)));
 		}

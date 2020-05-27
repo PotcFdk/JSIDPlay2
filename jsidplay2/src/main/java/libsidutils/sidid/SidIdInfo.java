@@ -45,9 +45,8 @@ public class SidIdInfo extends SidIdBase {
 
 		/**
 		 * Create a new section.
-		 * 
-		 * @param name
-		 *            player name
+		 *
+		 * @param name player name
 		 */
 		public PlayerInfoSection(final String name) {
 			this.playerName = name;
@@ -97,16 +96,21 @@ public class SidIdInfo extends SidIdBase {
 		public String toString() {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(playerName).append('\n');
-			if (name != null)
+			if (name != null) {
 				stringBuilder.append(NAME_TOKEN + name).append('\n');
-			if (author != null)
+			}
+			if (author != null) {
 				stringBuilder.append(AUTHOR_TOKEN + author).append('\n');
-			if (released != null)
+			}
+			if (released != null) {
 				stringBuilder.append(RELEASED_TOKEN + released).append('\n');
-			if (comment != null)
+			}
+			if (comment != null) {
 				stringBuilder.append(COMMENT_TOKEN + comment).append('\n');
-			if (reference != null)
+			}
+			if (reference != null) {
 				stringBuilder.append(REFERENCE_TOKEN + reference).append('\n');
+			}
 			stringBuilder.append('\n');
 			return stringBuilder.toString();
 		}
@@ -116,11 +120,11 @@ public class SidIdInfo extends SidIdBase {
 
 	/**
 	 * Read configuration file and configure the SID-ID class.
-	 * 
+	 *
 	 * @throws IOException I/O error
 	 */
 	public void readconfig() throws IOException {
-		this.playerInfoList = new ArrayList<PlayerInfoSection>();
+		this.playerInfoList = new ArrayList<>();
 		PlayerInfoSection playerInfoSection = null;
 		String line;
 		try (final BufferedReader br = new BufferedReader(
@@ -156,9 +160,8 @@ public class SidIdInfo extends SidIdBase {
 
 	/**
 	 * Search player ID Info.
-	 * 
-	 * @param playerName
-	 *            player to get infos for
+	 *
+	 * @param playerName player to get infos for
 	 * @return player infos (or null, if not found)
 	 */
 	public PlayerInfoSection getPlayerInfo(final String playerName) {

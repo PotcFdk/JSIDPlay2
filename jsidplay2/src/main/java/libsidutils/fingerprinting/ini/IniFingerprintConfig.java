@@ -14,9 +14,9 @@ import sidplay.ini.IniReader;
 /**
  * INI configuration file support responsible to load and save all emulator
  * settings.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniFingerprintConfig implements IFingerprintConfig {
 	/** Name of our config file. */
@@ -38,7 +38,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	/**
 	 * Get default configuration, read from internal sidplay2.ini file.<BR>
 	 * This is a Single instance!
-	 * 
+	 *
 	 * @return default configuration
 	 */
 	public static IniFingerprintConfig getDefault() {
@@ -57,7 +57,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 
 	/**
 	 * Read configuration file (external or internal, if it does not exist).<BR>
-	 * 
+	 *
 	 * @param createIfNotExists If external configuration file does not exist,
 	 *                          create it
 	 */
@@ -95,7 +95,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 * <LI>If INI file exists in the user directory, then use it, else
 	 * <LI>use INI file in the current working directory
 	 * </OL>
-	 * 
+	 *
 	 * @return the absolute path name of the INI file to use
 	 */
 	private static File getINIPath(boolean createIfNotExists) {
@@ -114,7 +114,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 
 	/**
 	 * Create backup of old INI file
-	 * 
+	 *
 	 * @param iniFile the INI file to backup
 	 */
 	private void createINIBackup(final File iniFile) {
@@ -122,7 +122,8 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	}
 
 	private void readInternal() {
-		try (InputStream is = getClass().getClassLoader().getResourceAsStream("libsidutils/fingerprinting/ini/" + FILE_NAME)) {
+		try (InputStream is = getClass().getClassLoader()
+				.getResourceAsStream("libsidutils/fingerprinting/ini/" + FILE_NAME)) {
 			iniReader = new IniReader(is);
 			clear();
 			/*

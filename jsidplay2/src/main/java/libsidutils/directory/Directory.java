@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * 
+ *
  * This class represents a disk directory. However it is used to show tape file
  * entries or other formats as a pseudo directory as well.
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -36,7 +36,7 @@ public class Directory {
 	private String statusLine;
 
 	public Directory() {
-		dirEntries = new ArrayList<DirEntry>();
+		dirEntries = new ArrayList<>();
 		singleSided = true;
 	}
 
@@ -75,8 +75,8 @@ public class Directory {
 		header.append(DirEntry.convertFilename(title, -1));
 		if (id != null) {
 			header.append(" ");
-			for (int i = 0; i < id.length; i++) {
-				header.append((char) ((id[i] & 0xff)));
+			for (byte element : id) {
+				header.append((char) (element & 0xff));
 			}
 		}
 		return header.toString();

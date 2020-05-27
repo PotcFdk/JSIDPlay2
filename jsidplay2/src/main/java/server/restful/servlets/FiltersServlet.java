@@ -34,7 +34,7 @@ public class FiltersServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get SID filter definitions.
-	 * 
+	 *
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/filters
 	 */
 	@Override
@@ -48,7 +48,7 @@ public class FiltersServlet extends JSIDPlay2Servlet {
 	}
 
 	private List<String> getFilters() {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (FilterSection iFilterSection : util.getConfiguration().getFilterSection()) {
 			if (iFilterSection.isReSIDFilter6581()) {
 				result.add("RESID_MOS6581_" + iFilterSection.getName());

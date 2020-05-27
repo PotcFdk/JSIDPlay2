@@ -24,20 +24,24 @@
  *  02111-1307  USA.
  *
  * @author Ken Händel
- * 
+ *
  **/
 package libsidplay.components.c1541;
 
-import static libsidplay.components.c1541.DOSErrorCodes.*;
+import static libsidplay.components.c1541.DOSErrorCodes.CBMDOS_IPE_DISK_ID_MISMATCH;
+import static libsidplay.components.c1541.DOSErrorCodes.CBMDOS_IPE_READ_ERROR_BCHK;
+import static libsidplay.components.c1541.DOSErrorCodes.CBMDOS_IPE_READ_ERROR_BNF;
+import static libsidplay.components.c1541.DOSErrorCodes.CBMDOS_IPE_READ_ERROR_CHK;
+import static libsidplay.components.c1541.DOSErrorCodes.CBMDOS_IPE_READ_ERROR_DATA;
 
 import java.util.Arrays;
 
 /**
- * 
+ *
  * Group Coded Recording.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public final class GCR {
 	/**
@@ -66,7 +70,7 @@ public final class GCR {
 	public static final byte DATA_HEADER_START = 0x07;
 	/**
 	 * Convert a nybble to GCR code.
-	 * 
+	 *
 	 * <PRE>
 	 * Nybble Code
 	 * 0000	  01010
@@ -115,11 +119,9 @@ public final class GCR {
 
 	/**
 	 * Get GCR data of a whole track.
-	 * 
-	 * @param trackPos
-	 *            track offset
-	 * @param trackSize
-	 *            track size
+	 *
+	 * @param trackPos  track offset
+	 * @param trackSize track size
 	 * @return GCR data
 	 */
 	protected byte[] getTrackData(final int trackPos, final int trackSize) {
@@ -130,13 +132,10 @@ public final class GCR {
 
 	/**
 	 * Set GCR data of a whole track.
-	 * 
-	 * @param trackPos
-	 *            track offset
-	 * @param trackSize
-	 *            track size
-	 * @param byt
-	 *            GCR value to be used for the whole track
+	 *
+	 * @param trackPos  track offset
+	 * @param trackSize track size
+	 * @param byt       GCR value to be used for the whole track
 	 */
 	protected void setTrackData(final int trackPos, final int trackSize, final byte byt) {
 		Arrays.fill(data, trackPos, trackPos + trackSize, byt);
@@ -144,13 +143,10 @@ public final class GCR {
 
 	/**
 	 * Set GCR data of a whole track.
-	 * 
-	 * @param trackBytes
-	 *            GCR data of a whole track
-	 * @param trackPos
-	 *            track offset
-	 * @param trackSize
-	 *            track size
+	 *
+	 * @param trackBytes GCR data of a whole track
+	 * @param trackPos   track offset
+	 * @param trackSize  track size
 	 */
 	protected void setTrackData(final byte[] trackBytes, final int trackPos, final int trackSize) {
 		System.arraycopy(trackBytes, 0, data, trackPos, trackSize);
@@ -182,21 +178,14 @@ public final class GCR {
 	/**
 	 * Convert the contents of a disk sector to GCR coded bytes. Input is a
 	 * pre-formatted sector filled with 0x55 bytes (gap data).
-	 * 
-	 * @param sectorBytes
-	 *            sector data to convert
-	 * @param off
-	 *            position of result
-	 * @param track
-	 *            track, where sector is located in
-	 * @param sector
-	 *            sector to convert
-	 * @param diskID1
-	 *            first byte of the disk ID
-	 * @param diskID2
-	 *            second byte of the disk ID
-	 * @param errorCode
-	 *            error code
+	 *
+	 * @param sectorBytes sector data to convert
+	 * @param off         position of result
+	 * @param track       track, where sector is located in
+	 * @param sector      sector to convert
+	 * @param diskID1     first byte of the disk ID
+	 * @param diskID2     second byte of the disk ID
+	 * @param errorCode   error code
 	 */
 	protected void convertSectorToGCR(final byte[] sectorBytes, int off, final int track, final int sector,
 			final byte diskID1, final byte diskID2, final DOSErrorCodes errorCode) {
@@ -206,7 +195,7 @@ public final class GCR {
 		Arrays.fill(data, off, off + 5, (byte) 0xff);
 		off += 5;
 
-		byte headerId1 = (byte) ((errorCode == CBMDOS_IPE_DISK_ID_MISMATCH) ? diskID1 ^ 0xff : diskID1);
+		byte headerId1 = (byte) (errorCode == CBMDOS_IPE_DISK_ID_MISMATCH ? diskID1 ^ 0xff : diskID1);
 
 		/* GCR block header */
 
@@ -215,7 +204,7 @@ public final class GCR {
 		// CKS - checksum
 		// S - sector number
 		// T - track number
-		buf[0] = (byte) ((errorCode == CBMDOS_IPE_READ_ERROR_BNF) ? 0xff : BLOCK_HEADER_START);
+		buf[0] = (byte) (errorCode == CBMDOS_IPE_READ_ERROR_BNF ? 0xff : BLOCK_HEADER_START);
 		buf[1] = (byte) (sector ^ track ^ diskID2 ^ headerId1);
 		buf[2] = (byte) sector;
 		buf[3] = (byte) track;
@@ -248,13 +237,13 @@ public final class GCR {
 		/* GCR data */
 
 		// 7 - $07 begin of data header
-		sectorBytes[0] = (byte) ((errorCode == CBMDOS_IPE_READ_ERROR_DATA) ? 0xff : DATA_HEADER_START);
+		sectorBytes[0] = (byte) (errorCode == CBMDOS_IPE_READ_ERROR_DATA ? 0xff : DATA_HEADER_START);
 		// CKS - checksum
 		int chksum = sectorBytes[1];
 		for (int i = 2; i < 257; i++) {
 			chksum ^= sectorBytes[i];
 		}
-		sectorBytes[257] = (byte) ((errorCode == CBMDOS_IPE_READ_ERROR_CHK) ? chksum ^ 0xff : chksum);
+		sectorBytes[257] = (byte) (errorCode == CBMDOS_IPE_READ_ERROR_CHK ? chksum ^ 0xff : chksum);
 		sectorBytes[258] = sectorBytes[259] = 0; // filler???
 		// header + 256 bytes data + checksum
 		int sectorBytesPos = 0;
@@ -267,15 +256,11 @@ public final class GCR {
 
 	/**
 	 * Convert 4 bytes into the GCR coded form (5 bytes).
-	 * 
-	 * @param source
-	 *            byte array to convert containing 4 bytes.
-	 * @param srcPos
-	 *            position of source
-	 * @param dest
-	 *            resulting byte array
-	 * @param dstPos
-	 *            position of dest
+	 *
+	 * @param source byte array to convert containing 4 bytes.
+	 * @param srcPos position of source
+	 * @param dest   resulting byte array
+	 * @param dstPos position of dest
 	 */
 	private void convert4BytesToGCR(final byte[] source, int srcPos, final byte[] dest, int dstPos) {
 		int idx = 0;
@@ -287,7 +272,7 @@ public final class GCR {
 
 			/* make room for the lower nybble */
 			idx <<= 5;
-			idx |= TO_GCR[(source[srcPos]) & 0x0f];
+			idx |= TO_GCR[source[srcPos] & 0x0f];
 
 			dest[dstPos] = (byte) (idx >> i);
 		}
@@ -297,19 +282,16 @@ public final class GCR {
 
 	/**
 	 * Convert a GCR coded sector into bytes.
-	 * 
-	 * @param dest
-	 *            resulting GCR byte array
-	 * @param dstPos
-	 *            position of the GCR data containing the sector the sector
-	 * @param trackSize
-	 *            the track size
+	 *
+	 * @param dest      resulting GCR byte array
+	 * @param dstPos    position of the GCR data containing the sector the sector
+	 * @param trackSize the track size
 	 */
 	protected void convertGCRToSector(final byte[] dest, int dstPos, final int trackSize) {
 		byte[] header = new byte[5];
 		int bufferPos = 0;
 		int trackEnd = dataPos + trackSize;
-		for (int i = 0; i < (GCR_SECTOR_SIZE_DATA_ONLY / 5); i++) {
+		for (int i = 0; i < GCR_SECTOR_SIZE_DATA_ONLY / 5; i++) {
 			for (int j = 0; j < header.length; j++) {
 				header[j] = data[dstPos++];
 				if (dstPos >= trackEnd) {
@@ -322,15 +304,11 @@ public final class GCR {
 	}
 
 	/**
-	 * Search for the sector header of the given track and sector in the GCR
-	 * data.
-	 * 
-	 * @param track
-	 *            track where the sector is contained in
-	 * @param sector
-	 *            sector to search for
-	 * @param trackSize
-	 *            the track size
+	 * Search for the sector header of the given track and sector in the GCR data.
+	 *
+	 * @param track     track where the sector is contained in
+	 * @param sector    sector to search for
+	 * @param trackSize the track size
 	 * @return offset in the GCR data pointing to the sector or -1 (not found)
 	 */
 	protected int findSectorHeader(final int track, final int sector, final int trackSize) {
@@ -339,7 +317,7 @@ public final class GCR {
 		boolean wrapOver = false;
 		int syncCount = 0;
 		int trackEnd = dataPos + trackSize;
-		while ((offset < trackEnd) && !wrapOver) {
+		while (offset < trackEnd && !wrapOver) {
 			while (data[offset] != (byte) 0xff) {
 				offset++;
 				if (offset >= trackEnd) {
@@ -353,7 +331,7 @@ public final class GCR {
 					wrapOver = true;
 				}
 				/* Check for killer tracks. */
-				if ((++syncCount) >= trackSize) {
+				if (++syncCount >= trackSize) {
 					return -1;
 				}
 			}
@@ -380,13 +358,10 @@ public final class GCR {
 
 	/**
 	 * Find sector GCR data starting at the sector header position.
-	 * 
-	 * @param sectorHeaderPos
-	 *            search start position
-	 * @param trackSize
-	 *            the track size
-	 * @return offset in the GCR data pointing to the sector data or -1 (not
-	 *         found)
+	 *
+	 * @param sectorHeaderPos search start position
+	 * @param trackSize       the track size
+	 * @return offset in the GCR data pointing to the sector data or -1 (not found)
 	 */
 	protected int findSectorData(final int sectorHeaderPos, final int trackSize) {
 		int trackEnd = dataPos + trackSize;
@@ -414,13 +389,10 @@ public final class GCR {
 
 	/**
 	 * Convert 5-byte GCR code to 4-byte.
-	 * 
-	 * @param source
-	 *            source buffer containing the 5-byte GCR code.
-	 * @param dest
-	 *            target buffer to hold the result
-	 * @param destPos
-	 *            off set into the target buffer
+	 *
+	 * @param source  source buffer containing the 5-byte GCR code.
+	 * @param dest    target buffer to hold the result
+	 * @param destPos off set into the target buffer
 	 */
 	private void convertGCRTo4Bytes(final byte[] source, final byte[] dest, final int destPos) {
 		/* at least 24 bits for shifting into bits 16...20 */
@@ -433,10 +405,10 @@ public final class GCR {
 			sourcePos++;
 			idx |= (source[sourcePos] & 0xff) << i;
 
-			dest[off] = (byte) ((FROM_GCR[(idx >> 16) & 0x1f] & 0xff) << 4);
+			dest[off] = (byte) ((FROM_GCR[idx >> 16 & 0x1f] & 0xff) << 4);
 			idx <<= 5;
 
-			dest[off] |= FROM_GCR[(idx >> 16) & 0x1f];
+			dest[off] |= FROM_GCR[idx >> 16 & 0x1f];
 			idx <<= 5;
 		}
 	}
@@ -447,10 +419,10 @@ public final class GCR {
 			return 0;
 		}
 		int byteOffset = gcrHeadOffset >> 3;
-		int bitNumber = (~gcrHeadOffset) & 7;
+		int bitNumber = ~gcrHeadOffset & 7;
 		gcrHeadOffset = (gcrHeadOffset + 1) % (currentTrackSize << 3);
 		byte gcrData = data[dataPos + byteOffset];
-		return (gcrData >> bitNumber) & 1;
+		return gcrData >> bitNumber & 1;
 	}
 
 	protected void writeNextBit(final boolean value, final int currentTrackSize) {
@@ -459,7 +431,7 @@ public final class GCR {
 			return;
 		}
 		int byteOffset = gcrHeadOffset >> 3;
-		int bitNumber = (~gcrHeadOffset) & 7;
+		int bitNumber = ~gcrHeadOffset & 7;
 		gcrHeadOffset = (gcrHeadOffset + 1) % (currentTrackSize << 3);
 
 		byte gcrData = data[dataPos + byteOffset];
@@ -472,14 +444,13 @@ public final class GCR {
 
 	/**
 	 * Set the current GCR data track position.
-	 * 
-	 * @param num
-	 *            half-track to set
+	 *
+	 * @param num              half-track to set
 	 *
 	 * @param oldTrackSize
 	 * @param currentTrackSize
 	 */
-	protected final void setHalfTrack(final int num, final int oldTrackSize, final int currentTrackSize) {
+	protected void setHalfTrack(final int num, final int oldTrackSize, final int currentTrackSize) {
 		dataPos = ((num >> 1) - 1) * NUM_MAX_BYTES_TRACK;
 		gcrHeadOffset = gcrHeadOffset * oldTrackSize / currentTrackSize;
 	}

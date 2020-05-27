@@ -14,11 +14,11 @@ public class ContentEntrySearchResult {
 	public List<ContentEntry> getContentEntry() {
 		return contentEntry;
 	}
-	
+
 	public boolean getIsContentByItself() {
 		return isContentByItself;
 	}
-	
+
 	public void setIsContentByItself(boolean isContentByItself) {
 		this.isContentByItself = isContentByItself;
 	}

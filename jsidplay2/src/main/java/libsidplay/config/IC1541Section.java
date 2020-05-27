@@ -6,42 +6,42 @@ public interface IC1541Section {
 
 	/**
 	 * Drive turned on?
-	 * 
+	 *
 	 * @return drive turned on?
 	 */
 	boolean isDriveOn();
 
 	/**
 	 * Turn drive on.
-	 * 
+	 *
 	 * @param on drive turned on?
 	 */
 	void setDriveOn(boolean on);
 
 	/**
 	 * Is the parallel cable plugged in?
-	 * 
+	 *
 	 * @return parallel cable plugged in?
 	 */
 	boolean isParallelCable();
 
 	/**
 	 * Plug in parallel cable.
-	 * 
+	 *
 	 * @param on parallel cable plugged in?
 	 */
 	void setParallelCable(boolean on);
 
 	/**
 	 * Is floppy speeder Jiffydos installed?
-	 * 
+	 *
 	 * @return floppy speeder Jiffydos installed?
 	 */
 	boolean isJiffyDosInstalled();
 
 	/**
 	 * Install floppy speeder Jiffydos.
-	 * 
+	 *
 	 * @param on Floppy speeder Jiffydos installed?
 	 */
 	void setJiffyDosInstalled(boolean on);
@@ -78,14 +78,14 @@ public interface IC1541Section {
 
 	/**
 	 * Set type of floppy.
-	 * 
+	 *
 	 * @param floppyType type of floppy
 	 */
 	void setFloppyType(FloppyType floppyType);
 
 	/**
 	 * Get type of floppy.
-	 * 
+	 *
 	 * @return type of floppy
 	 */
 	FloppyType getFloppyType();

@@ -13,16 +13,16 @@ import java.util.function.IntConsumer;
  * <B>Note:</B> To mix several SIDs, all SampleMixer's IntBuffers must wrap the
  * same audio buffer. Additionally, the buffer must be cleared, before the next
  * mixing starts.
- * 
+ *
  * @author ken
  *
  */
 class SampleMixer implements IntConsumer {
 	/**
-	 * 
+	 *
 	 * Extends SampleMixer with linear fade-in/fade-out feature to smoothly
 	 * increase/decrease volume. TODO implement logarithmic type?
-	 * 
+	 *
 	 * @author ken
 	 *
 	 */
@@ -50,7 +50,7 @@ class SampleMixer implements IntConsumer {
 
 		/**
 		 * Set fade-in time. Increase volume from zero to the maximum.
-		 * 
+		 *
 		 * @param fadeIn fade-in time in clock ticks
 		 */
 		public void setFadeIn(long fadeIn) {
@@ -62,7 +62,7 @@ class SampleMixer implements IntConsumer {
 
 		/**
 		 * Set fade-out time. Decrease volume from the maximum to zero.
-		 * 
+		 *
 		 * @param fadeOut fade-out time in clock ticks
 		 */
 		public void setFadeOut(long fadeOut) {
@@ -134,7 +134,7 @@ class SampleMixer implements IntConsumer {
 
 	public void setDelay(int delayedSamples) {
 		this.delayedSamples = ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
-				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
+				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[delayedSamples + 1]);
 		((Buffer) this.delayedSamples).flip();
 	}
 

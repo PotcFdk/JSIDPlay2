@@ -82,7 +82,7 @@ public class Index {
 	}
 
 	private static Long idHash(int id, int time) {
-		return (((long) id << 16) + time + (1 << 15));
+		return ((long) id << 16) + time + (1 << 15);
 	}
 
 	private static int hash2id(Long idHash) {

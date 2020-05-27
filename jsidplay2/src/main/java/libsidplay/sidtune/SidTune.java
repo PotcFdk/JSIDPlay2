@@ -32,7 +32,7 @@ import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 
 /**
  * @author Ken Händel
- * 
+ *
  */
 public abstract class SidTune {
 	/**
@@ -124,11 +124,11 @@ public abstract class SidTune {
 
 	/**
 	 * Loads a file as a SidTune (PSID, PRG, P00, T64, MUS, MP3).
-	 * 
+	 *
 	 * @param file The file to load.
-	 * 
+	 *
 	 * @return A SidTune instance of the specified file to load.
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws SidTuneError
 	 */
@@ -151,12 +151,12 @@ public abstract class SidTune {
 
 	/**
 	 * Loads an InputStream as a SidTune (PSID, PRG, P00, T64).
-	 * 
+	 *
 	 * @param url    URL of the given stream
 	 * @param stream The InputStream to load.
-	 * 
+	 *
 	 * @return A SidTune of the specified InputStream.
-	 * 
+	 *
 	 * @throws IOException  If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
@@ -166,12 +166,12 @@ public abstract class SidTune {
 
 	/**
 	 * Load tune (PSID, PRG, P00, T64).
-	 * 
+	 *
 	 * @param name         name of the file (for file extension check)
 	 * @param fileContents The tune data to load.
-	 * 
+	 *
 	 * @return A SidTune of the specified contents.
-	 * 
+	 *
 	 * @throws IOException  If the stream cannot be read.
 	 * @throws SidTuneError
 	 */
@@ -198,14 +198,14 @@ public abstract class SidTune {
 	public byte[] getPSidHeader() {
 		return null;
 	}
-	
+
 	/**
 	 * Does not affect status of object, and therefore can be used to load files.
-	 * 
+	 *
 	 * @param file The file to load.
-	 * 
+	 *
 	 * @return The data of the loaded file.
-	 * 
+	 *
 	 * @throws IOException if the file could not be found.
 	 */
 	protected static final byte[] getContents(final File file) throws IOException {
@@ -227,7 +227,7 @@ public abstract class SidTune {
 
 	/**
 	 * Retrieve sub-song specific information.
-	 * 
+	 *
 	 * @return Sub-song specific information about the currently loaded tune.
 	 */
 	public final SidTuneInfo getInfo() {
@@ -236,9 +236,9 @@ public abstract class SidTune {
 
 	/**
 	 * Gets the speed of the selected song.
-	 * 
+	 *
 	 * @param selected The song to get the speed of.
-	 * 
+	 *
 	 * @return The speed of the selected song.
 	 */
 	public Speed getSongSpeed(int selected) {
@@ -247,14 +247,14 @@ public abstract class SidTune {
 
 	/**
 	 * Create 32-bit PSID-style speed word.
-	 * 
+	 *
 	 * Each bit in 'speed' specifies the speed for the corresponding song number,
 	 * i.e. bit 0 specifies the speed for song 1. If there are more than 32 song,
 	 * the speed specified for song 32 is also used for all higher numbered songs.
-	 * 
+	 *
 	 * A 0 bit specifies vertical blank interrupt (50Hz PAL, 60Hz NTSC), and a 1 bit
 	 * specifies CIA 1 timer interrupt (default 60Hz).
-	 * 
+	 *
 	 * @return 32-bit PSID-style speed word (defaults to CIA 1 timer interrupt)
 	 */
 	public int getSongSpeedWord() {
@@ -263,7 +263,7 @@ public abstract class SidTune {
 
 	/**
 	 * Detect fake-stereo SID (second SID at the same address).
-	 * 
+	 *
 	 * @param tune   current tune
 	 * @param sidNum current SID number
 	 * @return fake-stereo SID has been detected
@@ -325,7 +325,7 @@ public abstract class SidTune {
 
 	/**
 	 * Copy program into C64 memory.
-	 * 
+	 *
 	 * @param c64buf
 	 * @return play driver address
 	 * @throws SidTuneError
@@ -340,14 +340,14 @@ public abstract class SidTune {
 
 	/**
 	 * Identify the player ID of a tune
-	 * 
+	 *
 	 * @return the player IDs as a list
 	 */
 	public abstract Collection<String> identify();
 
 	/**
 	 * Search player ID Info.
-	 * 
+	 *
 	 * @param playerName player to get infos for
 	 * @return player infos (or null, if not found)
 	 */

@@ -16,9 +16,9 @@ import libsidplay.config.IWhatsSidSection;
 
 /**
  * WhatsSID section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 @Parameters(resourceBundle = "sidplay.ini.IniWhatsSidSection")
 public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
@@ -105,11 +105,13 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 
 	@Override
 	public float getMinimumRelativeConfidence() {
-		return iniReader.getPropertyFloat("WhatsSID", "Minimum Relative Confidence", DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
+		return iniReader.getPropertyFloat("WhatsSID", "Minimum Relative Confidence",
+				DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 	}
 
 	@Override
-	@Parameter(names = { "--whatsSIDMinimumRelativeConfidence" }, descriptionKey = "WHATSSID_MINIMUM_RELATIVE_CONFIDENCE", order = 1053)
+	@Parameter(names = {
+			"--whatsSIDMinimumRelativeConfidence" }, descriptionKey = "WHATSSID_MINIMUM_RELATIVE_CONFIDENCE", order = 1053)
 	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
 		iniReader.setProperty("WhatsSID", "Minimum Relative Confidence", minimumRelativeConfidence);
 	}

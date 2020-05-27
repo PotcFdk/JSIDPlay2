@@ -61,7 +61,7 @@ public class PRG2TAP {
 	private BufferedOutputStream out;
 
 	public final void setTapVersion(byte tapVersion) {
-		assert (tapVersion != 0 && tapVersion != 1);
+		assert tapVersion != 0 && tapVersion != 1;
 		this.tapVersion = tapVersion;
 	}
 
@@ -77,10 +77,10 @@ public class PRG2TAP {
 	 * Add program to TAP file.
 	 */
 	public void add(final PRG2TAPProgram program) throws IOException {
-		assert (out != null);
+		assert out != null;
 		if (turboTape) {
 			{
-				HashMap<String, String> globals = new HashMap<String, String>();
+				HashMap<String, String> globals = new HashMap<>();
 				globals.put("name", getName(program));
 				globals.put("threshold", String.valueOf(threshold));
 				byte[] header = compile(globals, TURBO_HEADER_ASM, TURBO_HEADER_BIN);
@@ -95,7 +95,7 @@ public class PRG2TAP {
 				addSilence(200000);
 			}
 			{
-				HashMap<String, String> globals = new HashMap<String, String>();
+				HashMap<String, String> globals = new HashMap<>();
 				byte[] data = compile(globals, TURBO_DATA_ASM, TURBO_DATA_BIN);
 				slowConvert(data, 0, data.length, 5000);
 				addSilence(1000000);
@@ -105,16 +105,16 @@ public class PRG2TAP {
 			final int start = program.getStartAddr();
 			final int end = start + program.getLength();
 			{
-				HashMap<String, String> globals = new HashMap<String, String>();
+				HashMap<String, String> globals = new HashMap<>();
 				globals.put("name", getName(program));
 				globals.put("start", String.valueOf(start));
 				globals.put("end", String.valueOf(end));
 				byte[] header = compile(globals, SLOW_HEADER_ASM, SLOW_HEADER_BIN);
 				if (!USE_KICKASSEMBLER) {
 					header[1] = (byte) (program.getStartAddr() & 0xFF);
-					header[2] = (byte) ((program.getStartAddr() >> 8) & 0xFF);
-					header[3] = (byte) ((program.getStartAddr() + program.getLength()) & 0xFF);
-					header[4] = (byte) (((program.getStartAddr() + program.getLength()) >> 8) & 0xFF);
+					header[2] = (byte) (program.getStartAddr() >> 8 & 0xFF);
+					header[3] = (byte) (program.getStartAddr() + program.getLength() & 0xFF);
+					header[4] = (byte) (program.getStartAddr() + program.getLength() >> 8 & 0xFF);
 					for (int i = 0; i < MAX_NAME_LENGTH; i++) {
 						header[5 + i] = program.getName()[i];
 					}
@@ -154,9 +154,8 @@ public class PRG2TAP {
 
 	/**
 	 * Add silence for n cycles
-	 * 
-	 * @param ncycles
-	 *            cycles of silence to add (1000000 ~ 1 sec)
+	 *
+	 * @param ncycles cycles of silence to add (1000000 ~ 1 sec)
 	 */
 	public void addSilence(final int ncycles) throws IOException {
 		if (ncycles < 256 * 8) {
@@ -167,8 +166,8 @@ public class PRG2TAP {
 				return;
 			}
 			out.write((byte) (ncycles & 0xFF));
-			out.write((byte) ((ncycles >> 8) & 0xFF));
-			out.write((byte) ((ncycles >> 16) & 0xFF));
+			out.write((byte) (ncycles >> 8 & 0xFF));
+			out.write((byte) (ncycles >> 16 & 0xFF));
 		}
 	}
 
@@ -191,15 +190,15 @@ public class PRG2TAP {
 	 * Close TAP file
 	 */
 	public void close(File outputFile) throws IOException {
-		assert (out != null);
+		assert out != null;
 		out.close();
 		long size = outputFile.length() - TAP_HEADER_SIZE;
 		try (RandomAccessFile rnd = new RandomAccessFile(outputFile, "rw")) {
 			rnd.seek(TAP_HEADER_SIZE - 4);
 			rnd.write((byte) (size & 0xFF));
-			rnd.write((byte) ((size >> 8) & 0xFF));
-			rnd.write((byte) ((size >> 16) & 0xFF));
-			rnd.write((byte) ((size >> 24) & 0xFF));
+			rnd.write((byte) (size >> 8 & 0xFF));
+			rnd.write((byte) (size >> 16 & 0xFF));
+			rnd.write((byte) (size >> 24 & 0xFF));
 		}
 	}
 
@@ -275,10 +274,10 @@ public class PRG2TAP {
 			turbotapeWriteByte((byte) i);
 		}
 		turbotapeWriteByte((byte) 1);
-		turbotapeWriteByte((byte) ((program.getStartAddr()) & 0xFF));
-		turbotapeWriteByte((byte) ((program.getStartAddr() >> 8) & 0xFF));
-		turbotapeWriteByte((byte) ((program.getStartAddr() + program.getLength()) & 0xFF));
-		turbotapeWriteByte((byte) ((program.getStartAddr() + program.getLength() >> 8) & 0xFF));
+		turbotapeWriteByte((byte) (program.getStartAddr() & 0xFF));
+		turbotapeWriteByte((byte) (program.getStartAddr() >> 8 & 0xFF));
+		turbotapeWriteByte((byte) (program.getStartAddr() + program.getLength() & 0xFF));
+		turbotapeWriteByte((byte) (program.getStartAddr() + program.getLength() >> 8 & 0xFF));
 		turbotapeWriteByte((byte) 0);
 		for (int i = 0; i < MAX_NAME_LENGTH; i++) {
 			turbotapeWriteByte(program.getName()[i]);

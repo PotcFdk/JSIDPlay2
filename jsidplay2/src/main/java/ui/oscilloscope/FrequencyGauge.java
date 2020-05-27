@@ -16,7 +16,7 @@ public final class FrequencyGauge extends SIDGauge {
 
 	public FrequencyGauge() {
 	}
-	
+
 	public FrequencyGauge(C64Window window, Player player) {
 		super(window, player);
 	}

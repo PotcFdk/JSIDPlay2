@@ -12,38 +12,38 @@ import libsidplay.common.VICChipModel;
  * precise chip revision, and at certain fixed angles in the UV plane, which are
  * fixed for all chips. Additionally, several effects observed on true PAL
  * systems are emulated.
- * 
+ *
  * <ol>
  * <li>The construction of the S-video signal reduces bandwidth of both
  * luminance and chrominance. This is achieved by filtering these components in
  * the horizontal direction. The luminance component is modified in order to
  * allow dot-creep or black bleed like effects by shifting the filter kernel at
  * bright colors towards right.
- * 
+ *
  * <li>PAL encoding which the VIC implements only partially and which causes
  * color blending effects: the U and V components of succeeding lines become in
  * effect averaged by the monitor's PAL decoder, because in PAL the color is
  * encoded as difference to the previous line's color, but VIC keeps no memory
  * of the color angles it generated for the preceding line.
- * 
+ *
  * <li>The imperfect generation of the color angles for the odd lines. The color
  * wheel should be inverted between each row to allow difference encoding, but
  * in practice the odd rows are not rotated perfectly.
- * 
+ *
  * <li>Color saturation for every second line is allowed to vary subtly.
  * </ol>
- * 
+ *
  * <p>
  * To implement these effects, U and V are simply averaged within each 3x2 pixel
  * block, and Y is filtered according to a gaussian at the top row's 3x1 pixel
  * block.
- * 
+ *
  * <p>
  * To do this, helper tables are constructed which describe the filtered colors
  * and luminances in the 3x1 block, and another helper table that can quickly
  * look up averages between succeeding rows to achieve the full 3x2 filter. The
  * YUV colors are converted to RGB colors on the second conversion.
- * 
+ *
  * <p>
  * To keep table sizes small, the pal emulation works on a 128 color palette per
  * line. Any 3 pixel block is reduced to a single color on a 128-color palette,
@@ -55,7 +55,7 @@ import libsidplay.common.VICChipModel;
  * assigned for even rows and colors 128..255 for odd rows. They are treated
  * independently at the color generation and quantization procedure. The highest
  * bit of the current row's generated color is used to identify odd/even rows.
- * 
+ *
  * @author Antti Lankila
  */
 public class Palette {
@@ -105,7 +105,7 @@ public class Palette {
 
 	/**
 	 * Simulate VIC chip colors and some common distortions to the colors.
-	 * 
+	 *
 	 * @author Antti Lankila
 	 */
 	protected static class PaletteEntry {
@@ -152,7 +152,7 @@ public class Palette {
 
 		/**
 		 * Construct YUV color from components.
-		 * 
+		 *
 		 * @param y range 0 .. 1
 		 * @param u range -0.5 .. 0.5
 		 * @param v range -0.5 .. 0.5
@@ -165,7 +165,7 @@ public class Palette {
 
 		/**
 		 * Construct YUV color from packed format.
-		 * 
+		 *
 		 * @param yuvPacked The packed approximation as 0x00YYUUVV.
 		 */
 		protected YUVEntry(final int yuvPacked) {
@@ -176,7 +176,7 @@ public class Palette {
 
 		/**
 		 * Convert this color to 30-bit quantized packed approximation.
-		 * 
+		 *
 		 * @return YUV color
 		 */
 		protected int toPacked() {
@@ -261,7 +261,7 @@ public class Palette {
 		 * calculate palette rgb->index map we can use to map colors in reverse
 		 * direction.
 		 */
-		Map<Integer, Byte> yuvToIndex = new HashMap<Integer, Byte>();
+		Map<Integer, Byte> yuvToIndex = new HashMap<>();
 		for (int i = 0; i < 256; i++) {
 			yuv[i] = new YUVEntry(yuvPalette[i]);
 			yuvToIndex.put(yuvPalette[i], (byte) i);
@@ -302,7 +302,7 @@ public class Palette {
 
 	/**
 	 * Find closest color according to root mean square from palette.
-	 * 
+	 *
 	 * @param filtered
 	 * @param q
 	 * @param colorIndex
@@ -321,7 +321,7 @@ public class Palette {
 
 	/**
 	 * Gauss
-	 * 
+	 *
 	 * @param b Position with respect to origo
 	 * @param c Width of peak
 	 * @return Gaussian value

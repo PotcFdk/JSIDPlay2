@@ -21,48 +21,48 @@ import libsidutils.assembler.KickAssemblerResult;
  * 	    e..e	0    (2)	0 (2-256)	8b(POSLO)    LZ77
  * 	    e..e	100  (3)	111111 111111		     END of FILE
  * 	    e..e	101  (4..)	111111 111111	8b(add) 8b(POSLO)	DLZ
- * 
+ *
  * 	    e..e010	n..ne.....e				     escape + new esc
  * 	    e..e011	value(LEN)	bytecode		     Short RLE  2..
  * 	    e..e011	111..111 8b(LENLO) value(LENHI+1) bytecode   Long RLE
  * 			(values 64.. not used (may not be available) in bytecode)
- * 
- * 
+ *
+ *
  * 	e..e011 0 0			RLE=2, rank 1 (saves 11.. bit)
  * 	e..e011 0 10 x			RLE=2, rank 2-3 (saves 9.. bit)
  * 	e..e011 0 11 0xx		RLE=2, rank 4-7 (saves 7.. bit)
  * 	e..e011 0 11 10xxx		RLE=2, rank 8-15 (saves 5.. bit)
  * 	e..e011 0 11 110xxxx xxxx	RLE=2, not ranked
- * 
- * 
+ *
+ *
  * 	LZ77, len=2 (pos&lt;=256) saves 4 bits (2-bit escape)
  * 	LZ77, len=3 saves 10..1 bits (pos 2..15616)
  * 	LZ77, len=4 saves 18..9 bits
  * 	LZ77, len=5 saves 24..15 bits
- * 
+ *
  * 	RLE, len=2 saves 11..1(..-5) bits (bytecode rank 1..not ranked)
  * 	RLE, len=3 saves 15..2 bits
  * 	RLE, len=4 saves 23..10 bits
  * 	RLE, len=5 saves 29..16 bits
- * 
+ *
  * 	bs: 3505 LZ reference points, 41535 bytes -&gt; 11.85, i.e. 8.4% referenced
- * 
- * 
+ *
+ *
  * 	 1) Short RLE -&gt; gamma + 1 linear bit -&gt; ivanova.run -29 bytes
- * 
+ *
  * 	 2) ?? .. no
  * 	    esc = RLE, with value 1
  * 	    e..e01 value(1)	n..ne.....e			     escape + new esc
  * 	    e..e01 value(LEN)	bytecode			     Short RLE  2..
  * 	    e..e01 111..111 8b(LENLO) value(LENHI+1) bytecode        Long RLE
  * 			(values 64.. not used (may not be available) in bytecode)
- * 
- * 
+ *
+ *
  * </PRE>
- * 
+ *
  * <PRE>
  * 	Value:
- * 
+ *
  * 	Elias Gamma Code rediscovered, just the prefix bits are reversed, plus
  * 	there is a length limit (1 bit gained for each value in the last group)
  * 	; 0000000	not possible
@@ -74,7 +74,7 @@ import libsidutils.assembler.KickAssemblerResult;
  * 	; 01xxxxx	111110	xxxxx	32-63			+4 bits
  * 	; 1xxxxxx	111111	xxxxxx	64-127			+5 bits
  * </PRE>
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -94,7 +94,7 @@ public class PUCrunch {
 	private static final int FIXF_FAST = 2048;
 	private static final int FIXF_SHORT = 4096;
 
-	private static final int FIXF_MUSTMASK = (FIXF_WRAP | FIXF_DLZ | FIXF_BASIC);
+	private static final int FIXF_MUSTMASK = FIXF_WRAP | FIXF_DLZ | FIXF_BASIC;
 
 	private static final Decruncher DECRUNCHERS[] = {
 			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64.asm", "C64", FIXF_C64),
@@ -111,10 +111,10 @@ public class PUCrunch {
 			new Decruncher("/libsidutils/cruncher/PUCrunch_headerC64WF.asm", "C64 fast wrap",
 					FIXF_C64 | FIXF_WRAP | FIXF_FAST), };
 
-	private static final int F_AUTO = (1 << 2);
-	private static final int F_NOOPT = (1 << 3);
-	private static final int F_AUTOEX = (1 << 4);
-	private static final int F_2MHZ = (1 << 6);
+	private static final int F_AUTO = 1 << 2;
+	private static final int F_NOOPT = 1 << 3;
+	private static final int F_AUTOEX = 1 << 4;
+	private static final int F_2MHZ = 1 << 6;
 
 	private static final int LITERAL = 0;
 	private static final int LZ77 = 1;
@@ -122,12 +122,12 @@ public class PUCrunch {
 	private static final int DLZ = 3;
 	private static final int MMARK = 4;
 
-	private static final int F_NORLE = (1 << 9);
+	private static final int F_NORLE = 1 << 9;
 	private static final int OUT_SIZE = 2000000;
 
 	private int maxGamma = 7, reservedBytes = 2, escBits = 2, escMask = 0xc0, extraLZPosBits = 0, rleUsed = 15,
-			memConfig = 0x37, cliConfig = 0x58, lrange = (((2 << maxGamma) - 3) * 256), maxlzlen = (2 << maxGamma),
-			maxrlelen = (((2 << maxGamma) - 2) * 256), size = 0, bitMask = 0x80, timesDLz = 0, inlen, lzopt = 0;
+			memConfig = 0x37, cliConfig = 0x58, lrange = ((2 << maxGamma) - 3) * 256, maxlzlen = 2 << maxGamma,
+			maxrlelen = ((2 << maxGamma) - 2) * 256, size = 0, bitMask = 0x80, timesDLz = 0, inlen, lzopt = 0;
 
 	private byte[] outBuffer = new byte[OUT_SIZE], indata, newesc, rleValues = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -148,13 +148,14 @@ public class PUCrunch {
 				/* machine is correct */
 				/* Require wrap if necessary, allow wrap if not */
 				/* Require delta matches */
-				if (((dc.getFlags() & type) & FIXF_MUSTMASK) == (type & FIXF_MUSTMASK)) {
+				if ((dc.getFlags() & type & FIXF_MUSTMASK) == (type & FIXF_MUSTMASK)) {
 
 					/* Haven't found any match or this is better */
-					if (null == best || ((type & FIXF_WRAP) == (dc.getFlags() & FIXF_WRAP)
+					if (null == best || (type & FIXF_WRAP) == (dc.getFlags() & FIXF_WRAP)
 							&& (0 == (type & (FIXF_FAST | FIXF_SHORT))
-									|| (dc.getFlags() & type & (FIXF_FAST | FIXF_SHORT)) != 0)))
+									|| (dc.getFlags() & type & (FIXF_FAST | FIXF_SHORT)) != 0)) {
 						best = dc;
+					}
 					/* If requirements match exactly, can return */
 					/*
 					 * Assumes that non-wraps are located before wrap versions
@@ -193,16 +194,16 @@ public class PUCrunch {
 			type &= ~FIXF_WRAP;
 		}
 		Decruncher dc = BestMatch(type);
-		HashMap<String, String> globals = new HashMap<String, String>();
+		HashMap<String, String> globals = new HashMap<>();
 		globals.put("pc", String.valueOf(memStart));
 		globals.put("ftFastDisable", String.valueOf(enable2MHz ? 1 : 0));
-		globals.put("ftOverlap", String.valueOf(overlap != 0 ? (overlap - 1) : 0));
+		globals.put("ftOverlap", String.valueOf(overlap != 0 ? overlap - 1 : 0));
 		globals.put("ftOverlapAddr", String.valueOf(rleUsed - 15 + size - overlap));
 		globals.put("ftSizePages", String.valueOf((size >> 8) + 1));
 		globals.put("ftSizeAddr", String.valueOf(rleUsed - 15 + size - 0x100 - overlap));
 		globals.put("ftEndAddr", String.valueOf(endAddr - 0x100));
 		globals.put("ftEscBits", String.valueOf(escBits));
-		globals.put("ftEscValue", String.valueOf(escape >> (8 - escBits)));
+		globals.put("ftEscValue", String.valueOf(escape >> 8 - escBits));
 		globals.put("ftOutposAddr", String.valueOf(start));
 		globals.put("ftMaxGamma", String.valueOf(maxGamma));
 		globals.put("ftExtraBits", String.valueOf(extraLZPosBits));
@@ -229,13 +230,15 @@ public class PUCrunch {
 	}
 
 	private void FlushBits() {
-		if (bitMask != 0x80)
+		if (bitMask != 0x80) {
 			size++;
+		}
 	}
 
 	private void PutBit(int bit) {
-		if (bit != 0 && size < OUT_SIZE)
+		if (bit != 0 && size < OUT_SIZE) {
 			outBuffer[size] |= bitMask;
+		}
 		bitMask >>= 1;
 		if (0 == bitMask) {
 			bitMask = 0x80;
@@ -247,15 +250,16 @@ public class PUCrunch {
 		int bits = 0, count = 0;
 
 		while (value > 1) {
-			bits = (bits << 1) | (value & 1); /* is reversed compared to value */
+			bits = bits << 1 | value & 1; /* is reversed compared to value */
 			value >>= 1;
 			count++;
 			PutBit(1);
 		}
-		if (count < maxGamma)
+		if (count < maxGamma) {
 			PutBit(0);
-		while ((count--) != 0) {
-			PutBit((bits & 1)); /* output is reversed again -> same as value */
+		}
+		while (count-- != 0) {
+			PutBit(bits & 1); /* output is reversed again -> same as value */
 			bits >>= 1;
 		}
 	}
@@ -263,25 +267,27 @@ public class PUCrunch {
 	private int RealLenValue(int value) {
 		int count = 0;
 
-		if (value < 2) /* 1 */
+		if (value < 2) {
 			count = 0;
-		else if (value < 4) /* 2-3 */
+		} else if (value < 4) {
 			count = 1;
-		else if (value < 8) /* 4-7 */
+		} else if (value < 8) {
 			count = 2;
-		else if (value < 16) /* 8-15 */
+		} else if (value < 16) {
 			count = 3;
-		else if (value < 32) /* 16-31 */
+		} else if (value < 32) {
 			count = 4;
-		else if (value < 64) /* 32-63 */
+		} else if (value < 64) {
 			count = 5;
-		else if (value < 128) /* 64-127 */
+		} else if (value < 128) {
 			count = 6;
-		else if (value < 256) /* 128-255 */
+		} else if (value < 256) {
 			count = 7;
+		}
 
-		if (count < maxGamma)
+		if (count < maxGamma) {
 			return 2 * count + 1;
+		}
 		return 2 * count;
 	}
 
@@ -292,30 +298,31 @@ public class PUCrunch {
 	}
 
 	private void PutNBits(int b, int bits) {
-		while ((bits--) != 0)
-			PutBit((b & (1 << bits)));
+		while (bits-- != 0) {
+			PutBit(b & 1 << bits);
+		}
 	}
 
 	private int OutputNormal(int esc, byte[] data, int dataPos, int newesc) {
 		if ((data[dataPos + 0] & escMask) == esc) {
-			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+			PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 			PutValue(2 - 1);
 			PutBit(1);
 			PutBit(0);
 
 			esc = newesc;
-			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
-			PutNBits((data[dataPos + 0] & 0xff), 8 - escBits);
+			PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
+			PutNBits(data[dataPos + 0] & 0xff, 8 - escBits);
 
 			return newesc;
 		}
-		PutNBits((data[dataPos + 0] & 0xff), 8);
+		PutNBits(data[dataPos + 0] & 0xff, 8);
 		return esc;
 	}
 
 	private void OutputEof(int esc) {
 		/* EOF marker */
-		PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+		PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 		PutValue(3 - 1); /* >1 */
 		PutValue((2 << maxGamma) - 1); /* Maximum value */
 
@@ -326,14 +333,15 @@ public class PUCrunch {
 	private void PutRleByte(int data) {
 		for (int index = 1; index < 16/* 32 */; index++) {
 			if (data == (rleValues[index] & 0xff)) {
-				if (index == 1)
+				if (index == 1) {
 					lenStat[0][3]++;
-				else if (index <= 3)
+				} else if (index <= 3) {
 					lenStat[1][3]++;
-				else if (index <= 7)
+				} else if (index <= 7) {
 					lenStat[2][3]++;
-				else if (index <= 15)
+				} else if (index <= 15) {
 					lenStat[3][3]++;
+				}
 
 				PutValue(index);
 				return;
@@ -351,10 +359,12 @@ public class PUCrunch {
 	private void InitRleLen() {
 		int i;
 
-		for (i = 0; i < 256; i++)
+		for (i = 0; i < 256; i++) {
 			rleLen[i] = lenValue[16/* 32 */ + 0] + 4/* 3 */;
-		for (i = 1; i < 16 /* 32 */; i++)
+		}
+		for (i = 1; i < 16 /* 32 */; i++) {
 			rleLen[rleValues[i] & 0xff] = lenValue[i];
+		}
 	}
 
 	private int LenRle(int len, int data) {
@@ -363,12 +373,12 @@ public class PUCrunch {
 			if (len == 1) {
 				out += escBits + 3 + 8;
 				len = 0;
-			} else if (len <= (1 << maxGamma)) {
+			} else if (len <= 1 << maxGamma) {
 				out += escBits + 3 + lenValue[len - 1] + rleLen[data];
 				len = 0;
 			} else {
 				int tmp = Math.min(len, maxrlelen);
-				out += escBits + 3 + maxGamma + 8 + lenValue[((tmp - 1) >> 8) + 1] + rleLen[data];
+				out += escBits + 3 + maxGamma + 8 + lenValue[(tmp - 1 >> 8) + 1] + rleLen[data];
 
 				len -= tmp;
 			}
@@ -380,26 +390,27 @@ public class PUCrunch {
 		int len = rlelen;
 
 		while (len != 0) {
-			if (len >= 2 && len <= (1 << maxGamma)) {
+			if (len >= 2 && len <= 1 << maxGamma) {
 				/* Short RLE */
-				if (len == 2)
+				if (len == 2) {
 					lenStat[0][2]++;
-				else if (len <= 4)
+				} else if (len <= 4) {
 					lenStat[1][2]++;
-				else if (len <= 8)
+				} else if (len <= 8) {
 					lenStat[2][2]++;
-				else if (len <= 16)
+				} else if (len <= 16) {
 					lenStat[3][2]++;
-				else if (len <= 32)
+				} else if (len <= 32) {
 					lenStat[4][2]++;
-				else if (len <= 64)
+				} else if (len <= 64) {
 					lenStat[5][2]++;
-				else if (len <= 128)
+				} else if (len <= 128) {
 					lenStat[6][2]++;
-				else if (len <= 256)
+				} else if (len <= 256) {
 					lenStat[6][2]++;
+				}
 
-				PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+				PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 				PutValue(2 - 1);
 				PutBit(1);
 				PutBit(1);
@@ -408,39 +419,40 @@ public class PUCrunch {
 				return esc;
 			}
 			if (len < 3) {
-				while (len-- != 0)
+				while (len-- != 0) {
 					esc = OutputNormal(esc, data, dataPos, esc);
+				}
 				return esc;
 			}
 
 			if (len <= maxrlelen) {
 				/* Run-length encoding */
-				PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+				PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 
 				PutValue(2 - 1);
 				PutBit(1);
 				PutBit(1);
 
-				PutValue((1 << maxGamma) + (((len - 1) & 0xff) >> (8 - maxGamma)));
+				PutValue((1 << maxGamma) + ((len - 1 & 0xff) >> 8 - maxGamma));
 
-				PutNBits((len - 1), 8 - maxGamma);
-				PutValue(((len - 1) >> 8) + 1);
+				PutNBits(len - 1, 8 - maxGamma);
+				PutValue((len - 1 >> 8) + 1);
 				PutRleByte(data[dataPos] & 0xff);
 
 				return esc;
 			}
 
 			/* Run-length encoding */
-			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+			PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 
 			PutValue(2 - 1);
 			PutBit(1);
 			PutBit(1);
 
-			PutValue((1 << maxGamma) + (((maxrlelen - 1) & 0xff) >> (8 - maxGamma)));
+			PutValue((1 << maxGamma) + ((maxrlelen - 1 & 0xff) >> 8 - maxGamma));
 
-			PutNBits((maxrlelen - 1) & 0xff, 8 - maxGamma);
-			PutValue(((maxrlelen - 1) >> 8) + 1);
+			PutNBits(maxrlelen - 1 & 0xff, 8 - maxGamma);
+			PutValue((maxrlelen - 1 >> 8) + 1);
 			PutRleByte(data[dataPos]);
 
 			len -= maxrlelen;
@@ -455,79 +467,83 @@ public class PUCrunch {
 	}
 
 	private void OutputDLz(int esc, int lzlen, int lzpos, int add) {
-		PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+		PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 
 		PutValue(lzlen - 1);
 		PutValue((2 << maxGamma) - 1); /* Maximum value */
 		PutNBits(add, 8);
-		PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
+		PutNBits(lzpos - 1 & 0xff ^ 0xff, 8);
 
 		timesDLz++;
 	}
 
 	private int LenLz(int lzlen, int lzpos) {
 		if (lzlen == 2) {
-			if (lzpos <= 256)
+			if (lzpos <= 256) {
 				return escBits + 2 + 8;
+			}
 			return 100000;
 		}
-		return escBits + 8 + extraLZPosBits + lenValue[((lzpos - 1) >> (8 + extraLZPosBits)) + 1] + lzlen < 257
+		return escBits + 8 + extraLZPosBits + lenValue[(lzpos - 1 >> 8 + extraLZPosBits) + 1] + lzlen < 257
 				? lenValue[lzlen - 1]
 				: 50;
 	}
 
 	private void OutputLz(int esc, int lzlen, int lzpos, byte[] data, int dataPos, int curpos) {
-		if (lzlen == 2)
+		if (lzlen == 2) {
 			lenStat[0][1]++;
-		else if (lzlen <= 4)
+		} else if (lzlen <= 4) {
 			lenStat[1][1]++;
-		else if (lzlen <= 8)
+		} else if (lzlen <= 8) {
 			lenStat[2][1]++;
-		else if (lzlen <= 16)
+		} else if (lzlen <= 16) {
 			lenStat[3][1]++;
-		else if (lzlen <= 32)
+		} else if (lzlen <= 32) {
 			lenStat[4][1]++;
-		else if (lzlen <= 64)
+		} else if (lzlen <= 64) {
 			lenStat[5][1]++;
-		else if (lzlen <= 128)
+		} else if (lzlen <= 128) {
 			lenStat[6][1]++;
-		else if (lzlen <= 256)
+		} else if (lzlen <= 256) {
 			lenStat[7][1]++;
+		}
 
 		if (lzlen >= 2 && lzlen <= maxlzlen) {
 			int tmp;
 
-			PutNBits((esc >> (8 - escBits)), escBits); /* escBits>=0 */
+			PutNBits(esc >> 8 - escBits, escBits); /* escBits>=0 */
 
-			tmp = ((lzpos - 1) >> (8 + extraLZPosBits)) + 2;
-			if (tmp == 2)
+			tmp = (lzpos - 1 >> 8 + extraLZPosBits) + 2;
+			if (tmp == 2) {
 				lenStat[0][0]++;
-			else if (tmp <= 4)
+			} else if (tmp <= 4) {
 				lenStat[1][0]++;
-			else if (tmp <= 8)
+			} else if (tmp <= 8) {
 				lenStat[2][0]++;
-			else if (tmp <= 16)
+			} else if (tmp <= 16) {
 				lenStat[3][0]++;
-			else if (tmp <= 32)
+			} else if (tmp <= 32) {
 				lenStat[4][0]++;
-			else if (tmp <= 64)
+			} else if (tmp <= 64) {
 				lenStat[5][0]++;
-			else if (tmp <= 128)
+			} else if (tmp <= 128) {
 				lenStat[6][0]++;
-			else if (tmp <= 256)
+			} else if (tmp <= 256) {
 				lenStat[6][0]++;
+			}
 
 			if (lzlen == 2) {
 				PutValue(lzlen - 1);
 				PutBit(0);
-				if (lzpos > 256)
+				if (lzpos > 256) {
 					System.err.printf("Error at %d: lzpos too long (%d) for lzlen==2\n", curpos, lzpos);
-				PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
+				}
+				PutNBits(lzpos - 1 & 0xff ^ 0xff, 8);
 			} else {
 				PutValue(lzlen - 1);
-				PutValue(((lzpos - 1) >> (8 + extraLZPosBits)) + 1);
-				PutNBits(((lzpos - 1) >> 8), extraLZPosBits);
-				PutNBits(((lzpos - 1) & 0xff) ^ 0xff, 8);
+				PutValue((lzpos - 1 >> 8 + extraLZPosBits) + 1);
+				PutNBits(lzpos - 1 >> 8, extraLZPosBits);
+				PutNBits(lzpos - 1 & 0xff ^ 0xff, 8);
 			}
 			return;
 		}
@@ -553,16 +569,17 @@ public class PUCrunch {
 
 				i -= elr[i];
 
-				r2 = LenRle(rle[i], (indata[i] & 0xff)) + length[i + rle[i]];
+				r2 = LenRle(rle[i], indata[i] & 0xff) + length[i + rle[i]];
 				if (optimize != 0) {
 					int ii, mini = rle[i], minv = r2;
 
 					int bot = rle[i] - (1 << maxGamma);
-					if (bot < 2)
+					if (bot < 2) {
 						bot = 2;
+					}
 
 					for (ii = mini - 1; ii >= bot; ii--) {
-						int v = LenRle(ii, (indata[i] & 0xff)) + length[i + ii];
+						int v = LenRle(ii, indata[i] & 0xff) + length[i + ii];
 						if (v < minv) {
 							minv = v;
 							mini = ii;
@@ -586,22 +603,22 @@ public class PUCrunch {
 			r3 = r2 = r1 + 1000; /* r3 >= r2 > r1 */
 
 			if (rle[i] != 0) {
-				r2 = LenRle(rle[i], (indata[i] & 0xff)) + length[i + rle[i]];
+				r2 = LenRle(rle[i], indata[i] & 0xff) + length[i + rle[i]];
 
 				if (optimize != 0) {
 					int ii, mini = rle[i], minv = r2;
 
 					/*
 					 * Check only the original length and all shorter lengths that are power of two.
-					 * 
+					 *
 					 * Does not really miss many 'minimums' this way, at least not globally..
-					 * 
+					 *
 					 * Makes the assumption that the Elias Gamma Code is used, i.e. values of the
 					 * form 2^n are 'optimal'
 					 */
 					ii = 2;
 					while (rle[i] > ii) {
-						int v = LenRle(ii, (indata[i] & 0xff)) + length[i + ii];
+						int v = LenRle(ii, indata[i] & 0xff) + length[i + ii];
 						if (v < minv) {
 							minv = v;
 							mini = ii;
@@ -625,9 +642,9 @@ public class PUCrunch {
 
 					/*
 					 * Check only the original length and all shorter lengths that are power of two.
-					 * 
+					 *
 					 * Does not really miss many 'minimums' this way, at least not globally..
-					 * 
+					 *
 					 * Makes the assumption that the Elias Gamma Code is used, i.e. values of the
 					 * form 2^n are 'optimal'
 					 */
@@ -738,18 +755,19 @@ public class PUCrunch {
 	 *        the one with the smallest value in A.
 	 *     3) The starting escape is selected from the possibilities
 	 *        and mode 0 is restored to all mode 3 locations.
-	 * 
+	 *
 	 * </PRE>
 	 */
 	private int OptimizeEscape(IntContainer startEscape, IntContainer nonNormal) {
-		int i, j, states = (1 << escBits);
+		int i, j, states = 1 << escBits;
 		int minp = 0, minv = 0, other = 0;
 		int a[] = new int[256]; /* needs int/long */
 		int b[] = new int[256]; /* Remembers the # of escaped for each */
 		int esc8 = 8 - escBits;
 
-		for (i = 0; i < 256; i++)
+		for (i = 0; i < 256; i++) {
 			b[i] = a[i] = -1;
+		}
 
 		if (states > 256) {
 			System.err.printf("Escape optimize: only 256 states (%d)!\n", states);
@@ -784,7 +802,7 @@ public class PUCrunch {
 		for (i = inlen - 1; i >= 0; i--) {
 			/* Using a table to skip non-normal bytes does not help.. */
 			if (mode[i] == MMARK) {
-				int k = ((indata[i] & 0xff) >> esc8);
+				int k = (indata[i] & 0xff) >> esc8;
 
 				/* Change the tag values back to normal */
 				mode[i] = LITERAL;
@@ -821,14 +839,15 @@ public class PUCrunch {
 			i = inlen; /* make it big enough */
 			for (j = states - 1; j >= 0; j--) {
 				if (a[j] <= i) {
-					startEscape.intVal = (j << esc8);
+					startEscape.intVal = j << esc8;
 					i = a[j];
 				}
 			}
 		}
-		if (nonNormal != null)
+		if (nonNormal != null) {
 			nonNormal.intVal = other;
-		return b[startEscape != null ? (startEscape.intVal >> esc8) : 0];
+		}
+		return b[startEscape != null ? startEscape.intVal >> esc8 : 0];
 	}
 
 	/* Initialize the RLE byte code table according to all RLE's found so far */
@@ -846,8 +865,9 @@ public class PUCrunch {
 			if (mv > 0) {
 				rleValues[i] = (byte) mr;
 				rleHist[mr] = -1;
-			} else
+			} else {
 				break;
+			}
 		}
 		InitRleLen();
 	}
@@ -859,8 +879,9 @@ public class PUCrunch {
 			rleUsed = 0;
 			return;
 		}
-		for (int p = 0; p < 256; p++)
+		for (int p = 0; p < 256; p++) {
 			rleHist[p] = 0;
+		}
 
 		for (int p = 0; p < inlen;) {
 			switch (mode[p]) {
@@ -899,8 +920,9 @@ public class PUCrunch {
 			if (mv > 0) {
 				rleValues[i] = (byte) mr;
 				rleHist[mr] = -1;
-			} else
+			} else {
 				break;
+			}
 		}
 		rleUsed = i - 1;
 
@@ -918,8 +940,9 @@ public class PUCrunch {
 			System.err.printf("LZ range must be from 0 to 65535 (was %d). Set to 65535.\n", lzsz);
 			lzsz = 65535;
 		}
-		if (0 == lzsz)
+		if (0 == lzsz) {
 			System.err.printf("Warning: zero LZ range. Only RLE packing used.\n");
+		}
 
 		InitRleLen();
 		length = new int[inlen + 1];
@@ -998,17 +1021,19 @@ public class PUCrunch {
 				/*
 				 * There's always 1 equal byte, although it may not be marked as RLE.
 				 */
-				if (rlep <= 0)
+				if (rlep <= 0) {
 					rlep = 1;
-				if (bot < 0)
+				}
+				if (bot < 0) {
 					bot = 0;
-				bot += (rlep - 1);
+				}
+				bot += rlep - 1;
 
 				/*
 				 * First get the shortest possible match (if any). If there is no 2-byte match,
 				 * don't look further, because there can't be a longer match.
 				 */
-				i = lastPair[((indata[p] & 0xff) << 8) | (indata[p + 1] & 0xff)] - 1;
+				i = lastPair[(indata[p] & 0xff) << 8 | indata[p + 1] & 0xff] - 1;
 				if (i >= 0 && i >= bot) {
 					/* Got a 2-byte match at least */
 					maxval = 2;
@@ -1016,32 +1041,32 @@ public class PUCrunch {
 
 					/*
 					 * A..AB rlep # of A's, B is something else..
-					 * 
+					 *
 					 * Search for bytes that are in p + (rlep-1), i.e. the last rle byte ('A') and
 					 * the non-matching one ('B'). When found, check if the rle in the compare
 					 * position (i) is long enough (i.e. the same number of A's at p and i-rlep+1).
-					 * 
+					 *
 					 * There are dramatically less matches for AB than for AA, so we get a huge
 					 * speedup with this approach. We are still guaranteed to find the most recent
 					 * longest match there is.
 					 */
 
-					i = lastPair[((indata[p + (rlep - 1)] & 0xff) << 8) | (indata[p + rlep] & 0xff)] - 1;
+					i = lastPair[(indata[p + rlep - 1] & 0xff) << 8 | indata[p + rlep] & 0xff] - 1;
 					while (i >= bot /* && i>=rlep-1 */) { /*
 															 * bot>=rlep-1, i>=bot ==> i>=rlep-1
 															 */
 
 						/* Equal number of A's ? */
-						if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
-																				 * 'head' matches
-																				 */
+						if (0 == rlep - 1 || rle[i - (rlep - 1)] == rlep) { /*
+																			 * 'head' matches
+																			 */
 							/*
 							 * Check the hash values corresponding to the last two bytes of the currently
 							 * longest match and the first new matching(?) byte. If the hash values don't
 							 * match, don't bother to check the data itself.
 							 */
-							if ((hashValue[i + maxval - rlep - 1] == hashCompare)
-									|| ((indata[i + maxval - rlep + 1] & 0xff) == valueCompare) /* HASH_COMPARE */
+							if (hashValue[i + maxval - rlep - 1] == hashCompare
+									|| (indata[i + maxval - rlep + 1] & 0xff) == valueCompare /* HASH_COMPARE */
 							) {
 								a = i + 2; /* match */
 								int b = p + rlep - 1 + 2;/* curpos */
@@ -1049,14 +1074,16 @@ public class PUCrunch {
 
 								/* the 2 first bytes ARE the same.. */
 								j = 2;
-								while (j < topindex && indata[a++] == indata[b++])
+								while (j < topindex && indata[a++] == indata[b++]) {
 									j++;
+								}
 
 								if (j + rlep - 1 > maxval) {
 									int tmplen = j + rlep - 1, tmppos = p - i + rlep - 1;
 
-									if (tmplen > maxlzlen)
+									if (tmplen > maxlzlen) {
 										tmplen = maxlzlen;
+									}
 
 									if (lzmlen[p] < tmplen) {
 										lzmlen[p] = tmplen;
@@ -1070,13 +1097,15 @@ public class PUCrunch {
 										maxpos = tmppos;
 										hashCompare = hashValue[p + maxval - 2];
 									}
-									if (maxval == maxlzlen)
+									if (maxval == maxlzlen) {
 										break;
+									}
 								}
 							}
 						}
-						if (0 == backSkip[i])
+						if (0 == backSkip[i]) {
 							break; /* No previous occurrances (near enough) */
+						}
 						i -= backSkip[i];
 					}
 
@@ -1093,23 +1122,26 @@ public class PUCrunch {
 					 */
 					if (maxval < maxlzlen && rlep > maxval) {
 						bot = p - lzsz;
-						if (bot < 0)
+						if (bot < 0) {
 							bot = 0;
+						}
 
 						/* Note: indata[p] == indata[p+1] */
 						i = lastPair[(indata[p] & 0xff) * 257] - 1;
 						while (/* i>= rlep-2 && */i >= bot) {
 							if (elr[i] + 2 > maxval) {
 								maxval = Math.min(elr[i] + 2, rlep);
-								maxpos = p - i + (maxval - 2);
-								if (maxval == rlep)
+								maxpos = p - i + maxval - 2;
+								if (maxval == rlep) {
 									break; /* Got enough */
+								}
 							}
 							i -= elr[i];
-							if (0 == backSkip[i])
+							if (0 == backSkip[i]) {
 								break; /*
 										 * No previous occurrances (near enough)
 										 */
+							}
 							i -= backSkip[i];
 						}
 					}
@@ -1122,9 +1154,10 @@ public class PUCrunch {
 						lzmpos[p] = maxpos;
 					}
 					if (maxpos <= 256 || maxval > 2) {
-						if (maxpos < 0)
+						if (maxpos < 0) {
 							System.err.printf("Error @ %d, lzlen %d, pos %d\n", p, maxval, maxpos);
-						lzlen[p] = (maxval < maxlzlen) ? maxval : maxlzlen;
+						}
+						lzlen[p] = maxval < maxlzlen ? maxval : maxlzlen;
 						lzpos[p] = maxpos;
 					}
 				}
@@ -1135,23 +1168,24 @@ public class PUCrunch {
 
 				for (rot = 1; rot < 255/* BUG:?should be 256? */; rot++) {
 					int bot = p - /* lzsz */256, maxval, maxpos, rlep = rle[p];
-					int valueCompare = ((indata[p + 2] & 0xff) + rot) & 0xff;
+					int valueCompare = (indata[p + 2] & 0xff) + rot & 0xff;
 
 					/*
 					 * There's always 1 equal byte, although it may not be marked as RLE.
 					 */
-					if (rlep <= 0)
+					if (rlep <= 0) {
 						rlep = 1;
-					if (bot < 0)
+					}
+					if (bot < 0) {
 						bot = 0;
-					bot += (rlep - 1);
+					}
+					bot += rlep - 1;
 
 					/*
 					 * First get the shortest possible match (if any). If there is no 2-byte match,
 					 * don't look further, because there can't be a longer match.
 					 */
-					i = lastPair[((((indata[p] & 0xff) + rot) & 0xff) << 8) | (((indata[p + 1] & 0xff) + rot) & 0xff)]
-							- 1;
+					i = lastPair[((indata[p] & 0xff) + rot & 0xff) << 8 | (indata[p + 1] & 0xff) + rot & 0xff] - 1;
 					if (i >= 0 && i >= bot) {
 						/* Got a 2-byte match at least */
 						maxval = 2;
@@ -1159,26 +1193,26 @@ public class PUCrunch {
 
 						/*
 						 * A..AB rlep # of A's, B is something else..
-						 * 
+						 *
 						 * Search for bytes that are in p + (rlep-1), i.e. the last rle byte ('A') and
 						 * the non-matching one ('B'). When found, check if the rle in the compare
 						 * position (i) is long enough (i.e. the same number of A's at p and i-rlep+1).
-						 * 
+						 *
 						 * There are dramatically less matches for AB than for AA, so we get a huge
 						 * speedup with this approach. We are still guaranteed to find the most recent
 						 * longest match there is.
 						 */
 
-						i = lastPair[((((indata[p + (rlep - 1)] & 0xff) + rot) & 0xff) << 8)
-								| (((indata[p + rlep] & 0xff) + rot) & 0xff)] - 1;
+						i = lastPair[((indata[p + rlep - 1] & 0xff) + rot & 0xff) << 8
+								| (indata[p + rlep] & 0xff) + rot & 0xff] - 1;
 						while (i >= bot /* && i>=rlep-1 */) { /*
 																 * bot>=rlep-1, i>=bot ==> i>=rlep-1
 																 */
 
 							/* Equal number of A's ? */
-							if (0 == (rlep - 1) || rle[i - (rlep - 1)] == rlep) { /*
-																					 * 'head' matches
-																					 */
+							if (0 == rlep - 1 || rle[i - (rlep - 1)] == rlep) { /*
+																				 * 'head' matches
+																				 */
 								/*
 								 * Check the hash values corresponding to the last two bytes of the currently
 								 * longest match and the first new matching(?) byte. If the hash values don't
@@ -1192,14 +1226,16 @@ public class PUCrunch {
 									/* the 2 first bytes ARE the same.. */
 									j = 2;
 									while (j < topindex
-											&& (indata[a++] & 0xff) == (((indata[b++] & 0xff) + rot) & 0xff))
+											&& (indata[a++] & 0xff) == ((indata[b++] & 0xff) + rot & 0xff)) {
 										j++;
+									}
 
 									if (j + rlep - 1 > maxval) {
 										int tmplen = j + rlep - 1, tmppos = p - i + rlep - 1;
 
-										if (tmplen > maxlzlen)
+										if (tmplen > maxlzlen) {
 											tmplen = maxlzlen;
+										}
 
 										/*
 										 * Accept only versions that really are shorter
@@ -1208,17 +1244,19 @@ public class PUCrunch {
 											maxval = tmplen;
 											maxpos = tmppos;
 
-											valueCompare = ((indata[p + maxval] & 0xff) + rot) & 0xff;
+											valueCompare = (indata[p + maxval] & 0xff) + rot & 0xff;
 										}
-										if (maxval == maxlzlen)
+										if (maxval == maxlzlen) {
 											break;
+										}
 									}
 								}
 							}
-							if (0 == backSkip[i])
+							if (0 == backSkip[i]) {
 								break; /*
 										 * No previous occurrances (near enough)
 										 */
+							}
 							i -= backSkip[i];
 						}
 
@@ -1227,10 +1265,11 @@ public class PUCrunch {
 							maxval = inlen - p;
 						}
 						if (maxval > 3 && maxpos <= 256
-								&& (maxval > lzlen2[p] || (maxval == lzlen2[p] && maxpos < lzpos2[p]))) {
-							if (maxpos < 0)
+								&& (maxval > lzlen2[p] || maxval == lzlen2[p] && maxpos < lzpos2[p])) {
+							if (maxpos < 0) {
 								System.err.printf("Error @ %d, lzlen %d, pos %d\n", p, maxval, maxpos);
-							lzlen2[p] = (maxval < maxlzlen) ? maxval : maxlzlen;
+							}
+							lzlen2[p] = maxval < maxlzlen ? maxval : maxlzlen;
 							lzpos2[p] = maxpos;
 						}
 					}
@@ -1244,11 +1283,12 @@ public class PUCrunch {
 			 * Update the two-byte history ('hash table') & backSkip ('linked list')
 			 */
 			if (p + 1 < inlen) {
-				int index = ((indata[p] & 0xff) << 8) | (indata[p + 1] & 0xff);
+				int index = (indata[p] & 0xff) << 8 | indata[p + 1] & 0xff;
 				int ptr = p - (lastPair[index] - 1);
 
-				if (ptr > p || ptr > 0xffff)
+				if (ptr > p || ptr > 0xffff) {
 					ptr = 0;
+				}
 
 				backSkip[p] = ptr;
 				lastPair[index] = p + 1;
@@ -1257,7 +1297,7 @@ public class PUCrunch {
 		if ((flags & F_NORLE) != 0) {
 			for (p = 1; p < inlen; p++) {
 				if (rle[p - 1] - 1 > lzlen[p]) {
-					lzlen[p] = (rle[p] < maxlzlen) ? rle[p] : maxlzlen;
+					lzlen[p] = rle[p] < maxlzlen ? rle[p] : maxlzlen;
 					lzpos[p] = 1;
 				}
 			}
@@ -1275,7 +1315,7 @@ public class PUCrunch {
 			/*
 			 * Absolute maximum number of escaped bytes with the escape optimize is 2^-n,
 			 * where n is the number of escape bits used.
-			 * 
+			 *
 			 * This worst case happens only on equal- distributed normal bytes (01230123..).
 			 * This is why the typical values are so much smaller.
 			 */
@@ -1285,7 +1325,7 @@ public class PUCrunch {
 			for (escBits = 1; escBits < 9; escBits++) {
 				int escaped, other = 0, c;
 
-				escMask = (0xff00 >> escBits) & 0xff;
+				escMask = 0xff00 >> escBits & 0xff;
 
 				/*
 				 * Find the optimum path for selected escape bits (no optimize)
@@ -1333,7 +1373,7 @@ public class PUCrunch {
 			}
 
 			escBits = mb;
-			escMask = (0xff00 >> escBits) & 0xff;
+			escMask = 0xff00 >> escBits & 0xff;
 		}
 
 		/* Find the optimum path (optimize) */
@@ -1370,14 +1410,16 @@ public class PUCrunch {
 			}
 			for (i = 0; i < 5; i++) {
 				/* first time around (lzstat[0] < lzstat[0]) */
-				if (lzstat[i] < lzstat[cur])
+				if (lzstat[i] < lzstat[cur]) {
 					cur = i;
+				}
 			}
 			extraLZPosBits = (flags & F_AUTOEX) != 0 ? cur : old;
 
 			/* Find the optimum path (optimize) */
-			if (extraLZPosBits != old)
+			if (extraLZPosBits != old) {
 				OptimizeLength((flags & F_NOOPT) != 0 ? 0 : 1);
+			}
 		}
 		if (true) {
 			int stat[] = new int[] { 0, 0, 0, 0 };
@@ -1385,17 +1427,20 @@ public class PUCrunch {
 			for (p = 0; p < inlen;) {
 				switch (mode[p]) {
 				case LZ77: /* lz */
-					if ((lzpos[p] >> 8) + 1 > (1 << maxGamma))
+					if ((lzpos[p] >> 8) + 1 > 1 << maxGamma) {
 						stat[3]++;
-					if (lzlen[p] > (1 << maxGamma))
+					}
+					if (lzlen[p] > 1 << maxGamma) {
 						stat[0]++;
+					}
 					p += lzlen[p];
 					break;
 
 				case RLE: /* rle */
-					if (rle[p] > (1 << (maxGamma - 1))) {
-						if (rle[p] <= (1 << maxGamma))
+					if (rle[p] > 1 << maxGamma - 1) {
+						if (rle[p] <= 1 << maxGamma) {
 							stat[1]++;
+						}
 					}
 					p += rle[p];
 					break;
@@ -1441,11 +1486,13 @@ public class PUCrunch {
 						int bot = p - lzpos[p] + 1;
 						int rlep = rle[p];
 
-						if (0 == rlep)
+						if (0 == rlep) {
 							rlep = 1;
-						if (bot < 0)
+						}
+						if (bot < 0) {
 							bot = 0;
-						bot += (rlep - 1);
+						}
+						bot += rlep - 1;
 
 						i = p - backSkip[p];
 						while (i >= bot /* && i>=rlep-1 */) {
@@ -1458,8 +1505,9 @@ public class PUCrunch {
 								int topindex = inlen - (p + rlep - 1);
 
 								j = 1;
-								while (j < topindex && indata[a++] == indata[b++])
+								while (j < topindex && indata[a++] == indata[b++]) {
 									j++;
+								}
 
 								if (j + rlep - 1 >= lzlen[p]) {
 									int tmppos = p - i + rlep - 1;
@@ -1468,10 +1516,11 @@ public class PUCrunch {
 									break;
 								}
 							}
-							if (0 == backSkip[i])
+							if (0 == backSkip[i]) {
 								break; /*
 										 * No previous occurrances (near enough)
 										 */
+							}
 							i -= backSkip[i];
 						}
 					}
@@ -1503,22 +1552,25 @@ public class PUCrunch {
 				break;
 
 			case DLZ:
-				for (i = 0; i < lzlen2[p]; i++)
+				for (i = 0; i < lzlen2[p]; i++) {
 					length[p + i] = size;
-				OutputDLz(escape, lzlen2[p], lzpos2[p], ((indata[p] & 0xff) - (indata[p - lzpos2[p]] & 0xff)) & 0xff);
+				}
+				OutputDLz(escape, lzlen2[p], lzpos2[p], (indata[p] & 0xff) - (indata[p - lzpos2[p]] & 0xff) & 0xff);
 				p += lzlen2[p];
 				break;
 
 			case LZ77: /* lz77 */
-				for (i = 0; i < lzlen[p]; i++)
+				for (i = 0; i < lzlen[p]; i++) {
 					length[p + i] = size;
+				}
 				OutputLz(escape, lzlen[p], lzpos[p], indata, p - lzpos[p], p);
 				p += lzlen[p];
 				break;
 
 			case RLE: /* rle */
-				for (i = 0; i < rle[p]; i++)
+				for (i = 0; i < rle[p]; i++) {
 					length[p + i] = size;
+				}
 				escape = OutputRle(escape, indata, p, rle[p]);
 				p += rle[p];
 				break;
@@ -1537,13 +1589,14 @@ public class PUCrunch {
 
 		i = inlen;
 		for (p = 0; p < inlen; p++) {
-			int pos = (inlen - size) + length[p] - p;
+			int pos = inlen - size + length[p] - p;
 			i = Math.min(i, pos);
 		}
-		if (i < 0)
+		if (i < 0) {
 			reservedBytes = -i + 2;
-		else
+		} else {
 			reservedBytes = 0;
+		}
 
 		return startEscape;
 	}
@@ -1560,8 +1613,9 @@ public class PUCrunch {
 					execAddr = 0;
 					i++;
 					/* Skip spaces and parens */
-					while (indata[i] == '(' || indata[i] == ' ')
+					while (indata[i] == '(' || indata[i] == ' ') {
 						i++;
+					}
 
 					while (indata[i] >= '0' && indata[i] <= '9') {
 						execAddr = execAddr * 10 + indata[i++] - '0';
@@ -1580,7 +1634,7 @@ public class PUCrunch {
 			System.out.printf("Exec address 0x%04x\n", execAddr);
 			System.out.printf("New load address 0x%04x\n", memStart);
 			System.out.printf("Interrupts %s and memory config set to $%02x " + "after decompression\n",
-					(cliConfig == 0x58) ? "enabled" : "disabled", memConfig);
+					cliConfig == 0x58 ? "enabled" : "disabled", memConfig);
 		}
 	}
 
@@ -1605,7 +1659,7 @@ public class PUCrunch {
 			if (ibufferUsed != 0) {
 				System.out.printf("$200-$%x, ", 0x200 + ibufferUsed);
 			}
-			System.out.printf("and $%04x-$%04x.\n", (start < memStart + 1) ? start : memStart + 1, endAddr - 1);
+			System.out.printf("and $%04x-$%04x.\n", start < memStart + 1 ? start : memStart + 1, endAddr - 1);
 			System.out.printf("Uncompressed %d bytes, Compressed %d bytes\n", inlen,
 					header.length + rleUsed - 15 + size);
 		}
@@ -1654,9 +1708,9 @@ public class PUCrunch {
 			int progEnd = endAddr;
 			// estimated maximum decruncher size
 			int maxDecruncherLen = 512;
-			if (endAddr - ((size + 0xff) & ~0xff) < memStart + maxDecruncherLen + 3) {
+			if (endAddr - (size + 0xff & ~0xff) < memStart + maxDecruncherLen + 3) {
 				/* would overwrite the decompressor, move a bit upwards */
-				endAddr = memStart + maxDecruncherLen + 3 + ((size + 0xff) & ~0xff);
+				endAddr = memStart + maxDecruncherLen + 3 + (size + 0xff & ~0xff);
 			}
 			/* 3 bytes reserved for EOF */
 			/* bytes reserved for temporary data expansion (escaped chars) */

@@ -35,14 +35,14 @@ import libsidutils.siddatabase.TimeConverter;
  * This class can read properties files in Microsoft .ini file style and
  * provides an interface to read string, integer and boolean values. The .ini
  * files has the following structure:
- * 
+ *
  * <pre>
  * ; one type of comment
  * # another type of comment (will be removed in future)
  * [SectionNameWithNoSpaces]
  * Key string = whatever you want
  * </pre>
- * 
+ *
  * @author Antti S. Lankila
  */
 public class IniReader {
@@ -62,7 +62,7 @@ public class IniReader {
 	 */
 	private static final Pattern KEY_VALUE = Pattern.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
 
-	private final Map<String, Map<String, String>> sections = new LinkedHashMap<String, Map<String, String>>();
+	private final Map<String, Map<String, String>> sections = new LinkedHashMap<>();
 
 	private boolean dirty;
 
@@ -113,7 +113,7 @@ public class IniReader {
 
 			m = SECTION_HEADING.matcher(line);
 			if (m.matches()) {
-				section = new LinkedHashMap<String, String>();
+				section = new LinkedHashMap<>();
 				sections.put(m.group(1), section);
 
 				if (comment.length() != 0) {
@@ -294,7 +294,7 @@ public class IniReader {
 	public void setProperty(String section, String key, Object value) {
 		Map<String, String> settings = sections.get(section);
 		if (settings == null) {
-			sections.put(section, settings = new HashMap<String, String>());
+			sections.put(section, settings = new HashMap<>());
 		}
 		String newValue = value instanceof Character ? "\'" + value + "\'"
 				: value instanceof Enum ? ((Enum<?>) value).name() : String.valueOf(value);

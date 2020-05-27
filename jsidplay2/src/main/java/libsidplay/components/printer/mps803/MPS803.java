@@ -12,7 +12,7 @@ import libsidplay.components.printer.paper.ConsolePaper;
 /**
  * Note: Normally this printer is connected as a serial device, this emulation
  * uses a connection via user port as well<BR>
- * 
+ *
  * <TABLE>
  * <TR>
  * <TD>General Specifications</TD>
@@ -94,9 +94,9 @@ import libsidplay.components.printer.paper.ConsolePaper;
  * <TD>1.2 x 10 characters</TD>
  * </TR>
  * </TABLE>
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class MPS803 extends SerialIECDevice implements UserportPrinterEnvironment {
 
@@ -261,11 +261,9 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Create a printer.
-	 * 
-	 * @param p
-	 *            primary device number
-	 * @param s
-	 *            secondary device number
+	 *
+	 * @param p primary device number
+	 * @param s secondary device number
 	 */
 	public MPS803(final IECBus bus, final int p, final int s) {
 		super(bus);
@@ -310,9 +308,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Turn on/off printer. The paper is opened or closed.
-	 * 
-	 * @param on
-	 *            true (on), false (off)
+	 *
+	 * @param on true (on), false (off)
 	 */
 	public void turnPrinterOnOff(final boolean on) {
 		if (on) {
@@ -327,28 +324,25 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Set printer paper output.
-	 * 
-	 * @param p
-	 *            paper to be used
+	 *
+	 * @param p paper to be used
 	 */
 	public void setPaper(final IPaper p) {
 		this.paper = p;
 	}
 
 	/**
-	 * This method implements the state machine. Various modes can be turned
-	 * on/off by sending specific commands to the printer. Additionally
-	 * characters (normal or graphical) can be printed here.
-	 * 
-	 * @param c
-	 *            byte code to print or printer command
+	 * This method implements the state machine. Various modes can be turned on/off
+	 * by sending specific commands to the printer. Additionally characters (normal
+	 * or graphical) can be printed here.
+	 *
+	 * @param c byte code to print or printer command
 	 */
 	public void putc(final byte c) {
 		if (lineBufferPos >= MAX_WIDTH) {
 			/*
-			 * When the printer uses up more than 480 dots, then it prints out
-			 * the line and then stops and tells you that it's READY for more
-			 * information.
+			 * When the printer uses up more than 480 dots, then it prints out the line and
+			 * then stops and tells you that it's READY for more information.
 			 */
 			writeLine();
 		}
@@ -362,7 +356,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 			// already two digits read?
 			if (expectedDigits-- == 1) {
 				// decode start position
-				int startPos = ((digitHighByte & 0xff) << 8) | (c & 0xff);
+				int startPos = (digitHighByte & 0xff) << 8 | c & 0xff;
 				if (startPos >= COLUMN_WIDTH << 3) {
 					// When a number greater than 639 is specified, the dot is
 					// printed from the beginning of the next line.
@@ -412,16 +406,16 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 		case LINE_FEED:
 			/*
-			 * By sending LF Code [CHR$(10)] | to your printer, all data in the
-			 * print buffer is printed and the paper is advanced one line.
+			 * By sending LF Code [CHR$(10)] | to your printer, all data in the print buffer
+			 * is printed and the paper is advanced one line.
 			 */
 			writeLine();
 			break;
 
 		case CARRIAGE_RETURN:
 			/*
-			 * By sending CR Code [CHR$(13)] to your printer, all data in the
-			 * print buffer is printed and the paper is advanced one line.
+			 * By sending CR Code [CHR$(13)] to your printer, all data in the print buffer
+			 * is printed and the paper is advanced one line.
 			 */
 			writeLine();
 			// A Carriage Return turns off REVERSE FIELD and quote mode.
@@ -435,8 +429,9 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 			setState(STATE_ENHANCE);
 			// CHR$(14) and CHR$(15) cancel bit image graphic printing code
 			// [CHR$(8)]
-			if (isState(STATE_BIT_IMAGE_PRINTING))
+			if (isState(STATE_BIT_IMAGE_PRINTING)) {
 				bitmodeOff();
+			}
 			break;
 
 		case ENHANCE_OFF:
@@ -446,17 +441,18 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 			unsetState(STATE_ENHANCE);
 			// CHR$(14) and CHR$(15) cancel bit image graphic printing code
 			// [CHR$(8)]
-			if (isState(STATE_BIT_IMAGE_PRINTING))
+			if (isState(STATE_BIT_IMAGE_PRINTING)) {
 				bitmodeOff();
+			}
 			break;
 
 		case DOT_ADDRESS_TERMINATION:
 			/*
 			 * CHR$(27);CHR${16);CHR$(nH);CHR$(nL)
-			 * 
-			 * This code sequence specifies print start position in dot units.
-			 * nH and nL are 2-byte binary numbers (0 through 639) which
-			 * indicate dots where printing starts.
+			 *
+			 * This code sequence specifies print start position in dot units. nH and nL are
+			 * 2-byte binary numbers (0 through 639) which indicate dots where printing
+			 * starts.
 			 */
 			expectedDigits = 2;
 			break;
@@ -475,11 +471,11 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 		case REPEAT_BIT_IMAGE:
 			/*
 			 * CHR$(8) ... CHR$(26);CHR$(n);CHR$(Bit Image Data)
-			 * 
-			 * This codes sequence specifies the repeated printing of bit image
-			 * data, "n" is a binary number (0 through 255} which specifies the
-			 * desired number of the printed repetition; followed by one-byte
-			 * bit image data to be printing repeatedly
+			 *
+			 * This codes sequence specifies the repeated printing of bit image data, "n" is
+			 * a binary number (0 through 255} which specifies the desired number of the
+			 * printed repetition; followed by one-byte bit image data to be printing
+			 * repeatedly
 			 */
 			setState(STATE_REPEAT_BIT_IMAGE);
 			repeatN = 0;
@@ -508,8 +504,9 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 			break;
 
 		default:
-			if (isState(STATE_BIT_IMAGE_PRINTING))
+			if (isState(STATE_BIT_IMAGE_PRINTING)) {
 				return;
+			}
 
 			printCBMChar(c);
 		}
@@ -517,9 +514,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Print a character code according to the current mode.
-	 * 
-	 * @param rawchar
-	 *            character code to print
+	 *
+	 * @param rawchar character code to print
 	 */
 	private void printCBMChar(final byte rawchar) {
 		int c = rawchar & 0xff;
@@ -533,9 +529,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 		for (int y = 0; y < CHAR_HEIGHT; y++) {
 			if (isState(STATE_ENHANCE)) {
 				/*
-				 * All characters following the CHR$(14) are printed
-				 * double-width using dot matrix that is 7 dots high and 12 dots
-				 * wide.
+				 * All characters following the CHR$(14) are printed double-width using dot
+				 * matrix that is 7 dots high and 12 dots wide.
 				 */
 				for (int x = 0; lineBufferPos + x * 2 + 1 < 480 && x < CHAR_WIDTH; x++) {
 					lineBuffer[lineBufferPos + x * 2][y] = getCharsetBit(c, x, y);
@@ -543,11 +538,12 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 				}
 			} else {
 				/*
-				 * Your printer normally generates a character using dot matrix
-				 * that is 7 dots high and 6 dots wide.
+				 * Your printer normally generates a character using dot matrix that is 7 dots
+				 * high and 6 dots wide.
 				 */
-				for (int x = 0; lineBufferPos + x < 480 && x < CHAR_WIDTH; x++)
+				for (int x = 0; lineBufferPos + x < 480 && x < CHAR_WIDTH; x++) {
 					lineBuffer[lineBufferPos + x][y] = getCharsetBit(c, x, y);
+				}
 			}
 		}
 
@@ -556,23 +552,19 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Get a bit of the char-set ROM.
-	 * 
-	 * @param chr
-	 *            character code
-	 * @param bit
-	 *            bit to check
-	 * @param row
-	 *            row number of the character code
+	 *
+	 * @param chr character code
+	 * @param bit bit to check
+	 * @param row row number of the character code
 	 * @return bit is set?
 	 */
 	private boolean getCharsetBit(final int chr, final int bit, final int row) {
 		/*
-		 * By sending the code [CHR$(18)] to your printer, you have turned on
-		 * the REVERSE FIELD mode. This prints white letters on a black
-		 * background.
+		 * By sending the code [CHR$(18)] to your printer, you have turned on the
+		 * REVERSE FIELD mode. This prints white letters on a black background.
 		 */
 		boolean reverse = isState(STATE_REVERSE);
-		return (MPS803_CHARSET_BIN[chr * CHAR_HEIGHT + row] & (1 << (CHAR_HEIGHT - bit))) != 0 ? !reverse : reverse;
+		return (MPS803_CHARSET_BIN[chr * CHAR_HEIGHT + row] & 1 << CHAR_HEIGHT - bit) != 0 ? !reverse : reverse;
 	}
 
 	/**
@@ -580,8 +572,9 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 	 */
 	private void writeLine() {
 		for (int y = 0; y < CHAR_HEIGHT; y++) {
-			for (int x = 0; x < MAX_WIDTH; x++)
+			for (int x = 0; x < MAX_WIDTH; x++) {
 				paper.put(lineBuffer[x][y] ? IPaper.Outputs.OUTPUT_PIXEL_BLACK : IPaper.Outputs.OUTPUT_PIXEL_WHITE);
+			}
 			paper.put(IPaper.Outputs.OUTPUT_NEWLINE);
 		}
 
@@ -607,13 +600,12 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Bit image printing.
-	 * 
-	 * @param c
-	 *            The bitmask to print.
+	 *
+	 * @param c The bitmask to print.
 	 */
 	private void printBitmask(final byte c) {
 		for (int y = 0; y < CHAR_HEIGHT; y++) {
-			lineBuffer[lineBufferPos][y] = (c & (1 << (CHAR_WIDTH - y))) != 0;
+			lineBuffer[lineBufferPos][y] = (c & 1 << CHAR_WIDTH - y) != 0;
 		}
 		bitCnt++;
 		lineBufferPos++;
@@ -637,9 +629,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Check printer state, if the state is enabled.
-	 * 
-	 * @param s
-	 *            state to check
+	 *
+	 * @param s state to check
 	 * @return state is currently enabled?
 	 */
 	private boolean isState(final int s) {
@@ -648,9 +639,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Enable printer state.
-	 * 
-	 * @param s
-	 *            state to enable
+	 *
+	 * @param s state to enable
 	 */
 	private void setState(final int s) {
 		state |= s;
@@ -658,9 +648,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Disable printer state.
-	 * 
-	 * @param s
-	 *            state to disable
+	 *
+	 * @param s state to disable
 	 */
 	private void unsetState(final int s) {
 		state &= ~s;
@@ -668,9 +657,8 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 
 	/**
 	 * Signal busy printer.
-	 * 
-	 * @param flag
-	 *            busy flag
+	 *
+	 * @param flag busy flag
 	 */
 	public abstract void setBusy(final boolean flag);
 
@@ -680,7 +668,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 	public void open(int device, byte secondary) {
 		/*
 		 * Secondary address sets the character mode globally
-		 * 
+		 *
 		 * (SA=0: Graphic Mode, SA=7: Business Mode)
 		 */
 		if ((secondary & 0x0f) == 0) {
@@ -719,7 +707,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 	public void write(int device, byte secondary, byte data) {
 		/*
 		 * Secondary address sets the character mode globally
-		 * 
+		 *
 		 * (SA=0: Graphic Mode, SA=7: Business Mode)
 		 */
 		if ((secondary & 0x0f) == 0) {

@@ -35,7 +35,7 @@ import ui.entities.config.Configuration;
  * whole downloaded file is checked against the CRC checksum which is stored in
  * the file with file extension crc. <BR>
  * Download file consists of:
- * 
+ *
  * <PRE>
  * &lt;chunk&gt;.001
  * &lt;chunk&gt;.002
@@ -43,24 +43,24 @@ import ui.entities.config.Configuration;
  * &lt;chunk&gt;.&lt;N&gt;
  * &lt;file&gt;.crc
  * </PRE>
- * 
+ *
  * (where the chunks will be merged to &lt;file&gt;.&lt;ext&gt;) or
- * 
+ *
  * <PRE>
  * &lt;file&gt;.&lt;ext&gt;
  * &lt;file&gt;.crc
  * </PRE>
- * 
+ *
  * CRC file contents:
- * 
+ *
  * <PRE>
  * filename=&lt;file&gt;.&lt;ext&gt;
  * size=&lt;fileSizeInBytes&gt;
  * crc32=&lt;8DigitsHexCRC32&gt;
  * </PRE>
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	private static final String ILLEGAL_FILENAME_CHARS = "[?:]";
@@ -147,7 +147,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 	private File downloadAndMergeChunks() throws IOException, MalformedURLException {
 		File downloadedFile;
-		List<File> chunks = new ArrayList<File>();
+		List<File> chunks = new ArrayList<>();
 		int part = 1;
 		do {
 			File chunk = download(getURL(part), true, true);
@@ -265,9 +265,9 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 			String crc = properties.getProperty("crc32");
 			long fileLength = Integer.valueOf(properties.getProperty("size"));
 			String filename = properties.getProperty("filename");
-			System.out.println("Check name: " + download.getName()+" with " + filename);
-			System.out.println("Check size: " + download.length()+" with " + fileLength);
-			System.out.println("Check  crc: " + calculateCRC32(download)+" with " + crc);
+			System.out.println("Check name: " + download.getName() + " with " + filename);
+			System.out.println("Check size: " + download.length() + " with " + fileLength);
+			System.out.println("Check  crc: " + calculateCRC32(download) + " with " + crc);
 			return download.getName().equals(filename) && download.length() == fileLength
 					&& calculateCRC32(download).equals(crc);
 		} catch (NumberFormatException e) {

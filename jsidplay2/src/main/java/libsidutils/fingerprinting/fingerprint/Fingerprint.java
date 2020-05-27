@@ -12,21 +12,21 @@ import libsidutils.fingerprinting.spectrogram.Window;
 
 /**
  * <B>Working principle:</B><BR>
- * 
+ *
  * The algorithm is similar to Shazam. First, I calculate the spectrum of the
  * audio. The spectrum is divided into several sub-bands according to the
  * frequency, and several peak points are searched for each sub-band. The
  * subband of the algorithm is based on the Mel frequency.
- * 
+ *
  * The peak points to be obtained are grouped according to the frequency and
  * time range.
- * 
+ *
  * The point-to-frequency range of the algorithm is within the sub-band, the
  * purpose of which is to reduce the number of pairs of points and improve the
  * distributed capability. The time range for taking a pair is 1s-4s. You can
  * modify these parameters as needed.<BR>
  * <BR>
- * 
+ *
  * <B>Performance and effects:</B><BR>
  * <i> Data volume: </i>The music library is 1500 songs, the number of
  * fingerprints is about 24 million, and the server takes up about 340M after
@@ -53,13 +53,13 @@ import libsidutils.fingerprinting.spectrogram.Window;
  * fingerprints and music information). You may need to modify the
  * max_allowed_packet parameter, because adding a song requires sending a larger
  * package. The parameter I am using is 32M
- * 
+ *
  * @see <a href=
  *      "https://github.com/JPery/Audio-Fingerprinting">Audio-Fingerprinting</a>
  * @see <a href=
  *      "http://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf">Shazam</a>
  * @see <a href="https://en.wikipedia.org/wiki/Mel_scale">Mel scale</a>
- * 
+ *
  * @author hsyecheng on 2015/6/11.
  */
 public class Fingerprint {
@@ -173,15 +173,17 @@ public class Fingerprint {
 			for (k = i + 1; k < n; k++) {
 				float t = time[p1.getIntTime()];
 				float t2 = time[peakList.get(k).getIntTime()];
-				if (t2 - t >= range_time[0])
+				if (t2 - t >= range_time[0]) {
 					break;
+				}
 			}
 			int tStart = k;
 			for (; k < n; k++) {
 				float t = time[p1.getIntTime()];
 				float t2 = time[peakList.get(k).getIntTime()];
-				if (t2 - t >= range_time[1])
+				if (t2 - t >= range_time[1]) {
 					break;
+				}
 			}
 			int tEnd = k;
 			// freq start|end

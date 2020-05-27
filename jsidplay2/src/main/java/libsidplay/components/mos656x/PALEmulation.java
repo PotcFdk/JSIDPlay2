@@ -79,7 +79,7 @@ public class PALEmulation {
 
 	/**
 	 * Determine palette for current raster line.
-	 * 
+	 *
 	 * @param rasterY      current raster line
 	 * @param isFrameStart a new frame is about to start?
 	 */
@@ -100,7 +100,7 @@ public class PALEmulation {
 
 	/**
 	 * Draw eight pixels at once. Pixels arrive in 0x12345678 order (MSB to LSB).
-	 * 
+	 *
 	 * @param graphicsDataBuffer eight pixels each of 4 bits (VIC color value range
 	 *                           0x0-0xF)
 	 * @param pixelConsumer      consumer of the corresponding RGBA pixels

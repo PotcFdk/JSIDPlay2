@@ -14,9 +14,9 @@ import ui.common.C64Window;
 import ui.common.UIPart;
 
 public class ConsoleOutput extends C64VBox implements UIPart {
-	
+
 	private StringBuilder output = new StringBuilder();
-	
+
 	@FXML
 	protected TextArea console;
 	@FXML
@@ -24,7 +24,7 @@ public class ConsoleOutput extends C64VBox implements UIPart {
 
 	public ConsoleOutput() {
 	}
-	
+
 	public ConsoleOutput(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -32,7 +32,7 @@ public class ConsoleOutput extends C64VBox implements UIPart {
 	@Override
 	protected void initialize() {
 	}
-	
+
 	@FXML
 	private void clearConsole() {
 		console.clear();

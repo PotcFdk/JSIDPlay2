@@ -70,14 +70,11 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 	 * chip, if implementation does not change.<BR>
 	 * Note: The reason for re-using SID implementation is to preserve the current
 	 * SID's internal state, when changing filters or chip model type.
-	 * 
-	 * @param oldSIDEmu
-	 *            currently used SID chip
-	 * @param tune
-	 *            current tune
-	 * @param sidNum
-	 *            current SID number
-	 * 
+	 *
+	 * @param oldSIDEmu currently used SID chip
+	 * @param tune      current tune
+	 * @param sidNum    current SID number
+	 *
 	 * @return new or re-used SID emulation of a specific emulation engine
 	 */
 	private ReSIDBase getOrCreateSID(SIDEmu oldSIDEmu, SidTune tune, int sidNum) {
@@ -94,11 +91,9 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
 	/**
 	 * Get SID chip implementation class.
-	 * 
-	 * @param emulation
-	 *            wanted emulation type
-	 * @param fakeStereo
-	 *            fake-stereo mode (two SIDs at the same address)
+	 *
+	 * @param emulation  wanted emulation type
+	 * @param fakeStereo fake-stereo mode (two SIDs at the same address)
 	 * @return SID implementation class
 	 */
 	private Class<? extends ReSIDBase> getSIDImplClass(final Emulation emulation, final boolean fakeStereo) {
@@ -114,11 +109,9 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
 	/**
 	 * Create a new SID chip implementation.
-	 * 
-	 * @param sidImplCls
-	 *            SID implementation class
-	 * @param sidNum
-	 *            current SID number
+	 *
+	 * @param sidImplCls SID implementation class
+	 * @param sidNum     current SID number
 	 * @return new SID chip
 	 */
 	private ReSIDBase createSID(final Class<? extends ReSIDBase> sidImplCls, int sidNum) {

@@ -11,7 +11,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.chart.ValueAxis;
 
-//http://blog.dooapp.com/logarithmic-scale-strikes-back-in-javafx-20        
+//http://blog.dooapp.com/logarithmic-scale-strikes-back-in-javafx-20
 public class LogarithmicAxis extends ValueAxis<Number> {
 
 	// Create our LogarithmicAxis class that extends ValueAxis<Number> and
@@ -67,7 +67,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	/**
 	 * Validate the bounds by throwing an exception if the values are not conform to
 	 * the mathematics log interval: ]0,Double.MAX_VALUE]
-	 * 
+	 *
 	 * @param lowerBound
 	 * @param upperBound
 	 * @throws IllegalLogarithmicRangeException
@@ -98,7 +98,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 			int minorTickMarkCount = getMinorTickCount();
 
 			for (double i = logLowerBound; i <= logUpperBound; i += 1) {
-				for (double j = 0; j <= 10; j += (1. / minorTickMarkCount)) {
+				for (double j = 0; j <= 10; j += 1. / minorTickMarkCount) {
 					double value = j * Math.pow(10, i);
 					minorTickMarksPositions.add(value);
 				}
@@ -113,7 +113,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	// display one tick each power of 10.
 	@Override
 	protected List<Number> calculateTickValues(double length, Object range) {
-		List<Number> tickPositions = new ArrayList<Number>();
+		List<Number> tickPositions = new ArrayList<>();
 		if (range != null) {
 			Number lowerBound = ((Number[]) range)[0];
 			Number upperBound = ((Number[]) range)[1];
@@ -122,7 +122,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 
 			for (double i = logLowerBound; i <= logUpperBound; i += 1) {
 				for (double j = 1; j <= 10; j++) {
-					double value = (j * Math.pow(10, i));
+					double value = j * Math.pow(10, i);
 					tickPositions.add(value);
 				}
 			}
@@ -174,9 +174,9 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	public Number getValueForDisplay(double displayPosition) {
 		double delta = logUpperBound.get() - logLowerBound.get();
 		if (getSide().isVertical()) {
-			return Math.pow(10, (((displayPosition - getHeight()) / -getHeight()) * delta) + logLowerBound.get());
+			return Math.pow(10, (displayPosition - getHeight()) / -getHeight() * delta + logLowerBound.get());
 		} else {
-			return Math.pow(10, (((displayPosition / getWidth()) * delta) + logLowerBound.get()));
+			return Math.pow(10, displayPosition / getWidth() * delta + logLowerBound.get());
 		}
 	}
 
@@ -185,19 +185,19 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 		double delta = logUpperBound.get() - logLowerBound.get();
 		double deltaV = Math.log10(value.doubleValue()) - logLowerBound.get();
 		if (getSide().isVertical()) {
-			return (1. - ((deltaV) / delta)) * getHeight();
+			return (1. - deltaV / delta) * getHeight();
 		} else {
-			return ((deltaV) / delta) * getWidth();
+			return deltaV / delta * getWidth();
 		}
 	}
 
 	/**
 	 * Exception to be thrown when a bound value isn't supported by the logarithmic
 	 * axis<br>
-	 * 
-	 * 
+	 *
+	 *
 	 * @author Kevin Senechal mailto: kevin.senechal@dooapp.com
-	 * 
+	 *
 	 */
 	public class IllegalLogarithmicRangeException extends Exception {
 		private static final long serialVersionUID = -1874700637219400970L;

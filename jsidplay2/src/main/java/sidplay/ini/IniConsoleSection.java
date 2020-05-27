@@ -1,12 +1,19 @@
 package sidplay.ini;
 
-import static sidplay.ini.IniDefaults.*;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_BOTTOM_LEFT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_BOTTOM_RIGHT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_HORIZONTAL;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_JUNCTION_LEFT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_JUNCTION_RIGHT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_TOP_LEFT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_TOP_RIGHT;
+import static sidplay.ini.IniDefaults.DEFAULT_CHAR_VERTICAL;
 
 /**
  * Console section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniConsoleSection extends IniSection {
 	protected IniConsoleSection(IniReader iniReader) {
@@ -15,7 +22,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the top left character of the console output.
-	 * 
+	 *
 	 * @return the top left character of the console output
 	 */
 
@@ -29,7 +36,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the top right character of the console output.
-	 * 
+	 *
 	 * @return the top right character of the console output
 	 */
 
@@ -43,7 +50,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the bottom left character of the console output.
-	 * 
+	 *
 	 * @return the bottom left character of the console output
 	 */
 
@@ -57,7 +64,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the bottom right character of the console output.
-	 * 
+	 *
 	 * @return the bottom right character of the console output
 	 */
 
@@ -71,7 +78,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the vertical character of the console output.
-	 * 
+	 *
 	 * @return the vertical character of the console output
 	 */
 
@@ -85,7 +92,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the horizontal character of the console output.
-	 * 
+	 *
 	 * @return the horizontal character of the console output
 	 */
 
@@ -99,7 +106,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the junction left character of the console output.
-	 * 
+	 *
 	 * @return the junction left character of the console output
 	 */
 
@@ -113,7 +120,7 @@ public class IniConsoleSection extends IniSection {
 
 	/**
 	 * Getter of the junction right character of the console output.
-	 * 
+	 *
 	 * @return the junction right character of the console output
 	 */
 

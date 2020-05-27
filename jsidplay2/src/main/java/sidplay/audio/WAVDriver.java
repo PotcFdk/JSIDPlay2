@@ -13,17 +13,17 @@ import libsidplay.common.CPUClock;
 
 /**
  * Abstract base class to output a WAV to an output stream.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class WAVDriver implements AudioDriver {
 
 	/**
 	 * File based driver to create a WAV file.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	public static class WavFile extends WAVDriver {
 
@@ -58,17 +58,17 @@ public abstract class WAVDriver implements AudioDriver {
 
 	/**
 	 * Driver to write into an WAV output stream.<BR>
-	 * 
+	 *
 	 * <B>Note:</B> The caller is responsible of closing the output stream
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	public static class WAVStream extends WAVDriver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
-		 * 
+		 *
 		 * @param out Output stream to write the encoded WAV to
 		 */
 		public WAVStream(OutputStream out) {
@@ -131,6 +131,6 @@ public abstract class WAVDriver implements AudioDriver {
 	public String getExtension() {
 		return ".wav";
 	}
-	
+
 	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

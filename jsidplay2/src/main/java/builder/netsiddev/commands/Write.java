@@ -15,11 +15,11 @@ public class Write {
 	public int getCycles() {
 		return cycles;
 	}
-	
+
 	public byte getReg() {
 		return reg;
 	}
-	
+
 	public byte getData() {
 		return data;
 	}

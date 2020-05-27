@@ -29,7 +29,7 @@ public enum VICChipModel {
 
 	/**
 	 * Voltage by color (0x0-0x0F)
-	 * 
+	 *
 	 * <pre>
 	 * http://www.zimmers.net/anonftp/pub/cbm/documents/chipdata/656x-luminances.txt
 	 * </pre>

@@ -1,6 +1,7 @@
 package libsidutils.psid64;
 
-import static libsidplay.sidtune.SidTune.Compatibility.*;
+import static libsidplay.sidtune.SidTune.Compatibility.RSID_BASIC;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -184,7 +185,7 @@ public class Psid64 {
 			size += memBlock.getSize();
 		}
 
-		HashMap<String, String> globals = new HashMap<String, String>();
+		HashMap<String, String> globals = new HashMap<>();
 		globals.put("songNum", String.valueOf(tuneInfo.getCurrentSong() - 1));
 		globals.put("size", String.valueOf(size));
 		globals.put("numPages", String.valueOf(size + 0xff >> 8));
@@ -287,7 +288,7 @@ public class Psid64 {
 		int charset = freePages.getCharPage() != null ? freePages.getCharPage() >> 2 & 0x0e : 0x06;
 		int stil = freePages.getStilPage() != null ? freePages.getStilPage() : 0;
 
-		HashMap<String, String> globals = new HashMap<String, String>();
+		HashMap<String, String> globals = new HashMap<>();
 		globals.put("pc", String.valueOf(freePages.getDriverPage() << 8));
 		globals.put("screen", String.valueOf(screen));
 		globals.put("screen_songnum", String.valueOf(screenSongNum));
@@ -387,7 +388,7 @@ public class Psid64 {
 	/**
 	 * Find free space in the C64 memory map for the screen and the driver code. Of
 	 * course the driver code takes priority over the screen.
-	 * 
+	 *
 	 * @return free mem pages for driver/screen/char/stil
 	 */
 	private FreeMemPages findFreeSpace(int stilTextLength) {
@@ -412,7 +413,7 @@ public class Psid64 {
 			}
 		} else if (tuneInfo.getRelocStartPage() != 0xff && tuneInfo.getRelocPages() != 0) {
 			// the available pages have been specified in the PSID file
-			int endp = Math.min((tuneInfo.getRelocStartPage() + tuneInfo.getRelocPages()), MAX_PAGES);
+			int endp = Math.min(tuneInfo.getRelocStartPage() + tuneInfo.getRelocPages(), MAX_PAGES);
 
 			// check that the relocation information does not use the following
 			// memory areas: 0x0000-0x03FF, 0xA000-0xBFFF and 0xD000-0xFFFF
@@ -501,7 +502,7 @@ public class Psid64 {
 
 	/**
 	 * Try to find free consecutive memory pages.
-	 * 
+	 *
 	 * @param pages  pages which are already marked as used
 	 * @param scr    first screen page which is already used (not free)
 	 * @param chars  first characters page which is already used (not free)
@@ -512,9 +513,9 @@ public class Psid64 {
 	private Integer findSpace(boolean pages[], Integer scr, Integer chars, Integer driver, int size) {
 		int firstPage = 0;
 		for (int i = 0; i < MAX_PAGES; ++i) {
-			if (pages[i] || (scr != null && scr <= i && i < scr + NUM_SCREEN_PAGES)
-					|| (chars != null && chars <= i && i < chars + NUM_CHAR_PAGES)
-					|| (driver != null && driver <= i && i < driver + NUM_EXTDRV_PAGES)) {
+			if (pages[i] || scr != null && scr <= i && i < scr + NUM_SCREEN_PAGES
+					|| chars != null && chars <= i && i < chars + NUM_CHAR_PAGES
+					|| driver != null && driver <= i && i < driver + NUM_EXTDRV_PAGES) {
 				if (i - firstPage >= size) {
 					return firstPage;
 				}
@@ -617,16 +618,16 @@ public class Psid64 {
 	}
 
 	private static int getStereoAdress(byte[] ram, int videoScreenAddress, int row, int column) {
-		int stereoAddress = (getDigit(ram, videoScreenAddress, row, column + 1) << 12)
-				| (getDigit(ram, videoScreenAddress, row, column + 2) << 8)
-				| (getDigit(ram, videoScreenAddress, row, column + 3) << 4)
-				| (getDigit(ram, videoScreenAddress, row, column + 4));
+		int stereoAddress = getDigit(ram, videoScreenAddress, row, column + 1) << 12
+				| getDigit(ram, videoScreenAddress, row, column + 2) << 8
+				| getDigit(ram, videoScreenAddress, row, column + 3) << 4
+				| getDigit(ram, videoScreenAddress, row, column + 4);
 		return stereoAddress;
 	}
 
 	private static int getDigit(byte[] ram, int videoScreenAddress, int row, int column) {
-		final int offset = ((row - 1) * 40) + (column - 1);
-		int ch = (ram[videoScreenAddress + offset]) & 0xff;
+		final int offset = (row - 1) * 40 + column - 1;
+		int ch = ram[videoScreenAddress + offset] & 0xff;
 		if (ch >= 48) {
 			// digit
 			ch -= 48;
@@ -648,7 +649,7 @@ public class Psid64 {
 
 	protected static boolean checkScreenMessage(byte[] ram, int videoScreenAddress, String expected, int row,
 			int column) {
-		final int offset = ((row - 1) * 40) + (column - 1);
+		final int offset = (row - 1) * 40 + column - 1;
 		for (int i = 0; i < expected.length(); i++) {
 			final byte screenCode = Petscii.iso88591ToPetscii(expected.charAt(i));
 			if (ram[videoScreenAddress + offset + i] != screenCode) {

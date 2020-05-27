@@ -3,7 +3,7 @@
  *
  * Written by
  *  Marco van den Heuvel <blackystardust68@yahoo.com>
- * 
+ *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
- * 
+ *
  * The GeoRAM is a banked memory system. It uses the registers at
  * $dffe and $dfff to determine what part of the GeoRAM memory should
  * be mapped to $de00-$deff.
@@ -46,12 +46,12 @@ public class GeoRAM extends Cartridge {
 
 	/**
 	 * GEORAM register selects a page within a 16KB bank.
-	 * 
+	 *
 	 * <PRE>
 	 * Register | bits
 	 * -------------------
 	 * $dffe    | xx543210
-	 * 
+	 *
 	 * x = unused, not connected.
 	 * </PRE>
 	 */
@@ -59,7 +59,7 @@ public class GeoRAM extends Cartridge {
 	/**
 	 * GEORAM register selects a 16KB bank. The number of 16k blocks that is
 	 * available depends on the size of the GeoRAM/BBG:
-	 * 
+	 *
 	 * <PRE>
 	 * RAM size | $dfff
 	 * ------------------

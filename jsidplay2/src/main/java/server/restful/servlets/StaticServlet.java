@@ -38,7 +38,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get VUE web page.
-	 * 
+	 *
 	 * E.g. http://haendel.ddns.net:8080/static/hvsc.vue
 	 */
 	@Override

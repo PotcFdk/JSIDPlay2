@@ -26,7 +26,7 @@ public class DelayProcessor implements AudioProcessor {
 			if (delayInMs == null || delayInMs != audioSection.getDelay()) {
 				delayInMs = audioSection.getDelay();
 
-				delayOffset = (delayInMs * audioSection.getSamplingRate().getFrequency() * 2) / 1000;
+				delayOffset = delayInMs * audioSection.getSamplingRate().getFrequency() * 2 / 1000;
 				delayBufferSize = (sampleBuffer.capacity() >> 1) + delayOffset;
 				delayBuffer = new short[delayBufferSize];
 				writeIndex = 0;
@@ -39,14 +39,14 @@ public class DelayProcessor implements AudioProcessor {
 			for (int i = 0; i < len >> 1; i++) {
 				int inputSample = sampleBuffer.getShort();
 				int delaySample = delayBuffer[readIndex++];
-				int outputSample = ((inputSample * audioSection.getDelayDryLevel()) / 100)
-						+ ((delaySample * audioSection.getDelayWetLevel()) / 100);
+				int outputSample = inputSample * audioSection.getDelayDryLevel() / 100
+						+ delaySample * audioSection.getDelayWetLevel() / 100;
 
 				outputSample = Math.max(Math.min(outputSample, Short.MAX_VALUE), Short.MIN_VALUE);
 
 				buffer.putShort((short) outputSample);
 
-				inputSample += (delaySample * audioSection.getDelayFeedbackLevel()) / 100;
+				inputSample += delaySample * audioSection.getDelayFeedbackLevel() / 100;
 
 				inputSample = Math.max(Math.min(inputSample, Short.MAX_VALUE), Short.MIN_VALUE);
 

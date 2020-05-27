@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ui.musiccollection.search;
 

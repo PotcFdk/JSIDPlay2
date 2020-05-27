@@ -30,7 +30,7 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 
 	public Printer() {
 	}
-	
+
 	public Printer(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -47,7 +47,7 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 		// set default paper
 		util.getPlayer().getPrinter().setPaper(new ConsolePaper());
 	}
-	
+
 	@FXML
 	private void clearPaper() {
 		paper.getGraphicsContext2D().clearRect(0, 0, paper.getWidth(), paper.getHeight());
@@ -72,9 +72,9 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 				GraphicsContext g = paper.getGraphicsContext2D();
 				if (paperY >= paper.getHeight()) {
 					// endless paper scroll
-					paper.setTranslateY(paperY-paper.getHeight());
+					paper.setTranslateY(paperY - paper.getHeight());
 					paper.setHeight(paperY);
-					scroll.setVvalue(1.0); 
+					scroll.setVvalue(1.0);
 				}
 				for (int paperX = 0; paperX < toPrint.length; paperX++) {
 					g.setStroke(toPrint[paperX] ? Color.BLACK : Color.WHITE);
@@ -86,8 +86,9 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 		case OUTPUT_PIXEL_WHITE:
 		default:
 			// black/white pixel
-			if (x < MPS803.MAX_WIDTH)
+			if (x < MPS803.MAX_WIDTH) {
 				currentPixelRow[x] = out == Outputs.OUTPUT_PIXEL_BLACK;
+			}
 			x++;
 			break;
 		}

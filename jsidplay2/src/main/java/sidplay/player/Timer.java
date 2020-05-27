@@ -1,12 +1,12 @@
 package sidplay.player;
 
-import sidplay.Player;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
+import sidplay.Player;
 
 /**
  * The timer contains the start and end time of a currently played song. It
@@ -81,9 +81,8 @@ public abstract class Timer {
 
 	/**
 	 * Create a song length timer for the player
-	 * 
-	 * @param player
-	 *            SID player
+	 *
+	 * @param player SID player
 	 */
 	public Timer(final Player player) {
 		this.player = player;
@@ -91,9 +90,8 @@ public abstract class Timer {
 
 	/**
 	 * Set tune start time
-	 * 
-	 * @param start
-	 *            start time
+	 *
+	 * @param start start time
 	 */
 	public final void setStart(final double start) {
 		this.start = start;
@@ -160,11 +158,9 @@ public abstract class Timer {
 	/**
 	 * Schedule start or end timer event.<BR>
 	 * Note: If the event is in the past: trigger immediately
-	 * 
-	 * @param seconds
-	 *            absolute schedule time in seconds
-	 * @param event
-	 *            timer event to schedule
+	 *
+	 * @param seconds absolute schedule time in seconds
+	 * @param event   timer event to schedule
 	 */
 	private double schedule(final double seconds, final Event event, final boolean includeEndpoint) {
 		double maxSeconds = seconds + (includeEndpoint ? .001 : 0);
@@ -182,9 +178,8 @@ public abstract class Timer {
 
 	/**
 	 * Cancel event.
-	 * 
-	 * @param timer
-	 *            event to cancel
+	 *
+	 * @param timer event to cancel
 	 */
 	private void cancel(final Event event) {
 		player.getC64().getEventScheduler().cancel(event);
@@ -192,7 +187,7 @@ public abstract class Timer {
 
 	/**
 	 * Get tune end time in cycles
-	 * 
+	 *
 	 * @return tune end time
 	 */
 	public final double getEnd() {

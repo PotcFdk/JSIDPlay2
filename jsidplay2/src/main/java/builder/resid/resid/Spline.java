@@ -33,7 +33,7 @@ final class Spline {
 			double dx = x2 - x1;
 			double dy = y2 - y1;
 
-			double a = ((k1 + k2) - 2 * dy / dx) / (dx * dx);
+			double a = (k1 + k2 - 2 * dy / dx) / (dx * dx);
 			double b = ((k2 - k1) / dx - 3 * (x1 + x2) * a) / 2;
 			double c = k1 - (3 * x1 * a + 2 * b) * x1;
 			double d = y1 - ((x1 * a + b) * x1 + c) * x1;
@@ -42,8 +42,8 @@ final class Spline {
 		}
 
 		/*
-		 * Fix the value ranges, because we interpolate outside original bounds
-		 * if necessary.
+		 * Fix the value ranges, because we interpolate outside original bounds if
+		 * necessary.
 		 */
 		params[0][0] = Double.MIN_VALUE;
 		params[params.length - 1][1] = Double.MAX_VALUE;
@@ -53,11 +53,11 @@ final class Spline {
 
 	protected void evaluate(double x, double[] out) {
 		if (x < c[0] || x > c[1]) {
-			for (int i = 0; i < params.length; i++) {
-				if (params[i][1] < x) {
+			for (double[] param : params) {
+				if (param[1] < x) {
 					continue;
 				}
-				c = params[i];
+				c = param;
 				break;
 			}
 		}

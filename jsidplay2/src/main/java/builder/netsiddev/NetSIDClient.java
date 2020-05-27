@@ -58,11 +58,10 @@ public class NetSIDClient {
 
 	/**
 	 * Establish a single instance connection to a NetworkSIDDevice.
-	 * 
+	 *
 	 * Always MAX_SIDS are reserved.
-	 * 
-	 * @param context
-	 *            event context
+	 *
+	 * @param context event context
 	 */
 	public NetSIDClient(EventScheduler context, IEmulationSection emulationSection) {
 		this.context = context;
@@ -93,8 +92,8 @@ public class NetSIDClient {
 	}
 
 	/**
-	 * Add setting all SidModels to the first available configuration to the
-	 * command queue to initialize server side properly.
+	 * Add setting all SidModels to the first available configuration to the command
+	 * queue to initialize server side properly.
 	 */
 	private void addSetSidModels() {
 		commands.add(new TrySetSidCount((byte) MAX_SIDS));
@@ -104,11 +103,10 @@ public class NetSIDClient {
 	}
 
 	/**
-	 * Initialize: Drop unprocessed writes and add flush and reset to the
-	 * command queue
-	 * 
-	 * @param volume
-	 *            volume for reset
+	 * Initialize: Drop unprocessed writes and add flush and reset to the command
+	 * queue
+	 *
+	 * @param volume volume for reset
 	 */
 	public void init(byte volume) {
 		clocksSinceLastAccess();
@@ -124,8 +122,9 @@ public class NetSIDClient {
 	public void write(byte sidNum, byte addr, byte data) {
 		try {
 			int clocksSinceLastAccess = clocksSinceLastAccess();
-			while (tryWrite(sidNum, clocksSinceLastAccess >> fastForwardFactor, addr, data) == BUSY)
+			while (tryWrite(sidNum, clocksSinceLastAccess >> fastForwardFactor, addr, data) == BUSY) {
 				;
+			}
 		} catch (InterruptedException | IOException e) {
 			connection.close();
 			throw new RuntimeException(e);
@@ -134,7 +133,8 @@ public class NetSIDClient {
 
 	private SimpleImmutableEntry<ChipModel, String> sendReceiveConfig(NetSIDPkg cmd) {
 		addAndSend(cmd);
-		return new SimpleImmutableEntry<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581, "Filter" + configName);
+		return new SimpleImmutableEntry<>(readResult == 1 ? ChipModel.MOS8580 : ChipModel.MOS6581,
+				"Filter" + configName);
 	}
 
 	private byte sendReceive(NetSIDPkg cmd) {
@@ -196,7 +196,7 @@ public class NetSIDClient {
 			commands.add(tryWrite);
 		}
 		// add write to queue
-		tryWrite.addWrite(cycles, (byte) ((sidNum << 5) | reg), data);
+		tryWrite.addWrite(cycles, (byte) (sidNum << 5 | reg), data);
 		// NB: if flush attempt fails, we have nevertheless queued command
 		// locally and thus are allowed to return OK in any case.
 		maybeSendWritesToServer();

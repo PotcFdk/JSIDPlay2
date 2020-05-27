@@ -28,17 +28,17 @@ public interface AudioDriver {
 
 	/**
 	 * Add additional configuration where appropriate.
-	 * 
+	 *
 	 * @param config configuration
 	 */
 	default void configure(SidTune tune, IConfig config) {
-	};
+	}
 
 	/**
 	 * Open audio interface.
-	 * 
+	 *
 	 * The audio parameters may be manipulated by open().
-	 * 
+	 *
 	 * @param cfg               Configuration requested.
 	 * @param recordingFilename name for a recording
 	 * @throws IOException
@@ -49,7 +49,7 @@ public interface AudioDriver {
 
 	/**
 	 * Write the complete contents of ByteBuffer to audio device.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	void write() throws InterruptedException;
@@ -58,7 +58,7 @@ public interface AudioDriver {
 	 * Temporarily cease audio production, for instance if user paused the
 	 * application. Some backends such as DirectSound end up looping the audio
 	 * unless explicitly told to pause.
-	 * 
+	 *
 	 * Audio will be resumed automatically on next write().
 	 */
 	default void pause() {
@@ -71,11 +71,11 @@ public interface AudioDriver {
 
 	/**
 	 * Return the bytebuffer intended to hold the audio data.
-	 * 
+	 *
 	 * The audio data is in interleaved format and has as many channels as given by
 	 * the result of open(). Use putShort() to write 16-bit values. Don't call
 	 * write() until you have filled the entire buffer with audio.
-	 * 
+	 *
 	 * @return The buffer to write audio to.
 	 */
 	ByteBuffer buffer();

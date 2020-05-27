@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 public class ZipFileUtils {
 
 	private static final int COPY_BUFFER_CHUNK_SIZE = 16 * 1024;
-	
+
 	private static Constructor<? extends InputStream> INPUT_STREAM;
 	private static Constructor<File> FILE;
 
@@ -33,8 +33,8 @@ public class ZipFileUtils {
 			// support for files contained in a ZIP (optionally in the classpath)
 			FILE = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile").getConstructor(String.class,
 					String.class);
-			INPUT_STREAM = (Constructor<InputStream>) Class
-					.forName("de.schlichtherle.truezip.file.TFileInputStream").getConstructor(File.class);
+			INPUT_STREAM = (Constructor<InputStream>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
+					.getConstructor(File.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
 		}
 	}
@@ -81,7 +81,8 @@ public class ZipFileUtils {
 		return convertStreamToString(is, charsetName, new HashMap<>());
 	}
 
-	public static String convertStreamToString(java.io.InputStream is, String charsetName, Map<String,String>replacements) {
+	public static String convertStreamToString(java.io.InputStream is, String charsetName,
+			Map<String, String> replacements) {
 		try (java.util.Scanner s = new java.util.Scanner(is, charsetName)) {
 			s.useDelimiter("\\A");
 			String string = s.hasNext() ? s.next() : "";
@@ -92,4 +93,3 @@ public class ZipFileUtils {
 		}
 	}
 }
-

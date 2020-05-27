@@ -1,6 +1,6 @@
 /**
  * D64 disk images.
- * 
+ *
  * @author Ken Händel
  */
 package libsidplay.components.c1541;
@@ -12,7 +12,7 @@ import java.io.RandomAccessFile;
 
 /**
  * @author Ken Händel
- * 
+ *
  */
 public final class D64 extends DiskImage {
 
@@ -50,12 +50,11 @@ public final class D64 extends DiskImage {
 	}
 
 	/**
-	 * Detect 35..42 track d64 image, determine image parameters. Walk from 35
-	 * to 42, calculate expected image file size for each track, and compare
-	 * this with the size of the given image.
-	 * 
-	 * @throws IOException
-	 *             disk image file read error
+	 * Detect 35..42 track d64 image, determine image parameters. Walk from 35 to
+	 * 42, calculate expected image file size for each track, and compare this with
+	 * the size of the given image.
+	 *
+	 * @throws IOException disk image file read error
 	 */
 	@Override
 	protected void attach() throws IOException {
@@ -93,7 +92,7 @@ public final class D64 extends DiskImage {
 		// Read error information contained in the first block
 		errorInfo = new byte[imageBlocks];
 		if (hasErrorinfo) {
-			fd.seek((imageBlocks << 8));
+			fd.seek(imageBlocks << 8);
 			fd.readFully(errorInfo, 0, imageBlocks);
 		}
 
@@ -141,18 +140,13 @@ public final class D64 extends DiskImage {
 
 	/**
 	 * Read sector of disk image.
-	 * 
-	 * @param sectorBytes
-	 *            sector bytes read from track
-	 * @param sectorBytesPos
-	 *            offset with the start of the sector bytes
-	 * @param track
-	 *            track
-	 * @param sector
-	 *            sector
+	 *
+	 * @param sectorBytes    sector bytes read from track
+	 * @param sectorBytesPos offset with the start of the sector bytes
+	 * @param track          track
+	 * @param sector         sector
 	 * @return DOS error code of the sector to read
-	 * @throws IOException
-	 *             error reading disk image
+	 * @throws IOException error reading disk image
 	 */
 	private DOSErrorCodes readSector(final byte[] sectorBytes, final int sectorBytesPos, final int track,
 			final int sector) throws IOException {
@@ -164,11 +158,9 @@ public final class D64 extends DiskImage {
 
 	/**
 	 * Count sectors up to the given location.
-	 * 
-	 * @param track
-	 *            track
-	 * @param sector
-	 *            sector
+	 *
+	 * @param track  track
+	 * @param sector sector
 	 * @return sector number
 	 */
 	private int getSectorCount(final int track, final int sector) {
@@ -215,9 +207,8 @@ public final class D64 extends DiskImage {
 
 	/**
 	 * Extend disk image to 42 tracks.
-	 * 
-	 * @throws IOException
-	 *             disk image write error
+	 *
+	 * @throws IOException disk image write error
 	 */
 	private void driveExtendDiskImage() throws IOException {
 		byte[] buffer = new byte[D64_SECTOR_SIZE];
@@ -232,15 +223,11 @@ public final class D64 extends DiskImage {
 
 	/**
 	 * Write back dirty sector into the disk image.
-	 * 
-	 * @param offset
-	 *            offset of the GCR data
-	 * @param track
-	 *            track
-	 * @param sector
-	 *            sector
-	 * @throws IOException
-	 *             disk image write error
+	 *
+	 * @param offset offset of the GCR data
+	 * @param track  track
+	 * @param sector sector
+	 * @throws IOException disk image write error
 	 */
 	private void gcrDataWritebackSector(final int offset, final int track, final int sector) throws IOException {
 		byte[] sectorBytes = new byte[GCR.SECTOR_SIZE];
@@ -254,17 +241,12 @@ public final class D64 extends DiskImage {
 
 	/**
 	 * Write a sector.
-	 * 
-	 * @param sectorBytes
-	 *            sector bytes to write
-	 * @param sectorBytesPos
-	 *            offset of the sector bytes
-	 * @param track
-	 *            track
-	 * @param sector
-	 *            sector
-	 * @throws IOException
-	 *             disk image write error
+	 *
+	 * @param sectorBytes    sector bytes to write
+	 * @param sectorBytesPos offset of the sector bytes
+	 * @param track          track
+	 * @param sector         sector
+	 * @throws IOException disk image write error
 	 */
 	private void writeSector(final byte[] sectorBytes, final int sectorBytesPos, final int track, final int sector)
 			throws IOException {

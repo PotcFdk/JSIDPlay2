@@ -39,7 +39,7 @@ public class DiskCollectionTreeItem extends TreeItem<File> {
 
 	private void loadChildren() {
 		hasLoadedChildren = true;
-		Collection<DiskCollectionTreeItem> children = new ArrayList<DiskCollectionTreeItem>();
+		Collection<DiskCollectionTreeItem> children = new ArrayList<>();
 		File[] listFiles = getValue().listFiles(fileFilter);
 		if (listFiles != null) {
 			Arrays.sort(listFiles, (a, b) -> {

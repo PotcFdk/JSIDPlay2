@@ -15,22 +15,22 @@ import libsidplay.common.VICChipModel;
 import libsidplay.components.pla.PLA;
 
 /* TODO
- * 
+ *
  * - vborder2.prg proves that whether graphics sequencer is on or off for a line is decided not from the
  *   vborder flag but something else. Perhaps there is a graphics sequencer master toggle, which is set
  *   at the start of line. At any rate, changing the vborder at middle of line must not stop graphics
  *   sequencer. (The on/off is distinct from isDisplayActive, which is graphics sequencer enabled, merely
  *   without badlines and thus reading idle data.)
- * 
+ *
  * - videomode splits indicate that videomode changes need to take effect without xscroll delay. Unfortunately
  *   fixing that will destroy the 8-pixels-at-once tables, and thus increase the costs for sequencer.
- * 
+ *
  * - sprite damaged fetch region. Placement given for sprite 0, but other sprites
  *   all follow $10 increments. Properties:
  *   - sprite pixel at $162 repeats to $169 then is cut.
  *   - no sprite is displayed if sprite is positioned between $16a .. $16e
  *   - sprite works after $16f again.
- * 
+ *
  * - sprite pixel-exact display enable. Sprites show the idle data after $164
  *   position for sprite 1+ because DMA fetch hasn't happened yet. For sprite 0,
  *   the display goes off at $163, and DMA will have happened by $16f and thus
@@ -125,7 +125,7 @@ public final class MOS6569 extends VIC {
 
 	private final Event event = new Event("MOS6569") {
 		@Override
-		public final void event() throws InterruptedException {
+		public void event() throws InterruptedException {
 			if (lineCycle == CYCLES_PER_LINE) {
 				lineCycle = 0;
 			}
@@ -231,8 +231,8 @@ public final class MOS6569 extends VIC {
 				if (rasterY == MAX_RASTERS - 1) {
 					vcBase = 0;
 					/*
-					 * last line is 1 cycle longer than it appears to be. To set
-					 * rasterY = 0 at next cycle, we use a flag.
+					 * last line is 1 cycle longer than it appears to be. To set rasterY = 0 at next
+					 * cycle, we use a flag.
 					 */
 					startOfFrame = true;
 				} else {
@@ -242,19 +242,18 @@ public final class MOS6569 extends VIC {
 
 				// increase raster counter
 				/*
-				 * since raster Y just changed, we need to find out if we have
-				 * entered a badline. the CPU can change the conditions any
-				 * time, but since here VIC changes the raster, we *must* check
-				 * badline on this cycle. In particular, linecrunch depends on
-				 * canceling the bad line between the cycles 10 - 24.
+				 * since raster Y just changed, we need to find out if we have entered a
+				 * badline. the CPU can change the conditions any time, but since here VIC
+				 * changes the raster, we *must* check badline on this cycle. In particular,
+				 * linecrunch depends on canceling the bad line between the cycles 10 - 24.
 				 */
 				if (rasterY == FIRST_DMA_LINE) {
 					areBadLinesEnabled = readDEN();
 				}
 
 				/*
-				 * mysteriously, isDisplayActive is determined already on this
-				 * cycle. Normally it takes 1 clock to take effect.
+				 * mysteriously, isDisplayActive is determined already on this cycle. Normally
+				 * it takes 1 clock to take effect.
 				 */
 				isBadLine = evaluateIsBadLine();
 				isDisplayActive |= isBadLine;
@@ -402,7 +401,7 @@ public final class MOS6569 extends VIC {
 	};
 
 	@Override
-	public final void reset() {
+	public void reset() {
 		super.reset();
 		palEmulation.updatePalette();
 		lineCycle = 9; // preincremented at event

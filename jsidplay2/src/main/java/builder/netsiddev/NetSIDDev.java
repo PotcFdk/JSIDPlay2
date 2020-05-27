@@ -15,10 +15,10 @@ import libsidplay.config.IEmulationSection;
 public class NetSIDDev extends SIDEmu {
 
 	/**
-	 * FakeStereo mode uses two chips using the same base address. Write
-	 * commands are routed two both SIDs, while read command can be configured
-	 * to be processed by a specific SID chip.
-	 * 
+	 * FakeStereo mode uses two chips using the same base address. Write commands
+	 * are routed two both SIDs, while read command can be configured to be
+	 * processed by a specific SID chip.
+	 *
 	 * @author ken
 	 *
 	 */
@@ -27,8 +27,8 @@ public class NetSIDDev extends SIDEmu {
 		private final int prevNum;
 		private final List<NetSIDDev> sids;
 
-		public FakeStereo(NetSIDClient connection, final int sidNum, final ChipModel model,
-				final IConfig config, final List<NetSIDDev> sids) {
+		public FakeStereo(NetSIDClient connection, final int sidNum, final ChipModel model, final IConfig config,
+				final List<NetSIDDev> sids) {
 			super(connection, sidNum, model);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
@@ -54,7 +54,7 @@ public class NetSIDDev extends SIDEmu {
 		/**
 		 * Order of writes is important, since SID read flushes the write queue!
 		 * (Polly_Rock.sid)
-		 * 
+		 *
 		 * @see builder.netsiddev.NetSIDDev#write(int, byte)
 		 */
 		@Override

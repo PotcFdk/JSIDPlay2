@@ -28,7 +28,7 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 	}
 
 	public static List<SearchCriteria<?, ?>> getSearchableAttributes() {
-		List<SearchCriteria<?, ?>> result = new ArrayList<SearchCriteria<?, ?>>();
+		List<SearchCriteria<?, ?>> result = new ArrayList<>();
 		for (SingularAttribute<? extends Object, ?> singularAttribute : Arrays.asList(HVSCEntry_.path, HVSCEntry_.name,
 				HVSCEntry_.title, HVSCEntry_.author, HVSCEntry_.released, HVSCEntry_.format, HVSCEntry_.playerId,
 				HVSCEntry_.noOfSongs, HVSCEntry_.startSong, HVSCEntry_.clockFreq, HVSCEntry_.speed,
@@ -48,7 +48,7 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 
 	public static List<Pair<String, String>> getAttributeValues(HVSCEntry hvscEntry,
 			Function<SearchCriteria<?, ?>, String> nameLocalizer) {
-		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> result = new ArrayList<>();
 		if (hvscEntry == null) {
 			return result;
 		}

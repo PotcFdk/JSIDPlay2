@@ -14,7 +14,7 @@ import sidplay.audio.WAVHeader;
 /**
  * Use a WhatsSid capture buffer to match a currently played tune. Capture
  * buffer contains always the last N seconds of sound samples in a ring buffer.
- * 
+ *
  * @author ken
  *
  */
@@ -69,16 +69,17 @@ public final class WhatsSidSupport {
 
 	/**
 	 * Output sample data to fill WhatsSid capture buffer
-	 * 
+	 *
 	 * @param valL left channel sample data
 	 * @param valR right channel sample data
 	 * @return capture buffer full
 	 */
 	public boolean output(int valL, int valR) {
 		int dither = triangularDithering();
-		if (downSampler.input((valL + valR) >> 1)) {
-			if (!whatsSidBuffer.putShort(
-					(short) Math.max(Math.min(downSampler.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
+		if (downSampler.input(valL + valR >> 1)) {
+			if (!whatsSidBuffer
+					.putShort(
+							(short) Math.max(Math.min(downSampler.output() + dither, Short.MAX_VALUE), Short.MIN_VALUE))
 					.hasRemaining()) {
 				((Buffer) whatsSidBuffer).clear();
 				return true;
@@ -89,7 +90,7 @@ public final class WhatsSidSupport {
 
 	/**
 	 * Match WhatsSid capture buffer using the given matcher
-	 * 
+	 *
 	 * @param matcher matcher used to match the capture buffer contents
 	 * @return matched music info or null (no match)
 	 * @throws IOException I/O error
@@ -119,7 +120,7 @@ public final class WhatsSidSupport {
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.
-	 * 
+	 *
 	 * @return triangular noise sample
 	 */
 	private int triangularDithering() {
@@ -130,7 +131,7 @@ public final class WhatsSidSupport {
 
 	/**
 	 * Create WAV sample data form ring-buffer.
-	 * 
+	 *
 	 * @return WAV bytes
 	 */
 	private byte[] createWAV() {

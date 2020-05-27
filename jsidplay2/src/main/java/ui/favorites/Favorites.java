@@ -16,8 +16,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
@@ -402,14 +400,7 @@ public class Favorites extends C64VBox implements UIPart {
 		Tab tab = new Tab(favoritesSection.getName(), newTab);
 		newTab.restoreColumns(favoritesSection);
 		tab.setClosable(favoritesList.getTabs().size() != 0);
-		tab.setOnClosed(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				newTab.removeAllFavorites();
-			}
-
-		});
+		tab.setOnClosed(event -> newTab.removeAllFavorites());
 		newTab.setFavorites(this);
 
 		favoritesList.getTabs().add(tab);

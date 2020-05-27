@@ -61,8 +61,8 @@ public class EasyFlash extends Cartridge {
 	};
 
 	private static final int EASYFLASH_N_BANK_BITS = 6;
-	private static final int EASYFLASH_N_BANKS = (1 << (EASYFLASH_N_BANK_BITS));
-	private static final int EASYFLASH_BANK_MASK = ((EASYFLASH_N_BANKS) - 1);
+	private static final int EASYFLASH_N_BANKS = 1 << EASYFLASH_N_BANK_BITS;
+	private static final int EASYFLASH_BANK_MASK = EASYFLASH_N_BANKS - 1;
 
 	/** the 29F040B state machine */
 	private Flash040Core.Flash040Context easyflashStateLow;
@@ -121,7 +121,7 @@ public class EasyFlash extends Cartridge {
 		default:
 			/* mode register we only remember led, mode, exrom, game */
 			easyflashRegister02 = (byte) (value & 0x87);
-			byte memMode = easyflashMemconfig[(easyflashJumper << 3) | (easyflashRegister02 & 0x07)];
+			byte memMode = easyflashMemconfig[easyflashJumper << 3 | easyflashRegister02 & 0x07];
 			// TODO KSC: check me!
 			// cart_config_changed_slotmain(memMode, memMode, CMODE_READ);
 			/* bit3 = jumper, bit2 = mode, bit1 = !exrom, bit0 = game */
@@ -148,7 +148,7 @@ public class EasyFlash extends Cartridge {
 
 	protected void easyflashIO1Dump() {
 		System.out.printf("Mode %d, LED %s, jumper %s\n",
-				easyflashMemconfig[(easyflashJumper << 3) | (easyflashRegister02 & 0x07)],
+				easyflashMemconfig[easyflashJumper << 3 | easyflashRegister02 & 0x07],
 				(easyflashRegister02 & 0x80) != 0 ? "on" : "off", easyflashJumper != 0 ? "on" : "off");
 	}
 
@@ -165,7 +165,7 @@ public class EasyFlash extends Cartridge {
 
 	/**
 	 * EasyFlash jumper.
-	 * 
+	 *
 	 * @param val EasyFlash jumper
 	 */
 	public void setEasyflashJumper(boolean val) {
@@ -174,7 +174,7 @@ public class EasyFlash extends Cartridge {
 
 	/**
 	 * Save to EasyFlash crt on detach?
-	 * 
+	 *
 	 * @param val save on detach
 	 */
 	public void setEasyflashCRTWrite(boolean val) {
@@ -261,21 +261,21 @@ public class EasyFlash extends Cartridge {
 				break;
 			}
 
-			int bank = ((chipheader[0xa] & 0xff) << 8) | (chipheader[0xb] & 0xff);
-			int offset = ((chipheader[0xc] & 0xff) << 8) | (chipheader[0xd] & 0xff);
-			int length = ((chipheader[0xe] & 0xff) << 8) | (chipheader[0xf] & 0xff);
+			int bank = (chipheader[0xa] & 0xff) << 8 | chipheader[0xb] & 0xff;
+			int offset = (chipheader[0xc] & 0xff) << 8 | chipheader[0xd] & 0xff;
+			int length = (chipheader[0xe] & 0xff) << 8 | chipheader[0xf] & 0xff;
 
 			if (length == 0x2000) {
 				if (bank >= EASYFLASH_N_BANKS || !(offset == 0x8000 || offset == 0xa000 || offset == 0xe000)) {
 					return false;
 				}
-				dis.read(rawcart, (bank << 13) | (offset == 0x8000 ? 0 << 19 : 1 << 19), 0x2000);
+				dis.read(rawcart, bank << 13 | (offset == 0x8000 ? 0 << 19 : 1 << 19), 0x2000);
 			} else if (length == 0x4000) {
 				if (bank >= EASYFLASH_N_BANKS || offset != 0x8000) {
 					return false;
 				}
-				dis.read(rawcart, (bank << 13) | (0 << 19), 0x2000);
-				dis.read(rawcart, (bank << 13) | (1 << 19), 0x2000);
+				dis.read(rawcart, bank << 13 | 0 << 19, 0x2000);
+				dis.read(rawcart, bank << 13 | 1 << 19, 0x2000);
 			} else {
 				return false;
 			}

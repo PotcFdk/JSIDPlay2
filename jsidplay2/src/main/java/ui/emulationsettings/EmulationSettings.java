@@ -145,7 +145,7 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private Button copy;
-	
+
 	private ObservableList<Emulation> sid1Emulations, sid2Emulations, sid3Emulations, defaultEmulations;
 	private ObservableList<ChipModel> sid1Models, sid2Models, sid3Models, defaultModels;
 	private ObservableList<String> mainFilters, secondFilters, thirdFilters;
@@ -253,7 +253,7 @@ public class EmulationSettings extends C64Window {
 				new NumberToStringConverter<>(2));
 		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
 				.configureMixer(b -> b.setVolume(1, newValue.floatValue())));
-		
+
 		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
 		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(),
 				new NumberToStringConverter<>(2));
@@ -599,10 +599,10 @@ public class EmulationSettings extends C64Window {
 
 		emulationSection.setStereoEmulation(emulationSection.getUserEmulation());
 		emulationSection.setThirdEmulation(emulationSection.getUserEmulation());
-		
+
 		emulationSection.setStereoSidModel(emulationSection.getUserSidModel());
 		emulationSection.setThirdSIDModel(emulationSection.getUserSidModel());
-		
+
 		emulationSection.setStereoFilter(emulationSection.isFilter());
 		emulationSection.setThirdSIDFilter(emulationSection.isFilter());
 
@@ -610,9 +610,9 @@ public class EmulationSettings extends C64Window {
 		emulationSection.setThirdSIDFilter6581(emulationSection.getFilter6581());
 		emulationSection.setStereoFilter8580(emulationSection.getFilter8580());
 		emulationSection.setThirdSIDFilter8580(emulationSection.getFilter8580());
-		
+
 		emulationSection.setReSIDfpStereoFilter6581(emulationSection.getReSIDfpFilter6581());
-		emulationSection.setReSIDfpThirdSIDFilter6581(emulationSection.getReSIDfpFilter6581());		
+		emulationSection.setReSIDfpThirdSIDFilter6581(emulationSection.getReSIDfpFilter6581());
 		emulationSection.setReSIDfpStereoFilter8580(emulationSection.getReSIDfpFilter8580());
 		emulationSection.setReSIDfpThirdSIDFilter8580(emulationSection.getReSIDfpFilter8580());
 
@@ -624,7 +624,7 @@ public class EmulationSettings extends C64Window {
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
 	}
-	
+
 	/**
 	 * Update SID configuration on-the-fly.
 	 */
@@ -637,7 +637,7 @@ public class EmulationSettings extends C64Window {
 	/**
 	 * Update combo-box filter list according to the current emulation and chip
 	 * model.
-	 * 
+	 *
 	 * @param tune    currently played tune
 	 * @param num     SID chip number
 	 * @param filters resulting filter list to add matching filter names to
@@ -688,7 +688,7 @@ public class EmulationSettings extends C64Window {
 	/**
 	 * Update filter settings of the specified SID number according to the currently
 	 * selected filter and re-draw filter curve.
-	 * 
+	 *
 	 * @param sidNum      SID chip number
 	 * @param filterBox   filter combo box
 	 * @param filterCurve filter curve to update
@@ -717,7 +717,7 @@ public class EmulationSettings extends C64Window {
 		if (optFilter.isPresent()) {
 			FilterSection filterSection = optFilter.get();
 			// stereo curve or 3-SID curve currently used?
-			if (!((filterCurve == secondFilterCurve && !second) || (filterCurve == thirdFilterCurve && !third))) {
+			if (!(filterCurve == secondFilterCurve && !second || filterCurve == thirdFilterCurve && !third)) {
 				for (int fc = 1; fc < FC_MAX; fc++) {
 					if (filterSection.isReSIDFilter6581() || filterSection.isReSIDFilter8580()) {
 						double data = builder.resid.resid.FilterModelConfig.estimateFrequency(filterSection, fc);

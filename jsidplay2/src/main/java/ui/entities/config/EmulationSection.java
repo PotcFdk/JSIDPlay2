@@ -9,7 +9,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
 import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
 import static sidplay.ini.IniDefaults.DEFAULT_ENGINE;
 import static sidplay.ini.IniDefaults.DEFAULT_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_FILTER_6581;
@@ -55,6 +54,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_SID_BASE;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_EMULATION;
@@ -136,7 +136,7 @@ public class EmulationSection implements IEmulationSection {
 		Bindings.bindBidirectional(this.appServerKeystore, appServerKeystoreFile, new FileToStringConverter());
 	}
 
-	private ObjectProperty<Engine> engine = new SimpleObjectProperty<Engine>(DEFAULT_ENGINE);
+	private ObjectProperty<Engine> engine = new SimpleObjectProperty<>(DEFAULT_ENGINE);
 
 	public ObjectProperty<Engine> engineProperty() {
 		return engine;
@@ -153,7 +153,7 @@ public class EmulationSection implements IEmulationSection {
 		this.engine.set(engine);
 	}
 
-	private ObjectProperty<Emulation> defaultEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_EMULATION);
+	private ObjectProperty<Emulation> defaultEmulation = new SimpleObjectProperty<>(DEFAULT_EMULATION);
 
 	public ObjectProperty<Emulation> defaultEmulationProperty() {
 		return defaultEmulation;
@@ -170,7 +170,7 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultEmulation.set(emulation);
 	}
 
-	private ObjectProperty<Emulation> userEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_USER_EMULATION);
+	private ObjectProperty<Emulation> userEmulation = new SimpleObjectProperty<>(DEFAULT_USER_EMULATION);
 
 	public ObjectProperty<Emulation> userEmulationProperty() {
 		return userEmulation;
@@ -187,7 +187,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userEmulation.set(userEmulation);
 	}
 
-	private ObjectProperty<Emulation> stereoEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_STEREO_EMULATION);
+	private ObjectProperty<Emulation> stereoEmulation = new SimpleObjectProperty<>(DEFAULT_STEREO_EMULATION);
 
 	public ObjectProperty<Emulation> stereoEmulationProperty() {
 		return stereoEmulation;
@@ -204,7 +204,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoEmulation.set(stereoEmulation);
 	}
 
-	private ObjectProperty<Emulation> thirdEmulation = new SimpleObjectProperty<Emulation>(DEFAULT_3SID_EMULATION);
+	private ObjectProperty<Emulation> thirdEmulation = new SimpleObjectProperty<>(DEFAULT_3SID_EMULATION);
 
 	public ObjectProperty<Emulation> thirdEmulationProperty() {
 		return thirdEmulation;
@@ -221,7 +221,7 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdEmulation.set(thirdEmulation);
 	}
 
-	private ObjectProperty<CPUClock> defaultClockSpeed = new SimpleObjectProperty<CPUClock>(DEFAULT_CLOCK_SPEED);
+	private ObjectProperty<CPUClock> defaultClockSpeed = new SimpleObjectProperty<>(DEFAULT_CLOCK_SPEED);
 
 	public ObjectProperty<CPUClock> defaultClockSpeedProperty() {
 		return defaultClockSpeed;
@@ -238,7 +238,7 @@ public class EmulationSection implements IEmulationSection {
 		this.defaultClockSpeed.set(speed);
 	}
 
-	private ObjectProperty<CPUClock> userClockSpeed = new SimpleObjectProperty<CPUClock>();
+	private ObjectProperty<CPUClock> userClockSpeed = new SimpleObjectProperty<>();
 
 	public ObjectProperty<CPUClock> userClockSpeedProperty() {
 		return userClockSpeed;
@@ -255,7 +255,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userClockSpeed.set(userClockSpeed);
 	}
 
-	private ObjectProperty<ChipModel> defaultSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_SID_MODEL);
+	private ObjectProperty<ChipModel> defaultSidModel = new SimpleObjectProperty<>(DEFAULT_SID_MODEL);
 
 	public ObjectProperty<ChipModel> defaultSidModelProperty() {
 		return defaultSidModel;
@@ -286,7 +286,7 @@ public class EmulationSection implements IEmulationSection {
 		return detectPSID64ChipModel;
 	}
 
-	private ObjectProperty<ChipModel> userSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_USER_MODEL);
+	private ObjectProperty<ChipModel> userSidModel = new SimpleObjectProperty<>(DEFAULT_USER_MODEL);
 
 	public ObjectProperty<ChipModel> userSidModelProperty() {
 		return userSidModel;
@@ -303,7 +303,7 @@ public class EmulationSection implements IEmulationSection {
 		this.userSidModel.set(userSidModel);
 	}
 
-	private ObjectProperty<ChipModel> stereoSidModel = new SimpleObjectProperty<ChipModel>(DEFAULT_STEREO_MODEL);
+	private ObjectProperty<ChipModel> stereoSidModel = new SimpleObjectProperty<>(DEFAULT_STEREO_MODEL);
 
 	public ObjectProperty<ChipModel> stereoSidModelProperty() {
 		return stereoSidModel;
@@ -320,7 +320,7 @@ public class EmulationSection implements IEmulationSection {
 		this.stereoSidModel.set(stereoSidModel);
 	}
 
-	private ObjectProperty<ChipModel> thirdSIDModel = new SimpleObjectProperty<ChipModel>(DEFAULT_3SID_MODEL);
+	private ObjectProperty<ChipModel> thirdSIDModel = new SimpleObjectProperty<>(DEFAULT_3SID_MODEL);
 
 	public ObjectProperty<ChipModel> thirdSIDModelProperty() {
 		return thirdSIDModel;
@@ -337,7 +337,7 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDModel.set(stereoSidModel);
 	}
 
-	private ObjectProperty<Integer> hardsid6581 = new SimpleObjectProperty<Integer>(DEFAULT_HARD_SID_6581);
+	private ObjectProperty<Integer> hardsid6581 = new SimpleObjectProperty<>(DEFAULT_HARD_SID_6581);
 
 	public ObjectProperty<Integer> hardsid6581Property() {
 		return hardsid6581;
@@ -353,7 +353,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid6581.set(hardsid6581);
 	}
 
-	private ObjectProperty<Integer> hardsid8580 = new SimpleObjectProperty<Integer>(DEFAULT_HARD_SID_8580);
+	private ObjectProperty<Integer> hardsid8580 = new SimpleObjectProperty<>(DEFAULT_HARD_SID_8580);
 
 	public ObjectProperty<Integer> hardsid8580Property() {
 		return hardsid8580;
@@ -369,7 +369,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<ChipModel>(
+	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<>(
 			DEFAULT_SIDBLASTER_0);
 
 	public ObjectProperty<ChipModel> sidBlaster0ModelProperty() {
@@ -387,7 +387,7 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster0ModelProperty.set(sidBlaster0Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<ChipModel>(
+	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<>(
 			DEFAULT_SIDBLASTER_1);
 
 	public ObjectProperty<ChipModel> sidBlaster1ModelProperty() {
@@ -405,7 +405,7 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster1ModelProperty.set(sidBlaster1Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<ChipModel>(
+	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<>(
 			DEFAULT_SIDBLASTER_2);
 
 	public ObjectProperty<ChipModel> sidBlaster2ModelProperty() {
@@ -439,7 +439,7 @@ public class EmulationSection implements IEmulationSection {
 		this.netSidDevHostProperty.set(hostname);
 	}
 
-	private ObjectProperty<Integer> netSidDevPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_NETSIDDEV_PORT);
+	private ObjectProperty<Integer> netSidDevPortProperty = new SimpleObjectProperty<>(DEFAULT_NETSIDDEV_PORT);
 
 	public ObjectProperty<Integer> netSidDevPortProperty() {
 		return netSidDevPortProperty;
@@ -455,7 +455,8 @@ public class EmulationSection implements IEmulationSection {
 		this.netSidDevPortProperty.set(port);
 	}
 
-	private ObjectProperty<Ultimate64Mode> ultimate64Mode = new SimpleObjectProperty<Ultimate64Mode>(DEFAULT_ULTIMATE64_MODE);
+	private ObjectProperty<Ultimate64Mode> ultimate64Mode = new SimpleObjectProperty<>(
+			DEFAULT_ULTIMATE64_MODE);
 
 	public ObjectProperty<Ultimate64Mode> ultimate64ModeProperty() {
 		return ultimate64Mode;
@@ -471,7 +472,6 @@ public class EmulationSection implements IEmulationSection {
 	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
 		this.ultimate64Mode.set(ultimate64Mode);
 	}
-
 
 	private StringProperty ultimate64HostProperty = new SimpleStringProperty(DEFAULT_ULTIMATE64_HOST);
 
@@ -489,7 +489,7 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64HostProperty.set(hostname);
 	}
 
-	private ObjectProperty<Integer> ultimate64PortProperty = new SimpleObjectProperty<Integer>(DEFAULT_ULTIMATE64_PORT);
+	private ObjectProperty<Integer> ultimate64PortProperty = new SimpleObjectProperty<>(DEFAULT_ULTIMATE64_PORT);
 
 	public ObjectProperty<Integer> ultimate64PortProperty() {
 		return ultimate64PortProperty;
@@ -505,7 +505,7 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64PortProperty.set(port);
 	}
 
-	private ObjectProperty<Integer> ultimate64SyncDelayProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> ultimate64SyncDelayProperty = new SimpleObjectProperty<>(
 			DEFAULT_ULTIMATE64_SYNC_DELAY);
 
 	public ObjectProperty<Integer> ultimate64SyncDelayProperty() {
@@ -537,7 +537,7 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64StreamingTargetProperty.set(ultimate64StreamingTarget);
 	}
 
-	private ObjectProperty<Integer> ultimate64StreamingAudioPortProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> ultimate64StreamingAudioPortProperty = new SimpleObjectProperty<>(
 			DEFAULT_ULTIMATE64_STREAMING_AUDIO_PORT);
 
 	public ObjectProperty<Integer> ultimate64StreamingAudioPortProperty() {
@@ -552,7 +552,7 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64StreamingAudioPortProperty.set(ultimate64StreamingAudioPort);
 	}
 
-	private ObjectProperty<Integer> ultimate64StreamingVideoPortProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> ultimate64StreamingVideoPortProperty = new SimpleObjectProperty<>(
 			DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT);
 
 	public ObjectProperty<Integer> ultimate64StreamingVideoPortProperty() {
@@ -567,7 +567,7 @@ public class EmulationSection implements IEmulationSection {
 		this.ultimate64StreamingVideoPortProperty.set(ultimate64StreamingVideoPort);
 	}
 
-	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<Connectors>(DEFAULT_CONNECTORS);
+	private ObjectProperty<Connectors> appServerConnectors = new SimpleObjectProperty<>(DEFAULT_CONNECTORS);
 
 	public ObjectProperty<Connectors> appServerConnectorsProperty() {
 		return appServerConnectors;
@@ -578,12 +578,12 @@ public class EmulationSection implements IEmulationSection {
 		return this.appServerConnectors.get();
 	}
 
-	@Parameter(names = { "--appServerConnectors" }, descriptionKey = "APP_SERVER_CONNECTORS", order= 0)
+	@Parameter(names = { "--appServerConnectors" }, descriptionKey = "APP_SERVER_CONNECTORS", order = 0)
 	public void setAppServerConnectors(Connectors appServerConnectors) {
 		this.appServerConnectors.set(appServerConnectors);
 	}
 
-	private ObjectProperty<Integer> appServerPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_APP_SERVER_PORT);
+	private ObjectProperty<Integer> appServerPortProperty = new SimpleObjectProperty<>(DEFAULT_APP_SERVER_PORT);
 
 	public ObjectProperty<Integer> appServerPortProperty() {
 		return appServerPortProperty;
@@ -593,12 +593,12 @@ public class EmulationSection implements IEmulationSection {
 		return appServerPortProperty.get();
 	}
 
-	@Parameter(names = { "--appServerPort" }, descriptionKey = "APP_SERVER_PORT", order= 1)
+	@Parameter(names = { "--appServerPort" }, descriptionKey = "APP_SERVER_PORT", order = 1)
 	public void setAppServerPort(int port) {
 		this.appServerPortProperty.set(port);
 	}
 
-	private ObjectProperty<Integer> appServerSecurePortProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> appServerSecurePortProperty = new SimpleObjectProperty<>(
 			DEFAULT_APP_SERVER_SECURE_PORT);
 
 	public ObjectProperty<Integer> appServerSecurePortProperty() {
@@ -609,12 +609,12 @@ public class EmulationSection implements IEmulationSection {
 		return appServerSecurePortProperty.get();
 	}
 
-	@Parameter(names = { "--appServerSecurePort" }, descriptionKey = "APP_SERVER_SECURE_PORT", order= 2)
+	@Parameter(names = { "--appServerSecurePort" }, descriptionKey = "APP_SERVER_SECURE_PORT", order = 2)
 	public void setAppServerSecurePort(int securePort) {
 		this.appServerSecurePortProperty.set(securePort);
 	}
 
-	private ObjectProperty<File> appServerKeystoreFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> appServerKeystoreFile = new SimpleObjectProperty<>();
 	private StringProperty appServerKeystore = new SimpleStringProperty();
 
 	public ObjectProperty<File> appServerKeystoreFileProperty() {
@@ -625,7 +625,7 @@ public class EmulationSection implements IEmulationSection {
 		return this.appServerKeystore.get();
 	}
 
-	@Parameter(names = { "--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", order= 3)
+	@Parameter(names = { "--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", order = 3)
 	public void setAppServerKeystoreFile(String appServerKeystoreFile) {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}
@@ -645,7 +645,7 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeystorePasswordProperty.get();
 	}
 
-	@Parameter(names = { "--appServerKeystorePassword" }, descriptionKey = "APP_SERVER_KEYSTORE_PASSWORD", order= 4)
+	@Parameter(names = { "--appServerKeystorePassword" }, descriptionKey = "APP_SERVER_KEYSTORE_PASSWORD", order = 4)
 	public void setAppServerKeystorePassword(String appServerKeyStorePassword) {
 		this.appServerKeystorePasswordProperty.set(appServerKeyStorePassword);
 	}
@@ -660,7 +660,7 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeyAliasProperty.get();
 	}
 
-	@Parameter(names = { "--appServerKeyAlias" }, descriptionKey = "APP_SERVER_KEY_ALIAS", order= 5)
+	@Parameter(names = { "--appServerKeyAlias" }, descriptionKey = "APP_SERVER_KEY_ALIAS", order = 5)
 	public void setAppServerKeyAlias(String appServerKeyAlias) {
 		this.appServerKeyAliasProperty.set(appServerKeyAlias);
 	}
@@ -680,7 +680,7 @@ public class EmulationSection implements IEmulationSection {
 		return appServerKeyPasswordProperty.get();
 	}
 
-	@Parameter(names = { "--appServerKeyPassword" }, descriptionKey = "APP_SERVER_KEY_PASSWORD", order= 6)
+	@Parameter(names = { "--appServerKeyPassword" }, descriptionKey = "APP_SERVER_KEY_PASSWORD", order = 6)
 	public void setAppServerKeyPassword(String appServerKeyPassword) {
 		this.appServerKeyPasswordProperty.set(appServerKeyPassword);
 	}
@@ -733,7 +733,7 @@ public class EmulationSection implements IEmulationSection {
 		this.thirdSIDFilter.set(isFilter);
 	}
 
-	private ObjectProperty<Integer> sidNumToRead = new SimpleObjectProperty<Integer>(DEFAULT_SID_NUM_TO_READ);
+	private ObjectProperty<Integer> sidNumToRead = new SimpleObjectProperty<>(DEFAULT_SID_NUM_TO_READ);
 
 	public ObjectProperty<Integer> sidNumToReadProperty() {
 		return sidNumToRead;

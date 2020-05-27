@@ -1,6 +1,5 @@
 package ui.entities.config;
 
-import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
 import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
 import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
@@ -11,6 +10,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_FADE_OUT_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_GAMMA;
 import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
 import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
+import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
 import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
@@ -198,7 +198,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return singleProperty;
 	}
 
-	private ObjectProperty<File> hvmecFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> hvmecFile = new SimpleObjectProperty<>();
 	private StringProperty hvmec = new SimpleStringProperty();
 
 	@Transient
@@ -218,7 +218,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return hvmec;
 	}
 
-	private ObjectProperty<File> demosFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> demosFile = new SimpleObjectProperty<>();
 	private StringProperty demos = new SimpleStringProperty();
 
 	@Transient
@@ -238,7 +238,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return demos;
 	}
 
-	private ObjectProperty<File> magsFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> magsFile = new SimpleObjectProperty<>();
 	private StringProperty mags = new SimpleStringProperty();
 
 	public String getMags() {
@@ -258,7 +258,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return mags;
 	}
 
-	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<>();
 	private StringProperty cgsc = new SimpleStringProperty();
 
 	@Transient
@@ -278,7 +278,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return cgsc;
 	}
 
-	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<>();
 	private StringProperty hvsc = new SimpleStringProperty();
 
 	@Transient
@@ -300,7 +300,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return hvsc;
 	}
 
-	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<>();
 	private StringProperty gameBase64 = new SimpleStringProperty();
 
 	@Transient
@@ -344,7 +344,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyHostnameProperty.set(hostname);
 	}
 
-	private ObjectProperty<Integer> proxyPortProperty = new SimpleObjectProperty<Integer>(DEFAULT_PROXY_PORT);
+	private ObjectProperty<Integer> proxyPortProperty = new SimpleObjectProperty<>(DEFAULT_PROXY_PORT);
 
 	public ObjectProperty<Integer> proxyPortProperty() {
 		return proxyPortProperty;
@@ -477,7 +477,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return videoScalingProperty;
 	}
 
-	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<Boolean>(DEFAULT_SHOW_MONITOR);
+	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<>(DEFAULT_SHOW_MONITOR);
 
 	public boolean isShowMonitor() {
 		return showMonitorProperty.get();
@@ -493,7 +493,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private BooleanProperty palEmulationProperty = new SimpleBooleanProperty(DEFAULT_PAL_EMULATION);
 
-	public BooleanProperty palEmulationProperty () {
+	public BooleanProperty palEmulationProperty() {
 		return palEmulationProperty;
 	}
 

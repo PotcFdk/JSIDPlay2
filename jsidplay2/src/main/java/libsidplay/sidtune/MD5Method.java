@@ -2,7 +2,7 @@ package libsidplay.sidtune;
 
 /**
  * MD5 checksum calculation method - used for SLDB (SongLengthDataBase)
- * 
+ *
  * @author ken
  *
  */

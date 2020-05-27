@@ -18,19 +18,19 @@ import libsidplay.components.pla.PLA;
 import sidplay.audio.VideoDriver;
 
 /* TODO
- * 
+ *
  * - vborder2.prg proves that whether graphics sequencer is on or off for a line is decided not from the
  *   vborder flag but something else. Perhaps there is a graphics sequencer master toggle, which is set
  *   at the start of line. At any rate, changing the vborder at middle of line must not stop graphics
  *   sequencer. (The on/off is distinct from isDisplayActive, which is graphics sequencer enabled, merely
  *   without badlines and thus reading idle data.)
- * 
+ *
  * - sprite damaged fetch region. Placement given for sprite 0, but other sprites
  *   all follow $10 increments. Properties:
  *   - sprite pixel at $162 repeats to $169 then is cut.
  *   - no sprite is displayed if sprite is positioned between $16a .. $16e
  *   - sprite works after $16f again.
- * 
+ *
  * - sprite pixel-exact display enable. Sprites show the idle data after $164
  *   position for sprite 1+ because DMA fetch hasn't happened yet. For sprite 0,
  *   the display goes off at $163, and DMA will have happened by $16f and thus
@@ -39,19 +39,23 @@ import sidplay.audio.VideoDriver;
 
 /**
  * Implements the functionality of the C64's VIC II chip
- * 
+ *
  * For a good German documentation on the MOS 6567/6569 Videocontroller
  * (VIC-II), see
- * 
+ *
  * <pre>
- * <a href='http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm'>http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm</a>,
- * <a href='http://cbmmuseum.kuto.de/zusatz_6569_vic2.html'>http://cbmmuseum.kuto.de/zusatz_6569_vic2.html</a> or
- * <a href='http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html'>http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html</a>.
+ * <a href=
+'http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm'>http://www.minet.uni-jena.de/~andreasg/c64/vic_artikel/vic_artikel_1.htm</a>,
+ * <a href=
+'http://cbmmuseum.kuto.de/zusatz_6569_vic2.html'>http://cbmmuseum.kuto.de/zusatz_6569_vic2.html</a> or
+ * <a href=
+'http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html'>http://unusedino.de/ec64/technical/misc/vic656x/vic656x-german.html</a>.
  * An English version of the documentation you can find at
- * <a href='http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html'>http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html</a>.
+ * <a href=
+'http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html'>http://www.unusedino.de/ec64/technical/misc/vic656x/vic656x.html</a>.
  * </pre>
- * 
- * 
+ *
+ *
  * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  * @author Antti S. Lankila (alankila@bel.fi)
  */
@@ -77,11 +81,11 @@ public abstract class VIC extends Bank {
 	private static final byte COL_ECM = 8;
 	private static final byte COL_NONE = 9;
 
-	private static final byte[] videoModeColorDecoder = { COL_D021, COL_D021, COL_CBUF,
-			COL_CBUF, /* ECM=0 BMM=0 MCM=0 */
+	private static final byte[] videoModeColorDecoder = { COL_D021, COL_D021, COL_CBUF, COL_CBUF, /*
+																									 * ECM=0 BMM=0 MCM=0
+																									 */
 			COL_D021, COL_D022, COL_D023, COL_CBUF_MC, /* ECM=0 BMM=0 MCM=1 */
-			COL_VBUF_L, COL_VBUF_L, COL_VBUF_H,
-			COL_VBUF_H, /* ECM=0 BMM=1 MCM=0 */
+			COL_VBUF_L, COL_VBUF_L, COL_VBUF_H, COL_VBUF_H, /* ECM=0 BMM=1 MCM=0 */
 			COL_D021, COL_VBUF_H, COL_VBUF_L, COL_CBUF, /* ECM=0 BMM=1 MCM=1 */
 			COL_ECM, COL_ECM, COL_CBUF, COL_CBUF, /* ECM=1 BMM=0 MCM=0 */
 			COL_NONE, COL_NONE, COL_NONE, COL_NONE, /* ECM=1 BMM=0 MCM=1 */
@@ -107,7 +111,7 @@ public abstract class VIC extends Bank {
 	private int phi1DataPipe;
 
 	protected PALEmulation palEmulation;
-	
+
 	/** PLA chip */
 	private final PLA pla;
 
@@ -184,11 +188,11 @@ public abstract class VIC extends Bank {
 	/** masks for the IRQ flags */
 	private byte irqMask;
 	/**
-	 * Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha, red,
-	 * green, blue
+	 * Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha, red, green,
+	 * blue
 	 */
 	protected final IntBuffer pixels = IntBuffer.allocate(MAX_WIDTH * MAX_HEIGHT);
-	
+
 	/** Current visible line */
 	protected int lineCycle;
 	/** Is display rendering enabled? */
@@ -214,7 +218,7 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Creates a new instance of VIC6569
-	 * 
+	 *
 	 * @param pla
 	 * @param context
 	 * @param cpl
@@ -239,9 +243,8 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Set consumer of VIC screen output as ARGB data
-	 * 
-	 * @param videoDriver
-	 *            consumer of C64 screen pixels as ARGB data
+	 *
+	 * @param videoDriver consumer of C64 screen pixels as ARGB data
 	 */
 	public void setVideoDriver(VideoDriver videoDriver) {
 		this.videoDriver = videoDriver;
@@ -249,9 +252,8 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Read the x-coordinate of a sprite
-	 * 
-	 * @param spriteNo
-	 *            no of the sprite (0-7)
+	 *
+	 * @param spriteNo no of the sprite (0-7)
 	 * @return x-coordinate
 	 */
 	private int readSpriteXCoordinate(final int spriteNo) {
@@ -259,9 +261,8 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * Read the RSEL flag which determines whether we display 24 or 25 lines of
-	 * text
-	 * 
+	 * Read the RSEL flag which determines whether we display 24 or 25 lines of text
+	 *
 	 * @return true if RSEL is set and we use 25 lines, otherwise false
 	 */
 	protected boolean readRSEL() {
@@ -269,9 +270,9 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * Read the CSEL flag which determines whether we display 38 or 40 columns
-	 * of text
-	 * 
+	 * Read the CSEL flag which determines whether we display 38 or 40 columns of
+	 * text
+	 *
 	 * @return true if CSEL is set and we use 40 columns, otherwise false
 	 */
 	private boolean readCSEL() {
@@ -280,7 +281,7 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Read the DEN flag which tells whether the display is enabled
-	 * 
+	 *
 	 * @return true if DEN is set, otherwise false
 	 */
 	protected boolean readDEN() {
@@ -289,7 +290,7 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Read the value of the raster line IRQ
-	 * 
+	 *
 	 * @return raster line when to trigger an IRQ
 	 */
 	protected int readRasterLineIRQ() {
@@ -315,9 +316,9 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * Get the video memory base address, which is determined by the inverted
-	 * bits 0-1 of port A on CIA 2, plus the video matrix base address plus the
-	 * character data base address plus the bitmap memory base address.
+	 * Get the video memory base address, which is determined by the inverted bits
+	 * 0-1 of port A on CIA 2, plus the video matrix base address plus the character
+	 * data base address plus the bitmap memory base address.
 	 */
 	private void determineVideoMemoryBaseAddresses() {
 		videoMatrixBase = (registers[0x18] & 0xf0) << 6;
@@ -326,9 +327,9 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * Set an IRQ flag and trigger an IRQ if the corresponding IRQ mask is set.
-	 * The IRQ only gets activated, i.e. flag 0x80 gets set, if it was not
-	 * active before.
+	 * Set an IRQ flag and trigger an IRQ if the corresponding IRQ mask is set. The
+	 * IRQ only gets activated, i.e. flag 0x80 gets set, if it was not active
+	 * before.
 	 */
 	protected void activateIRQFlag(final byte flag) {
 		irqFlags |= flag;
@@ -347,11 +348,11 @@ public abstract class VIC extends Bank {
 	public int getVideoMatrixBase() {
 		return videoMatrixBase;
 	}
-	
+
 	/*
 	 * This table can be used to quadruple every bit, for instance %1011 ->
-	 * %1111000011111111. Additionally, the inverse of input is stored on the
-	 * high pits, making the complete value %00001111000000001111000011111111.
+	 * %1111000011111111. Additionally, the inverse of input is stored on the high
+	 * pits, making the complete value %00001111000000001111000011111111.
 	 */
 	protected static final int[] singleColorLUT = new int[16];
 
@@ -359,7 +360,7 @@ public abstract class VIC extends Bank {
 		for (int in = 0; in < 16; in++) {
 			int out = 0;
 			for (int b = 0; b < 4; b++) {
-				if ((in & (1 << b)) != 0) {
+				if ((in & 1 << b) != 0) {
 					out |= 0xf << (b << 2);
 				}
 			}
@@ -392,7 +393,7 @@ public abstract class VIC extends Bank {
 		for (int pixel = 0; pixel < 32;) {
 			/* At midpoint -> set video mode bits. */
 			if (pixel == 16) {
-				videoModeColorDecoderOffset |= ((registers[0x11] & 0x60 | registers[0x16] & 0x10) >> 2);
+				videoModeColorDecoderOffset |= (registers[0x11] & 0x60 | registers[0x16] & 0x10) >> 2;
 			}
 
 			/* XScroll matched -> load new data. */
@@ -401,7 +402,7 @@ public abstract class VIC extends Bank {
 				videoModeColors[COL_CBUF_MC] = (byte) (latchedColor & 0x7);
 				videoModeColors[COL_VBUF_L] = (byte) (latchedVmd & 0xf);
 				videoModeColors[COL_VBUF_H] = (byte) (latchedVmd >> 4 & 0xf);
-				videoModeColors[COL_ECM] = videoModeColors[COL_D021 + ((latchedVmd >> 6) & 0x3)];
+				videoModeColors[COL_ECM] = videoModeColors[COL_D021 + (latchedVmd >> 6 & 0x3)];
 
 				mcFlip = true;
 				if (renderCycle < 40 && !showBorderVertical) {
@@ -412,8 +413,8 @@ public abstract class VIC extends Bank {
 			}
 
 			/*
-			 * Calculate size of renderable chunk: either until next 16 bits, or
-			 * to next xscroll.
+			 * Calculate size of renderable chunk: either until next 16 bits, or to next
+			 * xscroll.
 			 */
 			int end = pixel + 16 & 0xf0;
 			if (pixel < latchedXscroll) {
@@ -421,15 +422,14 @@ public abstract class VIC extends Bank {
 			}
 
 			/*
-			 * This monster asks a question: are we going to render multicolor
-			 * pixels now?
+			 * This monster asks a question: are we going to render multicolor pixels now?
 			 */
-			if (((videoModeColorDecoderOffset & 4) != 0
-					&& !(videoModeColorDecoderOffset == 4 && videoModeColors[COL_CBUF] < 8))) {
+			if ((videoModeColorDecoderOffset & 4) != 0
+					&& !(videoModeColorDecoderOffset == 4 && videoModeColors[COL_CBUF] < 8)) {
 
 				/*
-				 * It would be great if the below expression could be SIMDified,
-				 * but that has proven to be very difficult.
+				 * It would be great if the below expression could be SIMDified, but that has
+				 * proven to be very difficult.
 				 */
 				while (pixel < end) {
 					/* Read next pixel (maybe) */
@@ -443,8 +443,7 @@ public abstract class VIC extends Bank {
 					priorityData <<= 4;
 
 					/*
-					 * Convert to one of the 9 possible values VIC can output at
-					 * a time
+					 * Convert to one of the 9 possible values VIC can output at a time
 					 */
 					int color = videoModeColorDecoder[videoModeColorDecoderOffset | pixelColor];
 					/* Convert to final color index in the vic-ii palette. */
@@ -457,7 +456,7 @@ public abstract class VIC extends Bank {
 			} else {
 				int bits = end - pixel;
 				/* Number of f's equals the number of pixels. */
-				int mask = (-1 >>> -bits);
+				int mask = -1 >>> -bits;
 
 				/* Extract bits of input */
 				int inputBits = phi1DataPipe >>> (-bits >> 2);
@@ -465,7 +464,7 @@ public abstract class VIC extends Bank {
 				mcFlip ^= (bits & 4) != 0;
 
 				int videoModeColorsSIMD = videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset]] << 16
-						| (videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset | 3]] & 0xff);
+						| videoModeColors[videoModeColorDecoder[videoModeColorDecoderOffset | 3]] & 0xff;
 				videoModeColorsSIMD |= videoModeColorsSIMD << 4;
 				videoModeColorsSIMD |= videoModeColorsSIMD << 8;
 
@@ -487,11 +486,10 @@ public abstract class VIC extends Bank {
 		}
 
 		/*
-		 * This should happen on the 6th, 7th or such pixel. It's apparently
-		 * related to the fall time in NMOS, and can be observed to change with
-		 * system temperature.
+		 * This should happen on the 6th, 7th or such pixel. It's apparently related to
+		 * the fall time in NMOS, and can be observed to change with system temperature.
 		 */
-		videoModeColorDecoderOffset &= ((registers[0x11] & 0x60 | registers[0x16] & 0x10) >> 2);
+		videoModeColorDecoderOffset &= (registers[0x11] & 0x60 | registers[0x16] & 0x10) >> 2;
 
 		/* Sprite sequencer */
 		int opaqueSpritePixels = 0;
@@ -509,11 +507,11 @@ public abstract class VIC extends Bank {
 			}
 
 			/*
-			 * Handle sprite-sprite collision. It's easy to detect that a
-			 * collision occurred, but hard to find which two sprites collided.
-			 * For this purpose, we store the sprite index which contributed a
-			 * pixel into the low bits of a pixel slot, and keep the 4th bit as
-			 * a mask that we can use to reliably identify the collision.
+			 * Handle sprite-sprite collision. It's easy to detect that a collision
+			 * occurred, but hard to find which two sprites collided. For this purpose, we
+			 * store the sprite index which contributed a pixel into the low bits of a pixel
+			 * slot, and keep the 4th bit as a mask that we can use to reliably identify the
+			 * collision.
 			 */
 			if ((opaqueSpritePixels & spriteForegroundMask) != 0) {
 				if (registers[0x1e] == 0) {
@@ -533,9 +531,8 @@ public abstract class VIC extends Bank {
 						opaqueSpritePixels |= (current.index | 8) << pixel;
 					} else {
 						/*
-						 * Collision; register the other sprite as colliding,
-						 * but keep the old value, as it doesn't matter whether
-						 * it contains the other or ourselves: both collision
+						 * Collision; register the other sprite as colliding, but keep the old value, as
+						 * it doesn't matter whether it contains the other or ourselves: both collision
 						 * bits are set on 0x1e once we finish.
 						 */
 						registers[0x1e] |= 1 << (otherSprite & 0x7);
@@ -582,8 +579,8 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * This version just detects sprite-sprite collisions. It is appropriate to
-	 * use outside renderable screen, where graphics sequencer is known to have
+	 * This version just detects sprite-sprite collisions. It is appropriate to use
+	 * outside renderable screen, where graphics sequencer is known to have
 	 * quiesced.
 	 */
 	protected final void spriteCollisionsOnly() {
@@ -626,8 +623,8 @@ public abstract class VIC extends Bank {
 	}
 
 	/**
-	 * In certain cases, CPU sees the stale bus data from VIC. VIC reads on
-	 * every cycle, and this describes what it reads.
+	 * In certain cases, CPU sees the stale bus data from VIC. VIC reads on every
+	 * cycle, and this describes what it reads.
 	 */
 	public final byte getLastReadByte() {
 		return phi1Data;
@@ -635,9 +632,8 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Get memory address of sprite data.
-	 * 
-	 * @param n
-	 *            sprite number
+	 *
+	 * @param n sprite number
 	 */
 	protected void fetchSpritePointer(final int n) {
 		Sprite sprite = sprites[n];
@@ -653,9 +649,8 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Fetch 1 byte of memory starting from the sprite address.
-	 * 
-	 * @param n
-	 *            sprite number
+	 *
+	 * @param n sprite number
 	 */
 	protected void fetchSpriteData(final int n) {
 		Sprite sprite = sprites[n];
@@ -672,9 +667,8 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Read VIC register.
-	 * 
-	 * @param register
-	 *            Register to read.
+	 *
+	 * @param register Register to read.
 	 */
 	@Override
 	public final byte read(int register) {
@@ -684,11 +678,11 @@ public abstract class VIC extends Bank {
 		switch (register) {
 		// control register 1
 		case 0x11: {
-			value = (byte) ((registers[register] & 0x7f) | (rasterY & 0x100) >> 1);
+			value = (byte) (registers[register] & 0x7f | (rasterY & 0x100) >> 1);
 			break;
 		}
 
-			// Raster Counter
+		// Raster Counter
 		case 0x12:
 			value = (byte) rasterY;
 			break;
@@ -720,8 +714,8 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// for addresses < $20 read from register directly, when < $2f set
-			// bits of high nibble to 1, for >= $2f return $ff
+		// for addresses < $20 read from register directly, when < $2f set
+		// bits of high nibble to 1, for >= $2f return $ff
 		default:
 			if (register < 0x20) {
 				value = registers[register];
@@ -797,11 +791,9 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * Write to VIC register.
-	 * 
-	 * @param register
-	 *            Register to write to.
-	 * @param data
-	 *            Data byte to write.
+	 *
+	 * @param register Register to write to.
+	 * @param data     Data byte to write.
 	 */
 	@Override
 	public final void write(int register, final byte data) {
@@ -827,7 +819,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// y-coordinate of a spriteID has been modified
+		// y-coordinate of a spriteID has been modified
 		case 0x01:
 		case 0x03:
 		case 0x05:
@@ -859,9 +851,8 @@ public abstract class VIC extends Bank {
 			}
 
 			/*
-			 * At cycle 9, it's too late for the CPU to affect VIC's decisions
-			 * for that line -- no more PHI1 cycles with that rasterY value
-			 * remain.
+			 * At cycle 9, it's too late for the CPU to affect VIC's decisions for that line
+			 * -- no more PHI1 cycles with that rasterY value remain.
 			 */
 			if (lineCycle != 9) {
 				final int narrowing = readRSEL() ? 0 : 4;
@@ -878,15 +869,14 @@ public abstract class VIC extends Bank {
 			isBadLine = evaluateIsBadLine();
 
 			/*
-			 * Schedule display activation if badlines are enabled for one
-			 * clock.
+			 * Schedule display activation if badlines are enabled for one clock.
 			 */
 			if (!oldBadLine && isBadLine) {
 				context.schedule(makeDisplayActive, 1, Phase.PHI2);
 			}
 
 			/* Within the display range, VIC signals AEC changes on next PHI1 */
-			if ((isBadLine ^ oldBadLine) && lineCycle > 20 && lineCycle < 63) {
+			if (isBadLine ^ oldBadLine && lineCycle > 20 && lineCycle < 63) {
 				context.schedule(badLineStateChange, 0, Phase.PHI1);
 			}
 			// $FALL-THROUGH$
@@ -917,7 +907,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// the sprite y-expansion byte has changed
+		// the sprite y-expansion byte has changed
 		case 0x17: {
 			for (int i = 0; i < 8; i++) {
 				final boolean expandY = (data & 1 << i) != 0;
@@ -926,7 +916,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// the cached video memory base addresses might have changed
+		// the cached video memory base addresses might have changed
 		case 0x18:
 			determineVideoMemoryBaseAddresses();
 			break;
@@ -951,7 +941,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// Sprites O-7 Multi-Color Mode Selection
+		// Sprites O-7 Multi-Color Mode Selection
 		case 0x1c:
 			for (int i = 0, m = 1; i < 8; ++i, m <<= 1) {
 				this.sprites[i].setMulticolor((data & m) != 0);
@@ -966,7 +956,7 @@ public abstract class VIC extends Bank {
 			break;
 		}
 
-			// the border color was changed
+		// the border color was changed
 		case 0x20:
 			borderColor = (data & 0xf) * 0x11111111;
 			break;
@@ -1013,15 +1003,13 @@ public abstract class VIC extends Bank {
 
 	/**
 	 * If CPU reads/writes to VIC at just the cycle VIC is supposed to do a PHI2
-	 * fetch for sprite data, the data fetched is set from the interaction with
-	 * CPU.
-	 * 
-	 * @param data
-	 *            The {@link Sprite} data to set.
+	 * fetch for sprite data, the data fetched is set from the interaction with CPU.
+	 *
+	 * @param data The {@link Sprite} data to set.
 	 */
 	private void setSpriteDataFromCPU(byte data) {
 		if (lineCycle >= 4 && lineCycle < 20) {
-			Sprite damagedSprite = sprites[(lineCycle - 4) >> 1];
+			Sprite damagedSprite = sprites[lineCycle - 4 >> 1];
 			damagedSprite.setSpriteByte((lineCycle & 1) == 0 ? 2 : 0, data);
 		}
 	}
@@ -1037,8 +1025,7 @@ public abstract class VIC extends Bank {
 	/**
 	 * Schedule the rendering to begin
 	 *
-	 * @param sprite
-	 *            The {@link Sprite} to handle the visibility event of.
+	 * @param sprite The {@link Sprite} to handle the visibility event of.
 	 */
 	private void handleSpriteVisibilityEvent(final Sprite sprite) {
 		/* New coordinate in pipeline: cancel any pending event... */
@@ -1049,16 +1036,15 @@ public abstract class VIC extends Bank {
 			return;
 		}
 
-		final int xpos = (sprite.getX() >> 3);
+		final int xpos = sprite.getX() >> 3;
 
 		/* calculate cycles until sprite can display */
 		int count = xpos - getCurrentSpriteCycle();
 		/*
 		 * Wrap to nearest CYCLE when comparison will match.
-		 * 
-		 * VICE test spritex proves that setting location very near will not
-		 * work: it takes one cycle for VIC to adjust to the new sprite
-		 * position.
+		 *
+		 * VICE test spritex proves that setting location very near will not work: it
+		 * takes one cycle for VIC to adjust to the new sprite position.
 		 */
 		if (count <= 0) {
 			count += CYCLES_PER_LINE;
@@ -1068,7 +1054,7 @@ public abstract class VIC extends Bank {
 		}
 
 		/* Delay sprite by 0 .. 7 pixels. */
-		sprite.setDisplayStart((sprite.getX() & 7));
+		sprite.setDisplayStart(sprite.getX() & 7);
 		context.schedule(sprite, count, Event.Phase.PHI2);
 	}
 
@@ -1120,7 +1106,7 @@ public abstract class VIC extends Bank {
 	public PALEmulation getPalEmulation() {
 		return palEmulation;
 	}
-	
+
 	/**
 	 * Trigger the lightpen. Sets the lightpen usage flag.
 	 */
@@ -1165,7 +1151,7 @@ public abstract class VIC extends Bank {
 	public byte[] getRegisters() {
 		return registers;
 	}
-	
+
 	/**
 	 * @return Output ARGB screen buffer as int32 array. MSB to LSB -&gt; alpha,
 	 *         red, green, blue

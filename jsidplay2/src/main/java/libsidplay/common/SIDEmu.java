@@ -16,6 +16,7 @@
 package libsidplay.common;
 
 import static libsidplay.common.SIDChip.REG_COUNT;
+
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -23,7 +24,7 @@ import libsidplay.config.IEmulationSection;
  * Base class for hardware or software based SID emulation. All register write
  * access is recorded and can be read by {@link #readInternalRegister(int)}
  * (side-effect free).
- * 
+ *
  * @author ken
  *
  */
@@ -31,15 +32,14 @@ public abstract class SIDEmu {
 
 	/** no SID chip */
 	public static final SIDEmu NONE = null;
-	
+
 	/** Internal cache of SID register state, used for GUI feedback. */
 	private final byte[] registers = new byte[REG_COUNT];
 
 	/**
 	 * Side effect free read access.
-	 * 
-	 * @param addr
-	 *            address to read
+	 *
+	 * @param addr address to read
 	 * @return register value recorded since last write access
 	 */
 	public byte readInternalRegister(final int addr) {

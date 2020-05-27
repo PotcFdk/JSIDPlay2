@@ -105,16 +105,16 @@ public class AudioGeneratorThread extends Thread {
 
 	/** WhatsSID capture time in seconds */
 	private int captureTime;
-	
+
 	/** WhatsSID enabled? */
 	private boolean whatsSidEnabled;
-	
+
 	/** WhatsSID minimum confidence to match */
 	private double minimumRelativeConfidence;
-	
+
 	/** WhatsSID */
 	private WhatsSidSupport whatsSidSupport;
-	
+
 	/**
 	 * Triangularly shaped noise source for audio applications. Output of this PRNG
 	 * is between ]-1, 1[.
@@ -129,7 +129,7 @@ public class AudioGeneratorThread extends Thread {
 
 	public AudioGeneratorThread(AudioConfig config) {
 		setPriority(Thread.MAX_PRIORITY);
-		sidCommandQueue = new LinkedBlockingQueue<SIDWrite>();
+		sidCommandQueue = new LinkedBlockingQueue<>();
 		audioConfig = config;
 
 		SIDDeviceSettings settings = SIDDeviceSettings.getInstance();
@@ -345,7 +345,7 @@ public class AudioGeneratorThread extends Thread {
 		sids[sidNumber].reset();
 		sids[sidNumber].write(0x18, volume);
 	}
-	
+
 	public void reopen() {
 		// Fix for Linux ALSA audio systems, only
 		deviceChanged = true;
@@ -407,8 +407,8 @@ public class AudioGeneratorThread extends Thread {
 	 * output frequency.
 	 */
 	private void refreshParams() {
-		for (int i = 0; i < sids.length; i++) {
-			sids[i].setClockFrequency(sidClocking.getCpuFrequency());
+		for (SIDChip sid : sids) {
+			sid.setClockFrequency(sidClocking.getCpuFrequency());
 		}
 		resamplerL = Resampler.createResampler(sidClocking.getCpuFrequency(), sidSampling, audioConfig.getFrameRate(),
 				20000);
@@ -418,8 +418,8 @@ public class AudioGeneratorThread extends Thread {
 
 	public void setPosition(int sidNumber, int position) {
 		if (sids.length > 1) {
-			float leftFraction = (position <= 0) ? 1 : (100 - position) / 100f;
-			float rightFraction = (position >= 0) ? 1 : (100 + position) / 100f;
+			float leftFraction = position <= 0 ? 1 : (100 - position) / 100f;
+			float rightFraction = position >= 0 ? 1 : (100 + position) / 100f;
 			sidPositionL[sidNumber] = (int) (1024 * leftFraction);
 			sidPositionR[sidNumber] = (int) (1024 * rightFraction);
 		} else {
@@ -436,7 +436,7 @@ public class AudioGeneratorThread extends Thread {
 		synchronized (this.delayedSamples) {
 			int delayedSamples = (int) (sidClocking.getCpuFrequency() / 1000. * delay);
 			this.delayedSamples[sid] = ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
-					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
+					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[delayedSamples + 1]);
 			((Buffer) this.delayedSamples[sid]).flip();
 		}
 	}
@@ -472,7 +472,7 @@ public class AudioGeneratorThread extends Thread {
 	public JavaSound getDriver() {
 		return driver;
 	}
-	
+
 	/**
 	 * Return the current clock in the SID stream.
 	 *

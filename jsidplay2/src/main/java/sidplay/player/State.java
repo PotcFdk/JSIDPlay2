@@ -2,7 +2,7 @@ package sidplay.player;
 
 /**
  * SID player state.
- * 
+ *
  * @author ken
  *
  */

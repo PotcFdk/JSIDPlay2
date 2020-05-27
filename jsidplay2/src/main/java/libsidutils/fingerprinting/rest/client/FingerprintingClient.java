@@ -42,7 +42,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	private Object password;
 
 	private boolean useXml;
-	
+
 	public FingerprintingClient(String url, String username, String password) {
 		this.url = url;
 		this.username = username;

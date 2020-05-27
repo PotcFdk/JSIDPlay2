@@ -29,9 +29,9 @@ import libsidplay.sidtune.SidTune.Model;
 /**
  * An instance of this structure is used to transport values to and from SidTune
  * objects.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class SidTuneInfo {
 	/**
@@ -190,7 +190,7 @@ public class SidTuneInfo {
 
 	/**
 	 * Select sub-song number (null = default starting song).
-	 * 
+	 *
 	 * @param song The chosen song.
 	 */
 	public final void setSelectedSong(final Integer song) {
@@ -206,7 +206,7 @@ public class SidTuneInfo {
 
 	/**
 	 * Temporary hack till real bank switching code added
-	 * 
+	 *
 	 * @param addr A 16-bit effective address
 	 * @return A default bank-select value for $01.
 	 */

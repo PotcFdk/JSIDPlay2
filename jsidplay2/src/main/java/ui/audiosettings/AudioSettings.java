@@ -62,13 +62,13 @@ public class AudioSettings extends C64Window {
 
 	@FXML
 	private Label cbrLabel, vbrQualityLabel, aviVideoQualityLabel;
-	
+
 	@FXML
 	private TextField cbr, vbrQuality, aviVideoQuality;
-	
+
 	@FXML
 	private CheckBox vbr;
-	
+
 	public AudioSettings() {
 		super();
 	}
@@ -172,11 +172,11 @@ public class AudioSettings extends C64Window {
 		audioSection.setReverbAllPass2Delay(DEFAULT_REVERB_ALL_PASS2_DELAY);
 		audioSection.setReverbSustainDelay(DEFAULT_REVERB_SUSTAIN_DELAY);
 		audioSection.setReverbDryWetMix(DEFAULT_REVERB_DRY_WET_MIX);
-		
+
 		audioSection.setCbr(DEFAULT_CBR);
 		audioSection.setVbr(DEFAULT_VBR);
 		audioSection.setVbrQuality(DEFAULT_VBR_QUALITY);
-		
+
 		audioSection.setAviCompressionQuality(DEFAULT_AVI_COMPRESSION_QUALITY);
 	}
 

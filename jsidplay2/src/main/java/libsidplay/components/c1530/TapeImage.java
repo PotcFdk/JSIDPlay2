@@ -30,9 +30,9 @@ import java.io.IOException;
 
 /**
  * Tape image implementation.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class TapeImage {
 
@@ -48,14 +48,11 @@ public class TapeImage {
 
 	/**
 	 * Attach tape image to datasette.
-	 * 
-	 * @param datasette
-	 *            datasette to attach image
-	 * @param tapeFile
-	 *            tape image file
+	 *
+	 * @param datasette datasette to attach image
+	 * @param tapeFile  tape image file
 	 * @return tape image read error
-	 * @throws IOException
-	 *             cannot read tape image
+	 * @throws IOException cannot read tape image
 	 */
 	public final boolean imageAttach(final Datasette datasette, final File tapeFile) throws IOException {
 		// try to open tap file
@@ -80,11 +77,9 @@ public class TapeImage {
 
 	/**
 	 * Detach tape image from datasette.
-	 * 
-	 * @param datasette
-	 *            datasette to eject tape
-	 * @throws IOException
-	 *             tape image read error
+	 *
+	 * @param datasette datasette to eject tape
+	 * @throws IOException tape image read error
 	 */
 	final void imageDetach(final Datasette datasette) throws IOException {
 		if (tap == null || tapeFile == null) {

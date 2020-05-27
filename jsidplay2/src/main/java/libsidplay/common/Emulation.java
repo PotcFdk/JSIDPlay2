@@ -17,7 +17,7 @@ public enum Emulation {
 	 * <LI>SID emulation forced by user configuration
 	 * <LI>default SID emulation
 	 * </OL>
-	 * 
+	 *
 	 * @return SID emulation to be used for SID number 0..MAX_SIDS-1
 	 */
 	public static Emulation getEmulation(IEmulationSection emulationSection, SidTune tune, int sidNum) {

@@ -33,10 +33,10 @@ import libsidplay.config.IFilterSection;
 public class ReSIDfp extends ReSIDBase {
 
 	/**
-	 * FakeStereo mode uses two chips using the same base address. Write
-	 * commands are routed two both SIDs, while read command can be configured
-	 * to be processed by a specific SID chip.
-	 * 
+	 * FakeStereo mode uses two chips using the same base address. Write commands
+	 * are routed two both SIDs, while read command can be configured to be
+	 * processed by a specific SID chip.
+	 *
 	 * @author ken
 	 *
 	 */
@@ -81,8 +81,7 @@ public class ReSIDfp extends ReSIDBase {
 	/**
 	 * Constructor
 	 *
-	 * @param context
-	 *            {@link EventScheduler} context to use.
+	 * @param context {@link EventScheduler} context to use.
 	 */
 	public ReSIDfp(EventScheduler context) {
 		super(context);

@@ -45,7 +45,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	public void configure(SidTune tune, IConfig config) {
 		aviVideoQuality = config.getAudioSection().getAviCompressionQuality();
 	}
-	
+
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {

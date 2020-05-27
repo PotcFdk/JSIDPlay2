@@ -77,7 +77,7 @@ class PSid extends Prg {
 	private static final int SIDTUNE_MAX_SONGS = 256;
 
 	private PSidHeader header;
-	
+
 	private Speed songSpeed[] = new Speed[SIDTUNE_MAX_SONGS];
 
 	private KickAssemblerResult preparedDriver;
@@ -104,7 +104,7 @@ class PSid extends Prg {
 	@Override
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
-			HashMap<String, String> globals = new HashMap<String, String>();
+			HashMap<String, String> globals = new HashMap<>();
 			globals.put("pc", String.valueOf(info.determinedDriverAddr));
 			globals.put("songNum", String.valueOf(info.currentSong));
 			globals.put("songs", String.valueOf(info.songs));
@@ -134,7 +134,7 @@ class PSid extends Prg {
 		}
 		info.determinedDriverLength = preparedDriver.getData().length - 2;
 		System.arraycopy(preparedDriver.getData(), 2, mem, info.determinedDriverAddr, info.determinedDriverLength);
-		if ((info.determinedDriverLength + 255) >> 8 != 1) {
+		if (info.determinedDriverLength + 255 >> 8 != 1) {
 			throw new RuntimeException("Driver must not be greater than one block! " + PSID_DRIVER_ASM);
 		}
 		Integer start = preparedDriver.getResolvedSymbols().get("start");
@@ -393,19 +393,19 @@ class PSid extends Prg {
 		int model2 = 0;
 		int model3 = 0;
 		if (psid.header.version >= 2) {
-			clock = (psid.header.flags >> 2) & 3;
-			model1 = (psid.header.flags >> 4) & 3;
+			clock = psid.header.flags >> 2 & 3;
+			model1 = psid.header.flags >> 4 & 3;
 
 			psid.info.relocStartPage = (short) (psid.header.relocStartPage & 0xff);
 			psid.info.relocPages = (short) (psid.header.relocPages & 0xff);
 
 		}
 		if (psid.header.version >= 3) {
-			model2 = (psid.header.flags >> 6) & 3;
+			model2 = psid.header.flags >> 6 & 3;
 
 			/* Handle 2nd SID chip location */
 			int sid2loc = 0xd000 | (psid.header.sidChip2MiddleNybbles & 0xff) << 4;
-			if (((sid2loc >= 0xd420 && sid2loc < 0xd800) || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
+			if ((sid2loc >= 0xd420 && sid2loc < 0xd800 || sid2loc >= 0xde00) && (sid2loc & 0x10) == 0) {
 				psid.info.sidChipBase[1] = sid2loc;
 				if (model2 == 0) {
 					// If Unknown then SID will be same SID as the first SID
@@ -414,11 +414,11 @@ class PSid extends Prg {
 			}
 		}
 		if (psid.header.version >= 4) {
-			model3 = (psid.header.flags >> 8) & 3;
+			model3 = psid.header.flags >> 8 & 3;
 
 			/* Handle 3rd SID chip location */
 			int sid3loc = 0xd000 | (psid.header.sidChip3MiddleNybbles & 0xff) << 4;
-			if (((sid3loc >= 0xd420 && sid3loc < 0xd800) || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
+			if ((sid3loc >= 0xd420 && sid3loc < 0xd800 || sid3loc >= 0xde00) && (sid3loc & 0x10) == 0) {
 				psid.info.sidChipBase[2] = sid3loc;
 				if (model3 == 0) {
 					// If Unknown then SID will be same SID as the first SID
@@ -449,16 +449,16 @@ class PSid extends Prg {
 	public byte[] getPSidHeader() {
 		return header.getArray();
 	}
-	
+
 	/**
 	 * Convert 32-bit PSID-style speed word to internal tables.
-	 * 
+	 *
 	 * @param speed The speed to convert.
 	 */
 	private void convertOldStyleSpeedToTables(long speed) {
 		for (int s = 0; s < SIDTUNE_MAX_SONGS; s++) {
 			int i = s > 31 ? 31 : s;
-			if ((speed & (1 << i)) != 0) {
+			if ((speed & 1 << i) != 0) {
 				songSpeed[s] = CIA_1A;
 			} else {
 				songSpeed[s] = VBI;
@@ -571,7 +571,7 @@ class PSid extends Prg {
 
 	/**
 	 * Calculate MD5 checksum.
-	 * 
+	 *
 	 * @return MD5 checksum as hex string
 	 */
 	@Override

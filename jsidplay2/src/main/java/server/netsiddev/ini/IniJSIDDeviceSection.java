@@ -5,9 +5,9 @@ import sidplay.ini.IniSection;
 
 /**
  * SIDPlay2 section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniJSIDDeviceSection extends IniSection {
 	protected IniJSIDDeviceSection(final IniReader ini) {

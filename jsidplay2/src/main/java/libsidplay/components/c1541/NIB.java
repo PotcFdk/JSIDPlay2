@@ -61,15 +61,11 @@ public class NIB extends G64 {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param gcr
-	 *            GCR support
-	 * @param fileName
-	 *            disk image file name
-	 * @param fd
-	 *            file handle of the disk image
-	 * @param readOnly
-	 *            mount read-only?
+	 *
+	 * @param gcr      GCR support
+	 * @param fileName disk image file name
+	 * @param fd       file handle of the disk image
+	 * @param readOnly mount read-only?
 	 */
 	public NIB(final GCR gcr, final String fileName, final RandomAccessFile fd, final boolean readOnly) {
 		super(gcr, fileName, fd, readOnly);
@@ -77,9 +73,8 @@ public class NIB extends G64 {
 
 	/**
 	 * Read image in G64 format and fill this GCR data and speed zone data.
-	 * 
-	 * @throws IOException
-	 *             disk image file could not be attached
+	 *
+	 * @throws IOException disk image file could not be attached
 	 */
 	@Override
 	protected void attach() throws IOException {
@@ -101,7 +96,7 @@ public class NIB extends G64 {
 			trackOffsets[track * 2] = 12 + MAX_TRACKS_1541 * 16 + track * 7930;
 			trackOffsets[track * 2 + 1] = 0; /* no halftracks */
 			/* set speed zone data */
-			speedZoneOffsets[track * 2] = (nibHeader[17 + track * 2] & 0x03);
+			speedZoneOffsets[track * 2] = nibHeader[17 + track * 2] & 0x03;
 			speedZoneOffsets[track * 2 + 1] = 0;
 		}
 
@@ -112,7 +107,7 @@ public class NIB extends G64 {
 			Arrays.fill(trackData, (byte) 0xff);
 
 			// Skip halftracks if present in image
-			if (nibHeader[headerOffset] < (track + 1) << 1) {
+			if (nibHeader[headerOffset] < track + 1 << 1) {
 				fd.seek(fd.getFilePointer() + MNIB_TRACK_LENGTH);
 				headerOffset += 2;
 			}
@@ -156,11 +151,10 @@ public class NIB extends G64 {
 	}
 
 	/**
-	 * try to extract one complete cycle of GCR data from an 8kB buffer. Align
-	 * track to sector gap if possible, else align to track 0, else copy cyclic
-	 * loop from begin of source. If buffer is pure nonsense, return tracklen =
-	 * 0; [Input] destination buffer, source buffer [Return] length of copied
-	 * track fragment
+	 * try to extract one complete cycle of GCR data from an 8kB buffer. Align track
+	 * to sector gap if possible, else align to track 0, else copy cyclic loop from
+	 * begin of source. If buffer is pure nonsense, return tracklen = 0; [Input]
+	 * destination buffer, source buffer [Return] length of copied track fragment
 	 */
 	private int extractGCRtrack(byte[] dest, byte[] src) {
 		/* start position of cycle */
@@ -203,7 +197,7 @@ public class NIB extends G64 {
 			int syncPos;
 			if ((syncPos = startPos + MIN_TRACK_LENGTH) >= stopPos) {
 				cycle.cycleStop = cycle.cycleStart;
-				return (0); /* no cycle found */
+				return 0; /* no cycle found */
 			}
 
 			/* try to find next sync */
@@ -218,16 +212,18 @@ public class NIB extends G64 {
 						cycle_pos = -1;
 						break;
 					}
-					if ((p1 = findSync(gcrData, p1, stopPos)) == -1)
+					if ((p1 = findSync(gcrData, p1, stopPos)) == -1) {
 						break;
-					if ((p2 = findSync(gcrData, p2, stopPos)) == -1)
+					}
+					if ((p2 = findSync(gcrData, p2, stopPos)) == -1) {
 						break;
+					}
 				}
 
 				if (cycle_pos != -1) {
 					cycle.cycleStart = startPos;
 					cycle.cycleStop = cycle_pos;
-					return (cycle_pos - startPos);
+					return cycle_pos - startPos;
 				}
 			}
 			startPos = findSync(gcrData, startPos, stopPos);
@@ -252,10 +248,11 @@ public class NIB extends G64 {
 
 		/* try to find sector 0 */
 		while (pos < bufferEnd) {
-			if ((pos = findSync(gcrData, pos, bufferEnd)) == -1)
+			if ((pos = findSync(gcrData, pos, bufferEnd)) == -1) {
 				return -1;
-			if ((gcrData[pos + 0] == 0x52) && ((gcrData[pos + 1] & 0xc0) == 0x40) && ((gcrData[pos + 2] & 0x0f) == 0x05)
-					&& ((gcrData[pos + 3] & 0xfc) == 0x28)) {
+			}
+			if (gcrData[pos + 0] == 0x52 && (gcrData[pos + 1] & 0xc0) == 0x40 && (gcrData[pos + 2] & 0x0f) == 0x05
+					&& (gcrData[pos + 3] & 0xfc) == 0x28) {
 				break;
 			}
 		}
@@ -263,14 +260,16 @@ public class NIB extends G64 {
 		/* find last GCR byte before sync */
 		do {
 			pos--;
-			if (pos == 0)
+			if (pos == 0) {
 				pos += tracklen;
+			}
 		} while (gcrData[pos] == (byte) 0xff);
 
 		/* move to first sync GCR byte */
 		pos++;
-		while (pos >= tracklen)
+		while (pos >= tracklen) {
 			pos -= tracklen;
+		}
 
 		return pos;
 	}
@@ -281,15 +280,17 @@ public class NIB extends G64 {
 				pos = gcrEnd;
 				return -1; /* not found */
 			}
-			if (((gcrData[pos + 0] & 0x03) == 0x03) && (gcrData[pos + 1] == (byte) 0xff))
+			if ((gcrData[pos + 0] & 0x03) == 0x03 && gcrData[pos + 1] == (byte) 0xff) {
 				break;
+			}
 			pos++;
 		}
 
 		pos++;
-		while ((pos < gcrEnd) && (gcrData[pos] == (byte) 0xff))
+		while (pos < gcrEnd && gcrData[pos] == (byte) 0xff) {
 			pos++;
-		return (pos < gcrEnd) ? pos : -1;
+		}
+		return pos < gcrEnd ? pos : -1;
 	}
 
 	private int findSectorGap(byte[] gcrData, int tracklen) {
@@ -304,8 +305,9 @@ public class NIB extends G64 {
 		int maxgap = 0;
 		/* try to find biggest (sector) gap */
 		while (pos < bufferEnd) {
-			if ((pos = findSync(gcrData, pos, bufferEnd)) == -1)
+			if ((pos = findSync(gcrData, pos, bufferEnd)) == -1) {
 				break;
+			}
 			int gap = pos - syncLast;
 			if (gap > maxgap) {
 				maxgap = gap;
@@ -314,21 +316,24 @@ public class NIB extends G64 {
 			syncLast = pos;
 		}
 
-		if (maxgap == 0)
+		if (maxgap == 0) {
 			return -1; /* no gap found */
+		}
 
 		/* find last GCR byte before sync */
 		pos = syncMax;
 		do {
 			pos--;
-			if (pos == 0)
+			if (pos == 0) {
 				pos += tracklen;
+			}
 		} while (gcrData[pos] == (byte) 0xff);
 
 		/* move to first sync GCR byte */
 		pos++;
-		while (pos >= tracklen)
+		while (pos >= tracklen) {
 			pos -= tracklen;
+		}
 
 		return pos;
 	}

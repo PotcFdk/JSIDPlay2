@@ -9,7 +9,7 @@ public class Reloc65 {
 
 	private static final byte CMP_O64[] = { 1, 0, 'o', '6', '5' };
 
-	private static final int bufPos = (9 * 2 + 8); /* 16 bit header */
+	private static final int bufPos = 9 * 2 + 8; /* 16 bit header */
 
 	private int tdiff;
 
@@ -27,7 +27,7 @@ public class Reloc65 {
 		int dlen = ((buf[15] & 0xff) << 8) + (buf[14] & 0xff);
 
 		tdiff = addr - tbase;
-		globals = new HashMap<String, Integer>();
+		globals = new HashMap<>();
 
 		byte[] segt = buf;
 		int segtPos = hlen;
@@ -46,7 +46,7 @@ public class Reloc65 {
 
 		reloc_globals(extab, extabPos);
 
-		buf[9] = (byte) ((addr >> 8) & 255);
+		buf[9] = (byte) (addr >> 8 & 255);
 		buf[8] = (byte) (addr & 255);
 
 		return ByteBuffer.wrap(segt, segtPos, tlen);
@@ -55,7 +55,7 @@ public class Reloc65 {
 	private int read_options(byte[] buf, int pos) {
 		int l = 0;
 		int c = buf[pos + 0] & 0xff;
-		while ((c != 0)) {
+		while (c != 0) {
 			l += c;
 			c = buf[pos + l] & 0xff;
 		}
@@ -77,7 +77,7 @@ public class Reloc65 {
 				tmp[j] = buf[pos + l + j];
 			}
 
-			while (buf[pos + (l++)] != 0) {
+			while (buf[pos + l++] != 0) {
 			}
 			i++;
 		}
@@ -106,7 +106,7 @@ public class Reloc65 {
 						newv = old + find_global(rtab, rtabPos);
 					}
 					buf[bufPos + adr] = (byte) (newv & 255);
-					buf[bufPos + adr + 1] = (byte) ((newv >> 8) & 255);
+					buf[bufPos + adr + 1] = (byte) (newv >> 8 & 255);
 					break;
 				}
 				case 0x40: {
@@ -117,7 +117,7 @@ public class Reloc65 {
 					} else {
 						newv = old + find_global(rtab, rtabPos);
 					}
-					buf[bufPos + adr] = (byte) ((newv >> 8) & 255);
+					buf[bufPos + adr] = (byte) (newv >> 8 & 255);
 					rtab[rtabPos] = (byte) (newv & 255);
 					rtabPos++;
 					break;
@@ -134,8 +134,9 @@ public class Reloc65 {
 					break;
 				}
 				}
-				if (seg == 0)
+				if (seg == 0) {
 					rtabPos += 2;
+				}
 			}
 		}
 		if (adr > len) {
@@ -155,7 +156,7 @@ public class Reloc65 {
 
 		int newv = 0;
 		while (n != 0) {
-			while ((buf[bufPos++]) != 0) {
+			while (buf[bufPos++] != 0) {
 			}
 			int seg = buf[bufPos] & 0xff;
 			int old = (buf[bufPos + 1] & 0xff) + ((buf[bufPos + 2] & 0xff) << 8);
@@ -165,7 +166,7 @@ public class Reloc65 {
 				newv = old + find_global(buf, bufPos + 1);
 			}
 			buf[bufPos + 1] = (byte) (newv & 255);
-			buf[bufPos + 2] = (byte) ((newv >> 8) & 255);
+			buf[bufPos + 2] = (byte) (newv >> 8 & 255);
 			bufPos += 3;
 			n--;
 		}

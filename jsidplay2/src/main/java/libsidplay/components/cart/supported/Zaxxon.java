@@ -31,14 +31,12 @@ public class Zaxxon extends Cartridge {
 
 	/**
 	 * Load a Zaxxon cartridge.
-	 * 
-	 * @param dis
-	 *            stream to load from
+	 *
+	 * @param dis stream to load from
 	 *
 	 * @param pla
 	 *
-	 * @throws IOException
-	 *             load error
+	 * @throws IOException load error
 	 */
 	public Zaxxon(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
@@ -49,8 +47,9 @@ public class Zaxxon extends Cartridge {
 
 		// the reason both 0x10 and 0x20 are OK is that the first 0x10 is only
 		// used, and the second part is probably just a mirror of the first.
-		if (chipHeader[0xc] != (byte) 0x80 || (chipHeader[0xe] != 0x10 && chipHeader[0xe] != 0x20))
+		if (chipHeader[0xc] != (byte) 0x80 || chipHeader[0xe] != 0x10 && chipHeader[0xe] != 0x20) {
 			throw new IOException("Unexpected Chip header!");
+		}
 
 		int bankLen = (chipHeader[0xe] & 0xff) << 8;
 		roml = new byte[bankLen];
@@ -61,8 +60,9 @@ public class Zaxxon extends Cartridge {
 		romh = new byte[2][0x2000];
 		for (int i = 0; i < 2; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xc] != (byte) 0xa0 || chipHeader[0xe] != 0x20)
+			if (chipHeader[0xc] != (byte) 0xa0 || chipHeader[0xe] != 0x20) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			byte bankNum = chipHeader[0xb];
 			dis.readFully(romh[bankNum]);
 		}

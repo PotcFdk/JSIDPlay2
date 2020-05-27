@@ -15,9 +15,9 @@ import java.nio.ShortBuffer;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import javafx.animation.Animation;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -188,19 +188,19 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			serverSocket.receive(receivePacket);
 //			int sequenceNo = ((receivePacket.getData()[1] & 0xff) << 8) | (receivePacket.getData()[0] & 0xff);
 //			int frameNo = ((receivePacket.getData()[3] & 0xff) << 8) | (receivePacket.getData()[2] & 0xff);
-			int lineNo = ((receivePacket.getData()[5] & 0xff) << 8) | (receivePacket.getData()[4] & 0xff);
-			boolean isLastPacketOfFrame = (lineNo & (1 << 15)) != 0;
+			int lineNo = (receivePacket.getData()[5] & 0xff) << 8 | receivePacket.getData()[4] & 0xff;
+			boolean isLastPacketOfFrame = (lineNo & 1 << 15) != 0;
 			lineNo &= lineNo & ~(1 << 15);
-			int pixelsPerLine = ((receivePacket.getData()[7] & 0xff) << 8) | (receivePacket.getData()[6] & 0xff);
+			int pixelsPerLine = (receivePacket.getData()[7] & 0xff) << 8 | receivePacket.getData()[6] & 0xff;
 			int linesPerPacket = receivePacket.getData()[8] & 0xff;
 			int bitsPerPixel = receivePacket.getData()[9] & 0xff;
-			int encodingType = ((receivePacket.getData()[11] & 0xff) << 8) | (receivePacket.getData()[10] & 0xff);
+			int encodingType = (receivePacket.getData()[11] & 0xff) << 8 | receivePacket.getData()[10] & 0xff;
 			byte[] pixelData = new byte[linesPerPacket * pixelsPerLine * bitsPerPixel / 8];
 			System.arraycopy(receivePacket.getData(), 12, pixelData, 0, pixelData.length);
-			assert (pixelsPerLine == SCREEN_WIDTH);
-			assert (linesPerPacket == 4);
-			assert (bitsPerPixel == 4);
-			assert (encodingType == 0); // or later 1 for RLE?
+			assert pixelsPerLine == SCREEN_WIDTH;
+			assert linesPerPacket == 4;
+			assert bitsPerPixel == 4;
+			assert encodingType == 0; // or later 1 for RLE?
 
 			if (frameStart) {
 				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* linesPerPacket */);
@@ -213,8 +213,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 					for (int x = 0; x < pixelsPerLine; x++) {
 						graphicsDataBuffer <<= 4;
-						graphicsDataBuffer |= (pixelData[pixelDataOffset + x >> 1] >> ((x & 1) << 2)) & 0xf;
-						if (((x + 1) & 0x7) == 0) {
+						graphicsDataBuffer |= pixelData[pixelDataOffset + x >> 1] >> ((x & 1) << 2) & 0xf;
+						if ((x + 1 & 0x7) == 0) {
 							palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color));
 						}
 					}
@@ -298,7 +298,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						screen.getWidth(), screen.getHeight());
 			}
 		});
-		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
+		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 
 		imageQueue = new ImageQueue();
 

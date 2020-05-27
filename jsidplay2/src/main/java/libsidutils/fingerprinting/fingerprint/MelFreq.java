@@ -6,7 +6,7 @@ package libsidutils.fingerprinting.fingerprint;
 public class MelFreq {
 
 	public static float Mel2Freq(float melFreq) {
-		return (float) ((Math.pow(10, (melFreq / 2595) - 1)) * 700);
+		return (float) (Math.pow(10, melFreq / 2595 - 1) * 700);
 	}
 
 	public static float Freq2Mel(float freq) {

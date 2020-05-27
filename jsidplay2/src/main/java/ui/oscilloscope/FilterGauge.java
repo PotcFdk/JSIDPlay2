@@ -16,7 +16,7 @@ public final class FilterGauge extends SIDGauge {
 
 	public FilterGauge() {
 	}
-	
+
 	public FilterGauge(C64Window window, Player player) {
 		super(window, player);
 	}

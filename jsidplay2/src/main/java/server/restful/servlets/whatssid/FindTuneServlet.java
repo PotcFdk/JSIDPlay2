@@ -44,7 +44,7 @@ public class FindTuneServlet extends JSIDPlay2Servlet {
 		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
 		MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
 		entityManager.clear();
-		
+
 		setOutput(request, response, musicInfoBean, MusicInfoBean.class);
 	}
 }

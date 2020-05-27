@@ -86,19 +86,21 @@ public class Update extends C64Window {
 			// undetermined local or remote version? Do not flag an update
 			return false;
 		}
-		for (int i = 0; i < currentVersion.length; i++)
+		for (int i = 0; i < currentVersion.length; i++) {
 			if (currentVersion[i] != latestVersion[i]) {
 				// current version is outdated
 				return currentVersion[i] < latestVersion[i];
 			}
+		}
 		// version is equal
 		return false;
 	}
 
 	private int[] getVersionNumbers(String ver) {
 		Matcher m = Pattern.compile("(\\d+)\\.(\\d+)").matcher(ver);
-		if (!m.matches())
+		if (!m.matches()) {
 			throw new IllegalArgumentException("Malformed FW version");
+		}
 
 		return new int[] { Integer.parseInt(m.group(1)), // major
 				Integer.parseInt(m.group(2)), // minor

@@ -36,14 +36,14 @@ public class GameBasePage extends C64VBox implements UIPart {
 	private ImageView screenshot;
 	private String fileToRun;
 	private final BiPredicate<File, File> FILE_TO_RUN_DETECTOR = (file,
-			toAttach) -> (fileToRun.length() == 0 && Convenience.LEXICALLY_FIRST_MEDIA.test(file, toAttach))
+			toAttach) -> fileToRun.length() == 0 && Convenience.LEXICALLY_FIRST_MEDIA.test(file, toAttach)
 					|| fileToRun.equals(file.getName());
 	private ObservableList<Games> allGames;
 	private ObservableList<Games> filteredGames;
 
 	public GameBasePage() {
 	}
-	
+
 	public GameBasePage(C64Window window, Player player) {
 		super(window, player);
 	}

@@ -17,7 +17,7 @@ public final class EnvelopeGauge extends SIDGauge {
 
 	public EnvelopeGauge() {
 	}
-	
+
 	public EnvelopeGauge(C64Window window, Player player) {
 		super(window, player);
 	}

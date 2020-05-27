@@ -15,7 +15,7 @@ import libsidplay.config.IEmulationSection;
 /**
  *
  * @author Ken Händel
- * 
+ *
  */
 public class SIDBlasterEmu extends SIDEmu {
 
@@ -23,7 +23,7 @@ public class SIDBlasterEmu extends SIDEmu {
 	 * FakeStereo mode uses two chips using the same base address. Write commands
 	 * are routed two both SIDs, while read command can be configured to be
 	 * processed by a specific SID chip.
-	 * 
+	 *
 	 * @author ken
 	 *
 	 */
@@ -76,13 +76,13 @@ public class SIDBlasterEmu extends SIDEmu {
 	private final EventScheduler context;
 
 	private final SidBlasterBuilder hardSIDBuilder;
-	
+
 	private final HardSID hardSID;
 
 	private final byte deviceID;
 
 	private int sidNum;
-	
+
 	private final ChipModel chipModel;
 
 	private boolean doReadWriteDelayed;
@@ -118,19 +118,20 @@ public class SIDBlasterEmu extends SIDEmu {
 	public void write(int addr, final byte data) {
 		// clock();
 		super.write(addr, data);
-		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, clocksSinceLastAccess, (byte) addr,
-					data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc())
+					data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc()) {
 				;
+			}
 		});
 	}
 
 	@Override
 	public void clock() {
-		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 		doWriteDelayed(() -> {
 			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
 		});

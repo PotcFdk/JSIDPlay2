@@ -40,13 +40,10 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Connect to server, if not already connected or connection changed
-	 * 
-	 * @param hostname
-	 *            server host name
-	 * @param port
-	 *            server port address
-	 * @throws IOException
-	 *             socket I/O error
+	 *
+	 * @param hostname server host name
+	 * @param port     server port address
+	 * @throws IOException socket I/O error
 	 */
 	public void open(String hostname, int port) throws IOException {
 		if (connection.isInvalidated()) {
@@ -59,13 +56,10 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Open connection to server
-	 * 
-	 * @param hostname
-	 *            server host name
-	 * @param port
-	 *            server port address
-	 * @throws IOException
-	 *             socket I/O error
+	 *
+	 * @param hostname server host name
+	 * @param port     server port address
+	 * @throws IOException socket I/O error
 	 */
 	private void connect(String hostname, int port) throws IOException {
 		connectedSocket = new Socket();
@@ -91,7 +85,7 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Connection has been closed?
-	 * 
+	 *
 	 * @return connection closed
 	 */
 	private boolean isClosed() {
@@ -107,7 +101,7 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Connection has been invalidated?
-	 * 
+	 *
 	 * @return connection invalid, must be re-opened
 	 */
 	public boolean isInvalidated() {
@@ -116,11 +110,9 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Send byte array to server.
-	 * 
-	 * @param cmd
-	 *            byte array to send
-	 * @throws IOException
-	 *             socket I/O error
+	 *
+	 * @param cmd byte array to send
+	 * @throws IOException socket I/O error
 	 */
 	public void send(byte[] cmd) throws IOException {
 		connectedSocket.getOutputStream().write(cmd);
@@ -128,10 +120,9 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Receive byte from server.
-	 * 
+	 *
 	 * @return received byte
-	 * @throws IOException
-	 *             socket I/O error
+	 * @throws IOException socket I/O error
 	 */
 	public int receive() throws IOException {
 		return connectedSocket.getInputStream().read();
@@ -139,17 +130,17 @@ public class NetSIDDevConnection {
 
 	/**
 	 * Receive zero terminated byte array as string (ISO-88-59-1).
-	 * 
+	 *
 	 * @return string received from server.
-	 * @throws IOException
-	 *             socket I/O error
+	 * @throws IOException socket I/O error
 	 */
 	public String receiveString() throws IOException {
 		int chIdx;
 		for (chIdx = 0; chIdx < stringBytes.length; chIdx++) {
 			connectedSocket.getInputStream().read(stringBytes, chIdx, 1);
-			if (stringBytes[chIdx] <= 0)
+			if (stringBytes[chIdx] <= 0) {
 				break;
+			}
 		}
 		return new String(stringBytes, 0, chIdx, ISO_8859_1);
 	}

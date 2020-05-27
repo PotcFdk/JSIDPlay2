@@ -28,7 +28,7 @@ public class TryWrite implements NetSIDPkg {
 		cmd[i++] = 0;
 		cmd[i++] = 0;
 		for (Write write : writes) {
-			cmd[i++] = (byte) ((write.getCycles() >> 8) & 0xff);
+			cmd[i++] = (byte) (write.getCycles() >> 8 & 0xff);
 			cmd[i++] = (byte) (write.getCycles() & 0xff);
 			cmd[i++] = write.getReg();
 			cmd[i++] = write.getData();

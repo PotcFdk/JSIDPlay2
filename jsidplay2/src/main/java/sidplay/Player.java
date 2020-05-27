@@ -91,9 +91,9 @@ import sidplay.player.Timer;
 
 /**
  * The player adds some music player capabilities to the HardwareEnsemble.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class Player extends HardwareEnsemble implements VideoDriver, SIDListener {
 
@@ -143,7 +143,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Music player state.
 	 */
-	private ObjectProperty<State> stateProperty = new ObjectProperty<State>(State.class.getSimpleName(), QUIT);
+	private ObjectProperty<State> stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
 	/**
 	 * Play timer.
 	 */
@@ -181,7 +181,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	};
 	/**
 	 * Currently used audio and corresponding audio driver.
-	 * 
+	 *
 	 * <B>Note:</B> If audio driver has been set externally by
 	 * {@link Player#setAudioDriver(AudioDriver)}, audio is null!
 	 */
@@ -242,12 +242,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<VideoDriver>();
+	protected List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Consumer for SID register writes
 	 */
-	protected List<SIDListener> sidListeners = new CopyOnWriteArrayList<SIDListener>();
+	protected List<SIDListener> sidListeners = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -261,7 +261,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Create a Music Player.
-	 * 
+	 *
 	 * @param config configuration
 	 */
 	public Player(final IConfig config) {
@@ -270,7 +270,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Create a Music Player.
-	 * 
+	 *
 	 * @param config   configuration
 	 * @param cpuClass CPU class implementation
 	 */
@@ -290,7 +290,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					final SIDMixer sidMixer = ((SIDMixer) sidBuilder);
+					final SIDMixer sidMixer = (SIDMixer) sidBuilder;
 
 					IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
@@ -342,10 +342,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			 * <LI>Play again looping song
 			 * <LI>End tune
 			 * </OL>
-			 * 
+			 *
 			 * <B>Note:</B> Our streaming audio drivers must never play infinitely (e.g. MP4
 			 * recording)
-			 * 
+			 *
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
@@ -363,7 +363,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 			/**
 			 * If a tune starts playing, fade-in volume.
-			 * 
+			 *
 			 * @see sidplay.player.Timer#fadeInStart(int)
 			 */
 			@Override
@@ -375,7 +375,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 			/**
 			 * If a tune is short before stop time, fade-out volume.
-			 * 
+			 *
 			 * @see sidplay.player.Timer#fadeOutStart(int)
 			 */
 			@Override
@@ -404,7 +404,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set a fingerprint matcher.
-	 * 
+	 *
 	 * @param fingerPrintMatcher a fingerprint matcher
 	 */
 	public void setFingerPrintMatcher(IFingerprintMatcher fingerPrintMatcher) {
@@ -421,7 +421,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Call to configure VIC chips thread-safe.
-	 * 
+	 *
 	 * @param action VIC configuration action
 	 */
 	public final void configureVICs(Consumer<VIC> action) {
@@ -430,7 +430,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Configure all available SIDs thread-safe.
-	 * 
+	 *
 	 * @param action SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
@@ -439,7 +439,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Configure one specific SID thread-safe.
-	 * 
+	 *
 	 * @param chipNum SID chip number
 	 * @param action  SID chip consumer
 	 */
@@ -449,7 +449,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Configure the mixer, optionally implemented by SID builder thread-safe.
-	 * 
+	 *
 	 * @param action mixer consumer
 	 */
 	public final void configureMixer(final Consumer<Mixer> action) {
@@ -463,7 +463,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * The runnable is executed immediately in player thread or scheduled
 	 * thread-safe.
-	 * 
+	 *
 	 * @param eventName event name for scheduling
 	 * @param runnable  runnable to execute in player thread
 	 */
@@ -539,7 +539,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Simulate a user typed-in command.
-	 * 
+	 *
 	 * @param command command to type-in
 	 */
 	public final void typeInCommand(final String command) {
@@ -550,7 +550,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Enter basic command after reset.
-	 * 
+	 *
 	 * @param command basic command after reset
 	 */
 	private void setCommand(final String command) {
@@ -559,7 +559,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * What is the current playing time in secs.
-	 * 
+	 *
 	 * @return the current playing time in secs
 	 */
 	public final double time() {
@@ -569,7 +569,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get current play-list.
-	 * 
+	 *
 	 * @return current tune-based play list
 	 */
 	public final PlayList getPlayList() {
@@ -578,7 +578,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get current timer.
-	 * 
+	 *
 	 * @return song length timer
 	 */
 	public final Timer getTimer() {
@@ -587,7 +587,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get the currently played tune.
-	 * 
+	 *
 	 * @return the currently played tune
 	 */
 	public final SidTune getTune() {
@@ -596,7 +596,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set a tune to play.
-	 * 
+	 *
 	 * @param tune tune to play
 	 */
 	public final void setTune(final SidTune tune) {
@@ -623,7 +623,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Stop or wait for player thread.
-	 * 
+	 *
 	 * @param quitOrWait quit player (true) or wait for termination, only (false)
 	 */
 	public synchronized final void stopC64(final boolean quitOrWait) {
@@ -640,7 +640,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set a hook to be called when the player has opened a tune.
-	 * 
+	 *
 	 * @param menuHook menu hook
 	 */
 	public final void setMenuHook(final Consumer<Player> menuHook) {
@@ -649,7 +649,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set a hook to be called when the player has played a chunk.
-	 * 
+	 *
 	 * @param interactivityHook
 	 */
 	public final void setInteractivityHook(final Consumer<Player> interactivityHook) {
@@ -658,7 +658,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set a hook to be called when WhatsSid has detected a tune.
-	 * 
+	 *
 	 * @param whatsSidHook
 	 */
 	public void setWhatsSidHook(Consumer<MusicInfoWithConfidenceBean> whatsSidHook) {
@@ -667,7 +667,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get the player's state,
-	 * 
+	 *
 	 * @return the player's state
 	 */
 	public final ObjectProperty<State> stateProperty() {
@@ -713,9 +713,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Open player, that means basically: Reset C64 and start playing the tune.
-	 * 
+	 *
 	 * <B>Note:</B> Audio driver different to {@link Audio} members are on hold!
-	 * 
+	 *
 	 * @throws LineUnavailableException audio line currently in use
 	 * @throws IOException              audio output file cannot be written
 	 * @throws InterruptedException
@@ -758,7 +758,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Create configured SID chip implementation (software/hardware).
-	 * 
+	 *
 	 * @param cpuClock CPU clock frequency
 	 * @return SID builder
 	 */
@@ -780,7 +780,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get currently used audio driver.
-	 * 
+	 *
 	 * @return currently used audio driver
 	 */
 	public AudioDriver getAudioDriver() {
@@ -799,7 +799,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Check the configuration.
-	 * 
+	 *
 	 * @throws IOException configuration error
 	 */
 	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
@@ -820,7 +820,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune (e.g. {@link MP3Stream})
-	 * 
+	 *
 	 * @param audioDriver for example {@link MP3Stream}
 	 * @throws IOException configuration error
 	 */
@@ -831,9 +831,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Play routine (clock chips until audio buffer is filled completely or player
 	 * gets paused).
-	 * 
+	 *
 	 * @return continue to play next time?
-	 * 
+	 *
 	 * @throws InterruptedException audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
@@ -876,7 +876,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Play tune.
-	 * 
+	 *
 	 * @param tune tune to play (RESET means just reset C64)
 	 */
 	public final void play(final SidTune tune) {
@@ -885,7 +885,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Reset C64 and enter basic command.
-	 * 
+	 *
 	 * @param command basic command to be entered after a normal reset
 	 */
 	public final void resetC64(String command) {
@@ -894,7 +894,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Turn C64 off and on, load a tune and enter basic command.
-	 * 
+	 *
 	 * @param tune    tune to play (RESET means just reset C64)
 	 * @param command basic command to be entered after a normal reset
 	 */
@@ -971,7 +971,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get mixer info.
-	 * 
+	 *
 	 * @param function     mixer function to apply
 	 * @param defaultValue default value, if SIDBuilder does not implement a mixer
 	 * @return mixer info
@@ -982,7 +982,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get hardware SID builder info.
-	 * 
+	 *
 	 * @param function     hardware SID builder function to apply
 	 * @param defaultValue default value, if SIDBuilder does not implement a
 	 *                     hardware SID builder
@@ -1005,7 +1005,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set song length database.
-	 * 
+	 *
 	 * @param sidDatabase song length database
 	 */
 	public final void setSidDatabase(final SidDatabase sidDatabase) {
@@ -1014,7 +1014,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get song length database info.
-	 * 
+	 *
 	 * @param function     SidDatabase function to apply
 	 * @param              <T> SidDatabase return type
 	 * @param defaultValue default value, if database is not set
@@ -1026,7 +1026,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set SID Tune Information List (STIL).
-	 * 
+	 *
 	 * @param stil SID Tune Information List
 	 */
 	public final void setSTIL(final STIL stil) {
@@ -1035,7 +1035,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get SID Tune Information List info.
-	 * 
+	 *
 	 * @param collectionName entry path to get infos for
 	 * @return SID Tune Information List info
 	 */
@@ -1045,7 +1045,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Get recording filename, add audio related file extension (if known).
-	 * 
+	 *
 	 * @return recording filename
 	 */
 	public String getRecordingFilename() {
@@ -1059,7 +1059,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Set provider of recording filenames.
-	 * 
+	 *
 	 * @param recordingFilenameProvider provider of recording filenames
 	 */
 	public final void setRecordingFilenameProvider(final Function<SidTune, String> recordingFilenameProvider) {
@@ -1068,7 +1068,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Add consumer of VIC screen output as ARGB data
-	 * 
+	 *
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
 	public void addVideoDriver(VideoDriver consumer) {
@@ -1077,7 +1077,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Remove consumer of VIC screen output as ARGB data
-	 * 
+	 *
 	 * @param consumer consumer of C64 screen pixels as ARGB data
 	 */
 	public void removeVideoDriver(VideoDriver consumer) {
@@ -1086,7 +1086,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Add consumer of SID register writes
-	 * 
+	 *
 	 * @param consumer consumer of SID register writes
 	 */
 	public void addSidListener(SIDListener consumer) {
@@ -1095,7 +1095,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Remove consumer of SID register writes
-	 * 
+	 *
 	 * @param consumer consumer of SID register writes
 	 */
 	public void removeSidListener(SIDListener consumer) {
@@ -1128,7 +1128,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * The credits for the authors of many parts of this emulator.
-	 * 
+	 *
 	 * @param properties containing dynamic values for the credits (e.g. version)
 	 * @return the credits
 	 */
@@ -1203,7 +1203,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 	/**
 	 * Test main: Play a tune.
-	 * 
+	 *
 	 * @param args the filename of the tune is the first arg
 	 * @throws SidTuneError SID tune error
 	 * @throws IOException  tune file cannot be read

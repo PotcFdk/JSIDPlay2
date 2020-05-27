@@ -25,7 +25,7 @@ public class TimeConverter {
 
 	/**
 	 * Convert time in minutes and seconds (mm:ss.SSS)
-	 * 
+	 *
 	 * @param time time string
 	 * @return seconds or -1 (invalid format)
 	 */

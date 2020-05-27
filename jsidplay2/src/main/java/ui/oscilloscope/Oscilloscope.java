@@ -5,9 +5,9 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import java.beans.PropertyChangeListener;
 import java.util.function.Consumer;
 
+import javafx.animation.Animation;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -161,7 +161,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		}
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
 				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
-		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
+		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 		sequentialTransition.playFromStart();
 	}
 
@@ -238,7 +238,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	/**
 	 * Sample audio from provided SID.
-	 * 
+	 *
 	 * @param chipNum           SID chip number
 	 * @param sid               provided SID
 	 * @param isLowerResolution lower resolution event occurred (less precision)
@@ -326,7 +326,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 
 	/**
 	 * Update gauges using provided consumer.
-	 * 
+	 *
 	 * @param chipNum SID chip number
 	 * @param updater update method
 	 */

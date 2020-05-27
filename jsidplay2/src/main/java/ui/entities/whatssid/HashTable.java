@@ -21,7 +21,7 @@ public class HashTable {
 	private int idHashTable;
 
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idHashTable", nullable = false)
 	public int getIdHashTable() {
 		return idHashTable;

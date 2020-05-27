@@ -34,7 +34,7 @@ import libsidplay.components.pla.PLA;
  * the verify-related bugs.
  * <p>
  * REU images are pure RAM dumps with no internal structure.
- * 
+ *
  * @author AL
  */
 public class REU extends Cartridge {
@@ -145,13 +145,13 @@ public class REU extends Cartridge {
 				return (byte) (baseAddr >> 8);
 
 			case REGISTER_BASEADDR_LOW:
-				return (byte) (baseAddr);
+				return (byte) baseAddr;
 
 			case REGISTER_RAMADDR_HIGH:
 				return (byte) (ramAddr >> 8);
 
 			case REGISTER_RAMADDR_LOW:
-				return (byte) (ramAddr);
+				return (byte) ramAddr;
 
 			case REGISTER_BANK:
 				return (byte) (ramAddr >> 16);
@@ -160,7 +160,7 @@ public class REU extends Cartridge {
 				return (byte) (dmaLen >> 8);
 
 			case REGISTER_BLOCKLEN_LOW:
-				return (byte) (dmaLen);
+				return (byte) dmaLen;
 
 			case REGISTER_INTERRUPT: {
 				byte value = interrupt;
@@ -188,20 +188,19 @@ public class REU extends Cartridge {
 			address &= 0x1f;
 
 			/*
-			 * How does baseAddress etc. work? The internal register within the
-			 * REU is 16 bits wide. Every CPU write to bank, base and ram
-			 * addresses are backed by a shadow register that holds the
-			 * reference value that is used during the AUTOLOAD mode of command.
-			 * 
-			 * Whenever a write occurs, it goes into the shadow first, and is
-			 * then copied to the register used for DMA operations. However,
-			 * this means that writing low 8 bits will copy the high 8 bits as
-			 * well, and vice versa.
-			 * 
-			 * The bank is a separate register, and the REU tracks overflows of
-			 * the ramAddr and increments bank on overflow. I have chosen to
-			 * store bank on the ramAddr high bits. That is why the bank is
-			 * modified differently from the other modifications.
+			 * How does baseAddress etc. work? The internal register within the REU is 16
+			 * bits wide. Every CPU write to bank, base and ram addresses are backed by a
+			 * shadow register that holds the reference value that is used during the
+			 * AUTOLOAD mode of command.
+			 *
+			 * Whenever a write occurs, it goes into the shadow first, and is then copied to
+			 * the register used for DMA operations. However, this means that writing low 8
+			 * bits will copy the high 8 bits as well, and vice versa.
+			 *
+			 * The bank is a separate register, and the REU tracks overflows of the ramAddr
+			 * and increments bank on overflow. I have chosen to store bank on the ramAddr
+			 * high bits. That is why the bank is modified differently from the other
+			 * modifications.
 			 */
 			switch (address) {
 			case REGISTER_STATUS: {
@@ -227,7 +226,7 @@ public class REU extends Cartridge {
 
 			case REGISTER_BASEADDR_LOW:
 				shadowBaseAddr &= 0xff00;
-				shadowBaseAddr |= (value & 0xff);
+				shadowBaseAddr |= value & 0xff;
 				baseAddr = shadowBaseAddr;
 				return;
 
@@ -242,7 +241,7 @@ public class REU extends Cartridge {
 
 			case REGISTER_RAMADDR_LOW:
 				shadowRamAddr &= 0xffff00;
-				shadowRamAddr |= (value & 0xff);
+				shadowRamAddr |= value & 0xff;
 				/* copy bits, keep Bank */
 				ramAddr &= wrapAround & 0xff0000;
 				ramAddr |= shadowRamAddr & 0xffff;
@@ -251,8 +250,8 @@ public class REU extends Cartridge {
 
 			case REGISTER_BANK:
 				/*
-				 * Modify bank and shadow copy of bank, kept on the high bits of
-				 * ramAddr, which is a deviation from hardware's behavior.
+				 * Modify bank and shadow copy of bank, kept on the high bits of ramAddr, which
+				 * is a deviation from hardware's behavior.
 				 */
 				ramAddr &= 0xffff;
 				ramAddr |= (value & 0xff) << 16;
@@ -269,7 +268,7 @@ public class REU extends Cartridge {
 
 			case REGISTER_BLOCKLEN_LOW:
 				shadowDmaLen &= 0xff00;
-				shadowDmaLen |= (value & 0xff);
+				shadowDmaLen |= value & 0xff;
 				dmaLen = shadowDmaLen;
 				return;
 
@@ -424,8 +423,7 @@ public class REU extends Cartridge {
 			}
 
 			/*
-			 * INC stops on first verify error, but the last byte does get
-			 * compared
+			 * INC stops on first verify error, but the last byte does get compared
 			 */
 			if (oldVerifyError == 0) {
 				/* Fixed C64? */
@@ -449,8 +447,7 @@ public class REU extends Cartridge {
 				}
 			} else {
 				/*
-				 * Set the block finished flag only if the last 2 bytes weren't
-				 * both bad
+				 * Set the block finished flag only if the last 2 bytes weren't both bad
 				 */
 				if (verifyError != 2) {
 					status |= 0x40;

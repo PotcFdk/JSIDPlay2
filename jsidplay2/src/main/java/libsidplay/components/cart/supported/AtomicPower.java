@@ -12,7 +12,7 @@ import libsidplay.components.pla.PLA;
 /**
  * This cartridge has a special A000 RAM mode, enabled by setting the Action
  * Replay control byte to 0x22 (ignoring the bank select lines).
- * 
+ *
  * I believe this is implemented using a bus snooping technique where the cart
  * takes note of R/W and address signals and in that mode updates the RAM
  * whenever a write to 0xa000-0xbfff occurs.
@@ -20,7 +20,7 @@ import libsidplay.components.pla.PLA;
  * It is unknown if the data also goes to the system RAM, or whether the cart
  * enables Ultimax mode to avoid touching the system RAM data. The current
  * implementation updates both the cart RAM and the system RAM.
- * 
+ *
  * @author Antti Lankila
  */
 public class AtomicPower extends Cartridge {
@@ -50,8 +50,9 @@ public class AtomicPower extends Cartridge {
 		romLBanks = new byte[4][0x2000];
 		for (int i = 0; i < 4; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && (chipHeader[0xb] & 0xff) > 3)
+			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && (chipHeader[0xb] & 0xff) > 3) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
 		}
@@ -65,7 +66,7 @@ public class AtomicPower extends Cartridge {
 
 		@Override
 		public void write(int address, byte value) {
-			currentRomBank = ((value >> 3) & 3);
+			currentRomBank = value >> 3 & 3;
 
 			if ((value & 0xe7) == 0x22) {
 				value ^= 3;
@@ -89,16 +90,18 @@ public class AtomicPower extends Cartridge {
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-			if (exportRam)
+			if (exportRam) {
 				return ram[address & 0x1fff];
+			}
 
 			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 
 		@Override
 		public void write(int address, byte value) {
-			if (exportRam)
+			if (exportRam) {
 				ram[address & 0x1fff] = value;
+			}
 		}
 	};
 

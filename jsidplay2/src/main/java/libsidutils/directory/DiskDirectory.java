@@ -27,11 +27,11 @@ public class DiskDirectory {
 		byte[] sectorBytes = new byte[GCR.SECTOR_SIZE];
 		img.getDiskSector(DiskImage.DIR_TRACK_1541, 0, sectorBytes);
 		// Get disk title/ID
-		int afterBamInfos = (5 + DiskImage.MIN_TRACKS_1541 * 4);
+		int afterBamInfos = 5 + DiskImage.MIN_TRACKS_1541 * 4;
 		int freeBlocks = 0;
 		for (int i = 1; i <= 35; i++) {
 			if (i != 18) {
-				freeBlocks += sectorBytes[5 + ((i - 1) * 4)] & 0xff;
+				freeBlocks += sectorBytes[5 + (i - 1) * 4] & 0xff;
 			}
 		}
 		byte[] diskName = new byte[16];
@@ -94,13 +94,10 @@ public class DiskDirectory {
 				final int nrSectors = (lowByte & 0xff) + ((highByte & 0xff) << 8);
 				dir.getDirEntries().add(new DirEntry(nrSectors, fn, fileType) {
 					/**
-					 * Save the program of this directory entry to the specified
-					 * file.
-					 * 
-					 * @param autostartFile
-					 *            file to save
-					 * @throws IOException
-					 *             File write error
+					 * Save the program of this directory entry to the specified file.
+					 *
+					 * @param autostartFile file to save
+					 * @throws IOException File write error
 					 */
 					@Override
 					public void save(File autostartFile) throws IOException {

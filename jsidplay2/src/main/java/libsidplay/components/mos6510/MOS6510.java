@@ -27,11 +27,11 @@ import libsidplay.common.EventScheduler;
 
 /**
  * Cycle-exact 6502/6510 emulation core.
- * 
- * Code is based on work by Simon A. White &lt;sidplay2@yahoo.com&gt;. Original Java
- * port by Ken Händel. Later on, it has been hacked to improve compatibility
- * with Lorenz suite on VICE's test suite.
- * 
+ *
+ * Code is based on work by Simon A. White &lt;sidplay2@yahoo.com&gt;. Original
+ * Java port by Ken Händel. Later on, it has been hacked to improve
+ * compatibility with Lorenz suite on VICE's test suite.
+ *
  * @author Antti Lankila
  */
 public class MOS6510 {
@@ -55,20 +55,20 @@ public class MOS6510 {
 	/**
 	 * The result of the ANE opcode is A = ((A | CONST) & X & IMM), with CONST
 	 * apparently being both chip- and temperature dependent.
-	 * 
+	 *
 	 * The commonly used value for CONST in various documents is 0xee, which is
 	 * however not to be taken for granted (as it is unstable). see here:
 	 * http://visual6502 .org/wiki/index.php?title=6502_Opcode_8B_(XAA,_ANE)
-	 * 
+	 *
 	 * as seen in the list, there are several possible values, and its origin is
 	 * still kinda unknown. instead of the commonly used 0xee we use 0xff here,
-	 * since this will make the only known occurance of this opcode in actual
-	 * code work. see here: https://sourceforge
-	 * .net/tracker/?func=detail&aid=2110948 &group_id=223021&atid=1057617
-	 * 
-	 * FIXME: in the unlikely event that other code surfaces that depends on
-	 * another CONST value, it probably has to be made configurable somehow if
-	 * no value can be found that works for both.
+	 * since this will make the only known occurance of this opcode in actual code
+	 * work. see here: https://sourceforge .net/tracker/?func=detail&aid=2110948
+	 * &group_id=223021&atid=1057617
+	 *
+	 * FIXME: in the unlikely event that other code surfaces that depends on another
+	 * CONST value, it probably has to be made configurable somehow if no value can
+	 * be found that works for both.
 	 */
 	private static final int ANE_CONST = 0xee;
 
@@ -121,8 +121,8 @@ public class MOS6510 {
 	protected boolean irqAssertedOnPin;
 
 	/**
-	 * When IRQ was triggered. -MAX means "during some previous instruction",
-	 * MAX means "no IRQ"
+	 * When IRQ was triggered. -MAX means "during some previous instruction", MAX
+	 * means "no IRQ"
 	 */
 	protected int interruptCycle;
 
@@ -147,22 +147,21 @@ public class MOS6510 {
 
 	/**
 	 * Set the value of V flag (often related to the SO pin)
-	 * 
-	 * @param flag
-	 *            new V flag state
+	 *
+	 * @param flag new V flag state
 	 */
 	public void setFlagV(final boolean flag) {
 		flagV = flag;
 	}
 
 	/**
-	 * Evaluate when to execute an interrupt. Calling this method can also
-	 * result in the decision that no interrupt at all needs to be scheduled.
+	 * Evaluate when to execute an interrupt. Calling this method can also result in
+	 * the decision that no interrupt at all needs to be scheduled.
 	 */
 	protected void calculateInterruptTriggerCycle() {
 		/* Interrupt cycle not going to trigger? */
 		if (interruptCycle == MAX) {
-			if (rstFlag || nmiFlag || (!flagI && irqAssertedOnPin)) {
+			if (rstFlag || nmiFlag || !flagI && irqAssertedOnPin) {
 				interruptCycle = cycleCount;
 			}
 		}
@@ -188,8 +187,8 @@ public class MOS6510 {
 				context.schedule(this, 1);
 			} else {
 				/*
-				 * Even while stalled, the CPU can still process first clock of
-				 * interrupt delay, but only the first one.
+				 * Even while stalled, the CPU can still process first clock of interrupt delay,
+				 * but only the first one.
 				 */
 				if (interruptCycle == cycleCount) {
 					interruptCycle--;
@@ -259,7 +258,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch low address byte, increment PC<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Stack Manipulation
@@ -277,7 +276,7 @@ public class MOS6510 {
 
 	/**
 	 * Read from address, add index register X to it<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Zero Page Indexed
@@ -290,7 +289,7 @@ public class MOS6510 {
 
 	/**
 	 * Read from address, add index register Y to it<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Zero Page Indexed
@@ -303,9 +302,9 @@ public class MOS6510 {
 
 	/**
 	 * Fetch high address byte, increment PC (Absolute Addressing)<BR>
-	 * 
+	 *
 	 * Low byte must have been obtained first!<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Absolute
@@ -319,9 +318,9 @@ public class MOS6510 {
 
 	/**
 	 * Fetch high byte of address, add index register X to low address byte,<BR>
-	 * 
+	 *
 	 * increment PC<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Absolute Indexed
@@ -336,9 +335,9 @@ public class MOS6510 {
 
 	/**
 	 * Fetch high byte of address, add index register Y to low address byte,<BR>
-	 * 
+	 *
 	 * increment PC<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Absolute Indexed
@@ -353,7 +352,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch effective address low<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Indirect
@@ -367,7 +366,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch effective address high<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Indirect
@@ -381,7 +380,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch effective address high, add Y to low byte of effective address<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Indirect indexed (post Y)
@@ -396,7 +395,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch pointer address low, increment PC<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Absolute Indirect
@@ -410,7 +409,7 @@ public class MOS6510 {
 
 	/**
 	 * Fetch pointer address high, increment PC<BR>
-	 * 
+	 *
 	 * Addressing Modes:
 	 * <UL>
 	 * <LI>Absolute Indirect
@@ -548,9 +547,8 @@ public class MOS6510 {
 
 	/**
 	 * Create new CPU emu
-	 * 
-	 * @param context
-	 *            The Event Context
+	 *
+	 * @param context The Event Context
 	 */
 	public MOS6510(final EventScheduler context) {
 		this.context = context;
@@ -582,12 +580,12 @@ public class MOS6510 {
 
 			/*
 			 * So: what cycles are marked as stealable? Rules are:
-			 * 
-			 * - CPU performs either read or write at every cycle. Reads are
-			 * always stealable. Writes are rare.
-			 * 
-			 * - Every instruction begins with a sequence of reads. Writes, if
-			 * any, are at the end for most instructions.
+			 *
+			 * - CPU performs either read or write at every cycle. Reads are always
+			 * stealable. Writes are rare.
+			 *
+			 * - Every instruction begins with a sequence of reads. Writes, if any, are at
+			 * the end for most instructions.
 			 */
 
 			AccessMode access = AccessMode.WRITE;
@@ -1180,20 +1178,16 @@ public class MOS6510 {
 					}
 
 					/*
-					 * 2 cycles spent before arriving here. spend 0 - 2 cycles
-					 * here; - condition false: Continue immediately to
-					 * FetchNextInstr (return true).
-					 * 
-					 * Otherwise read the byte following the opcode (which is
-					 * already scheduled to occur on this cycle). This effort is
-					 * wasted. Then calculate address of the branch target. If
-					 * branch is on same page, then continue at that insn on
-					 * next cycle (this delays IRQs by 1 clock for some reason,
-					 * allegedly).
-					 * 
-					 * If the branch is on different memory page, issue a
-					 * spurious read with wrong high byte before continuing at
-					 * the correct address.
+					 * 2 cycles spent before arriving here. spend 0 - 2 cycles here; - condition
+					 * false: Continue immediately to FetchNextInstr (return true).
+					 *
+					 * Otherwise read the byte following the opcode (which is already scheduled to
+					 * occur on this cycle). This effort is wasted. Then calculate address of the
+					 * branch target. If branch is on same page, then continue at that insn on next
+					 * cycle (this delays IRQs by 1 clock for some reason, allegedly).
+					 *
+					 * If the branch is on different memory page, issue a spurious read with wrong
+					 * high byte before continuing at the correct address.
 					 */
 					if (condition) {
 						/* issue the spurious read for next insn here. */
@@ -1214,8 +1208,8 @@ public class MOS6510 {
 						Register_ProgramCounter = Cycle_EffectiveAddress;
 					} else {
 						/*
-						 * branch not taken: skip the following spurious read
-						 * insn and go to FetchNextInstr immediately.
+						 * branch not taken: skip the following spurious read insn and go to
+						 * FetchNextInstr immediately.
 						 */
 						interruptsAndNextOpcode();
 					}
@@ -2017,9 +2011,9 @@ public class MOS6510 {
 			}
 
 			/*
-			 * missing an addressing mode or implementation makes opcode
-			 * invalid. These are normally called HLT instructions. In the
-			 * hardware, the CPU state machine locks up and will never recover.
+			 * missing an addressing mode or implementation makes opcode invalid. These are
+			 * normally called HLT instructions. In the hardware, the CPU state machine
+			 * locks up and will never recover.
 			 */
 			if (!(legalMode && legalInstr)) {
 				instrTable[buildCycle++] = () -> cycleCount--;
@@ -2032,9 +2026,8 @@ public class MOS6510 {
 
 	/**
 	 * Force CPU to start execution at given address
-	 * 
-	 * @param address
-	 *            The address to start CPU execution at.
+	 *
+	 * @param address The address to start CPU execution at.
 	 */
 	public void forcedJump(final int address) {
 		cycleCount = (NOPn << 3) + 1;
@@ -2043,7 +2036,7 @@ public class MOS6510 {
 
 	/**
 	 * Module Credits
-	 * 
+	 *
 	 * @return credit string
 	 */
 	public static String credits() {
@@ -2051,11 +2044,10 @@ public class MOS6510 {
 	}
 
 	/**
-	 * Handle bus access signal. When RDY line is asserted, the CPU will pause
-	 * when executing the next read operation.
-	 * 
-	 * @param rdy
-	 *            new state for RDY signal
+	 * Handle bus access signal. When RDY line is asserted, the CPU will pause when
+	 * executing the next read operation.
+	 *
+	 * @param rdy new state for RDY signal
 	 */
 	public final void setRDY(final boolean rdy) {
 		this.rdy = rdy;
@@ -2070,23 +2062,22 @@ public class MOS6510 {
 	}
 
 	/**
-	 * This forces the CPU to abort whatever it is doing and immediately enter
-	 * the RST interrupt handling sequence. The implementation is not
-	 * compatible: instructions actually get aborted mid-execution. However,
-	 * there is no possible way to trigger this signal from programs, so it's
-	 * OK.
+	 * This forces the CPU to abort whatever it is doing and immediately enter the
+	 * RST interrupt handling sequence. The implementation is not compatible:
+	 * instructions actually get aborted mid-execution. However, there is no
+	 * possible way to trigger this signal from programs, so it's OK.
 	 */
 	public final void triggerRST() {
 		Initialise();
-		cycleCount = (BRKn << 3);
+		cycleCount = BRKn << 3;
 		rstFlag = true;
 		calculateInterruptTriggerCycle();
 	}
 
 	/**
 	 * Trigger NMI interrupt on the CPU. Calling this method flags that CPU must
-	 * enter the NMI routine at earliest opportunity. There is no way to cancel
-	 * NMI request once given.
+	 * enter the NMI routine at earliest opportunity. There is no way to cancel NMI
+	 * request once given.
 	 */
 	public final void triggerNMI() {
 		nmiFlag = true;
@@ -2119,9 +2110,8 @@ public class MOS6510 {
 
 	/**
 	 * Set N and Z flag values.
-	 * 
-	 * @param value
-	 *            to set flags from
+	 *
+	 * @param value to set flags from
 	 */
 	protected final void setFlagsNZ(final byte value) {
 		flagZ = value == 0;
@@ -2171,12 +2161,12 @@ public class MOS6510 {
 
 	/**
 	 * When stalled by BA but not yet tristated by AEC, the CPU generates read
-	 * requests to the PLA chip. These reads likely concern whatever byte the
-	 * CPU's current subcycle would need, but full emulation can be really
-	 * tricky. We normally have this case only immediately after a write opcode,
-	 * and thus the next read will concern the next opcode. Therefore, we fake
-	 * it by reading the byte under the PC.
-	 * 
+	 * requests to the PLA chip. These reads likely concern whatever byte the CPU's
+	 * current subcycle would need, but full emulation can be really tricky. We
+	 * normally have this case only immediately after a write opcode, and thus the
+	 * next read will concern the next opcode. Therefore, we fake it by reading the
+	 * byte under the PC.
+	 *
 	 * @return the value under PC
 	 */
 	public final byte getStalledOnByte() {

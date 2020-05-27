@@ -65,8 +65,7 @@ public class SidDumpReplayer {
 		SID sid = new SID();
 
 		/*
-		 * FIXME: support for HardSID playback of recordings is lost. Will fix
-		 * later.
+		 * FIXME: support for HardSID playback of recordings is lost. Will fix later.
 		 */
 		agt = new AudioGeneratorThread(AudioConfig.getInstance(cfg.getAudioSection()));
 		agt.setSidArray(new SID[] { sid });
@@ -91,7 +90,7 @@ public class SidDumpReplayer {
 					continue;
 				}
 
-				final Vector<SidDumpOutput> examineRows = new Vector<SidDumpOutput>();
+				final Vector<SidDumpOutput> examineRows = new Vector<>();
 				for (int i = 0; i < 20; i++) {
 					examineRows.add(row);
 				}

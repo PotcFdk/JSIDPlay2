@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * ---------------------------------------------------------------------------
  * Filter distortion code written by Antti S. Lankila 2007 - 2008.
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -25,7 +25,7 @@ package builder.resid.resid;
 
 /**
  * SID filter base class
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -79,22 +79,18 @@ public abstract class Filter {
 
 	/**
 	 * SID clocking - 1 cycle
-	 * 
-	 * @param v1
-	 *            voice 1 in
-	 * @param v2
-	 *            voice 2 in
-	 * @param v3
-	 *            voice 3 in
+	 *
+	 * @param v1 voice 1 in
+	 * @param v2 voice 2 in
+	 * @param v3 voice 3 in
 	 * @return filtered output
 	 */
 	protected abstract int clock(int v1, int v2, int v3);
 
 	/**
 	 * Enable filter.
-	 * 
-	 * @param enable
-	 *            Enable/Disable the filter.
+	 *
+	 * @param enable Enable/Disable the filter.
 	 */
 	public void enable(final boolean enable) {
 		if (!enabled && enable) {
@@ -124,7 +120,7 @@ public abstract class Filter {
 
 	/**
 	 * Register function.
-	 * 
+	 *
 	 * @param fc_lo
 	 */
 	protected final void writeFC_LO(final byte fc_lo) {
@@ -134,7 +130,7 @@ public abstract class Filter {
 
 	/**
 	 * Register function.
-	 * 
+	 *
 	 * @param fc_hi
 	 */
 	protected final void writeFC_HI(final byte fc_hi) {
@@ -144,7 +140,7 @@ public abstract class Filter {
 
 	/**
 	 * Register function.
-	 * 
+	 *
 	 * @param res_filt
 	 */
 	protected final void writeRES_FILT(final byte res_filt) {
@@ -165,7 +161,7 @@ public abstract class Filter {
 
 	/**
 	 * Register function.
-	 * 
+	 *
 	 * @param mode_vol
 	 */
 	protected final void writeMODE_VOL(final byte mode_vol) {
@@ -179,7 +175,7 @@ public abstract class Filter {
 	}
 
 	protected abstract void zeroDenormals();
-	
+
 	/**
 	 * Set filter cutoff frequency.
 	 */

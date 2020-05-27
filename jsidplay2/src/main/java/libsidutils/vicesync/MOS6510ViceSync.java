@@ -26,7 +26,7 @@ import libsidplay.components.mos6510.MOS6510;
  * and communicating via socket connection after each instruction.<BR>
  * This has been added to find differences and improve emulation quality.
  * Currently for Edge of Disgrace disk 1 hung up.
- * 
+ *
  * @author Ken Händel
  */
 public class MOS6510ViceSync extends MOS6510 {
@@ -99,7 +99,7 @@ public class MOS6510ViceSync extends MOS6510 {
 					sync.send("");
 
 					System.out.println(viceState.toString());
-					
+
 					ViceSync.MOS6510State jsidplay2State = new ViceSync.MOS6510State(
 							context.getTime(Phase.PHI2) - syncClk, Register_ProgramCounter, Register_Accumulator,
 							Register_X, Register_Y, Register_StackPointer);

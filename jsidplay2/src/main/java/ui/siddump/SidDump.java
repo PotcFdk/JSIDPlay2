@@ -44,7 +44,7 @@ public class SidDump extends C64VBox implements UIPart {
 	@FXML
 	protected ToggleButton replayAll, startStopRecording;
 	@FXML
-	private CheckBox startStopPlayer,timeInSeconds, lowResolutionMode;
+	private CheckBox startStopPlayer, timeInSeconds, lowResolutionMode;
 	@FXML
 	private TextField firstFrame, noteSpacing, maxRecordLength, patternSpacing, oldNoteFactor, tableFontSize, baseFreq,
 			baseNote, callsPerFrame;
@@ -60,7 +60,7 @@ public class SidDump extends C64VBox implements UIPart {
 	protected SidDumpExtension sidDumpExtension;
 
 	private int loadAddress, initAddress, playerAddress, subTune;
-	
+
 	private double seconds;
 
 	private Thread fPlayerThread;
@@ -69,7 +69,7 @@ public class SidDump extends C64VBox implements UIPart {
 
 	public SidDump() {
 	}
-	
+
 	public SidDump(final C64Window window, final Player player) {
 		super(window, player);
 	}

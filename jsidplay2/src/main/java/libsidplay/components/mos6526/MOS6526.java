@@ -26,7 +26,7 @@ import libsidplay.components.pla.Bank;
 /**
  * This class is heavily based on the ciacore/ciatimer source code from VICE.
  * The CIA state machine is lifted as-is. Big thanks to VICE project!
- * 
+ *
  * @author Antti Lankila
  */
 public abstract class MOS6526 extends Bank {
@@ -118,9 +118,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Trigger an interrupt.
-		 * 
-		 * @param interruptMask
-		 *            Interrupt flag number
+		 *
+		 * @param interruptMask Interrupt flag number
 		 */
 		protected void trigger(final byte interruptMask) {
 			idr |= interruptMask;
@@ -128,7 +127,7 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Clear interrupt state.
-		 * 
+		 *
 		 * @return old interrupt state
 		 */
 		protected byte clear() {
@@ -138,9 +137,8 @@ public abstract class MOS6526 extends Bank {
 		}
 
 		/**
-		 * Clear pending interrupts, but do not signal to CPU we lost them. It
-		 * is assumed that all components get reset() calls in synchronous
-		 * manner.
+		 * Clear pending interrupts, but do not signal to CPU we lost them. It is
+		 * assumed that all components get reset() calls in synchronous manner.
 		 */
 		public void reset() {
 			icr = idr = 0;
@@ -149,9 +147,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Set interrupt control mask bits.
-		 * 
-		 * @param interruptMask
-		 *            control mask bits
+		 *
+		 * @param interruptMask control mask bits
 		 */
 		public void setEnabled(final byte interruptMask) {
 			icr |= interruptMask & ~INTERRUPT_REQUEST;
@@ -160,9 +157,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Clear selected interrupt control mask bits.
-		 * 
-		 * @param interruptMask
-		 *            control mask bits
+		 *
+		 * @param interruptMask control mask bits
 		 */
 		public void clearEnabled(final byte interruptMask) {
 			icr &= ~interruptMask;
@@ -171,7 +167,7 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * InterruptSource that acts like new CIA
-	 * 
+	 *
 	 * @author Antti Lankila
 	 */
 	protected final class InterruptSource6526A extends InterruptSource {
@@ -200,7 +196,7 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * InterruptSource that acts like old CIA
-	 * 
+	 *
 	 * @author Antti Lankila
 	 */
 	protected final class InterruptSource6526 extends InterruptSource {
@@ -209,9 +205,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Trigger an interrupt.
-		 * 
-		 * @param interruptMask
-		 *            Interrupt flag number
+		 *
+		 * @param interruptMask Interrupt flag number
 		 */
 		@Override
 		protected void trigger(final byte interruptMask) {
@@ -233,7 +228,7 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Clear interrupt state.
-		 * 
+		 *
 		 * @return old interrupt state
 		 */
 		@Override
@@ -259,9 +254,8 @@ public abstract class MOS6526 extends Bank {
 		}
 
 		/**
-		 * Clear pending interrupts, but do not signal to CPU we lost them. It
-		 * is assumed that all components get reset() calls in synchronous
-		 * manner.
+		 * Clear pending interrupts, but do not signal to CPU we lost them. It is
+		 * assumed that all components get reset() calls in synchronous manner.
 		 */
 		@Override
 		public void reset() {
@@ -277,9 +271,9 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * This class implements a Timer A or B of a MOS6526 chip.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	protected abstract class Timer extends Event {
 
@@ -325,18 +319,17 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * This is a tri-state:
-		 * 
-		 * when -1: cia is completely stopped when 0: cia 1-clock events are
-		 * ticking. otherwise: cycleskipevent is ticking, and the value is the
-		 * first phi1 clock of skipping.
+		 *
+		 * when -1: cia is completely stopped when 0: cia 1-clock events are ticking.
+		 * otherwise: cycleskipevent is ticking, and the value is the first phi1 clock
+		 * of skipping.
 		 */
 		protected long ciaEventPauseTime;
 
 		/**
 		 * Create a new timer.
-		 * 
-		 * @param eventName
-		 *            The name of the new timer.
+		 *
+		 * @param eventName The name of the new timer.
 		 */
 		public Timer(final String eventName) {
 			super(eventName);
@@ -344,9 +337,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Set CRA/CRB control register.
-		 * 
-		 * @param cr
-		 *            Control register value
+		 *
+		 * @param cr Control register value
 		 */
 		public final void setControlRegister(final byte cr) {
 			state &= ~CIAT_CR_MASK;
@@ -356,7 +348,7 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Get current timer value.
-		 * 
+		 *
 		 * @return current timer value
 		 */
 		public final int getTimer() {
@@ -365,7 +357,7 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Get PB6/PB7 Flipflop state.
-		 * 
+		 *
 		 * @return PB6/PB7 flipflop state
 		 */
 		public final boolean getPbToggle() {
@@ -374,9 +366,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Set PB6/PB7 Flipflop state.
-		 * 
-		 * @param state
-		 *            PB6/PB7 flipflop state
+		 *
+		 * @param state PB6/PB7 flipflop state
 		 */
 		public final void setPbToggle(final boolean state) {
 			pbToggle = state;
@@ -384,9 +375,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Set high byte of Timer start value (Latch).
-		 * 
-		 * @param high
-		 *            high byte of latch
+		 *
+		 * @param high high byte of latch
 		 */
 		public final void setLatchHigh(final byte high) {
 			latch = (short) (latch & 0xff | (high & 0xff) << 8);
@@ -397,9 +387,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Set low byte of Timer start value (Latch).
-		 * 
-		 * @param low
-		 *            low byte of latch
+		 *
+		 * @param low low byte of latch
 		 */
 		public final void setLatchLow(final byte low) {
 			latch = (short) (latch & 0xff00 | low & 0xff);
@@ -422,7 +411,7 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Perform cycle skipping manually.
-		 * 
+		 *
 		 * Clocks the CIA up to the state it should be in, and stops all events.
 		 */
 		public final void syncWithCpu() {
@@ -430,10 +419,9 @@ public abstract class MOS6526 extends Bank {
 				context.cancel(cycleSkippingEvent);
 				final long elapsed = context.getTime(Phase.PHI2) - ciaEventPauseTime;
 				/*
-				 * It's possible for CIA to determine that it wants to go to
-				 * sleep starting from the next cycle, and then have its plans
-				 * aborted by CPU. Thus, we must avoid modifying the CIA state
-				 * if the first sleep clock was still in the future.
+				 * It's possible for CIA to determine that it wants to go to sleep starting from
+				 * the next cycle, and then have its plans aborted by CPU. Thus, we must avoid
+				 * modifying the CIA state if the first sleep clock was still in the future.
 				 */
 				if (elapsed >= 0) {
 					timer -= elapsed;
@@ -447,8 +435,8 @@ public abstract class MOS6526 extends Bank {
 		}
 
 		/**
-		 * Counterpart of syncWithCpu(), starts the event ticking if it is
-		 * needed. No clock() call or anything such is permissible here!
+		 * Counterpart of syncWithCpu(), starts the event ticking if it is needed. No
+		 * clock() call or anything such is permissible here!
 		 */
 		public final void wakeUpAfterSyncWithCpu() {
 			ciaEventPauseTime = 0;
@@ -494,8 +482,7 @@ public abstract class MOS6526 extends Bank {
 				adj |= CIAT_COUNT3;
 			}
 			/*
-			 * CR_FLOAD -> LOAD1, CR_ONESHOT -> ONESHOT0, LOAD1 -> LOAD,
-			 * ONESHOT0 -> ONESHOT
+			 * CR_FLOAD -> LOAD1, CR_ONESHOT -> ONESHOT0, LOAD1 -> LOAD, ONESHOT0 -> ONESHOT
 			 */
 			adj |= (state & (CIAT_CR_FLOAD | CIAT_CR_ONESHOT | CIAT_LOAD1 | CIAT_ONESHOT0)) << 8;
 			state = adj;
@@ -528,21 +515,18 @@ public abstract class MOS6526 extends Bank {
 		}
 
 		/**
-		 * Reschedule CIA event at the earliest interesting time. If CIA timer
-		 * is stopped or is programmed to just count down, the events are
-		 * paused.
+		 * Reschedule CIA event at the earliest interesting time. If CIA timer is
+		 * stopped or is programmed to just count down, the events are paused.
 		 */
 		private final void reschedule() {
 			/*
 			 * There are only two subcases to consider.
 			 *
-			 * - are we counting, and if so, are we going to continue counting?
-			 * - have we stopped, and are there no conditions to force a new
-			 * beginning?
-			 * 
-			 * Additionally, there are numerous flags that are present only in
-			 * passing manner, but which we need to let cycle through the CIA
-			 * state machine.
+			 * - are we counting, and if so, are we going to continue counting? - have we
+			 * stopped, and are there no conditions to force a new beginning?
+			 *
+			 * Additionally, there are numerous flags that are present only in passing
+			 * manner, but which we need to let cycle through the CIA state machine.
 			 */
 			final int unwanted = CIAT_OUT | CIAT_CR_FLOAD | CIAT_LOAD1 | CIAT_LOAD;
 			if ((state & unwanted) != 0) {
@@ -552,17 +536,16 @@ public abstract class MOS6526 extends Bank {
 
 			if ((state & CIAT_COUNT3) != 0) {
 				/*
-				 * Test the conditions that keep COUNT2 and thus COUNT3 alive,
-				 * and also ensure that all of them are set indicating steady
-				 * state operation.
+				 * Test the conditions that keep COUNT2 and thus COUNT3 alive, and also ensure
+				 * that all of them are set indicating steady state operation.
 				 */
 
 				final int wanted = CIAT_CR_START | CIAT_PHI2IN | CIAT_COUNT2 | CIAT_COUNT3;
 				if ((timer & 0xffff) > 2 && (state & wanted) == wanted) {
 					/*
-					 * we executed this cycle, therefore the pauseTime is +1. If
-					 * we are called to execute on the very next clock, we need
-					 * to get 0 because there's another timer-- in it.
+					 * we executed this cycle, therefore the pauseTime is +1. If we are called to
+					 * execute on the very next clock, we need to get 0 because there's another
+					 * timer-- in it.
 					 */
 					ciaEventPauseTime = context.getTime(Phase.PHI1) + 1;
 					/* execute event slightly before the next underflow. */
@@ -576,8 +559,7 @@ public abstract class MOS6526 extends Bank {
 
 			} else {
 				/*
-				 * Test conditions that result in CIA activity in next clocks.
-				 * If none, stop.
+				 * Test conditions that result in CIA activity in next clocks. If none, stop.
 				 */
 				final int unwanted1 = CIAT_CR_START | CIAT_PHI2IN;
 				final int unwanted2 = CIAT_CR_START | CIAT_STEP;
@@ -609,9 +591,9 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * This is the timer A of this CIA.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	private final class TimerA extends Timer {
 		/**
@@ -640,10 +622,10 @@ public abstract class MOS6526 extends Bank {
 		}
 
 		/**
-		 * This event exists solely to break the ambiguity of what scheduling on
-		 * top of PHI1 causes, because there is no ordering between events on
-		 * same phase. Thus it is scheduled in PHI2 to ensure the b.event() is
-		 * run once before the value changes.
+		 * This event exists solely to break the ambiguity of what scheduling on top of
+		 * PHI1 causes, because there is no ordering between events on same phase. Thus
+		 * it is scheduled in PHI2 to ensure the b.event() is run once before the value
+		 * changes.
 		 * <UL>
 		 * <LI>PHI1 a.event() (which calls underFlow())
 		 * <LI>PHI1 b.event()
@@ -678,9 +660,9 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * This is the timer B of this CIA.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	private final class TimerB extends Timer {
 		/**
@@ -745,9 +727,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Convert 8-bit value to BCD.
-		 * 
-		 * @param thebyte
-		 *            the value to convert
+		 *
+		 * @param thebyte the value to convert
 		 * @return BCD code
 		 */
 		private byte byte2bcd(final byte thebyte) {
@@ -757,9 +738,8 @@ public abstract class MOS6526 extends Bank {
 
 		/**
 		 * Convert BCD to 8-bit value.
-		 * 
-		 * @param bcd
-		 *            BCD code
+		 *
+		 * @param bcd BCD code
 		 * @return 8-bit value
 		 */
 		private byte bcd2byte(final byte bcd) {
@@ -818,9 +798,8 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Create a new CIA.
-	 * 
-	 * @param ctx
-	 *            the event context
+	 *
+	 * @param ctx the event context
 	 */
 	protected MOS6526(final EventScheduler ctx, final CIAChipModel model) {
 		this.context = ctx;
@@ -835,9 +814,8 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Signal interrupt.
-	 * 
-	 * @param state
-	 *            interrupt state
+	 *
+	 * @param state interrupt state
 	 */
 	public abstract void interrupt(boolean state);
 
@@ -853,9 +831,8 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * External interrupt control.
-	 * 
-	 * @param flag
-	 *            Interrupt flag
+	 *
+	 * @param flag Interrupt flag
 	 */
 	public void setFlag(final boolean flag) {
 		if (flag) {
@@ -894,9 +871,8 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Read CIA register.
-	 * 
-	 * @param addr
-	 *            register address to read (lowest 4 bits)
+	 *
+	 * @param addr register address to read (lowest 4 bits)
 	 */
 	@Override
 	public final byte read(int addr) {
@@ -971,11 +947,9 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Write CIA register.
-	 * 
-	 * @param addr
-	 *            register address to write (lowest 4 bits)
-	 * @param data
-	 *            value to write
+	 *
+	 * @param addr register address to write (lowest 4 bits)
+	 * @param data value to write
 	 */
 	@Override
 	public final void write(int addr, byte data) {
@@ -1081,7 +1055,7 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Get the credits.
-	 * 
+	 *
 	 * @return the credits
 	 */
 	public static final String credits() {
@@ -1090,7 +1064,7 @@ public abstract class MOS6526 extends Bank {
 
 	/**
 	 * Set day-of-time event occurrence of rate.
-	 * 
+	 *
 	 * @param clock
 	 */
 	public final void setDayOfTimeRate(final double clock) {

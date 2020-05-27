@@ -17,7 +17,7 @@ import javax.swing.KeyStroke;
 
 public abstract class SIDDeviceStage extends JDialog implements SIDDeviceUIPart {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final KeyStroke ESCAPE_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 	private static final String DISPATCH_WINDOW_CLOSING_ACTION_MAP_KEY = "WINDOW_CLOSING";
 	private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();

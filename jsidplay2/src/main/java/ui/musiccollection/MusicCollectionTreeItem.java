@@ -67,7 +67,7 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 
 	private void loadChildren() {
 		hasLoadedChildren = true;
-		Collection<MusicCollectionTreeItem> children = new ArrayList<MusicCollectionTreeItem>();
+		Collection<MusicCollectionTreeItem> children = new ArrayList<>();
 		File[] listFiles = getValue().listFiles(fFileFilter);
 		if (listFiles != null) {
 			Arrays.stream(listFiles).sorted((a, b) -> {

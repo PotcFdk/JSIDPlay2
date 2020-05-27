@@ -12,11 +12,11 @@ public class KickAssemblerResult {
 		this.data = data;
 		this.resolvedSymbols = resolvedSymbols;
 	}
-	
+
 	public byte[] getData() {
 		return data;
 	}
-	
+
 	public Map<String, Integer> getResolvedSymbols() {
 		return resolvedSymbols;
 	}

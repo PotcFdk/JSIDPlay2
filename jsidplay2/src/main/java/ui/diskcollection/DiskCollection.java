@@ -98,7 +98,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 
 	public DiskCollection() {
 	}
-	
+
 	public DiskCollection(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -178,7 +178,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
-		if (fileBrowser.getRoot()!= null && fileBrowser.getRoot().getValue() instanceof TFile) {
+		if (fileBrowser.getRoot() != null && fileBrowser.getRoot().getValue() instanceof TFile) {
 			TFile tf = (TFile) fileBrowser.getRoot().getValue();
 			try {
 				TVFS.umount(tf);
@@ -187,7 +187,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 			}
 		}
 	}
-	
+
 	@FXML
 	private void doAutoConfiguration() {
 		if (autoConfiguration.isSelected()) {

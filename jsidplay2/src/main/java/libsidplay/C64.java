@@ -41,15 +41,15 @@ import libsidplay.components.ram.SystemRAMBank;
 
 /**
  * Commodore 64 emulation core.
- * 
+ *
  * It consists of the following chips: PLA, MOS6510, MOS6526(a), VIC
  * 6569(PAL)/6567(NTSC), RAM/ROM.<BR>
  * Some connectors exist additionally: Keyboard, two Joysticks, parallel cable
  * and some memory expansions and other cartridges can be plugged in.
- * 
+ *
  * @author Antti Lankila
  * @author Ken Händel
- * 
+ *
  */
 public abstract class C64 implements DatasetteEnvironment, C1541Environment, UserportPrinterEnvironment {
 
@@ -108,14 +108,14 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Area backed by RAM, including cpu port addresses 0 and 1.
-	 * 
+	 *
 	 * This is bit of a fake. We know that the CPU port is an internal detail of the
 	 * CPU, and therefore CPU should simply pay the price for reading/writing to
 	 * 0/1.
-	 * 
+	 *
 	 * However, that would slow down all accesses, which is suboptimal. Therefore we
 	 * install this little hook to the 4k 0 region to deal with this.
-	 * 
+	 *
 	 * @author Antti Lankila
 	 */
 	protected class ZeroRAMBank extends Bank {
@@ -253,9 +253,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Set play routine address to watch by CPU emulation.
-	 * 
-	 * @param playAddr
-	 *            Observe calls of SID player (JSR $PlayAddr).
+	 *
+	 * @param playAddr Observe calls of SID player (JSR $PlayAddr).
 	 */
 	public void setPlayAddr(final int playAddr) {
 		cpu.setJmpJsrHandler(Register_ProgramCounter -> {
@@ -270,7 +269,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Determine tune speed (calls of play routine per frame).
-	 * 
+	 *
 	 * @return current tune speed
 	 */
 	public final double determineTuneSpeed() {
@@ -279,7 +278,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		final double interval = now - lastUpdate;
 		if (interval >= cpuFreq) {
 			lastUpdate = now;
-			tuneSpeed = (callsToPlayRoutine * cpuFreq) / (interval * clock.getScreenRefresh());
+			tuneSpeed = callsToPlayRoutine * cpuFreq / (interval * clock.getScreenRefresh());
 			callsToPlayRoutine = 0;
 		}
 		return tuneSpeed;
@@ -428,7 +427,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Return the array backing C64 RAM
-	 * 
+	 *
 	 * @return the RAM
 	 */
 	public byte[] getRAM() {
@@ -437,7 +436,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Return CPU emulator
-	 * 
+	 *
 	 * @return the cpu
 	 */
 	public MOS6510 getCPU() {
@@ -447,9 +446,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 	/**
 	 * Install a play routine observer to hook the JSR command of the CPU. It gets
 	 * called, if the player address gets called.
-	 * 
-	 * @param observer
-	 *            play routine observer
+	 *
+	 * @param observer play routine observer
 	 */
 	public void setPlayRoutineObserver(final IMOS6510Extension observer) {
 		playRoutineObserver = observer;
@@ -457,7 +455,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Get VIC chip emulator (PAL/NTSC).
-	 * 
+	 *
 	 * @return VIC chip
 	 */
 	public VIC getVIC() {
@@ -470,13 +468,12 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Insert SID chips to be used.
-	 * 
-	 * @param sidCreator
-	 *            Responsible to decide which SID chips we need (SIDEmu) and which
-	 *            we don't need (NONE). SID number and old SID are mapped to new
-	 *            SID.
-	 * @param sidLocator
-	 *            Responsible to determine the base address of the SID chips we need
+	 *
+	 * @param sidCreator Responsible to decide which SID chips we need (SIDEmu) and
+	 *                   which we don't need (NONE). SID number and old SID are
+	 *                   mapped to new SID.
+	 * @param sidLocator Responsible to determine the base address of the SID chips
+	 *                   we need
 	 */
 	public final void insertSIDChips(BiFunction<Integer, SIDEmu, SIDEmu> sidCreator, IntFunction<Integer> sidLocator) {
 		for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
@@ -493,9 +490,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Configure PAL and NTSC VIC.
-	 * 
-	 * @param action
-	 *            VIC consumer
+	 *
+	 * @param action VIC consumer
 	 */
 	public void configureVICs(Consumer<VIC> action) {
 		action.accept(palVic);
@@ -504,9 +500,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Configure all available SIDs.
-	 * 
-	 * @param action
-	 *            SID chip consumer
+	 *
+	 * @param action SID chip consumer
 	 */
 	public final void configureSIDs(BiConsumer<Integer, SIDEmu> action) {
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
@@ -519,11 +514,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Configure one specific SID.
-	 * 
-	 * @param chipNum
-	 *            SID chip number
-	 * @param action
-	 *            SID chip consumer
+	 *
+	 * @param chipNum SID chip number
+	 * @param action  SID chip consumer
 	 */
 	public final void configureSID(int chipNum, Consumer<SIDEmu> action) {
 		final SIDEmu sid = pla.getSIDBank().getSID(chipNum);
@@ -541,9 +534,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Set system clock (PAL/NTSC).
-	 * 
-	 * @param clock
-	 *            system clock (PAL/NTSC)
+	 *
+	 * @param clock system clock (PAL/NTSC)
 	 */
 	protected void setClock(final CPUClock clock) {
 		this.clock = clock;
@@ -556,7 +548,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Get system clock (PAL/NTSC).
-	 * 
+	 *
 	 * @return system clock (PAL/NTSC)
 	 */
 	public CPUClock getClock() {
@@ -565,7 +557,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Get C64's event scheduler
-	 * 
+	 *
 	 * @return the scheduler
 	 */
 	public EventScheduler getEventScheduler() {
@@ -574,9 +566,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Installs a custom Kernal ROM.
-	 * 
-	 * @param kernalRom
-	 *            Kernal ROM replacement (null means original Kernal)
+	 *
+	 * @param kernalRom Kernal ROM replacement (null means original Kernal)
 	 */
 	public void setCustomKernal(final byte[] kernalRom) {
 		if (kernalRom == null) {
@@ -598,7 +589,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Get current keyboard emulation.
-	 * 
+	 *
 	 * @return current keyboard emulation
 	 */
 	public Keyboard getKeyboard() {
@@ -607,11 +598,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Set joystick implementation.
-	 * 
-	 * @param portNumber
-	 *            joystick port (0-1)
-	 * @param joystickReader
-	 *            joystick implementation or null (disconnected)
+	 *
+	 * @param portNumber     joystick port (0-1)
+	 * @param joystickReader joystick implementation or null (disconnected)
 	 */
 	public final void setJoystick(final int portNumber, final IJoystick joystickReader) {
 		joystickPort[portNumber] = joystickReader == null ? disconnectedJoystick : joystickReader;
@@ -619,9 +608,8 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Is joystick connected?
-	 * 
-	 * @param portNumber
-	 *            joystick port (0-1)
+	 *
+	 * @param portNumber joystick port (0-1)
 	 * @return joystick connected?
 	 */
 	public final boolean isJoystickConnected(final int portNumber) {
@@ -630,13 +618,10 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Insert a cartridge of a given size with empty contents.
-	 * 
-	 * @param type
-	 *            cartridge type
-	 * @param sizeKB
-	 *            size in KB
-	 * @throws IOException
-	 *             never thrown here
+	 *
+	 * @param type   cartridge type
+	 * @param sizeKB size in KB
+	 * @throws IOException never thrown here
 	 */
 	public final void setCartridge(final CartridgeType type, final int sizeKB) throws IOException {
 		pla.setCartridge(Cartridge.create(pla, type, sizeKB));
@@ -644,13 +629,10 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Insert a cartridge loading an image file.
-	 * 
-	 * @param type
-	 *            cartridge type
-	 * @param file
-	 *            file to load the RAM contents
-	 * @throws IOException
-	 *             image read error
+	 *
+	 * @param type cartridge type
+	 * @param file file to load the RAM contents
+	 * @throws IOException image read error
 	 */
 	public final void setCartridge(final CartridgeType type, final File file) throws IOException {
 		pla.setCartridge(Cartridge.read(pla, type, file));
@@ -658,11 +640,9 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Insert a cartridge of type CRT loading an image.
-	 * 
-	 * @param is
-	 *            input stream to load the RAM contents
-	 * @throws IOException
-	 *             image read error
+	 *
+	 * @param is input stream to load the RAM contents
+	 * @throws IOException image read error
 	 */
 	public final void setCartridgeCRT(final InputStream is) throws IOException {
 		pla.setCartridge(Cartridge.readCRT(pla, new DataInputStream(is)));
@@ -670,7 +650,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 
 	/**
 	 * Get current multi purpose cartridge of the expansion port of the C64.
-	 * 
+	 *
 	 * @return multi purpose cartridge
 	 */
 	public final Cartridge getCartridge() {

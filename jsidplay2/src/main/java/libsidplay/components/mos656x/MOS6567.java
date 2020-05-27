@@ -16,7 +16,7 @@ import libsidplay.components.pla.PLA;
 
 /**
  * NTSC specialization of the VIC
- * 
+ *
  * @author Antti Lankila
  */
 public class MOS6567 extends VIC {
@@ -61,7 +61,7 @@ public class MOS6567 extends VIC {
 		case 14:
 		case 16:
 		case 18: {
-			int n = (lineCycle - 4) >> 1;
+			int n = lineCycle - 4 >> 1;
 			if (sprites[n].isDMA()) {
 				int address = sprites[n].getCurrentByteAddress();
 				phi1Data = vicReadMemoryPHI1(address);
@@ -207,8 +207,8 @@ public class MOS6567 extends VIC {
 				if (rasterY == MAX_RASTERS - 1) {
 					vcBase = 0;
 					/*
-					 * last line is 1 cycle longer than it appears to be. To set
-					 * rasterY = 0 at next cycle, we use a flag.
+					 * last line is 1 cycle longer than it appears to be. To set rasterY = 0 at next
+					 * cycle, we use a flag.
 					 */
 					startOfFrame = true;
 				} else {
@@ -218,19 +218,18 @@ public class MOS6567 extends VIC {
 
 				// increase raster counter
 				/*
-				 * since raster Y just changed, we need to find out if we have
-				 * entered a badline. the CPU can change the conditions any
-				 * time, but since here VIC changes the raster, we *must* check
-				 * badline on this cycle. In particular, linecrunch depends on
-				 * canceling the bad line between the cycles 10 - 24.
+				 * since raster Y just changed, we need to find out if we have entered a
+				 * badline. the CPU can change the conditions any time, but since here VIC
+				 * changes the raster, we *must* check badline on this cycle. In particular,
+				 * linecrunch depends on canceling the bad line between the cycles 10 - 24.
 				 */
 				if (rasterY == FIRST_DMA_LINE) {
 					areBadLinesEnabled = readDEN();
 				}
 
 				/*
-				 * mysteriously, isDisplayActive is determined already on this
-				 * cycle. Normally it takes 1 clock to take effect.
+				 * mysteriously, isDisplayActive is determined already on this cycle. Normally
+				 * it takes 1 clock to take effect.
 				 */
 				isBadLine = evaluateIsBadLine();
 				isDisplayActive |= isBadLine;

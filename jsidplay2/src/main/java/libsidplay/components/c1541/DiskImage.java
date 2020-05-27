@@ -33,9 +33,9 @@ import java.io.RandomAccessFile;
 
 /**
  * Support of disk images.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class DiskImage {
 	/**
@@ -103,14 +103,11 @@ public abstract class DiskImage {
 
 	/**
 	 * Attach an disk image file to drive.
-	 * 
-	 * @param gcr
-	 *            group code recording support
-	 * @param file
-	 *            file of the image
+	 *
+	 * @param gcr  group code recording support
+	 * @param file file of the image
 	 * @return disk image
-	 * @throws IOException
-	 *             disk image file could not be attached
+	 * @throws IOException disk image file could not be attached
 	 */
 	public final static DiskImage attach(final GCR gcr, final File file) throws IOException {
 		assert file != null;
@@ -139,17 +136,15 @@ public abstract class DiskImage {
 
 	/**
 	 * Attach disk image to drive.
-	 * 
-	 * @throws IOException
-	 *             error reading disk image
+	 *
+	 * @throws IOException error reading disk image
 	 */
 	protected abstract void attach() throws IOException;
 
 	/**
 	 * Detach disk image from drive.
-	 * 
-	 * @throws IOException
-	 *             disk image file write error
+	 *
+	 * @throws IOException disk image file write error
 	 */
 	public final void detach() throws IOException {
 		fd.close();
@@ -157,9 +152,8 @@ public abstract class DiskImage {
 
 	/**
 	 * Set policy how to deal with disks up to 40 tracks.
-	 * 
-	 * @param listener
-	 *            listener to ask about the policy
+	 *
+	 * @param listener listener to ask about the policy
 	 */
 	public final void setExtendImagePolicy(final IExtendImageListener listener) {
 		this.extendImageListener = listener;
@@ -167,16 +161,15 @@ public abstract class DiskImage {
 
 	/**
 	 * Write back unsaved disk image data.
-	 * 
-	 * @param track
-	 *            dirty track
+	 *
+	 * @param track dirty track
 	 * @throws IOException
 	 */
 	public abstract void gcrDataWriteback(final int track) throws IOException;
 
 	/**
 	 * Is the disk image mounted read-only?
-	 * 
+	 *
 	 * @return True if the mounted disk image is read-only; false otherwise.
 	 */
 	public final boolean isReadOnly() {

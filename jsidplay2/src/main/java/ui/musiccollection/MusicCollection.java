@@ -52,7 +52,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -101,18 +101,18 @@ import ui.stilview.STILView;
  * Common view base for HVSC and CGSC collections. Loosely based on Rhythmbox,
  * which is probably based on iTunes. Display is divided to 2 vertical panels of
  * identical widths
- * 
+ *
  * - 1st shows file meta info in table, and composer's photo, scaled to 100% of
  * width. These take the whole vertical space.
- * 
+ *
  * - 2nd column show search bar, which is used to match song and artist name
- * 
+ *
  * - 2nd column displays list of artists.
- * 
+ *
  * - 2nd column displays list of songs matching search criteria and selected
  * artist. - currently playing symbol - artist name - song name - total song
  * length (?)
- * 
+ *
  * @author Ken Händel
  * @author Antti Lankila
  */
@@ -639,7 +639,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			searchStart = x -> {
 				Platform.runLater(() -> {
 					disableSearch();
-					util.progressProperty(fileBrowser.getScene()).set(ProgressBar.INDETERMINATE_PROGRESS);
+					util.progressProperty(fileBrowser.getScene()).set(ProgressIndicator.INDETERMINATE_PROGRESS);
 				});
 				searchIndexCreator.getSearchStart().accept(x);
 			};
@@ -743,7 +743,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		if (rootItem == null || matchFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
 			return;
 		}
-		List<TreeItem<File>> pathSegs = new ArrayList<TreeItem<File>>();
+		List<TreeItem<File>> pathSegs = new ArrayList<>();
 		pathSegs.add(rootItem);
 
 		File rootFile = rootItem.getValue();

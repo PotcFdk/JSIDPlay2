@@ -18,7 +18,7 @@ import sidplay.audio.Audio;
 
 /**
  * Provide constants for all settings read from the internal INI file.
- * 
+ *
  * @author ken
  *
  */
@@ -195,5 +195,5 @@ public interface IniDefaults {
 	int DEFAULT_WHATSSID_CAPTURE_TIME = WHATSSID_SECTION.getCaptureTime();
 	int DEFAULT_WHATSSID_MATCH_START_TIME = WHATSSID_SECTION.getMatchStartTime();
 	int DEFAULT_WHATSSID_MATCH_RETRY_TIME = WHATSSID_SECTION.getMatchRetryTime();
-	float DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE =  WHATSSID_SECTION.getMinimumRelativeConfidence();
+	float DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE = WHATSSID_SECTION.getMinimumRelativeConfidence();
 }

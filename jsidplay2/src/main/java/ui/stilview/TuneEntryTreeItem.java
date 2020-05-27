@@ -26,7 +26,7 @@ public class TuneEntryTreeItem extends TreeItem<Object> {
 	public ObservableList<TreeItem<Object>> getChildren() {
 		if (hasLoadedChildren == false) {
 			hasLoadedChildren = true;
-			Collection<InfoTreeItem> children = new ArrayList<InfoTreeItem>();
+			Collection<InfoTreeItem> children = new ArrayList<>();
 			TuneEntry tuneEntry = (TuneEntry) getValue();
 			for (Info info : tuneEntry.infos) {
 				children.add(new InfoTreeItem(info));

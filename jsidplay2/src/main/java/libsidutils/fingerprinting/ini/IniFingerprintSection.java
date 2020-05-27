@@ -1,4 +1,5 @@
 package libsidutils.fingerprinting.ini;
+
 import static libsidutils.fingerprinting.ini.IniFingerPrintDefaults.DEFAULT_BAND;
 import static libsidutils.fingerprinting.ini.IniFingerPrintDefaults.DEFAULT_C;
 import static libsidutils.fingerprinting.ini.IniFingerPrintDefaults.DEFAULT_FFTSIZE;
@@ -48,7 +49,7 @@ public class IniFingerprintSection extends IniSection implements IFingerprintSec
 
 	@Override
 	public void setFftSize(int fftSize) {
-		iniReader.setProperty("FingerPrint", "fftSize", fftSize);		
+		iniReader.setProperty("FingerPrint", "fftSize", fftSize);
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class IniFingerprintSection extends IniSection implements IFingerprintSec
 
 	@Override
 	public void setOverlap(int overlap) {
-		iniReader.setProperty("FingerPrint", "overlap", overlap);		
+		iniReader.setProperty("FingerPrint", "overlap", overlap);
 	}
 
 	@Override

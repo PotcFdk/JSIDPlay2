@@ -45,14 +45,12 @@ public class T64 extends Prg {
 
 	/**
 	 * Load T64 file entry from buffer.
-	 * 
-	 * @param dataBuf
-	 *            buffer with file data
-	 * @param entryNum
-	 *            entry number to load
+	 *
+	 * @param dataBuf  buffer with file data
+	 * @param entryNum entry number to load
 	 */
 	public T64Entry getEntry(final byte[] dataBuf, final int entryNum) throws SidTuneError {
-		int totalEntries = ((dataBuf[35] & 0xff) << 8) | (dataBuf[34] & 0xff);
+		int totalEntries = (dataBuf[35] & 0xff) << 8 | dataBuf[34] & 0xff;
 		if (entryNum < 1 || entryNum > totalEntries) {
 			throw new SidTuneError("T64: Illegal T64 entry number: " + entryNum + ", must be 1.." + totalEntries);
 		}
@@ -60,7 +58,7 @@ public class T64 extends Prg {
 		// expect 1 (Normal tape file) and PRG
 		final byte type = dataBuf[pos++];
 		final byte fileType = dataBuf[pos++];
-		if (pos + 32 > dataBuf.length || (type != 1 && (fileType & BITMASK_FILETYPE) != FILETYPE_PRG)) {
+		if (pos + 32 > dataBuf.length || type != 1 && (fileType & BITMASK_FILETYPE) != FILETYPE_PRG) {
 			throw new SidTuneError("T64: Illegal T64 entry type, must be PRG normal tape file");
 		}
 		final T64Entry entry = new T64Entry();
@@ -78,7 +76,7 @@ public class T64 extends Prg {
 		// determine offset of program data
 		entry.programOffset = 0;
 		for (int i = 0; i <= 3; i++) {
-			entry.programOffset += (dataBuf[pos++] & 0xff) << (8 * i);
+			entry.programOffset += (dataBuf[pos++] & 0xff) << 8 * i;
 		}
 
 		// skip unused
@@ -94,7 +92,7 @@ public class T64 extends Prg {
 			throws IOException {
 		try (DataOutputStream dout = new DataOutputStream(new FileOutputStream(file))) {
 			dout.writeByte(loadAddr & 0xff);
-			dout.writeByte((loadAddr >> 8) & 0xff);
+			dout.writeByte(loadAddr >> 8 & 0xff);
 			dout.write(program, programOffset, c64dataLen);
 		}
 	}

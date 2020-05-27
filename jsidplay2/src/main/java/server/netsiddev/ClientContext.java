@@ -44,7 +44,7 @@ import sidplay.fingerprinting.WhatsSidSupport;
  * @author Ken Händel
  * @author Antti Lankila
  * @author Wilfred Bos
- * 
+ *
  * @see NetworkSIDDevice
  */
 class ClientContext {
@@ -107,7 +107,7 @@ class ClientContext {
 	private static boolean openNewConnection = true;
 
 	/** Map which holds all instances of each client connection. */
-	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<SocketChannel, ClientContext>();
+	private static Map<SocketChannel, ClientContext> clientContextMap = new ConcurrentHashMap<>();
 
 	private MusicInfoWithConfidenceBean whatsSidResult;
 
@@ -148,7 +148,7 @@ class ClientContext {
 
 	/**
 	 * Callback to handle protocol after new data has been received.
-	 * 
+	 *
 	 * @throws InvalidCommandException
 	 */
 	private void processReadBuffer() throws InvalidCommandException {
@@ -278,7 +278,7 @@ class ClientContext {
 		}
 
 		case TRY_WRITE: {
-			if (dataLength < 4 && (dataLength % 4) != 0) {
+			if (dataLength < 4 && dataLength % 4 != 0) {
 				throw new InvalidCommandException("TRY_WRITE needs 4*n bytes, with n > 1 (hardsid protocol)",
 						dataLength);
 			}
@@ -546,7 +546,6 @@ class ClientContext {
 			eventConsumerThread.interrupt();
 			return;
 		}
-		;
 
 		eventConsumerThread.getSidCommandQueue().add(SIDWrite.makeEnd());
 		eventConsumerThread.ensureDraining();
@@ -574,7 +573,7 @@ class ClientContext {
 	/**
 	 * changeDevice will change the device to the specified device for all connected
 	 * client contexts
-	 * 
+	 *
 	 * @param deviceInfo the device that should be used
 	 */
 	public static void changeDevice(final Mixer.Info deviceInfo) {
@@ -586,7 +585,7 @@ class ClientContext {
 	/**
 	 * setDigiBoost will change the digiboost setting for each 8580 device for all
 	 * connected client contexts
-	 * 
+	 *
 	 * @param enabled specifies if the digiboost feature is turned on
 	 */
 	public static void setDigiBoost(final boolean enabled) {
@@ -598,7 +597,7 @@ class ClientContext {
 	/**
 	 * setAudioBufferSize will change the size of the audio buffer for all connected
 	 * client contexts
-	 * 
+	 *
 	 * @param audioBufferSize specifies the size of the audio buffer (1024-16384 as
 	 *                        a power of two)
 	 */
@@ -792,7 +791,7 @@ class ClientContext {
 		whatsSidThread.start();
 	}
 
-		private static void closeClientConnections() throws IOException {
+	private static void closeClientConnections() throws IOException {
 		for (ClientContext cc : clientContextMap.values()) {
 			System.out.println("Cleaning up client: " + cc);
 			cc.dispose();

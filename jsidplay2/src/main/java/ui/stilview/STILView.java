@@ -31,7 +31,7 @@ public class STILView extends C64Window {
 
 	public STILView() {
 	}
-	
+
 	public STILView(Player player) {
 		super(player);
 	}

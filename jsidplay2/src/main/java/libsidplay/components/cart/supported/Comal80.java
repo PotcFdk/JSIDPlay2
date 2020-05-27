@@ -26,12 +26,10 @@ public class Comal80 extends Cartridge {
 
 	/**
 	 * Load a Comal80 cartridge.
-	 * 
-	 * @param dis
-	 *            stream to load from
+	 *
+	 * @param dis stream to load from
 	 * @param pla
-	 * @throws IOException
-	 *             load error
+	 * @throws IOException load error
 	 */
 	public Comal80(final DataInputStream dis, final PLA pla) throws IOException {
 		super(pla);
@@ -41,8 +39,9 @@ public class Comal80 extends Cartridge {
 		romHBanks = new byte[4][0x2000];
 		for (int i = 0; i < 4; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && chipHeader[0xb] > 3)
+			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && chipHeader[0xb] > 3) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
 			dis.readFully(romHBanks[bank]);
@@ -52,14 +51,14 @@ public class Comal80 extends Cartridge {
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-			return romLBanks[currentRomBank][(address & 0x1fff)];
+			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 	};
 
 	private final Bank romhBank = new Bank() {
 		@Override
 		public byte read(int address) {
-			return romHBanks[currentRomBank][(address & 0x1fff)];
+			return romHBanks[currentRomBank][address & 0x1fff];
 		}
 	};
 
@@ -73,7 +72,7 @@ public class Comal80 extends Cartridge {
 		public void write(int address, byte value) {
 			int iv = value & 0xff;
 			if (iv >= 0x80 && iv <= 0x83) {
-				currentRomBank = (value & 3);
+				currentRomBank = value & 3;
 			}
 		}
 	};

@@ -75,16 +75,13 @@ public class Extract7Zip {
 				throw new SevenZipException("Error opening file: " + file.getAbsolutePath(), e);
 			}
 
-			return new ISequentialOutStream() {
-				@Override
-				public int write(byte[] data) throws SevenZipException {
-					try {
-						outputStream.write(data);
-					} catch (IOException e) {
-						throw new SevenZipException("Error writing to file: " + file.getAbsolutePath());
-					}
-					return data.length; // Return amount of consumed data
+			return data -> {
+				try {
+					outputStream.write(data);
+				} catch (IOException e) {
+					throw new SevenZipException("Error writing to file: " + file.getAbsolutePath());
 				}
+				return data.length; // Return amount of consumed data
 			};
 		}
 

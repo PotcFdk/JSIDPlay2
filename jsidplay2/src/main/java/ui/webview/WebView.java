@@ -159,7 +159,7 @@ public class WebView extends C64VBox implements UIPart {
 
 	public WebView() {
 	}
-	
+
 	public WebView(final C64Window window, final Player player) {
 		super(window, player);
 	}

@@ -35,12 +35,10 @@ public class PseudoDirectory {
 
 	/**
 	 * Create a directory preview of the currently selected file
-	 * 
-	 * @param file
-	 *            file to create a directory preview for
+	 *
+	 * @param file file to create a directory preview for
 	 * @return directory preview
-	 * @throws IOException
-	 *             can not open file
+	 * @throws IOException can not open file
 	 */
 	public static final Directory getDirectory(Player player, final File file, final IConfig cfg) throws IOException {
 		if (diskFilter.accept(file)) {

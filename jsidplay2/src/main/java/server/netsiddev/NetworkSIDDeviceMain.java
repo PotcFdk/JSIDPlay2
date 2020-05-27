@@ -19,7 +19,7 @@ import javax.swing.Timer;
 
 /**
  * Documentation of the protocol is contained here: netsiddev.ad
- * 
+ *
  * @author Ken Händel
  * @author Antti S. Lankila
  * @author Wilfred Bos
@@ -51,7 +51,7 @@ public class NetworkSIDDeviceMain {
 
 	/**
 	 * Main method. Create an application frame and start emulation.
-	 * 
+	 *
 	 * @param args command line arguments
 	 * @throws Exception
 	 */
@@ -127,7 +127,7 @@ public class NetworkSIDDeviceMain {
 	private String getToolTip() {
 		String toolTipText = "";
 		final int clientsConnected = ClientContext.getClientsConnectedCount();
-		
+
 		if (clientsConnected > 0) {
 			toolTipText = ClientContext.getTuneHeaders().stream().filter(Objects::nonNull)
 					.map(header -> Arrays.asList(header.getName(), header.getAuthor(), header.getReleased()).stream()

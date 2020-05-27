@@ -21,15 +21,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import libsidplay.common.Event.Phase;
+import libsidplay.common.EventScheduler;
 import libsidplay.components.mos6510.MOS6510;
 import libsidutils.disassembler.IMOS6510Disassembler;
 import libsidutils.disassembler.SimpleDisassembler;
-import libsidplay.common.EventScheduler;
 
 /**
  * MOS6510 debug implementation to trace CPU state each time a command gets
  * fetched and each time interrupt routine gets started or ends.
- * 
+ *
  * @author Ken Händel
  */
 public class MOS6510Debug extends MOS6510 {

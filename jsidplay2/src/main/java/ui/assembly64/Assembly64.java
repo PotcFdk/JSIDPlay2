@@ -380,7 +380,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		switch (columnType) {
 		case YEAR:
 		case RATING:
-			TableColumn<SearchResult, Integer> tableColumnInteger = new TableColumn<SearchResult, Integer>();
+			TableColumn<SearchResult, Integer> tableColumnInteger = new TableColumn<>();
 			tableColumn = tableColumnInteger;
 			tableColumnInteger.setCellValueFactory(
 					new PropertyValueFactory<SearchResult, Integer>(columnType.getColumnProperty()));
@@ -388,13 +388,13 @@ public class Assembly64 extends C64VBox implements UIPart {
 			break;
 		case UPDATED:
 		case RELEASED:
-			TableColumn<SearchResult, LocalDate> tableColumnLocalDate = new TableColumn<SearchResult, LocalDate>();
+			TableColumn<SearchResult, LocalDate> tableColumnLocalDate = new TableColumn<>();
 			tableColumn = tableColumnLocalDate;
 			tableColumnLocalDate.setCellValueFactory(
 					new PropertyValueFactory<SearchResult, LocalDate>(columnType.getColumnProperty()));
 			break;
 		default:
-			TableColumn<SearchResult, String> tableColumnString = new TableColumn<SearchResult, String>();
+			TableColumn<SearchResult, String> tableColumnString = new TableColumn<>();
 			tableColumn = tableColumnString;
 			tableColumnString.setCellValueFactory(
 					new PropertyValueFactory<SearchResult, String>(columnType.getColumnProperty()));

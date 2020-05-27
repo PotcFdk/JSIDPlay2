@@ -15,9 +15,9 @@ import lowlevel.ID3V2Decoder;
  * Special MP3 tune implementation. This is not a program present in the C64
  * memory, it is just a file played back by the jump3r library. However this C64
  * emulator requires tunes so this is a dummy to meet that requirement.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class MP3Tune extends SidTune {
 
@@ -41,7 +41,7 @@ public class MP3Tune extends SidTune {
 
 	@Override
 	public Collection<String> identify() {
-		Collection<String> names = new ArrayList<String>();
+		Collection<String> names = new ArrayList<>();
 		// The player is called jump3r ;-)
 		names.add("jump3r");
 		return names;
@@ -89,7 +89,7 @@ public class MP3Tune extends SidTune {
 
 	/**
 	 * Get cover art bitmap.
-	 * 
+	 *
 	 * @return cover art bitmap
 	 */
 	public byte[] getCoverArt() {

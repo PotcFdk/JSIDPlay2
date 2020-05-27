@@ -283,7 +283,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		ultimate64Box.setConverter(new EnumToStringConverter<Ultimate64Mode>(bundle));
 		ultimate64Box.valueProperty().bindBidirectional(emulationSection.ultimate64ModeProperty());
 		ultimate64Box.setItems(ultimate64Modes);
-		
+
 		ultimate64Hostname.textProperty().bindBidirectional(emulationSection.ultimate64HostProperty());
 		Bindings.bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
 				new IntegerStringConverter());
@@ -459,7 +459,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void setUltimate64() {
 		restart();
 	}
-	
+
 	@FXML
 	private void setUltimate64Hostname() {
 		restart();

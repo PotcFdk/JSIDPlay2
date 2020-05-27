@@ -24,7 +24,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	private static final int MIN_HIT = 10;
 
 	private IFingerprintConfig config;
-	
+
 	private FingerPrintingDataSource fingerPrintingDataSource;
 
 	public FingerPrinting(IFingerprintConfig config, FingerPrintingDataSource fingerPrintingDataSource) {

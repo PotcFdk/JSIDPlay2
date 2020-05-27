@@ -79,7 +79,7 @@ public class Configuration implements IConfig {
 
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
 	{
-		INITIAL_KEYCODES = new ArrayList<KeyTableEntity>(
+		INITIAL_KEYCODES = new ArrayList<>(
 				Arrays.asList(new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
 						new KeyTableEntity(KeyCode.BACK_SLASH.getName(), KeyTableEntry.ARROW_LEFT),
 						new KeyTableEntity(KeyCode.DIGIT1.getName(), KeyTableEntry.ONE),
@@ -152,7 +152,7 @@ public class Configuration implements IConfig {
 
 	private final List<FavoritesSection> INITIAL_FAVORITES;
 	{
-		INITIAL_FAVORITES = new ArrayList<FavoritesSection>(Arrays.asList(new FavoritesSection()));
+		INITIAL_FAVORITES = new ArrayList<>(Arrays.asList(new FavoritesSection()));
 	}
 
 	private Integer id;
@@ -285,7 +285,7 @@ public class Configuration implements IConfig {
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
 		if (favorites == null) {
-			favorites = new ArrayList<FavoritesSection>();
+			favorites = new ArrayList<>();
 		}
 		return getObservableFavorites();
 	}
@@ -337,7 +337,7 @@ public class Configuration implements IConfig {
 	@Override
 	public List<FilterSection> getFilterSection() {
 		if (filter == null) {
-			filter = new ArrayList<FilterSection>();
+			filter = new ArrayList<>();
 		}
 		return filter;
 	}

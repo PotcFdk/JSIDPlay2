@@ -8,7 +8,7 @@ public class TryDelay implements NetSIDPkg {
 
 	public TryDelay(byte sidNum, int cycles) {
 		this.sidNum = sidNum;
-		this.cyclesHigh = (byte) ((cycles >> 8) & 0xff);
+		this.cyclesHigh = (byte) (cycles >> 8 & 0xff);
 		this.cyclesLow = (byte) (cycles & 0xff);
 	}
 

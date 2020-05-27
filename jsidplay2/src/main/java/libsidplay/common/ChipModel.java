@@ -9,7 +9,7 @@ import libsidplay.sidtune.SidTune.Model;
 
 /**
  * SID chip model
- * 
+ *
  */
 public enum ChipModel {
 	/** Auto-detect SID model */
@@ -28,7 +28,7 @@ public enum ChipModel {
 	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the same
 	 * chip model as for the 1st SID
 	 * </OL>
-	 * 
+	 *
 	 * @return chip model to be used for SID number 0..MAX_SIDS-1
 	 */
 	public static ChipModel getChipModel(IEmulationSection emulation, SidTune tune, int sidNum) {

@@ -18,10 +18,9 @@ public abstract class C1541Runner extends Event {
 
 	/**
 	 * Return the number of clock ticks that 1541 should advance.
-	 * 
-	 * @param offset
-	 *            adjust C64 cycles
-	 * 
+	 *
+	 * @param offset adjust C64 cycles
+	 *
 	 * @return The number of clock ticks that 1541 should advance.
 	 */
 	protected int updateSlaveTicks(long offset) {

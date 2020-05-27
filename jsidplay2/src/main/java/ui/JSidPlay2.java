@@ -28,7 +28,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	public JSidPlay2() {
 	}
-	
+
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
 	}
@@ -76,7 +76,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	/**
 	 * Provide a filename for the tune containing some tune infos.
-	 * 
+	 *
 	 * @see java.util.function.Function#apply(java.lang.Object)
 	 */
 	@Override

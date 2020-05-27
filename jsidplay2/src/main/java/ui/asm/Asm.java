@@ -12,7 +12,6 @@ import java.util.Scanner;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -20,7 +19,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import kickass.common.errors.AsmError;
 import kickass.common.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
@@ -81,20 +79,16 @@ public class Asm extends C64VBox implements UIPart {
 		varNameColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.4));
 		varValueColumn.prefWidthProperty().bind(variablesTable.widthProperty().multiply(0.6));
 
-		contents.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.Z && event.isControlDown()) {
-					contents.undo();
-					event.consume();
-				}
-				if (event.getCode() == KeyCode.Y && event.isControlDown()) {
-					contents.redo();
-					event.consume();
-				}
-
+		contents.setOnKeyPressed(event -> {
+			if (event.getCode() == KeyCode.Z && event.isControlDown()) {
+				contents.undo();
+				event.consume();
 			}
+			if (event.getCode() == KeyCode.Y && event.isControlDown()) {
+				contents.redo();
+				event.consume();
+			}
+
 		});
 	}
 
@@ -122,7 +116,7 @@ public class Asm extends C64VBox implements UIPart {
 	@FXML
 	private void compile() {
 		try {
-			HashMap<String, String> globals = new HashMap<String, String>();
+			HashMap<String, String> globals = new HashMap<>();
 			variables.stream().forEach(var -> globals.put(var.getName(), var.getValue()));
 			InputStream asm = new ByteArrayInputStream(contents.getText().getBytes(UTF_8.name()));
 			byte[] assembly = assembler.assemble(ASM_RESOURCE, asm, globals).getData();

@@ -14,7 +14,7 @@ import sidplay.player.State;
 public abstract class StreamingPlayer {
 	private static final int QUIT_MAX_WAIT_TIME = 1000;
 
-	private ObjectProperty<State> stateProperty = new ObjectProperty<State>(State.class.getSimpleName(), QUIT);
+	private ObjectProperty<State> stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
 
 	private Thread streamingThread;
 

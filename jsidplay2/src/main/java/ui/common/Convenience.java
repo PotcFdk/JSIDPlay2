@@ -20,7 +20,7 @@ import ui.filefilter.TuneFileFilter;
 
 /**
  * Automation for the Player.
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -64,20 +64,16 @@ public class Convenience {
 	/**
 	 * Auto-start C64 bundle (ZIP containing well-known formats or un-zipped entry).
 	 * Attach specific disk/tape/cartridge and automatically start entry.<BR>
-	 * 
+	 *
 	 * Note: temporary files are removed or marked to be removed on exit.
-	 * 
-	 * @param file
-	 *            file to open
-	 * @param isMediaToAttach
-	 *            tester for media to attach
-	 * @param autoStartFile
-	 *            if media to attach is a disk/tape/cartridge this tune is loaded
-	 *            after attaching the media (null means just reset C64, instead).
-	 * @throws IOException
-	 *             image read error
-	 * @throws SidTuneError
-	 *             invalid tune
+	 *
+	 * @param file            file to open
+	 * @param isMediaToAttach tester for media to attach
+	 * @param autoStartFile   if media to attach is a disk/tape/cartridge this tune
+	 *                        is loaded after attaching the media (null means just
+	 *                        reset C64, instead).
+	 * @throws IOException  image read error
+	 * @throws SidTuneError invalid tune
 	 */
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError {
@@ -135,15 +131,11 @@ public class Convenience {
 
 	/**
 	 * Load tune or reset C64 and type-in command automatically
-	 * 
-	 * @param file
-	 *            tune file to load and play
-	 * @param command
-	 *            command to type-in after reset (if no file is specified)
-	 * @throws IOException
-	 *             image read error
-	 * @throws SidTuneError
-	 *             invalid tune
+	 *
+	 * @param file    tune file to load and play
+	 * @param command command to type-in after reset (if no file is specified)
+	 * @throws IOException  image read error
+	 * @throws SidTuneError invalid tune
 	 */
 	private void autoStart(File file, String command) throws IOException, SidTuneError {
 		if (file != null) {
@@ -156,17 +148,13 @@ public class Convenience {
 
 	/**
 	 * Get media file to attach, search recursively.<BR>
-	 * 
+	 *
 	 * Note: all files and folders are marked to be deleted.
-	 * 
-	 * @param dir
-	 *            directory where the files are located
-	 * @param file
-	 *            file to get traversed and searched for media
-	 * @param mediaTester
-	 *            predicate to check desired media
-	 * @param toAttach
-	 *            current media to attach
+	 *
+	 * @param dir         directory where the files are located
+	 * @param file        file to get traversed and searched for media
+	 * @param mediaTester predicate to check desired media
+	 * @param toAttach    current media to attach
 	 * @return media to attach
 	 */
 	private File getToAttach(String dir, File file, BiPredicate<File, File> mediaTester, File toAttach) {
@@ -208,9 +196,8 @@ public class Convenience {
 
 	/**
 	 * Check well-known disk/tape/cartridge file extension
-	 * 
-	 * @param file
-	 *            file to check
+	 *
+	 * @param file file to check
 	 * @return is it a well-known format
 	 */
 	public boolean isSupportedMedia(File file) {

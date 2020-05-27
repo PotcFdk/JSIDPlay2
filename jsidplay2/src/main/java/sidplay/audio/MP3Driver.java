@@ -19,17 +19,17 @@ import sidplay.audio.exceptions.EndTuneException;
 
 /**
  * Abstract base class to output an MP3 encoded tune to an output stream.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class MP3Driver implements AudioDriver {
 
 	/**
 	 * File based driver to create a MP3 file.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	public static class MP3File extends MP3Driver {
 		@Override
@@ -55,17 +55,17 @@ public abstract class MP3Driver implements AudioDriver {
 
 	/**
 	 * Driver to write into an MP3 encoded output stream.<BR>
-	 * 
+	 *
 	 * <B>Note:</B> The caller is responsible of closing the output stream
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	public static class MP3Stream extends MP3Driver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
-		 * 
+		 *
 		 * @param out Output stream to write the encoded MP3 to
 		 */
 		public MP3Stream(OutputStream out) {
@@ -79,10 +79,10 @@ public abstract class MP3Driver implements AudioDriver {
 
 	}
 
-	private  int cbr = LameEncoder.DEFAULT_BITRATE;
-	private  int vbrQuality = LameEncoder.DEFAULT_QUALITY;
+	private int cbr = LameEncoder.DEFAULT_BITRATE;
+	private int vbrQuality = LameEncoder.DEFAULT_QUALITY;
 	private boolean vbr = LameEncoder.DEFAULT_VBR;
-	
+
 	/**
 	 * Jump3r encoder.
 	 */
@@ -103,7 +103,7 @@ public abstract class MP3Driver implements AudioDriver {
 		vbr = audioSection.isVbr();
 		vbrQuality = audioSection.getVbrQuality();
 	}
-	
+
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {

@@ -46,9 +46,9 @@ import libsidutils.prg2tap.PRG2TAPProgram;
  * The HardwareEnsemble contains a C64 computer and additional peripherals.<BR>
  * It is meant as a complete hardware setup (C64, tape/disk drive, printer and
  * more).
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class HardwareEnsemble implements Ultimate64 {
 	private static final String JIFFYDOS_C64_ROM = "/libsidplay/roms/JiffyDOS C64 Kernal 6.01.bin";
@@ -207,7 +207,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Get Configuration
-	 * 
+	 *
 	 * @return configuration
 	 */
 	public final IConfig getConfig() {
@@ -216,7 +216,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Get C64.
-	 * 
+	 *
 	 * @return C64
 	 */
 	public final C64 getC64() {
@@ -225,7 +225,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Get C1530 datasette.
-	 * 
+	 *
 	 * @return C1530 datasette
 	 */
 	public final Datasette getDatasette() {
@@ -234,7 +234,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Get C1541 floppies.
-	 * 
+	 *
 	 * @return C1541 floppies
 	 */
 	public final C1541[] getFloppies() {
@@ -243,7 +243,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Get MPS803 printer.
-	 * 
+	 *
 	 * @return MPS803 printer
 	 */
 	public final MPS803 getPrinter() {
@@ -252,7 +252,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Set frequency (PAL/NTSC)
-	 * 
+	 *
 	 * @param cpuFreq frequency (PAL/NTSC)
 	 */
 	protected void setClock(final CPUClock cpuFreq) {
@@ -312,7 +312,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Enable floppy disk drives.
-	 * 
+	 *
 	 * @param on floppy disk drives enable
 	 */
 	public final void enableFloppyDiskDrives(final boolean on) {
@@ -334,7 +334,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	/**
 	 * Plug-in a parallel cable between the C64 user port and the C1541 floppy disk
 	 * drive.
-	 * 
+	 *
 	 * @param connected connected enable
 	 */
 	public final void connectC64AndC1541WithParallelCable(final boolean connected) {
@@ -348,7 +348,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	/**
 	 * Create a parallel cable between the C64 user port and the C1541 floppy disk
 	 * drive.
-	 * 
+	 *
 	 * @return parallel cable
 	 */
 	private IParallelCable makeCableBetweenC64AndC1541() {
@@ -371,7 +371,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 			/**
 			 * Return the current state of the parallel cable.
-			 * 
+			 *
 			 * @return the current state of the parallel cable
 			 */
 			private byte parallelCableValue() {
@@ -413,7 +413,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Turn-on printer.
-	 * 
+	 *
 	 * @param printerOn printer on/off
 	 */
 	public final void enablePrinter(boolean printerOn) {
@@ -422,7 +422,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Extend floppy disk strategy (&gt; 35 tracks)
-	 * 
+	 *
 	 * @param policy extension policy
 	 */
 	public final void setExtendImagePolicy(IExtendImageListener policy) {
@@ -431,7 +431,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Insert a disk into the first floppy disk drive.
-	 * 
+	 *
 	 * @param file disk file to insert
 	 * @throws IOException image read error
 	 */
@@ -458,8 +458,9 @@ public class HardwareEnsemble implements Ultimate64 {
 			try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
 					DigestInputStream dis = new DigestInputStream(is, MD5_DIGEST)) {
 				// read the file and update the hash calculation
-				while (dis.read() != -1)
+				while (dis.read() != -1) {
 					;
+				}
 				// get the hash value as byte array
 				byte[] digest = MD5_DIGEST.digest();
 				boolean hack = Arrays.equals(digest, EOD_HACK) || Arrays.equals(digest, EOD_HACK2);
@@ -476,7 +477,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	/**
 	 * Insert a tape into the datasette.<BR>
 	 * Note: If the file is different to the TAP format, it will be converted.
-	 * 
+	 *
 	 * @param file tape file to insert
 	 * @throws IOException image read error
 	 */
@@ -505,7 +506,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Insert a cartridge of a given size with empty contents.
-	 * 
+	 *
 	 * @param type   cartridge type
 	 * @param sizeKB size in KB
 	 * @throws IOException never thrown here
@@ -517,7 +518,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Insert a cartridge loading an image file.
-	 * 
+	 *
 	 * @param type cartridge type
 	 * @param file file to load the RAM contents
 	 * @throws IOException image read error
@@ -530,7 +531,7 @@ public class HardwareEnsemble implements Ultimate64 {
 
 	/**
 	 * Insert a cartridge of type CRT loading an image.
-	 * 
+	 *
 	 * @param is input stream to load the RAM contents
 	 * @throws IOException image read error
 	 */

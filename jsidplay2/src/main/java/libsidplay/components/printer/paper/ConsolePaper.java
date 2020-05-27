@@ -5,9 +5,8 @@ import libsidplay.components.printer.IPaper;
 public class ConsolePaper implements IPaper {
 	/**
 	 * Print printer output to console.
-	 * 
-	 * @param out
-	 *            output type to print
+	 *
+	 * @param out output type to print
 	 */
 	@Override
 	public final void put(final Outputs out) {

@@ -16,7 +16,7 @@ import sidplay.ini.IniReader;
 /**
  * Utility class to determine song length for tunes based on HVSC file
  * "DOCUMENTS/Songlengths.txt".
- * 
+ *
  * @author ken
  *
  */
@@ -52,9 +52,8 @@ public class SidDatabase {
 
 	/**
 	 * Get tune length (sum of all song length contained in the tune) in seconds.
-	 * 
-	 * @param tune
-	 *            tune to get the length for
+	 *
+	 * @param tune tune to get the length for
 	 * @return tune length in seconds
 	 */
 	public double getTuneLength(final SidTune tune) {
@@ -68,9 +67,8 @@ public class SidDatabase {
 
 	/**
 	 * Get song length of the current song in seconds.
-	 * 
-	 * @param tune
-	 *            tune to determine the current song
+	 *
+	 * @param tune tune to determine the current song
 	 * @return song length of the current song of the tune
 	 */
 	public double getSongLength(final SidTune tune) {
@@ -87,9 +85,8 @@ public class SidDatabase {
 	 * <BR>
 	 * e.g. "; <B>/DEMOS/0-9/2_Hours_NOT_Enough.sid</B>" followed by<BR>
 	 * "539be0485ad1fb958770fb9f069ae8c8=0:59"
-	 * 
-	 * @param tune
-	 *            MD5 checksum of the tune is used to identify the path
+	 *
+	 * @param tune MD5 checksum of the tune is used to identify the path
 	 * @return path of the tune
 	 */
 	public String getPath(final SidTune tune) {
@@ -102,7 +99,7 @@ public class SidDatabase {
 
 	public String getRandomPath() {
 		String[] sectionProperties = database.sectionProperties("Database");
-		int rndIndex = (Math.abs(random.nextInt(Integer.MAX_VALUE)) % sectionProperties.length) & Integer.MAX_VALUE - 1;
+		int rndIndex = Math.abs(random.nextInt(Integer.MAX_VALUE)) % sectionProperties.length & Integer.MAX_VALUE - 1;
 		String md5Comment = sectionProperties[rndIndex];
 		final String comment = md5Comment != null ? database.getPropertyString("Database", "_" + md5Comment, null)
 				: null;
@@ -114,11 +111,9 @@ public class SidDatabase {
 	 * identified by MD5 checksum.<BR>
 	 * e.g. "b67e3121c8d771f3f06020b47232fc80=0:24 0:28 <B>1:03</B> 0:22 1:22 0:22"
 	 * for song number 3.
-	 * 
-	 * @param md5
-	 *            MD5 checksum to get the song length
-	 * @param songNum
-	 *            song number
+	 *
+	 * @param md5     MD5 checksum to get the song length
+	 * @param songNum song number
 	 * @return song length of the song number
 	 */
 	private double getLength(final String md5, final int songNum) {

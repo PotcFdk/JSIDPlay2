@@ -17,7 +17,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	private final SIDChip sid = createSID();
 
 	private EventScheduler context;
-	
+
 	/**
 	 * Consumes samples of the SID while clocking.
 	 */
@@ -31,8 +31,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	/**
 	 * Constructor
 	 *
-	 * @param context
-	 *            {@link EventScheduler} context to use.
+	 * @param context {@link EventScheduler} context to use.
 	 */
 	public ReSIDBase(EventScheduler context) {
 		this.context = context;
@@ -84,8 +83,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	/**
 	 * Sets the clock frequency.
 	 *
-	 * @param systemClock
-	 *            System clock to use for the SID.
+	 * @param systemClock System clock to use for the SID.
 	 */
 	@Override
 	public void setClockFrequency(final double systemClock) {
@@ -94,7 +92,7 @@ public abstract class ReSIDBase extends SIDEmu {
 
 	/**
 	 * Set the emulated SID model
-	 * 
+	 *
 	 * @param model
 	 */
 	@Override

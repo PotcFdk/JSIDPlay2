@@ -242,7 +242,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 						screen.getHeight() - (marginTop + marginBottom));
 			}
 		});
-		sequentialTransition.setCycleCount(Timeline.INDEFINITE);
+		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 
 		imageQueue = new ImageQueue();
 
@@ -544,14 +544,15 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	private void updateVICChipConfiguration(Consumer<VIC> action, boolean apply) {
 		util.getPlayer().configureVICs(action.andThen(vic -> {
-			if (apply)
+			if (apply) {
 				vic.getPalEmulation().updatePalette();
+			}
 		}));
 	}
 
 	/**
 	 * Create an image per frame of VIC screen output.
-	 * 
+	 *
 	 * @see java.util.function.BiConsumer#accept(java.lang.Object, java.lang.Object)
 	 */
 	@Override

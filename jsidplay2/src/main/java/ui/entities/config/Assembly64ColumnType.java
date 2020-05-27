@@ -23,7 +23,7 @@ public enum Assembly64ColumnType {
 	public Class<?> getColumnClass() {
 		return columnClass;
 	}
-	
+
 	public double getDefaultWidth() {
 		return defaultWidth;
 	}

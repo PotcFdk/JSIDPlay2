@@ -30,12 +30,12 @@ public class TryRead extends TryWrite {
 		cmd[i++] = 0;
 		cmd[i++] = 0;
 		for (Write write : writes) {
-			cmd[i++] = (byte) ((write.getCycles() >> 8) & 0xff);
+			cmd[i++] = (byte) (write.getCycles() >> 8 & 0xff);
 			cmd[i++] = (byte) (write.getCycles() & 0xff);
 			cmd[i++] = write.getReg();
 			cmd[i++] = write.getData();
 		}
-		cmd[i++] = (byte) ((readCycles >> 8) & 0xff);
+		cmd[i++] = (byte) (readCycles >> 8 & 0xff);
 		cmd[i++] = (byte) (readCycles & 0xff);
 		cmd[i++] = readAddr;
 		return cmd;

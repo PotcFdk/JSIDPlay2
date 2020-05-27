@@ -26,7 +26,7 @@ public class STILEntryTreeItem extends TreeItem<Object> {
 	public ObservableList<TreeItem<Object>> getChildren() {
 		if (hasLoadedChildren == false) {
 			hasLoadedChildren = true;
-			Collection<TuneEntryTreeItem> children = new ArrayList<TuneEntryTreeItem>();
+			Collection<TuneEntryTreeItem> children = new ArrayList<>();
 			STILEntry stilEntry = (STILEntry) getValue();
 			for (TuneEntry tuneEntry : stilEntry.subtunes) {
 				children.add(new TuneEntryTreeItem(tuneEntry));

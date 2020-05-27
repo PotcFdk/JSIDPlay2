@@ -91,7 +91,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return passwordProperty;
 	}
 
-	private ObjectProperty<Integer> captureTimeProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> captureTimeProperty = new SimpleObjectProperty<>(
 			DEFAULT_WHATSSID_CAPTURE_TIME);
 
 	@Override
@@ -108,7 +108,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return captureTimeProperty;
 	}
 
-	private ObjectProperty<Integer> matchStartTimeProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> matchStartTimeProperty = new SimpleObjectProperty<>(
 			DEFAULT_WHATSSID_MATCH_START_TIME);
 
 	@Override
@@ -125,7 +125,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return matchStartTimeProperty;
 	}
 
-	private ObjectProperty<Integer> matchRetryTimeProperty = new SimpleObjectProperty<Integer>(
+	private ObjectProperty<Integer> matchRetryTimeProperty = new SimpleObjectProperty<>(
 			DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 
 	@Override

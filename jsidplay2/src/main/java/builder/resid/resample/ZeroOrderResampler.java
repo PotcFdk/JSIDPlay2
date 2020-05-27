@@ -2,7 +2,7 @@ package builder.resid.resample;
 
 /**
  * Return sample with linear interpolation.
- * 
+ *
  * @author Antti Lankila
  */
 public class ZeroOrderResampler implements Resampler {

@@ -2,9 +2,9 @@ package libsidplay.components.c1541;
 
 /**
  * Specific floppy type.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public enum FloppyType {
 	/**

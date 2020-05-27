@@ -12,7 +12,6 @@ import javax.persistence.Persistence;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,7 +22,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
@@ -119,17 +117,13 @@ public class GameBase extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem().getContent();
-				if (filterField.getText().trim().length() == 0) {
-					page.filter("");
-				} else {
-					page.filter(filterField.getText());
-				}
+		filterField.setOnKeyReleased(event -> {
+			GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem().getContent();
+			if (filterField.getText().trim().length() == 0) {
+				page.filter("");
+			} else {
+				page.filter(filterField.getText());
 			}
-
 		});
 
 		contents.setPrefHeight(Double.MAX_VALUE);

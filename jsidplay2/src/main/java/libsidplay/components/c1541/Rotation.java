@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  *
  * @author Ken Händel
- * 
+ *
  **/
 package libsidplay.components.c1541;
 
@@ -32,11 +32,11 @@ import java.util.Random;
 import libsidplay.components.c1541.VIA6522DC.Mode;
 
 /**
- * 
+ *
  * Disk rotation.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class Rotation {
 	/**
@@ -45,9 +45,9 @@ public abstract class Rotation {
 	private static final Random RANDOM = new Random();
 	/**
 	 * Speed (in microbits per drive clock) of the disk in the 4 speed zones.
-	 * 
-	 * The drive contains a 16.00 MHz crystal and these values are established
-	 * by dividing by 16, 15, 14 and 13 and then by 4.
+	 *
+	 * The drive contains a 16.00 MHz crystal and these values are established by
+	 * dividing by 16, 15, 14 and 13 and then by 4.
 	 */
 	protected static final int[] ROT_SPEED_BPC = { 250000, 266667, 285714, 307692 };
 
@@ -115,8 +115,8 @@ public abstract class Rotation {
 	 */
 	protected final void rotateDisk() {
 		/*
-		 * Calculate the number of bits that have passed under the R/W head
-		 * since the last time.
+		 * Calculate the number of bits that have passed under the R/W head since the
+		 * last time.
 		 */
 		long clk = cpuClk();
 		accum += ROT_SPEED_BPC[speedZone] * (clk - rotationLastClk);
@@ -129,41 +129,37 @@ public abstract class Rotation {
 			while (bitsMoved-- != 0) {
 				/*
 				 * GCR=0 support.
-				 * 
-				 * In the absence of 1-bits (magnetic flux changes), the drive
-				 * will use a timer counter to count how many 0s it has read.
-				 * Every 4 read bits, it will detect a 1-bit, because it doesn't
-				 * distinguish between reset occuring from magnetic flux or
-				 * regular wraparound.
-				 * 
-				 * Random magnetic flux events can also occur after GCR data has
-				 * been quiet for a long time, for at least 4 bits. So the first
-				 * value read will always be 1. Afterwards, the 0-bit sequence
-				 * lengths vary randomly, but can never exceed 3.
-				 * 
-				 * Each time a random event happens, it tends to advance the bit
-				 * counter by half a clock, because the random event can occur
-				 * at any time and thus the expectation value is that it occurs
-				 * at 50 % point within the bitcells.
-				 * 
-				 * Additionally, the underlying disk rotation has no way to keep
-				 * in sync with the electronics, so the bitstream after a GCR=0
-				 * may or may not be shifted with respect to the bit counter by
-				 * the time drive encounters it. This situation will persist
-				 * until the next sync sequence. There is no specific emulation
-				 * for variable disk rotation, this case is thought to be
-				 * covered by the random event handling.
-				 * 
+				 *
+				 * In the absence of 1-bits (magnetic flux changes), the drive will use a timer
+				 * counter to count how many 0s it has read. Every 4 read bits, it will detect a
+				 * 1-bit, because it doesn't distinguish between reset occuring from magnetic
+				 * flux or regular wraparound.
+				 *
+				 * Random magnetic flux events can also occur after GCR data has been quiet for
+				 * a long time, for at least 4 bits. So the first value read will always be 1.
+				 * Afterwards, the 0-bit sequence lengths vary randomly, but can never exceed 3.
+				 *
+				 * Each time a random event happens, it tends to advance the bit counter by half
+				 * a clock, because the random event can occur at any time and thus the
+				 * expectation value is that it occurs at 50 % point within the bitcells.
+				 *
+				 * Additionally, the underlying disk rotation has no way to keep in sync with
+				 * the electronics, so the bitstream after a GCR=0 may or may not be shifted
+				 * with respect to the bit counter by the time drive encounters it. This
+				 * situation will persist until the next sync sequence. There is no specific
+				 * emulation for variable disk rotation, this case is thought to be covered by
+				 * the random event handling.
+				 *
 				 * Here's some genuine 1541 patterns for reference:
-				 * 
-				 * 53 12 46 22 24 AA AA AA AA AA AA AA A8 AA AA AA 53 11 11 11
-				 * 14 AA AA AA AA AA AA AA A8 AA AA AA 53 12 46 22 24 AA AA AA
-				 * AA AA AA AA A8 AA AA AA 53 12 22 24 45 2A AA AA AA AA AA AA
-				 * AA 2A AA AA 53 11 52 22 24 AA AA AA AA AA AA AA A8 AA AA AA
+				 *
+				 * 53 12 46 22 24 AA AA AA AA AA AA AA A8 AA AA AA 53 11 11 11 14 AA AA AA AA AA
+				 * AA AA A8 AA AA AA 53 12 46 22 24 AA AA AA AA AA AA AA A8 AA AA AA 53 12 22 24
+				 * 45 2A AA AA AA AA AA AA AA 2A AA AA 53 11 52 22 24 AA AA AA AA AA AA AA A8 AA
+				 * AA AA
 				 */
 
 				int bit = gcr.readNextBit(getCurrentTrackSize());
-				lastReadData = ((lastReadData << 1) & 0x3fe);
+				lastReadData = lastReadData << 1 & 0x3fe;
 
 				if (bit != 0) {
 					zeroCount = 0;
@@ -171,25 +167,22 @@ public abstract class Rotation {
 				}
 
 				/*
-				 * Simulate random magnetic flux events in our lame-ass
-				 * emulation.
+				 * Simulate random magnetic flux events in our lame-ass emulation.
 				 */
-				if (++zeroCount > 8 && (lastReadData & 0x3f) == 0x8 && RANDOM.nextInt() > (1 << 30)) {
+				if (++zeroCount > 8 && (lastReadData & 0x3f) == 0x8 && RANDOM.nextInt() > 1 << 30) {
 					lastReadData |= 1;
 					/*
-					 * Simulate loss of sync against the underlying platter.
-					 * Whenever 1-bits occur, there's a chance that they occured
-					 * due to a random magnetic flux event, and can thus occur
-					 * at any phase of the bit-cell clock.
-					 * 
-					 * It follows, therefore, that such events have a chance to
-					 * advance the bit_counter by about 0,5 clocks each time
-					 * they occur. Hence > 0 here, which filters out 50 % of
-					 * events.
+					 * Simulate loss of sync against the underlying platter. Whenever 1-bits occur,
+					 * there's a chance that they occured due to a random magnetic flux event, and
+					 * can thus occur at any phase of the bit-cell clock.
+					 *
+					 * It follows, therefore, that such events have a chance to advance the
+					 * bit_counter by about 0,5 clocks each time they occur. Hence > 0 here, which
+					 * filters out 50 % of events.
 					 */
 					if (bitCounter < 7 && RANDOM.nextInt() > 0) {
 						bitCounter++;
-						lastReadData = (lastReadData << 1) & 0x3fe;
+						lastReadData = lastReadData << 1 & 0x3fe;
 					}
 				} else if ((lastReadData & 0xf) == 0) {
 					/* Simulate clock reset */
@@ -215,11 +208,11 @@ public abstract class Rotation {
 			}
 		} else {
 			/*
-			 * When writing, the first byte after transition is going to echo
-			 * the bits from the last read value.
+			 * When writing, the first byte after transition is going to echo the bits from
+			 * the last read value.
 			 */
 			while (bitsMoved-- != 0) {
-				lastReadData = (lastReadData << 1) & 0x3fe;
+				lastReadData = lastReadData << 1 & 0x3fe;
 				if ((lastReadData & 0xf) == 0) {
 					/* 0 -> 1 */
 					lastReadData |= 1;
@@ -238,9 +231,9 @@ public abstract class Rotation {
 	}
 
 	/**
-	 * SYNC is detected whenever the last 10 bits are 1, and we aren't writing,
-	 * or disk wasn't just being changed.
-	 * 
+	 * SYNC is detected whenever the last 10 bits are 1, and we aren't writing, or
+	 * disk wasn't just being changed.
+	 *
 	 * @return 0 when found, 0x80 when not.
 	 */
 	protected final byte syncFound() {
@@ -253,7 +246,7 @@ public abstract class Rotation {
 
 	/**
 	 * Group Code Recording support.
-	 * 
+	 *
 	 * @return the GCR support
 	 */
 	protected final GCR getGCR() {

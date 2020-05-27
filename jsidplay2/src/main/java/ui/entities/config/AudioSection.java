@@ -65,7 +65,7 @@ public class AudioSection implements IAudioSection {
 		Bindings.bindBidirectional(this.mp3, mp3File, new FileToStringConverter());
 	}
 
-	private ObjectProperty<Audio> audio = new SimpleObjectProperty<Audio>(DEFAULT_AUDIO);
+	private ObjectProperty<Audio> audio = new SimpleObjectProperty<>(DEFAULT_AUDIO);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -98,7 +98,7 @@ public class AudioSection implements IAudioSection {
 		return device;
 	}
 
-	private ObjectProperty<SamplingRate> samplingRate = new SimpleObjectProperty<SamplingRate>(DEFAULT_SAMPLING_RATE);
+	private ObjectProperty<SamplingRate> samplingRate = new SimpleObjectProperty<>(DEFAULT_SAMPLING_RATE);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -115,7 +115,7 @@ public class AudioSection implements IAudioSection {
 		return samplingRate;
 	}
 
-	private ObjectProperty<SamplingMethod> sampling = new SimpleObjectProperty<SamplingMethod>(DEFAULT_SAMPLING);
+	private ObjectProperty<SamplingMethod> sampling = new SimpleObjectProperty<>(DEFAULT_SAMPLING);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -324,7 +324,7 @@ public class AudioSection implements IAudioSection {
 		return playOriginal;
 	}
 
-	private ObjectProperty<File> mp3File = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> mp3File = new SimpleObjectProperty<>();
 	private StringProperty mp3 = new SimpleStringProperty();
 
 	public ObjectProperty<File> mp3FileProperty() {

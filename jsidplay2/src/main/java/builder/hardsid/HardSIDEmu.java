@@ -14,7 +14,7 @@ import libsidplay.config.IEmulationSection;
 /**
  *
  * @author Ken Händel
- * 
+ *
  */
 public class HardSIDEmu extends SIDEmu {
 
@@ -22,7 +22,7 @@ public class HardSIDEmu extends SIDEmu {
 	 * FakeStereo mode uses two chips using the same base address. Write commands
 	 * are routed two both SIDs, while read command can be configured to be
 	 * processed by a specific SID chip.
-	 * 
+	 *
 	 * @author ken
 	 *
 	 */
@@ -75,7 +75,7 @@ public class HardSIDEmu extends SIDEmu {
 	private final EventScheduler context;
 
 	private final HardSIDBuilder hardSIDBuilder;
-	
+
 	private final HardSID hardSID;
 
 	private final byte deviceID;
@@ -83,7 +83,7 @@ public class HardSIDEmu extends SIDEmu {
 	private final byte chipNum;
 
 	private int sidNum;
-	
+
 	private final ChipModel chipModel;
 
 	private boolean doReadWriteDelayed;
@@ -131,7 +131,7 @@ public class HardSIDEmu extends SIDEmu {
 
 	@Override
 	public void clock() {
-		final short clocksSinceLastAccess = (short) (hardSIDBuilder.clocksSinceLastAccess());
+		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 		doWriteDelayed(() -> {
 			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
 		});

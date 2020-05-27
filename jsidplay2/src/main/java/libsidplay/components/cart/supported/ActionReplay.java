@@ -59,8 +59,9 @@ public class ActionReplay extends Cartridge {
 		romLBanks = new byte[4][0x2000];
 		for (int i = 0; i < 4; i++) {
 			dis.readFully(chipHeader);
-			if ((chipHeader[0xb] & 0xff) > 3)
+			if ((chipHeader[0xb] & 0xff) > 3) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
 		}
@@ -76,7 +77,7 @@ public class ActionReplay extends Cartridge {
 		public void write(int address, byte value) {
 			if (isActive) {
 				pla.setGameExrom((value & 1) == 0, (value & 2) != 0);
-				currentRomBank = (value >> 3) & 3;
+				currentRomBank = value >> 3 & 3;
 				exportRam = (value & 0x20) != 0;
 				if ((value & 0x40) != 0) {
 					setNMI(false);
@@ -95,8 +96,9 @@ public class ActionReplay extends Cartridge {
 			if (!isActive) {
 				return pla.getDisconnectedBusBank().read(address);
 			}
-			if (exportRam)
+			if (exportRam) {
 				return ram[address & 0x1fff];
+			}
 
 			return romLBanks[currentRomBank][address & 0x1fff];
 		}
@@ -104,8 +106,9 @@ public class ActionReplay extends Cartridge {
 		@Override
 		public void write(int address, byte value) {
 			if (isActive) {
-				if (exportRam)
+				if (exportRam) {
 					ram[address & 0x1fff] = value;
+				}
 			}
 		}
 	};
@@ -113,16 +116,18 @@ public class ActionReplay extends Cartridge {
 	protected final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-			if (exportRam)
+			if (exportRam) {
 				return ram[address & 0x1fff];
+			}
 
 			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 
 		@Override
 		public void write(int address, byte value) {
-			if (exportRam)
+			if (exportRam) {
 				ram[address & 0x1fff] = value;
+			}
 		}
 	};
 

@@ -44,9 +44,9 @@ import sidplay.audio.AudioConfig;
 
 /**
  * Audio section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 @Parameters(resourceBundle = "sidplay.ini.IniAudioSection")
 public class IniAudioSection extends IniSection implements IAudioSection {
@@ -78,7 +78,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Getter of the Playback/Recording frequency.
-	 * 
+	 *
 	 * @return Playback/Recording frequency
 	 */
 	@Override
@@ -88,7 +88,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Setter of the Playback/Recording frequency.
-	 * 
+	 *
 	 * @param samplingRate Playback/Recording frequency
 	 */
 	@Override
@@ -99,7 +99,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Getter of the sampling method.
-	 * 
+	 *
 	 * @return the sampling method
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Setter of the sampling method.
-	 * 
+	 *
 	 * @param method the sampling method
 	 */
 	@Override
@@ -120,7 +120,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Getter of the main SID volume setting.
-	 * 
+	 *
 	 * @return the main SID volume setting
 	 */
 	@Override
@@ -130,7 +130,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Setter of the main SID volume setting.
-	 * 
+	 *
 	 * @param volume the main SID volume setting
 	 */
 	@Override
@@ -141,7 +141,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Getter of the second SID volume setting.
-	 * 
+	 *
 	 * @return the second SID volume setting
 	 */
 	@Override
@@ -151,7 +151,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Setter of the second SID volume setting.
-	 * 
+	 *
 	 * @param volume the second SID volume setting
 	 */
 	@Override
@@ -162,7 +162,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Getter of the third SID volume setting.
-	 * 
+	 *
 	 * @return the third SID volume setting
 	 */
 	@Override
@@ -172,7 +172,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	/**
 	 * Setter of the third SID volume setting.
-	 * 
+	 *
 	 * @param volume the third SID volume setting
 	 */
 	@Override

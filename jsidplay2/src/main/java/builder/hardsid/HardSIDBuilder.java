@@ -20,9 +20,9 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
 /**
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
@@ -51,7 +51,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Already used HardSIDs.
 	 */
-	private List<HardSIDEmu> sids = new ArrayList<HardSIDEmu>();
+	private List<HardSIDEmu> sids = new ArrayList<>();
 
 	/**
 	 * Device number, if more than one USB devices is connected.
@@ -204,7 +204,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	/**
 	 * Get HardSID device index based on the desired chip model.
-	 * 
+	 *
 	 * @param chipModel desired chip model
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired HardSID device

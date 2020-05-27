@@ -4,7 +4,7 @@ import java.util.function.IntConsumer;
 
 /**
  * Interface for the SID chip re-implementation.
- * 
+ *
  * @author ken
  *
  */

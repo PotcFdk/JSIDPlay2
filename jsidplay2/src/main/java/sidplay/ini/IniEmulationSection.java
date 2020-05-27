@@ -16,9 +16,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_FORCE_3SID_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_FORCE_STEREO_TUNE;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_HARD_SID_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE1;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE2;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_STEREO_VOICE3;
@@ -33,10 +30,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE3;
 import static sidplay.ini.IniDefaults.DEFAULT_MUTE_VOICE4;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSIDDEV_PORT;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
-import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_NETSID_FILTER_6581;
@@ -49,6 +42,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -56,6 +52,10 @@ import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_SID_BASE;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
+import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
@@ -75,9 +75,9 @@ import libsidplay.config.IEmulationSection;
 
 /**
  * Emulation section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 @Parameters(resourceBundle = "sidplay.ini.IniEmulationSection")
 public class IniEmulationSection extends IniSection implements IEmulationSection {
@@ -277,13 +277,13 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public Ultimate64Mode getUltimate64Mode() {
 		return iniReader.getPropertyEnum("Emulation", "Ultimate64 Mode", DEFAULT_ULTIMATE64_MODE, Ultimate64Mode.class);
 	}
-	
+
 	@Override
 	@Parameter(names = { "--ultimate64Mode" }, descriptionKey = "ULTIMATE64_MODE", order = 1008)
 	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
 		iniReader.setProperty("Emulation", "Ultimate64 Mode", ultimate64Mode);
 	}
-	
+
 	@Override
 	public String getUltimate64Host() {
 		return iniReader.getPropertyString("Emulation", "Ultimate64 Host", DEFAULT_ULTIMATE64_HOST);
@@ -316,7 +316,6 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	public void setUltimate64SyncDelay(int syncDelay) {
 		iniReader.setProperty("Emulation", "Ultimate64 Sync Delay", syncDelay);
 	}
-
 
 	@Override
 	public final boolean isFilter() {

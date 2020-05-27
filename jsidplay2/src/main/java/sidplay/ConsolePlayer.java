@@ -49,7 +49,7 @@ final public class ConsolePlayer {
 	private Boolean quiet = Boolean.FALSE;
 
 	@Parameter(description = "filename")
-	private List<String> filenames = new ArrayList<String>();
+	private List<String> filenames = new ArrayList<>();
 
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true);
@@ -113,7 +113,7 @@ final public class ConsolePlayer {
 	private void printSoundcardDevices() {
 		int deviceIdx = 0;
 		for (Info device : JavaSound.getDevices()) {
-			System.out.printf("    --deviceIndex %d -> %s (%s)\n", (deviceIdx++), device.getName(),
+			System.out.printf("    --deviceIndex %d -> %s (%s)\n", deviceIdx++, device.getName(),
 					device.getDescription());
 		}
 	}

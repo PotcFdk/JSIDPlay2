@@ -82,9 +82,9 @@ public class Screen {
 		}
 		hasFlags = addFlag(hasFlags, tuneInfo.getClockSpeed().toString());
 		hasFlags = addFlag(hasFlags, tuneInfo.getSIDModel(0).toString());
-		int sid2midNibbles = (tuneInfo.getSIDChipBase(1) >> 4) & 0xff;
-		if (((sid2midNibbles & 1) == 0) && (((0x42 <= sid2midNibbles) && (sid2midNibbles <= 0x7e))
-				|| ((0xe0 <= sid2midNibbles) && (sid2midNibbles <= 0xfe)))) {
+		int sid2midNibbles = tuneInfo.getSIDChipBase(1) >> 4 & 0xff;
+		if ((sid2midNibbles & 1) == 0 && (0x42 <= sid2midNibbles && sid2midNibbles <= 0x7e
+				|| 0xe0 <= sid2midNibbles && sid2midNibbles <= 0xfe)) {
 			hasFlags = addFlag(hasFlags,
 					tuneInfo.getSIDModel(1).toString() + String.format(" at $%04x", tuneInfo.getSIDChipBase(1)));
 		}
@@ -135,7 +135,7 @@ public class Screen {
 	}
 
 	private void move(int x, int y) {
-		if ((x < WIDTH) && (y < HEIGHT)) {
+		if (x < WIDTH && y < HEIGHT) {
 			this.x = x;
 			this.y = y;
 		}
@@ -159,7 +159,7 @@ public class Screen {
 	}
 
 	private void poke(int x, int y, int value) {
-		if ((x < WIDTH) && (y < HEIGHT)) {
+		if (x < WIDTH && y < HEIGHT) {
 			int offs = offset(x, y);
 			screen[offs] = (byte) (value & 0xff);
 		}
@@ -174,19 +174,19 @@ public class Screen {
 	}
 
 	private void moveRight() {
-		if (x < (WIDTH - 1)) {
+		if (x < WIDTH - 1) {
 			++x;
 		}
 	}
 
 	private void moveDown() {
-		if (y < (HEIGHT - 1)) {
+		if (y < HEIGHT - 1) {
 			++y;
 		}
 	}
 
 	private int offset(int x, int y) {
-		return x + (WIDTH * y);
+		return x + WIDTH * y;
 	}
 
 }

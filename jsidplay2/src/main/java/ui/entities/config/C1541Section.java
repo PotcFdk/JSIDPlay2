@@ -2,8 +2,8 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
 import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
-import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_JIFFYDOS_INSTALLED;
+import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
@@ -170,7 +170,7 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled4.set(on);
 	}
 
-	private ObjectProperty<ExtendImagePolicy> extendImagePolicy = new SimpleObjectProperty<ExtendImagePolicy>(
+	private ObjectProperty<ExtendImagePolicy> extendImagePolicy = new SimpleObjectProperty<>(
 			DEFAULT_EXTEND_IMAGE_POLICY);
 
 	public ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
@@ -186,7 +186,7 @@ public class C1541Section implements IC1541Section {
 		this.extendImagePolicy.set(policy);
 	}
 
-	private ObjectProperty<FloppyType> floppyType = new SimpleObjectProperty<FloppyType>(DEFAULT_FLOPPY_TYPE);
+	private ObjectProperty<FloppyType> floppyType = new SimpleObjectProperty<>(DEFAULT_FLOPPY_TYPE);
 
 	public ObjectProperty<FloppyType> floppyTypeProperty() {
 		return floppyType;

@@ -14,11 +14,11 @@ import libsidplay.sidtune.SidTune;
 
 /**
  * Proxy driver to use two different sound or video drivers at the same time.
- * 
+ *
  * <B>Note:</B> Both driver's sample buffer must be equal in size.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	private final AudioDriver driverOne;
@@ -26,7 +26,7 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 
 	/**
 	 * Create a proxy driver
-	 * 
+	 *
 	 * @param driver1 sound driver, that buffer gets filled
 	 * @param driver2 sound driver, that gets the copied sample buffer
 	 */
@@ -40,7 +40,7 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 		driverOne.configure(tune, config);
 		driverTwo.configure(tune, config);
 	}
-	
+
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {

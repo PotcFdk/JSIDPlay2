@@ -66,15 +66,16 @@ public class ServletUtil {
 
 	private List<String> getCollectionFiles(File rootFile, String root, String path, String filter,
 			String virtualCollectionRoot, boolean adminRole) {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		if (rootFile != null) {
 			if (path.endsWith("/")) {
 				path = path.substring(0, path.length() - 1);
 			}
 			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
 			File[] listFiles = file.listFiles(pathname -> {
-				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp"))
+				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp")) {
 					return false;
+				}
 				return pathname.isDirectory() || filter == null
 						|| pathname.getName().toLowerCase(Locale.US).matches(filter);
 			});
@@ -99,7 +100,7 @@ public class ServletUtil {
 
 	private List<String> getRoot(boolean adminRole) {
 		List<String> result = new ArrayList<>(Arrays.asList(C64_MUSIC + "/", CGSC + "/"));
-		
+
 		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
 			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
@@ -123,7 +124,8 @@ public class ServletUtil {
 			String directoryValue = splitted.length > 0 ? splitted[0] : null;
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
 			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
-				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()), new TFile(directoryValue), null);
+				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()),
+						new TFile(directoryValue), null);
 			}
 		}
 		throw new FileNotFoundException(path);

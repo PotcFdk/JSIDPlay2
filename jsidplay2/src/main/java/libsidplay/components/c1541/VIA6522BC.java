@@ -32,9 +32,9 @@ import libsidplay.components.iec.IECBus;
 
 /**
  * Handling of the Bus Controller.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class VIA6522BC extends VIACore {
 	/**
@@ -54,9 +54,8 @@ public abstract class VIA6522BC extends VIACore {
 
 	/**
 	 * Set a parallel cable.
-	 * 
-	 * @param cable
-	 *            parallel cable
+	 *
+	 * @param cable parallel cable
 	 */
 	public final void setParallelCable(final IParallelCable cable) {
 		this.parallelCable = cable;
@@ -64,7 +63,7 @@ public abstract class VIA6522BC extends VIACore {
 
 	/**
 	 * Get the parallel cable.
-	 * 
+	 *
 	 * @return parallel cable
 	 */
 	public final IParallelCable getParallelCable() {
@@ -73,11 +72,9 @@ public abstract class VIA6522BC extends VIACore {
 
 	/**
 	 * Creates a new instance of VIA6522BC.
-	 * 
-	 * @param id
-	 *            the C1541 device ID
-	 * @param bus
-	 *            the IEC Bus
+	 *
+	 * @param id  the C1541 device ID
+	 * @param bus the IEC Bus
 	 */
 	public VIA6522BC(final int id, final IECBus bus) {
 		super("1541Drive" + id + "VIA6522BC");

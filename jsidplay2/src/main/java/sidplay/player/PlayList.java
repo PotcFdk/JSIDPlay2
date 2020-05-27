@@ -9,7 +9,7 @@ import libsidplay.sidtune.SidTune;
  * currently selected song.<BR>
  * e.g. 5 songs in a tune using start song number 3 will result in<BR>
  * [3],4,5,1,2 -&gt; first = 3, length=5, current song is within range 1..5
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -49,11 +49,9 @@ public class PlayList {
 
 	/**
 	 * Get instance results in a new play-list each time the tune changes.
-	 * 
-	 * @param config
-	 *            configuration
-	 * @param tune
-	 *            SID tune
+	 *
+	 * @param config configuration
+	 * @param tune   SID tune
 	 * @return play list of the current tune
 	 */
 	public static PlayList getInstance(final IConfig config, final SidTune tune) {
@@ -70,7 +68,7 @@ public class PlayList {
 
 	/**
 	 * Get currently selected play list entry.
-	 * 
+	 *
 	 * @return current song number
 	 */
 	public int getCurrent() {
@@ -79,7 +77,7 @@ public class PlayList {
 
 	/**
 	 * Get current track (play list entry relative to the first).
-	 * 
+	 *
 	 * @return track number
 	 */
 	public int getTrackNum() {
@@ -89,7 +87,7 @@ public class PlayList {
 
 	/**
 	 * Get number of entries.
-	 * 
+	 *
 	 * @return number of songs
 	 */
 	public int getLength() {
@@ -127,7 +125,7 @@ public class PlayList {
 
 	/**
 	 * Is a previous play list entry available?
-	 * 
+	 *
 	 * @return is a previous song available?
 	 */
 	public boolean hasPrevious() {
@@ -136,7 +134,7 @@ public class PlayList {
 
 	/**
 	 * Is a next play list entry available?
-	 * 
+	 *
 	 * @return is a next song available?
 	 */
 	public boolean hasNext() {
@@ -145,7 +143,7 @@ public class PlayList {
 
 	/**
 	 * Get previous play list entry.
-	 * 
+	 *
 	 * @return the previous song of the play list
 	 */
 	public int getPrevious() {
@@ -155,7 +153,7 @@ public class PlayList {
 
 	/**
 	 * Get next play list entry.
-	 * 
+	 *
 	 * @return the next song of the play list
 	 */
 	public int getNext() {

@@ -89,7 +89,7 @@ public class SidReg extends C64VBox implements UIPart {
 
 		allSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
 
-		filters = new HashSet<String>();
+		filters = new HashSet<>();
 
 		doUpdateFilter();
 

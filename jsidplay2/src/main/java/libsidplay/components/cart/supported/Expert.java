@@ -9,14 +9,14 @@ import libsidplay.components.pla.PLA;
 
 /**
  * We emulate this cartridge in the ON mode.
- * 
+ *
  * Electrically, the cartridge can only switch between ultimax and no cartridge
  * mode.
- * 
+ *
  * However, the ultimax mode is only enabled when accesses to the region
  * 0x8000-0x9fff and 0xe000-0xffff occur. This is why the other regions like IO
  * and RAM still work.
- * 
+ *
  * @author AL
  */
 public class Expert extends Cartridge {

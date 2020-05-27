@@ -34,10 +34,10 @@ import ui.filefilter.TuneFileFilter;
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
  * currently played tune
- * 
+ *
  * This is the program to create the fingerprintings for all tunes of a
  * collection.
- * 
+ *
  * @author ken
  *
  */

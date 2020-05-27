@@ -19,29 +19,25 @@ import libsidplay.sidtune.SidTune;
 
 /**
  * @author Ken Händel
- * 
+ *
  *         Implement this class to create a new SID emulation for libsidplay2.
  */
 public interface SIDBuilder {
 	/**
 	 * Create a new SID chip emulation.
-	 * 
-	 * @param device
-	 *            old SID chip in use
-	 * @param sidNum
-	 *            SID chip number
-	 * @param tune
-	 *            current tune
-	 * 
+	 *
+	 * @param device old SID chip in use
+	 * @param sidNum SID chip number
+	 * @param tune   current tune
+	 *
 	 * @return emulated SID chip
 	 */
 	SIDEmu lock(SIDEmu device, int sidNum, SidTune tune);
 
 	/**
 	 * Destroy SID chip emulation.
-	 * 
-	 * @param device
-	 *            SID chip to destroy
+	 *
+	 * @param device SID chip to destroy
 	 */
 	void unlock(SIDEmu device);
 

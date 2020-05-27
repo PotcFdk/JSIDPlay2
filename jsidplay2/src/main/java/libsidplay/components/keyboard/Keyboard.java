@@ -19,11 +19,11 @@ import java.util.Set;
  * <a href=
 'http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg'>http://www.zimmers.net/anonftp/pub/cbm/magazines/transactor/v5i5/p039.jpg</a>.
  * </pre>
- * 
+ *
  * @author Jörg Jahnke (joergjahnke@users.sourceforge.net)
  */
 public abstract class Keyboard {
-	private final Set<KeyTableEntry> keysDown = new HashSet<KeyTableEntry>();
+	private final Set<KeyTableEntry> keysDown = new HashSet<>();
 
 	/**
 	 * Reset the keyboard
@@ -34,9 +34,8 @@ public abstract class Keyboard {
 
 	/**
 	 * Handle a pressed key
-	 * 
-	 * @param ktEntry
-	 *            key that was pressed
+	 *
+	 * @param ktEntry key that was pressed
 	 */
 	public synchronized void keyPressed(final KeyTableEntry ktEntry) {
 		keysDown.add(ktEntry);
@@ -44,7 +43,7 @@ public abstract class Keyboard {
 
 	/**
 	 * Get currently pressed keys
-	 * 
+	 *
 	 * @return which keys are currently pressed
 	 */
 	public synchronized Set<KeyTableEntry> getKeysDown() {
@@ -53,9 +52,8 @@ public abstract class Keyboard {
 
 	/**
 	 * Handle a released key
-	 * 
-	 * @param ktEntry
-	 *            key to release
+	 *
+	 * @param ktEntry key to release
 	 */
 	public synchronized void keyReleased(final KeyTableEntry ktEntry) {
 		keysDown.remove(ktEntry);
@@ -63,7 +61,7 @@ public abstract class Keyboard {
 
 	/**
 	 * Get read adjustment for CIA 1 register PRA or PRB
-	 * 
+	 *
 	 * @param selected
 	 * @param wantRow
 	 *
@@ -88,9 +86,8 @@ public abstract class Keyboard {
 
 	/**
 	 * Get read adjustment for CIA 1 register PRA
-	 * 
-	 * @param selected
-	 *            Columns to read.
+	 *
+	 * @param selected Columns to read.
 	 *
 	 * @return selected keyboard columns
 	 */
@@ -101,8 +98,7 @@ public abstract class Keyboard {
 	/**
 	 * Get read adjustment for CIA 1 register PRB
 	 *
-	 * @param selected
-	 *            columns to read
+	 * @param selected columns to read
 	 *
 	 * @return selected keyboard rows
 	 */

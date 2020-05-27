@@ -6,6 +6,7 @@ import java.io.IOException;
 public class IniConfigException extends IOException {
 	public IniConfigException() {
 	}
+
 	public IniConfigException(String message) {
 		super(message);
 	}

@@ -41,17 +41,17 @@ public class OnlineSection {
 	public void setHvscSearchIndexUrl(String hvscSearchIndexUrl) {
 		this.hvscSearchIndexUrl = hvscSearchIndexUrl;
 	}
-	
+
 	private String hvscSearchIndexPropertiesUrl = DEPLOYMENT_URL + "online/hvsc/HVSC.properties";
 
 	public String getHvscSearchIndexPropertiesUrl() {
 		return hvscSearchIndexPropertiesUrl;
 	}
-	
+
 	public void setHvscSearchIndexPropertiesUrl(String hvscSearchIndexPropertiesUrl) {
 		this.hvscSearchIndexPropertiesUrl = hvscSearchIndexPropertiesUrl;
 	}
-	
+
 	private String cgscUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.zip";
 
 	public String getCgscUrl() {
@@ -67,17 +67,19 @@ public class OnlineSection {
 	public String getCgscSearchIndexUrl() {
 		return cgscSearchIndexUrl;
 	}
+
 	public void setCgscSearchIndexUrl(String cgscSearchIndexUrl) {
 		this.cgscSearchIndexUrl = cgscSearchIndexUrl;
 	}
-	
+
 	public String getCgscSearchIndexPropertiesUrl() {
 		return cgscSearchIndexPropertiesUrl;
 	}
+
 	public void setCgscSearchIndexPropertiesUrl(String cgscSearchIndexPropertiesUrl) {
 		this.cgscSearchIndexPropertiesUrl = cgscSearchIndexPropertiesUrl;
 	}
-	
+
 	private String cgscSearchIndexPropertiesUrl = DEPLOYMENT_URL + "online/cgsc/CGSC.properties";
 
 	private String hvmecUrl = DEPLOYMENT_URL + "online/hvmec/HVMEC.zip";
@@ -162,36 +164,36 @@ public class OnlineSection {
 		soasc8580R5 = soasc8580r5;
 	}
 
-	private String gb64MusicUrl = DEPLOYMENT_URL+"music/";
+	private String gb64MusicUrl = DEPLOYMENT_URL + "music/";
 
 	public String getGb64MusicUrl() {
 		return gb64MusicUrl;
 	}
-	
+
 	public void setGb64MusicUrl(String gb64MusicUrl) {
 		this.gb64MusicUrl = gb64MusicUrl;
 	}
-	
-	private String gb64ScreenshotUrl = DEPLOYMENT_URL+"screenshots/";
+
+	private String gb64ScreenshotUrl = DEPLOYMENT_URL + "screenshots/";
 
 	public String getGb64ScreenshotUrl() {
 		return gb64ScreenshotUrl;
 	}
-	
+
 	public void setGb64ScreenshotUrl(String gb64ScreenshotUrl) {
 		this.gb64ScreenshotUrl = gb64ScreenshotUrl;
 	}
-	
-	private String gb64GamesUrl = DEPLOYMENT_URL+"games/";
+
+	private String gb64GamesUrl = DEPLOYMENT_URL + "games/";
 
 	public String getGb64GamesUrl() {
 		return gb64GamesUrl;
 	}
-	
+
 	public void setGb64GamesUrl(String gb64GamesUrl) {
 		this.gb64GamesUrl = gb64GamesUrl;
 	}
-	
+
 	private double zoom = DEFAULT_ZOOM;
 
 	public double getZoom() {
@@ -201,15 +203,15 @@ public class OnlineSection {
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
 	}
-	
+
 	private String assembly64Url = DEFAULT_ASSEMBLY64_URL;
-	
+
 	public String getAssembly64Url() {
 		return assembly64Url;
 	}
-	
+
 	public void setAssembly64Url(String assembly64Url) {
 		this.assembly64Url = assembly64Url;
 	}
-	
+
 }

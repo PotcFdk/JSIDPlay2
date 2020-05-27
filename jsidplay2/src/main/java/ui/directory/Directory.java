@@ -54,7 +54,7 @@ public class Directory extends C64VBox implements UIPart {
 
 	private ObservableList<DirectoryItem> directoryEntries;
 
-	private ObjectProperty<File> autoStartFileProperty = new SimpleObjectProperty<File>();
+	private ObjectProperty<File> autoStartFileProperty = new SimpleObjectProperty<>();
 
 	private int fontSet = TRUE_TYPE_FONT_BIG;
 	private int fontSetHeader = TRUE_TYPE_FONT_INVERSE_BIG;
@@ -180,7 +180,7 @@ public class Directory extends C64VBox implements UIPart {
 
 	private String print(final char c, int fontSet) {
 		if ((c & 0x60) == 0) {
-			return String.valueOf((char) (c | 0x40 | (fontSet ^ 0x0200)));
+			return String.valueOf((char) (c | 0x40 | fontSet ^ 0x0200));
 		} else {
 			return String.valueOf((char) (c | fontSet));
 		}
@@ -188,7 +188,7 @@ public class Directory extends C64VBox implements UIPart {
 
 	public void clear() {
 		directoryEntries.clear();
-		
+
 	}
 
 }

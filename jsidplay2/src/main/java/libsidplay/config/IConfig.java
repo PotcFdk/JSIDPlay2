@@ -18,7 +18,7 @@ public interface IConfig {
 	IEmulationSection getEmulationSection();
 
 	IWhatsSidSection getWhatsSidSection();
-	
+
 	List<? extends IFilterSection> getFilterSection();
 
 }

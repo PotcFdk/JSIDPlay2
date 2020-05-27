@@ -78,7 +78,7 @@ public class JavaSound implements AudioDriver {
 
 	/**
 	 * Estimate the length of audio data before we run out
-	 * 
+	 *
 	 * @return playback time in ms
 	 */
 	public int getRemainingPlayTime() {

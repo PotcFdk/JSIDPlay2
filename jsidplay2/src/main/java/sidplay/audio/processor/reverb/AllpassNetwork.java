@@ -30,7 +30,7 @@ public class AllpassNetwork {
 		// Default gain of allpass network
 		double networkGain = 0.7;
 		gain1 = -networkGain;
-		gain2 = 1.0 - (networkGain * networkGain);
+		gain2 = 1.0 - networkGain * networkGain;
 		gain3 = networkGain;
 
 		// Default sustain
@@ -76,7 +76,7 @@ public class AllpassNetwork {
 
 		// Now update the network gain
 		gain1 = -gain;
-		gain2 = 1.0 - (gain * gain);
+		gain2 = 1.0 - gain * gain;
 		gain3 = gain;
 	}
 
@@ -87,7 +87,7 @@ public class AllpassNetwork {
 		this.sustainTimeInMs = sustainTimeInMs;
 
 		// Number of samples needed for sustain duration
-		sustainSampleCount = (int) ((sustainTimeInMs * sampleRate * numberOfChannels) / 1000);
+		sustainSampleCount = (int) (sustainTimeInMs * sampleRate * numberOfChannels / 1000);
 
 		// Calculate gain for this filter
 		calcGain();
@@ -133,8 +133,9 @@ public class AllpassNetwork {
 			// No more input samples are available therefore sustain is in
 			// mode is in effect.
 			int samplesToMove = Math.min(outBuf.length, sustainSampleCount);
-			if (samplesToMove <= 0)
+			if (samplesToMove <= 0) {
 				return -1;
+			}
 
 			// No more input samples are available therefore sustain is in
 			// mode is in effect.

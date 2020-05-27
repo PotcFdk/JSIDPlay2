@@ -100,9 +100,9 @@ public class StatusBar extends C64VBox implements UIPart {
 		/**
 		 * Set SID Tune Player (name) and Details (author, released, comment and CSDB
 		 * link)
-		 * 
+		 *
 		 * e.g. player ID: Soedesoft, author: Jeroen Soede and Michiel Soede, etc.
-		 * 
+		 *
 		 * @param sidTune tune containing player details
 		 */
 		private void setPlayerIdAndInfos(SidTune sidTune) {
@@ -143,8 +143,9 @@ public class StatusBar extends C64VBox implements UIPart {
 		this.playerinfos = new StringBuilder();
 		this.statusTooltip = new Tooltip();
 		this.status.setOnMouseClicked(e -> {
-			if (status.getUserData() != null)
+			if (status.getUserData() != null) {
 				DesktopIntegration.browse(status.getUserData().toString());
+			}
 		});
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
@@ -208,7 +209,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		}
 		Runtime runtime = Runtime.getRuntime();
 		line.append(String.format(", %s: %sMb/%sMb", util.getBundle().getString("MEMORY"),
-				(runtime.totalMemory() - runtime.freeMemory()) >> 20, runtime.maxMemory() >> 20));
+				runtime.totalMemory() - runtime.freeMemory() >> 20, runtime.maxMemory() >> 20));
 		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
 				determineSongLength()));
 		if (util.getPlayer().getAudioDriver().isRecording()) {
@@ -509,8 +510,9 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	private String getFileSize(long size) {
-		if (size <= 0)
+		if (size <= 0) {
 			return "0 b";
+		}
 		final String[] units = new String[] { "b", "kb", "Mb", "Gb", "Tb" };
 		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
 		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];

@@ -18,7 +18,7 @@ public class Keyboard extends C64Window {
 	@FXML
 	private ToggleButton shiftLocked;
 
-	private final Set<KeyTableEntry> keysPressed = new HashSet<KeyTableEntry>();
+	private final Set<KeyTableEntry> keysPressed = new HashSet<>();
 
 	public Keyboard() {
 	}

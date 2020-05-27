@@ -54,8 +54,9 @@ public abstract class SearchInIndexThread extends SearchThread {
 
 	@Override
 	public void setSearchState(Object state) {
-		if (state instanceof HVSCEntries)
+		if (state instanceof HVSCEntries) {
 			this.state = (HVSCEntries) state;
+		}
 	}
 
 	public SingularAttribute<?, ?> getField() {

@@ -42,8 +42,8 @@ public class Normal extends Cartridge {
 
 		if (header[0xe] == 0x10) {
 			/*
-			 * This is ultimax cartridge. I'm expecting it to only have a single
-			 * ROM file, which I'll mirror twice into the ROMH region.
+			 * This is ultimax cartridge. I'm expecting it to only have a single ROM file,
+			 * which I'll mirror twice into the ROMH region.
 			 */
 			byte[] data = new byte[0x1000];
 			dis.readFully(data);

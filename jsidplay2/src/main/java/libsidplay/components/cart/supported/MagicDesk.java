@@ -10,16 +10,16 @@ import libsidplay.components.pla.PLA;
 /**
  * <PRE>
  *     "Magic Desk" Cartridge
- * 
+ *
  *     - this cart comes in 3 sizes, 32Kb, 64Kb and 128Kb.
  *     - ROM is always mapped in at $8000-$9FFF.
- * 
+ *
  *     - 1 register at io1 / de00:
- * 
+ *
  *     bit 0-5   bank number
  *     bit 7     exrom (1 = cart disabled)
  * </PRE>
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -42,8 +42,10 @@ public class MagicDesk extends Cartridge {
 		romLBanks = new byte[16][0x2000];
 		for (int i = 0; i < 16 && dis.available() > 0; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xb] >= (byte) 0x40 || (chipHeader[0xc] & 0xff) != 0x80 && (chipHeader[0xc] & 0xff) != 0xa0)
+			if (chipHeader[0xb] >= (byte) 0x40
+					|| (chipHeader[0xc] & 0xff) != 0x80 && (chipHeader[0xc] & 0xff) != 0xa0) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
 		}
@@ -67,7 +69,7 @@ public class MagicDesk extends Cartridge {
 	private final Bank romlBank = new Bank() {
 		@Override
 		public byte read(int address) {
-			return romLBanks[currentRomBank][(address & 0x1fff)];
+			return romLBanks[currentRomBank][address & 0x1fff];
 		}
 	};
 

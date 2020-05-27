@@ -76,7 +76,7 @@ public class CombFilter {
 		this.sustainTimeInMs = sustainTimeInMs;
 
 		// Number of samples needed for sustain duration
-		sustainSampleCount = (int) ((sustainTimeInMs * sampleRate * numberOfChannels) / 1000);
+		sustainSampleCount = (int) (sustainTimeInMs * sampleRate * numberOfChannels / 1000);
 
 		// Calculate gain for this filter
 		calcGain();
@@ -116,8 +116,9 @@ public class CombFilter {
 			// No more input samples are available therefore sustain
 			// mode is in effect.
 			int samplesToMove = Math.min(outBuf.length, sustainSampleCount);
-			if (samplesToMove <= 0)
+			if (samplesToMove <= 0) {
 				return -1;
+			}
 
 			// Move the sustain samples
 			for (int i = 0; i < samplesToMove; i++) {

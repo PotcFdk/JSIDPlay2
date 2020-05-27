@@ -3,9 +3,9 @@ package builder.resid.resid;
 /**
  * Java port of the reSID 1.0 filter VCR+opamp+capacitor element (integrator) by
  * Dag Lem.
- * 
+ *
  * Java port and subthreshold current simulation added by Antti S. Lankila.
- * 
+ *
  * @author Antti S. Lankila
  * @author Dag Lem
  */
@@ -50,7 +50,7 @@ final class Integrator {
 		}
 
 		// VCR current, scaled by m*2^15*2^15 = m*2^30
-		int n_I_vcr = (vcr_n_Ids_term[Vgs & 0xffff] - vcr_n_Ids_term[Vgd & 0xffff]) << 15;
+		int n_I_vcr = vcr_n_Ids_term[Vgs & 0xffff] - vcr_n_Ids_term[Vgd & 0xffff] << 15;
 
 		// Change in capacitor charge.
 		vc += n_I_snake + n_I_vcr;

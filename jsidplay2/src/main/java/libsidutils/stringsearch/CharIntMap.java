@@ -1,21 +1,21 @@
 /*
  * CharIntMap.java
- * 
+ *
  * Created on 13.11.2003.
  *
  * eaio: StringSearch - high-performance pattern matching algorithms in Java
  * Copyright (c) 2003, 2004 Johann Burkard (jb@eaio.com) http://eaio.com
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package libsidutils.stringsearch;
 
@@ -44,7 +44,7 @@ import java.io.ObjectOutput;
  * <br>
  * There's usually no need to construct a CharIntMap yourself, it is done
  * automatically for you in the pre-processing methods.
- * 
+ *
  * @author <a href="mailto:jb@eaio.com">Johann Burkard</a>
  * @version 1.2
  */
@@ -63,11 +63,9 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Constructor for CharIntMap.
-	 * 
-	 * @param extent
-	 *            the extent of the text
-	 * @param lowest
-	 *            the lowest occuring character
+	 *
+	 * @param extent the extent of the text
+	 * @param lowest the lowest occuring character
 	 */
 	public CharIntMap(final int extent, final char lowest) {
 		this(extent, lowest, 0);
@@ -75,14 +73,11 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Constructor for CharIntMap.
-	 * 
-	 * @param extent
-	 *            the extent of the text
-	 * @param lowest
-	 *            the lowest occuring character
-	 * @param defaultValue
-	 *            a default value to initialize the underlying <code>int</code>
-	 *            array with
+	 *
+	 * @param extent       the extent of the text
+	 * @param lowest       the lowest occuring character
+	 * @param defaultValue a default value to initialize the underlying
+	 *                     <code>int</code> array with
 	 */
 
 	public CharIntMap(final int extent, final char lowest, final int defaultValue) {
@@ -98,7 +93,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns a deep clone of this CharIntMap.
-	 * 
+	 *
 	 * @return an CharIntMap containing the same mappings
 	 */
 	@Override
@@ -115,16 +110,15 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the stored value for the given <code>char</code>.
-	 * 
-	 * @param c
-	 *            the <code>char</code>
+	 *
+	 * @param c the <code>char</code>
 	 * @return the stored value
 	 */
 	public int get(final char c) {
 
 		/*
-		 * For the Sun VM, the char version accelerates some algorithms by 5 to
-		 * 10 %, in the IBM VM, there is no difference.
+		 * For the Sun VM, the char version accelerates some algorithms by 5 to 10 %, in
+		 * the IBM VM, there is no difference.
 		 */
 
 		// int x = c - lowest;
@@ -141,17 +135,15 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Sets the stored value for the given <code>char</code>.
-	 * 
-	 * @param c
-	 *            the <code>char</code>
-	 * @param val
-	 *            the new value
+	 *
+	 * @param c   the <code>char</code>
+	 * @param val the new value
 	 */
 	public void set(final char c, final int val) {
 
 		/*
-		 * For the Sun VM, the char version accelerates some algorithms by 5 to
-		 * 10 %, in the IBM VM, there is no difference.
+		 * For the Sun VM, the char version accelerates some algorithms by 5 to 10 %, in
+		 * the IBM VM, there is no difference.
 		 */
 
 		// int x = c - lowest;
@@ -168,7 +160,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the extent of the actual <code>char</code> array.
-	 * 
+	 *
 	 * @return the extent
 	 */
 	public int getExtent() {
@@ -177,7 +169,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the lowest char that mappings can be saved for.
-	 * 
+	 *
 	 * @return a <code>char</code>
 	 */
 	public char getLowest() {
@@ -186,7 +178,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the highest char that mappings can be saved for.
-	 * 
+	 *
 	 * @return char
 	 */
 	public char getHighest() {
@@ -195,9 +187,8 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns if this Object is equal to another Object.
-	 * 
-	 * @param obj
-	 *            the other Object
+	 *
+	 * @param obj the other Object
 	 * @return if this Object is equal
 	 * @see java.lang.Object#equals(Object)
 	 */
@@ -222,7 +213,7 @@ class CharIntMap implements Externalizable, Cloneable {
 			return false;
 		} else if (array == null && m.array != null) {
 			return false;
-		} else if (array != null && m.array != null){
+		} else if (array != null && m.array != null) {
 			for (int i = 0; i < array.length; i++) {
 				if (array[i] != m.array[i]) {
 					return false;
@@ -234,7 +225,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns the hashCode of this Object.
-	 * 
+	 *
 	 * @return the hashCode
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -253,7 +244,7 @@ class CharIntMap implements Externalizable, Cloneable {
 
 	/**
 	 * Returns a String representation of this Object.
-	 * 
+	 *
 	 * @return a String
 	 * @see java.lang.Object#toString()
 	 */

@@ -3,9 +3,9 @@ package builder.resid.resid;
 /**
  * Filter based on Dag Lem's 6581 filter from reSID 1.0 prerelease. See original
  * source for discussion about theory of operation.
- * 
+ *
  * Java port by Antti S. Lankila
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -65,10 +65,9 @@ public final class Filter6581 extends Filter {
 
 	/**
 	 * Set filter curve type based on single parameter.
-	 * 
-	 * @param curvePosition
-	 *            0 .. 1, where 0 sets center frequency high ("light") and 1
-	 *            sets it low ("dark")
+	 *
+	 * @param curvePosition 0 .. 1, where 0 sets center frequency high ("light") and
+	 *                      1 sets it low ("dark")
 	 */
 	public void setFilterCurve(double curvePosition) {
 		System.arraycopy(FilterModelConfig.getDAC(FilterModelConfig.getDacZero(curvePosition)), 0, f0_dac, 0, 2048);
@@ -125,7 +124,7 @@ public final class Filter6581 extends Filter {
 	}
 
 	@Override
-	protected final void zeroDenormals() {
+	protected void zeroDenormals() {
 	}
 
 	@Override
@@ -145,7 +144,7 @@ public final class Filter6581 extends Filter {
 
 	/**
 	 * Resonance tuned by ear, based on a few observations:
-	 * 
+	 *
 	 * - there's a small notch even in allpass mode - size of resonance hump is
 	 * about 8 dB
 	 */

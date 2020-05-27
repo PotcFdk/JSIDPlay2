@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -24,8 +24,8 @@ package builder.resid.residfp;
 import java.util.function.IntConsumer;
 
 import libsidplay.common.ChipModel;
-import libsidplay.common.SIDChip;
 import libsidplay.common.Potentiometer;
+import libsidplay.common.SIDChip;
 
 public class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = -0x9500;
@@ -82,9 +82,9 @@ public class SID implements SIDChip {
 
 	/**
 	 * Set DAC nonlinearity for 6581 emulation.
-	 * 
+	 *
 	 * @param nonLinearity
-	 * 
+	 *
 	 * @see SID#kinkedDac(int, float, int)
 	 */
 	public void set6581VoiceNonlinearity(final float nonLinearity) {
@@ -99,19 +99,16 @@ public class SID implements SIDChip {
 
 	/**
 	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, but the second
-	 * resistor is not exactly double the first. The parameter nonLinearity
-	 * models the deviation from the resistor lengths. There appears to be about
-	 * 4 % error on the 6581, resulting in major kinks on the DAC. The value
-	 * that the DAC yields tends to be larger than expected. The output of this
-	 * method is normalized such that DAC errors occur both above and below the
-	 * ideal value equally.
-	 * 
-	 * @param input
-	 *            digital value to convert to analog
-	 * @param nonLinearity
-	 *            nonlinearity parameter, 1.0 for perfect linearity.
-	 * @param maxBit
-	 *            highest bit that may be set in input.
+	 * resistor is not exactly double the first. The parameter nonLinearity models
+	 * the deviation from the resistor lengths. There appears to be about 4 % error
+	 * on the 6581, resulting in major kinks on the DAC. The value that the DAC
+	 * yields tends to be larger than expected. The output of this method is
+	 * normalized such that DAC errors occur both above and below the ideal value
+	 * equally.
+	 *
+	 * @param input        digital value to convert to analog
+	 * @param nonLinearity nonlinearity parameter, 1.0 for perfect linearity.
+	 * @param maxBit       highest bit that may be set in input.
 	 * @return the analog value as modeled from the R-2R network.
 	 */
 	static float kinkedDac(final int input, final float nonLinearity, final int maxBit) {
@@ -141,22 +138,19 @@ public class SID implements SIDChip {
 
 	/**
 	 * Set chip model.
-	 * 
-	 * @param model
-	 *            chip model to use
+	 *
+	 * @param model chip model to use
 	 */
 	@Override
 	public void setChipModel(final ChipModel model) {
 		this.model = model;
 		/*
-		  results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
-		
-		  (new SID) (250469/8580R5) (250469/8580R5)
-		  delayfrq0    ~7a000        ~108000
-		
-		  (old SID) (250407/6581)
-		  delayfrq0    ~01d00
-		
+		 * results from real C64 (testprogs/SID/bitfade/delayfrq0.prg):
+		 * 
+		 * (new SID) (250469/8580R5) (250469/8580R5) delayfrq0 ~7a000 ~108000
+		 * 
+		 * (old SID) (250407/6581) delayfrq0 ~01d00
+		 * 
 		 */
 		databus_ttl = model == ChipModel.MOS8580 ? 0xa2000 : 0x1d00;
 
@@ -206,13 +200,12 @@ public class SID implements SIDChip {
 	}
 
 	/**
-	 * 16-bit input (EXT IN). Write 16-bit sample to audio input. NB! The caller
-	 * is responsible for keeping the value within 16 bits. Note that to mix in
-	 * an external audio signal, the signal should be resampled to 1MHz first to
-	 * avoid sampling noise.
-	 * 
-	 * @param value
-	 *            input level to set
+	 * 16-bit input (EXT IN). Write 16-bit sample to audio input. NB! The caller is
+	 * responsible for keeping the value within 16 bits. Note that to mix in an
+	 * external audio signal, the signal should be resampled to 1MHz first to avoid
+	 * sampling noise.
+	 *
+	 * @param value input level to set
 	 */
 	@Override
 	public void input(final int value) {
@@ -225,20 +218,18 @@ public class SID implements SIDChip {
 	 * Read registers.
 	 * <P>
 	 * Reading a write only register returns the last byte written to any SID
-	 * register. The individual bits in this value start to fade down towards
-	 * zero after a few cycles. All bits reach zero within approximately $2000 -
-	 * $4000 cycles. It has been claimed that this fading happens in an orderly
-	 * fashion, however sampling of write only registers reveals that this is
-	 * not the case. NB! This is not correctly modeled. The actual use of write
-	 * only registers has largely been made in the belief that all SID registers
-	 * are readable. To support this belief the read would have to be done
-	 * immediately after a write to the same register (remember that an
-	 * intermediate write to another register would yield that value instead).
-	 * With this in mind we return the last value written to any SID register
-	 * for $2000 cycles without modeling the bit fading.
-	 * 
-	 * @param offset
-	 *            SID register to read
+	 * register. The individual bits in this value start to fade down towards zero
+	 * after a few cycles. All bits reach zero within approximately $2000 - $4000
+	 * cycles. It has been claimed that this fading happens in an orderly fashion,
+	 * however sampling of write only registers reveals that this is not the case.
+	 * NB! This is not correctly modeled. The actual use of write only registers has
+	 * largely been made in the belief that all SID registers are readable. To
+	 * support this belief the read would have to be done immediately after a write
+	 * to the same register (remember that an intermediate write to another register
+	 * would yield that value instead). With this in mind we return the last value
+	 * written to any SID register for $2000 cycles without modeling the bit fading.
+	 *
+	 * @param offset SID register to read
 	 * @return value read from chip
 	 */
 	@Override
@@ -247,7 +238,7 @@ public class SID implements SIDChip {
 		switch (offset) {
 		case 0x19:
 			value = potX.readPOT();
-			
+
 			busValueTtl = databus_ttl;
 			break;
 		case 0x1a:
@@ -274,11 +265,9 @@ public class SID implements SIDChip {
 
 	/**
 	 * Write registers.
-	 * 
-	 * @param offset
-	 *            chip register to write
-	 * @param value
-	 *            value to write
+	 *
+	 * @param offset chip register to write
+	 * @param value  value to write
 	 */
 	@Override
 	public void write(final int offset, final byte value) {
@@ -375,11 +364,9 @@ public class SID implements SIDChip {
 
 	/**
 	 * SID voice muting.
-	 * 
-	 * @param channel
-	 *            channel to modify
-	 * @param mute
-	 *            is muted?
+	 *
+	 * @param channel channel to modify
+	 * @param mute    is muted?
 	 */
 	@Override
 	public void mute(final int channel, final boolean mute) {
@@ -392,9 +379,8 @@ public class SID implements SIDChip {
 
 	/**
 	 * Setting of clock frequency.
-	 * 
-	 * @param clockFrequency
-	 *            System clock frequency at Hz
+	 *
+	 * @param clockFrequency System clock frequency at Hz
 	 */
 	@Override
 	public void setClockFrequency(final double clockFrequency) {
@@ -415,11 +401,9 @@ public class SID implements SIDChip {
 
 	/**
 	 * Clock SID forward using chosen output sampling algorithm.
-	 * 
-	 * @param delta_t
-	 *            c64 clocks to clock
-	 * @param sample
-	 *            sample consumer
+	 *
+	 * @param delta_t c64 clocks to clock
+	 * @param sample  sample consumer
 	 */
 	@Override
 	public final void clock(final int delta_t, IntConsumer sample) {

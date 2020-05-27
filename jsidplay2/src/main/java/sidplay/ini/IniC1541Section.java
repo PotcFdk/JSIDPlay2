@@ -2,8 +2,8 @@ package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_DRIVE_ON;
 import static sidplay.ini.IniDefaults.DEFAULT_FLOPPY_TYPE;
-import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_JIFFYDOS_INSTALLED;
+import static sidplay.ini.IniDefaults.DEFAULT_PARALLEL_CABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X2000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X4000;
 import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0X6000;
@@ -15,9 +15,9 @@ import libsidplay.config.IC1541Section;
 
 /**
  * C1541 section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniC1541Section extends IniSection implements IC1541Section {
 
@@ -27,7 +27,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Drive turned on?
-	 * 
+	 *
 	 * @return drive turned on?
 	 */
 	@Override
@@ -37,7 +37,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Turn drive on.
-	 * 
+	 *
 	 * @param on drive turned on?
 	 */
 	@Override
@@ -47,7 +47,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Is the parallel cable plugged in?
-	 * 
+	 *
 	 * @return parallel cable plugged in?
 	 */
 	@Override
@@ -57,7 +57,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Plug in parallel cable.
-	 * 
+	 *
 	 * @param on parallel cable plugged in?
 	 */
 	@Override
@@ -137,7 +137,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Get type of floppy.
-	 * 
+	 *
 	 * @return type of floppy
 	 */
 	@Override
@@ -147,7 +147,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	/**
 	 * Set type of floppy.
-	 * 
+	 *
 	 * @param floppyType type of floppy
 	 */
 	@Override

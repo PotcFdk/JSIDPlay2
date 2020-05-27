@@ -27,8 +27,8 @@ public class SameThreadC1541Runner extends C1541Runner {
 		notTerminated = true;
 
 		/*
-		 * This should actually never throw InterruptedException, because the
-		 * only kind of Events that throw it are related to audio production.
+		 * This should actually never throw InterruptedException, because the only kind
+		 * of Events that throw it are related to audio production.
 		 */
 		try {
 			while (notTerminated) {

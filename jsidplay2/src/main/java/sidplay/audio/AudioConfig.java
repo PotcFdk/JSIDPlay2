@@ -19,7 +19,7 @@ import libsidplay.config.IAudioSection;
 
 /**
  * Audio configuration (frame rate, channels, etc.)
- * 
+ *
  * @author ken
  *
  */
@@ -31,7 +31,7 @@ public class AudioConfig {
 
 	/**
 	 * This instance represents the requested audio configuration.<BR>
-	 * 
+	 *
 	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
 	 * @param deviceIdx       The sound device number.
@@ -49,9 +49,9 @@ public class AudioConfig {
 	 * parameters.<BR>
 	 * <B>Note:</B> The number of audio channels is always two to support stereo
 	 * tunes and to play mono tunes as stereo (fake stereo).
-	 * 
+	 *
 	 * @param audio audio configuration
-	 * 
+	 *
 	 * @return AudioConfig for current specification
 	 */
 	public static AudioConfig getInstance(final IAudioSection audio) {
@@ -61,7 +61,7 @@ public class AudioConfig {
 
 	/**
 	 * Gets the audio frame rate of this AudioConfig.
-	 * 
+	 *
 	 * @return The audio frame rate of this AudioConfig.
 	 */
 	public final int getFrameRate() {
@@ -72,13 +72,13 @@ public class AudioConfig {
 	 * Return the desired size of buffer used at one time. This is often smaller
 	 * than the whole buffer because doing this allows us to stay closer in sync
 	 * with the audio production.
-	 * 
+	 *
 	 * <B>Note:</B>Do not choose too small values here: test with 96kHz and 32x fast
 	 * forward!
-	 * 
+	 *
 	 * <B>Note:</B> Current implementation uses exactly the same size as
 	 * bufferFrames as a result after numerous tests!
-	 * 
+	 *
 	 * @return size of one chunk
 	 */
 	public final int getChunkFrames() {
@@ -87,7 +87,7 @@ public class AudioConfig {
 
 	/**
 	 * Gets the size of this AudioConfig's audio buffer in frames.
-	 * 
+	 *
 	 * @return The size of this AudioConfig's audio buffer in frames.
 	 */
 	public final int getBufferFrames() {
@@ -97,11 +97,11 @@ public class AudioConfig {
 	/**
 	 * The actual buffer size for the open audio line may differ from the requested
 	 * buffer size, therefore the setter<BR>
-	 * 
+	 *
 	 * <B>Note:</B> We make the sample buffer size divisible by 64 to ensure that
 	 * all fast forward factors can be handled. (32x speed, 2 channels).<BR>
 	 * <B>Note:</B> Must be greater or equal than the calculated chunk size!
-	 * 
+	 *
 	 * @param bufferFrames available buffer frames
 	 */
 	public final void setBufferFrames(final int bufferFrames) {
@@ -114,7 +114,7 @@ public class AudioConfig {
 
 	/**
 	 * Get number of audio channels
-	 * 
+	 *
 	 * @return audio channels
 	 */
 	public final int getChannels() {
@@ -123,7 +123,7 @@ public class AudioConfig {
 
 	/**
 	 * Get currently used audio device
-	 * 
+	 *
 	 * @return audio device
 	 */
 	public final int getDevice() {
@@ -135,7 +135,7 @@ public class AudioConfig {
 	 * Best results after numerous tests (Win/Linux, Java 8/11, 44.1K..96K, 1x..32x
 	 * fast forward)<BR>
 	 * 1024=responsiveness vs. 16384=stable audio since Java11 on Linux
-	 * 
+	 *
 	 * @return platform dependent default buffer size
 	 */
 	public static final int getDefaultBufferSize() {

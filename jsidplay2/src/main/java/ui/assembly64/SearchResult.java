@@ -15,7 +15,7 @@ public class SearchResult {
 	public static final String NO = "N";
 	public static final String MATCH_ALL = "***";
 	public static final String DATE_PATTERN = "yyyyMMdd";
-	
+
 	private StringProperty idProperty = new SimpleStringProperty();
 	private StringProperty nameProperty = new SimpleStringProperty();
 	private StringProperty groupProperty = new SimpleStringProperty();
@@ -23,9 +23,9 @@ public class SearchResult {
 	private StringProperty handleProperty = new SimpleStringProperty();
 	private StringProperty eventProperty = new SimpleStringProperty();
 	private IntegerProperty ratingProperty = new SimpleIntegerProperty();
-	private ObjectProperty<LocalDate> updatedProperty = new SimpleObjectProperty<LocalDate>();
-	private ObjectProperty<LocalDate> releasedProperty = new SimpleObjectProperty<LocalDate>();
-	private ObjectProperty<Category> categoryProperty = new SimpleObjectProperty<Category>();
+	private ObjectProperty<LocalDate> updatedProperty = new SimpleObjectProperty<>();
+	private ObjectProperty<LocalDate> releasedProperty = new SimpleObjectProperty<>();
+	private ObjectProperty<Category> categoryProperty = new SimpleObjectProperty<>();
 
 	public SearchResult() {
 	}

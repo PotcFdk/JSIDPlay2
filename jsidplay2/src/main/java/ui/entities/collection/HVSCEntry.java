@@ -420,7 +420,7 @@ public class HVSCEntry {
 	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	public List<StilEntry> getStil() {
 		if (stil == null) {
-			stil = new ArrayList<StilEntry>();
+			stil = new ArrayList<>();
 		}
 		return stil;
 	}

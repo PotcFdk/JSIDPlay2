@@ -30,10 +30,11 @@ public class Rex extends Cartridge {
 	private final Bank io2Bank = new Bank() {
 		@Override
 		public byte read(int address) {
-			if ((address & 0xff) < 0xc0)
+			if ((address & 0xff) < 0xc0) {
 				pla.setGameExrom(true, true);
-			else
+			} else {
 				pla.setGameExrom(true, false);
+			}
 
 			return 0;
 		}

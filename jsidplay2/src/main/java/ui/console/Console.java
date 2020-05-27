@@ -16,7 +16,7 @@ public class Console extends C64VBox implements UIPart {
 
 	public Console() {
 	}
-	
+
 	public Console(C64Window window, Player player) {
 		super(window, player);
 	}

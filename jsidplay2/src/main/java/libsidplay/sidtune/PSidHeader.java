@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 /**
  * Header has been extended for 'RSID' format<BR>
- * 
+ *
  * The following changes are present:
  * <UL>
  * <LI>id = 'RSID'
@@ -18,9 +18,9 @@ import java.util.Scanner;
  * <LI>load cannot be less than 0x0801 (start of basic)
  * </UL>
  * all values big-endian
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class PSidHeader {
 	static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
@@ -132,7 +132,7 @@ public class PSidHeader {
 
 	/**
 	 * 32-bit speed info:<BR>
-	 * 
+	 *
 	 * bit: 0=50 Hz, 1=CIA 1 Timer A (default: 60 Hz)
 	 */
 	int speed;
@@ -194,11 +194,11 @@ public class PSidHeader {
 	public String getName() {
 		return getString(name);
 	}
-	
+
 	public String getAuthor() {
 		return getString(author);
 	}
-	
+
 	public String getReleased() {
 		return getString(released);
 	}

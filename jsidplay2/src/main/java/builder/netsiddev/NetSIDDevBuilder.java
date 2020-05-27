@@ -13,9 +13,9 @@ import builder.netsiddev.commands.SetClocking;
 import builder.netsiddev.commands.SetDelay;
 import builder.netsiddev.commands.SetFadeIn;
 import builder.netsiddev.commands.SetFadeOut;
+import builder.netsiddev.commands.SetSidHeader;
 import builder.netsiddev.commands.SetSidLevel;
 import builder.netsiddev.commands.SetSidPosition;
-import builder.netsiddev.commands.SetSidHeader;
 import builder.netsiddev.commands.TrySetSampling;
 import builder.netsiddev.commands.TrySetSidModel;
 import libsidplay.common.CPUClock;
@@ -70,10 +70,11 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 		for (byte addr = 0; sidEmu != null && addr < REG_COUNT; addr++) {
 			sid.write(addr, sidEmu.readInternalRegister(addr));
 		}
-		if (sidNum < sids.size())
+		if (sidNum < sids.size()) {
 			sids.set(sidNum, sid);
-		else
+		} else {
 			sids.add(sid);
+		}
 		updateMixer(audioSection);
 		return sid;
 	}
@@ -135,7 +136,7 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 	public void setVolume(int sidNum, float volume) {
 		// -6db..6db (client)
 		// -50..50 (server)
-		float level = -50f + ((volume + 6f) / 12f) * 100f;
+		float level = -50f + (volume + 6f) / 12f * 100f;
 		client.add(new SetSidLevel((byte) sidNum, (byte) level));
 	}
 

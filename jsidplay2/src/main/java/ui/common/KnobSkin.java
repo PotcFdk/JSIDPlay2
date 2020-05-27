@@ -1,7 +1,6 @@
 package ui.common;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.SkinBase;
@@ -12,11 +11,11 @@ import javafx.scene.layout.StackPane;
 
 /**
  * A simple knob skin for slider.
- * 
+ *
  * @author Jasper Potts (initial version)
- * 
+ *
  * @author ken (behavior dependencies removed)
- * 
+ *
  */
 public class KnobSkin extends SkinBase<Slider> {
 
@@ -45,7 +44,7 @@ public class KnobSkin extends SkinBase<Slider> {
 			@Override
 			protected void layoutChildren() {
 				knobDot.setLayoutX((knob.getWidth() - knobDot.getWidth()) / 2);
-				knobDot.setLayoutY(5 + (knobDot.getHeight() / 2));
+				knobDot.setLayoutY(5 + knobDot.getHeight() / 2);
 			}
 
 		};
@@ -75,13 +74,8 @@ public class KnobSkin extends SkinBase<Slider> {
 			thumbDragged(me, mouseToValue(me.getX(), me.getY()) + dragOffset);
 			getSkinnable().requestLayout();
 		});
-		getSkinnable().valueProperty().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				getSkinnable().requestLayout();
-			}
-		});
+		getSkinnable().valueProperty().addListener(
+				(ChangeListener<Number>) (observable, oldValue, newValue) -> getSkinnable().requestLayout());
 	}
 
 	@Override
@@ -165,21 +159,21 @@ public class KnobSkin extends SkinBase<Slider> {
 		} else {
 			topZeroAngle = -(90 + mouseAngle);
 		}
-		return 1 - ((topZeroAngle - minAngle) / (maxAngle - minAngle));
+		return 1 - (topZeroAngle - minAngle) / (maxAngle - minAngle);
 	}
 
 	private void rotateKnob() {
 		Slider s = getSkinnable();
 		double zeroOneValue = (s.getValue() - s.getMin()) / (s.getMax() - s.getMin());
-		double angle = minAngle + ((maxAngle - minAngle) * zeroOneValue);
+		double angle = minAngle + (maxAngle - minAngle) * zeroOneValue;
 		knob.setRotate(angle);
 	}
 
 	@Override
 	protected void layoutChildren(double x, double y, double w, double h) {
 		// calculate the available space
-		double cx = x + (w / 2);
-		double cy = y + (h / 2);
+		double cx = x + w / 2;
+		double cy = y + h / 2;
 
 		// resize thumb to preferred size
 		double knobWidth = knob.prefWidth(-1);
@@ -197,25 +191,25 @@ public class KnobSkin extends SkinBase<Slider> {
 	@Override
 	protected double computeMinWidth(double height, double topInset, double rightInset, double bottomInset,
 			double leftInset) {
-		return (leftInset + knob.minWidth(-1) + rightInset);
+		return leftInset + knob.minWidth(-1) + rightInset;
 	}
 
 	@Override
 	protected double computeMinHeight(double width, double topInset, double rightInset, double bottomInset,
 			double leftInset) {
-		return (topInset + knob.minHeight(-1) + bottomInset);
+		return topInset + knob.minHeight(-1) + bottomInset;
 	}
 
 	@Override
 	protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset,
 			double leftInset) {
-		return (leftInset + knob.prefWidth(-1) + rightInset);
+		return leftInset + knob.prefWidth(-1) + rightInset;
 	}
 
 	@Override
 	protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset,
 			double leftInset) {
-		return (topInset + knob.prefHeight(-1) + bottomInset);
+		return topInset + knob.prefHeight(-1) + bottomInset;
 	}
 
 	@Override

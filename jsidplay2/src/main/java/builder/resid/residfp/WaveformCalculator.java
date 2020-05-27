@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -31,12 +31,12 @@ import libsidplay.common.ChipModel;
 
 /**
  * Combined waveform calculator for WaveformGenerator.
- * 
+ *
  * @author Antti Lankila
  */
 public final class WaveformCalculator {
-	private static final Map<String, float[][]> WFTABLE_CACHE = new HashMap<String, float[][]>();
-	private static final Map<String, byte[][]> WFDIGITAL_CACHE = new HashMap<String, byte[][]>();
+	private static final Map<String, float[][]> WFTABLE_CACHE = new HashMap<>();
+	private static final Map<String, byte[][]> WFDIGITAL_CACHE = new HashMap<>();
 
 	private static class CombinedWaveformConfig {
 		public CombinedWaveformConfig(final float f, final float g, final float h, final float i, final float j) {
@@ -55,30 +55,32 @@ public final class WaveformCalculator {
 	}
 
 	/*
-	 * Nata provided me with a sampling that indicates the bit turn on/off
-	 * threshold is very, very steep. Since this *should* be an analog step, I
-	 * resist just turning it into a hard cutoff, but my resolution is wavering.
-	 * 512 is approximately right for 8580, and hopefully approximates the
-	 * analog character yet.
+	 * Nata provided me with a sampling that indicates the bit turn on/off threshold
+	 * is very, very steep. Since this *should* be an analog step, I resist just
+	 * turning it into a hard cutoff, but my resolution is wavering. 512 is
+	 * approximately right for 8580, and hopefully approximates the analog character
+	 * yet.
 	 */
 	private static final float sharpness = 512.f;
 	/*
-	 * the "bits wrong" figures below are not directly comparable. 0 bits are
-	 * very easy to predict, and waveforms that are mostly zero have low scores.
-	 * More comparable scores would be found by dividing with the count of
-	 * 1-bits, or something.
+	 * the "bits wrong" figures below are not directly comparable. 0 bits are very
+	 * easy to predict, and waveforms that are mostly zero have low scores. More
+	 * comparable scores would be found by dividing with the count of 1-bits, or
+	 * something.
 	 */
-	private static final CombinedWaveformConfig wfconfig[][] = new CombinedWaveformConfig[][] {
-			{ /* kevtris chip G (6581r2/r3) */
-					new CombinedWaveformConfig(0.880815f, 0f, 0f, 0.3279614f, 0.5999545f), // error
-																							// 1795
-					new CombinedWaveformConfig(0.8924618f, 2.014781f, 1.003332f, 0.02992322f, 0.0f), // error
-																										// 11610
-					new CombinedWaveformConfig(0.8646501f, 1.712586f, 1.137704f, 0.02845423f, 0f), // error
-																									// 21307
-					new CombinedWaveformConfig(0.9527834f, 1.794777f, 0f, 0.09806272f, 0.7752482f), // error
-																									// 196
-					new CombinedWaveformConfig(0.5f, 0.0f, 1.0f, 0.0f, 0.0f), },
+	private static final CombinedWaveformConfig wfconfig[][] = new CombinedWaveformConfig[][] { { /*
+																									 * kevtris chip G
+																									 * (6581r2/r3)
+																									 */
+			new CombinedWaveformConfig(0.880815f, 0f, 0f, 0.3279614f, 0.5999545f), // error
+																					// 1795
+			new CombinedWaveformConfig(0.8924618f, 2.014781f, 1.003332f, 0.02992322f, 0.0f), // error
+																								// 11610
+			new CombinedWaveformConfig(0.8646501f, 1.712586f, 1.137704f, 0.02845423f, 0f), // error
+																							// 21307
+			new CombinedWaveformConfig(0.9527834f, 1.794777f, 0f, 0.09806272f, 0.7752482f), // error
+																							// 196
+			new CombinedWaveformConfig(0.5f, 0.0f, 1.0f, 0.0f, 0.0f), },
 			{ /* kevtris chip V (8580) */
 					new CombinedWaveformConfig(0.9781665f, 0f, 0.9899469f, 8.087667f, 0.8226412f), // error
 																									// 5546
@@ -113,26 +115,24 @@ public final class WaveformCalculator {
 	/**
 	 * Build waveform tables for use by WaveformGenerator. The method returns 3
 	 * tables in an Object[] wrapper:
-	 * 
+	 *
 	 * 1. float[11][4096] wftable: the analog values in the waveform table 2.
-	 * float[12] dac table for values of the nonlinear bits used in waveforms.
-	 * 3. byte[11][4096] wfdigital: the digital values in the waveform table.
-	 * 
-	 * The wf* tables are structured as follows: indices 0 .. 6 correspond to
-	 * SID waveforms of 1 to 7 with pulse width value set to 0x1000 (never
-	 * triggered). Indices 7 .. 10 correspond to the pulse waveforms with width
-	 * set to 0x000 (always triggered).
-	 * 
-	 * @param model
-	 *            Chip model to use
-	 * @param nonlinearity
-	 *            Nonlinearity factor for 6581 tables, 1.0 for 8580
+	 * float[12] dac table for values of the nonlinear bits used in waveforms. 3.
+	 * byte[11][4096] wfdigital: the digital values in the waveform table.
+	 *
+	 * The wf* tables are structured as follows: indices 0 .. 6 correspond to SID
+	 * waveforms of 1 to 7 with pulse width value set to 0x1000 (never triggered).
+	 * Indices 7 .. 10 correspond to the pulse waveforms with width set to 0x000
+	 * (always triggered).
+	 *
+	 * @param model        Chip model to use
+	 * @param nonlinearity Nonlinearity factor for 6581 tables, 1.0 for 8580
 	 * @return Table suite
 	 */
 	protected static Object[] rebuildWftable(ChipModel model, float nonlinearity) {
 		float[] dac = new float[12];
 		for (int i = 0; i < 12; i++) {
-			dac[i] = SID.kinkedDac((1 << i), nonlinearity, 12);
+			dac[i] = SID.kinkedDac(1 << i, nonlinearity, 12);
 		}
 
 		final String key = nonlinearity + "," + model;
@@ -146,8 +146,7 @@ public final class WaveformCalculator {
 			for (int waveform = 1; waveform < 8; waveform++) {
 				for (int accumulator = 0; accumulator < 1 << 24; accumulator += 1 << 12) {
 					/*
-					 * generate pulse-low variants. Also, when waveform < 4, pw
-					 * doesn't matter.
+					 * generate pulse-low variants. Also, when waveform < 4, pw doesn't matter.
 					 */
 					fillInWaveformSample(o, model, waveform, accumulator, 0x1000);
 					wftable[waveform - 1][accumulator >> 12] = makeSample(dac, o) + wave_zero;
@@ -253,8 +252,8 @@ public final class WaveformCalculator {
 		}
 
 		/*
-		 * Use the environment around bias value to set/clear dac bit.
-		 * Measurements indicate the threshold is very sharp.
+		 * Use the environment around bias value to set/clear dac bit. Measurements
+		 * indicate the threshold is very sharp.
 		 */
 		for (i = 0; i < 12; i++) {
 			o[i] = (o[i] - config.bias) * sharpness;
@@ -284,26 +283,28 @@ public final class WaveformCalculator {
 
 		String dir = "c:/Users/AL/Desktop/";
 
-		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_wave.dat", false))) {
-			for (int i = 0; i < wftable.length; i++) {
-				for (int j = 0; j < wftable[i].length; j++) {
-					output.writeInt(Math.round(wftable[i][j]));
+		try (DataOutputStream output = new DataOutputStream(
+				new FileOutputStream(dir + basename + "_wave.dat", false))) {
+			for (float[] element : wftable) {
+				for (int j = 0; j < element.length; j++) {
+					output.writeInt(Math.round(element[j]));
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_dac.dat", false))) {
-			for (int i = 0; i < dac.length; i++) {
-				output.writeInt(Math.round(dac[i]));
+			for (float element : dac) {
+				output.writeInt(Math.round(element));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_digi.dat", false))) {
-			for (int i = 0; i < digitable.length; i++) {
-				for (int j = 0; j < digitable[i].length; j++) {
-					output.writeByte(digitable[i][j]);
+		try (DataOutputStream output = new DataOutputStream(
+				new FileOutputStream(dir + basename + "_digi.dat", false))) {
+			for (byte[] element : digitable) {
+				for (int j = 0; j < element.length; j++) {
+					output.writeByte(element[j]);
 				}
 			}
 		} catch (IOException e) {

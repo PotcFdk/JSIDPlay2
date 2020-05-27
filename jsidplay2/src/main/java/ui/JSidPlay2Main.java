@@ -34,7 +34,7 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
 /**
  * @author Ken Händel
  * @author Joakim Eriksson
- * 
+ *
  *         SID Player main class
  */
 @Parameters(resourceBundle = "ui.JSidPlay2Main")
@@ -51,7 +51,7 @@ public class JSidPlay2Main extends Application {
 	private ConfigurationType configurationType = ConfigurationType.XML;
 
 	@Parameter(description = "filename")
-	private List<String> filenames = new ArrayList<String>();
+	private List<String> filenames = new ArrayList<>();
 
 	/**
 	 * Main Window
@@ -172,7 +172,7 @@ public class JSidPlay2Main extends Application {
 
 	/**
 	 * Parse optional command line arguments.
-	 * 
+	 *
 	 * @return configuration database chosen by command line arguments
 	 */
 	private Configuration getConfigurationFromCommandLineArgs() {
@@ -198,7 +198,7 @@ public class JSidPlay2Main extends Application {
 
 	/**
 	 * Get the players configuration, create a new one, if absent.
-	 * 
+	 *
 	 * @return the players configuration to be used
 	 */
 	private Configuration getConfiguration() {
@@ -208,7 +208,7 @@ public class JSidPlay2Main extends Application {
 
 	/**
 	 * Main method. Create an application frame and start emulation.
-	 * 
+	 *
 	 * @param args command line arguments
 	 */
 	public static void main(final String[] args) {

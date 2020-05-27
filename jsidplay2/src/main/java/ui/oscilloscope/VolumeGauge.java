@@ -16,7 +16,7 @@ public final class VolumeGauge extends SIDGauge {
 
 	public VolumeGauge() {
 	}
-	
+
 	public VolumeGauge(C64Window window, Player player) {
 		super(window, player);
 	}

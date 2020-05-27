@@ -5,6 +5,7 @@ import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
 
 import java.awt.Graphics2D;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -164,8 +165,8 @@ public class MenuBar extends C64VBox implements UIPart {
 					boolean doNotSwitch = selectedItem != null
 							&& (MusicCollection.class.isAssignableFrom(selectedItem.getContent().getClass())
 									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
-					if (sidTune == RESET || (!MP3Tune.class.isAssignableFrom(sidTune.getClass())
-							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch)) {
+					if (sidTune == RESET || !MP3Tune.class.isAssignableFrom(sidTune.getClass())
+							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch) {
 						video();
 					}
 				} else if (event.getNewValue().equals(State.END)) {
@@ -235,8 +236,9 @@ public class MenuBar extends C64VBox implements UIPart {
 
 		for (ViewEntity view : config.getViews()) {
 			Platform.runLater(() -> {
-				if (jSidPlay2.getTabbedPane() != null)
+				if (jSidPlay2.getTabbedPane() != null) {
 					addView(view.getFxId());
+				}
 			});
 		}
 
@@ -1139,7 +1141,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				if (format.equals("jpg")) {
 					BufferedImage image = SwingFXUtils.fromFXImage(vicImage, null);
 					BufferedImage vicImageRGB = new BufferedImage(image.getWidth(), image.getHeight(),
-							BufferedImage.OPAQUE);
+							Transparency.OPAQUE);
 					Graphics2D graphics = vicImageRGB.createGraphics();
 					graphics.drawImage(image, 0, 0, null);
 					ImageIO.write(vicImageRGB, format, file);

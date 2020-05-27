@@ -10,9 +10,9 @@ public interface HardSID extends Library {
 	void HardSID_Flush(byte deviceID);
 
 	void HardSID_Reset(byte deviceID);
-	
+
 	void HardSID_Delay(byte deviceID, short cycles);
-	
+
 	void HardSID_Write(byte deviceID, byte sidNum, byte reg, byte data);
 
 }

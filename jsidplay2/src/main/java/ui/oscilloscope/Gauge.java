@@ -212,8 +212,9 @@ public class Gauge extends C64VBox implements UIPart {
 		if (dx >= dy) {
 			while (true) {
 				pixelWriter.setColor(x, y, c);
-				if (x == x2)
+				if (x == x2) {
 					break;
+				}
 				x += ix;
 				d += dy2;
 				if (d > dx) {
@@ -224,8 +225,9 @@ public class Gauge extends C64VBox implements UIPart {
 		} else {
 			while (true) {
 				pixelWriter.setColor(x, y, c);
-				if (y == y2)
+				if (y == y2) {
 					break;
+				}
 				y += iy;
 				d += dx2;
 				if (d > dy) {

@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 
 /**
  * Common Search thread
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class SearchThread extends Thread {
 
@@ -27,9 +27,8 @@ public abstract class SearchThread extends Thread {
 
 	/**
 	 * Create a new search thread
-	 * 
-	 * @param forward
-	 *            search direction (forward/backward)
+	 *
+	 * @param forward search direction (forward/backward)
 	 */
 	public SearchThread(boolean forward, Consumer<Void> searchStart, Consumer<File> searchHit,
 			Consumer<Boolean> searchStop) {
@@ -42,9 +41,8 @@ public abstract class SearchThread extends Thread {
 
 	/**
 	 * Set user abort flag
-	 * 
-	 * @param aborted
-	 *            user abort flag
+	 *
+	 * @param aborted user abort flag
 	 */
 	public void setAborted(boolean aborted) {
 		fAborted = aborted;
@@ -52,7 +50,7 @@ public abstract class SearchThread extends Thread {
 
 	/**
 	 * Get search direction
-	 * 
+	 *
 	 * @return true - forward, false backward
 	 */
 	public boolean getDirection() {
@@ -61,16 +59,15 @@ public abstract class SearchThread extends Thread {
 
 	/**
 	 * Get current search state
-	 * 
+	 *
 	 * @return the current search state
 	 */
 	public abstract Object getSearchState();
 
 	/**
 	 * Restore search state to continue search
-	 * 
-	 * @param state
-	 *            the search state
+	 *
+	 * @param state the search state
 	 */
 	public abstract void setSearchState(Object state);
 }

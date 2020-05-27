@@ -40,8 +40,9 @@ public class FinalV3 extends Cartridge {
 		romHBanks = new byte[4][0x2000];
 		for (int i = 0; i < 4; i++) {
 			dis.readFully(chipHeader);
-			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && chipHeader[0xb] > 3)
+			if (chipHeader[0xc] != (byte) 0xa0 && chipHeader[0xe] != 0x40 && chipHeader[0xb] > 3) {
 				throw new RuntimeException("Unexpected Chip header!");
+			}
 			int bank = chipHeader[0xb] & 0xff;
 			dis.readFully(romLBanks[bank]);
 			dis.readFully(romHBanks[bank]);

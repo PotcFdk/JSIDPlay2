@@ -20,7 +20,7 @@ public enum SamplingRate {
 	public int getFrequency() {
 		return frequency;
 	}
-	
+
 	public int getMiddleFrequency() {
 		return middleFrequency;
 	}

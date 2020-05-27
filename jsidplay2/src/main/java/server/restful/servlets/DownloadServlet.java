@@ -37,7 +37,7 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Download SID.
-	 * 
+	 *
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download/C64Music/DEMOS/0-9/1_45_Tune.sid
 	 */

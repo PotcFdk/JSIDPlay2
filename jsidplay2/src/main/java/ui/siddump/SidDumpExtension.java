@@ -490,22 +490,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 							}
 							// Print new note
 							if (fChannel[c].note != fPrevChannel[c].note /*
-																			 * ||
-																			 * changes
-																			 * [
-																			 * FREQ_LO_1
-																			 * +
-																			 * 7
-																			 * *
-																			 * c]
-																			 * ||
-																			 * changes
-																			 * [
-																			 * FREQ_HI_1
-																			 * +
-																			 * 7
-																			 * *
-																			 * c]
+																			 * || changes [ FREQ_LO_1 + 7 * c] ||
+																			 * changes [ FREQ_HI_1 + 7 * c]
 																			 */) {
 								if (fPrevChannel[c].note == -1) {
 									if (fLowRes) {
@@ -625,9 +611,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	/**
 	 * Re-load a SID dump file
-	 * 
-	 * @param filename
-	 *            file name to load
+	 *
+	 * @param filename file name to load
 	 */
 	public void load(final String filename) {
 		// first clear table
@@ -882,9 +867,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	/**
 	 * Save table into file (create SID dump file)
-	 * 
-	 * @param filename
-	 *            file name
+	 *
+	 * @param filename       file name
 	 * @param sidDumpOutputs
 	 */
 	public void save(final String filename, ObservableList<SidDumpOutput> sidDumpOutputs) {
@@ -892,8 +876,8 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 			out.println(String.format("Load address: $%04X Init address: $%04X Play address: $%04X", fLoadAddress,
 					fInitAddress, fPlayerAddress));
 			out.println("Calling initroutine with subtune " + (fCurrentSong - 1));
-			out.println(
-					"Calling playroutine for " + (int) (fSeconds * TUNE_SPEED) + " frames, starting from frame " + fFirstframe);
+			out.println("Calling playroutine for " + (int) (fSeconds * TUNE_SPEED) + " frames, starting from frame "
+					+ fFirstframe);
 			out.println(String.format("Middle C frequency is $%04X", FREQ_TBL_LO_USE[48] | FREQ_TBL_HI_USE[48] << 8));
 			out.println();
 			out.println(
@@ -969,9 +953,9 @@ public abstract class SidDumpExtension implements IMOS6510Extension {
 
 	/**
 	 * Replay a recorded SID dump
-	 * 
+	 *
 	 * @param sidDumpOutputs
-	 * 
+	 *
 	 * @throws InvalidCommandException
 	 */
 	public void replay(ObservableList<SidDumpOutput> sidDumpOutputs) throws InvalidCommandException {

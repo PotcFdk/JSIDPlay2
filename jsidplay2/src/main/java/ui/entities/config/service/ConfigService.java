@@ -21,14 +21,14 @@ import ui.entities.config.Configuration;
 
 /**
  * Service of the configuration database.
- * 
+ *
  * @author ken
  *
  */
 public class ConfigService {
 	/**
 	 * Configuration types offered by JSIDPlay2
-	 * 
+	 *
 	 * @author ken
 	 *
 	 */
@@ -87,9 +87,9 @@ public class ConfigService {
 
 	/**
 	 * Get configuration database.
-	 * 
+	 *
 	 * If absent or invalid, create a new one.
-	 * 
+	 *
 	 * @return configuration
 	 */
 	private Configuration get() {
@@ -119,7 +119,7 @@ public class ConfigService {
 
 	/**
 	 * Create a new configuration and persist into the database.
-	 * 
+	 *
 	 * @return newly created configuration
 	 */
 	private Configuration create() {
@@ -131,7 +131,7 @@ public class ConfigService {
 
 	/**
 	 * Remove configuration database.
-	 * 
+	 *
 	 * @param configuration configuration to remove
 	 */
 	private void remove(Configuration configuration) {
@@ -149,7 +149,7 @@ public class ConfigService {
 
 	/**
 	 * Persist configuration database.
-	 * 
+	 *
 	 * @param config configuration to persist
 	 */
 	private void persist(Configuration config) {
@@ -176,9 +176,9 @@ public class ConfigService {
 
 	/**
 	 * Import configuration database from an XML file.
-	 * 
+	 *
 	 * If absent or invalid, create a new one.
-	 * 
+	 *
 	 * @param file XML file to import
 	 * @return imported configuration
 	 */
@@ -209,7 +209,7 @@ public class ConfigService {
 
 	/**
 	 * Export configuration database into an XML file.
-	 * 
+	 *
 	 * @param configuration configuration to export
 	 * @param file          target file of the export
 	 */
@@ -226,7 +226,7 @@ public class ConfigService {
 
 	/**
 	 * Search for the configuration. Search in CWD and in the HOME folder.
-	 * 
+	 *
 	 * @return XML configuration file
 	 */
 	private File getConfigPath() {
@@ -242,7 +242,7 @@ public class ConfigService {
 
 	/**
 	 * Create a backup of the current configuration.
-	 * 
+	 *
 	 * @param configuration configuration to backup
 	 * @param configPath    path to save the backup
 	 */

@@ -1,21 +1,21 @@
-/* 
+/*
  * BNDMWildcards.java
- * 
+ *
  * Created on 19.01.2004.
  *
  * eaio: StringSearch - high-performance pattern matching algorithms in Java
  * Copyright (c) 2003, 2004 Johann Burkard (jb@eaio.com) http://eaio.com
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  */
 package libsidutils.stringsearch;
 
@@ -36,11 +36,11 @@ package libsidutils.stringsearch;
  * This algorithm is around five times faster than
  * com.eaio.stringsearch.ShiftOrWildcards. <br>
  * <br>
- * 
+ *
  * <pre>
  * Preprocessing: O(2m + &sum;) time
  * </pre>
- * 
+ *
  * @see #processBytes(byte[], byte)
  * @see #processChars(char[], char)
  * @see BNDM
@@ -62,12 +62,13 @@ public class BNDMWildcards extends BNDM {
 	}
 
 	/**
-	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. The wildcard character is obtained from
-	 * the static {@link #wildcard} field.
-	 * 
+	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in length.
+	 * If it does, <b>only it's first 32 bytes</b> are processed which might lead to
+	 * unexpected results. The wildcard character is obtained from the static
+	 * {@link #wildcard} field.
+	 *
 	 * com.eaio.stringsearch.StringSearch#processBytes(byte[])
+	 * 
 	 * @see #processBytes(byte[], byte)
 	 */
 	@Override
@@ -76,15 +77,13 @@ public class BNDMWildcards extends BNDM {
 	}
 
 	/**
-	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. Returns an <code>int</code> array.
-	 * 
-	 * @param pattern
-	 *            the <code>byte</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param w
-	 *            the wildcard <code>byte</code> character
+	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in length.
+	 * If it does, <b>only it's first 32 bytes</b> are processed which might lead to
+	 * unexpected results. Returns an <code>int</code> array.
+	 *
+	 * @param pattern the <code>byte</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param w       the wildcard <code>byte</code> character
 	 * @return an <code>int</code> array
 	 */
 	public Object processBytes(byte[] pattern, byte w) {
@@ -93,7 +92,7 @@ public class BNDMWildcards extends BNDM {
 
 		for (int i = 0; i < end; ++i) {
 			if (pattern[i] == w) {
-				j |= (1 << end - i - 1);
+				j |= 1 << end - i - 1;
 			}
 		}
 
@@ -115,13 +114,12 @@ public class BNDMWildcards extends BNDM {
 
 	/**
 	 * Pre-processes the pattern. The pattern may not exceed 32 characters in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. The wildcard character is obtained from
-	 * the static {@link #wildcard} field.
-	 * 
-	 * @param pattern
-	 *            the <code>char</code> array containing the pattern, may not be
-	 *            <code>null</code>
+	 * length. If it does, <b>only it's first 32 bytes</b> are processed which might
+	 * lead to unexpected results. The wildcard character is obtained from the
+	 * static {@link #wildcard} field.
+	 *
+	 * @param pattern the <code>char</code> array containing the pattern, may not be
+	 *                <code>null</code>
 	 * @return a {@link CharIntMap}
 	 * @see StringSearch#processChars(char[])
 	 * @see #processChars(char[], char)
@@ -133,14 +131,12 @@ public class BNDMWildcards extends BNDM {
 
 	/**
 	 * Pre-processes the pattern. The pattern may not exceed 32 characters in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. Returns a {@link CharIntMap}.
-	 * 
-	 * @param pattern
-	 *            the <code>char</code> array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param w
-	 *            the wildcard character
+	 * length. If it does, <b>only it's first 32 bytes</b> are processed which might
+	 * lead to unexpected results. Returns a {@link CharIntMap}.
+	 *
+	 * @param pattern the <code>char</code> array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param w       the wildcard character
 	 * @return a {@link CharIntMap}.
 	 */
 	public Object processChars(char[] pattern, char w) {
@@ -149,7 +145,7 @@ public class BNDMWildcards extends BNDM {
 
 		for (int i = 0; i < end; ++i) {
 			if (pattern[i] == w) {
-				j |= (1 << end - i - 1);
+				j |= 1 << end - i - 1;
 			}
 		}
 
@@ -165,14 +161,12 @@ public class BNDMWildcards extends BNDM {
 
 	/**
 	 * Pre-processes the pattern. The pattern may not exceed 32 characters in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. Returns a {@link CharIntMap}.
-	 * 
-	 * @param pattern
-	 *            the String array containing the pattern, may not be
-	 *            <code>null</code>
-	 * @param w
-	 *            the wildcard character
+	 * length. If it does, <b>only it's first 32 bytes</b> are processed which might
+	 * lead to unexpected results. Returns a {@link CharIntMap}.
+	 *
+	 * @param pattern the String array containing the pattern, may not be
+	 *                <code>null</code>
+	 * @param w       the wildcard character
 	 * @return a {@link CharIntMap}.
 	 */
 	public Object processString(String pattern, char w) {

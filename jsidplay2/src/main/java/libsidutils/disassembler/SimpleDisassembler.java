@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SimpleDisassembler implements IMOS6510Disassembler {
-	private static HashMap<Integer, CPUCommand> cpuCommands = new HashMap<Integer, CPUCommand>();
+	private static HashMap<Integer, CPUCommand> cpuCommands = new HashMap<>();
 	private static SimpleDisassembler theInstance;
 
 	static {
@@ -35,9 +35,9 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 
 	/**
 	 * Simple disassembler. Reads the hex bytes that constitute command, from
-	 * supplied environment, and decodes the branch targets properly. TODO:
-	 * improve this poor disassembler to something respectable
-	 * 
+	 * supplied environment, and decodes the branch targets properly. TODO: improve
+	 * this poor disassembler to something respectable
+	 *
 	 * @return disassembly string like "LDA $12".
 	 */
 	public String getDisassembly(final byte[] ram, final int instrAddress) {
@@ -57,7 +57,7 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 		} else if (cmd.getByteCount() == 3) {
 			base += ":";
 			base += String.format(cmd.getFormat(),
-					((ram[instrAddress + 2 & 0xffff] & 0xff) << 8) | (ram[instrAddress + 1 & 0xffff] & 0xff));
+					(ram[instrAddress + 2 & 0xffff] & 0xff) << 8 | ram[instrAddress + 1 & 0xffff] & 0xff);
 		}
 
 		return base;

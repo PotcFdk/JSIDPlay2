@@ -79,8 +79,8 @@ public class MusicInfoWithConfidenceBean {
 
 	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {
 		confidence = songMatch.getCount();
-		relativeConfidence = (songMatch.getCount()
-				/ (double) fingerprintedSampleData.getFingerprint().getLinkList().size()) * 100;
+		relativeConfidence = songMatch.getCount()
+				/ (double) fingerprintedSampleData.getFingerprint().getLinkList().size() * 100;
 		offset = songMatch.getTime();
 		offsetSeconds = songMatch.getTime() * 0.03225806451612903;
 	}

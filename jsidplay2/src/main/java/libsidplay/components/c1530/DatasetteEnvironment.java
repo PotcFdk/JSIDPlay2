@@ -1,9 +1,9 @@
 package libsidplay.components.c1530;
 
 public interface DatasetteEnvironment {
-	public boolean getTapeSense();
+	boolean getTapeSense();
 
-	public void setMotor(boolean state);
+	void setMotor(boolean state);
 
-	public void toggleWriteBit(boolean state);
+	void toggleWriteBit(boolean state);
 }

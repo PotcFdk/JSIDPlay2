@@ -58,9 +58,8 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Launch JSIDPlay2.
-	 * 
-	 * @throws Exception
-	 *             launch error
+	 *
+	 * @throws Exception launch error
 	 */
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -109,7 +108,7 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Show primary stage.
-	 * 
+	 *
 	 * @see org.testfx.framework.junit.ApplicationTest#start(javafx.stage.Stage)
 	 */
 	@Override
@@ -120,7 +119,7 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Prevent a bug hitting the wrong menu-item, when mouse is moved diagonal
-	 * 
+	 *
 	 * @see org.testfx.api.FxRobotInterface#clickOn(java.lang.String,
 	 *      javafx.scene.input.MouseButton[])
 	 */
@@ -131,11 +130,9 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Check C64 RAM contents.
-	 * 
-	 * @param address
-	 *            start address
-	 * @param expected
-	 *            expected byte contents at the specified address
+	 *
+	 * @param address  start address
+	 * @param expected expected byte contents at the specified address
 	 * @return RAM contents equals
 	 */
 	protected boolean checkRam(int address, byte[] expected) {
@@ -150,18 +147,15 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Check a message on C64 video screen RAM.
-	 * 
-	 * @param expected
-	 *            expected message visible on the video screen
-	 * @param row
-	 *            expected message appears on this row
-	 * @param column
-	 *            expected message appears on this column
+	 *
+	 * @param expected expected message visible on the video screen
+	 * @param row      expected message appears on this row
+	 * @param column   expected message appears on this column
 	 * @return Video RAM contains the specified message
 	 */
 	protected boolean checkScreenMessage(String expected, int row, int column) {
 		final byte[] ram = player.getC64().getRAM();
-		final int offset = ((row - 1) * 40) + (column - 1);
+		final int offset = (row - 1) * 40 + column - 1;
 		for (int i = 0; i < expected.length(); i++) {
 			final byte screenCode = Petscii.iso88591ToPetscii(expected.charAt(i));
 			if (ram[0x0400 + offset + i] != screenCode) {
@@ -173,9 +167,8 @@ public class JSIDPlay2Test extends ApplicationTest {
 
 	/**
 	 * Schedule a thread-safe C64 event.
-	 * 
-	 * @param eventConsumer
-	 *            event consumer with event behavior
+	 *
+	 * @param eventConsumer event consumer with event behavior
 	 */
 	protected void schedule(java.util.function.Consumer<C64> eventConsumer) {
 		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Test Event") {

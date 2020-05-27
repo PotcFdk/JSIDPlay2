@@ -101,7 +101,7 @@ public class JSIDPlay2Server {
 
 	/**
 	 * Filename of the configuration file to access additional directories.
-	 * 
+	 *
 	 * e.g. "/MP3=/media/nas1/mp3,true" (top-level logical directory name=real
 	 * directory name, admin role required?)
 	 */
@@ -127,7 +127,7 @@ public class JSIDPlay2Server {
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class);
 
-	private static final ThreadLocal<EntityManager> threadLocalEntityManager = new ThreadLocal<EntityManager>();
+	private static final ThreadLocal<EntityManager> threadLocalEntityManager = new ThreadLocal<>();
 
 	private static EntityManagerFactory entityManagerFactory;
 
@@ -242,7 +242,7 @@ public class JSIDPlay2Server {
 	/**
 	 * Search for user, password and role configuration file.<BR>
 	 * <B>Note:</B>If no configuration file is found internal configuration is used
-	 * 
+	 *
 	 * @return user, password and role configuration file
 	 */
 	private URL getRealmConfigURL() {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -33,10 +33,9 @@ import java.util.TreeMap;
  * sampling frequency. The work rate is inversely proportional to the percentage
  * of the bandwidth allocated to the filter transition band.
  * <P>
- * This implementation is based on the paper
- * "A Flexible Sampling-Rate Conversion Method", by J. O. Smith and P. Gosset,
- * or rather on the expanded tutorial on the
- * "Digital Audio Resampling Home Page":
+ * This implementation is based on the paper "A Flexible Sampling-Rate
+ * Conversion Method", by J. O. Smith and P. Gosset, or rather on the expanded
+ * tutorial on the "Digital Audio Resampling Home Page":
  * http:*www-ccrma.stanford.edu/~jos/resample/
  * <P>
  * By building shifted FIR tables with samples according to the sampling
@@ -59,7 +58,7 @@ import java.util.TreeMap;
  * <CODE>2 * pass_freq + sqrt [ 2 * pass_freq * orig_sample_freq
  *       * (dest_sample_freq - 2 * pass_freq) / dest_sample_freq ]</CODE>
  * </OL>
- * 
+ *
  * @author Dag Lem
  * @author Antti Lankila
  */
@@ -86,18 +85,17 @@ public final class SincResampler implements Resampler {
 	 * Cache for caching the expensive FIR table computation results in the Java
 	 * process.
 	 */
-	private static Map<String, int[][]> FIR_CACHE = new HashMap<String, int[][]>();
+	private static Map<String, int[][]> FIR_CACHE = new HashMap<>();
 
 	/** Maximum error acceptable in I0 is 1e-6, or ~96 dB. */
 	private static final double I0E = 1e-6;
 
 	/**
-	 * I0() computes the 0th order modified Bessel function of the first kind.
-	 * This function is originally from resample-1.5/filterkit.c by J. O. Smith.
-	 * It is used to build the Kaiser window for resampling.
-	 * 
-	 * @param x
-	 *            evaluate I0 at x
+	 * I0() computes the 0th order modified Bessel function of the first kind. This
+	 * function is originally from resample-1.5/filterkit.c by J. O. Smith. It is
+	 * used to build the Kaiser window for resampling.
+	 *
+	 * @param x evaluate I0 at x
 	 * @return value of I0 at x.
 	 */
 	private static double I0(final double x) {
@@ -116,13 +114,10 @@ public final class SincResampler implements Resampler {
 
 	/**
 	 * Calculate convolution with sample and sinc.
-	 * 
-	 * @param a
-	 *            sample buffer input
-	 * @param aPos
-	 *            offset in sample buffer
-	 * @param b
-	 *            sinc
+	 *
+	 * @param a    sample buffer input
+	 * @param aPos offset in sample buffer
+	 * @param b    sinc
 	 * @return convolved result
 	 */
 	private static int convolve(final int a[], int aPos, final int b[]) {
@@ -134,28 +129,25 @@ public final class SincResampler implements Resampler {
 	}
 
 	/**
-	 * Use a clock frequency of 985248Hz for PAL C64, 1022730Hz for NTSC C64.
-	 * The default end of passband frequency is pass_freq = 0.9*sample_freq/2
-	 * for sample frequencies up to ~ 44.1kHz, and 20kHz for higher sample
-	 * frequencies.
+	 * Use a clock frequency of 985248Hz for PAL C64, 1022730Hz for NTSC C64. The
+	 * default end of passband frequency is pass_freq = 0.9*sample_freq/2 for sample
+	 * frequencies up to ~ 44.1kHz, and 20kHz for higher sample frequencies.
 	 * <P>
 	 * For resampling, the ratio between the clock frequency and the sample
 	 * frequency is limited as follows: 125*clock_freq/sample_freq &lt; 16384 E.g.
 	 * provided a clock frequency of ~ 1MHz, the sample frequency can not be set
-	 * lower than ~ 8kHz. A lower sample frequency would make the resampling
-	 * code overfill its 16k sample ring buffer.
+	 * lower than ~ 8kHz. A lower sample frequency would make the resampling code
+	 * overfill its 16k sample ring buffer.
 	 * <P>
 	 * The end of passband frequency is also limited: pass_freq &lt;=
 	 * 0.9*sample_freq/2
 	 * <P>
-	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited
-	 * to slightly below 20kHz. This constraint ensures that the FIR table is
-	 * not overfilled.
-	 * 
-	 * @param clockFrequency
-	 *            System clock frequency at Hz
-	 * @param samplingFrequency
-	 *            Desired output sampling rate
+	 * E.g. for a 44.1kHz sampling rate the end of passband frequency is limited to
+	 * slightly below 20kHz. This constraint ensures that the FIR table is not
+	 * overfilled.
+	 *
+	 * @param clockFrequency           System clock frequency at Hz
+	 * @param samplingFrequency        Desired output sampling rate
 	 * @param highestAccurateFrequency
 	 */
 	public SincResampler(final double clockFrequency, final double samplingFrequency,
@@ -200,16 +192,15 @@ public final class SincResampler implements Resampler {
 			}
 
 			/*
-			 * Error is bounded by err < 1.234 / L^2, so L = sqrt(1.234 /
-			 * (2^-16)) = sqrt(1.234 * 2^16).
+			 * Error is bounded by err < 1.234 / L^2, so L = sqrt(1.234 / (2^-16)) =
+			 * sqrt(1.234 * 2^16).
 			 */
 			firRES = (int) Math.ceil(Math.sqrt(1.234 * (1 << BITS)) / cyclesPerSampleD);
 
 			/*
-			 * firN*firRES represent the total resolution of the sinc sampling.
-			 * JOS recommends a length of 2^BITS, but we don't quite use that
-			 * good a filter. The filter test program indicates that the filter
-			 * performs well, though.
+			 * firN*firRES represent the total resolution of the sinc sampling. JOS
+			 * recommends a length of 2^BITS, but we don't quite use that good a filter. The
+			 * filter test program indicates that the filter performs well, though.
 			 */
 		}
 
@@ -221,9 +212,9 @@ public final class SincResampler implements Resampler {
 		fir = FIR_CACHE.get(firKey);
 
 		/*
-		 * The FIR computation is expensive and we set sampling parameters
-		 * often, but from a very small set of choices. Thus, caching is used to
-		 * speed initialization.
+		 * The FIR computation is expensive and we set sampling parameters often, but
+		 * from a very small set of choices. Thus, caching is used to speed
+		 * initialization.
 		 */
 		if (fir == null) {
 			// Allocate memory for FIR tables.
@@ -252,8 +243,7 @@ public final class SincResampler implements Resampler {
 	/**
 	 * Inputs a given sample into this SincResampler.
 	 *
-	 * @param input
-	 *            The sample to input into this resampler.
+	 * @param input The sample to input into this resampler.
 	 *
 	 * @return True if the sample is ready to output.
 	 */
@@ -295,8 +285,8 @@ public final class SincResampler implements Resampler {
 
 	private int fir(int subcycle) {
 		/* find the first of the nearest fir tables close to the phase */
-		int firTableFirst = (subcycle * firRES >> 10);
-		int firTableOffset = (subcycle * firRES) & 0x3ff;
+		int firTableFirst = subcycle * firRES >> 10;
+		int firTableOffset = subcycle * firRES & 0x3ff;
 
 		/*
 		 * find firN most recent samples, plus one extra in case the FIR wraps.
@@ -319,17 +309,16 @@ public final class SincResampler implements Resampler {
 	}
 
 	/**
-	 * Simple sin waveform in, power output measurement function. It would be
-	 * far better to use FFT.
-	 * 
-	 * @param args
-	 *            Arguments
+	 * Simple sin waveform in, power output measurement function. It would be far
+	 * better to use FFT.
+	 *
+	 * @param args Arguments
 	 */
 	public static void main(String[] args) {
 		double RATE = 985248.4;
 		Resampler r = new TwoPassSincResampler(RATE, 48000.0, 20000.0);
 
-		Map<Double, Double> results = new TreeMap<Double, Double>();
+		Map<Double, Double> results = new TreeMap<>();
 		long start = System.currentTimeMillis();
 		for (double freq = 1000; freq < RATE / 2; freq *= 1.01) {
 			/* prefill resampler buffer */
@@ -343,8 +332,7 @@ public final class SincResampler implements Resampler {
 			int n = 0;
 			float pwr = 0;
 			/*
-			 * Now, during measurement stage, put 100 cycles of waveform through
-			 * filter.
+			 * Now, during measurement stage, put 100 cycles of waveform through filter.
 			 */
 			for (int j = 0; j < 100000; j++) {
 				int signal = (int) (32768.0 * Math.sin(k++ * omega) * Math.sqrt(2));

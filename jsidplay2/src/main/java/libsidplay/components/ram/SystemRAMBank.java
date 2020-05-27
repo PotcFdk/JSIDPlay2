@@ -6,7 +6,7 @@ import libsidplay.components.pla.Bank;
 
 /**
  * Area backed by RAM
- * 
+ *
  * @author Antti Lankila
  */
 public final class SystemRAMBank extends Bank {

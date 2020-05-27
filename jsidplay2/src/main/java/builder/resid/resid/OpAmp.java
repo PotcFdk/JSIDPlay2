@@ -5,7 +5,7 @@ package builder.resid.resid;
  * resistors. Equations and first implementation were written by Dag Lem. This
  * class is a rewrite without use of fixed point integer mathematics, and uses
  * the actual voltages instead of the normalized values.
- * 
+ *
  * @author Antti Lankila
  */
 final class OpAmp {
@@ -22,11 +22,9 @@ final class OpAmp {
 
 	/**
 	 * Opamp input -> output voltage conversion
-	 * 
-	 * @param opamp
-	 *            opamp mapping table as pairs of points (in -> out)
-	 * @param Vddt
-	 *            transistor dt parameter (in volts)
+	 *
+	 * @param opamp opamp mapping table as pairs of points (in -> out)
+	 * @param Vddt  transistor dt parameter (in volts)
 	 */
 	protected OpAmp(double[][] opamp, double Vddt) {
 		this.Vddt = Vddt;
@@ -41,11 +39,9 @@ final class OpAmp {
 
 	/**
 	 * Solve the opamp equation for input vi in loading context n
-	 * 
-	 * @param n
-	 *            the ratio of input/output loading
-	 * @param vi
-	 *            input
+	 *
+	 * @param n  the ratio of input/output loading
+	 * @param vi input
 	 * @return vo
 	 */
 	protected double solve(double n, double vi) {
@@ -56,7 +52,7 @@ final class OpAmp {
 
 		double a = n + 1;
 		double b = Vddt;
-		double b_vi = (b - vi);
+		double b_vi = b - vi;
 		double c = n * (b_vi * b_vi);
 
 		while (true) {
@@ -70,7 +66,7 @@ final class OpAmp {
 			double b_vx = b - x;
 			double b_vo = b - vo;
 
-			double f = a * (b_vx * b_vx) - c - (b_vo * b_vo);
+			double f = a * (b_vx * b_vx) - c - b_vo * b_vo;
 			double df = 2. * (b_vo * dvo - a * b_vx);
 
 			x -= f / df;

@@ -14,7 +14,7 @@ public enum Connectors {
 	public String getPreferredProtocol() {
 		return preferredProtocol;
 	}
-	
+
 	public int getPreferredPortNum() {
 		return preferredPortNum;
 	}

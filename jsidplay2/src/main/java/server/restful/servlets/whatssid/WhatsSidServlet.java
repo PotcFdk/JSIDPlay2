@@ -37,7 +37,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * WhatsSID? (SID tune recognition).
-	 * 
+	 *
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/whatssid
 	 */
 	@Override

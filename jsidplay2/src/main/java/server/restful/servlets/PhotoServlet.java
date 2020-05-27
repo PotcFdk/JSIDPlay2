@@ -37,7 +37,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get photo of composer.
-	 * 
+	 *
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */

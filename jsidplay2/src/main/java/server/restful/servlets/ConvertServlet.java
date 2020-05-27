@@ -69,7 +69,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Stream SID as MP3.
-	 * 
+	 *
 	 * <BR>
 	 * E.g. stream audio<BR>
 	 * {@code
@@ -165,8 +165,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private File convertVideo(IConfig config, File file, AudioDriver driver)
-			throws IOException, SidTuneError {
+	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				new File(config.getSidplay2Section().getTmpDir()));

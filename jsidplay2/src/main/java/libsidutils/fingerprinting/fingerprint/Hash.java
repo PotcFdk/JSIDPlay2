@@ -14,7 +14,7 @@ public class Hash {
 
 	public static int[] hash2link(int hash) {
 		int freq = hash % 5000;
-		int df = (hash / 5000) % 600;
+		int df = hash / 5000 % 600;
 		int dt = hash / 5000 / 600;
 
 		return new int[] { freq, df, dt };

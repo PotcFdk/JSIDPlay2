@@ -16,7 +16,7 @@ public class Assembly64RowFactory implements Callback<TableView<SearchResult>, T
 	public ObjectProperty<SearchResult> getCurrentlyPlayedRowProperty() {
 		return currentlyPlayedRowProperty;
 	}
-	
+
 	public void setCurrentlyPlayedRowProperty(ObjectProperty<SearchResult> currentlyPlayedRowProperty) {
 		this.currentlyPlayedRowProperty = currentlyPlayedRowProperty;
 	}
@@ -29,7 +29,6 @@ public class Assembly64RowFactory implements Callback<TableView<SearchResult>, T
 			currentlyPlayedRowProperty.addListener(new WeakChangeListener<>(listener));
 		}
 
-		
 		@Override
 		public void updateItem(SearchResult item, boolean empty) {
 			super.updateItem(item, empty);

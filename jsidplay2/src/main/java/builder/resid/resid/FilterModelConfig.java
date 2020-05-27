@@ -58,9 +58,9 @@ public final class FilterModelConfig {
 		norm = 1.0 / (vmax - vmin);
 
 		double wp = 0;
-		for (int i = 0; i < opamp_voltage.length; i++) {
-			if (opamp_voltage[i][0] == opamp_voltage[i][1]) {
-				wp = opamp_voltage[i][0];
+		for (double[] element : opamp_voltage) {
+			if (element[0] == element[1]) {
+				wp = element[0];
 			}
 		}
 		opamp_working_point = wp;
@@ -127,8 +127,7 @@ public final class FilterModelConfig {
 			opampModel.reset();
 			mixer[i] = new char[size];
 			for (int vi = 0; vi < mixer[i].length; vi++) {
-				double vin = vmin
-						+ vi / N16 / (i == 0 ? 1 : i); /* vmin .. vmax */
+				double vin = vmin + vi / N16 / (i == 0 ? 1 : i); /* vmin .. vmax */
 				mixer[i][vi] = (char) ((opampModel.solve(i * 8.0 / 6.0, vin) - vmin) * N16 + 0.5);
 			}
 		}
@@ -148,11 +147,11 @@ public final class FilterModelConfig {
 		}
 
 		int Vddt = (int) (N16 * (Vdd - Vth) + 0.5);
-		for (int i = 0; i < (1 << 16); i++) {
+		for (int i = 0; i < 1 << 16; i++) {
 			// The table index is right-shifted 16 times in order to fit in
 			// 16 bits; the argument to sqrt is thus multiplied by (1 << 16).
 			int Vg = Vddt - (int) (Math.sqrt((double) i * (1 << 16)) + 0.5);
-			if (Vg >= (1 << 16)) {
+			if (Vg >= 1 << 16) {
 				// Clamp to 16 bits.
 				// FIXME: If the DAC output voltage exceeds the max op-amp
 				// output
@@ -174,7 +173,7 @@ public final class FilterModelConfig {
 
 		/* 1st term is used for clamping and must therefore be fixed to 0. */
 		vcr_n_Ids_term[0] = 0;
-		for (int Vgx = 1; Vgx < (1 << 16); Vgx++) {
+		for (int Vgx = 1; Vgx < 1 << 16; Vgx++) {
 			double log_term = Math.log(1 + Math.exp((Vgx / N16 - k * Vth) / (2 * Ut)));
 			// Scaled by m*2^15
 			vcr_n_Ids_term[Vgx] = (char) (n_Is * log_term * log_term + .5);
@@ -190,11 +189,11 @@ public final class FilterModelConfig {
 	}
 
 	public static int getVoiceScaleS14() {
-		return (int) ((norm * ((1L << 14) - 1)) * voice_voltage_range);
+		return (int) (norm * ((1L << 14) - 1) * voice_voltage_range);
 	}
 
 	public static int getVoiceDC() {
-		return (int) ((norm * ((1L << 16) - 1)) * (voice_DC_voltage - vmin));
+		return (int) (norm * ((1L << 16) - 1) * (voice_DC_voltage - vmin));
 	}
 
 	public static char[][] getGain() {
@@ -216,10 +215,10 @@ public final class FilterModelConfig {
 		double N16 = norm * ((1L << 16) - 1);
 		final int bits = 11;
 		char[] f0_dac = new char[1 << bits];
-		for (int i = 0; i < (1 << bits); i++) {
+		for (int i = 0; i < 1 << bits; i++) {
 			double fcd = 0;
 			for (int j = 0; j < bits; j++) {
-				if ((i & (1 << j)) != 0) {
+				if ((i & 1 << j) != 0) {
 					fcd += dac[j];
 				}
 			}
@@ -261,13 +260,13 @@ public final class FilterModelConfig {
 
 	/**
 	 * Estimate the center frequency corresponding to some FC setting.
-	 * 
-	 * FIXME: this function is extremely sensitive to prevailing voltage
-	 * offsets. They got to be right within about 0.1V, or the results will be
-	 * simply wrong. This casts doubt on the feasibility of this approach.
-	 * Perhaps the offsets at the integrators would need to be statically solved
-	 * first for 1-voice null input.
-	 * 
+	 *
+	 * FIXME: this function is extremely sensitive to prevailing voltage offsets.
+	 * They got to be right within about 0.1V, or the results will be simply wrong.
+	 * This casts doubt on the feasibility of this approach. Perhaps the offsets at
+	 * the integrators would need to be statically solved first for 1-voice null
+	 * input.
+	 *
 	 * @param fc
 	 * @return frequency in Hz
 	 */
@@ -278,15 +277,14 @@ public final class FilterModelConfig {
 			int bits = 11;
 			double Vw = 0;
 			for (int j = 0; j < bits; j++) {
-				if ((fc & (1 << j)) != 0) {
+				if ((fc & 1 << j) != 0) {
 					Vw += dac[j];
 				}
 			}
 			Vw = dacZero + dac_scale * Vw / (1 << bits);
 
 			/*
-			 * Estimate the behavior for small signals around the op-amp working
-			 * point.
+			 * Estimate the behavior for small signals around the op-amp working point.
 			 */
 			double vx = opamp_working_point;
 			double diff = 0.2;
@@ -296,12 +294,12 @@ public final class FilterModelConfig {
 			n_I /= 2;
 
 			/*
-			 * Convert the current to frequency based on the calculated current
-			 * and the potential.
+			 * Convert the current to frequency based on the calculated current and the
+			 * potential.
 			 */
 			return n_I / (2 * Math.PI * C * diff);
 		} else {
-			return (fc * filter.getFilter8580CurvePosition() / (SIDChip.FC_MAX - 1));
+			return fc * filter.getFilter8580CurvePosition() / (SIDChip.FC_MAX - 1);
 		}
 	}
 }

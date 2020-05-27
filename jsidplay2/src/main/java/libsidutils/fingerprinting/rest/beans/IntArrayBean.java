@@ -8,11 +8,11 @@ public class IntArrayBean {
 
 	public IntArrayBean() {
 	}
-	
+
 	public IntArrayBean(int[] hash) {
 		this.hash = hash;
 	}
-	
+
 	private int[] hash;
 
 	public int[] getHash() {

@@ -11,9 +11,8 @@ public class DesktopIntegration {
 
 	/**
 	 * Open a browser URL (and run in a separate daemon thread).
-	 * 
-	 * @param link
-	 *            link to open in the default browser
+	 *
+	 * @param link link to open in the default browser
 	 */
 	public static void browse(String link) {
 		openInSeparateThread(link, desktop -> {
@@ -31,9 +30,8 @@ public class DesktopIntegration {
 
 	/**
 	 * Open a file (and run in a separate daemon thread).
-	 * 
-	 * @param file
-	 *            file to open
+	 *
+	 * @param file file to open
 	 */
 	public static void open(File file) {
 		openInSeparateThread(file, desktop -> {

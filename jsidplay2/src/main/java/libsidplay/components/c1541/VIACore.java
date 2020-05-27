@@ -40,13 +40,13 @@ import libsidplay.common.Event;
  * update_myviairq() id called, that checks the IRQ line state.
  * This is now possible, as ettore has decoupled A_* alarm events
  * from interrupts for performance reasons.
- * 
+ *
  * A new function for signaling rising/falling edges on the
  * control lines is introduced:
  *      myvia_signal(VIA_SIG_[CA1|CA2|CB1|CB2], VIA_SIG_[RISE|FALL])
  * which signals the corresponding edge to the VIA. The constants
  * are defined in via.h.
- * 
+ *
  * Except for shift register and input latching everything should be ok now.
  * </PRE>
  */
@@ -231,9 +231,9 @@ public abstract class VIACore {
 	/**
 	 * <PRE>
 	 * 01apr98 a.fachat
-	 * 
+	 *
 	 * One-shot Timing (partly from 6522-VIA.txt):
-	 * 
+	 *
 	 * 	                     +-+ +-+ +-+ +-+ +-+ +-+   +-+ +-+ +-+ +-+ +-+ +-+
 	 * 	                02 --+ +-+ +-+ +-+ +-+ +-+ +-#-+ +-+ +-+ +-+ +-+ +-+ +-
 	 * 	                       |   |                           |
@@ -256,14 +256,14 @@ public abstract class VIACore {
 	 * 	                                                  call of
 	 * 	                                                int_myvia*
 	 * 	                                                   here
-	 * 
+	 *
 	 * 	   real myviatau value = myviatau* + TAUOFFSET
 	 * 	   myviatbu = myviatbu* + 0
-	 * 
-	 * 
+	 *
+	 *
 	 * IRQ and PB7 are set/toggled at the low-high transition of Phi2,
 	 * but int_* is called a half-cycle before that. Does that matter?
-	 * 
+	 *
 	 * PB7 output is still to be implemented
 	 * </PRE>
 	 */
@@ -660,9 +660,9 @@ public abstract class VIACore {
 
 		case VIA_PRA_NHS: { /* port A, no handshake */
 			/*
-			 * WARNING: this pin reads the voltage of the output pins, not the
-			 * ORA value as the other port. Value read might be different from
-			 * what is expected due to excessive load.
+			 * WARNING: this pin reads the voltage of the output pins, not the ORA value as
+			 * the other port. Value read might be different from what is expected due to
+			 * excessive load.
 			 */
 			byte b = readPra();
 			ila = b;
@@ -679,8 +679,8 @@ public abstract class VIACore {
 			}
 
 			/*
-			 * WARNING: this pin reads the ORA for output pins, not the voltage
-			 * on the pins as the other port.
+			 * WARNING: this pin reads the ORA for output pins, not the voltage on the pins
+			 * as the other port.
 			 */
 			byte b = readPrb();
 			ilb = b;
@@ -693,7 +693,7 @@ public abstract class VIACore {
 			return b;
 		}
 
-			/* Timers */
+		/* Timers */
 		case VIA_T1CL /* TIMER_AL */: /* timer A low */
 			ifr &= ~VIA_IM_T1;
 			checkInterrupts();

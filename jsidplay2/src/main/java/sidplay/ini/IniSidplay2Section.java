@@ -1,6 +1,5 @@
 package sidplay.ini;
 
-import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_BLEED;
 import static sidplay.ini.IniDefaults.DEFAULT_BLUR;
 import static sidplay.ini.IniDefaults.DEFAULT_BRIGHTNESS;
@@ -13,11 +12,12 @@ import static sidplay.ini.IniDefaults.DEFAULT_HVSC_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_LAST_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_LOOP;
 import static sidplay.ini.IniDefaults.DEFAULT_OFFSET;
+import static sidplay.ini.IniDefaults.DEFAULT_PAL_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_PHASE_SHIFT;
 import static sidplay.ini.IniDefaults.DEFAULT_PLAY_LENGTH;
-import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
+import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
@@ -33,9 +33,9 @@ import sidplay.consoleplayer.ParameterTimeConverter;
 
 /**
  * SIDPlay2 section of the INI file.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 @Parameters(resourceBundle = "sidplay.ini.IniSidplay2Section")
 public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
@@ -71,7 +71,8 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--startTime", "-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class, order = 1)
+	@Parameter(names = { "--startTime",
+			"-t" }, descriptionKey = "START_TIME", converter = ParameterTimeConverter.class, order = 1)
 	public final void setStartTime(final double startTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (startTime * 1000)));
 		iniReader.setProperty("SIDPlay2", "Start Time", time);
@@ -108,7 +109,8 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class, order = 4)
+	@Parameter(names = {
+			"--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class, order = 4)
 	public void setFadeOutTime(double fadeOutTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeOutTime * 1000)));
 		iniReader.setProperty("SIDPlay2", "Fade Out Time", time);
@@ -178,7 +180,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	public void setPalEmulation(boolean palEmulation) {
 		iniReader.setProperty("SIDPlay2", "PAL Emulation", palEmulation);
 	}
-	
+
 	@Override
 	public float getBrightness() {
 		return iniReader.getPropertyFloat("SIDPlay2", "Brightness", DEFAULT_BRIGHTNESS);

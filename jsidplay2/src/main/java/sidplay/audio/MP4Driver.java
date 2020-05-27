@@ -131,7 +131,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 					// hack: remove remaining temporary files of mp4parser :-(
 					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
-							&& (System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000)))
+							&& System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000))
 							.stream().forEach(name -> new File(tmpDir, name).delete());
 				}
 			}
@@ -167,8 +167,8 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
 			// ignore ALPHA channel (ARGB channel order), picture data is -128 shifted
-			pictureBuffer.put((byte) (((pixel >> 16) & 0xff) - 128));
-			pictureBuffer.put((byte) (((pixel >> 8) & 0xff) - 128));
+			pictureBuffer.put((byte) ((pixel >> 16 & 0xff) - 128));
+			pictureBuffer.put((byte) ((pixel >> 8 & 0xff) - 128));
 			pictureBuffer.put((byte) ((pixel & 0xff) - 128));
 		}
 	}

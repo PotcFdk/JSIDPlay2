@@ -11,16 +11,15 @@ abstract class SIDGauge extends Gauge {
 
 	public SIDGauge() {
 	}
-	
+
 	public SIDGauge(C64Window window, Player player) {
 		super(window, player);
 	}
 
 	/**
 	 * Sample audio from provided SID.
-	 * 
-	 * @param sid
-	 *            The SID to sample audio from.
+	 *
+	 * @param sid The SID to sample audio from.
 	 */
 	public abstract SIDGauge sample(SIDEmu sid);
 

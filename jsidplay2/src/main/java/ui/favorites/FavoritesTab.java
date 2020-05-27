@@ -88,7 +88,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 	public FavoritesTab() {
 	}
-	
+
 	public FavoritesTab(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -142,7 +142,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())
-					|| !(SingularAttribute.class.isAssignableFrom(field.getType()))) {
+					|| !SingularAttribute.class.isAssignableFrom(field.getType())) {
 				continue;
 			}
 			try {
@@ -194,7 +194,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 			}
 		});
 
-		currentlyPlayedHVSCEntryProperty = new SimpleObjectProperty<HVSCEntry>();
+		currentlyPlayedHVSCEntryProperty = new SimpleObjectProperty<>();
 		for (TableColumn column : favoritesTable.getColumns()) {
 			FavoritesCellFactory cellFactory = (FavoritesCellFactory) column.getCellFactory();
 			cellFactory.setPlayer(util.getPlayer());
@@ -289,7 +289,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		File directory = fileDialog.showDialog(favoritesTable.getScene().getWindow());
 		if (directory != null) {
 			sidPlay2Section.setLastDirectory(directory.getAbsolutePath());
-			final ArrayList<File> files = new ArrayList<File>();
+			final ArrayList<File> files = new ArrayList<>();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel().getSelectedItems()) {
 				files.add(getHVSCFile(hvscEntry));
 			}
@@ -311,7 +311,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 	void addFavorites(List<File> files) {
 		String result = "";
-		for (File file: files) {
+		for (File file : files) {
 			final File[] listFiles = file.listFiles();
 			if (file.isDirectory() && listFiles != null) {
 				addFavorites(Arrays.asList(listFiles));
@@ -503,13 +503,12 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		filter(filterField.getText());
 	}
 
-	private SingularAttribute<?, ?> getAttribute(String columnProperty)
-			throws IllegalAccessException {
+	private SingularAttribute<?, ?> getAttribute(String columnProperty) throws IllegalAccessException {
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())) {
 				continue;
 			}
-			if (!(SingularAttribute.class.isAssignableFrom(field.getType()))) {
+			if (!SingularAttribute.class.isAssignableFrom(field.getType())) {
 				continue;
 			}
 			if (columnProperty.equals(field.getName())) {
@@ -550,7 +549,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	void moveColumn() {
-		Collection<FavoriteColumn> newOrderList = new ArrayList<FavoriteColumn>();
+		Collection<FavoriteColumn> newOrderList = new ArrayList<>();
 		for (TableColumn<HVSCEntry, ?> tableColumn : favoritesTable.getColumns()) {
 			FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn.getUserData();
 			if (favoriteColumn != null) {
@@ -603,7 +602,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		TextArea textArea = new TextArea(msg);
 		textArea.setEditable(false);
 		textArea.setWrapText(true);
-		alert.getDialogPane().setContent(textArea);		
+		alert.getDialogPane().setContent(textArea);
 		alert.showAndWait();
 	}
 

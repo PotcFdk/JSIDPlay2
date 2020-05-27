@@ -94,7 +94,7 @@ class Prg extends SidTune {
 
 	/**
 	 * Identify the player IDs of a program in memory.
-	 * 
+	 *
 	 * @return the player IDs as a list
 	 */
 	@Override
@@ -104,9 +104,8 @@ class Prg extends SidTune {
 
 	/**
 	 * Search player ID Info.
-	 * 
-	 * @param playerName
-	 *            player to get infos for
+	 *
+	 * @param playerName player to get infos for
 	 * @return player infos (or null, if not found)
 	 */
 	@Override

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * ---------------------------------------------------------------------------
  * Filter distortion code written by Antti S. Lankila 2007 - 2008.
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -54,11 +54,11 @@ package builder.resid.residfp;
  * centered around the switching threshold.
  * <P>
  * Qualified guesses at SID filter schematics are depicted below.
- * 
+ *
  * <pre>
  * SID filter
  * ----------
- * 
+ *
  *     -----------------------------------------------
  *    |                                               |
  *    |            ---Rq--                            |
@@ -72,10 +72,10 @@ package builder.resid.residfp;
  *     ----R1--|-----[A&gt;--|--R-----[A&gt;--|--R-----[A&gt;--|
  *             |          |             |             |
  * vi -----R1--           |             |             |
- * 
+ *
  *                       vhp           vbp           vlp
- * 
- * 
+ *
+ *
  * vi  - input voltage
  * vhp - highpass output
  * vbp - bandpass output
@@ -86,14 +86,14 @@ package builder.resid.residfp;
  * R   - NMOS FET voltage controlled resistor controlling cutoff frequency
  * Rs  - shunt resitor
  * C   - capacitor
- * 
- * 
- * 
+ *
+ *
+ *
  * SID integrator
  * --------------
- * 
+ *
  *                                   V+
- * 
+ *
  *                                   |
  *                                   |
  *                              -----|
@@ -115,11 +115,11 @@ package builder.resid.residfp;
  *          R1                       V-
  *          |
  *          |
- * 
+ *
  *          Vw
  * ----------------------------------------------------------------------------
  * </pre>
- * 
+ *
  * @author Ken Händel
  */
 public abstract class Filter {
@@ -168,15 +168,11 @@ public abstract class Filter {
 
 	/**
 	 * SID clocking - 1 cycle
-	 * 
-	 * @param v1
-	 *            voice 1 in
-	 * @param v2
-	 *            voice 2 in
-	 * @param v3
-	 *            voice 3 in
-	 * @param vE
-	 *            external audio in
+	 *
+	 * @param v1 voice 1 in
+	 * @param v2 voice 2 in
+	 * @param v3 voice 3 in
+	 * @param vE external audio in
 	 * @return filtered output
 	 */
 
@@ -196,7 +192,7 @@ public abstract class Filter {
 
 	/**
 	 * Enable filter.
-	 * 
+	 *
 	 * @param enable
 	 */
 	public void enable(final boolean enable) {
@@ -239,7 +235,7 @@ public abstract class Filter {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * @param fc_lo
 	 */
 	protected final void writeFC_LO(final byte fc_lo) {
@@ -249,7 +245,7 @@ public abstract class Filter {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * @param fc_hi
 	 */
 	protected final void writeFC_HI(final byte fc_hi) {
@@ -259,7 +255,7 @@ public abstract class Filter {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * @param res_filt
 	 */
 	protected final void writeRES_FILT(final byte res_filt) {
@@ -278,7 +274,7 @@ public abstract class Filter {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * @param mode_vol
 	 */
 	protected final void writeMODE_VOL(final byte mode_vol) {

@@ -42,7 +42,7 @@ public class Settings extends SIDDeviceStage {
 	private JCheckBox allowExternalConnections, digiBoost, whatsSidEnable;
 
 	private JTextField whatsSidURl, whatsSidUsername;
-	
+
 	private JPasswordField whatsSidPassword;
 
 	private JFormattedTextField whatsSidCaptureTime, whatsSidMatchRetryTime, whatsSidMinimumRelativeConfidence;
@@ -76,7 +76,7 @@ public class Settings extends SIDDeviceStage {
 		audioPane.add(deviceLabel);
 
 		audioDevices = new Vector<>();
-		audioDevice = new JComboBox<AudioDevice>(audioDevices);
+		audioDevice = new JComboBox<>(audioDevices);
 		audioDevice.setRenderer(new ItemRenderer());
 		audioDevice.addActionListener(event -> setAudioDevice());
 		audioDevice.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -85,14 +85,14 @@ public class Settings extends SIDDeviceStage {
 		JLabel audioBufferSizeLabel = new JLabel(util.getBundle().getString("AUDIO_BUFFER_SIZE"));
 		audioBufferSizeLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		audioPane.add(audioBufferSizeLabel);
-		
+
 		audioBufferSizes = new Vector<>(Arrays.asList(1024, 2048, 4096, 8192, 16384));
-		audioBuffer = new JComboBox<Integer>(audioBufferSizes);
+		audioBuffer = new JComboBox<>(audioBufferSizes);
 		audioBuffer.setRenderer(new ItemRenderer());
 		audioBuffer.addActionListener(event -> setAudioBuffer());
 		audioBuffer.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		audioPane.add(audioBuffer);
-		
+
 		getContentPane().add(audioPane, gridBagConstants);
 
 		JPanel connectionPane = new JPanel();
@@ -236,7 +236,7 @@ public class Settings extends SIDDeviceStage {
 
 		initialize();
 	}
-	
+
 	private void initialize() {
 		settings = SIDDeviceSettings.getInstance();
 		AudioDeviceCompare cmp = new AudioDeviceCompare();
@@ -272,15 +272,10 @@ public class Settings extends SIDDeviceStage {
 		whatsSidMatchRetryTime.setValue(settings.getWhatsSidMatchRetryTime());
 		whatsSidMinimumRelativeConfidence.setValue(settings.getWhatsSidMinimumRelativeConfidence());
 	}
-	
+
 	@Override
 	public void open() {
-        SwingUtilities.invokeLater(new Runnable() {
-        	@Override
-           public void run() {
-        	   okButton.requestFocusInWindow(); 
-           }
-        }); 
+		SwingUtilities.invokeLater(() -> okButton.requestFocusInWindow());
 
 		super.open();
 	}
@@ -352,14 +347,16 @@ public class Settings extends SIDDeviceStage {
 		settings.saveDeviceIndex(settings.getDeviceIndex());
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
-	
+
 	private class ItemRenderer extends BasicComboBoxRenderer {
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		@SuppressWarnings("rawtypes")
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected,
+					cellHasFocus);
 
 			comp.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 			return this;

@@ -36,9 +36,9 @@ import libsidplay.config.IWhatsSidSection;
 /**
  * INI configuration file support responsible to load and save all emulator
  * settings.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class IniConfig implements IConfig {
 	/** Name of our config file. */
@@ -75,7 +75,7 @@ public class IniConfig implements IConfig {
 
 	@Override
 	public List<? extends IFilterSection> getFilterSection() {
-		final List<IFilterSection> filters = new ArrayList<IFilterSection>();
+		final List<IFilterSection> filters = new ArrayList<>();
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
 				continue;
@@ -90,7 +90,7 @@ public class IniConfig implements IConfig {
 	/**
 	 * Get default configuration, read from internal sidplay2.ini file.<BR>
 	 * This is a Single instance!
-	 * 
+	 *
 	 * @return default configuration
 	 */
 	public static IniConfig getDefault() {
@@ -109,9 +109,9 @@ public class IniConfig implements IConfig {
 
 	/**
 	 * Read configuration file (external or internal, if it does not exist).<BR>
-	 * 
-	 * @param createIfNotExists
-	 *            If external configuration file does not exist, create it
+	 *
+	 * @param createIfNotExists If external configuration file does not exist,
+	 *                          create it
 	 */
 	public IniConfig(boolean createIfNotExists) {
 		this(createIfNotExists, getINIPath(createIfNotExists));
@@ -147,7 +147,7 @@ public class IniConfig implements IConfig {
 	 * <LI>If INI file exists in the user directory, then use it, else
 	 * <LI>use INI file in the current working directory
 	 * </OL>
-	 * 
+	 *
 	 * @return the absolute path name of the INI file to use
 	 */
 	private static File getINIPath(boolean createIfNotExists) {
@@ -166,9 +166,8 @@ public class IniConfig implements IConfig {
 
 	/**
 	 * Create backup of old INI file
-	 * 
-	 * @param iniFile
-	 *            the INI file to backup
+	 *
+	 * @param iniFile the INI file to backup
 	 */
 	private void createINIBackup(final File iniFile) {
 		iniFile.renameTo(new File(iniFile.getParentFile(), FILE_NAME + ".bak"));

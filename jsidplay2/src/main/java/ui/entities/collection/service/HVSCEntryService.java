@@ -33,7 +33,7 @@ public class HVSCEntryService {
 	public class HVSCEntries {
 		HVSCEntries(List<String> list, boolean fForward) {
 			this.list = list;
-			this.listIdx = (fForward ? -1 : list.size());
+			this.listIdx = fForward ? -1 : list.size();
 		}
 
 		private int listIdx;
@@ -86,7 +86,7 @@ public class HVSCEntryService {
 		Class<?> entityType = field.getDeclaringType().getJavaType();
 		Class<?> fieldType = field.getJavaType();
 
-		assert (entityType == HVSCEntry.class || entityType == StilEntry.class);
+		assert entityType == HVSCEntry.class || entityType == StilEntry.class;
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> q = cb.createQuery(String.class);
@@ -97,7 +97,7 @@ public class HVSCEntryService {
 			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
 			if (fieldType == LocalDateTime.class) {
-				assert (fieldValue.getClass() == LocalDateTime.class);
+				assert fieldValue.getClass() == LocalDateTime.class;
 				Path<LocalDateTime> fieldName = h.get((SingularAttribute<HVSCEntry, LocalDateTime>) field);
 				if (fieldValue instanceof LocalDate) {
 					// SELECT distinct h.path FROM HVSCEntry h WHERE
@@ -129,7 +129,7 @@ public class HVSCEntryService {
 					predicate = cb.and();
 				}
 			} else if (fieldType == String.class) {
-				assert (fieldValue.getClass() == String.class);
+				assert fieldValue.getClass() == String.class;
 				// SELECT distinct h.path FROM HVSCEntry h WHERE h.<fieldName>
 				// LIKE <value>
 				Path<String> fieldName = h.get((SingularAttribute<HVSCEntry, String>) field);
@@ -142,14 +142,14 @@ public class HVSCEntryService {
 			}
 		} else {
 			// if (entityType == StilEntry.class)
-			assert (fieldValue.getClass() == String.class);
+			assert fieldValue.getClass() == String.class;
 			Root<StilEntry> s = q.from(StilEntry.class);
 			Join<ui.entities.collection.StilEntry, HVSCEntry> h = s.join(StilEntry_.hvscEntry, JoinType.INNER);
 			Path<String> path = h.get(HVSCEntry_.path);
 			q.select(path).distinct(true);
 
 			if (fieldType == String.class) {
-				assert (fieldValue.getClass() == String.class);
+				assert fieldValue.getClass() == String.class;
 				// SELECT distinct h.path FROM STIL s INNER JOIN s.hvscEntry h
 				// WHERE s.<fieldName> LIKE <value>
 				Path<String> fieldName = s.get((SingularAttribute<StilEntry, String>) field);

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ui.filefilter;
 

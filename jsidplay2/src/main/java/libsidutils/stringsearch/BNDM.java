@@ -1,21 +1,21 @@
 /*
  * BNDM.java
- * 
+ *
  * Created on 21.10.2003
  *
  * eaio: StringSearch - high-performance pattern matching algorithms in Java
  * Copyright (c) 2003, 2004 Johann Burkard (jb@eaio.com) http://eaio.com
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,28 +31,29 @@ package libsidutils.stringsearch;
  * An implementation of the Backwards Non-deterministic Dawg (Directed acyclic
  * word graph) Matching algorithm by Gonzalo Navarro and Mathieu Raffinot. See
  * "A Bit-Parallel Approach to Suffix Automata: Fast Extended String Matching"
- * (appeared in <em>Proceedings of the 9th Annual
- * Symposium on Combinatorial Pattern Matching, 1998</em>). <br>
+ * (appeared in <em>Proceedings of the 9th Annual Symposium on Combinatorial
+ * Pattern Matching, 1998</em>). <br>
  * <br>
  * This is one of the fastest algorithms, but it does not beat the
  * com.eaio.stringsearch.BoyerMooreHorspoolRaita and the
  * com.eaio.stringsearch.BoyerMooreHorspool algorithms. <br>
  * <br>
- * 
+ *
  * <pre>
  * Preprocessing: O(m) time
- * 
+ *
  * Searching    : O(n/m) (best case)
  *                O(n log|&sum;| m / m) (average)
  *                O(mn) (worst case)
  * </pre>
- * 
+ *
  * <a href="http://www.dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz"> http://www.
- *      dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz </a><br>
+ * dcc.uchile.cl/~gnavarro/ps/cpm98.ps.gz </a><br>
  * <a href="http://www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz"> http://
- *      www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz </a><br>
+ * www-igm.univ-mlv.fr/~raffinot/ftp/cpm98.ps.gz </a><br>
  * <a href="http://citeseer.nj.nec.com/navarro98bitparallel.html"> http://
- *      citeseer.nj.nec.com/navarro98bitparallel.html </a><br>
+ * citeseer.nj.nec.com/navarro98bitparallel.html </a><br>
+ * 
  * @author <a href="mailto:jb@eaio.de">Johann Burkard</a>
  * @version 1.2
  */
@@ -66,10 +67,10 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. Returns an <code>int</code> array.
-	 * 
+	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in length.
+	 * If it does, <b>only it's first 32 bytes</b> are processed which might lead to
+	 * unexpected results. Returns an <code>int</code> array.
+	 *
 	 * com.eaio.stringsearch.StringSearch#processBytes(byte[])
 	 */
 	@Override
@@ -87,10 +88,10 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in
-	 * length. If it does, <b>only it's first 32 bytes</b> are processed which
-	 * might lead to unexpected results. Returns a {@link CharIntMap}.
-	 * 
+	 * Pre-processing of the pattern. The pattern may not exceed 32 bytes in length.
+	 * If it does, <b>only it's first 32 bytes</b> are processed which might lead to
+	 * unexpected results. Returns a {@link CharIntMap}.
+	 *
 	 * com.eaio.stringsearch.StringSearch#processChars(char[])
 	 */
 	@Override
@@ -108,8 +109,8 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * com.eaio.stringsearch.StringSearch#searchBytes(byte[], int, int,
-	 *      byte[], java.lang.Object)
+	 * com.eaio.stringsearch.StringSearch#searchBytes(byte[], int, int, byte[],
+	 * java.lang.Object)
 	 */
 	@Override
 	public int searchBytes(byte[] text, int textStart, int textEnd, byte[] pattern, Object processed) {
@@ -150,8 +151,8 @@ public class BNDM extends StringSearch {
 	}
 
 	/**
-	 * com.eaio.stringsearch.StringSearch#searchChars(char[], int, int,
-	 *      char[], Object)
+	 * com.eaio.stringsearch.StringSearch#searchChars(char[], int, int, char[],
+	 * Object)
 	 */
 	@Override
 	public int searchChars(char[] text, int textStart, int textEnd, char[] pattern, Object processed) {

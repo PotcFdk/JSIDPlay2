@@ -35,9 +35,9 @@ import libsidplay.common.EventScheduler;
 
 /**
  * Implementation of a C1530 Datasette.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public abstract class Datasette {
 	public enum DatasetteStatus {
@@ -69,8 +69,8 @@ public abstract class Datasette {
 	 */
 	private static final double DS_G = 0.525;
 	/**
-	 * Counter is c=g*(sqrt(v*t/d*pi+r^2/d^2)-r/d). At FF/REWIND,
-	 * Datasette-counter makes ~4 rounds per second.
+	 * Counter is c=g*(sqrt(v*t/d*pi+r^2/d^2)-r/d). At FF/REWIND, Datasette-counter
+	 * makes ~4 rounds per second.
 	 */
 	private static final double DS_RPS_FAST = 4.00;
 	/**
@@ -95,13 +95,11 @@ public abstract class Datasette {
 	private final TapeImage img = new TapeImage();
 
 	/**
-	 * Insert a tape image into the datasette. A previously attached tape is
-	 * ejected first.
+	 * Insert a tape image into the datasette. A previously attached tape is ejected
+	 * first.
 	 *
-	 * @param tapeFile
-	 *            filename of the tape image
-	 * @throws IOException
-	 *             cannot read tape
+	 * @param tapeFile filename of the tape image
+	 * @throws IOException cannot read tape
 	 */
 	public final void insertTape(final File tapeFile) throws IOException {
 		ejectTape();
@@ -110,9 +108,8 @@ public abstract class Datasette {
 
 	/**
 	 * Eject tape image.
-	 * 
-	 * @throws IOException
-	 *             cannot write tape image
+	 *
+	 * @throws IOException cannot write tape image
 	 */
 	public final void ejectTape() throws IOException {
 		img.imageDetach(this);
@@ -120,18 +117,16 @@ public abstract class Datasette {
 
 	/**
 	 * Return value of method fetchGap.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	protected static final class GapDir {
 		/**
 		 * Constructor.
-		 * 
-		 * @param g
-		 *            gap
-		 * @param d
-		 *            direction
+		 *
+		 * @param g gap
+		 * @param d direction
 		 */
 		protected GapDir(final long g, final int d) {
 			this.gap = g;
@@ -164,9 +159,9 @@ public abstract class Datasette {
 
 	/**
 	 * Controls of the datasette.
-	 * 
+	 *
 	 * @author Ken Händel
-	 * 
+	 *
 	 */
 	public enum Control {
 		/**
@@ -290,9 +285,8 @@ public abstract class Datasette {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param ctx
-	 *            event context
+	 *
+	 * @param ctx event context
 	 */
 	public Datasette(final EventScheduler ctx) {
 		this.context = ctx;
@@ -343,9 +337,8 @@ public abstract class Datasette {
 	/**
 	 * reads buffer to fit the next gap-read tap_buffer[next_tap] ~
 	 * currentFileSeekPosition.
-	 * 
-	 * @param offset
-	 *            offset to move
+	 *
+	 * @param offset offset to move
 	 * @return move succeeded
 	 */
 	private boolean moveBufferForward(final int offset) {
@@ -373,9 +366,8 @@ public abstract class Datasette {
 	/**
 	 * reads buffer to fit the next gap-read at current_file_seek_position-1
 	 * tap_buffer[next_tap] ~ currentFileSeekPosition.
-	 * 
-	 * @param offset
-	 *            offset to move
+	 *
+	 * @param offset offset to move
 	 * @return move succeeded
 	 */
 	private boolean moveBufferBack(final int offset) {
@@ -406,11 +398,9 @@ public abstract class Datasette {
 
 	/**
 	 * Fetch GAP.
-	 * 
-	 * @param gd
-	 *            IN/OUT parameters
-	 * @param readTap
-	 *            ?
+	 *
+	 * @param gd      IN/OUT parameters
+	 * @param readTap ?
 	 * @return succeeded
 	 */
 	private boolean fetchGap(final GapDir gd, final long readTap) {
@@ -439,7 +429,7 @@ public abstract class Datasette {
 
 	/**
 	 * Read GAP forward.
-	 * 
+	 *
 	 * @return next GAP
 	 */
 	private long readGapForward() {
@@ -448,7 +438,7 @@ public abstract class Datasette {
 
 	/**
 	 * Read GAP backward (Tape version 0).
-	 * 
+	 *
 	 * @return previous GAP
 	 */
 	private long readGapBackwardV0() {
@@ -458,12 +448,10 @@ public abstract class Datasette {
 	/**
 	 * Read GAP backward (Tape version 1). Examine, if previous gap was long by
 	 * rewinding until 3 non-zero-values in a row found, then reading forward
-	 * 
-	 * @param readTap
-	 *            current tape position
+	 *
+	 * @param readTap current tape position
 	 * @return previous GAP
-	 * @throws Exception
-	 *             error moving buffer position
+	 * @throws Exception error moving buffer position
 	 */
 	private long readGapBackwardV1(final long readTap) throws Exception {
 		long rememberFileSeekPosition = currentImage.currentFilePosition;
@@ -510,9 +498,8 @@ public abstract class Datasette {
 
 	/**
 	 * Read GAP.
-	 * 
-	 * @param direction
-	 *            1: forward, -1: rewind
+	 *
+	 * @param direction 1: forward, -1: rewind
 	 * @return GAP
 	 */
 	private long readGap(int direction) {
@@ -620,9 +607,8 @@ public abstract class Datasette {
 
 	/**
 	 * Read bit.
-	 * 
-	 * @throws IOException
-	 *             tape image read error
+	 *
+	 * @throws IOException tape image read error
 	 */
 	protected void readBit() throws IOException {
 		double speedOfTape = DS_V_PLAY;
@@ -674,8 +660,8 @@ public abstract class Datasette {
 
 		if (direction + lastDirection == 0) {
 			/*
-			 * the direction changed; read the gap from file, but use use only
-			 * the elapsed gap
+			 * the direction changed; read the gap from file, but use use only the elapsed
+			 * gap
 			 */
 			gap = readGap(direction);
 			longGapPending = longGapElapsed;
@@ -713,11 +699,9 @@ public abstract class Datasette {
 
 	/**
 	 * Sets the TAP image to work with.
-	 * 
-	 * @param image
-	 *            TAP image
-	 * @throws IOException
-	 *             tape image read error
+	 *
+	 * @param image TAP image
+	 * @throws IOException tape image read error
 	 */
 	public final void setTapeImage(final Tap image) throws IOException {
 		currentImage = image;
@@ -760,9 +744,8 @@ public abstract class Datasette {
 
 	/**
 	 * Internal reset datasette.
-	 * 
-	 * @throws IOException
-	 *             error reading TAP image
+	 *
+	 * @throws IOException error reading TAP image
 	 */
 	protected void internalReset() throws IOException {
 		if (currentImage != null) {
@@ -799,9 +782,8 @@ public abstract class Datasette {
 
 	/**
 	 * Start datasette motor.
-	 * 
-	 * @throws IOException
-	 *             tape image read error
+	 *
+	 * @throws IOException tape image read error
 	 */
 	protected void startMotor() throws IOException {
 		currentImage.fd.seek(currentImage.currentFilePosition + currentImage.offset);
@@ -812,9 +794,8 @@ public abstract class Datasette {
 
 	/**
 	 * Triggered by GUI: RECORD/START...
-	 * 
-	 * @param command
-	 *            triggered datasette control
+	 *
+	 * @param command triggered datasette control
 	 */
 	public final void control(final Control command) {
 		if (currentImage == null) {
@@ -881,9 +862,8 @@ public abstract class Datasette {
 
 	/**
 	 * Triggered by c64pla_config_changed.
-	 * 
-	 * @param flag
-	 *            motor on/off
+	 *
+	 * @param flag motor on/off
 	 */
 	public final void setMotor(final boolean flag) {
 		if (currentImage != null) {
@@ -911,9 +891,8 @@ public abstract class Datasette {
 
 	/**
 	 * Write bit.
-	 * 
-	 * @throws IOException
-	 *             tape image write error
+	 *
+	 * @throws IOException tape image write error
 	 */
 	private void bitWrite() throws IOException {
 		long clk = context.getTime(Phase.PHI1);
@@ -938,8 +917,8 @@ public abstract class Datasette {
 			lastWriteClk = clk;
 
 			/*
-			 * write long gap designation, or just a placeholder for a long gap,
-			 * if we are version 0.
+			 * write long gap designation, or just a placeholder for a long gap, if we are
+			 * version 0.
 			 */
 			try {
 				currentImage.fd.write((byte) 0);
@@ -978,9 +957,8 @@ public abstract class Datasette {
 
 	/**
 	 * Triggered by CPU port update at PHI2.
-	 * 
-	 * @param writeBit
-	 *            toggle state
+	 *
+	 * @param writeBit toggle state
 	 */
 	public final void toggleWriteBit(final boolean writeBit) {
 		if (currentImage != null && writeBit && mode == Control.RECORD) {
@@ -1018,12 +996,12 @@ public abstract class Datasette {
 		if (currentImage == null || currentImage.cycleCounterTotal == 0) {
 			return 0;
 		}
-		return ((float) currentImage.cycleCounter / currentImage.cycleCounterTotal);
+		return (float) currentImage.cycleCounter / currentImage.cycleCounterTotal;
 	}
 
 	/**
 	 * Read state of button press.
-	 * 
+	 *
 	 * @return The read state of a button press.
 	 */
 	public boolean getTapeSense() {
@@ -1032,15 +1010,14 @@ public abstract class Datasette {
 
 	/**
 	 * Signal interrupt flag.
-	 * 
-	 * @param flag
-	 *            interrupt flag
+	 *
+	 * @param flag interrupt flag
 	 */
 	public abstract void setFlag(final boolean flag);
 
 	/**
 	 * Get a status icon to display the floppies activity.
-	 * 
+	 *
 	 * @return icon to show
 	 */
 	public DatasetteStatus getStatus() {

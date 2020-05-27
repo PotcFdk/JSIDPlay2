@@ -35,7 +35,7 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 
 	/**
 	 * Get contents of the first SID favorites tab.
-	 * 
+	 *
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/favorites
 	 */
 	@Override

@@ -23,9 +23,9 @@ import sidplay.ini.IniConfigException;
 
 /**
  * Sound driver to listen to emulation and MP3 recording in parallel.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class CmpMP3File extends JavaSound {
 

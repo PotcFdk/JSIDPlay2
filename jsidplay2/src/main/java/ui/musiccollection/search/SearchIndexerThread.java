@@ -14,7 +14,7 @@ public class SearchIndexerThread extends SearchThread {
 	 * file filter for tunes
 	 */
 	protected FileFilter fFileFilter = new TuneFileFilter();
-	protected Queue<File> fQueue = new LinkedList<File>();
+	protected Queue<File> fQueue = new LinkedList<>();
 
 	public SearchIndexerThread(final File root, Consumer<Void> searchStart, Consumer<File> searchHit,
 			Consumer<Boolean> searchStop) {
@@ -46,7 +46,7 @@ public class SearchIndexerThread extends SearchThread {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setSearchState(final Object state) {
-		if (state != null && (state instanceof Queue<?>)) {
+		if (state != null && state instanceof Queue<?>) {
 			fQueue = (Queue<File>) state;
 		}
 

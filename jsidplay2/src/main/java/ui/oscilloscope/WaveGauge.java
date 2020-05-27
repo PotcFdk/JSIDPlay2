@@ -17,7 +17,7 @@ public final class WaveGauge extends SIDGauge {
 
 	public WaveGauge() {
 	}
-	
+
 	public WaveGauge(C64Window window, Player player) {
 		super(window, player);
 	}

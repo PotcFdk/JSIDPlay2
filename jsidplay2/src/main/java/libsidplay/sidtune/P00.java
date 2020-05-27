@@ -35,9 +35,9 @@ import libsidutils.Petscii;
  * removal of characters occurs in three passes, the first removes all '_', then
  * vowels and finally numerics. If the filename is still greater than 8 it is
  * truncated.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 class P00 extends Prg {
 
@@ -90,7 +90,7 @@ class P00 extends Prg {
 		p00.program = dataBuf;
 		p00.programOffset = X00Header.SIZE + 2;
 		p00.info.c64dataLen = dataBuf.length - p00.programOffset;
-		p00.info.loadAddr = (dataBuf[X00Header.SIZE] & 0xff) | ((dataBuf[X00Header.SIZE + 1] & 0xff) << 8);
+		p00.info.loadAddr = dataBuf[X00Header.SIZE] & 0xff | (dataBuf[X00Header.SIZE + 1] & 0xff) << 8;
 		p00.info.infoString.add(Petscii.petsciiToIso88591(header.name));
 
 		return p00;

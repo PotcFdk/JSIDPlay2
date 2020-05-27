@@ -76,24 +76,25 @@ class Mus extends PSid {
 
 	private int detect(File musFile, final byte[] buffer, final String errorMessage) throws SidTuneError {
 		String suffix = PathUtils.getFilenameSuffix(musFile.getName().toLowerCase(Locale.ENGLISH));
-		if (!DEFAULT_MUS_NAMES.stream().anyMatch(ext -> suffix.endsWith(ext)))
+		if (!DEFAULT_MUS_NAMES.stream().anyMatch(ext -> suffix.endsWith(ext))) {
 			throw new SidTuneError(errorMessage);
+		}
 		if (buffer == null || buffer.length < 8) {
 			throw new SidTuneError(errorMessage);
 		}
 		// Add length of voice 1 data.
-		final int voice1DataEnd = 2 + 3 * 2 + ((buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8));
+		final int voice1DataEnd = 2 + 3 * 2 + (buffer[2] & 0xff) + ((buffer[3] & 0xff) << 8);
 		// Add length of voice 2 data.
-		final int voice2DataEnd = voice1DataEnd + ((buffer[4] & 0xff) + ((buffer[5] & 0xff) << 8));
+		final int voice2DataEnd = voice1DataEnd + (buffer[4] & 0xff) + ((buffer[5] & 0xff) << 8);
 		// Add length of voice 3 data.
-		final int voice3DataEnd = voice2DataEnd + ((buffer[6] & 0xff) + ((buffer[7] & 0xff) << 8));
+		final int voice3DataEnd = voice2DataEnd + (buffer[6] & 0xff) + ((buffer[7] & 0xff) << 8);
 
 		// validate that voice3 is still inside the buffer and that each track
 		// ends with HLT
 		if (!(voice3DataEnd - 1 < buffer.length
-				&& ((buffer[voice1DataEnd - 1] & 0xff) + ((buffer[voice1DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
-				&& ((buffer[voice2DataEnd - 1] & 0xff) + ((buffer[voice2DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD
-				&& ((buffer[voice3DataEnd - 1] & 0xff) + ((buffer[voice3DataEnd - 2] & 0xff) << 8)) == MUS_HLT_CMD)) {
+				&& (buffer[voice1DataEnd - 1] & 0xff) + ((buffer[voice1DataEnd - 2] & 0xff) << 8) == MUS_HLT_CMD
+				&& (buffer[voice2DataEnd - 1] & 0xff) + ((buffer[voice2DataEnd - 2] & 0xff) << 8) == MUS_HLT_CMD
+				&& (buffer[voice3DataEnd - 1] & 0xff) + ((buffer[voice3DataEnd - 2] & 0xff) << 8) == MUS_HLT_CMD)) {
 			throw new SidTuneError(errorMessage);
 		}
 		return voice3DataEnd;
@@ -169,7 +170,7 @@ class Mus extends PSid {
 	/**
 	 * Get stereo music file by naming convention. Couples are *.mus/*.str or
 	 * *_a.mus/*_b.mus .
-	 * 
+	 *
 	 * @param file file to get the stereo tune for (e.g. name.mus).
 	 * @return stereo file (e.g. name.str)
 	 */

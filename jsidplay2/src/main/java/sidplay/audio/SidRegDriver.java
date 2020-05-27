@@ -44,7 +44,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 		public String getDescription() {
 			return BUNDLE.getString(DESCRIPTION[address & 0x1f]);
 		}
-		
+
 		public void writeSidRegister(PrintStream printStream) {
 			printStream.printf("\"%d\", \"%d\", \"$%04X\", \"$%02X\", \"%s\"\n", absCycles, relCycles, address, value,
 					getDescription());

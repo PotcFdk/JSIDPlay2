@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
 package builder.resid.residfp;
 
 /**
- * 
+ *
  * The audio output stage in a Commodore 64 consists of two STC networks, a
  * low-pass filter with 3-dB frequency 16kHz followed by a high-pass filter with
  * 3-dB frequency 16Hz (the latter provided an audio equipment input impedance
@@ -34,9 +34,9 @@ package builder.resid.residfp;
  * emitter-base impedances sufficiently low to produce additional low-pass and
  * high-pass 3dB-frequencies in the order of hundreds of kHz. This calls for a
  * sampling frequency of several MHz, which is far too high for practical use.
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 final class ExternalFilter {
 	private static final double LOWPASS_FREQUENCY = 15915.6;
@@ -63,17 +63,17 @@ final class ExternalFilter {
 
 	/**
 	 * SID clocking - 1 cycle.
-	 * 
+	 *
 	 * @param Vi
 	 */
-	protected final float clock(final float Vi) {
+	protected float clock(final float Vi) {
 		final float out = Vlp - Vhp;
 		Vhp += w0hp * out;
 		Vlp += w0lp * (Vi - Vlp);
 		return out;
 	}
 
-	protected final void zeroDenormals() {
+	protected void zeroDenormals() {
 		if (Vhp > -1e-12f && Vhp < 1e-12f) {
 			Vhp = 0;
 		}
@@ -91,7 +91,7 @@ final class ExternalFilter {
 
 	/**
 	 * Setup of the external filter sampling parameters.
-	 * 
+	 *
 	 * @param clock
 	 */
 	protected void setClockFrequency(final double frequency) {

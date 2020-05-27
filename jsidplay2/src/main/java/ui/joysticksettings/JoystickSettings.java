@@ -46,7 +46,7 @@ public class JoystickSettings extends C64Window {
 
 	public JoystickSettings() {
 	}
-	
+
 	public JoystickSettings(Player player) {
 		super(player);
 	}
@@ -54,11 +54,11 @@ public class JoystickSettings extends C64Window {
 	@FXML
 	@Override
 	protected void initialize() {
-		components1 = FXCollections.<Component> observableArrayList();
+		components1 = FXCollections.<Component>observableArrayList();
 		SortedList<Component> sortedList1 = new SortedList<>(components1);
 		sortedList1.comparatorProperty().bind(testTable1.comparatorProperty());
 		testTable1.setItems(sortedList1);
-		devices = FXCollections.<Controller> observableArrayList();
+		devices = FXCollections.<Controller>observableArrayList();
 		device1.setItems(devices);
 		up1.setItems(components1);
 		down1.setItems(components1);
@@ -66,7 +66,7 @@ public class JoystickSettings extends C64Window {
 		right1.setItems(components1);
 		fire1.setItems(components1);
 
-		components2 = FXCollections.<Component> observableArrayList();
+		components2 = FXCollections.<Component>observableArrayList();
 		SortedList<Component> sortedList2 = new SortedList<>(components2);
 		sortedList2.comparatorProperty().bind(testTable2.comparatorProperty());
 		testTable2.setItems(sortedList2);

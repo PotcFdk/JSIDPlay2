@@ -1,7 +1,7 @@
 package builder.sidblaster;
 
-import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static libsidplay.common.Engine.SIDBLASTER;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
 /**
- * 
+ *
  * @author Ken Händel
- * 
+ *
  */
 public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
@@ -53,7 +53,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Already used SIDBlaster SIDs.
 	 */
-	private List<SIDBlasterEmu> sids = new ArrayList<SIDBlasterEmu>();
+	private List<SIDBlasterEmu> sids = new ArrayList<>();
 
 	/**
 	 * Device number, if more than one USB devices is connected.
@@ -209,7 +209,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	/**
 	 * Get SIDBlaster device index based on the desired chip model.
-	 * 
+	 *
 	 * @param chipModel desired chip model
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired SIDBlaster device

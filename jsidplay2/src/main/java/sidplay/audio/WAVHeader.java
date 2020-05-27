@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
 
 /**
  * WAV header format.
- * 
+ *
  * @author Ken Händel
  */
 public class WAVHeader {
@@ -15,7 +15,7 @@ public class WAVHeader {
 	private static final int HEADER_OFFSET = 8;
 	public static final int HEADER_LENGTH = 44;
 
-	private int length, sampleFreq,bytesPerSec, dataChunkLen;
+	private int length, sampleFreq, bytesPerSec, dataChunkLen;
 	private short format, channels, blockAlign, bitsPerSample;
 
 	public WAVHeader(int channels, int frameRate) {

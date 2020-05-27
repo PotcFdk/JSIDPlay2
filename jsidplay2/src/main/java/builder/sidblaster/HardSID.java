@@ -12,10 +12,10 @@ public interface HardSID extends Library {
 			this.rc = rc;
 		}
 
-		public int getRc() {
+		int getRc() {
 			return rc;
 		}
-	};
+	}
 
 	// Version 2 Interface (Cycle exact interface)
 
@@ -85,14 +85,14 @@ public interface HardSID extends Library {
 
 	/**
 	 * Click reduction
-	 * 
+	 *
 	 * @since 2.04
 	 */
 	void HardSID_Reset2(byte DeviceID, byte volume);
 
 	/**
 	 * Lock SID to application
-	 * 
+	 *
 	 * @since 2.04
 	 */
 	boolean HardSID_Lock(byte DeviceID);
@@ -107,7 +107,7 @@ public interface HardSID extends Library {
 	 * existing group. If deviceID = groupID then a new group is created with the
 	 * SID device becoming group master. Only writes to the master are played on the
 	 * other grouped SIDs.
-	 * 
+	 *
 	 * @since 2.04
 	 */
 	boolean HardSID_Group(byte deviceID, boolean enable, byte groupID);
@@ -118,7 +118,7 @@ public interface HardSID extends Library {
 	 * Support whether the channel change was a request from the user or the program
 	 * (auto or manual respectively). External mixers can use this to prioritize
 	 * requests
-	 * 
+	 *
 	 * @since 2.07
 	 */
 	void HardSID_Mute2(byte DeviceID, byte channel, boolean mute, boolean manual);
@@ -127,7 +127,7 @@ public interface HardSID extends Library {
 
 	/**
 	 * Enable support for non hardsid hardware (e.g. Catweasel MK3/4)
-	 * 
+	 *
 	 * @since 2.08
 	 */
 	void HardSID_OtherHardware();

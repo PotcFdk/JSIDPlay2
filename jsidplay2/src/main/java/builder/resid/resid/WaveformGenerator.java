@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * @author Ken Händel
  *
  */
@@ -29,9 +29,9 @@ import libsidplay.common.ChipModel;
  * zero when TEST is set, and starts counting when TEST is cleared. The noise
  * waveform is taken from intermediate bits of a 23 bit shift register. This
  * register is clocked by bit 19 of the accumulator.
- * 
+ *
  * Java port of the reSID 1.0 waveformgenerator by Dag Lem.
- * 
+ *
  * @author Ken Händel
  * @author Dag Lem
  * @author Antti Lankila
@@ -83,7 +83,6 @@ public final class WaveformGenerator {
 	private short[] wave;
 
 	private int waveform_output;
-	
 
 	protected void setWaveformModels(short[][] models) {
 		for (int i = 0; i < 8; i++) {
@@ -95,9 +94,8 @@ public final class WaveformGenerator {
 	 * Set nonlinearity parameter for imperfect analog DAC emulation. 1.0 means
 	 * perfect 8580-like linearity, values between 0.95 - 0.97 are probably
 	 * realistic 6581 nonlinearity values.
-	 * 
-	 * @param chipModel
-	 *            The {@link ChipModel} to use.
+	 *
+	 * @param chipModel The {@link ChipModel} to use.
 	 */
 	protected void setChipModel(final ChipModel chipModel) {
 		final double dacBits[] = new double[12];
@@ -106,7 +104,7 @@ public final class WaveformGenerator {
 		for (int i = 0; i < 4096; i++) {
 			double dacValue = 0;
 			for (int j = 0; j < 12; j++) {
-				if ((i & (1 << j)) != 0) {
+				if ((i & 1 << j) != 0) {
 					dacValue += dacBits[j];
 				}
 			}
@@ -133,7 +131,7 @@ public final class WaveformGenerator {
 			accumulator_prev = accumulator;
 
 			// Calculate new accumulator value;
-			int accumulator_next = (accumulator + freq) & 0xffffff;
+			int accumulator_next = accumulator + freq & 0xffffff;
 			int accumulator_bits_set = ~accumulator & accumulator_next;
 			accumulator = accumulator_next;
 
@@ -157,12 +155,10 @@ public final class WaveformGenerator {
 	 * Synchronize oscillators. This must be done after all the oscillators have
 	 * been clock()'ed, so that they are in the same state.
 	 *
-	 * @param syncDest
-	 *            The oscillator I am syncing
-	 * @param syncSource
-	 *            The oscillator syncing me.
+	 * @param syncDest   The oscillator I am syncing
+	 * @param syncSource The oscillator syncing me.
 	 */
-	protected final void synchronize(final WaveformGenerator syncDest, final WaveformGenerator syncSource) {
+	protected void synchronize(final WaveformGenerator syncDest, final WaveformGenerator syncSource) {
 		// A special case occurs when a sync source is synced itself on the same
 		// cycle as when its MSB is set high. In this case the destination will
 		// not be synced. This has been verified by sampling OSC3.
@@ -173,8 +169,8 @@ public final class WaveformGenerator {
 
 	private void clock_shift_register() {
 		// bit0 = (bit22 | test) ^ bit17
-		int bit0 = ((shift_register >> 22) ^ (shift_register >> 17)) & 0x1;
-		shift_register = ((shift_register << 1) | bit0) & 0x7fffff;
+		int bit0 = (shift_register >> 22 ^ shift_register >> 17) & 0x1;
+		shift_register = (shift_register << 1 | bit0) & 0x7fffff;
 
 		// New noise waveform output.
 		set_noise_output();
@@ -188,15 +184,15 @@ public final class WaveformGenerator {
 		// FIXME: Write test program to check the effect of 1 bits and whether
 		// neighboring bits are affected.
 
-		shift_register &= ~((1 << 20) | (1 << 18) | (1 << 14) | (1 << 11) | (1 << 9) | (1 << 5) | (1 << 2) | (1 << 0))
-				| ((waveform_output & 0x800) << 9) | // Bit 11 -> bit 20
-				((waveform_output & 0x400) << 8) | // Bit 10 -> bit 18
-				((waveform_output & 0x200) << 5) | // Bit 9 -> bit 14
-				((waveform_output & 0x100) << 3) | // Bit 8 -> bit 11
-				((waveform_output & 0x080) << 2) | // Bit 7 -> bit 9
-				((waveform_output & 0x040) >> 1) | // Bit 6 -> bit 5
-				((waveform_output & 0x020) >> 3) | // Bit 5 -> bit 2
-				((waveform_output & 0x010) >> 4); // Bit 4 -> bit 0
+		shift_register &= ~(1 << 20 | 1 << 18 | 1 << 14 | 1 << 11 | 1 << 9 | 1 << 5 | 1 << 2 | 1 << 0)
+				| (waveform_output & 0x800) << 9 | // Bit 11 -> bit 20
+				(waveform_output & 0x400) << 8 | // Bit 10 -> bit 18
+				(waveform_output & 0x200) << 5 | // Bit 9 -> bit 14
+				(waveform_output & 0x100) << 3 | // Bit 8 -> bit 11
+				(waveform_output & 0x080) << 2 | // Bit 7 -> bit 9
+				(waveform_output & 0x040) >> 1 | // Bit 6 -> bit 5
+				(waveform_output & 0x020) >> 3 | // Bit 5 -> bit 2
+				(waveform_output & 0x010) >> 4; // Bit 4 -> bit 0
 
 		noise_output &= waveform_output;
 		no_noise_or_noise_output = no_noise | noise_output;
@@ -211,19 +207,18 @@ public final class WaveformGenerator {
 	}
 
 	private void set_noise_output() {
-		noise_output = ((shift_register & 0x100000) >> 9) | ((shift_register & 0x040000) >> 8)
-				| ((shift_register & 0x004000) >> 5) | ((shift_register & 0x000800) >> 3)
-				| ((shift_register & 0x000200) >> 2) | ((shift_register & 0x000020) << 1)
-				| ((shift_register & 0x000004) << 3) | ((shift_register & 0x000001) << 4);
+		noise_output = (shift_register & 0x100000) >> 9 | (shift_register & 0x040000) >> 8
+				| (shift_register & 0x004000) >> 5 | (shift_register & 0x000800) >> 3 | (shift_register & 0x000200) >> 2
+				| (shift_register & 0x000020) << 1 | (shift_register & 0x000004) << 3
+				| (shift_register & 0x000001) << 4;
 
 		no_noise_or_noise_output = no_noise | noise_output;
 	}
 
 	/**
 	 * 12-bit waveform output.
-	 * 
-	 * @param ringModulator
-	 *            The oscillator ring-modulating me.
+	 *
+	 * @param ringModulator The oscillator ring-modulating me.
 	 * @return output from waveformgenerator
 	 */
 	public short output(final WaveformGenerator ringModulator) {
@@ -232,9 +227,9 @@ public final class WaveformGenerator {
 			// The bit masks no_pulse and no_noise are used to achieve
 			// branch-free
 			// calculation of the output value.
-			int ix = (accumulator ^ (~ringModulator.accumulator & ring_msb_mask)) >> 12;
+			int ix = (accumulator ^ ~ringModulator.accumulator & ring_msb_mask) >> 12;
 			waveform_output = wave[ix] & (no_pulse | pulse_output) & no_noise_or_noise_output;
-		
+
 			if (waveform > 0x8 && !test && shift_pipeline != 1) {
 				// Combined waveforms write to the shift register.
 				write_shift_register();
@@ -262,7 +257,7 @@ public final class WaveformGenerator {
 
 		// The result of the pulse width compare is delayed one cycle.
 		// Push next pulse level into pulse level pipeline.
-		pulse_output = ((accumulator >> 12) >= pw) ? 0xfff : 0x000;
+		pulse_output = accumulator >> 12 >= pw ? 0xfff : 0x000;
 
 		// DAC imperfections are emulated by using waveform_output as an index
 		// into a DAC lookup table. readOSC() uses waveform_output directly.
@@ -280,9 +275,9 @@ public final class WaveformGenerator {
 			// The bit masks no_pulse and no_noise are used to achieve
 			// branch-free
 			// calculation of the output value.
-			int ix = (myAccumulator ^ (~ringAccumulator & ring_msb_mask)) >> 12;
+			int ix = (myAccumulator ^ ~ringAccumulator & ring_msb_mask) >> 12;
 			waveform_output = wave[ix] & (no_pulse | pulse_output) & no_noise_or_noise_output;
-		
+
 			if (waveform > 0x8 && !test && shift_pipeline != 1) {
 				// Combined waveforms write to the shift register.
 				write_shift_register();
@@ -310,7 +305,7 @@ public final class WaveformGenerator {
 
 		// The result of the pulse width compare is delayed one cycle.
 		// Push next pulse level into pulse level pipeline.
-		pulse_output = ((accumulator >> 12) >= pw) ? 0xfff : 0x000;
+		pulse_output = accumulator >> 12 >= pw ? 0xfff : 0x000;
 
 		// DAC imperfections are emulated by using waveform_output as an index
 		// into a DAC lookup table. readOSC() uses waveform_output directly.
@@ -319,9 +314,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Read OSC3 value (6581, not latched/delayed version)
-	 * 
-	 * @param ring_modulator
-	 *            The ring modulating partner of this waveform
+	 *
+	 * @param ring_modulator The ring modulating partner of this waveform
 	 * @return OSC3 value
 	 */
 	protected byte readOSC6581(final WaveformGenerator ring_modulator) {
@@ -329,12 +323,11 @@ public final class WaveformGenerator {
 	}
 
 	/**
-	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and
-	 * above are not appropriately delayed by 1 clock. It should not be
-	 * noticeable for 0 and &gt; 8, but noise is not correctly delayed.
-	 * 
-	 * @param ring_modulator
-	 *            The ring modulating partner of this waveform
+	 * Read OSC3 value (8580, 1-clock latched version). Waveforms 0 and 8 and above
+	 * are not appropriately delayed by 1 clock. It should not be noticeable for 0
+	 * and &gt; 8, but noise is not correctly delayed.
+	 *
+	 * @param ring_modulator The ring modulating partner of this waveform
 	 * @return OSC3 value
 	 */
 	protected byte readOSC8580(final WaveformGenerator ring_modulator) {
@@ -357,9 +350,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param freq_lo
-	 *            low 8 bits of frequency
+	 *
+	 * @param freq_lo low 8 bits of frequency
 	 */
 	protected void writeFREQ_LO(final byte freq_lo) {
 		freq = freq & 0xff00 | freq_lo & 0xff;
@@ -367,9 +359,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param freq_hi
-	 *            high 8 bits of frequency
+	 *
+	 * @param freq_hi high 8 bits of frequency
 	 */
 	protected void writeFREQ_HI(final byte freq_hi) {
 		freq = freq_hi << 8 & 0xff00 | freq & 0xff;
@@ -377,13 +368,12 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
+	 *
 	 * The original form was (acc &gt;&gt; 12) &gt;= pw, where truth value is not
-	 * affected by the contents of the low 12 bits. Therefore the lowest bits
-	 * must be zero in the new formulation acc &gt;= (pw &lt;&lt; 12).
-	 * 
-	 * @param pw_lo
-	 *            low 8 bits of pulse width
+	 * affected by the contents of the low 12 bits. Therefore the lowest bits must
+	 * be zero in the new formulation acc &gt;= (pw &lt;&lt; 12).
+	 *
+	 * @param pw_lo low 8 bits of pulse width
 	 */
 	protected void writePW_LO(final byte pw_lo) {
 		pw = pw & 0xf00 | pw_lo & 0x0ff;
@@ -391,9 +381,8 @@ public final class WaveformGenerator {
 
 	/**
 	 * Register functions.
-	 * 
-	 * @param pw_hi
-	 *            high 8 bits of pulse width
+	 *
+	 * @param pw_hi high 8 bits of pulse width
 	 */
 	protected void writePW_HI(final byte pw_hi) {
 		pw = pw_hi << 8 & 0xf00 | pw & 0x0ff;
@@ -402,13 +391,12 @@ public final class WaveformGenerator {
 	/**
 	 * Register functions.
 	 *
-	 * @param control
-	 *            control register value
+	 * @param control control register value
 	 */
 	protected void writeCONTROL_REG(final byte control) {
 		int waveform_prev = waveform;
 		boolean test_prev = test;
-		waveform = (control >> 4) & 0x0f;
+		waveform = control >> 4 & 0x0f;
 		test = (control & 0x08) != 0;
 		sync = (control & 0x02) != 0;
 
@@ -416,7 +404,7 @@ public final class WaveformGenerator {
 		wave = model_wave[waveform & 0x7];
 
 		// Substitution of accumulator MSB when sawtooth = 0, ring_mod = 1.
-		ring_msb_mask = ((~control >> 5) & (control >> 2) & 0x1) << 23;
+		ring_msb_mask = (~control >> 5 & control >> 2 & 0x1) << 23;
 
 		// no_noise and no_pulse are used in set_waveform_output() as bitmasks
 		// to
@@ -442,8 +430,8 @@ public final class WaveformGenerator {
 			// completed by enabling SRAM write.
 
 			// bit0 = (bit22 | test) ^ bit17 = 1 ^ bit17 = ~bit17
-			int bit0 = (~shift_register >> 17) & 0x1;
-			shift_register = ((shift_register << 1) | bit0) & 0x7fffff;
+			int bit0 = ~shift_register >> 17 & 0x1;
+			shift_register = (shift_register << 1 | bit0) & 0x7fffff;
 
 			// Set new noise waveform output.
 			set_noise_output();
@@ -462,7 +450,7 @@ public final class WaveformGenerator {
 	protected void reset() {
 		// accumulator is not changed on reset, but on power-on (not modeled)
 		accumulator = accumulator_prev = 0x555555;
-		
+
 		freq = 0;
 		pw = 0;
 

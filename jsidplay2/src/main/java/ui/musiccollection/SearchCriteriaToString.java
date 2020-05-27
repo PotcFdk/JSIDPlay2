@@ -2,9 +2,9 @@ package ui.musiccollection;
 
 import java.util.ResourceBundle;
 
-import javafx.util.StringConverter;
-
 import javax.persistence.metamodel.SingularAttribute;
+
+import javafx.util.StringConverter;
 
 public final class SearchCriteriaToString extends StringConverter<SearchCriteria<?, ?>> {
 

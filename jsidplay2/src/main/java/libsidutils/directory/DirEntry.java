@@ -59,13 +59,10 @@ public abstract class DirEntry {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param nrSectors
-	 *            disk: blocks used, tape: program length
-	 * @param fn
-	 *            file name
-	 * @param fType
-	 *            file type or -1 (no extension)
+	 *
+	 * @param nrSectors disk: blocks used, tape: program length
+	 * @param fn        file name
+	 * @param fType     file type or -1 (no extension)
 	 */
 	public DirEntry(int nrSectors, byte[] fn, byte fType) {
 		blocks = nrSectors;
@@ -75,11 +72,9 @@ public abstract class DirEntry {
 
 	/**
 	 * Quoted file name and type string.
-	 * 
-	 * @param fileName
-	 *            file name
-	 * @param fileType
-	 *            file type
+	 *
+	 * @param fileName file name
+	 * @param fileType file type
 	 * @return quoted file name and type string
 	 */
 	public final static String convertFilename(final byte[] fileName, final int fileType) {
@@ -92,7 +87,7 @@ public abstract class DirEntry {
 				break;
 			}
 			// Beware the PETSCII bytes here!
-			fn.append((char) ((c & 0xff)));
+			fn.append((char) (c & 0xff));
 		}
 		fn.append("\"");
 		// END include filename in quotes
@@ -111,11 +106,9 @@ public abstract class DirEntry {
 
 	/**
 	 * Convert ASCII string to PETSCII bytes.
-	 * 
-	 * @param str
-	 *            string to convert
-	 * @param maxLen
-	 *            maximum string length to take into account
+	 *
+	 * @param str    string to convert
+	 * @param maxLen maximum string length to take into account
 	 * @return PETSCII bytes
 	 */
 	public final static byte[] asciiTopetscii(final String str, int maxLen) {
@@ -132,7 +125,7 @@ public abstract class DirEntry {
 
 	/**
 	 * Return a valid filename to save this directory entry to hard disk.
-	 * 
+	 *
 	 * @return a valid filename to save this directory entry
 	 */
 	public final String getValidFilename() {
@@ -142,11 +135,9 @@ public abstract class DirEntry {
 
 	/**
 	 * Save the program of this directory entry to the specified file.
-	 * 
-	 * @param autostartFile
-	 *            file to save
-	 * @throws IOException
-	 *             File write error
+	 *
+	 * @param autostartFile file to save
+	 * @throws IOException File write error
 	 */
 	public abstract void save(File autostartFile) throws IOException;
 }

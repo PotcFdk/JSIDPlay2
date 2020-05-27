@@ -3,10 +3,6 @@ package ui.entities.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -20,6 +16,9 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 
@@ -85,7 +84,7 @@ public class FavoritesSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoriteColumn> getColumns() {
 		if (columns == null) {
-			columns = new ArrayList<FavoriteColumn>();
+			columns = new ArrayList<>();
 			FavoriteColumn dbFavoriteColumn;
 			SingularAttribute<?, ?> attribute;
 			dbFavoriteColumn = new FavoriteColumn();
@@ -120,7 +119,7 @@ public class FavoritesSection {
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
 		if (favorites == null) {
-			favorites = new ArrayList<HVSCEntry>();
+			favorites = new ArrayList<>();
 		}
 		return getObservableFavorites();
 	}
@@ -128,7 +127,7 @@ public class FavoritesSection {
 	@Transient
 	public ObservableList<HVSCEntry> getObservableFavorites() {
 		if (observableFavorites == null) {
-			observableFavorites = FXCollections.<HVSCEntry> observableArrayList(favorites);
+			observableFavorites = FXCollections.<HVSCEntry>observableArrayList(favorites);
 			Bindings.bindContent(favorites, observableFavorites);
 		}
 		return observableFavorites;

@@ -47,7 +47,7 @@ public class Assembly64Section {
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Assembly64Column> getColumns() {
 		if (columns == null) {
-			columns = new ArrayList<Assembly64Column>();
+			columns = new ArrayList<>();
 		}
 		return columns;
 	}

@@ -16,7 +16,7 @@ public final class ResonanceGauge extends SIDGauge {
 
 	public ResonanceGauge() {
 	}
-	
+
 	public ResonanceGauge(C64Window window, Player player) {
 		super(window, player);
 	}
@@ -33,7 +33,7 @@ public final class ResonanceGauge extends SIDGauge {
 
 	@Override
 	public SIDGauge sample(SIDEmu sidemu) {
-		int res = (sidemu.readInternalRegister(0x17) >> 4) & 0xf;
+		int res = sidemu.readInternalRegister(0x17) >> 4 & 0xf;
 		accumulate(res / 15f);
 		return this;
 	}

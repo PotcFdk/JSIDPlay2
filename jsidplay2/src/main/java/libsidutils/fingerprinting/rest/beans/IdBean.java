@@ -8,7 +8,7 @@ public class IdBean {
 
 	public IdBean() {
 	}
-	
+
 	public IdBean(int id) {
 		this.id = id;
 	}
