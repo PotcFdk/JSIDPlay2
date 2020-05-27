@@ -2,7 +2,6 @@ package ui.common;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -81,7 +80,7 @@ public class Convenience {
 	 *             invalid tune
 	 */
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
-			throws IOException, SidTuneError, URISyntaxException {
+			throws IOException, SidTuneError {
 		player.getC64().ejectCartridge();
 		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
 		TFile zip = new TFile(file);

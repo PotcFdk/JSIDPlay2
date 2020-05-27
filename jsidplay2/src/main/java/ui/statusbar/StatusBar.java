@@ -137,6 +137,7 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		this.playerId = new StringBuilder();
 		this.playerinfos = new StringBuilder();

@@ -66,6 +66,7 @@ public class JSIDDeviceConfig {
 		private static final String LIGHT = "Light";
 		private static final String DARK = "Dark";
 
+		@Override
 		public int compare(String o1, String o2) {
 			if (o1.startsWith(LIGHT) && !o2.startsWith(LIGHT)) {
 				return -1;

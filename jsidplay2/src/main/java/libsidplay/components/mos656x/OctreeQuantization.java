@@ -225,6 +225,7 @@ class OctreeQuantization {
 		 * colors.
 		 */
 		final TreeSet<Node> parentSet = new TreeSet<Node>(new Comparator<Node>() {
+			@Override
 			public int compare(final Node o1, final Node o2) {
 				/*
 				 * Tree is sorted according to usage count and secondarily by id

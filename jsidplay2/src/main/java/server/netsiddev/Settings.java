@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -274,8 +273,10 @@ public class Settings extends SIDDeviceStage {
 		whatsSidMinimumRelativeConfidence.setValue(settings.getWhatsSidMinimumRelativeConfidence());
 	}
 	
-	public void open() throws IOException {
+	@Override
+	public void open() {
         SwingUtilities.invokeLater(new Runnable() {
+        	@Override
            public void run() {
         	   okButton.requestFocusInWindow(); 
            }
@@ -355,6 +356,7 @@ public class Settings extends SIDDeviceStage {
 	private class ItemRenderer extends BasicComboBoxRenderer {
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		@SuppressWarnings("rawtypes")
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

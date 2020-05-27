@@ -11,6 +11,7 @@ public class SetSidLevel implements NetSIDPkg {
 		this.volume = volume;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) SET_SID_LEVEL.ordinal(), sidNum, 0, 0, volume };
 	}

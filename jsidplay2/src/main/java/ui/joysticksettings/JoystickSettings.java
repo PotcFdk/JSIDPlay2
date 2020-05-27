@@ -52,6 +52,7 @@ public class JoystickSettings extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		components1 = FXCollections.<Component> observableArrayList();
 		SortedList<Component> sortedList1 = new SortedList<>(components1);

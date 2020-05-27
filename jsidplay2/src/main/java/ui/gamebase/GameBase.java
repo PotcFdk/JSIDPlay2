@@ -117,6 +117,7 @@ public class GameBase extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		filterField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
@@ -259,6 +260,7 @@ public class GameBase extends C64VBox implements UIPart {
 		gamesService = new GamesService(em);
 	}
 
+	@Override
 	public void doClose() {
 		if (em != null) {
 			em.close();

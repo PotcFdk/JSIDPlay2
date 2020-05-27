@@ -9,6 +9,7 @@ public class ConsolePaper implements IPaper {
 	 * @param out
 	 *            output type to print
 	 */
+	@Override
 	public final void put(final Outputs out) {
 		switch (out) {
 		case OUTPUT_NEWLINE:
@@ -29,12 +30,14 @@ public class ConsolePaper implements IPaper {
 	/**
 	 * Nothing to do.
 	 */
+	@Override
 	public final void open() {
 	}
 
 	/**
 	 * Nothing to do.
 	 */
+	@Override
 	public final void close() {
 	}
 

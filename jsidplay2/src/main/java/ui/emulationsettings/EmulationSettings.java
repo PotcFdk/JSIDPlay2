@@ -165,6 +165,7 @@ public class EmulationSettings extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		duringInitialization = true;
 		ResourceBundle bundle = util.getBundle();

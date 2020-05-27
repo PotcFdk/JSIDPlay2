@@ -2,7 +2,6 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -113,7 +112,7 @@ public class JSidPlay2Main extends Application {
 				try {
 					new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA,
 							null);
-				} catch (IOException | SidTuneError | URISyntaxException e) {
+				} catch (IOException | SidTuneError e) {
 					System.err.println(e.getMessage());
 				}
 			}

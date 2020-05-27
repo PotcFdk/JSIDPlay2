@@ -89,7 +89,7 @@ public class CombFilter {
 		if (length != -1) {
 			// There are input samples so sustain is not in effect
 			for (int i = 0; i < length; i++) {
-				double sample = (double) inBuf[i];
+				double sample = inBuf[i];
 				double delaySample = delayBuffer[readIndex++];
 
 				// Output is from delay buffer

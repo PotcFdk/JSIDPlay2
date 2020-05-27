@@ -101,21 +101,21 @@ public class TypeTextField extends TextField {
 
 	public void setValue(Object value) {
 		if (type.get().equals("Long")) {
-			setText(String.valueOf((Long) value));
+			setText(String.valueOf(value));
 		} else if (type.get().equals("Integer")) {
-			setText(String.valueOf((Integer) value));
+			setText(String.valueOf(value));
 		} else if (type.get().equals("LocalDate")) {
 			if (value instanceof LocalDate) {
-				setText(String.valueOf((LocalDate) value));
+				setText(String.valueOf(value));
 			} else if (value instanceof YearMonth) {
-				setText(String.valueOf((YearMonth) value));
+				setText(String.valueOf(value));
 			} else if (value instanceof Year) {
-				setText(String.valueOf((Year) value));
+				setText(String.valueOf(value));
 			}
 		} else if (type.get().equals("Short")) {
-			setText(String.valueOf((Short) value));
+			setText(String.valueOf(value));
 		} else if (type.get().equals("Float")) {
-			setText(String.valueOf((Float) value));
+			setText(String.valueOf(value));
 		}
 		setText(value.toString());
 	}

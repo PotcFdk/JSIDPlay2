@@ -17,6 +17,7 @@ public class ZeroOrderResampler implements Resampler {
 		reset();
 	}
 
+	@Override
 	public boolean input(int sample) {
 		boolean ready = false;
 
@@ -32,10 +33,12 @@ public class ZeroOrderResampler implements Resampler {
 		return ready;
 	}
 
+	@Override
 	public int output() {
 		return output;
 	}
 
+	@Override
 	public void reset() {
 		sampleOffset = 0;
 		cachedSample = 0;

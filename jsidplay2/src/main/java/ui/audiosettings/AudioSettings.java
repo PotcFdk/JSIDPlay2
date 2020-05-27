@@ -78,6 +78,7 @@ public class AudioSettings extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		AudioSection audioSection = util.getConfig().getAudioSection();
 

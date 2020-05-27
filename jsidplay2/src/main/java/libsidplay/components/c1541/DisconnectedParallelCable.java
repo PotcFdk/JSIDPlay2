@@ -12,6 +12,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 	 * @see libsidplay.components.c1541.IParallelCable#driveWrite(byte, boolean,
 	 *      int)
 	 */
+	@Override
 	public void driveWrite(byte data, boolean handshake, int dnr) {
 	}
 
@@ -20,6 +21,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 	 * 
 	 * @see libsidplay.components.c1541.IParallelCable#driveRead(boolean)
 	 */
+	@Override
 	public byte driveRead(boolean handshake) {
 		return (byte) 0xff;
 	}
@@ -29,6 +31,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 	 * 
 	 * @see libsidplay.components.c1541.IParallelCable#c64Write(byte)
 	 */
+	@Override
 	public void c64Write(byte data) {
 	}
 
@@ -37,6 +40,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 	 * 
 	 * @see libsidplay.components.c1541.IParallelCable#c64Read()
 	 */
+	@Override
 	public byte c64Read() {
 		return (byte) 0xff;
 	}
@@ -46,6 +50,7 @@ public class DisconnectedParallelCable implements IParallelCable {
 	 * 
 	 * @see libsidplay.components.c1541.IParallelCable#pulse()
 	 */
+	@Override
 	public void pulse() {
 	}
 }

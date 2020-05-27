@@ -776,6 +776,7 @@ public class EmulationSection implements IEmulationSection {
 		return fakeStereo.get();
 	}
 
+	@Override
 	public void setFakeStereo(boolean fakeStereo) {
 		this.fakeStereo.set(fakeStereo);
 	}

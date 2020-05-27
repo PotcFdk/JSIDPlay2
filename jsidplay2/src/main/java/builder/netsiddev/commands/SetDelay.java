@@ -11,6 +11,7 @@ public class SetDelay implements NetSIDPkg {
 		this.delay = delay;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) SET_DELAY.ordinal(), sidNum, 0, 0, delay };
 	}

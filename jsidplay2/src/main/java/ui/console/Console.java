@@ -22,6 +22,7 @@ public class Console extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		out.getTitledPane().setText(util.getBundle().getString("OUT"));
 		out.getConsole().getStyleClass().add(STYLE_OUTPUT_CONSOLE);

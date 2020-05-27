@@ -93,8 +93,9 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		super(window, player);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@FXML
+	@Override
+	@SuppressWarnings("rawtypes")
 	protected void initialize() {
 		filteredFavorites = FXCollections.<HVSCEntry>observableArrayList();
 		SortedList<HVSCEntry> sortedList = new SortedList<>(filteredFavorites);
@@ -332,7 +333,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 			try {
 				SingularAttribute<?, ?> attribute = getAttribute(favoriteColumn.getColumnProperty());
 				addColumn(attribute, favoriteColumn);
-			} catch (IllegalArgumentException | NoSuchFieldException | IllegalAccessException e) {
+			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
@@ -400,8 +401,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 							filteredFavorites.add(hvscEntry);
 							continue outer;
 						}
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-							| NoSuchFieldException e) {
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
 				}
@@ -504,7 +504,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	private SingularAttribute<?, ?> getAttribute(String columnProperty)
-			throws NoSuchFieldException, IllegalAccessException {
+			throws IllegalAccessException {
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())) {
 				continue;

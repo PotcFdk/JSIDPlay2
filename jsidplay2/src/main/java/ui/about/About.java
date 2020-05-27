@@ -35,6 +35,7 @@ public class About extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		credits.setText(util.getPlayer().getCredits(properties));
 	}

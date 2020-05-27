@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -312,7 +311,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		if (contentEntryFile != null) {
 			try {
 				util.getPlayer().insertDisk(contentEntryFile);
-			} catch (IOException | SidTuneError e) {
+			} catch (IOException e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
 			}
 		}
@@ -713,8 +712,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 					return contentEntryFile;
 				}
 			}
-		} catch (IOException e) {
-			// ignore bad checksum or download: re-create instead!
 		} finally {
 			contentEntryFile.deleteOnExit();
 			contentEntryChecksumFile.deleteOnExit();
@@ -732,7 +729,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private byte[] getContents(File contentEntryChecksumFile) throws IOException {
+	private byte[] getContents(File contentEntryChecksumFile) {
 		try (InputStream is = new FileInputStream(contentEntryChecksumFile)) {
 			return IOUtils.toByteArray(is);
 		} catch (IOException e) {
@@ -789,7 +786,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 					currentlyPlayedSearchResultRowProperty.set(searchResult);
 					currentlyPlayedContentEntryRowProperty.set(contentEntry);
 				}
-			} catch (IOException | SidTuneError | URISyntaxException e) {
+			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
 			}
 		}

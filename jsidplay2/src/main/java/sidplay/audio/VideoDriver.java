@@ -14,6 +14,7 @@ public interface VideoDriver extends Consumer<VIC> {
 	 * <B>Note:</B> Pixel format is ARGB and is updated frequently at a rate of
 	 * screen refresh rate. {@link CPUClock#getScreenRefresh()}
 	 */
+	@Override
 	void accept(VIC vic);
 
 }

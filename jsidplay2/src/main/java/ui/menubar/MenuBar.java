@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -198,6 +197,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		final Configuration config = util.getConfig();
 		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
@@ -268,7 +268,7 @@ public class MenuBar extends C64VBox implements UIPart {
 								.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get().getContent());
 						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
 								null);
-					} catch (IOException | SidTuneError | URISyntaxException e) {
+					} catch (IOException | SidTuneError e) {
 						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 					}
 				}
@@ -585,7 +585,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		if (file != null) {
 			try {
 				util.getPlayer().insertDisk(file);
-			} catch (IOException | SidTuneError e) {
+			} catch (IOException e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}
@@ -623,7 +623,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			video();
 			try {
 				util.getPlayer().insertDisk(target);
-			} catch (IOException | SidTuneError e) {
+			} catch (IOException e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", target.getAbsolutePath()));
 			}
 		}
@@ -1128,7 +1128,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void createHardCopy(String format) {
 		video();
 		try {
-			Tab tab = (Tab) jSidPlay2.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
+			Tab tab = jSidPlay2.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
 					.findFirst().get();
 			Video videoScreen = (Video) tab.getContent();
 			Image vicImage = videoScreen.getVicImage();

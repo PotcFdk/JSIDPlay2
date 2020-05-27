@@ -42,82 +42,102 @@ public class IniFilterSection implements IFilterSection {
 		ini.setProperty(name, "Filter6581CurvePosition", filter6581CurvePosition);
 	}
 
+	@Override
 	public float getAttenuation() {
 		return ini.getPropertyFloat(name, "Attenuation", 0);
 	}
 
+	@Override
 	public void setAttenuation(float attenuation) {
 		ini.setProperty(name, "Attenuation", String.valueOf(attenuation));
 	}
 
+	@Override
 	public float getNonlinearity() {
 		return ini.getPropertyFloat(name, "Nonlinearity", 0);
 	}
 
+	@Override
 	public void setNonlinearity(float nonlinearity) {
 		ini.setProperty(name, "Nonlinearity", String.valueOf(nonlinearity));
 	}
 
+	@Override
 	public float getVoiceNonlinearity() {
 		return ini.getPropertyFloat(name, "VoiceNonlinearity", 0);
 	}
 
+	@Override
 	public void setVoiceNonlinearity(float voiceNonlinearity) {
 		ini.setProperty(name, "VoiceNonlinearity", String.valueOf(voiceNonlinearity));
 	}
 
+	@Override
 	public float getBaseresistance() {
 		return ini.getPropertyFloat(name, "Type3BaseResistance", 0);
 	}
 
+	@Override
 	public void setBaseresistance(float baseresistance) {
 		ini.setProperty(name, "Type3BaseResistance", String.valueOf(baseresistance));
 	}
 
+	@Override
 	public float getOffset() {
 		return ini.getPropertyFloat(name, "Type3Offset", 0);
 	}
 
+	@Override
 	public void setOffset(float offset) {
 		ini.setProperty(name, "Type3Offset", String.valueOf(offset));
 	}
 
+	@Override
 	public float getSteepness() {
 		return ini.getPropertyFloat(name, "Type3Steepness", 0);
 	}
 
+	@Override
 	public void setSteepness(float steepness) {
 		ini.setProperty(name, "Type3Steepness", String.valueOf(steepness));
 	}
 
+	@Override
 	public float getMinimumfetresistance() {
 		return ini.getPropertyFloat(name, "Type3MinimumFETResistance", 0);
 	}
 
+	@Override
 	public void setMinimumfetresistance(float minimumfetresistance) {
 		ini.setProperty(name, "Type3MinimumFETResistance", String.valueOf(minimumfetresistance));
 	}
 
+	@Override
 	public float getK() {
 		return ini.getPropertyFloat(name, "Type4K", 0);
 	}
 
+	@Override
 	public void setK(float k) {
 		ini.setProperty(name, "Type4K", String.valueOf(k));
 	}
 
+	@Override
 	public float getB() {
 		return ini.getPropertyFloat(name, "Type4B", 0);
 	}
 
+	@Override
 	public void setB(float b) {
 		ini.setProperty(name, "Type4B", String.valueOf(b));
 	}
 
+	@Override
 	public float getResonanceFactor() {
 		return ini.getPropertyFloat(name, "ResonanceFactor", 0);
 	}
 
+	@Override
 	public void setResonanceFactor(float resonanceFactor) {
 		ini.setProperty(name, "ResonanceFactor", String.valueOf(resonanceFactor));
 	}

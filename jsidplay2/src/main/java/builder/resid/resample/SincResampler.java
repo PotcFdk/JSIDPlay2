@@ -257,6 +257,7 @@ public final class SincResampler implements Resampler {
 	 *
 	 * @return True if the sample is ready to output.
 	 */
+	@Override
 	public boolean input(int input) {
 		boolean ready = false;
 
@@ -278,6 +279,7 @@ public final class SincResampler implements Resampler {
 	 *
 	 * @return The current output sample.
 	 */
+	@Override
 	public int output() {
 		return output;
 	}
@@ -285,6 +287,7 @@ public final class SincResampler implements Resampler {
 	/**
 	 * Resets this SincResampler.
 	 */
+	@Override
 	public void reset() {
 		Arrays.fill(sample, 0);
 		sampleOffset = 0;

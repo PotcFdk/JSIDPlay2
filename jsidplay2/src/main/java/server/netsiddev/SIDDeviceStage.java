@@ -8,7 +8,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
@@ -26,6 +25,7 @@ public abstract class SIDDeviceStage extends JDialog implements SIDDeviceUIPart 
 	private final Action dispatchClosing = new AbstractAction() {
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void actionPerformed(ActionEvent event) {
 			SIDDeviceStage.this.dispatchEvent(new WindowEvent(SIDDeviceStage.this, WindowEvent.WINDOW_CLOSING));
 		}
@@ -44,7 +44,7 @@ public abstract class SIDDeviceStage extends JDialog implements SIDDeviceUIPart 
 		setResizable(false);
 	}
 
-	public void open() throws IOException {
+	public void open() {
 		setModalityType(APPLICATION_MODAL);
 		pack();
 		setLocation((SCREEN_SIZE.width >> 1) - (getSize().width >> 1),

@@ -42,6 +42,7 @@ public class ConsoleOutput extends C64VBox implements UIPart {
 	public PrintStream getPrintStream(final OutputStream original) {
 		return new PrintStream(new OutputStream() {
 
+			@Override
 			public synchronized void write(final byte[] b, final int off, final int len) throws IOException {
 				original.write(b, off, len);
 				print(new String(b, off, len));

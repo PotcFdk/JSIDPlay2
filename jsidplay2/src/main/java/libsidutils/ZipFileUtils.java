@@ -28,8 +28,8 @@ public class ZipFileUtils {
 	static {
 		try {
 			// standard java.io functionality
-			FILE = (Constructor<File>) File.class.getConstructor(String.class, String.class);
-			INPUT_STREAM = (Constructor<FileInputStream>) FileInputStream.class.getConstructor(File.class);
+			FILE = File.class.getConstructor(String.class, String.class);
+			INPUT_STREAM = FileInputStream.class.getConstructor(File.class);
 			// support for files contained in a ZIP (optionally in the classpath)
 			FILE = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile").getConstructor(String.class,
 					String.class);

@@ -125,6 +125,7 @@ public abstract class DirEntry {
 	/**
 	 * Get string representation of this directory entry.
 	 */
+	@Override
 	public String toString() {
 		return String.format("%-3d  %s", blocks, convertFilename(filename, fileType));
 	}

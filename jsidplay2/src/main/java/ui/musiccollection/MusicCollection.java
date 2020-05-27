@@ -193,6 +193,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		tuneMatcherListener = event -> {
 			Platform.runLater(() -> showCurrentTune());
@@ -307,6 +308,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		}
 	}
 
+	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(tuneMatcherListener);
 		closeDatabase();

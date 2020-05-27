@@ -124,6 +124,7 @@ public final class Filter6581 extends Filter {
 		return currentGain[currentMixer[Vo]] - (1 << 15);
 	}
 
+	@Override
 	protected final void zeroDenormals() {
 	}
 

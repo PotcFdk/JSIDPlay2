@@ -7,7 +7,6 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -33,6 +32,7 @@ public class NetworkSIDDeviceMain {
 	private static final String MENU_EXIT = "Exit";
 
 	private NetworkSIDDevice networkSIDDeviceHeadless = new NetworkSIDDevice() {
+		@Override
 		protected void printErrorAndExit(Exception e) {
 			JOptionPane.showMessageDialog(null, exceptionToString(e), "Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
@@ -80,32 +80,24 @@ public class NetworkSIDDeviceMain {
 
 		MenuItem aboutItem = new MenuItem(MENU_ABOUT);
 		aboutItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-			try {
-				if (aboutDialog == null) {
-					aboutDialog = new About();
-				}
-				aboutDialog.requestFocus();
-				if (!aboutDialog.isShowing()) {
-					aboutDialog.open();
-				}
-			} catch (IOException e1) {
-				networkSIDDeviceHeadless.printErrorAndExit(e1);
+			if (aboutDialog == null) {
+				aboutDialog = new About();
+			}
+			aboutDialog.requestFocus();
+			if (!aboutDialog.isShowing()) {
+				aboutDialog.open();
 			}
 		}));
 		popup.add(aboutItem);
 
 		MenuItem settingsItem = new MenuItem(MENU_SETTINGS);
 		settingsItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-			try {
-				if (settingsDialog == null) {
-					settingsDialog = new Settings();
-				}
-				settingsDialog.requestFocus();
-				if (!settingsDialog.isShowing()) {
-					settingsDialog.open();
-				}
-			} catch (IOException e1) {
-				networkSIDDeviceHeadless.printErrorAndExit(e1);
+			if (settingsDialog == null) {
+				settingsDialog = new Settings();
+			}
+			settingsDialog.requestFocus();
+			if (!settingsDialog.isShowing()) {
+				settingsDialog.open();
 			}
 		}));
 		popup.add(settingsItem);

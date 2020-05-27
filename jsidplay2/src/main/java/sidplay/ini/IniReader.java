@@ -270,7 +270,7 @@ public class IniReader {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			try {
-				T value = (T) Enum.valueOf(class1, s.toUpperCase(Locale.US));
+				T value = Enum.valueOf(class1, s.toUpperCase(Locale.US));
 				return value;
 			} catch (Exception e) {
 				throw new RuntimeException(e);

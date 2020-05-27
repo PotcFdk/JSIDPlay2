@@ -124,7 +124,7 @@ public class NetSIDDev extends SIDEmu {
 	@Override
 	public void setVoiceMute(int voice, boolean mute) {
 		if (client.getVersion() >= 3 || voice < 3) {
-			client.addAndSend(new Mute((byte) sidNum, (byte) voice, mute));
+			client.addAndSend(new Mute(sidNum, (byte) voice, mute));
 		}
 	}
 

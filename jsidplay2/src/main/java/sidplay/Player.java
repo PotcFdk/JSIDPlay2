@@ -483,6 +483,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Power-on C64 system.
 	 */
+	@Override
 	protected final void reset() {
 		super.reset();
 		timer.reset();

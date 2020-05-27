@@ -280,6 +280,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 

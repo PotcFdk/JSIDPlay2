@@ -597,6 +597,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		return iniReader.getPropertyString("Emulation", "NetSID_Filter8580", DEFAULT_NETSID_FILTER_8580);
 	}
 
+	@Override
 	public final void setNetSIDFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "NetSID_Filter8580", filterName);
 	}
@@ -726,6 +727,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		return iniReader.getPropertyString("Emulation", "ReSIDfp_Filter8580", DEFAULT_ReSIDfp_FILTER_8580);
 	}
 
+	@Override
 	@Parameter(names = { "--reSIDfpFilter8580" }, descriptionKey = "RESIDFP_FILTER_8580", order = 1042)
 	public final void setReSIDfpFilter8580(final String filterName) {
 		iniReader.setProperty("Emulation", "ReSIDfp_Filter8580", filterName);

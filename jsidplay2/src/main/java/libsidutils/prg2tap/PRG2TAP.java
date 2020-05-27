@@ -180,7 +180,7 @@ public class PRG2TAP {
 
 		byte[] header = "C64-TAPE-RAW".getBytes("ISO-8859-1");
 		out.write(header);
-		out.write((byte) tapVersion);
+		out.write(tapVersion);
 		for (int i = 0; i < TAP_HEADER_SIZE - header.length; i++) {
 			out.write((byte) 0);
 		}

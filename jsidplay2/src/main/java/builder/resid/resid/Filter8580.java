@@ -70,6 +70,7 @@ public class Filter8580 extends Filter {
 		return (int) (Vo * vol) >> 4;
 	}
 
+	@Override
 	protected final void zeroDenormals() {
 		/* We only need this for systems that don't do -msse and -mfpmath=sse */
 		if (Vbp > -1e-12f && Vbp < 1e-12f) {

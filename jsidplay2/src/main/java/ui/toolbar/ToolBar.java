@@ -167,6 +167,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		this.duringInitialization = true;
 

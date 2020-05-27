@@ -69,6 +69,7 @@ public class Directory extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		dirColumn.prefWidthProperty().bind(directory.widthProperty());
 		directoryEntries = FXCollections.<DirectoryItem>observableArrayList();

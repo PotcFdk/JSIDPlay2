@@ -80,6 +80,7 @@ public class SidReg extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		filteredSidRegWrites = FXCollections.<SidRegWrite>observableArrayList();
 		SortedList<SidRegWrite> sortedList = new SortedList<>(filteredSidRegWrites);

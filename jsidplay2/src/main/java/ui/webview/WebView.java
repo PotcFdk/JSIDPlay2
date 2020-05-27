@@ -3,7 +3,6 @@ package ui.webview;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.w3c.dom.Document;
@@ -109,7 +108,7 @@ public class WebView extends C64VBox implements UIPart {
 								} else if (downloadedFile != null) {
 									downloadedFile.delete();
 								}
-							} catch (IOException | SidTuneError | URISyntaxException e) {
+							} catch (IOException | SidTuneError e) {
 								// ignore
 							}
 						}
@@ -171,6 +170,7 @@ public class WebView extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		progressListener = (observable, oldValue, newValue) -> {
 			Platform.runLater(() -> {

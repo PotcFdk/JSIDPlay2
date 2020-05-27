@@ -89,15 +89,15 @@ public class FavoritesSection {
 			FavoriteColumn dbFavoriteColumn;
 			SingularAttribute<?, ?> attribute;
 			dbFavoriteColumn = new FavoriteColumn();
-			attribute = (SingularAttribute<?, ?>) HVSCEntry_.title;
+			attribute = HVSCEntry_.title;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
-			attribute = (SingularAttribute<?, ?>) HVSCEntry_.author;
+			attribute = HVSCEntry_.author;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
-			attribute = (SingularAttribute<?, ?>) HVSCEntry_.released;
+			attribute = HVSCEntry_.released;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			columns.add(dbFavoriteColumn);
 		}

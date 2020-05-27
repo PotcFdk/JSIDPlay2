@@ -11,6 +11,7 @@ public class SetSidPosition implements NetSIDPkg {
 		this.position = balance;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) SET_SID_POSITION.ordinal(), sidNum, 0, 0, position };
 	}

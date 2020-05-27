@@ -75,6 +75,7 @@ public class SidDump extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		changeListener = event -> {
 			if (event.getNewValue() == State.START) {

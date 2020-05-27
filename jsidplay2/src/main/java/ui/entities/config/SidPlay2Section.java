@@ -134,6 +134,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return fadeInTimeProperty.get();
 	}
 
+	@Override
 	public void setFadeInTime(double fadeInTime) {
 		fadeInTimeProperty.set(fadeInTime);
 	}
@@ -149,6 +150,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return fadeOutTimeProperty.get();
 	}
 
+	@Override
 	public void setFadeOutTime(double fadeOutTime) {
 		fadeOutTimeProperty.set(fadeOutTime);
 	}
@@ -170,10 +172,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private boolean loop = DEFAULT_LOOP;
 
+	@Override
 	public boolean isLoop() {
 		return loop;
 	}
 
+	@Override
 	public void setLoop(boolean loop) {
 		this.loop = loop;
 	}
@@ -505,10 +509,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty brightnessProperty = new SimpleFloatProperty(DEFAULT_BRIGHTNESS);
 
+	@Override
 	public float getBrightness() {
 		return brightnessProperty.get();
 	}
 
+	@Override
 	public void setBrightness(float brightness) {
 		this.brightnessProperty.set(brightness);
 	}
@@ -519,10 +525,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty contrastProperty = new SimpleFloatProperty(DEFAULT_CONTRAST);
 
+	@Override
 	public float getContrast() {
 		return contrastProperty.get();
 	}
 
+	@Override
 	public void setContrast(float contrast) {
 		this.contrastProperty.set(contrast);
 	}
@@ -533,10 +541,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty gammaProperty = new SimpleFloatProperty(DEFAULT_GAMMA);
 
+	@Override
 	public float getGamma() {
 		return gammaProperty.get();
 	}
 
+	@Override
 	public void setGamma(float gamma) {
 		this.gammaProperty.set(gamma);
 	}
@@ -547,10 +557,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty saturationProperty = new SimpleFloatProperty(DEFAULT_SATURATION);
 
+	@Override
 	public float getSaturation() {
 		return saturationProperty.get();
 	}
 
+	@Override
 	public void setSaturation(float saturation) {
 		this.saturationProperty.set(saturation);
 	}
@@ -561,10 +573,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty phaseShiftProperty = new SimpleFloatProperty(DEFAULT_PHASE_SHIFT);
 
+	@Override
 	public float getPhaseShift() {
 		return phaseShiftProperty.get();
 	}
 
+	@Override
 	public void setPhaseShift(float phaseShift) {
 		this.phaseShiftProperty.set(phaseShift);
 	}
@@ -575,10 +589,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty offsetProperty = new SimpleFloatProperty(DEFAULT_OFFSET);
 
+	@Override
 	public float getOffset() {
 		return offsetProperty.get();
 	}
 
+	@Override
 	public void setOffset(float offset) {
 		this.offsetProperty.set(offset);
 	}
@@ -589,10 +605,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty tintProperty = new SimpleFloatProperty(DEFAULT_TINT);
 
+	@Override
 	public float getTint() {
 		return tintProperty.get();
 	}
 
+	@Override
 	public void setTint(float tint) {
 		this.tintProperty.set(tint);
 	}
@@ -603,10 +621,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty blurProperty = new SimpleFloatProperty(DEFAULT_BLUR);
 
+	@Override
 	public float getBlur() {
 		return blurProperty.get();
 	}
 
+	@Override
 	public void setBlur(float blur) {
 		this.blurProperty.set(blur);
 	}
@@ -617,10 +637,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private FloatProperty bleedProperty = new SimpleFloatProperty(DEFAULT_BLEED);
 
+	@Override
 	public float getBleed() {
 		return bleedProperty.get();
 	}
 
+	@Override
 	public void setBleed(float bleed) {
 		this.bleedProperty.set(bleed);
 	}

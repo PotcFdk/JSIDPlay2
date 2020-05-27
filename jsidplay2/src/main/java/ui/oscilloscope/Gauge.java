@@ -181,18 +181,18 @@ public class Gauge extends C64VBox implements UIPart {
 
 	private void drawPoint(PixelWriter pixelWriter, int x, int y, Color c) {
 		// clip coordinates
-		x = (int) Math.min(Math.max(0, x), width - 1);
-		y = (int) Math.min(Math.max(0, y), height - 1);
+		x = Math.min(Math.max(0, x), width - 1);
+		y = Math.min(Math.max(0, y), height - 1);
 
 		pixelWriter.setColor(x, y, c);
 	}
 
 	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {
 		// clip coordinates
-		x1 = (int) Math.min(Math.max(0, x1), width - 1);
-		x2 = (int) Math.min(Math.max(0, x2), width - 1);
-		y1 = (int) Math.min(Math.max(0, y1), height - 1);
-		y2 = (int) Math.min(Math.max(0, y2), height - 1);
+		x1 = Math.min(Math.max(0, x1), width - 1);
+		x2 = Math.min(Math.max(0, x2), width - 1);
+		y1 = Math.min(Math.max(0, y1), height - 1);
+		y2 = Math.min(Math.max(0, y2), height - 1);
 
 		// delta of exact value and rounded value of the dependent variable
 		int d = 0;

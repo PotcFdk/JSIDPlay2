@@ -30,6 +30,7 @@ public class TuneInfos extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		tuneInfos = FXCollections.<TuneInfo>observableArrayList();
 		SortedList<TuneInfo> sortedList = new SortedList<>(tuneInfos);

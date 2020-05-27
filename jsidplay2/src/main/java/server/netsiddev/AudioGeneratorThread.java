@@ -1,6 +1,5 @@
 package server.netsiddev;
 
-import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -329,7 +328,7 @@ public class AudioGeneratorThread extends Thread {
 			}
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
-		} catch (final IOException | LineUnavailableException e) {
+		} catch (final LineUnavailableException e) {
 			e.printStackTrace();
 		} finally {
 			driver.close();
@@ -436,7 +435,7 @@ public class AudioGeneratorThread extends Thread {
 	public void setDelay(int sid, int delay) {
 		synchronized (this.delayedSamples) {
 			int delayedSamples = (int) (sidClocking.getCpuFrequency() / 1000. * delay);
-			this.delayedSamples[sid] = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
+			this.delayedSamples[sid] = ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
 					.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
 			((Buffer) this.delayedSamples[sid]).flip();
 		}

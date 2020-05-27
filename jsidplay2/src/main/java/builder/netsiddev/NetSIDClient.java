@@ -118,12 +118,7 @@ public class NetSIDClient {
 	}
 
 	public byte read(byte sidNum, byte addr) {
-		try {
-			return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
-		} catch (IOException | InterruptedException e) {
-			connection.close();
-			throw new RuntimeException(e);
-		}
+		return tryRead(sidNum, clocksSinceLastAccess() >> fastForwardFactor, addr);
 	}
 
 	public void write(byte sidNum, byte addr, byte data) {
@@ -172,7 +167,7 @@ public class NetSIDClient {
 	 * NetworkSIDDevice to be queued there and executed, since a SID read is
 	 * implemented to be always the last command after a series of writes
 	 */
-	private byte tryRead(byte sidNum, int cycles, byte addr) throws IOException, InterruptedException {
+	private byte tryRead(byte sidNum, int cycles, byte addr) {
 		if (!commands.isEmpty() && commands.get(0) instanceof TryWrite) {
 			// Replace TryWrite by TryRead (READ terminates a series of writes)
 			tryWrite = new TryRead((TryWrite) commands.remove(0), sidNum, cycles, addr);

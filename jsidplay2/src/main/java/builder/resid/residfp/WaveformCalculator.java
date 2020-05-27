@@ -23,6 +23,7 @@ package builder.resid.residfp;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -283,33 +284,29 @@ public final class WaveformCalculator {
 
 		String dir = "c:/Users/AL/Desktop/";
 
-		try {
-			DataOutputStream output;
-
-			output = new DataOutputStream(new FileOutputStream(dir + basename + "_wave.dat", false));
+		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_wave.dat", false))) {
 			for (int i = 0; i < wftable.length; i++) {
 				for (int j = 0; j < wftable[i].length; j++) {
 					output.writeInt(Math.round(wftable[i][j]));
 				}
 			}
-			output.close();
-
-			output = new DataOutputStream(new FileOutputStream(dir + basename + "_dac.dat", false));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_dac.dat", false))) {
 			for (int i = 0; i < dac.length; i++) {
 				output.writeInt(Math.round(dac[i]));
 			}
-			output.close();
-
-			output = new DataOutputStream(new FileOutputStream(dir + basename + "_digi.dat", false));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try (DataOutputStream output = new DataOutputStream(new FileOutputStream(dir + basename + "_digi.dat", false))) {
 			for (int i = 0; i < digitable.length; i++) {
 				for (int j = 0; j < digitable[i].length; j++) {
 					output.writeByte(digitable[i][j]);
 				}
 			}
-			output.close();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

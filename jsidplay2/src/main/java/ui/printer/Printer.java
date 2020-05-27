@@ -36,6 +36,7 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		paper.setWidth(MPS803.MAX_WIDTH);
 		util.getPlayer().getPrinter().setPaper(this);

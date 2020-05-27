@@ -12,6 +12,7 @@ public class TryDelay implements NetSIDPkg {
 		this.cyclesLow = (byte) (cycles & 0xff);
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_DELAY.ordinal(), sidNum, 0, 0, cyclesHigh, cyclesLow };
 	}

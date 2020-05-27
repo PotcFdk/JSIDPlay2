@@ -292,6 +292,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 		bitCnt = 0;
 	}
 
+	@Override
 	public void printerUserportWriteStrobe(final boolean s) {
 		// strobe hi->lo?
 		if (strobe && !s) {
@@ -302,6 +303,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 		strobe = s;
 	}
 
+	@Override
 	public final void printerUserportWriteData(final byte b) {
 		value = b;
 	}

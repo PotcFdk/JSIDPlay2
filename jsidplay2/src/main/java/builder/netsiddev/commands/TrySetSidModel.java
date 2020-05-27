@@ -66,6 +66,7 @@ public class TrySetSidModel implements NetSIDPkg {
 				.sorted((s1, s2) -> s1.compareToIgnoreCase(s2)).collect(Collectors.toList());
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_SET_SID_MODEL.ordinal(), sidNum, 0, 0, config };
 	}

@@ -9,6 +9,7 @@ public class SetSidHeader implements NetSIDPkg {
 		this.header = header;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		int i = 0;
 		byte[] cmd = new byte[4 + header.length];

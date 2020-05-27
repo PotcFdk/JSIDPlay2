@@ -71,7 +71,7 @@ public class NetworkSIDDevice {
 		return sid;
 	}
 
-	public void start(boolean createIniFileIfNotExists) throws InterruptedException {
+	public void start(boolean createIniFileIfNotExists) {
 		config = new JSIDDeviceConfig(createIniFileIfNotExists);
 		new Thread(() -> {
 			try {
@@ -87,7 +87,7 @@ public class NetworkSIDDevice {
 		System.exit(-1);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		new NetworkSIDDevice().start(true);
 	}
 

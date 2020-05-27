@@ -27,6 +27,7 @@ public class WhatsSidSettings extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		WhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
 

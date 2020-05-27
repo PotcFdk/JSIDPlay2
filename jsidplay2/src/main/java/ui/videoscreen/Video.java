@@ -121,6 +121,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
@@ -302,7 +303,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		if (file != null) {
 			try {
 				util.getPlayer().insertDisk(file);
-			} catch (IOException | SidTuneError e) {
+			} catch (IOException e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}

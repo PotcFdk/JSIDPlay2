@@ -269,6 +269,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Starts mixing the outputs of several SIDs.
 	 */
+	@Override
 	public void start() {
 		context.schedule(mixerAudio, 0, Event.Phase.PHI2);
 	}
@@ -278,6 +279,7 @@ public class SIDMixer implements Mixer {
 	 * 
 	 * @param fadeIn Fade-in time in seconds
 	 */
+	@Override
 	public void fadeIn(double fadeIn) {
 		for (ReSIDBase sid : sids) {
 			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
@@ -290,6 +292,7 @@ public class SIDMixer implements Mixer {
 	 * 
 	 * @param fadeOut Fade-out time in seconds
 	 */
+	@Override
 	public void fadeOut(double fadeOut) {
 		for (ReSIDBase sid : sids) {
 			LinearFadingSampleMixer sampler = (LinearFadingSampleMixer) sid.getSampler();
@@ -332,6 +335,7 @@ public class SIDMixer implements Mixer {
 	 * @param sidNum     SID chip number
 	 * @param volumeInDB volume in DB -6(-6db)..6(+6db)
 	 */
+	@Override
 	public void setVolume(int sidNum, float volumeInDB) {
 		assert volumeInDB >= -6 && volumeInDB <= 6;
 
@@ -355,6 +359,7 @@ public class SIDMixer implements Mixer {
 	 * @param sidNum  SID chip number
 	 * @param balance balance 0(left speaker)..0.5(centered)..1(right speaker)
 	 */
+	@Override
 	public void setBalance(int sidNum, float balance) {
 		assert balance >= 0 && balance <= 1;
 
@@ -369,6 +374,7 @@ public class SIDMixer implements Mixer {
 	 * @param sidNum SID chip number
 	 * @param delay  delay in ms
 	 */
+	@Override
 	public void setDelay(int sidNum, int delay) {
 		assert delay >= 0 && delay <= 100;
 
@@ -419,6 +425,7 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Doubles speed factor.
 	 */
+	@Override
 	public void fastForward() {
 		mixerAudio.fastForwardShift = Math.min(mixerAudio.fastForwardShift + 1, MAX_FAST_FORWARD + VOLUME_SCALER);
 		mixerAudio.fastForwardBitMask = (1 << mixerAudio.fastForwardShift - VOLUME_SCALER) - 1;
@@ -427,15 +434,18 @@ public class SIDMixer implements Mixer {
 	/**
 	 * Use normal speed factor.
 	 */
+	@Override
 	public void normalSpeed() {
 		mixerAudio.fastForwardShift = VOLUME_SCALER;
 		mixerAudio.fastForwardBitMask = 0;
 	}
 
+	@Override
 	public boolean isFastForward() {
 		return mixerAudio.fastForwardShift - VOLUME_SCALER != 0;
 	}
 
+	@Override
 	public int getFastForwardBitMask() {
 		return mixerAudio.fastForwardBitMask;
 	}

@@ -41,6 +41,7 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/download/C64Music/DEMOS/0-9/1_45_Tune.sid
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();

@@ -5,7 +5,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -105,6 +104,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		convenience = new Convenience(util.getPlayer());
 		directory.setPrefHeight(Double.MAX_VALUE);
@@ -219,7 +219,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 		try {
 			File extractedFile = extract(file);
 			util.getPlayer().insertDisk(extractedFile);
-		} catch (IOException | SidTuneError e) {
+		} catch (IOException e) {
 			System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 		}
 	}
@@ -275,7 +275,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 				if (convenience.autostart(extractedFile, Convenience.LEXICALLY_FIRST_MEDIA, autoStartFile)) {
 					util.setPlayingTab(this);
 				}
-			} catch (IOException | SidTuneError | URISyntaxException e) {
+			} catch (IOException | SidTuneError e) {
 				System.err.println(String.format("Cannot insert media file '%s'.", file.getAbsolutePath()));
 			}
 		}

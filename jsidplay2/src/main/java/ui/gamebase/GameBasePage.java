@@ -3,7 +3,6 @@ package ui.gamebase;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -50,6 +49,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		convenience = new Convenience(util.getPlayer());
 		allGames = FXCollections.<Games>observableArrayList();
@@ -111,7 +111,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 								util.setPlayingTab(GameBasePage.this);
 							});
 						}
-					} catch (IOException | SidTuneError | URISyntaxException e) {
+					} catch (IOException | SidTuneError e) {
 						// ignore
 					}
 				}

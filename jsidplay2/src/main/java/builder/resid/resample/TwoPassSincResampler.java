@@ -21,14 +21,17 @@ public class TwoPassSincResampler implements Resampler {
 		reset();
 	}
 
+	@Override
 	public boolean input(int sample) {
 		return s1.input(sample) && s2.input(s1.output());
 	}
 
+	@Override
 	public int output() {
 		return s2.output();
 	}
 
+	@Override
 	public void reset() {
 		s1.reset();
 		s2.reset();

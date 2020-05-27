@@ -13,6 +13,7 @@ public class Mute implements NetSIDPkg {
 		this.mute = (byte) (mute ? 1 : 0);
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) MUTE.ordinal(), sidNum, 0, 0, voice, mute };
 	}

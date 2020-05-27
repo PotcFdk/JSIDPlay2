@@ -10,6 +10,7 @@ public class SetClocking implements NetSIDPkg {
 		this.cpuFrequency = (byte) (PAL.getCpuFrequency() == cpuFrequency ? 0 : 1);
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_SET_CLOCKING.ordinal(), 0, 0, 0, cpuFrequency };
 	}

@@ -37,6 +37,7 @@ public class FiltersServlet extends JSIDPlay2Servlet {
 	 * 
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/filters
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<String> filters = getFilters();

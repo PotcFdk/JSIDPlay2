@@ -101,6 +101,7 @@ class PSid extends Prg {
 	 * Linux ALSA is very sensible for timing: therefore we assemble before we open
 	 * AudioLine
 	 */
+	@Override
 	public void prepare() {
 		if (USE_KICKASSEMBLER) {
 			HashMap<String, String> globals = new HashMap<String, String>();

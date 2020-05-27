@@ -9,6 +9,7 @@ public class TrySetSidCount implements NetSIDPkg {
 		this.numSids = numSids;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_SET_SID_COUNT.ordinal(), numSids, 0, 0 };
 	}

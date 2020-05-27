@@ -89,7 +89,7 @@ public class FingerPrintingCreator {
 
 	private SidDatabase previousSidDatabase;
 
-	private void execute(String[] args) throws IOException, SidTuneError, InterruptedException {
+	private void execute(String[] args) throws IOException, SidTuneError {
 		JCommander commander = JCommander.newBuilder().addObject(this).programName(getClass().getName()).build();
 		commander.parse(args);
 		if (help) {
@@ -206,7 +206,7 @@ public class FingerPrintingCreator {
 		return filename;
 	}
 
-	public static void main(String[] args) throws IOException, SidTuneError, InterruptedException {
+	public static void main(String[] args) throws IOException, SidTuneError {
 		new FingerPrintingCreator().execute(args);
 	}
 

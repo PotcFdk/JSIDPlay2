@@ -77,6 +77,7 @@ public class Favorites extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		nextTuneListener = event -> {
 			if (event.getNewValue() == State.END) {

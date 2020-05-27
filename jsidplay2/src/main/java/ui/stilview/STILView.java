@@ -37,6 +37,7 @@ public class STILView extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		splitPane.setDividerPosition(0, 0.3);
 		tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

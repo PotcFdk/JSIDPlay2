@@ -63,6 +63,7 @@ public class SimpleDisassembler implements IMOS6510Disassembler {
 		return base;
 	}
 
+	@Override
 	public String disassemble(final int opcode, final int operand, final int address) {
 		final CPUCommand cmd = cpuCommands.get(opcode);
 		String base = cmd.getCmd() + cmd.getAddressing();

@@ -435,7 +435,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	 * @param file disk file to insert
 	 * @throws IOException image read error
 	 */
-	public final void insertDisk(final File file) throws IOException, SidTuneError {
+	public final void insertDisk(final File file) throws IOException {
 		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 			sendInsertDisk(config, file);
 		}

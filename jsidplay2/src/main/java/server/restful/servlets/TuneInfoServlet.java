@@ -47,6 +47,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/info/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();

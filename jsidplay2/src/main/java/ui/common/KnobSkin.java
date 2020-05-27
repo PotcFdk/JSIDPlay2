@@ -122,7 +122,7 @@ public class KnobSkin extends SkinBase<Slider> {
 	}
 
 	public void thumbPressed(MouseEvent e, double position) {
-		Slider slider = (Slider) getSkinnable();
+		Slider slider = getSkinnable();
 		if (!slider.isFocused()) {
 			slider.requestFocus();
 		}
@@ -130,7 +130,7 @@ public class KnobSkin extends SkinBase<Slider> {
 	}
 
 	public void trackPress(MouseEvent e, double position) {
-		Slider slider = (Slider) getSkinnable();
+		Slider slider = getSkinnable();
 		if (!slider.isFocused()) {
 			slider.requestFocus();
 		}
@@ -143,13 +143,13 @@ public class KnobSkin extends SkinBase<Slider> {
 	}
 
 	public void thumbReleased(MouseEvent e) {
-		Slider slider = (Slider) getSkinnable();
+		Slider slider = getSkinnable();
 		slider.setValueChanging(false);
 		slider.adjustValue(slider.getValue());
 	}
 
 	public void thumbDragged(MouseEvent e, double position) {
-		Slider slider = (Slider) this.getSkinnable();
+		Slider slider = this.getSkinnable();
 		slider.setValue(
 				Math.min(Math.max(position * (slider.getMax() - slider.getMin()) + slider.getMin(), slider.getMin()),
 						slider.getMax()));

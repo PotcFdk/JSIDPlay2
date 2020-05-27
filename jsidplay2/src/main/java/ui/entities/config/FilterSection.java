@@ -98,60 +98,72 @@ public class FilterSection implements IFilterSection {
 
 	private float offset;
 
+	@Override
 	public float getOffset() {
 		return offset;
 	}
 
+	@Override
 	public void setOffset(float offset) {
 		this.offset = offset;
 	}
 
 	private float steepness;
 
+	@Override
 	public float getSteepness() {
 		return steepness;
 	}
 
+	@Override
 	public void setSteepness(float steepness) {
 		this.steepness = steepness;
 	}
 
 	private float minimumfetresistance;
 
+	@Override
 	public float getMinimumfetresistance() {
 		return minimumfetresistance;
 	}
 
+	@Override
 	public void setMinimumfetresistance(float minimumfetresistance) {
 		this.minimumfetresistance = minimumfetresistance;
 	}
 
 	private float k;
 
+	@Override
 	public float getK() {
 		return k;
 	}
 
+	@Override
 	public void setK(float k) {
 		this.k = k;
 	}
 
 	private float b;
 
+	@Override
 	public float getB() {
 		return b;
 	}
 
+	@Override
 	public void setB(float b) {
 		this.b = b;
 	}
 
 	private float resonanceFactor;
 
+	@Override
 	public float getResonanceFactor() {
 		return resonanceFactor;
 	}
 
+	@Override
 	public void setResonanceFactor(float resonanceFactor) {
 		this.resonanceFactor = resonanceFactor;
 	}

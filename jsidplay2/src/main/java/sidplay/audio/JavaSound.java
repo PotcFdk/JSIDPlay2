@@ -43,7 +43,7 @@ public class JavaSound implements AudioDriver {
 		return devices;
 	}
 
-	public void open(final AudioConfig cfg, final Mixer.Info info) throws IOException, LineUnavailableException {
+	public void open(final AudioConfig cfg, final Mixer.Info info) throws LineUnavailableException {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;

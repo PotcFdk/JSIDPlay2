@@ -94,6 +94,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		pauseTransition = new PauseTransition(Duration.millis(50));
 		sequentialTransition = new SequentialTransition(pauseTransition);

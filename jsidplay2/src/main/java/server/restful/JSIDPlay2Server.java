@@ -347,8 +347,7 @@ public class JSIDPlay2Server {
 
 	private void addServlets(Context context) throws Exception {
 		for (Class<? extends JSIDPlay2Servlet> servletCls : SERVLETS) {
-			JSIDPlay2Servlet servlet = (JSIDPlay2Servlet) servletCls
-					.getDeclaredConstructor(Configuration.class, Properties.class)
+			JSIDPlay2Servlet servlet = servletCls.getDeclaredConstructor(Configuration.class, Properties.class)
 					.newInstance(configuration, servletUtilProperties);
 			addServlet(context, servletCls.getSimpleName(), servlet).addMapping(servlet.getServletPath() + "/*");
 		}

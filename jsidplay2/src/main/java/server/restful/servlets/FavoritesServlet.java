@@ -38,6 +38,7 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 	 * 
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/favorites
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<String> filters = getFirstFavorites();

@@ -9,6 +9,7 @@ public class TryReset implements NetSIDPkg {
 		this.volume = volume;
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_RESET.ordinal(), 0, 0, 0, volume };
 	}

@@ -39,6 +39,7 @@ public class Update extends C64Window {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		update.setText(util.getBundle().getString("PLEASE_WAIT"));
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(1000));

@@ -133,7 +133,7 @@ class SampleMixer implements IntConsumer {
 	}
 
 	public void setDelay(int delayedSamples) {
-		this.delayedSamples = (IntBuffer) ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
+		this.delayedSamples = ByteBuffer.allocateDirect(Integer.BYTES * (delayedSamples + 1))
 				.order(ByteOrder.nativeOrder()).asIntBuffer().put(new int[(delayedSamples + 1)]);
 		((Buffer) this.delayedSamples).flip();
 	}

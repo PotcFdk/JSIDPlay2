@@ -62,6 +62,7 @@ public class Asm extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		status.setPrefHeight(Double.MAX_VALUE);
 		assembler = new KickAssembler();

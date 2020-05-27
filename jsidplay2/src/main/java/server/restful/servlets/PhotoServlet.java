@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneError;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.config.Configuration;
@@ -42,6 +41,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 	 * E.g.
 	 * http://haendel.ddns.net:8080/jsidplay2service/JSIDPlay2REST/photo/C64Music/MUSICIANS/D/DRAX/Acid.sid
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
@@ -61,7 +61,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private byte[] getPhoto(SidTune tune) throws IOException, SidTuneError {
+	private byte[] getPhoto(SidTune tune) {
 		if (tune.getInfo().getInfoString().size() > 1) {
 			Iterator<String> iterator = tune.getInfo().getInfoString().iterator();
 			/* title = */iterator.next();

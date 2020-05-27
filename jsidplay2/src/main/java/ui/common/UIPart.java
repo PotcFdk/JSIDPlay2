@@ -14,6 +14,7 @@ public interface UIPart extends Builder<Object> {
 		return getClass().getResource(getClass().getSimpleName() + ".fxml");
 	}
 
+	@Override
 	default Object build() {
 		return this;
 	}

@@ -281,6 +281,7 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
 	 */
+	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		if (array == null) {
 			out.writeInt(0);
@@ -297,6 +298,7 @@ class CharIntMap implements Externalizable, Cloneable {
 	/**
 	 * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
 	 */
+	@Override
 	public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException {
 		final int l = in.readInt();
 		if (l > 0) {

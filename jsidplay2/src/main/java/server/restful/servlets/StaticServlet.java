@@ -41,6 +41,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 	 * 
 	 * E.g. http://haendel.ddns.net:8080/static/hvsc.vue
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();

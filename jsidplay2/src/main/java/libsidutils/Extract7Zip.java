@@ -76,6 +76,7 @@ public class Extract7Zip {
 			}
 
 			return new ISequentialOutStream() {
+				@Override
 				public int write(byte[] data) throws SevenZipException {
 					try {
 						outputStream.write(data);

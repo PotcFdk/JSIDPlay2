@@ -59,6 +59,7 @@ public class Disassembler extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	@Override
 	protected void initialize() {
 		assemblyLines = FXCollections.<AssemblyLine> observableArrayList();
 		SortedList<AssemblyLine> sortedList = new SortedList<>(assemblyLines);

@@ -11,6 +11,7 @@ public class TrySetSampling implements NetSIDPkg {
 		this.sampling = (byte) sampling.ordinal();
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		return new byte[] { (byte) TRY_SET_SAMPLING.ordinal(), 0, 0, 0, sampling };
 	}

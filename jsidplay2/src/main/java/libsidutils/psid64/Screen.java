@@ -147,7 +147,7 @@ public class Screen {
 			moveDown();
 		} else {
 			int offs = offset(x, y);
-			screen[offs] = (byte) Petscii.iso88591ToPetscii((char) c);
+			screen[offs] = Petscii.iso88591ToPetscii((char) c);
 			moveRight();
 		}
 	}
