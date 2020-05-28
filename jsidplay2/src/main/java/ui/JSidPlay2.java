@@ -13,7 +13,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
 import libsidplay.sidtune.SidTune;
@@ -32,7 +31,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 
 	public JSidPlay2(Stage primaryStage, Player player) {
 		super(primaryStage, player);
-		getStage().initStyle(StageStyle.UTILITY);
 	}
 
 	@FXML
