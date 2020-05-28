@@ -14,6 +14,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -119,26 +120,33 @@ public class JSidPlay2Main extends Application {
 			jSidplay2 = new JSidPlay2(primaryStage, player);
 			// Set default position and size
 			final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
-			primaryStage.setFullScreen(Boolean.TRUE.equals(section.getFullScreen()));
-			primaryStage.fullScreenProperty()
-					.addListener((observable, oldValue, newValue) -> section.setFullScreen(newValue));
+			int width = section.getFrameWidth();
+			int height = section.getFrameHeight();
+
 			final Scene scene = primaryStage.getScene();
 			if (scene != null) {
 				Window window = scene.getWindow();
 				window.setX(section.getFrameX());
 				window.setY(section.getFrameY());
-				window.setWidth(section.getFrameWidth());
-				window.setHeight(section.getFrameHeight());
-				window.widthProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
-				window.heightProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
 				window.xProperty()
 						.addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
 				window.yProperty()
 						.addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
+				window.setWidth(width);
+				window.setHeight(height);
+				window.widthProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
+				window.heightProperty()
+						.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
 			}
 			jSidplay2.open();
+			Platform.runLater(() -> {
+				if (scene != null) {
+					Window window = scene.getWindow();
+					window.setWidth(width);
+					window.setHeight(height);
+				}
+			});
 		} catch (Throwable t) {
 			// Uncover unparsable view or other development errors
 			t.printStackTrace();

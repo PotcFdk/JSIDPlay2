@@ -51,9 +51,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1280;
-	public static final int DEFAULT_FRAME_HEIGHT = 960;
-	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 180;
-	public static final boolean DEFAULT_FULL_SCREEN = false;
+	public static final int DEFAULT_FRAME_HEIGHT = 1024;
+	public static final int DEFAULT_FRAME_WIDTH_MINIMIZED = 1280;
+	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 172;
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 3f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
@@ -439,16 +439,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.frameHeight = frameHeight;
 	}
 
-	private Boolean fullScreen = DEFAULT_FULL_SCREEN;
-
-	public Boolean getFullScreen() {
-		return fullScreen;
-	}
-
-	public void setFullScreen(Boolean fullScreen) {
-		this.fullScreen = fullScreen;
-	}
-
 	private BooleanProperty minimizedProperty = new SimpleBooleanProperty(DEFAULT_MINIMIZED);
 
 	public boolean isMinimized() {
@@ -461,6 +451,26 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public BooleanProperty minimizedProperty() {
 		return minimizedProperty;
+	}
+
+	private int minimizedWidth;
+
+	public int getMinimizedWidth() {
+		return minimizedWidth;
+	}
+
+	public void setMinimizedWidth(int minimizedWidth) {
+		this.minimizedWidth = minimizedWidth;
+	}
+
+	private int minimizedHeight;
+
+	public int getMinimizedHeight() {
+		return minimizedHeight;
+	}
+
+	public void setMinimizedHeight(int minimizedHeight) {
+		this.minimizedHeight = minimizedHeight;
 	}
 
 	private FloatProperty videoScalingProperty = new SimpleFloatProperty(DEFAULT_VIDEO_SCALING);

@@ -38,7 +38,7 @@
 			<HBox AnchorPane.leftAnchor="10" alignment="TOP_LEFT" spacing="10">
 				<ComboBox onAction="#setVideoStandard" fx:id="videoStandardBox" />
 				<ComboBox onAction="#setEngine" fx:id="engineBox" />
-				<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="200" />
+				<ComboBox onAction="#setAudio" fx:id="audioBox" maxWidth="150" />
 				<Label fx:id="saveRecordingLabel" onMouseReleased="#saveRecording"
 					contentDisplay="GRAPHIC_ONLY" disable="false">
 					<graphic>
@@ -143,7 +143,7 @@
 						<ComboBox fx:id="sidBlaster2Box" onAction="#setSidBlaster2" />
 					</VBox>
 				</TitledPane>
-				<TitledPane text="%ULTIMATE64" expanded="false">
+				<TitledPane text="%ULTIMATE64" expanded="false" maxWidth="150">
 					<VBox>
 						<ComboBox fx:id="ultimate64Box" onAction="#setUltimate64" />
 						<Label text="%ULTIMATE64_HOSTNAME" />
@@ -219,7 +219,7 @@
 									selected="true" toggleGroup="$appServerGroup" fx:id="stopAppServer" />
 							</HBox>
 							<Label text="%APP_SERVER_CONNECTORS" />
-							<ComboBox fx:id="appServerConnectorsBox">
+							<ComboBox fx:id="appServerConnectorsBox" maxWidth="150">
 							</ComboBox>
 							<Label text="%APP_SERVER_PORT" fx:id="appServerPortLbl" />
 							<TypeTextField type="Integer" fx:id="appServerPort"
@@ -284,7 +284,7 @@
 						</VBox>
 					</HBox>
 				</TitledPane>
-				<TitledPane text="%PROXY" expanded="false">
+				<TitledPane text="%PROXY" expanded="false" maxWidth="150">
 					<VBox>
 						<CheckBox text="%PROXY_ENABLE" fx:id="proxyEnable" />
 						<Label text="%PROXY_HOSTNAME" />

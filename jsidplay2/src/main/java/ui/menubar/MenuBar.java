@@ -1,8 +1,8 @@
 package ui.menubar;
 
 import static libsidplay.sidtune.SidTune.RESET;
-import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT;
 import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
+import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_WIDTH_MINIMIZED;
 
 import java.awt.Graphics2D;
 import java.awt.Transparency;
@@ -244,8 +244,18 @@ public class MenuBar extends C64VBox implements UIPart {
 
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (getScene() != null) {
+				if (newValue.booleanValue()) {
+					sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
+					sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
+					getScene().getWindow().setWidth(DEFAULT_FRAME_WIDTH_MINIMIZED);
+					getScene().getWindow().setHeight(DEFAULT_FRAME_HEIGHT_MINIMIZED);
+					util.getWindow().getStage().setResizable(false);
+				} else {
+					getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
+					getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
+					util.getWindow().getStage().setResizable(true);
+				}
 				getScene().lookup("#tabbedPane").setVisible(!newValue);
-				getScene().getWindow().setHeight(newValue ? DEFAULT_FRAME_HEIGHT_MINIMIZED : DEFAULT_FRAME_HEIGHT);
 			}
 		});
 		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
