@@ -369,8 +369,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<>(
-			DEFAULT_SIDBLASTER_0);
+	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_0);
 
 	public ObjectProperty<ChipModel> sidBlaster0ModelProperty() {
 		return sidBlaster0ModelProperty;
@@ -387,8 +386,7 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster0ModelProperty.set(sidBlaster0Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<>(
-			DEFAULT_SIDBLASTER_1);
+	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_1);
 
 	public ObjectProperty<ChipModel> sidBlaster1ModelProperty() {
 		return sidBlaster1ModelProperty;
@@ -405,8 +403,7 @@ public class EmulationSection implements IEmulationSection {
 		this.sidBlaster1ModelProperty.set(sidBlaster1Model);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<>(
-			DEFAULT_SIDBLASTER_2);
+	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_2);
 
 	public ObjectProperty<ChipModel> sidBlaster2ModelProperty() {
 		return sidBlaster2ModelProperty;
@@ -455,8 +452,7 @@ public class EmulationSection implements IEmulationSection {
 		this.netSidDevPortProperty.set(port);
 	}
 
-	private ObjectProperty<Ultimate64Mode> ultimate64Mode = new SimpleObjectProperty<>(
-			DEFAULT_ULTIMATE64_MODE);
+	private ObjectProperty<Ultimate64Mode> ultimate64Mode = new SimpleObjectProperty<>(DEFAULT_ULTIMATE64_MODE);
 
 	public ObjectProperty<Ultimate64Mode> ultimate64ModeProperty() {
 		return ultimate64Mode;

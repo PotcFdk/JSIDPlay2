@@ -38,8 +38,7 @@ public class TrySetSidModel implements NetSIDPkg {
 			System.err.printf("TrySetSidModel: Filter name %s not found!", filterName);
 			Optional<String> filter = getFilterNames(chipModel).stream().findFirst();
 			if (filter.isPresent()) {
-				this.config = FILTER_TO_SID_MODEL
-						.get(new SimpleImmutableEntry<>(chipModel, filter.get()));
+				this.config = FILTER_TO_SID_MODEL.get(new SimpleImmutableEntry<>(chipModel, filter.get()));
 				System.err.printf("  TrySetSidModel: Use first configuration of chip model=%s, instead!\n", chipModel);
 			} else {
 				System.err.println("  TrySetSidModel: Use first avalable configuration, instead!");

@@ -91,8 +91,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return passwordProperty;
 	}
 
-	private ObjectProperty<Integer> captureTimeProperty = new SimpleObjectProperty<>(
-			DEFAULT_WHATSSID_CAPTURE_TIME);
+	private ObjectProperty<Integer> captureTimeProperty = new SimpleObjectProperty<>(DEFAULT_WHATSSID_CAPTURE_TIME);
 
 	@Override
 	public int getCaptureTime() {

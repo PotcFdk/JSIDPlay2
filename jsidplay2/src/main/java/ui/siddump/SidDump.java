@@ -103,7 +103,7 @@ public class SidDump extends C64VBox implements UIPart {
 		};
 		util.getPlayer().stateProperty().addListener(changeListener);
 
-		maxRecordLength.textProperty().addListener((obj,o,n)-> {
+		maxRecordLength.textProperty().addListener((obj, o, n) -> {
 			final Tooltip tooltip = new Tooltip();
 			maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
