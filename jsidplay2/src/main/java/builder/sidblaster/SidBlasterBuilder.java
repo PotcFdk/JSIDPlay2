@@ -128,7 +128,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public int getDeviceCount() {
-		return hardSID != null ? hardSID.HardSID_Devices() : null;
+		return hardSID != null ? hardSID.HardSID_Devices() : 0;
 	}
 
 	@Override

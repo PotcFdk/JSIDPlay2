@@ -282,7 +282,7 @@ abstract class StringSearch {
 		if (obj == null) {
 			return false;
 		}
-		return getClass().getName().equals(obj.getClass().getName());
+		return getClass().equals(obj.getClass());
 	}
 
 	/**

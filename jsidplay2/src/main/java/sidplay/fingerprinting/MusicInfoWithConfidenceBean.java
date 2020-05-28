@@ -61,6 +61,12 @@ public class MusicInfoWithConfidenceBean {
 	}
 
 	@Override
+	public int hashCode() {
+		assert false : "hashCode not designed";
+		return 42;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof MusicInfoWithConfidenceBean)) {
 			return false;

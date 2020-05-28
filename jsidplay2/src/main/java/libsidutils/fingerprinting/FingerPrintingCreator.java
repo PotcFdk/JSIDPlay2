@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -144,7 +145,7 @@ public class FingerPrintingCreator {
 	}
 
 	private void processDirectory(File dir, EntityManager em) throws IOException, SidTuneError {
-		File[] listFiles = dir.listFiles();
+		File[] listFiles = Optional.ofNullable(dir.listFiles()).orElse(new File[0]);
 		Arrays.sort(listFiles);
 		for (File file : listFiles) {
 			if (file.isDirectory()) {

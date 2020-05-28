@@ -123,7 +123,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public int getDeviceCount() {
-		return hardSID != null ? hardSID.HardSID_SIDCount(deviceID) : null;
+		return hardSID != null ? hardSID.HardSID_SIDCount(deviceID) : 0;
 	}
 
 	@Override

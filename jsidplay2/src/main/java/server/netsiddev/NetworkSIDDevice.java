@@ -70,7 +70,7 @@ public class NetworkSIDDevice {
 		return sid;
 	}
 
-	public void start(boolean createIniFileIfNotExists) {
+	public synchronized void start(boolean createIniFileIfNotExists) {
 		config = new JSIDDeviceConfig(createIniFileIfNotExists);
 		new Thread(() -> {
 			try {

@@ -114,6 +114,10 @@ public final class WhatsSidSupport {
 	public void reset() {
 		((Buffer) whatsSidBuffer).clear();
 		((Buffer) whatsSidBuffer.put(new byte[whatsSidBufferSize])).clear();
+		resetLastWhatsSidMatch();
+	}
+
+	private static void resetLastWhatsSidMatch() {
 		lastWhatsSidMatch = null;
 	}
 

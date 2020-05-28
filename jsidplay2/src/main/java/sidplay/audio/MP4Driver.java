@@ -18,6 +18,7 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -130,9 +131,11 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 					videoFile.delete();
 					// hack: remove remaining temporary files of mp4parser :-(
 					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-					Arrays.asList(tmpDir.list((dir, name) -> name.startsWith("MediaDataBox")
-							&& System.currentTimeMillis() - new File(dir, name).lastModified() > 10 * 60 * 1000))
-							.stream().forEach(name -> new File(tmpDir, name).delete());
+					Arrays.asList(Optional
+							.ofNullable(tmpDir.list((dir,
+									name) -> name.startsWith("MediaDataBox") && System.currentTimeMillis()
+											- new File(dir, name).lastModified() > 10 * 60 * 1000))
+							.orElse(new String[0])).stream().forEach(name -> new File(tmpDir, name).delete());
 				}
 			}
 		} catch (IOException e) {

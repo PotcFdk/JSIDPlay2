@@ -158,7 +158,7 @@ public class JSIDPlay2Server {
 
 	private static JSIDPlay2Server instance;
 
-	public static JSIDPlay2Server getInstance(Configuration configuration) {
+	public static synchronized JSIDPlay2Server getInstance(Configuration configuration) {
 		if (instance == null) {
 			instance = new JSIDPlay2Server(configuration);
 		}

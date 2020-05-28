@@ -36,7 +36,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	@Override
 	protected void initialize() {
-		String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Player.LAST_MODIFIED.getTime());
+		String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Player.getReleaseDate().getTime());
 		if (getStage() != null) {
 			getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
 					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));

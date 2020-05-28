@@ -511,7 +511,7 @@ class ClientContext {
 	private int getSidHeaderSize(final int dataLength) {
 		if (dataLength >= PSidHeader.SIZE) {
 			return (dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD) << 8)
-					+ dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD + 1);
+					+ (dataRead.get(4 + PSidHeader.DATA_OFFSET_FIELD + 1) & 0xff);
 		} else {
 			return dataLength;
 		}

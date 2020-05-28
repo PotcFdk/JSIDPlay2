@@ -98,7 +98,7 @@ import sidplay.player.Timer;
 public class Player extends HardwareEnsemble implements VideoDriver, SIDListener {
 
 	/** Build date calculated from our own modify time */
-	public static Calendar LAST_MODIFIED;
+	private static Calendar LAST_MODIFIED;
 
 	static {
 		try {
@@ -108,6 +108,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
+	}
+
+	public static Calendar getReleaseDate() {
+		return LAST_MODIFIED;
 	}
 
 	/**
