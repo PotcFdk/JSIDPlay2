@@ -411,8 +411,13 @@ public class SIDMixer implements Mixer {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
 				sampler.setDelay(0);
 			} else {
-				float leftFraction = (float) Math.sqrt(2 * positionL[sidNum]);
-				float rightFraction = (float) Math.sqrt(2 * positionR[sidNum]);
+				float leftFraction = positionL[sidNum];
+				float rightFraction = positionR[sidNum];
+				if (!(sid instanceof builder.resid.residfp.ReSIDfp.FakeStereo
+						|| sid instanceof builder.resid.resid.ReSID.FakeStereo)) {
+					leftFraction = (float) Math.sqrt(2 * positionL[sidNum]);
+					rightFraction = (float) Math.sqrt(2 * positionR[sidNum]);
+				}
 				int volumeL = (int) (volume[sidNum] * leftFraction);
 				int volumeR = (int) (volume[sidNum] * rightFraction);
 				sampler.setVolume(volumeL, volumeR);
