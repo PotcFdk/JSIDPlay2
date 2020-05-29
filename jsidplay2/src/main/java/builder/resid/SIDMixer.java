@@ -344,13 +344,13 @@ public class SIDMixer implements Mixer {
 	}
 
 	/**
-	 * db-to-linear(x) = 10^(x / 20)
+	 * Convert db to linear.
 	 *
 	 * @param decibel decibel value to convert
 	 * @return converted linear value
 	 */
 	public static double DECIBEL_TO_LINEAR(float decibel) {
-		return Math.pow(10., decibel / 20.);
+		return Math.pow(10., decibel / 12.);
 	}
 
 	/**
@@ -363,8 +363,8 @@ public class SIDMixer implements Mixer {
 	public void setBalance(int sidNum, float balance) {
 		assert balance >= 0 && balance <= 1;
 
-		positionL[sidNum] = (float) Math.sqrt(2 * (1 - balance));
-		positionR[sidNum] = (float) Math.sqrt(2 * balance);
+		positionL[sidNum] = (1 - balance);
+		positionR[sidNum] = balance;
 		updateSampleMixerVolume();
 	}
 
@@ -411,8 +411,8 @@ public class SIDMixer implements Mixer {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
 				sampler.setDelay(0);
 			} else {
-				float leftFraction = positionL[sidNum];
-				float rightFraction = positionR[sidNum];
+				float leftFraction = (float) Math.sqrt(2 * positionL[sidNum]);
+				float rightFraction = (float) Math.sqrt(2 * positionR[sidNum]);
 				int volumeL = (int) (volume[sidNum] * leftFraction);
 				int volumeR = (int) (volume[sidNum] * rightFraction);
 				sampler.setVolume(volumeL, volumeR);
