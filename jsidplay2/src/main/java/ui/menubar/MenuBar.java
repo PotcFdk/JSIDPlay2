@@ -43,6 +43,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.StageStyle;
 import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -1228,6 +1229,7 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	private void openErrorDialog(String msg) {
 		Alert alert = new Alert(AlertType.ERROR, "");
+		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
 		alert.getDialogPane().setHeaderText(msg);
 		alert.showAndWait();

@@ -63,6 +63,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
@@ -474,6 +475,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private void doCreateSearchIndex() {
 		Alert alert = new Alert(AlertType.CONFIRMATION, "");
+		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
 		alert.getDialogPane()
 				.setHeaderText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));

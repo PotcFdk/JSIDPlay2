@@ -47,6 +47,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.StageStyle;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
@@ -641,6 +642,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	private void openErrorDialog(String msg) {
 		Alert alert = new Alert(AlertType.ERROR, "");
+		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
 		alert.getDialogPane().setHeaderText(msg);
 		alert.showAndWait();
