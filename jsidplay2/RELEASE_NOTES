@@ -13,3 +13,4 @@ emulation settings: revert settings to default
 emulation settings: copy first SID settings to stereo SID and 3-SID
 Record tunes as CSV (audio driver for SID register writes)
 WhatsSID? Shazam like audio recognition added to JSIDPlay2 and JSIDDevice
+Bugfix: Volume of 2SID and 3SID corrected

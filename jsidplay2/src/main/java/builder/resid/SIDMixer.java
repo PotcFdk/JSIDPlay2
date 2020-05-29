@@ -363,8 +363,8 @@ public class SIDMixer implements Mixer {
 	public void setBalance(int sidNum, float balance) {
 		assert balance >= 0 && balance <= 1;
 
-		positionL[sidNum] = 1 - balance;
-		positionR[sidNum] = balance;
+		positionL[sidNum] = (float) Math.sqrt(2 * (1 - balance));
+		positionR[sidNum] = (float) Math.sqrt(2 * balance);
 		updateSampleMixerVolume();
 	}
 
