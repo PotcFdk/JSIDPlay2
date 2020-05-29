@@ -404,6 +404,7 @@ public class SIDMixer implements Mixer {
 	 */
 	private void updateSampleMixerVolume() {
 		boolean mono = sids.size() == 1;
+		boolean fakeStereo = isFakeStereo();
 		int sidNum = 0;
 		for (ReSIDBase sid : sids) {
 			SampleMixer sampler = (SampleMixer) sid.getSampler();
@@ -411,12 +412,11 @@ public class SIDMixer implements Mixer {
 				sampler.setVolume(volume[sidNum], volume[sidNum]);
 				sampler.setDelay(0);
 			} else {
-				float leftFraction = positionL[sidNum];
-				float rightFraction = positionR[sidNum];
-				if (!(sid instanceof builder.resid.residfp.ReSIDfp.FakeStereo
-						|| sid instanceof builder.resid.resid.ReSID.FakeStereo)) {
-					leftFraction = (float) Math.sqrt(2 * positionL[sidNum]);
-					rightFraction = (float) Math.sqrt(2 * positionR[sidNum]);
+				double leftFraction = positionL[sidNum];
+				double rightFraction = positionR[sidNum];
+				if (!fakeStereo) {
+					leftFraction = Math.sqrt(2 * leftFraction);
+					rightFraction = Math.sqrt(2 * rightFraction);
 				}
 				int volumeL = (int) (volume[sidNum] * leftFraction);
 				int volumeR = (int) (volume[sidNum] * rightFraction);
@@ -425,6 +425,14 @@ public class SIDMixer implements Mixer {
 			}
 			sidNum++;
 		}
+	}
+
+	/**
+	 * @return is fake stereo enabled?
+	 */
+	private boolean isFakeStereo() {
+		return sids.stream().anyMatch(sid -> sid instanceof builder.resid.residfp.ReSIDfp.FakeStereo
+				|| sid instanceof builder.resid.resid.ReSID.FakeStereo);
 	}
 
 	/**
