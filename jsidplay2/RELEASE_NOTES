@@ -1,16 +1,17 @@
 Release Notes:
 ==============
-JSIDDevice: configurable audio buffer size added
-Ultimate64 Audio-/Video Streaming: PAL emulation for video output added
-AVI recording driver added
-toolbar icon added: Save Recording to folder 
-Turn PAL emulation on/off
-Audio post processors added: delay and Schroeder reverb
-Audio Settings added (audio post processors, recording quality)
-Save JPEG screenshot fixed
-SOASC download strategy fixed
-emulation settings: revert settings to default
-emulation settings: copy first SID settings to stereo SID and 3-SID
-Record tunes as CSV (audio driver for SID register writes)
 WhatsSID? Shazam like audio recognition added to JSIDPlay2 and JSIDDevice
+New Audio driver: AVI recording
+New Audio driver: SID register writes as CSV
+Audio post processors added: Delay effect and Schroeder reverb effect
+Audio Settings added: Audio post processor settings and recording quality
+Emulation settings added: Revert settings, copy first SID settings to stereo SID and 3-SID
+Turn PAL emulation on/off
+Ultimate64 Audio-/Video Streaming: PAL emulation for video output added
+Toolbar icon added: Save Recording to folder 
+Bugfix: Save JPEG screenshot
+Bugfix: SOASC download strategy
 Bugfix: Volume of 2SID and 3SID corrected
+Delay value range changed to 0..50ms in 1ms steps
+
+JSIDDevice: configurable audio buffer size added
