@@ -53,7 +53,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final int DEFAULT_FRAME_WIDTH = 1280;
 	public static final int DEFAULT_FRAME_HEIGHT = 1024;
 	public static final int DEFAULT_FRAME_WIDTH_MINIMIZED = 1280;
-	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 172;
+	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED = 173;
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 3f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
