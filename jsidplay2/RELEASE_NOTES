@@ -11,7 +11,7 @@ Ultimate64 Audio-/Video Streaming: PAL emulation for video output added
 Toolbar icon added: Save Recording to folder 
 Bugfix: Save JPEG screenshot
 Bugfix: SOASC download strategy
-Bugfix: Volume of 2SID and 3SID corrected
+Bugfix: Volume of 2SID and 3SID corrected, fake-stereo volume fixed
 Delay value range changed to 0..50ms in 1ms steps
 
 JSIDDevice: configurable audio buffer size added
