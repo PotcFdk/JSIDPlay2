@@ -137,42 +137,42 @@ public interface IAudioSection {
 	void setThirdBalance(float balance);
 
 	/**
-	 * Getter of the main SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Getter of the main SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @return the main SID delay setting
 	 */
 	int getMainDelay();
 
 	/**
-	 * Setter of the main SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Setter of the main SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @param delay the main SID delay setting
 	 */
 	void setMainDelay(int delay);
 
 	/**
-	 * Getter of the second SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Getter of the second SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @return the second SID delay setting
 	 */
 	int getSecondDelay();
 
 	/**
-	 * Setter of the second SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Setter of the second SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @param delay the second SID delay setting
 	 */
 	void setSecondDelay(int delay);
 
 	/**
-	 * Getter of the third SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Getter of the third SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @return the third SID delay setting
 	 */
 	int getThirdDelay();
 
 	/**
-	 * Setter of the third SID delay setting (0 - no delay, 200 - 200ms delay).
+	 * Setter of the third SID delay setting (0 - no delay, 50 - 50ms delay).
 	 *
 	 * @param delay the third SID delay setting
 	 */

@@ -49,9 +49,9 @@
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 							majorTickUnit="0.1" showTickLabels="true" showTickMarks="true" />
 						<Label text="%MAIN_DELAY" />
-						<Slider fx:id="mainDelay" min="0" max="100" value="0"
-							minorTickCount="1" snapToTicks="true" blockIncrement="5"
-							majorTickUnit="10" showTickLabels="true" showTickMarks="true" />
+						<Slider fx:id="mainDelay" min="0" max="50" value="0"
+							blockIncrement="1" majorTickUnit="5"
+							showTickLabels="true" showTickMarks="true" />
 					</VBox>
 					<VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
 						<GridPane gridLinesVisible="true">
@@ -77,9 +77,9 @@
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 							majorTickUnit="0.1" showTickLabels="true" showTickMarks="true" />
 						<Label text="%SECOND_DELAY" />
-						<Slider fx:id="secondDelay" min="0" max="100" value="0"
-							minorTickCount="1" snapToTicks="true" blockIncrement="5"
-							majorTickUnit="10" showTickLabels="true" showTickMarks="true" />
+						<Slider fx:id="secondDelay" min="0" max="50" value="0"
+							blockIncrement="1" majorTickUnit="5"
+							showTickLabels="true" showTickMarks="true" />
 					</VBox>
 					<VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
 						<GridPane gridLinesVisible="true">
@@ -105,9 +105,9 @@
 							minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
 							majorTickUnit="0.1" showTickLabels="true" showTickMarks="true" />
 						<Label text="%THIRD_DELAY" />
-						<Slider fx:id="thirdDelay" min="0" max="100" value="0"
-							minorTickCount="1" snapToTicks="true" blockIncrement="5"
-							majorTickUnit="10" showTickLabels="true" showTickMarks="true" />
+						<Slider fx:id="thirdDelay" min="0" max="50" value="0"
+							blockIncrement="1" majorTickUnit="5"
+							showTickLabels="true" showTickMarks="true" />
 					</VBox>
 					<VBox GridPane.columnIndex="2" GridPane.rowIndex="1">
 						<GridPane gridLinesVisible="true">

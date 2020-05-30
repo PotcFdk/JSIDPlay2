@@ -372,11 +372,11 @@ public class SIDMixer implements Mixer {
 	 * Delay feature: Delaying SID chip sound samples by time in milliseconds
 	 *
 	 * @param sidNum SID chip number
-	 * @param delay  delay in ms
+	 * @param delay  delay in ms (0..50)
 	 */
 	@Override
 	public void setDelay(int sidNum, int delay) {
-		assert delay >= 0 && delay <= 100;
+		assert delay >= 0 && delay <= 50;
 
 		delayInSamples[sidNum] = (int) (cpuClock.getCpuFrequency() / 1000. * delay);
 		updateSampleMixerVolume();
