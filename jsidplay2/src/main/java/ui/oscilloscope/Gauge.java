@@ -5,13 +5,8 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
-import javafx.scene.paint.Color;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
 import ui.common.C64VBox;
@@ -20,12 +15,13 @@ import ui.common.ImageQueue;
 import ui.common.UIPart;
 
 public class Gauge extends C64VBox implements UIPart {
-	protected static final Color[] gaugeColors = new Color[256];
+	private static final int ALPHA = 0xff000000;
+	protected static final int[] gaugeColors = new int[256];
 
 	static {
 		for (int i = 0; i < gaugeColors.length; i++) {
 			int color = Math.round((float) Math.sqrt(i / 255f) * 255f);
-			gaugeColors[i] = new Color((color >> 8) / 255., (color & 0xff) / 255., 0, 1.);
+			gaugeColors[i] = ALPHA | ((color & 0xff) << 8) | (color >> 8);
 		}
 	}
 
@@ -46,7 +42,6 @@ public class Gauge extends C64VBox implements UIPart {
 	protected void initialize() {
 		width = (int) getArea().getWidth();
 		height = (int) getArea().getHeight();
-		pixels = new int[width * height];
 		format = WritablePixelFormat.getIntArgbInstance();
 	}
 
@@ -58,10 +53,8 @@ public class Gauge extends C64VBox implements UIPart {
 	private int dataPos = 0;
 
 	private WritablePixelFormat<IntBuffer> format;
-	
-	private int[] pixels;
 
-	protected ImageQueue imageQueue = new ImageQueue();
+	protected ImageQueue<int[]> imageQueue = new ImageQueue<>();
 
 	@Override
 	public String getBundleName() {
@@ -118,17 +111,14 @@ public class Gauge extends C64VBox implements UIPart {
 	public void updateGauge(SIDEmu sidemu) {
 		getTitledPane().setText(text);
 
-		Image image = imageQueue.poll();
-		if (image != null) {
-			GraphicsContext graphicsContext = getArea().getGraphicsContext2D();
-			image.getPixelReader().getPixels(0, 0, width, height, format, pixels, 0, width);
-			graphicsContext.getPixelWriter().setPixels(0, 0, width, height, format, pixels, 0, width);
+		int[] pixels = imageQueue.poll();
+		if (pixels != null) {
+			getArea().getGraphicsContext2D().getPixelWriter().setPixels(0, 0, width, height, format, pixels, 0, width);
 		}
 	}
 
 	public void addImage(SIDEmu sidemu) {
-		WritableImage image = new WritableImage(width, height);
-		PixelWriter pixelWriter = image.getPixelWriter();
+		int[] pixels = new int[width * height];
 		int shade = 255;
 		for (int x = 0; x < width; x++) {
 			final int readPos = dataPos - width + x & dataMin.length - 1;
@@ -148,7 +138,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 			/* one pixel line? */
 			if (intStartPos == intEndPos) {
-				drawPoint(pixelWriter, x, intStartPos, gaugeColors[shade]);
+				drawPoint(pixels, x, intStartPos, gaugeColors[shade]);
 				continue;
 			}
 
@@ -172,30 +162,30 @@ public class Gauge extends C64VBox implements UIPart {
 			}
 
 			/* Draw end points */
-			drawPoint(pixelWriter, x, intStartPos, gaugeColors[(int) (shade * firstPixel)]);
+			drawPoint(pixels, x, intStartPos, gaugeColors[(int) (shade * firstPixel)]);
 
-			drawPoint(pixelWriter, x, intEndPos, gaugeColors[(int) (shade * lastPixel)]);
+			drawPoint(pixels, x, intEndPos, gaugeColors[(int) (shade * lastPixel)]);
 
 			intStartPos += 1;
 			intEndPos -= 1;
 
 			/* Still space for the middle line? */
 			if (intStartPos <= intEndPos) {
-				drawLine(pixelWriter, x, intStartPos, x, intEndPos, gaugeColors[shade]);
+				drawLine(pixels, x, intStartPos, x, intEndPos, gaugeColors[shade]);
 			}
 		}
-		imageQueue.add(image);
+		imageQueue.add(pixels);
 	}
 
-	private void drawPoint(PixelWriter pixelWriter, int x, int y, Color c) {
+	private void drawPoint(int[] pixels, int x, int y, int c) {
 		// clip coordinates
 		x = Math.min(Math.max(0, x), width - 1);
 		y = Math.min(Math.max(0, y), height - 1);
 
-		pixelWriter.setColor(x, y, c);
+		pixels[x + width * y] = c;
 	}
 
-	private void drawLine(PixelWriter pixelWriter, int x1, int y1, int x2, int y2, Color c) {
+	private void drawLine(int[] pixels, int x1, int y1, int x2, int y2, int c) {
 		// clip coordinates
 		x1 = Math.min(Math.max(0, x1), width - 1);
 		x2 = Math.min(Math.max(0, x2), width - 1);
@@ -219,7 +209,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 		if (dx >= dy) {
 			while (true) {
-				pixelWriter.setColor(x, y, c);
+				pixels[x + width * y] = c;
 				if (x == x2) {
 					break;
 				}
@@ -232,7 +222,7 @@ public class Gauge extends C64VBox implements UIPart {
 			}
 		} else {
 			while (true) {
-				pixelWriter.setColor(x, y, c);
+				pixels[x + width * y] = c;
 				if (y == y2) {
 					break;
 				}
@@ -254,7 +244,7 @@ public class Gauge extends C64VBox implements UIPart {
 		return null;
 	}
 
-	protected ImageQueue getImageQueue() {
+	protected ImageQueue<int[]> getImageQueue() {
 		return imageQueue;
 	}
 

@@ -98,7 +98,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	private Keyboard virtualKeyboard;
 	private Timeline timer;
 
-	private ImageQueue imageQueue;
+	private ImageQueue<Image> imageQueue;
 
 	/**
 	 * Note: volatile, because Screen Updater thread writes it and javafx thread
@@ -244,7 +244,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		});
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 
-		imageQueue = new ImageQueue();
+		imageQueue = new ImageQueue<>();
 
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));

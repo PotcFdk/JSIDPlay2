@@ -266,7 +266,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 	private PALEmulation palEmulation;
 
-	private ImageQueue imageQueue;
+	private ImageQueue<Image> imageQueue;
 
 	private PauseTransition pauseTransition;
 	private SequentialTransition sequentialTransition;
@@ -300,7 +300,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		});
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 
-		imageQueue = new ImageQueue();
+		imageQueue = new ImageQueue<>();
 
 		SidTune tune = util.getPlayer().getTune();
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));

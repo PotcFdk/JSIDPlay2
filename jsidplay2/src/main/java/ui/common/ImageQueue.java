@@ -3,8 +3,6 @@ package ui.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.image.Image;
-
 /**
  * ImageQueue implements a queue like data structure. Frame images are queued
  * for every video frame the emulation produces. Frames are then polled with the
@@ -19,15 +17,15 @@ import javafx.scene.image.Image;
  * @author ken
  *
  */
-public class ImageQueue {
+public class ImageQueue<T> {
 
 	private static final int MAX_SIZE = 100;
 
-	private final List<Image> imageQueue = new ArrayList<>(MAX_SIZE);
+	private final List<T> imageQueue = new ArrayList<>(MAX_SIZE);
 
 	private boolean disposed;
 
-	public synchronized void add(Image image) {
+	public synchronized void add(T image) {
 		if (disposed) {
 			return;
 		}
@@ -38,7 +36,7 @@ public class ImageQueue {
 		imageQueue.add(image);
 	}
 
-	public synchronized Image poll() {
+	public synchronized T poll() {
 		// if we run out of sync, prevent overflow by dropping in-between frames
 		for (int i = 0; imageQueue.size() > 20 && i < imageQueue.size(); i += 10) {
 			imageQueue.remove(i);
