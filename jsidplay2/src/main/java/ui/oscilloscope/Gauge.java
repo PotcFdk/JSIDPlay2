@@ -1,6 +1,7 @@
 package ui.oscilloscope;
 
 import java.net.URL;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import javafx.scene.canvas.Canvas;
@@ -9,6 +10,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import libsidplay.common.SIDEmu;
 import sidplay.Player;
@@ -44,6 +46,8 @@ public class Gauge extends C64VBox implements UIPart {
 	protected void initialize() {
 		width = (int) getArea().getWidth();
 		height = (int) getArea().getHeight();
+		pixels = new int[width * height];
+		format = WritablePixelFormat.getIntArgbInstance();
 	}
 
 	/** data plots normalized between -1 .. 1 */
@@ -52,6 +56,10 @@ public class Gauge extends C64VBox implements UIPart {
 	private float[] dataMax = new float[256];
 	/** Position within data buffer */
 	private int dataPos = 0;
+
+	private WritablePixelFormat<IntBuffer> format;
+	
+	private int[] pixels;
 
 	protected ImageQueue imageQueue = new ImageQueue();
 
@@ -112,9 +120,9 @@ public class Gauge extends C64VBox implements UIPart {
 
 		Image image = imageQueue.poll();
 		if (image != null) {
-			GraphicsContext g = getArea().getGraphicsContext2D();
-			g.clearRect(0, 0, width, height);
-			g.drawImage(image, 0, 0);
+			GraphicsContext graphicsContext = getArea().getGraphicsContext2D();
+			image.getPixelReader().getPixels(0, 0, width, height, format, pixels, 0, width);
+			graphicsContext.getPixelWriter().setPixels(0, 0, width, height, format, pixels, 0, width);
 		}
 	}
 
