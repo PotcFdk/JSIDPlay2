@@ -59,7 +59,9 @@ public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 			client.add(new SetSidHeader(tune.getPSidHeader()));
 		}
 		client.add(new TrySetSampling(audioSection.getSampling()));
-		client.add(new TrySetSidModel((byte) sidNum, chipModel, filterName));
+		if (filterName != null) {
+			client.addAndSend(new TrySetSidModel((byte) sidNum, chipModel, filterName));
+		}
 		client.add(new SetClocking(cpuClock.getCpuFrequency()));
 		for (byte sidNum2 = 0; sidNum2 < MAX_SIDS; sidNum2++) {
 			for (byte voice = 0; voice < (client.getVersion() < 3 ? 3 : 4); voice++) {

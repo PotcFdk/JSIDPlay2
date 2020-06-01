@@ -132,7 +132,9 @@ public class NetSIDDev extends SIDEmu {
 	public void setFilter(IConfig config, int sidNum) {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		String filterName = emulationSection.getFilterName(sidNum, Engine.NETSID, Emulation.DEFAULT, chipModel);
-		client.addAndSend(new TrySetSidModel((byte) sidNum, chipModel, filterName));
+		if (filterName != null) {
+			client.addAndSend(new TrySetSidModel((byte) sidNum, chipModel, filterName));
+		}
 	}
 
 	@Override
