@@ -9,9 +9,9 @@ Emulation settings added: Revert settings, copy first SID settings to stereo SID
 Turn PAL emulation on/off
 Ultimate64 Audio-/Video Streaming: PAL emulation for video output added
 Toolbar icon added: Save Recording to folder 
+Delay value range changed to 0..50ms in 1ms steps
 Bugfix: Save JPEG screenshot
 Bugfix: SOASC download strategy
-Bugfix: Volume of 2SID and 3SID corrected, fake-stereo volume fixed
-Delay value range changed to 0..50ms in 1ms steps
-
+Bugfix: Volume of 2SID and 3SID corrected, fake-stereo volume fixed (everything should sound equal loud)
+Bugfix: Oscilloscope output is a bit smoother now
 JSIDDevice: configurable audio buffer size added
