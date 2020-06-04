@@ -93,21 +93,6 @@
 		    <version>0.7.7</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.4.0-b180830.0359</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-core</artifactId>
-			<version>3.0.0-M3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>3.0.0-M3</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
