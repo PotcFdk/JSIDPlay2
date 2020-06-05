@@ -15,7 +15,7 @@ public enum WebViewType {
 	/**
 	 * Codebase 64 Wiki
 	 */
-	CODEBASE64("http://codebase64.org/"),
+	CODEBASE64("https://codebase64.org/"),
 	/**
 	 * Remix.Kwed.Org The Devinitive Guide To C64 Remakes
 	 */

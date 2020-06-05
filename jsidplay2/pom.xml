@@ -161,12 +161,12 @@
 		<dependency>
             <groupId>org.mp4parser</groupId>
             <artifactId>muxer</artifactId>
-            <version>1.9.41</version>
+            <version>1.9.39</version>
 		</dependency>
 		<dependency>
             <groupId>org.mp4parser</groupId>
             <artifactId>streaming</artifactId>
-            <version>1.9.41</version>
+            <version>1.9.39</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
