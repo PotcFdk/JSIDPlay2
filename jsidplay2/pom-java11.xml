@@ -933,6 +933,8 @@
 									<opt>.</opt>
 									<opt>--add-modules</opt>
 									<opt>javafx.controls,javafx.web,javafx.fxml</opt>
+									<opt>--add-opens</opt>
+									<opt>java.base/java.io=org.apache.tomcat.embed.core</opt>
 								</opts>
 							</jre>
 							<splash>
