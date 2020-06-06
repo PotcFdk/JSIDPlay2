@@ -14,6 +14,6 @@ Bugfix: Save JPEG screenshot
 Bugfix: SOASC download strategy
 Bugfix: Volume of 2SID and 3SID corrected, fake-stereo volume fixed (everything should sound equal loud)
 Bugfix: Oscilloscope output is a bit smoother now
+Bugfix: Emulation settings: JSIDDevice filter names and selection fixed
 
 JSIDDevice: configurable audio buffer size added
-Bugfix JSIDDevice: JSIDDevice filter names and selection fixed

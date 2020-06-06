@@ -185,12 +185,8 @@ public class JSIDPlay2Server {
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYING
 				&& tomcat.getServer().getState() != LifecycleState.DESTROYED) {
 			try {
-				try {
-					tomcat.stop();
-					tomcat.getServer().await();
-				} catch (Throwable e) {
-					// workaround java11 problem
-				}
+				tomcat.stop();
+				tomcat.getServer().await();
 				tomcat.getServer().destroy();
 			} finally {
 				tomcat = null;
