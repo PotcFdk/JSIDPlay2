@@ -170,7 +170,7 @@ launch JSIDPlay2 using the following command:
 ----
 cd Downloads/jsidplay2-{version}
 java -Djava.library.path="." \
-	--module-path . \
+	--module-path ~/Downloads/jsidplay2-{version} \
 	--add-modules javafx.controls,javafx.web,javafx.fxml \
 	--add-opens java.base/java.io=org.apache.tomcat.embed.core \
 	-jar jsidplay2-{version}.jar # <1>
