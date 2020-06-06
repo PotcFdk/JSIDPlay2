@@ -25,12 +25,9 @@ Use Oracle Java8
 ================
 This is my recommendation, because JavaFX is already included!
 
-Hard-wire HardSID4U: connect mixed/out into the Microfone-in connector of your computer:
-========================================================================================
-In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
-Open a terminal and type:
-parec --latency-msec=1 | pacat --latency-msec=1
-Lower your microphone volume level to prevent overdrive noise
+Other Java versions
+===================
+If you prefer more recent versions get your installer here: https://adoptopenjdk.net
 
 Java 9,10,11 in Eclipse:
 ========================
@@ -87,6 +84,12 @@ How to find out available JavaFX style classes of a node in the scene graph?
 			for (Node c : ((Parent) n).getChildrenUnmodifiable())
 				dump(c, depth + 1);
 	}
+
+Hard-wire HardSID4U: connect mixed/out into the Microfone-in connector of your computer:
+In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
+Open a terminal and type:
+parec --latency-msec=1 | pacat --latency-msec=1
+Lower your microphone volume level to prevent overdrive noise
 
 get estimate row count of database:
 select  table_rows
