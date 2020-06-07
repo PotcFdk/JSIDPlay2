@@ -25,8 +25,8 @@ Use Oracle Java8
 ================
 This is my recommendation, because JavaFX is already included!
 
-Other Java versions
-===================
+OpenJDK
+=======
 If you prefer more recent versions get your installer here: https://adoptopenjdk.net
 
 Java 9,10,11 in Eclipse:
@@ -43,10 +43,10 @@ Java9 and successor versions require the configured required modules and
 the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
 However to use this new launch in Eclipse you must
-1st: use Java11 with Eclipse and
+1st: use Java11 with Eclipse for the project build
 2nd: Copy the contents of pom-java11.xml to pom.xml (Eclipse will always use pom.xml) and
 3rd: Launch "mvn clean install (Java11)".
-Then, you can start JSIDPlay2 using "Sidplay2Frame (Since Java9)".
+Then, you can start JSIDPlay2 using launch "Sidplay2Frame (Since Java9)".
 
 Eclipse JavaFX support:
 =======================
@@ -85,13 +85,13 @@ How to find out available JavaFX style classes of a node in the scene graph?
 				dump(c, depth + 1);
 	}
 
-Hard-wire HardSID4U: connect mixed/out into the Microfone-in connector of your computer:
+Hard-wire HardSID4U - connect mixed/out into the Microfone-in connector of your computer:
 In Ubuntu Linux with Pulseaudio installed transport Microfone sound to speakers;
 Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 Lower your microphone volume level to prevent overdrive noise
 
-get estimate row count of database:
+MYSQL - get estimate row count of database:
 select  table_rows
 from    information_schema.tables
 where   table_schema = 'whatssid'
@@ -110,16 +110,14 @@ mysql -u newuser -p"password"
 use whatssid
 OPTIMIZE TABLE HashTable
 
-Heap Memory Analyzer:
-To find memory leaks you can use:
+Heap Memory Analyzer - To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
-Install Eclipse Heap Memory Analyzer (https://www.eclipse.org/mat/)
+Install Eclipse MAT (Heap Memory Analyzer) (https://www.eclipse.org/mat/)
 Increase max memory, if required to load huge heap dumps in file MemoryAnalyzer.ini:
 -Xmx=5g
-Load heap dump:
-File/Open heap.bin
+In MAT - Load heap dump: File/Open heap.bin
 
-Chameleon Command-Line to send programs:
+Chameleon C64 hardware - Command-Line to send programs:
 sudo gedit /lib/udev/rules.d/100-local-permissions.rules:
 SUBSYSTEMS=="usb" ATTRS{idVendor}=="18d8" ATTRS{idProduct}=="201d" MODE:="0777" SYMLINK+="Chameleon"
 RESET (reset.txt consists of exactly one zero byte)
