@@ -1,6 +1,7 @@
 package server.restful.servlets;
 
 import static libsidutils.PathUtils.getFilenameSuffix;
+import static libsidutils.PathUtils.getFilenameWithoutSuffix;
 import static libsidutils.ZipFileUtils.copy;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
@@ -22,6 +23,8 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +53,14 @@ import ui.filefilter.TuneFileFilter;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
+
+	@Parameters(resourceBundle = "server.restful.servlets.ConvertServlet")
+	private static class ServletParameters {
+
+		@Parameter(names = "--download", arity = 1, descriptionKey = "DOWNLOAD")
+		private Boolean download = Boolean.FALSE;
+
+	}
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -93,11 +104,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				JCommander.newBuilder().addObject(config).programName(getClass().getName()).build().parse(args);
+				ServletParameters servletParameters = new ServletParameters();
+				JCommander.newBuilder().addObject(servletParameters).addObject(config).programName(getClass().getName())
+						.build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
+				if (Boolean.TRUE.equals(servletParameters.download)) {
+					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
+							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
+				}
 				convertAudio(config, file, driver);
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
@@ -106,11 +123,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				String[] args = getRequestParameters(request);
 
-				JCommander.newBuilder().addObject(config).programName(getClass().getName()).build().parse(args);
+				ServletParameters servletParameters = new ServletParameters();
+				JCommander.newBuilder().addObject(servletParameters).addObject(config).programName(getClass().getName())
+						.build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
+				if (Boolean.TRUE.equals(servletParameters.download)) {
+					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
+							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
+				}
 				File videoFile = convertVideo(config, file, driver);
 				copy(videoFile, response.getOutputStream());
 				videoFile.delete();
