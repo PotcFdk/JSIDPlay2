@@ -25,7 +25,6 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
-import sidplay.audio.Audio;
 import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
 import ui.entities.PersistenceProperties;
@@ -103,12 +102,14 @@ public class FingerPrintingCreator {
 			System.out.println("Parameter --hvsc must be present!");
 			System.exit(1);
 		}
-		config.getAudioSection().setAudio(Audio.WHATS_SID);
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
 
+		WhatsSidDriver whatsSidDriver = new WhatsSidDriver();
+
 		player = new Player(config);
+		player.setAudioDriver(whatsSidDriver);
 		player.setSidDatabase(new SidDatabase(config.getSidplay2Section().getHvsc()));
 
 		if (previousDirectory != null) {
@@ -121,7 +122,6 @@ public class FingerPrintingCreator {
 				.createEntityManager();
 		WhatsSidService whatsSidService = new WhatsSidService(em);
 
-		whatsSidDriver = (WhatsSidDriver) Audio.WHATS_SID.getAudioDriver();
 		whatsSidDriver.setFingerprintInserter(new FingerPrinting(new IniFingerprintConfig(createIni), whatsSidService));
 
 		if (Boolean.TRUE.equals(deleteAll)) {

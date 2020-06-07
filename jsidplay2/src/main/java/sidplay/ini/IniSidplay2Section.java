@@ -144,7 +144,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--hvsc" }, descriptionKey = "HVSC_DIR")
+	@Parameter(names = { "--hvsc" }, descriptionKey = "HVSC_DIR", order = 7)
 	public final void setHvsc(final String hvsc) {
 		iniReader.setProperty("SIDPlay2", "HVSC Dir", hvsc);
 	}
@@ -176,7 +176,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1, order = 7)
+	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1, order = 8)
 	public void setPalEmulation(boolean palEmulation) {
 		iniReader.setProperty("SIDPlay2", "PAL Emulation", palEmulation);
 	}

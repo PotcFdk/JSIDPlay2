@@ -41,9 +41,7 @@ public enum Audio {
 	/** SID register writes file write. */
 	LIVE_SID_REG(ProxyDriver.class, JavaSound.class, SidRegDriver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CmpMP3File.class),
-	/** Create audio fingerprint for later identification **/
-	WHATS_SID(WhatsSidDriver.class);
+	COMPARE_MP3(CmpMP3File.class);
 
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver;
