@@ -1202,6 +1202,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(builder.resid.resid.ReSID.credits());
 		credits.append(builder.resid.residfp.ReSIDfp.credits());
 		credits.append(builder.hardsid.HardSIDEmu.credits());
+		credits.append("\nJava version:");
+		credits.append(System.getProperty("java.runtime.version"));
 		return credits.toString();
 	}
 
