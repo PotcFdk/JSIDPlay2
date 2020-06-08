@@ -30,6 +30,7 @@ public class STILView extends C64Window {
 	private SplitPane splitPane;
 
 	public STILView() {
+		super();
 	}
 
 	public STILView(Player player) {

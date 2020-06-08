@@ -27,6 +27,7 @@ public class About extends C64Window {
 	private Text credits;
 
 	public About() {
+		super();
 	}
 
 	public About(Player player) {

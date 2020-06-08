@@ -179,6 +179,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	private EventHandler<WindowEvent> contextMenuEvent;
 
 	public MusicCollection() {
+		super();
 	}
 
 	public MusicCollection(C64Window window, Player player) {

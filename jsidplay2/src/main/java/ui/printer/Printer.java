@@ -29,6 +29,7 @@ public class Printer extends C64VBox implements UIPart, IPaper {
 	private int x, y;
 
 	public Printer() {
+		super();
 	}
 
 	public Printer(C64Window window, Player player) {

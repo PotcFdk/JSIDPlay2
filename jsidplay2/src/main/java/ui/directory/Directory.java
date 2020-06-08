@@ -62,6 +62,7 @@ public class Directory extends C64VBox implements UIPart {
 	private File previewFile;
 
 	public Directory() {
+		super();
 	}
 
 	public Directory(C64Window window, Player player) {

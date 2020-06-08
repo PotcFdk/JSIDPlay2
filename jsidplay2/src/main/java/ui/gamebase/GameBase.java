@@ -108,6 +108,7 @@ public class GameBase extends C64VBox implements UIPart {
 	private GamesService gamesService;
 
 	public GameBase() {
+		super();
 	}
 
 	public GameBase(C64Window window, Player player) {

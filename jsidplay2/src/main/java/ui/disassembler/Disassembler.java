@@ -52,6 +52,7 @@ public class Disassembler extends C64VBox implements UIPart {
 	private static final Map<Integer, CPUCommand> fCommands = SimpleDisassembler.getCpuCommands();
 
 	public Disassembler() {
+		super();
 	}
 
 	public Disassembler(final C64Window window, final Player player) {

@@ -53,6 +53,7 @@ public class Asm extends C64VBox implements UIPart {
 	private ObservableList<Variable> variables;
 
 	public Asm() {
+		super();
 	}
 
 	public Asm(C64Window window, Player player) {

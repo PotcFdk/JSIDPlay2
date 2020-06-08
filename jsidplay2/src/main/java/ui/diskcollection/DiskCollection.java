@@ -97,6 +97,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 	};
 
 	public DiskCollection() {
+		super();
 	}
 
 	public DiskCollection(C64Window window, Player player) {

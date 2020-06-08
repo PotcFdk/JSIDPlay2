@@ -23,6 +23,7 @@ public class ConsoleOutput extends C64VBox implements UIPart {
 	private TitledPane titledPane;
 
 	public ConsoleOutput() {
+		super();
 	}
 
 	public ConsoleOutput(C64Window window, Player player) {

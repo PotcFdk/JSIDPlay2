@@ -68,6 +68,7 @@ public class SidDump extends C64VBox implements UIPart {
 	private PropertyChangeListener changeListener;
 
 	public SidDump() {
+		super();
 	}
 
 	public SidDump(final C64Window window, final Player player) {

@@ -87,6 +87,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	private PropertyChangeListener listener;
 
 	public Oscilloscope() {
+		super();
 	}
 
 	public Oscilloscope(C64Window window, Player player) {

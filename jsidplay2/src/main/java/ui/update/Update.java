@@ -32,6 +32,7 @@ public class Update extends C64Window {
 	private Hyperlink latestVersionLink;
 
 	public Update() {
+		super();
 	}
 
 	public Update(Player player) {

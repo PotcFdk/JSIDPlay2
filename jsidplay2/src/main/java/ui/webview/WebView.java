@@ -158,6 +158,7 @@ public class WebView extends C64VBox implements UIPart {
 	private boolean showTuneInfos;
 
 	public WebView() {
+		super();
 	}
 
 	public WebView(final C64Window window, final Player player) {

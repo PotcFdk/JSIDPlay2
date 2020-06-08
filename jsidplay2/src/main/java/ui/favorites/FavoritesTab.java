@@ -88,6 +88,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	private int selectedColumn;
 
 	public FavoritesTab() {
+		super();
 	}
 
 	public FavoritesTab(C64Window window, Player player) {

@@ -68,6 +68,7 @@ public class Favorites extends C64VBox implements UIPart {
 	private PropertyChangeListener nextTuneListener;
 
 	public Favorites() {
+		super();
 	}
 
 	public Favorites(C64Window window, Player player) {

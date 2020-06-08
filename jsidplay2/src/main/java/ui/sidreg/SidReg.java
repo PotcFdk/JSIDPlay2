@@ -73,6 +73,7 @@ public class SidReg extends C64VBox implements UIPart {
 	private PropertyChangeListener sidRegStop;
 
 	public SidReg() {
+		super();
 	}
 
 	public SidReg(final C64Window window, final Player player) {

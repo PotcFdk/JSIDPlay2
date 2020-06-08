@@ -23,6 +23,7 @@ public class TuneInfos extends C64Window {
 	private ObservableList<TuneInfo> tuneInfos;
 
 	public TuneInfos() {
+		super();
 	}
 
 	public TuneInfos(Player player) {

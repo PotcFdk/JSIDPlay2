@@ -45,6 +45,7 @@ public class JoystickSettings extends C64Window {
 	private Timeline timer;
 
 	public JoystickSettings() {
+		super();
 	}
 
 	public JoystickSettings(Player player) {

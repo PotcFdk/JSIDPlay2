@@ -21,6 +21,7 @@ public class Keyboard extends C64Window {
 	private final Set<KeyTableEntry> keysPressed = new HashSet<>();
 
 	public Keyboard() {
+		super();
 	}
 
 	public Keyboard(Player player) {

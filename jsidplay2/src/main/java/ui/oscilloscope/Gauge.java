@@ -32,6 +32,7 @@ public class Gauge extends C64VBox implements UIPart {
 	private int voice;
 
 	public Gauge() {
+		super();
 	}
 
 	public Gauge(C64Window window, Player player) {

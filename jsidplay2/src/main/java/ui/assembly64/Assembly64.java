@@ -186,6 +186,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private TablePosition<?, ?> searchResultTableSelectedCell;
 
 	public Assembly64() {
+		super();
 	}
 
 	public Assembly64(C64Window window, Player player) {

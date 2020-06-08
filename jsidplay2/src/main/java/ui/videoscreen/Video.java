@@ -114,6 +114,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	private PropertyChangeListener stateListener;
 
 	public Video() {
+		super();
 	}
 
 	public Video(C64Window window, Player player) {

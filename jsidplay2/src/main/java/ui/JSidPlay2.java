@@ -28,6 +28,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	protected TabPane tabbedPane;
 
 	public JSidPlay2() {
+		super();
 	}
 
 	public JSidPlay2(Stage primaryStage, Player player) {
