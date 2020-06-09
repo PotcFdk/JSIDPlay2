@@ -164,8 +164,6 @@ public class OnlineContent {
 
 		TFile zipFile = new TFile(deployDir, jsidDeviceArtifact + ".zip");
 		TFile src;
-		src = new TFile(deployDir, "JSIDDevice (Java11).desktop");
-		src.mv(new TFile(zipFile, src.getName()));
 		src = new TFile(deployDir, "JSIDDevice.desktop");
 		src.mv(new TFile(zipFile, src.getName()));
 		src = new TFile(deployDir, "jsidplay2.png");
