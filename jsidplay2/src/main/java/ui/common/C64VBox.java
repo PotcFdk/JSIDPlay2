@@ -23,7 +23,9 @@ public abstract class C64VBox extends VBox implements UIPart, Initializable {
 		Configuration configuration = configService.load();
 		util = new UIUtil(null, new Player(configuration), this);
 		configService.close();
-		util.parse(this);
+		// TODO Uncomment line ONLY for JavaFX Preview in Eclipse of JSidPlay2.fxml
+		// and others, if you get problems in preview view
+//		util.parse(this);
 	}
 
 	public C64VBox(C64Window window, Player player) {
