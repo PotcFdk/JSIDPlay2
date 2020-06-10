@@ -15,6 +15,7 @@
 <?scenebuilder-preview-i18n-resource JoystickSettings.properties?>
 
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
 <Scene xmlns:fx="http://javafx.com/fxml">
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.joysticksettings.JoystickSettings"> -->
@@ -143,6 +144,5 @@
 				</TableView>
 			</VBox>
 		</TitledPane>
-
 	</HBox>
 </Scene>

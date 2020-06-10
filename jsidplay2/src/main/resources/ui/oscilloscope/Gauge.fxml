@@ -8,10 +8,10 @@
 <?import javafx.geometry.Insets?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.oscilloscope.Gauge"> -->
-<fx:root xmlns:fx="http://javafx.com/fxml"
-	type="javafx.scene.layout.VBox">
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.oscilloscope.EnvelopeGauge"> -->
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<TitledPane fx:id="border" text=" " collapsible="false">
 		<StackPane style="-fx-background-color: black">
 			<padding>
@@ -21,5 +21,5 @@
 				cacheHint="SPEED" />
 		</StackPane>
 	</TitledPane>
-	<!-- </Scene> -->
 </fx:root>
+<!-- </Scene> -->

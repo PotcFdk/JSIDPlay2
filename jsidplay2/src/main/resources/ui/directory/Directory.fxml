@@ -13,12 +13,12 @@
 <?scenebuilder-preview-i18n-resource Directory.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.directory.Directory"> -->
-<fx:root xmlns:fx="http://javafx.com/fxml"
-	type="javafx.scene.layout.VBox">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<TableView fx:id="directory">
-		<!-- <TableView fx:id="directory" userData="/home/ken/workspace/jsidplay2/src/test/resources/floppy/DISCY__A.D64"> -->
+<!-- 		<TableView fx:id="directory" userData="/home/ken/workspace/jsidplay2/src/test/resources/floppy/DISCY__A.D64"> -->
 		<columns>
 			<TableColumn fx:id="dirColumn" text="%DIRECTORY"
 				editable="false" sortable="false">
@@ -35,7 +35,7 @@
 				<items>
 					<MenuItem fx:id="startMenu" text="%START"
 						onAction="#autoStartProgram" />
-					<MenuItem  fx:id="switchFont" text="%SWITCH_FONT"
+					<MenuItem text="%SWITCH_FONT"
 						onAction="#doSwitchFont" />
 				</items>
 			</ContextMenu>

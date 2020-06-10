@@ -26,9 +26,10 @@
 <?scenebuilder-preview-i18n-resource ToolBar.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.toolbar.ToolBar"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
-	<!-- Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.toolbar.ToolBar" -->
 	<VBox>
 		<AnchorPane>
 			<fx:define>
@@ -333,4 +334,4 @@
 		</AnchorPane>
 	</VBox>
 </fx:root>
-<!--/Scene -->
+<!-- </Scene> -->

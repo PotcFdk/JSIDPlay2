@@ -24,10 +24,10 @@
 <?scenebuilder-preview-i18n-resource Asm.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
-<!-- Use root tag ELSE -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.asm.Asm"> -->
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane VBox.vgrow="ALWAYS">
 		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
 			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
@@ -63,7 +63,7 @@
 						</sortOrder>
 					</TableView>
 					<HBox alignment="CENTER">
-						<Button text="%ADD" fx:id="add" onAction="#addVariable">
+						<Button text="%ADD" onAction="#addVariable">
 							<graphic>
 								<ImageView>
 									<image>
@@ -72,7 +72,7 @@
 								</ImageView>
 							</graphic>
 						</Button>
-						<Button text="%REMOVE" fx:id="remove" onAction="#removeVariable">
+						<Button text="%REMOVE" onAction="#removeVariable">
 							<graphic>
 								<ImageView>
 									<image>
@@ -106,5 +106,5 @@
 			</rowConstraints>
 		</GridPane>
 	</AnchorPane>
-</fx:root>
+	</fx:root>
 <!-- </Scene> -->

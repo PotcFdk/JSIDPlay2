@@ -24,6 +24,7 @@
 <?scenebuilder-preview-i18n-resource SidDump.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
 
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.siddump.SidDump"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
@@ -350,5 +351,5 @@
 			</TableView>
 		</VBox>
 	</AnchorPane>
-<!-- </Scene> -->
 </fx:root>
+<!-- </Scene> -->
