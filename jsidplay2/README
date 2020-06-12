@@ -1,18 +1,20 @@
-mvn clean install
-=================
-target/standalone	-	local PC version
-target/deploy		-	website version
+Build JSIDPlay2
+===============
+"mvn clean install"
+-> target/standalone	-	local PC version
+-> target/deploy		-	website version
 
-mvn clean deploy
-=================
+Deploy JSIDPlay2
+================
+"mvn clean deploy"
 does mvn clean install
 and uploads target/deploy to web-server
 
-mvn clean deploy and run UI-tests
+Build JSIDPlay2 and runs UI-tests
 =================================
 mvn clean install -P release			"You should disable screensaver to not interfere with the tests"
 
-Set the following optional properties in Eclipse:
+Set the following optional properties in Eclipse to deploy additional online features:
 Open Preferences/Run/Debug/StringSubstitution or at command line: using -D
 
 -Dgb64.mdbfile=<pathToGameBase64.mdb>
@@ -39,11 +41,11 @@ mvn -Djavafx.platform=linux -f pom-java11.xml clean install		"(Specify platform:
 instead of:
 mvn clean install
 
-Java9 and successor versions require the configured required modules and
-the module path to JavaFX at startup of JSIDPlay2.
+Java9 and successor versions require additional launch parameters.
+The configured required modules and the module path to JavaFX at startup of JSIDPlay2.
 I have added an additional launch in Eclipse: "Sidplay2Frame (Since Java9)".
 However to use this new launch in Eclipse you must
-1st: use Java11 with Eclipse for the project build
+1st: Add Java11 to Eclipse for the project build and set as default: Window/Preferences, Java/Installed JREs
 2nd: Copy the contents of pom-java11.xml to pom.xml (Eclipse will always use pom.xml) and
 3rd: Launch "mvn clean install (Java11)".
 Then, you can start JSIDPlay2 using launch "Sidplay2Frame (Since Java9)".
@@ -55,11 +57,7 @@ Eclipse JavaFX support:
 Right click on your project -> properties -> Java build path -> libraries -> add library -> javaFX SDK
 3. To edit .fxml files with FXML Editor:
 Right click on .fxml file: Open With -> Other... -> FXML Editor (Check "Use it for all '*.fxml' files") -> OK
-4. To specify text resource inside .fxml file use for example:
-<?scenebuilder-preview-i18n-resource GameBasePage.properties?>
-5. To use style sheets inside .fxml file use for example:
-<Scene stylesheets="@JSidPlay2.css"> ...
-6. To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment the commented out alternative version)
+4. To use JavaFX Preview view in Eclipse, change root tag in fxml file (uncomment the commented out alternative version)
 Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why some of the layouts need that.
 
 General tips:
