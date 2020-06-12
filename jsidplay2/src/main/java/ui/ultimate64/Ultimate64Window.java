@@ -4,6 +4,7 @@ import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREA
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREAM_ON;
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_OFF;
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_ON;
+import static sidplay.audio.AudioConfig.getDefaultBufferSize;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -285,7 +286,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		// TODO configure values
-		audioBufferSize.setValue(2048);
+		audioBufferSize.setValue(getDefaultBufferSize());
 		enablePalEmulation.setSelected(true);
 
 		pauseTransition = new PauseTransition();
