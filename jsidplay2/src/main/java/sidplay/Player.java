@@ -1138,7 +1138,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	public final String getCredits(final Properties properties) {
 		final StringBuffer credits = new StringBuffer();
-		credits.append("Java Version and User Interface v");
+		credits.append("Operating System:\n");
+		credits.append(System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")\n");
+		credits.append(System.getProperty("sun.arch.data.model") + " bits\n");
+		credits.append("\nJava version:\n");
+		credits.append(System.getProperty("java.runtime.version"));
+		credits.append("\n\nJava Version and User Interface v");
 		credits.append(properties.getProperty("version"));
 		credits.append(":\n");
 		credits.append("\tCopyright (©) 2007-" + LAST_MODIFIED.get(Calendar.YEAR) + " Ken Händel\n");
@@ -1202,8 +1207,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(builder.resid.resid.ReSID.credits());
 		credits.append(builder.resid.residfp.ReSIDfp.credits());
 		credits.append(builder.hardsid.HardSIDEmu.credits());
-		credits.append("\nJava version:");
-		credits.append(System.getProperty("java.runtime.version"));
 		return credits.toString();
 	}
 
