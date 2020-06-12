@@ -103,11 +103,11 @@ public class SidTuneTest extends JSIDPlay2Test {
 		sleep(C64_RESET_TIMEOUT);
 
 		// Driver
-		Assert.assertTrue(checkRam(0xc000, new byte[] { 0x4c, 0x00, 0x08 }));
+		Assert.assertTrue(checkRam(0x0400, new byte[] { 0x4c, 0x43, 0x4d }));
 		// Load/Play
-		Assert.assertTrue(checkRam(0x0800, new byte[] { 0x4c, (byte) 0xb6, 0x66 }));
+		Assert.assertTrue(checkRam(0x4000, new byte[] { 0x4c, (byte) 0x87, 0x40 }));
 		// Init
-		Assert.assertTrue(checkRam(0x0803, new byte[] { (byte) 0xa2, 0x35 }));
+		Assert.assertTrue(checkRam(0x4d40, new byte[] { 0x4c, 0x46, 0x4d }));
 	}
 
 	@Test
