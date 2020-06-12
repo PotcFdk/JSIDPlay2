@@ -1140,9 +1140,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Operating System:\n");
 		credits.append(System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")\n");
-		credits.append(System.getProperty("sun.arch.data.model") + " bits\n");
 		credits.append("\nJava version:\n");
 		credits.append(System.getProperty("java.runtime.version"));
+		credits.append("\n" + System.getProperty("sun.arch.data.model") + " bits");
 		credits.append("\n\nJava Version and User Interface v");
 		credits.append(properties.getProperty("version"));
 		credits.append(":\n");
