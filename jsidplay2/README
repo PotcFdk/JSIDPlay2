@@ -129,6 +129,7 @@ libresidfp introduced a new envelopegenerator and a new filter8580 recently.
 (Nov. 2016)
 
 - Wait for proguard to support Java11 and adopt changes
+- App: download sid register writes and siddump
 - fakesid and harddware cards does not seem to ensure the minimum 4 cycle delay between writes
 - Playlists are wanted to be shared online
-- App: download sid register writes and siddump
+- Windows seem to hide set "default settings" buttons
