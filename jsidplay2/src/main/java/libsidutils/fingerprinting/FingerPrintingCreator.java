@@ -106,7 +106,7 @@ public class FingerPrintingCreator {
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
 
-		WhatsSidDriver whatsSidDriver = new WhatsSidDriver();
+		whatsSidDriver = new WhatsSidDriver();
 
 		player = new Player(config);
 		player.setAudioDriver(whatsSidDriver);
