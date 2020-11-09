@@ -67,14 +67,9 @@ import ui.virtualKeyboard.Keyboard;
 public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	public static final String ID = "VIDEO";
-	private static final double PAL_MARGIN_LEFT = 55;
-	private static final double PAL_MARGIN_RIGHT = 55;
-	private static final double PAL_MARGIN_TOP = 45;
-	private static final double PAL_MARGIN_BOTTOM = 55;
-	private static final double NTSC_MARGIN_LEFT = 55;
-	private static final double NTSC_MARGIN_RIGHT = 55;
-	private static final double NTSC_MARGIN_TOP = 38;
-	private static final double NTSC_MARGIN_BOTTOM = 48;
+	private static final double SCALE_X = 1.20;
+	private static final double PAL_SCALE_Y = 1.26;
+	private static final double NTSC_SCALE_Y = 1.18;
 
 	@FXML
 	private TitledPane monitor;
@@ -106,7 +101,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 */
 	private volatile Image currentImage;
 
-	private double marginLeft, marginRight, marginTop, marginBottom;
+	private double scaleY;
 
 	private PauseTransition pauseTransition;
 	private SequentialTransition sequentialTransition;
@@ -238,9 +233,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			if (image != null) {
 				currentImage = image;
 				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
-				screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), marginLeft,
-						marginTop, screen.getWidth() - (marginLeft + marginRight),
-						screen.getHeight() - (marginTop + marginBottom));
+				screen.getGraphicsContext2D().drawImage(image, 0, 0, screen.getWidth(), screen.getHeight());
 			}
 		});
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
@@ -367,15 +360,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 */
 	private void setupVideoScreen(final CPUClock cpuClock) {
 		if (cpuClock == CPUClock.PAL) {
-			marginLeft = PAL_MARGIN_LEFT;
-			marginRight = PAL_MARGIN_RIGHT;
-			marginTop = PAL_MARGIN_TOP;
-			marginBottom = PAL_MARGIN_BOTTOM;
+			scaleY = PAL_SCALE_Y;
 		} else {
-			marginLeft = NTSC_MARGIN_LEFT;
-			marginRight = NTSC_MARGIN_RIGHT;
-			marginTop = NTSC_MARGIN_TOP;
-			marginBottom = NTSC_MARGIN_BOTTOM;
+			scaleY = NTSC_SCALE_Y;
 		}
 		pauseTransition.setDuration(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
@@ -392,10 +379,8 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		screen.setScaleY(scale);
 		monitor.setPrefHeight(Integer.MAX_VALUE);
 		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
-			imageView.setScaleX(
-					scale * screen.getWidth() / (imageView.getImage().getWidth() + marginLeft + marginRight));
-			imageView.setScaleY(
-					scale * screen.getHeight() / (imageView.getImage().getHeight() + marginTop + marginBottom));
+			imageView.setScaleX(scale * SCALE_X * screen.getWidth() / (imageView.getImage().getWidth()));
+			imageView.setScaleY(scale * scaleY * screen.getHeight() / (imageView.getImage().getHeight()));
 		}
 	}
 
