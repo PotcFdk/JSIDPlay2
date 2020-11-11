@@ -24,6 +24,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -67,9 +68,12 @@ import ui.virtualKeyboard.Keyboard;
 public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	public static final String ID = "VIDEO";
-	private static final double SCALE_X = 1.20;
-	private static final double PAL_SCALE_Y = 1.26;
-	private static final double NTSC_SCALE_Y = 1.18;
+
+	// monitorBorder transformation parameters
+	private static final double SCALE_X = 1.2;
+	private static final double PAL_SCALE_Y = 1.2;
+	private static final double NTSC_SCALE_Y = 1.0;
+	private static final int TRANSLATE_Y = 8;
 
 	@FXML
 	private TitledPane monitor;
@@ -374,14 +378,17 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	private void updateScaling() {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+
 		double scale = sidplay2Section.getVideoScaling();
-		screen.setScaleX(scale);
-		screen.setScaleY(scale);
-		monitor.setPrefHeight(Integer.MAX_VALUE);
-		for (ImageView imageView : Arrays.asList(monitorBorder, breadbox, pc64)) {
-			imageView.setScaleX(scale * SCALE_X * screen.getWidth() / (imageView.getImage().getWidth()));
-			imageView.setScaleY(scale * scaleY * screen.getHeight() / (imageView.getImage().getHeight()));
+		for (Node imageView : Arrays.asList(monitorBorder, screen, breadbox, pc64)) {
+			imageView.setScaleX(scale);
+			imageView.setScaleY(scale);
 		}
+		monitor.setPrefHeight(Integer.MAX_VALUE);
+		// adjust monitorBorder to surround screen
+		monitorBorder.setScaleX(monitorBorder.getScaleX() * SCALE_X);
+		monitorBorder.setScaleY(monitorBorder.getScaleY() * scaleY);
+		monitorBorder.setTranslateY(TRANSLATE_Y * monitorBorder.getScaleY());
 	}
 
 	/**
