@@ -1,2 +1,13 @@
 Release Notes:
 ==============
+- App: Loop song did not work
+- Video Screen gives a much clearer pucture now, blurryness removed
+- harddware cards did not seem to ensure the minimum 4 cycle delay between writes in fake stereo mode (SID is not re-used anymore)
+- SIDBlaster: Show serial number and configure accordingly
+
+Next TODOs:
+- Playlist starts with last recently player tune on last startup (just click continue)
+- Only hide maximize window without being utility app
+- HVSC update website
+- Whatssid update HVSC
+- Windows seem to hide set "default settings" buttons

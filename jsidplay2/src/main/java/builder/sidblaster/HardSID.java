@@ -1,6 +1,7 @@
 package builder.sidblaster;
 
 import com.sun.jna.Library;
+import com.sun.jna.Memory;
 
 public interface HardSID extends Library {
 	enum HSID_USB_WSTATE {
@@ -148,5 +149,17 @@ public interface HardSID extends Library {
 	 * @since 2.09
 	 */
 	byte HardSID_Try_Write(byte DeviceID, short Cycles, byte SID_reg, byte data);
+
+	/**
+	 * @since SIDBlasterUSB 5.14beta
+	 */
+	void HardSID_GetSerial(byte DeviceID, Memory mem);
+
+	default String GetSerial(byte deviceID) {
+		Memory mem = new Memory(9L);
+		mem.setMemory(0L, 9L, (byte) 0);
+		HardSID_GetSerial(deviceID, mem);
+		return mem.getString(0L, "US_ASCII");
+	}
 
 }

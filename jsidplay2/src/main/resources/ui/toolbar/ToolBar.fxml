@@ -136,12 +136,15 @@
 				</TitledPane>
 				<TitledPane text="%SIDBLASTER" expanded="false">
 					<VBox>
-						<Label text="%SIDBLASTER_0" fx:id="sidBlaster0Label" />
-						<ComboBox fx:id="sidBlaster0Box" onAction="#setSidBlaster0" />
-						<Label text="%SIDBLASTER_1" fx:id="sidBlaster1Label" />
-						<ComboBox fx:id="sidBlaster1Box" onAction="#setSidBlaster1" />
-						<Label text="%SIDBLASTER_2" fx:id="sidBlaster2Label" />
-						<ComboBox fx:id="sidBlaster2Box" onAction="#setSidBlaster2" />
+						<Label text="%SIDBLASTER_MAPPING_0" />
+						<TextField fx:id="sidBlasterMapping0" onAction="#setSidBlasterMapping0"
+							promptText="%SIDBLASTER_MAPPING_0_PROMPT_TEXT" />
+						<Label text="%SIDBLASTER_MAPPING_1" />
+						<TextField fx:id="sidBlasterMapping1" onAction="#setSidBlasterMapping1"
+							promptText="%SIDBLASTER_MAPPING_1_PROMPT_TEXT" />
+						<Label text="%SIDBLASTER_MAPPING_2" />
+						<TextField fx:id="sidBlasterMapping2" onAction="#setSidBlasterMapping2"
+							promptText="%SIDBLASTER_MAPPING_2_PROMPT_TEXT" />
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%ULTIMATE64" expanded="false" maxWidth="150">

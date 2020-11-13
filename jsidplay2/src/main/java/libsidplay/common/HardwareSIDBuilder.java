@@ -19,6 +19,15 @@ public interface HardwareSIDBuilder extends SIDBuilder {
 	Integer getDeviceId(int sidNum);
 
 	/**
+	 * Get device name of specified SID
+	 *
+	 * @param sidNum SID number
+	 *
+	 * @return device name of specified SID (null means unassigned)
+	 */
+	String getDeviceName(int sidNum);
+
+	/**
 	 * Get device chip model of specified SID
 	 *
 	 * @param sidNum SID number

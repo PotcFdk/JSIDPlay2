@@ -38,9 +38,9 @@ import libsidutils.assembler.KickAssemblerResult;
 
 class Mus extends PSid {
 
-	private static final String MUSDRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
+	private static final String MUS_DRIVER1_ASM = "/libsidplay/sidtune/musdriver1.asm";
 	private static final String MUS_DRIVER1_BIN = "/libsidplay/sidtune/musdriver1.bin";
-	private static final String MUSDRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
+	private static final String MUS_DRIVER2_ASM = "/libsidplay/sidtune/musdriver2.asm";
 	private static final String MUS_DRIVER2_BIN = "/libsidplay/sidtune/musdriver2.bin";
 
 	/** Known SID names. MUS loader scans for these. */
@@ -207,19 +207,19 @@ class Mus extends PSid {
 			KickAssembler assembler = new KickAssembler();
 
 			// Assemble MUS player 1
-			InputStream asm = Mus.class.getResourceAsStream(MUSDRIVER1_ASM);
-			preparedDriver = assembler.assemble(MUSDRIVER1_ASM, asm, new HashMap<String, String>());
+			InputStream asm = Mus.class.getResourceAsStream(MUS_DRIVER1_ASM);
+			preparedDriver = assembler.assemble(MUS_DRIVER1_ASM, asm, new HashMap<String, String>());
 			// Install MUS player 1
-			checkLabels(MUSDRIVER1_ASM, preparedDriver.getResolvedSymbols(), "data_low", "data_high", "init", "start");
+			checkLabels(MUS_DRIVER1_ASM, preparedDriver.getResolvedSymbols(), "data_low", "data_high", "init", "start");
 			info.initAddr = preparedDriver.getResolvedSymbols().get("init");
 			info.playAddr = preparedDriver.getResolvedSymbols().get("start");
 
 			if (info.getSIDChipBase(1) != 0) {
 				// Assemble MUS player 2
-				InputStream stereoAsm = Mus.class.getResourceAsStream(MUSDRIVER2_ASM);
-				preparedStereoDriver = assembler.assemble(MUSDRIVER2_ASM, stereoAsm, new HashMap<String, String>());
+				InputStream stereoAsm = Mus.class.getResourceAsStream(MUS_DRIVER2_ASM);
+				preparedStereoDriver = assembler.assemble(MUS_DRIVER2_ASM, stereoAsm, new HashMap<String, String>());
 				// Install MUS player 2
-				checkLabels(MUSDRIVER2_ASM, preparedStereoDriver.getResolvedSymbols(), "data_low", "data_high", "init",
+				checkLabels(MUS_DRIVER2_ASM, preparedStereoDriver.getResolvedSymbols(), "data_low", "data_high", "init",
 						"start");
 				info.initAddr = preparedStereoDriver.getResolvedSymbols().get("init");
 				info.playAddr = preparedStereoDriver.getResolvedSymbols().get("start");

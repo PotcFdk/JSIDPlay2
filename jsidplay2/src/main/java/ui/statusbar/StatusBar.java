@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -420,11 +421,13 @@ public class StatusBar extends C64VBox implements UIPart {
 			if (deviceCount != null) {
 				Integer deviceId0 = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(0),
 						null);
+				String deviceName0 = util.getPlayer()
+						.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(0), null);
 				ChipModel deviceChipModel0 = util.getPlayer()
 						.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(0), null);
 				if (deviceId0 != null && deviceChipModel0 != null) {
 					line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
-							deviceId0, deviceChipModel0));
+							deviceId0, Optional.ofNullable(deviceName0).orElse(""), deviceChipModel0));
 				} else {
 					line.append(emulation.getEngine().name());
 				}
@@ -432,11 +435,13 @@ public class StatusBar extends C64VBox implements UIPart {
 					line.append("+");
 					Integer deviceId1 = util.getPlayer()
 							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(1), null);
+					String deviceName1 = util.getPlayer()
+							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(1), null);
 					ChipModel deviceChipModel1 = util.getPlayer()
 							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(1), null);
 					if (deviceId1 != null && deviceChipModel1 != null) {
 						line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
-								deviceId1, deviceChipModel1));
+								deviceId1, Optional.ofNullable(deviceName1).orElse(""), deviceChipModel1));
 					} else {
 						line.append(emulation.getEngine().name());
 					}
@@ -444,11 +449,14 @@ public class StatusBar extends C64VBox implements UIPart {
 						line.append("+");
 						Integer deviceId2 = util.getPlayer()
 								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(2), null);
+						String deviceName2 = util.getPlayer()
+								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(2), null);
 						ChipModel deviceChipModel2 = util.getPlayer()
 								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(2), null);
 						if (deviceId2 != null && deviceChipModel2 != null) {
 							line.append(String.format(util.getBundle().getString("DEVICE"),
-									emulation.getEngine().name(), deviceId2, deviceChipModel2));
+									emulation.getEngine().name(), deviceId2,
+									Optional.ofNullable(deviceName2).orElse(""), deviceName2, deviceChipModel2));
 						} else {
 							line.append(emulation.getEngine().name());
 						}

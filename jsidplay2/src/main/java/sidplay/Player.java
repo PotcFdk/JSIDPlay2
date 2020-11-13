@@ -246,12 +246,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Consumer for VIC screen output as ARGB data
 	 */
-	protected List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<>();
+	private List<VideoDriver> videoDrivers = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Consumer for SID register writes
 	 */
-	protected List<SIDListener> sidListeners = new CopyOnWriteArrayList<>();
+	private List<SIDListener> sidListeners = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Fast forward: skipped VIC frames.
@@ -745,8 +745,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
 
-		verifyConfiguration(sidplay2Section);
-
+		// Check audio configuration, if audio driver has not been set by
+		// setAudioDriver()!
+		if (audioAndDriver.getKey() != null) {
+			verifyConfiguration(sidplay2Section);
+		}
 		sidBuilder = createSIDBuilder(c64.getClock());
 
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));

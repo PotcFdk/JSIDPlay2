@@ -5,6 +5,8 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import com.sun.jna.Native;
 
@@ -66,6 +68,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
+	@SuppressWarnings("deprecation")
 	public SidBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
@@ -73,6 +76,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		if (hardSID == null) {
 			try {
 				hardSID = Native.load("hardsid", HardSID.class);
+				hardSID.InitHardSID_Mapper();
+				System.out.printf("hardsid.dll loaded. Version=%02X\n", hardSID.HardSID_Version());
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows is required to use " + SIDBLASTER + " soundcard!");
 				throw e;
@@ -94,7 +99,9 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				return oldHardSID;
 			}
 			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune,
-					emulationSection.getSidBlasterModel(deviceId));
+					chipModel/* this is just a best guess */);
+//			hsid.setDeviceName(hardSID.GetSerial(deviceID));
+
 			if (hsid.lock()) {
 				sids.add(hsid);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
@@ -104,10 +111,6 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		System.err.println(/* throw new RuntimeException( */
 				String.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)",
 						sidNum));
-		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			// Fake stereo chip not available? Re-use original chip
-			return oldHardSID;
-		}
 		return SIDEmu.NONE;
 	}
 
@@ -134,6 +137,11 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	@Override
 	public Integer getDeviceId(int sidNum) {
 		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getDeviceId()) : null;
+	}
+
+	@Override
+	public String getDeviceName(int sidNum) {
+		return sidNum < sids.size() ? sids.get(sidNum).getDeviceName() : null;
 	}
 
 	@Override
@@ -215,48 +223,33 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * @return SID index of the desired SIDBlaster device
 	 */
 	private Integer getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
-		ChipModel device0Model = config.getEmulationSection().getSidBlaster0Model();
-		ChipModel device1Model = config.getEmulationSection().getSidBlaster1Model();
-		ChipModel device2Model = config.getEmulationSection().getSidBlaster2Model();
-		if (sidNum == 0) {
-			// Mono SID: choose according to the chip model type
-			if (device0Model == chipModel && 0 < hardSID.HardSID_Devices()) {
-				return 0;
-			}
-			if (device1Model == chipModel && 1 < hardSID.HardSID_Devices()) {
-				return 1;
-			}
-			if (device2Model == chipModel && 2 < hardSID.HardSID_Devices()) {
-				return 2;
-			}
-		} else {
-			// Stereo or 3-SID: use next free slot (prevent already used one and wrong type)
-			for (int sidBlasterIdx = 0; sidBlasterIdx < hardSID.HardSID_Devices(); sidBlasterIdx++) {
-				final int theSidBlasterIdx = sidBlasterIdx;
-				if (sids.stream().filter(sid -> theSidBlasterIdx == sid.getDeviceId()).findFirst().isPresent()) {
-					continue;
-				}
-				if (theSidBlasterIdx == 0 && device0Model == chipModel) {
-					return 0;
-				}
-				if (theSidBlasterIdx == 1 && device1Model == chipModel) {
-					return 1;
-				}
-				if (theSidBlasterIdx == 2 && device2Model == chipModel) {
-					return 2;
-				}
+		Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
+
+		// use next free slot (prevent already used one and wrong type)
+		for (byte deviceId = 0; deviceId < hardSID.HardSID_Devices(); deviceId++) {
+			String serialNumber = hardSID.GetSerial(deviceId);
+			if (isChipModelMatching(chipModel, deviceMap, serialNumber) && !isSerialNumAlreadyUsed(serialNumber)) {
+				return Integer.valueOf(deviceId);
 			}
 		}
 		// Nothing matched? Use next free slot (prevent already used one)
-		for (int sidBlasterIdx = 0; sidBlasterIdx < hardSID.HardSID_Devices(); sidBlasterIdx++) {
-			final int theSidBlasterIdx = sidBlasterIdx;
-			if (sids.stream().filter(sid -> theSidBlasterIdx == sid.getDeviceId()).findFirst().isPresent()) {
-				continue;
+		for (byte deviceId = 0; deviceId < hardSID.HardSID_Devices(); deviceId++) {
+			String serialNumber = hardSID.GetSerial(deviceId);
+			if (!isSerialNumAlreadyUsed(serialNumber)) {
+				return Integer.valueOf(deviceId);
 			}
-			return sidBlasterIdx;
 		}
 		// no slot left
 		return null;
+	}
+
+	private boolean isChipModelMatching(final ChipModel chipModel, Map<String, ChipModel> deviceMap,
+			String serialNumber) {
+		return deviceMap.get(serialNumber) == null || deviceMap.get(serialNumber) == chipModel;
+	}
+
+	private boolean isSerialNumAlreadyUsed(String serialNumber) {
+		return sids.stream().filter(sid -> Objects.equals(sid.getDeviceName(), serialNumber)).findFirst().isPresent();
 	}
 
 	int clocksSinceLastAccess() {

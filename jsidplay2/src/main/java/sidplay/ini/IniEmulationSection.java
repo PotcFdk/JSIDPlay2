@@ -42,9 +42,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -222,33 +222,33 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public final ChipModel getSidBlaster0Model() {
-		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_0", DEFAULT_SIDBLASTER_0, ChipModel.class);
+	public String getSidBlasterMapping0() {
+		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_0", DEFAULT_SIDBLASTER_MAPPING_0);
 	}
 
 	@Override
-	public final void setSidBlaster0Model(final ChipModel model) {
-		iniReader.setProperty("Emulation", "SIDBlaster_1", model);
+	public void setSidBlasterMapping0(String mapping) {
+		iniReader.setProperty("Emulation", "SIDBlasterMapping_0", mapping);
 	}
 
 	@Override
-	public final ChipModel getSidBlaster1Model() {
-		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_1", DEFAULT_SIDBLASTER_1, ChipModel.class);
+	public String getSidBlasterMapping1() {
+		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_1", DEFAULT_SIDBLASTER_MAPPING_1);
 	}
 
 	@Override
-	public final void setSidBlaster1Model(final ChipModel model) {
-		iniReader.setProperty("Emulation", "SIDBlaster_1", model);
+	public void setSidBlasterMapping1(String mapping) {
+		iniReader.setProperty("Emulation", "SIDBlasterMapping_1", mapping);
 	}
 
 	@Override
-	public final ChipModel getSidBlaster2Model() {
-		return iniReader.getPropertyEnum("Emulation", "SIDBlaster_2", DEFAULT_SIDBLASTER_2, ChipModel.class);
+	public String getSidBlasterMapping2() {
+		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_2", DEFAULT_SIDBLASTER_MAPPING_2);
 	}
 
 	@Override
-	public final void setSidBlaster2Model(final ChipModel model) {
-		iniReader.setProperty("Emulation", "SIDBlaster_2", model);
+	public void setSidBlasterMapping2(String mapping) {
+		iniReader.setProperty("Emulation", "SIDBlasterMapping_2", mapping);
 	}
 
 	@Override

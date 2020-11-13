@@ -4,6 +4,10 @@ import static libsidplay.common.StereoMode.AUTO;
 import static libsidplay.common.StereoMode.STEREO;
 import static libsidplay.common.StereoMode.THREE_SID;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -169,46 +173,46 @@ public interface IEmulationSection {
 	void setHardsid8580(int chip);
 
 	/**
-	 * Getter of the chip model of the first connected SIDBlaster.
+	 * Getter of the chip model of the first SIDBlaster by serial number.
 	 *
-	 * @return the chip model of the first connected SIDBlaster
+	 * @return the chip model of the first SIDBlaster by serial number
 	 */
-	ChipModel getSidBlaster0Model();
+	String getSidBlasterMapping0();
 
 	/**
-	 * Setter of the the chip model of the first connected SIDBlaster.
+	 * Setter of the chip model of the first SIDBlaster by serial number.
 	 *
-	 * @param model the chip model of the first connected SIDBlaster
+	 * @param mapping the chip model of the first SIDBlaster by serial number
 	 */
-	void setSidBlaster0Model(ChipModel model);
+	void setSidBlasterMapping0(String mapping);
 
 	/**
-	 * Getter of the chip model of the second connected SIDBlaster.
+	 * Getter of the chip model of the second SIDBlaster by serial number.
 	 *
-	 * @return the chip model of the second connected SIDBlaster
+	 * @return the chip model of the second SIDBlaster by serial number
 	 */
-	ChipModel getSidBlaster1Model();
+	String getSidBlasterMapping1();
 
 	/**
-	 * Setter of the the chip model of the second connected SIDBlaster.
+	 * Setter of the chip model of the second SIDBlaster by serial number.
 	 *
-	 * @param model the chip model of the second connected SIDBlaster
+	 * @param mapping the chip model of the second SIDBlaster by serial number
 	 */
-	void setSidBlaster1Model(ChipModel model);
+	void setSidBlasterMapping1(String mapping);
 
 	/**
-	 * Getter of the device to be used for the third connected SIDBlaster.
+	 * Getter of the chip model of the third SIDBlaster by serial number.
 	 *
-	 * @return the device to be used for the third connected SIDBlaster
+	 * @return the chip model of the third SIDBlaster by serial number
 	 */
-	ChipModel getSidBlaster2Model();
+	String getSidBlasterMapping2();
 
 	/**
-	 * Setter of the the chip model of the third connected SIDBlaster.
+	 * Setter of the chip model of the third SIDBlaster by serial number.
 	 *
-	 * @param model the chip model of the third connected SIDBlaster
+	 * @param mapping the chip model of the third SIDBlaster by serial number
 	 */
-	void setSidBlaster2Model(ChipModel model);
+	void setSidBlasterMapping2(String mapping);
 
 	/**
 	 * Getter of the host name of a NetworkSIDDevice.
@@ -932,27 +936,18 @@ public interface IEmulationSection {
 	}
 
 	/**
-	 * Get chip model depending of the SIDBlaster device ID
-	 *
-	 * @param deviceId SIDBlaster device ID
-	 * @return chip model
+	 * Get serial number to ChipModel map.
+	 * 
+	 * @return serial number to ChipModel map
 	 */
-	default ChipModel getSidBlasterModel(Integer deviceId) {
-		switch (deviceId) {
-		case 0:
-			return getSidBlaster0Model();
-		case 1:
-			return getSidBlaster1Model();
-		case 2:
-			return getSidBlaster2Model();
-
-		default:
-			throw new RuntimeException(String.format("Maximum SID Blaster devices exceeded: %d!", deviceId));
-		}
+	default Map<String, ChipModel> getSidBlasterDeviceMap() {
+		return Arrays.asList(getSidBlasterMapping0(), getSidBlasterMapping1(), getSidBlasterMapping2()).stream()
+				.map(mapping -> mapping.split("="))
+				.collect(Collectors.toMap(tokens -> tokens[0], tokens -> ChipModel.valueOf(tokens[1])));
 	}
 
 	/**
-	 * Get filter enable depending of the SID number
+	 * Get filter enable depending of the SID number.
 	 *
 	 * @param sidNum SID number
 	 * @return filter enable
@@ -972,7 +967,7 @@ public interface IEmulationSection {
 	}
 
 	/**
-	 * Set filter enable depending of the SID number
+	 * Set filter enable depending of the SID number.
 	 *
 	 * @param sidNum SID number
 	 * @param enable filter enable

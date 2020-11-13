@@ -58,8 +58,18 @@ public interface ISidPlay2Section {
 	 */
 	void setDefaultPlayLength(double playLength);
 
+	/**
+	 * Getter of the tune should loop
+	 * 
+	 * @return tune should loop
+	 */
 	boolean isLoop();
 
+	/**
+	 * Setter of the tune should loop
+	 * 
+	 * @param loop tune should loop
+	 */
 	void setLoop(boolean loop);
 
 	/**

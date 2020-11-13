@@ -71,6 +71,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		if (hardSID == null) {
 			try {
 				hardSID = Native.load("hardsid_usb", HardSID.class);
+				System.out.printf("hardsid_usb.dll loaded.");
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: 32-bit Java for Windows is required to use " + HARDSID + " soundcard!");
 				throw e;
@@ -98,10 +99,6 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 				String.format(
 						"HARDSID ERROR: System doesn't have enough SID chips. Requested: (DeviceID=%d, sidNum=%d)",
 						deviceID, sidNum));
-		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			// Fake stereo chip not available? Re-use original chip
-			return oldHardSID;
-		}
 		return SIDEmu.NONE;
 	}
 
@@ -129,6 +126,11 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	@Override
 	public Integer getDeviceId(int sidNum) {
 		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getChipNum()) : null;
+	}
+
+	@Override
+	public String getDeviceName(int sidNum) {
+		return null;
 	}
 
 	@Override

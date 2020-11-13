@@ -20,8 +20,18 @@ public interface IAudioSection {
 	 */
 	void setAudio(Audio audio);
 
+	/**
+	 * Getter of the JavaSound device number
+	 * 
+	 * @return the JavaSound device number
+	 */
 	int getDevice();
 
+	/**
+	 * Setter of the JavaSound device number
+	 * 
+	 * @param device JavaSound device number
+	 */
 	void setDevice(int device);
 
 	/**

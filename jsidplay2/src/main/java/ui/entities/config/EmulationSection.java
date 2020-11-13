@@ -43,9 +43,9 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_2;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -369,55 +369,52 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster0ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_0);
+	private StringProperty sidBlasterMapping0Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_0);
 
-	public ObjectProperty<ChipModel> sidBlaster0ModelProperty() {
-		return sidBlaster0ModelProperty;
-	}
-
-	@Enumerated(EnumType.STRING)
 	@Override
-	public ChipModel getSidBlaster0Model() {
-		return sidBlaster0ModelProperty.get();
+	public String getSidBlasterMapping0() {
+		return sidBlasterMapping0Property.get();
 	}
 
 	@Override
-	public void setSidBlaster0Model(ChipModel sidBlaster0Model) {
-		this.sidBlaster0ModelProperty.set(sidBlaster0Model);
+	public void setSidBlasterMapping0(String mapping) {
+		sidBlasterMapping0Property.set(mapping);
 	}
 
-	private ObjectProperty<ChipModel> sidBlaster1ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_1);
-
-	public ObjectProperty<ChipModel> sidBlaster1ModelProperty() {
-		return sidBlaster1ModelProperty;
+	public StringProperty sidBlaster0ModelProperty() {
+		return sidBlasterMapping0Property;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Override
-	public ChipModel getSidBlaster1Model() {
-		return sidBlaster1ModelProperty.get();
-	}
+	private StringProperty sidBlasterMapping1Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_1);
 
 	@Override
-	public void setSidBlaster1Model(ChipModel sidBlaster1Model) {
-		this.sidBlaster1ModelProperty.set(sidBlaster1Model);
-	}
-
-	private ObjectProperty<ChipModel> sidBlaster2ModelProperty = new SimpleObjectProperty<>(DEFAULT_SIDBLASTER_2);
-
-	public ObjectProperty<ChipModel> sidBlaster2ModelProperty() {
-		return sidBlaster2ModelProperty;
-	}
-
-	@Enumerated(EnumType.STRING)
-	@Override
-	public ChipModel getSidBlaster2Model() {
-		return sidBlaster2ModelProperty.get();
+	public String getSidBlasterMapping1() {
+		return sidBlasterMapping1Property.get();
 	}
 
 	@Override
-	public void setSidBlaster2Model(ChipModel sidBlaster2Model) {
-		this.sidBlaster2ModelProperty.set(sidBlaster2Model);
+	public void setSidBlasterMapping1(String mapping) {
+		sidBlasterMapping1Property.set(mapping);
+	}
+
+	public StringProperty sidBlaster1ModelProperty() {
+		return sidBlasterMapping1Property;
+	}
+
+	private StringProperty sidBlasterMapping2Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_2);
+
+	@Override
+	public String getSidBlasterMapping2() {
+		return sidBlasterMapping2Property.get();
+	}
+
+	@Override
+	public void setSidBlasterMapping2(String mapping) {
+		sidBlasterMapping2Property.set(mapping);
+	}
+
+	public StringProperty sidBlaster2ModelProperty() {
+		return sidBlasterMapping2Property;
 	}
 
 	private StringProperty netSidDevHostProperty = new SimpleStringProperty(DEFAULT_NETSIDDEV_HOST);
