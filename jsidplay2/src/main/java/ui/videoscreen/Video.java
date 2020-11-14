@@ -237,7 +237,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			if (image != null) {
 				currentImage = image;
 				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
-				screen.getGraphicsContext2D().drawImage(image, 0, 0, screen.getWidth(), screen.getHeight());
+				screen.getGraphicsContext2D().drawImage(image, 0, 0);
 			}
 		});
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
@@ -380,9 +380,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		double scale = sidplay2Section.getVideoScaling();
-		for (Node imageView : Arrays.asList(monitorBorder, screen, breadbox, pc64)) {
-			imageView.setScaleX(scale);
-			imageView.setScaleY(scale);
+		for (Node node : Arrays.asList(monitorBorder, screen, breadbox, pc64)) {
+			node.setScaleX(scale);
+			node.setScaleY(scale);
 		}
 		monitor.setPrefHeight(Integer.MAX_VALUE);
 		// adjust monitorBorder to surround screen
