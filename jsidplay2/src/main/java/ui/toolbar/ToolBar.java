@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
 import javafx.util.converter.IntegerStringConverter;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -219,39 +221,27 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
 				new TimeToStringConverter());
+		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> checkTextField(defaultTime,
+				n.intValue() != -1, "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
 		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			defaultTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
 			if (n.intValue() != -1) {
 				util.getPlayer().getTimer().updateEnd();
-				tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_TIP"));
-				defaultTime.setTooltip(tooltip);
-				defaultTime.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				tooltip.setText(util.getBundle().getString("DEFAULT_LENGTH_FORMAT"));
-				defaultTime.setTooltip(tooltip);
-				defaultTime.getStyleClass().add(CELL_VALUE_ERROR);
 			}
 		});
 		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
 				new PositiveNumberToStringConverter<>(2048));
-		audioSection.bufferSizeProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			bufferSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (n.intValue() >= 2048) {
-				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_TIP"));
-				bufferSize.setTooltip(tooltip);
-				bufferSize.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				tooltip.setText(util.getBundle().getString("BUFFER_SIZE_FORMAT"));
-				bufferSize.setTooltip(tooltip);
-				bufferSize.getStyleClass().add(CELL_VALUE_ERROR);
-			}
-		});
+		audioSection.bufferSizeProperty().addListener((obj, o, n) -> checkTextField(bufferSize, n.intValue() >= 2048,
+				"BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
 
 		sidBlasterMapping0.textProperty().bindBidirectional(emulationSection.sidBlaster0ModelProperty());
+		emulationSection.sidBlaster0ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping0,
+				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
 		sidBlasterMapping1.textProperty().bindBidirectional(emulationSection.sidBlaster1ModelProperty());
+		emulationSection.sidBlaster1ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping1,
+				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
 		sidBlasterMapping2.textProperty().bindBidirectional(emulationSection.sidBlaster2ModelProperty());
+		emulationSection.sidBlaster2ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping2,
+				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
 
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
@@ -350,6 +340,32 @@ public class ToolBar extends C64VBox implements UIPart {
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
 		this.duringInitialization = false;
+	}
+
+	private void checkTextField(TextField textField, boolean valueCorrect, String tipKey, String formatKey) {
+		final Tooltip tooltip = new Tooltip();
+		textField.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		if (valueCorrect) {
+			tooltip.setText(util.getBundle().getString(tipKey));
+			textField.setTooltip(tooltip);
+			textField.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(util.getBundle().getString(formatKey));
+			textField.setTooltip(tooltip);
+			textField.getStyleClass().add(CELL_VALUE_ERROR);
+		}
+	}
+
+	private boolean checkSidBlasterMapping(String mapping) {
+		if (mapping.isEmpty()) {
+			return true;
+		}
+		String[] keyValue = mapping.split("=");
+		if (keyValue.length != 2 || keyValue[0].length() != 8) {
+			return false;
+		}
+		return Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
+				.filter(model -> Objects.equals(model, keyValue[1])).findFirst().isPresent();
 	}
 
 	@FXML
