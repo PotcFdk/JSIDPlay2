@@ -342,32 +342,6 @@ public class ToolBar extends C64VBox implements UIPart {
 		this.duringInitialization = false;
 	}
 
-	private void checkTextField(TextField textField, boolean valueCorrect, String tipKey, String formatKey) {
-		final Tooltip tooltip = new Tooltip();
-		textField.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		if (valueCorrect) {
-			tooltip.setText(util.getBundle().getString(tipKey));
-			textField.setTooltip(tooltip);
-			textField.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString(formatKey));
-			textField.setTooltip(tooltip);
-			textField.getStyleClass().add(CELL_VALUE_ERROR);
-		}
-	}
-
-	private boolean checkSidBlasterMapping(String mapping) {
-		if (mapping.isEmpty()) {
-			return true;
-		}
-		String[] keyValue = mapping.split("=");
-		if (keyValue.length != 2 || keyValue[0].length() != 8) {
-			return false;
-		}
-		return Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
-				.filter(model -> Objects.equals(model, keyValue[1])).findFirst().isPresent();
-	}
-
 	@FXML
 	private void setAudio() {
 		restart();
@@ -616,6 +590,32 @@ public class ToolBar extends C64VBox implements UIPart {
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 		stopAppServer();
+	}
+
+	private void checkTextField(TextField textField, boolean valueCorrect, String tipKey, String formatKey) {
+		final Tooltip tooltip = new Tooltip();
+		textField.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		if (valueCorrect) {
+			tooltip.setText(util.getBundle().getString(tipKey));
+			textField.setTooltip(tooltip);
+			textField.getStyleClass().add(CELL_VALUE_OK);
+		} else {
+			tooltip.setText(util.getBundle().getString(formatKey));
+			textField.setTooltip(tooltip);
+			textField.getStyleClass().add(CELL_VALUE_ERROR);
+		}
+	}
+
+	private boolean checkSidBlasterMapping(String mapping) {
+		if (mapping.isEmpty()) {
+			return true;
+		}
+		String[] keyValue = mapping.split("=");
+		if (keyValue.length != 2 || keyValue[0].length() != 8) {
+			return false;
+		}
+		return Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
+				.filter(model -> Objects.equals(model, keyValue[1])).findFirst().isPresent();
 	}
 
 	private String getHostname() {
