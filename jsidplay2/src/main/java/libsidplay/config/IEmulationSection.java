@@ -6,6 +6,7 @@ import static libsidplay.common.StereoMode.THREE_SID;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import libsidplay.common.CPUClock;
@@ -942,7 +943,9 @@ public interface IEmulationSection {
 	 */
 	default Map<String, ChipModel> getSidBlasterDeviceMap() {
 		return Arrays.asList(getSidBlasterMapping0(), getSidBlasterMapping1(), getSidBlasterMapping2()).stream()
-				.map(mapping -> mapping.split("="))
+				.map(mapping -> mapping.split("=")).filter(mapping -> mapping.length == 2)
+				.filter(mapping -> Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
+						.filter(model -> Objects.equals(model, mapping[1])).findFirst().isPresent())
 				.collect(Collectors.toMap(tokens -> tokens[0], tokens -> ChipModel.valueOf(tokens[1])));
 	}
 

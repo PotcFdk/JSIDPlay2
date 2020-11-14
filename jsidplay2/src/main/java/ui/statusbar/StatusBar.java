@@ -383,19 +383,28 @@ public class StatusBar extends C64VBox implements UIPart {
 		EmulationSection emulation = util.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		line.append(", ");
-		ChipModel chipModel = ChipModel.getChipModel(emulation, util.getPlayer().getTune(), 0);
-		line.append(String.format("%s", chipModel));
-		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-			ChipModel stereoModel = ChipModel.getChipModel(emulation, util.getPlayer().getTune(), 1);
-			int dualSidBase = SidTune.getSIDAddress(emulation, util.getPlayer().getTune(), 1);
-			line.append(String.format("+%s(at 0x%4x)", stereoModel, dualSidBase));
-			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-				ChipModel thirdModel = ChipModel.getChipModel(emulation, util.getPlayer().getTune(), 2);
-				int thirdSidBase = SidTune.getSIDAddress(emulation, util.getPlayer().getTune(), 2);
-				line.append(String.format("+%s(at 0x%4x)", thirdModel, thirdSidBase));
+		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 0)) {
+			determineChipModel(line, 0);
+			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
+				line.append("+");
+				determineChipModel(line, 1);
+				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+					line.append("+");
+					determineChipModel(line, 2);
+				}
 			}
+
 		}
 		return line.toString();
+	}
+
+	private void determineChipModel(StringBuilder line, int sidNum) {
+		EmulationSection emulation = util.getConfig().getEmulationSection();
+
+		ChipModel chipModel = ChipModel.getChipModel(emulation, util.getPlayer().getTune(), sidNum);
+		int sidBase = SidTune.getSIDAddress(emulation, util.getPlayer().getTune(), sidNum);
+		line.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
+
 	}
 
 	private String determineEmulation() {
@@ -404,13 +413,15 @@ public class StatusBar extends C64VBox implements UIPart {
 		line.append(", ");
 		switch (emulation.getEngine()) {
 		case EMULATION:
-			line.append(String.format("%s", Emulation.getEmulation(emulation, util.getPlayer().getTune(), 0).name()));
+			line.append(Emulation.getEmulation(emulation, util.getPlayer().getTune(), 0).name());
 			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 				String stereoEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 1).name();
-				line.append(String.format("+%s", stereoEmulation));
+				line.append("+");
+				line.append(stereoEmulation);
 				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
 					String thirdEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 2).name();
-					line.append(String.format("+%s", thirdEmulation));
+					line.append("+");
+					line.append(thirdEmulation);
 				}
 			}
 			break;
@@ -419,46 +430,14 @@ public class StatusBar extends C64VBox implements UIPart {
 			Integer deviceCount = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(),
 					null);
 			if (deviceCount != null) {
-				Integer deviceId0 = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(0),
-						null);
-				String deviceName0 = util.getPlayer()
-						.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(0), null);
-				ChipModel deviceChipModel0 = util.getPlayer()
-						.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(0), null);
-				if (deviceId0 != null && deviceChipModel0 != null) {
-					line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
-							deviceId0, Optional.ofNullable(deviceName0).orElse(""), deviceChipModel0));
-				} else {
-					line.append(emulation.getEngine().name());
-				}
-				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-					line.append("+");
-					Integer deviceId1 = util.getPlayer()
-							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(1), null);
-					String deviceName1 = util.getPlayer()
-							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(1), null);
-					ChipModel deviceChipModel1 = util.getPlayer()
-							.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(1), null);
-					if (deviceId1 != null && deviceChipModel1 != null) {
-						line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(),
-								deviceId1, Optional.ofNullable(deviceName1).orElse(""), deviceChipModel1));
-					} else {
-						line.append(emulation.getEngine().name());
-					}
-					if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 0)) {
+					determineEmulation(line, 0);
+					if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
 						line.append("+");
-						Integer deviceId2 = util.getPlayer()
-								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(2), null);
-						String deviceName2 = util.getPlayer()
-								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(2), null);
-						ChipModel deviceChipModel2 = util.getPlayer()
-								.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(2), null);
-						if (deviceId2 != null && deviceChipModel2 != null) {
-							line.append(String.format(util.getBundle().getString("DEVICE"),
-									emulation.getEngine().name(), deviceId2,
-									Optional.ofNullable(deviceName2).orElse(""), deviceName2, deviceChipModel2));
-						} else {
-							line.append(emulation.getEngine().name());
+						determineEmulation(line, 1);
+						if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
+							line.append("+");
+							determineEmulation(line, 2);
 						}
 					}
 				}
@@ -467,11 +446,13 @@ public class StatusBar extends C64VBox implements UIPart {
 			}
 			// $FALL-THROUGH$
 		case NETSID:
-			line.append(String.format("%s", emulation.getEngine().name()));
+			line.append(emulation.getEngine().name());
 			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-				line.append(String.format("+%s", emulation.getEngine().name()));
+				line.append("+");
+				line.append(emulation.getEngine().name());
 				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-					line.append(String.format("+%s", emulation.getEngine().name()));
+					line.append("+");
+					line.append(emulation.getEngine().name());
 				}
 			}
 			break;
@@ -481,9 +462,26 @@ public class StatusBar extends C64VBox implements UIPart {
 		return line.toString();
 	}
 
+	private void determineEmulation(StringBuilder line, int sidNum) {
+		EmulationSection emulation = util.getConfig().getEmulationSection();
+
+		Integer deviceId = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(sidNum),
+				null);
+		String deviceName = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(sidNum),
+				null);
+		ChipModel deviceChipModel = util.getPlayer()
+				.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(sidNum), null);
+		if (deviceId != null) {
+			line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(), deviceId,
+					Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
+					Optional.ofNullable(deviceName).orElse("")));
+		} else {
+			line.append(emulation.getEngine().name());
+		}
+	}
+
 	private String determineVideoNorm() {
-		return String.format("%s",
-				CPUClock.getCPUClock(util.getConfig().getEmulationSection(), util.getPlayer().getTune()).name());
+		return CPUClock.getCPUClock(util.getConfig().getEmulationSection(), util.getPlayer().getTune()).name();
 	}
 
 	private String determineSong() {

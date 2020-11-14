@@ -158,7 +158,6 @@ public class SIDBlasterEmu extends SIDEmu {
 		boolean locked = hardSID.HardSID_Lock(deviceID);
 		if (locked) {
 			reset((byte) 0xf);
-			setDeviceName(hardSID.GetSerial(deviceID));
 			context.schedule(event, 0, Event.Phase.PHI2);
 		}
 		return locked;

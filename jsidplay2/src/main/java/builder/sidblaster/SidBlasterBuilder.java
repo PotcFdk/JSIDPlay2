@@ -3,6 +3,8 @@ package builder.sidblaster;
 import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,14 +55,19 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	private static HardSID hardSID;
 
 	/**
+	 * Number of SIDBlaster devices.
+	 */
+	private static int deviceCount;
+
+	/**
+	 * Serial numbers of SIDBlaster devices.
+	 */
+	private static String[] serialNumbers;
+
+	/**
 	 * Already used SIDBlaster SIDs.
 	 */
 	private List<SIDBlasterEmu> sids = new ArrayList<>();
-
-	/**
-	 * Device number, if more than one USB devices is connected.
-	 */
-	private byte deviceID;
 
 	protected long lastSIDWriteTime;
 
@@ -68,7 +75,6 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
-	@SuppressWarnings("deprecation")
 	public SidBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
@@ -76,12 +82,21 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		if (hardSID == null) {
 			try {
 				hardSID = Native.load("hardsid", HardSID.class);
-				hardSID.InitHardSID_Mapper();
-				System.out.printf("hardsid.dll loaded. Version=%02X\n", hardSID.HardSID_Version());
+				init();
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows is required to use " + SIDBLASTER + " soundcard!");
 				throw e;
 			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void init() {
+		hardSID.InitHardSID_Mapper();
+		deviceCount = hardSID.HardSID_Devices();
+		serialNumbers = new String[deviceCount];
+		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
+			serialNumbers[deviceId] = hardSID.GetSerial(deviceId);
 		}
 	}
 
@@ -91,16 +106,18 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 
-		Integer deviceId = getModelDependantDeviceId(chipModel, sidNum);
-		if (deviceId != null && deviceId < hardSID.HardSID_Devices()) {
+		SimpleEntry<Integer, ChipModel> deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum);
+		Integer deviceId = deviceIdAndChipModel.getKey();
+		ChipModel model = deviceIdAndChipModel.getValue();
+
+		if (deviceId != null && deviceId < deviceCount) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune,
-					chipModel/* this is just a best guess */);
-//			hsid.setDeviceName(hardSID.GetSerial(deviceID));
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, model);
+			hsid.setDeviceName(serialNumbers[deviceId]);
 
 			if (hsid.lock()) {
 				sids.add(hsid);
@@ -131,7 +148,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public int getDeviceCount() {
-		return hardSID != null ? hardSID.HardSID_Devices() : 0;
+		return deviceCount;
 	}
 
 	@Override
@@ -212,7 +229,9 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		hardSID.HardSID_Flush(deviceID);
+		for (SIDBlasterEmu hSid : sids) {
+			hardSID.HardSID_Flush(hSid.getDeviceId());
+		}
 	}
 
 	/**
@@ -222,25 +241,25 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired SIDBlaster device
 	 */
-	private Integer getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
+	private AbstractMap.SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel,
+			int sidNum) {
 		Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
 
-		// use next free slot (prevent already used one and wrong type)
-		for (byte deviceId = 0; deviceId < hardSID.HardSID_Devices(); deviceId++) {
-			String serialNumber = hardSID.GetSerial(deviceId);
-			if (isChipModelMatching(chipModel, deviceMap, serialNumber) && !isSerialNumAlreadyUsed(serialNumber)) {
-				return Integer.valueOf(deviceId);
+		// use next free slot (prevent wrong type)
+		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
+			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])
+					&& isChipModelMatching(chipModel, deviceMap, serialNumbers[deviceId])) {
+				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), chipModel);
 			}
 		}
-		// Nothing matched? Use next free slot (prevent already used one)
-		for (byte deviceId = 0; deviceId < hardSID.HardSID_Devices(); deviceId++) {
-			String serialNumber = hardSID.GetSerial(deviceId);
-			if (!isSerialNumAlreadyUsed(serialNumber)) {
-				return Integer.valueOf(deviceId);
+		// Nothing matched? Use next free slot (no matter what type)
+		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
+			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])) {
+				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), deviceMap.get(serialNumbers[deviceId]));
 			}
 		}
 		// no slot left
-		return null;
+		return new AbstractMap.SimpleEntry<>(null, null);
 	}
 
 	private boolean isChipModelMatching(final ChipModel chipModel, Map<String, ChipModel> deviceMap,
@@ -264,7 +283,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			hardSID.HardSID_Delay(deviceID, (short) (REGULAR_DELAY >> fastForwardFactor));
+			hardSID.HardSID_Delay((byte) 0, (short) (REGULAR_DELAY >> fastForwardFactor));
 		}
 		return REGULAR_DELAY;
 	}
