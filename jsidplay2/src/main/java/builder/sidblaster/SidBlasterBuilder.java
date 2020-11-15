@@ -90,9 +90,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void init() {
-		hardSID.InitHardSID_Mapper();
+		hardSID.HardSID_SetWriteBufferSize((byte) config.getEmulationSection().getSidBlasterWriteBufferSize());
 		deviceCount = hardSID.HardSID_Devices();
 		serialNumbers = new String[deviceCount];
 		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
@@ -117,10 +116,10 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				return oldHardSID;
 			}
 			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, model);
-			hsid.setDeviceName(serialNumbers[deviceId]);
 
 			if (hsid.lock()) {
 				sids.add(hsid);
+				setDeviceName(sidNum, deviceId);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
 				return hsid;
 			}
@@ -159,6 +158,12 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	@Override
 	public String getDeviceName(int sidNum) {
 		return sidNum < sids.size() ? sids.get(sidNum).getDeviceName() : null;
+	}
+
+	public void setDeviceName(int sidNum, int deviceId) {
+		if (sidNum < sids.size()) {
+			sids.get(sidNum).setDeviceName(serialNumbers[deviceId]);
+		}
 	}
 
 	@Override

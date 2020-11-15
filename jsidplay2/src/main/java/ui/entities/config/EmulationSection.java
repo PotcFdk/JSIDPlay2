@@ -46,6 +46,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -415,6 +416,23 @@ public class EmulationSection implements IEmulationSection {
 
 	public StringProperty sidBlaster2ModelProperty() {
 		return sidBlasterMapping2Property;
+	}
+
+	private ObjectProperty<Integer> sidBlasterWriteBufferSize = new SimpleObjectProperty<>(
+			DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE);
+
+	public ObjectProperty<Integer> sidBlasterWriteBufferSizeProperty() {
+		return sidBlasterWriteBufferSize;
+	}
+
+	@Override
+	public int getSidBlasterWriteBufferSize() {
+		return sidBlasterWriteBufferSize.get();
+	}
+
+	@Override
+	public void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
+		this.sidBlasterWriteBufferSize.set(sidBlasterWriteBufferSize);
 	}
 
 	private StringProperty netSidDevHostProperty = new SimpleStringProperty(DEFAULT_NETSIDDEV_HOST);

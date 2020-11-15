@@ -145,6 +145,26 @@
 						<Label text="%SIDBLASTER_MAPPING_2" />
 						<TextField fx:id="sidBlasterMapping2" onAction="#setSidBlasterMapping2"
 							promptText="%SIDBLASTER_MAPPING_2_PROMPT_TEXT" />
+						<Label text="%SIDBLASTER_WRITE_BUFFER_SIZE" alignment="CENTER_RIGHT" />
+						<ComboBox fx:id="sidBlasterWriteBufferSize">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Integer fx:value="1" />
+									<Integer fx:value="2" />
+									<Integer fx:value="4" />
+									<Integer fx:value="8" />
+									<Integer fx:value="16" />
+									<Integer fx:value="32" />
+									<Integer fx:value="64" />
+									<Integer fx:value="128" />
+									<Integer fx:value="256" />
+								</FXCollections>
+							</items>
+							<tooltip>
+								<Tooltip text="%SIDBLASTER_WRITE_BUFFER_SIZE_TIP" wrapText="true"
+									prefWidth="400" />
+							</tooltip>
+						</ComboBox>
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%ULTIMATE64" expanded="false" maxWidth="150">

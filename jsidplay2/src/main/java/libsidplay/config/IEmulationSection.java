@@ -216,6 +216,20 @@ public interface IEmulationSection {
 	void setSidBlasterMapping2(String mapping);
 
 	/**
+	 * Getter of the SidBlaster write buffer size.
+	 *
+	 * @return size of the SidBlaster write buffer
+	 */
+	int getSidBlasterWriteBufferSize();
+
+	/**
+	 * Setter of the SidBlaster write buffer size.
+	 *
+	 * @param sidBlasterWriteBufferSize SidBlaster write buffer size
+	 */
+	void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize);
+
+	/**
 	 * Getter of the host name of a NetworkSIDDevice.
 	 *
 	 * @return host name of a NetworkSIDDevice

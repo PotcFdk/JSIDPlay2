@@ -107,7 +107,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
-	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize;
+	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize, sidBlasterWriteBufferSize;
 	@FXML
 	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
@@ -242,6 +242,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		sidBlasterMapping2.textProperty().bindBidirectional(emulationSection.sidBlaster2ModelProperty());
 		emulationSection.sidBlaster2ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping2,
 				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
+		sidBlasterWriteBufferSize.valueProperty()
+				.bindBidirectional(emulationSection.sidBlasterWriteBufferSizeProperty());
 
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());

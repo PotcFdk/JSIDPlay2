@@ -162,4 +162,8 @@ public interface HardSID extends Library {
 		return mem.getString(0L, "US_ASCII");
 	}
 
+	/**
+	 * @since SIDBlasterUSB 5.15beta
+	 */
+	void HardSID_SetWriteBufferSize(byte bufferSize);
 }

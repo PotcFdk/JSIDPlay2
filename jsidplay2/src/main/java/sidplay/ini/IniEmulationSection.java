@@ -45,6 +45,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
 import static sidplay.ini.IniDefaults.DEFAULT_STEREO_EMULATION;
@@ -249,6 +250,17 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public void setSidBlasterMapping2(String mapping) {
 		iniReader.setProperty("Emulation", "SIDBlasterMapping_2", mapping);
+	}
+
+	@Override
+	public int getSidBlasterWriteBufferSize() {
+		return iniReader.getPropertyInt("Emulation", "SIDBlasterWriteBuffer Size",
+				DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE);
+	}
+
+	@Override
+	public void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
+		iniReader.setProperty("Emulation", "SIDBlasterWriteBuffer Size", sidBlasterWriteBufferSize);
 	}
 
 	@Override
