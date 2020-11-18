@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.sun.jna.Native;
 
+import builder.hardsid.HardSID.UsbWaitState;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
@@ -72,7 +73,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 			try {
 				hardSID = Native.load("hardsid_usb", HardSID.class);
 			} catch (UnsatisfiedLinkError e) {
-				System.err.println("Error: 32-bit Java for Windows is required to use " + HARDSID + " soundcard!");
+				System.err.println("Error: Windows is required to use " + HARDSID + " soundcard!");
 				throw e;
 			}
 		}
@@ -82,7 +83,8 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
 		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
 		Integer chipNum = getModelDependantChipNum(chipModel, sidNum);
-		if (deviceID < hardSID.HardSID_Devices() && chipNum != null && chipNum < hardSID.HardSID_SIDCount(deviceID)) {
+		if (deviceID < hardSID.hardsid_usb_getdevcount() && chipNum != null
+				&& chipNum < hardSID.hardsid_usb_getsidcount(deviceID)) {
 			if (oldHardSID != null) {
 				// always re-use hardware SID chips, if configuration changes
 				// the purpose is to ignore chip model changes!
@@ -119,7 +121,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public int getDeviceCount() {
-		return hardSID != null ? hardSID.HardSID_SIDCount(deviceID) : 0;
+		return hardSID != null ? hardSID.hardsid_usb_getsidcount(deviceID) : 0;
 	}
 
 	@Override
@@ -200,7 +202,12 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		hardSID.HardSID_Flush(deviceID);
+		while (hardSID.hardsid_usb_flush(deviceID) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 	}
 
 	/**
@@ -214,13 +221,13 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		int sid6581 = config.getEmulationSection().getHardsid6581();
 		int sid8580 = config.getEmulationSection().getHardsid8580();
 		if (sidNum == 0) {
-			if (0 < hardSID.HardSID_SIDCount(deviceID)) {
+			if (0 < hardSID.hardsid_usb_getsidcount(deviceID)) {
 				// Mono SID: choose according to the chip model type
 				return chipModel == ChipModel.MOS6581 ? sid6581 : sid8580;
 			}
 		} else {
 			// Stereo or 3-SID: use next free slot (prevent already used one and wrong type)
-			for (int hardSidIdx = 0; hardSidIdx < hardSID.HardSID_SIDCount(deviceID); hardSidIdx++) {
+			for (int hardSidIdx = 0; hardSidIdx < hardSID.hardsid_usb_getsidcount(deviceID); hardSidIdx++) {
 				final int theHardSIDIdx = hardSidIdx;
 				if (sids.stream().filter(sid -> theHardSIDIdx == sid.getChipNum()).findFirst().isPresent()
 						|| hardSidIdx == sid6581 || hardSidIdx == sid8580) {
@@ -245,7 +252,14 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		int diff = (int) (now - lastSIDWriteTime);
 		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
-			hardSID.HardSID_Delay(deviceID, (short) (REGULAR_DELAY >> fastForwardFactor));
+
+			while (hardSID.hardsid_usb_delay(deviceID,
+					(short) (REGULAR_DELAY >> fastForwardFactor)) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 		}
 		return REGULAR_DELAY;
 	}

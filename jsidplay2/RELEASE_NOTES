@@ -4,6 +4,7 @@ Release Notes:
 - Video Screen gives a much clearer pucture now, blurryness removed
 - harddware cards did not seem to ensure the minimum 4 cycle delay between writes in fake stereo mode (SID is not re-used anymore)
 - SIDBlaster: Show serial number and configure accordingly
+- HardSID4U: 64 bit driver added
 
 Next TODOs:
 - Playlist starts with last recently player tune on last startup (just click continue)

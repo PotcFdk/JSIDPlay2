@@ -4,6 +4,7 @@ import static libsidplay.common.SIDChip.REG_COUNT;
 
 import java.util.List;
 
+import builder.hardsid.HardSID.UsbWaitState;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -101,14 +102,41 @@ public class HardSIDEmu extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		hardSID.HardSID_Reset(deviceID);
+		hardSID.hardsid_usb_abortplay(deviceID);
 		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
-			hardSID.HardSID_Write(deviceID, chipNum, reg, (byte) 0);
+			while (hardSID.hardsid_usb_delay(deviceID, SHORTEST_DELAY) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			while (hardSID.hardsid_usb_write(deviceID, (byte) ((chipNum << 5) | reg),
+					(byte) 0) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 		}
-		hardSID.HardSID_Delay(deviceID, SHORTEST_DELAY);
-		hardSID.HardSID_Write(deviceID, chipNum, (byte) 0xf, volume);
-		hardSID.HardSID_Flush(deviceID);
+		while (hardSID.hardsid_usb_delay(deviceID, SHORTEST_DELAY) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		while (hardSID.hardsid_usb_write(deviceID, (byte) ((chipNum << 5) | 0xf),
+				volume) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		while (hardSID.hardsid_usb_flush(deviceID) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+			try {
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 	}
 
 	@Override
@@ -125,7 +153,13 @@ public class HardSIDEmu extends SIDEmu {
 
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
-			hardSID.HardSID_Write(deviceID, chipNum, (byte) addr, data);
+			while (hardSID.hardsid_usb_write(deviceID, (byte) ((chipNum << 5) | addr),
+					data) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 		});
 	}
 
@@ -133,7 +167,14 @@ public class HardSIDEmu extends SIDEmu {
 	public void clock() {
 		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 		doWriteDelayed(() -> {
-			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
+			if (clocksSinceLastAccess > 0) {
+				while (hardSID.hardsid_usb_delay(deviceID, clocksSinceLastAccess) == UsbWaitState.HSID_USB_WSTATE_BUSY)
+					try {
+						Thread.sleep(0);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+			}
 		});
 	}
 
