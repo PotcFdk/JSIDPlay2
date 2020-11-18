@@ -62,24 +62,19 @@ link:{codebase}jsiddevice-{version}.jar[Download Network SID Device] (standalone
 
 == Minimum System Requirement
 
-*Note* 64-bit Java is preferred! However, HardSID4U driver requires 32-bit Java on Windows
 |===
 | | Java | Installers for Java 8, 11, 14
 | Linux
 |
-link:{codebase}java/jdk-8u211-linux-x64.tar.gz[[small]*Java8 (64-bit)*]
-
-link:{codebase}java/jdk-8u211-linux-i586.tar.gz[[small]*Java8 (32-bit)*]
+link:{codebase}java/jdk-8u211-linux-x64.tar.gz[[small]*Java8*]
 |
 link:https://adoptopenjdk.net[https://adoptopenjdk.net]
 | Windows |
-link:{codebase}java/jdk-8u211-windows-x64.exe[[small]*Java8 (64-bit)*]
-
-link:{codebase}java/jdk-8u211-windows-i586.exe[[small]*Java8 (32-bit)*]
+link:{codebase}java/jdk-8u211-windows-x64.exe[[small]*Java8*]
 |
 link:https://adoptopenjdk.net[https://adoptopenjdk.net]
 | MacOSX |
-link:{codebase}java/jdk-8u211-macosx-x64.dmg[[small]*Java8 (64-bit)*]
+link:{codebase}java/jdk-8u211-macosx-x64.dmg[[small]*Java8*]
 |
 link:https://adoptopenjdk.net[https://adoptopenjdk.net]
 |===
