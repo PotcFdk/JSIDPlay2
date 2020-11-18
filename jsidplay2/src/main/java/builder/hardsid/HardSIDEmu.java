@@ -243,7 +243,7 @@ public class HardSIDEmu extends SIDEmu {
 
 	public static final String credits() {
 		String credits = "HardSID4U Java version by Ken Händel <kschwiersch@yahoo.de> Copyright (©) 2007\n";
-		credits += "\tSupported and with kind permission by Sandor Téli, HARD Software\n";
+		credits += "\tSupported by official HardSID support\n";
 		credits += "\tBased on HardSID V1.0.1 Engine \tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n";
 		return credits;
 	}
