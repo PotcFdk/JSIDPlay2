@@ -124,9 +124,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				return hsid;
 			}
 		}
-		System.err.println(/* throw new RuntimeException( */
-				String.format("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)",
-						sidNum));
+		System.err.printf("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)\n", sidNum);
 		return SIDEmu.NONE;
 	}
 
@@ -259,6 +257,10 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 		// Nothing matched? Use next free slot (no matter what type)
 		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
+			if (deviceCount > deviceMap.size() && deviceMap.containsKey(serialNumbers[deviceId])) {
+				// more SIDs available than configured? still skip wrong type
+				continue;
+			}
 			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])) {
 				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), deviceMap.get(serialNumbers[deviceId]));
 			}
