@@ -946,47 +946,6 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>launch4j-32bit</id>
-						<phase>package</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>gui</headerType>
-							<jar>${project.artifactId}-${project.version}.jar</jar>
-							<outfile>${project.build.directory}/standalone/${project.artifactId}_32bit-${project.version}.exe</outfile>
-							<errTitle>${project.name}</errTitle>
-							<chdir>.</chdir>
-							<priority>high</priority>
-							<downloadUrl>https://java.com/download</downloadUrl>
-							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
-							<customProcName>false</customProcName>
-							<stayAlive>false</stayAlive>
-							<icon>src/main/launch4j/jsidplay2.ico</icon>
-							<singleInstance>
-								<mutexName>${project.artifactId}</mutexName>
-								<windowTitle>Error</windowTitle>
-							</singleInstance>
-							<classPath>
-								<mainClass>${javafx.main.class}</mainClass>
-								<jarLocation>.</jarLocation>
-								<addDependencies>true</addDependencies>
-							</classPath>
-							<jre>
-								<minVersion>1.8.0</minVersion>
-								<maxVersion>1.8.0_999</maxVersion>
-								<runtimeBits>32</runtimeBits>
-							</jre>
-							<splash>
-								<file>src/main/launch4j/jsidplay2.bmp</file>
-								<waitForWindow>true</waitForWindow>
-								<timeout>240</timeout>
-								<timeoutErr>true</timeoutErr>
-							</splash>
-						</configuration>
-					</execution>
-					<execution>
 						<id>launch4j</id>
 						<phase>package</phase>
 						<goals>
