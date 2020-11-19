@@ -237,7 +237,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		// use next free slot (prevent wrong type)
 		for (int chipNum = 0; chipNum < chipCount; chipNum++) {
 			if (!isChipNumAlreadyUsed(chipNum) && isChipModelMatching(chipModel, chipNum)) {
-				System.out.println("1. sidNum=" + sidNum + ", chipNum=" + chipNum + ", chipModel=" + chipModel);
+//				System.out.println("1. sidNum=" + sidNum + ", chipNum=" + chipNum + ", chipModel=" + chipModel);
 				return chipNum;
 			}
 		}
@@ -248,7 +248,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 				continue;
 			}
 			if (!isChipNumAlreadyUsed(chipNum)) {
-				System.out.println("2. sidNum=" + sidNum + ", chipNum=" + chipNum + ", chipModel=" + chipModel);
+//				System.out.println("2. sidNum=" + sidNum + ", chipNum=" + chipNum + ", chipModel=" + chipModel);
 				return chipNum;
 			}
 		}

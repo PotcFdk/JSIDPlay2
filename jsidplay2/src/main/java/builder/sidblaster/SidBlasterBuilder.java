@@ -252,6 +252,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
 			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])
 					&& isChipModelMatching(chipModel, deviceMap, serialNumbers[deviceId])) {
+//				System.out.println(
+//						"1. sidNum=" + sidNum + ", serialNo=" + serialNumbers[deviceId] + ", chipModel=" + chipModel);
 				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), chipModel);
 			}
 		}
@@ -262,6 +264,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				continue;
 			}
 			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])) {
+//				System.out.println("2. sidNum=" + sidNum + ", serialNo=" + serialNumbers[deviceId] + ", chipModel="
+//						+ deviceMap.get(serialNumbers[deviceId]));
 				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), deviceMap.get(serialNumbers[deviceId]));
 			}
 		}
@@ -271,7 +275,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private boolean isChipModelMatching(final ChipModel chipModel, Map<String, ChipModel> deviceMap,
 			String serialNumber) {
-		return deviceMap.get(serialNumber) == null || deviceMap.get(serialNumber) == chipModel;
+		return deviceMap.get(serialNumber) == chipModel;
 	}
 
 	private boolean isSerialNumAlreadyUsed(String serialNumber) {
