@@ -1,5 +1,7 @@
 package sidplay.ini;
 
+import java.util.List;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
@@ -10,6 +12,7 @@ import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
+import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.IPrinterSection;
 import libsidplay.config.ISidPlay2Section;
@@ -135,9 +138,7 @@ public interface IniDefaults {
 	ChipModel DEFAULT_3SID_MODEL = EMULATOR_SECTION.getThirdSIDModel();
 	int DEFAULT_HARD_SID_6581 = EMULATOR_SECTION.getHardsid6581();
 	int DEFAULT_HARD_SID_8580 = EMULATOR_SECTION.getHardsid8580();
-	String DEFAULT_SIDBLASTER_MAPPING_0 = EMULATOR_SECTION.getSidBlasterMapping0();
-	String DEFAULT_SIDBLASTER_MAPPING_1 = EMULATOR_SECTION.getSidBlasterMapping1();
-	String DEFAULT_SIDBLASTER_MAPPING_2 = EMULATOR_SECTION.getSidBlasterMapping2();
+	List<? extends IDeviceMapping> DEFAULT_SIDBLASTER_DEVICE_LIST = EMULATOR_SECTION.getSidBlasterDeviceList();
 	int DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE = EMULATOR_SECTION.getSidBlasterWriteBufferSize();
 	String DEFAULT_NETSIDDEV_HOST = EMULATOR_SECTION.getNetSIDDevHost();
 	int DEFAULT_NETSIDDEV_PORT = EMULATOR_SECTION.getNetSIDDevPort();

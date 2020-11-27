@@ -13,14 +13,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer.Info;
@@ -30,6 +31,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -41,9 +43,14 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
@@ -76,6 +83,7 @@ import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
 import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
+import ui.entities.config.DeviceMapping;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 
@@ -128,7 +136,11 @@ public class ToolBar extends C64VBox implements UIPart {
 	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
 			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword,
 			appServerKeyAlias, appServerKeyPassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
-			ultimate64StreamingVideoPort, sidBlasterMapping0, sidBlasterMapping1, sidBlasterMapping2;
+			ultimate64StreamingVideoPort;
+	@FXML
+	private ScrollPane sidBlasterScrollPane;
+	@FXML
+	private VBox sidBlasterDeviceParent;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -146,6 +158,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	protected ProgressBar progress;
 
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
+
+	private ObservableList<ChipModel> sidBlasterModelsModels;
 
 	private boolean duringInitialization;
 
@@ -233,15 +247,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioSection.bufferSizeProperty().addListener((obj, o, n) -> checkTextField(bufferSize, n.intValue() >= 2048,
 				"BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
 
-		sidBlasterMapping0.textProperty().bindBidirectional(emulationSection.sidBlaster0ModelProperty());
-		emulationSection.sidBlaster0ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping0,
-				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
-		sidBlasterMapping1.textProperty().bindBidirectional(emulationSection.sidBlaster1ModelProperty());
-		emulationSection.sidBlaster1ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping1,
-				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
-		sidBlasterMapping2.textProperty().bindBidirectional(emulationSection.sidBlaster2ModelProperty());
-		emulationSection.sidBlaster2ModelProperty().addListener((obj, o, n) -> checkTextField(sidBlasterMapping2,
-				checkSidBlasterMapping(n), "SIDBLASTER_MAPPING_TIP", "SIDBLASTER_MAPPING_FORMAT"));
+		sidBlasterModelsModels = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
+		emulationSection.getSidBlasterDeviceList().stream()
+				.forEach(deviceMapping -> addDeviceMappingToUI(deviceMapping));
 		sidBlasterWriteBufferSize.valueProperty()
 				.bindBidirectional(emulationSection.sidBlasterWriteBufferSizeProperty());
 
@@ -344,6 +352,51 @@ public class ToolBar extends C64VBox implements UIPart {
 		this.duringInitialization = false;
 	}
 
+	private void addDeviceMappingToUI(DeviceMapping deviceMapping) {
+		final ResourceBundle bundle = util.getBundle();
+		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		try {
+			int prefWidth = 120;
+			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
+
+			TextField serialNumEditor = new TextField(deviceMapping.getSerialNum());
+			serialNumEditor.setPrefWidth(prefWidth);
+			serialNumEditor.setPromptText(bundle.getString("SIDBLASTER_SERIALNUM_PROMPT_TEXT"));
+			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
+			serialNumEditor.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_SERIALNUM_TIP")));
+			serialNumEditor.textProperty().addListener((obj, o, n) -> checkTextField(serialNumEditor,
+					pattern.matcher(n).find(), "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
+
+			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
+			chipModelEditor.setPrefWidth(prefWidth);
+			chipModelEditor.setItems(sidBlasterModelsModels);
+			chipModelEditor.setValue(deviceMapping.getChipModel());
+			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
+			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
+
+			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
+			Button removeButton = new Button();
+			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
+			removeButton.setGraphic(new ImageView(new Image(url.openStream())));
+			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
+				sidBlasterDeviceParent.getChildren()
+						.remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
+				emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
+			});
+
+			VBox vbox = new VBox(5, serialNumEditor, chipModelEditor, removeButton, new Separator());
+			vbox.setMaxWidth(prefWidth);
+			sidBlasterDeviceParent.getChildren().add(vbox);
+
+			Platform.runLater(() -> {
+				sidBlasterDeviceParent.requestLayout();
+				Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));
+			});
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@FXML
 	private void setAudio() {
 		restart();
@@ -394,18 +447,13 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void setSidBlasterMapping0() {
-		restart();
-	}
+	private void addSidBlaster() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-	@FXML
-	private void setSidBlasterMapping1() {
-		restart();
-	}
-
-	@FXML
-	private void setSidBlasterMapping2() {
-		restart();
+		DeviceMapping deviceMapping = new DeviceMapping();
+		deviceMapping.setChipModel(ChipModel.AUTO);
+		emulationSection.getSidBlasterDeviceList().add(deviceMapping);
+		addDeviceMappingToUI(deviceMapping);
 	}
 
 	@FXML
@@ -606,18 +654,6 @@ public class ToolBar extends C64VBox implements UIPart {
 			textField.setTooltip(tooltip);
 			textField.getStyleClass().add(CELL_VALUE_ERROR);
 		}
-	}
-
-	private boolean checkSidBlasterMapping(String mapping) {
-		if (mapping.isEmpty()) {
-			return true;
-		}
-		String[] keyValue = mapping.split("=");
-		if (keyValue.length != 2 || keyValue[0].length() != 8) {
-			return false;
-		}
-		return Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
-				.filter(model -> Objects.equals(model, keyValue[1])).findFirst().isPresent();
 	}
 
 	private String getHostname() {

@@ -259,11 +259,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 		// Nothing matched? Use next free slot (no matter what type)
 		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
-			if (deviceCount > deviceMap.size() && deviceMap.containsKey(serialNumbers[deviceId])) {
-				// more SIDs available than configured? still skip wrong type
-				continue;
-			}
-			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])) {
+			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId]) && deviceMap.get(serialNumbers[deviceId]) != null
+					&& deviceMap.get(serialNumbers[deviceId]) != ChipModel.AUTO) {
 //				System.out.println("2. sidNum=" + sidNum + ", serialNo=" + serialNumbers[deviceId] + ", chipModel="
 //						+ deviceMap.get(serialNumbers[deviceId]));
 				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), deviceMap.get(serialNumbers[deviceId]));

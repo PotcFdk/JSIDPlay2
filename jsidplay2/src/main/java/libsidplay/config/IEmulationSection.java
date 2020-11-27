@@ -4,9 +4,8 @@ import static libsidplay.common.StereoMode.AUTO;
 import static libsidplay.common.StereoMode.STEREO;
 import static libsidplay.common.StereoMode.THREE_SID;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import libsidplay.common.CPUClock;
@@ -173,47 +172,7 @@ public interface IEmulationSection {
 	 */
 	void setHardsid8580(int chip);
 
-	/**
-	 * Getter of the chip model of the first SIDBlaster by serial number.
-	 *
-	 * @return the chip model of the first SIDBlaster by serial number
-	 */
-	String getSidBlasterMapping0();
-
-	/**
-	 * Setter of the chip model of the first SIDBlaster by serial number.
-	 *
-	 * @param mapping the chip model of the first SIDBlaster by serial number
-	 */
-	void setSidBlasterMapping0(String mapping);
-
-	/**
-	 * Getter of the chip model of the second SIDBlaster by serial number.
-	 *
-	 * @return the chip model of the second SIDBlaster by serial number
-	 */
-	String getSidBlasterMapping1();
-
-	/**
-	 * Setter of the chip model of the second SIDBlaster by serial number.
-	 *
-	 * @param mapping the chip model of the second SIDBlaster by serial number
-	 */
-	void setSidBlasterMapping1(String mapping);
-
-	/**
-	 * Getter of the chip model of the third SIDBlaster by serial number.
-	 *
-	 * @return the chip model of the third SIDBlaster by serial number
-	 */
-	String getSidBlasterMapping2();
-
-	/**
-	 * Setter of the chip model of the third SIDBlaster by serial number.
-	 *
-	 * @param mapping the chip model of the third SIDBlaster by serial number
-	 */
-	void setSidBlasterMapping2(String mapping);
+	List<? extends IDeviceMapping> getSidBlasterDeviceList();
 
 	/**
 	 * Getter of the SidBlaster write buffer size.
@@ -956,11 +915,8 @@ public interface IEmulationSection {
 	 * @return serial number to ChipModel map
 	 */
 	default Map<String, ChipModel> getSidBlasterDeviceMap() {
-		return Arrays.asList(getSidBlasterMapping0(), getSidBlasterMapping1(), getSidBlasterMapping2()).stream()
-				.map(mapping -> mapping.split("=")).filter(mapping -> mapping.length == 2)
-				.filter(mapping -> Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
-						.filter(model -> Objects.equals(model, mapping[1])).findFirst().isPresent())
-				.collect(Collectors.toMap(tokens -> tokens[0], tokens -> ChipModel.valueOf(tokens[1])));
+		return getSidBlasterDeviceList().stream()
+				.collect(Collectors.toMap(tokens -> tokens.getSerialNum(), tokens -> tokens.getChipModel()));
 	}
 
 	/**

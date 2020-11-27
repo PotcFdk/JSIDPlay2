@@ -10,6 +10,7 @@
 		<class>ui.entities.config.C1541Section</class>
 		<class>ui.entities.config.Configuration</class>
 		<class>ui.entities.config.EmulationSection</class>
+		<class>ui.entities.config.DeviceMapping</class>
 		<class>ui.entities.config.FavoritesSection</class>
 		<class>ui.entities.config.FavoriteColumn</class>
 		<class>ui.entities.config.Assembly64Section</class>

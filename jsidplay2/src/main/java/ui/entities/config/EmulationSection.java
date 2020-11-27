@@ -43,9 +43,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
+import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_DEVICE_LIST;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
@@ -65,10 +63,14 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -89,6 +91,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
+import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
 import ui.common.FileToStringConverter;
@@ -96,6 +99,15 @@ import ui.common.FileToStringConverter;
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.EmulationSection")
 public class EmulationSection implements IEmulationSection {
+
+	private final List<DeviceMapping> INITIAL_SIDBLASTER_DEVICE_LIST;
+	{
+		INITIAL_SIDBLASTER_DEVICE_LIST = new ArrayList<>();
+		for (IDeviceMapping iDeviceMapping : DEFAULT_SIDBLASTER_DEVICE_LIST) {
+			INITIAL_SIDBLASTER_DEVICE_LIST
+					.add(new DeviceMapping(iDeviceMapping.getSerialNum(), iDeviceMapping.getChipModel()));
+		}
+	}
 
 	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
 
@@ -370,52 +382,19 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private StringProperty sidBlasterMapping0Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_0);
+	protected List<DeviceMapping> sidBlasterDeviceList = INITIAL_SIDBLASTER_DEVICE_LIST;
 
+	public void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
+		this.sidBlasterDeviceList = sidBlasterDeviceList;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
 	@Override
-	public String getSidBlasterMapping0() {
-		return sidBlasterMapping0Property.get();
-	}
-
-	@Override
-	public void setSidBlasterMapping0(String mapping) {
-		sidBlasterMapping0Property.set(mapping);
-	}
-
-	public StringProperty sidBlaster0ModelProperty() {
-		return sidBlasterMapping0Property;
-	}
-
-	private StringProperty sidBlasterMapping1Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_1);
-
-	@Override
-	public String getSidBlasterMapping1() {
-		return sidBlasterMapping1Property.get();
-	}
-
-	@Override
-	public void setSidBlasterMapping1(String mapping) {
-		sidBlasterMapping1Property.set(mapping);
-	}
-
-	public StringProperty sidBlaster1ModelProperty() {
-		return sidBlasterMapping1Property;
-	}
-
-	private StringProperty sidBlasterMapping2Property = new SimpleStringProperty(DEFAULT_SIDBLASTER_MAPPING_2);
-
-	@Override
-	public String getSidBlasterMapping2() {
-		return sidBlasterMapping2Property.get();
-	}
-
-	@Override
-	public void setSidBlasterMapping2(String mapping) {
-		sidBlasterMapping2Property.set(mapping);
-	}
-
-	public StringProperty sidBlaster2ModelProperty() {
-		return sidBlasterMapping2Property;
+	public List<DeviceMapping> getSidBlasterDeviceList() {
+		if (sidBlasterDeviceList == null) {
+			sidBlasterDeviceList = new ArrayList<>();
+		}
+		return sidBlasterDeviceList;
 	}
 
 	private ObjectProperty<Integer> sidBlasterWriteBufferSize = new SimpleObjectProperty<>(

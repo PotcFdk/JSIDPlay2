@@ -42,9 +42,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_ReSIDfp_STEREO_FILTER_8580;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_0;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_1;
-import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_MAPPING_2;
 import static sidplay.ini.IniDefaults.DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_SID_NUM_TO_READ;
@@ -64,6 +61,12 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
@@ -72,6 +75,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
+import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
 
 /**
@@ -223,33 +227,21 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public String getSidBlasterMapping0() {
-		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_0", DEFAULT_SIDBLASTER_MAPPING_0);
-	}
+	public List<? extends IDeviceMapping> getSidBlasterDeviceList() {
+		int mappingCount = iniReader.getPropertyInt("Emulation", "SIDBlasterMapping_N", 0);
 
-	@Override
-	public void setSidBlasterMapping0(String mapping) {
-		iniReader.setProperty("Emulation", "SIDBlasterMapping_0", mapping);
-	}
+		int mappingNum = 0;
+		List<String> mappingList = new ArrayList<>();
+		do {
+			mappingList.add(iniReader.getPropertyString("Emulation", "SIDBlasterMapping_" + mappingNum++, ""));
+		} while (mappingNum < mappingCount);
 
-	@Override
-	public String getSidBlasterMapping1() {
-		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_1", DEFAULT_SIDBLASTER_MAPPING_1);
-	}
-
-	@Override
-	public void setSidBlasterMapping1(String mapping) {
-		iniReader.setProperty("Emulation", "SIDBlasterMapping_1", mapping);
-	}
-
-	@Override
-	public String getSidBlasterMapping2() {
-		return iniReader.getPropertyString("Emulation", "SIDBlasterMapping_2", DEFAULT_SIDBLASTER_MAPPING_2);
-	}
-
-	@Override
-	public void setSidBlasterMapping2(String mapping) {
-		iniReader.setProperty("Emulation", "SIDBlasterMapping_2", mapping);
+		return mappingList.stream().filter(Objects::nonNull).map(mapping -> mapping.split("="))
+				.filter(mapping -> mapping.length == 2)
+				.filter(mapping -> Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
+						.filter(model -> Objects.equals(model, mapping[1])).findFirst().isPresent())
+				.map(tokens -> new IniDeviceMapping(tokens[0], ChipModel.valueOf(tokens[1])))
+				.collect(Collectors.toList());
 	}
 
 	@Override
