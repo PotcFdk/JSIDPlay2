@@ -3,7 +3,6 @@ package builder.sidblaster;
 import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
-import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +118,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 			if (hsid.lock()) {
 				sids.add(hsid);
-				setDeviceName(sidNum, deviceId);
+				setDeviceName(sidNum, serialNumbers[deviceId]);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
 				return hsid;
 			}
@@ -158,9 +157,9 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return sidNum < sids.size() ? sids.get(sidNum).getDeviceName() : null;
 	}
 
-	public void setDeviceName(int sidNum, int deviceId) {
+	public void setDeviceName(int sidNum, String serialNo) {
 		if (sidNum < sids.size()) {
-			sids.get(sidNum).setDeviceName(serialNumbers[deviceId]);
+			sids.get(sidNum).setDeviceName(serialNo);
 		}
 	}
 
@@ -244,39 +243,32 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired SIDBlaster device
 	 */
-	private AbstractMap.SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel,
-			int sidNum) {
-		Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
+	private SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
+		final Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
 
 		// use next free slot (prevent wrong type)
-		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
-			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId])
-					&& isChipModelMatching(chipModel, deviceMap, serialNumbers[deviceId])) {
-//				System.out.println(
-//						"1. sidNum=" + sidNum + ", serialNo=" + serialNumbers[deviceId] + ", chipModel=" + chipModel);
-				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), chipModel);
+		for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
+			String serialNo = serialNumbers[deviceId];
+
+			if (!isSerialNumAlreadyUsed(serialNo) && chipModel == deviceMap.get(serialNo)) {
+				return new SimpleEntry<>(deviceId, chipModel);
 			}
 		}
 		// Nothing matched? Use next free slot (no matter what type)
-		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
-			if (!isSerialNumAlreadyUsed(serialNumbers[deviceId]) && deviceMap.get(serialNumbers[deviceId]) != null
-					&& deviceMap.get(serialNumbers[deviceId]) != ChipModel.AUTO) {
-//				System.out.println("2. sidNum=" + sidNum + ", serialNo=" + serialNumbers[deviceId] + ", chipModel="
-//						+ deviceMap.get(serialNumbers[deviceId]));
-				return new AbstractMap.SimpleEntry<>(Integer.valueOf(deviceId), deviceMap.get(serialNumbers[deviceId]));
+		for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
+			String serialNo = serialNumbers[deviceId];
+
+			if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null
+					&& deviceMap.get(serialNo) != ChipModel.AUTO) {
+				return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
 			}
 		}
 		// no slot left
-		return new AbstractMap.SimpleEntry<>(null, null);
+		return new SimpleEntry<>(null, null);
 	}
 
-	private boolean isChipModelMatching(final ChipModel chipModel, Map<String, ChipModel> deviceMap,
-			String serialNumber) {
-		return deviceMap.get(serialNumber) == chipModel;
-	}
-
-	private boolean isSerialNumAlreadyUsed(String serialNumber) {
-		return sids.stream().filter(sid -> Objects.equals(sid.getDeviceName(), serialNumber)).findFirst().isPresent();
+	private boolean isSerialNumAlreadyUsed(String serialNo) {
+		return sids.stream().filter(sid -> Objects.equals(sid.getDeviceName(), serialNo)).findFirst().isPresent();
 	}
 
 	int clocksSinceLastAccess() {

@@ -915,8 +915,8 @@ public interface IEmulationSection {
 	 * @return serial number to ChipModel map
 	 */
 	default Map<String, ChipModel> getSidBlasterDeviceMap() {
-		return getSidBlasterDeviceList().stream()
-				.collect(Collectors.toMap(tokens -> tokens.getSerialNum(), tokens -> tokens.getChipModel()));
+		return getSidBlasterDeviceList().stream().collect(
+				Collectors.toMap(deviceMapping -> deviceMapping.getSerialNum(), tokens -> tokens.getChipModel()));
 	}
 
 	/**

@@ -159,7 +159,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
-	private ObservableList<ChipModel> sidBlasterModelsModels;
+	private ObservableList<ChipModel> sidBlasterModels;
 
 	private boolean duringInitialization;
 
@@ -247,9 +247,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioSection.bufferSizeProperty().addListener((obj, o, n) -> checkTextField(bufferSize, n.intValue() >= 2048,
 				"BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
 
-		sidBlasterModelsModels = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
-		emulationSection.getSidBlasterDeviceList().stream()
-				.forEach(deviceMapping -> addDeviceMappingToUI(deviceMapping));
+		sidBlasterModels = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
+		emulationSection.getSidBlasterDeviceList().stream().forEach(this::addDeviceMappingToUI);
+
 		sidBlasterWriteBufferSize.valueProperty()
 				.bindBidirectional(emulationSection.sidBlasterWriteBufferSizeProperty());
 
@@ -357,27 +357,26 @@ public class ToolBar extends C64VBox implements UIPart {
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		try {
 			int prefWidth = 120;
+			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
 			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
 
 			TextField serialNumEditor = new TextField(deviceMapping.getSerialNum());
 			serialNumEditor.setPrefWidth(prefWidth);
 			serialNumEditor.setPromptText(bundle.getString("SIDBLASTER_SERIALNUM_PROMPT_TEXT"));
-			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
 			serialNumEditor.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_SERIALNUM_TIP")));
+			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
 			serialNumEditor.textProperty().addListener((obj, o, n) -> checkTextField(serialNumEditor,
 					pattern.matcher(n).find(), "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
 
 			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
 			chipModelEditor.setPrefWidth(prefWidth);
-			chipModelEditor.setItems(sidBlasterModelsModels);
+			chipModelEditor.setItems(sidBlasterModels);
 			chipModelEditor.setValue(deviceMapping.getChipModel());
 			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
 
-			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
-			Button removeButton = new Button();
+			Button removeButton = new Button("", new ImageView(new Image(url.openStream())));
 			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
-			removeButton.setGraphic(new ImageView(new Image(url.openStream())));
 			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
 				sidBlasterDeviceParent.getChildren()
 						.remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
@@ -388,6 +387,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			vbox.setMaxWidth(prefWidth);
 			sidBlasterDeviceParent.getChildren().add(vbox);
 
+			// scroll to bottom automatically
 			Platform.runLater(() -> {
 				sidBlasterDeviceParent.requestLayout();
 				Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));

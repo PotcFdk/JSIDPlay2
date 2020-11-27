@@ -65,6 +65,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -91,7 +92,6 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
-import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
 import ui.common.FileToStringConverter;
@@ -99,15 +99,6 @@ import ui.common.FileToStringConverter;
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.EmulationSection")
 public class EmulationSection implements IEmulationSection {
-
-	private final List<DeviceMapping> INITIAL_SIDBLASTER_DEVICE_LIST;
-	{
-		INITIAL_SIDBLASTER_DEVICE_LIST = new ArrayList<>();
-		for (IDeviceMapping iDeviceMapping : DEFAULT_SIDBLASTER_DEVICE_LIST) {
-			INITIAL_SIDBLASTER_DEVICE_LIST
-					.add(new DeviceMapping(iDeviceMapping.getSerialNum(), iDeviceMapping.getChipModel()));
-		}
-	}
 
 	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
 
@@ -382,7 +373,9 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	protected List<DeviceMapping> sidBlasterDeviceList = INITIAL_SIDBLASTER_DEVICE_LIST;
+	private List<DeviceMapping> sidBlasterDeviceList = DEFAULT_SIDBLASTER_DEVICE_LIST.stream()
+			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel()))
+			.collect(Collectors.toList());
 
 	public void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
 		this.sidBlasterDeviceList = sidBlasterDeviceList;
