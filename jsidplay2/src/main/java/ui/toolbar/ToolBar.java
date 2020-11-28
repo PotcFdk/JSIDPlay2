@@ -1,6 +1,7 @@
 package ui.toolbar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
@@ -18,8 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -94,6 +97,27 @@ import ui.entities.config.SidPlay2Section;
 
 public class ToolBar extends C64VBox implements UIPart {
 
+	protected final class EmulationChange implements PropertyChangeListener {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			if (event.getNewValue() == State.START) {
+				Platform.runLater(() -> {
+					util.getPlayer().configureMixer(mixer -> {
+						List<String> serialNumbers = new ArrayList<>(MAX_SIDS);
+						if (mixer instanceof SidBlasterBuilder) {
+							SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
+							for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+								serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
+							}
+						}
+						setSidBlasterDevicesActive(serialNumbers);
+					});
+				});
+			}
+		}
+	}
+
 	private StateChangeListener propertyChangeListener;
 
 	private class StateChangeListener implements PropertyChangeListener {
@@ -165,6 +189,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
 	private ObservableList<ChipModel> sidBlasterModels;
+
+	private PropertyChangeListener emulationChange;
 
 	private boolean duringInitialization;
 
@@ -354,6 +380,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
+		emulationChange = new EmulationChange();
+		util.getPlayer().stateProperty().addListener(emulationChange);
+
 		this.duringInitialization = false;
 	}
 
@@ -400,6 +429,9 @@ public class ToolBar extends C64VBox implements UIPart {
 
 			VBox vbox = new VBox(5, hbox, serialNumEditor, chipModelEditor, new Separator());
 			vbox.setMaxWidth(prefWidth);
+			vbox.getStyleClass().add("sidblaster-device");
+			vbox.getProperties().put("serialNo", deviceMapping.getSerialNum());
+
 			sidBlasterDeviceParent.getChildren().add(vbox);
 
 			// scroll to bottom automatically
@@ -689,6 +721,18 @@ public class ToolBar extends C64VBox implements UIPart {
 			textField.setTooltip(tooltip);
 			textField.getStyleClass().add(CELL_VALUE_ERROR);
 		}
+	}
+
+	private void setSidBlasterDevicesActive(List<String> serialNumbers) {
+		for (Node node : sidBlasterDeviceParent.getChildren()) {
+			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
+
+			node.getStyleClass().remove("active");
+			if (serialNoOfDevice != null && serialNumbers.contains(serialNoOfDevice)) {
+				node.getStyleClass().add("active");
+			}
+		}
+
 	}
 
 	private String getHostname() {

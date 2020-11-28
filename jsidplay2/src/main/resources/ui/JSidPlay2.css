@@ -101,3 +101,7 @@
 .label {
 	 -fx-font-size: 12;
 }
+
+.sidblaster-device.active .text-field {
+	-fx-background-color: lightgreen;
+}
