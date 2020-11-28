@@ -1228,10 +1228,9 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		Alert alert = new Alert(AlertType.ERROR, "");
+		Alert alert = new Alert(AlertType.ERROR, msg);
 		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alert.getDialogPane().setHeaderText(msg);
 		alert.showAndWait();
 	}
 }

@@ -475,11 +475,11 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	private void doCreateSearchIndex() {
-		Alert alert = new Alert(AlertType.CONFIRMATION, "");
+		String msg = String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString());
+
+		Alert alert = new Alert(AlertType.CONFIRMATION, msg);
 		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("CREATE_SEARCH_DATABASE"));
-		alert.getDialogPane()
-				.setHeaderText(String.format(util.getBundle().getString("RECREATE_DATABASE"), type.get().toString()));
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			startSearch(true);
@@ -590,10 +590,10 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg, MusicCollectionType type) {
-		Alert alert = new Alert(AlertType.ERROR, "");
+		msg = String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg;
+
+		Alert alert = new Alert(AlertType.ERROR, msg);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alert.getDialogPane()
-				.setHeaderText(String.format(util.getBundle().getString("ERR_CANNOT_CONFIGURE"), type) + msg);
 		alert.showAndWait();
 	}
 

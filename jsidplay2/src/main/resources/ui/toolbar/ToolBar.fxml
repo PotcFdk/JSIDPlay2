@@ -25,6 +25,7 @@
 <?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource ToolBar.properties?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Region?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
 <!-- Ctrl+Shift+C to toggle comment -->
@@ -144,18 +145,33 @@
 							</VBox>
 						</ScrollPane>
 						<VBox spacing="5">
-							<Button onAction="#addSidBlaster">
-								<tooltip>
-									<Tooltip text="%ADD_SIDBLASTER_TIP" />
-								</tooltip>
-								<graphic>
-									<ImageView>
-										<image>
-											<Image url="@/ui/icons/add_sidblaster.png" />
-										</image>
-									</ImageView>
-								</graphic>
-							</Button>
+							<HBox>
+								<Button onAction="#addSidBlaster">
+									<tooltip>
+										<Tooltip text="%ADD_SIDBLASTER_TIP" />
+									</tooltip>
+									<graphic>
+										<ImageView>
+											<image>
+												<Image url="@/ui/icons/add_sidblaster.png" />
+											</image>
+										</ImageView>
+									</graphic>
+								</Button>
+								<Region HBox.hgrow="ALWAYS" />
+								<Button onAction="#autodetect">
+									<tooltip>
+										<Tooltip text="%AUTODETECT_TIP" />
+									</tooltip>
+									<graphic>
+										<ImageView>
+											<image>
+												<Image url="@/ui/icons/autodetect_sidblaster.png" />
+											</image>
+										</ImageView>
+									</graphic>
+								</Button>
+							</HBox>
 						</VBox>
 						<VBox>
 							<Label text="%SIDBLASTER_WRITE_BUFFER_SIZE" alignment="CENTER_RIGHT" />

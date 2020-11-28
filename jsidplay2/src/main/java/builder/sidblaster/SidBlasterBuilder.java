@@ -147,6 +147,10 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return deviceCount;
 	}
 
+	public static String[] getSerialNumbers() {
+		return serialNumbers;
+	}
+
 	@Override
 	public Integer getDeviceId(int sidNum) {
 		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getDeviceId()) : null;

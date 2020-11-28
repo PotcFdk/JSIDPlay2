@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.sound.sampled.Mixer.Info;
 
 import builder.netsiddev.NetSIDDevConnection;
+import builder.sidblaster.SidBlasterBuilder;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -470,6 +471,27 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	private void autodetect() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		try {
+			// first fetch serial numbers
+			new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
+					util.getPlayer().getC64().getClock());
+
+			// overwrite device list
+			emulationSection.getSidBlasterDeviceList().clear();
+			sidBlasterDeviceParent.getChildren().clear();
+			for (String serialNumber : SidBlasterBuilder.getSerialNumbers()) {
+				DeviceMapping deviceMapping = new DeviceMapping(serialNumber, ChipModel.MOS8580, true);
+				emulationSection.getSidBlasterDeviceList().add(deviceMapping);
+				addDeviceMappingToUI(deviceMapping);
+			}
+		} catch (Error error) {
+			openErrorDialog(error.getMessage());
+		}
+	}
+
+	@FXML
 	private void setSid6581() {
 		restart();
 	}
@@ -690,10 +712,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	private void openErrorDialog(String msg) {
-		Alert alert = new Alert(AlertType.ERROR, "");
+		Alert alert = new Alert(AlertType.ERROR, msg);
 		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
-		alert.getDialogPane().setHeaderText(msg);
 		alert.showAndWait();
 	}
 

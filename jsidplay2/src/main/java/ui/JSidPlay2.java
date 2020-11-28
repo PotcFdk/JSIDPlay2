@@ -61,11 +61,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@Override
 	public boolean isAllowed() {
 		if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ASK) {
+			String msg = util.getBundle().getString("EXTEND_DISK_IMAGE_TO_40_TRACKS");
+
 			// EXTEND_ASK
-			Alert alert = new Alert(AlertType.CONFIRMATION, "");
+			Alert alert = new Alert(AlertType.CONFIRMATION, msg);
 			alert.initStyle(StageStyle.UTILITY);
 			alert.setTitle(util.getBundle().getString("EXTEND_DISK_IMAGE"));
-			alert.getDialogPane().setHeaderText(util.getBundle().getString("EXTEND_DISK_IMAGE_TO_40_TRACKS"));
 			Optional<ButtonType> result = alert.showAndWait();
 			return result.isPresent() && result.get() == ButtonType.OK;
 		} else if (util.getConfig().getC1541Section().getExtendImagePolicy() == ExtendImagePolicy.EXTEND_ACCESS) {
