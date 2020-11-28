@@ -31,7 +31,7 @@ import sidplay.audio.AudioDriver;
  */
 public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
-	private static final short REGULAR_DELAY = 4096;
+	private static final short REGULAR_DELAY = 128;
 
 	/**
 	 * System event context.
