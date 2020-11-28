@@ -5,15 +5,27 @@ import libsidplay.config.IDeviceMapping;
 
 public class IniDeviceMapping implements IDeviceMapping {
 
+	private boolean used;
 	private String serialNum;
 	private ChipModel chipModel;
 
 	public IniDeviceMapping() {
 	}
 
-	public IniDeviceMapping(String serialNum, ChipModel chipModel) {
+	public IniDeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
 		this.serialNum = serialNum;
 		this.chipModel = chipModel;
+		this.used = used;
+	}
+
+	@Override
+	public boolean isUsed() {
+		return used;
+	}
+
+	@Override
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 
 	@Override

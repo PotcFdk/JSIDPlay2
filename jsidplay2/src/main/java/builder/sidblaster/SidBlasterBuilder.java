@@ -258,8 +258,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
 			String serialNo = serialNumbers[deviceId];
 
-			if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null
-					&& deviceMap.get(serialNo) != ChipModel.AUTO) {
+			if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null) {
 				return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
 			}
 		}

@@ -240,7 +240,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 				.filter(mapping -> mapping.length == 2)
 				.filter(mapping -> Arrays.asList(ChipModel.values()).stream().map(ChipModel::toString)
 						.filter(model -> Objects.equals(model, mapping[1])).findFirst().isPresent())
-				.map(tokens -> new IniDeviceMapping(tokens[0], ChipModel.valueOf(tokens[1])))
+				.map(tokens -> new IniDeviceMapping(tokens[0], ChipModel.valueOf(tokens[1]), true))
 				.collect(Collectors.toList());
 	}
 

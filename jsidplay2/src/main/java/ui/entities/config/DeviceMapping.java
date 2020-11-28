@@ -30,6 +30,18 @@ public class DeviceMapping implements IDeviceMapping {
 		this.id = id;
 	}
 
+	private boolean used;
+
+	@Override
+	public boolean isUsed() {
+		return used;
+	}
+
+	@Override
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
+
 	private String serialNum;
 
 	@Override
@@ -59,9 +71,10 @@ public class DeviceMapping implements IDeviceMapping {
 		super();
 	}
 
-	public DeviceMapping(String serialNum, ChipModel chipModel) {
+	public DeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
 		this.serialNum = serialNum;
 		this.chipModel = chipModel;
+		this.used = used;
 	}
 
 }

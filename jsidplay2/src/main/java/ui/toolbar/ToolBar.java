@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,6 +51,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -247,7 +251,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioSection.bufferSizeProperty().addListener((obj, o, n) -> checkTextField(bufferSize, n.intValue() >= 2048,
 				"BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
 
-		sidBlasterModels = FXCollections.<ChipModel>observableArrayList(ChipModel.values());
+		sidBlasterModels = FXCollections.<ChipModel>observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
 		emulationSection.getSidBlasterDeviceList().stream().forEach(this::addDeviceMappingToUI);
 
 		sidBlasterWriteBufferSize.valueProperty()
@@ -356,7 +360,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		final ResourceBundle bundle = util.getBundle();
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		try {
-			int prefWidth = 120;
+			int prefWidth = 140;
 			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
 			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
 
@@ -371,11 +375,12 @@ public class ToolBar extends C64VBox implements UIPart {
 			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
 			chipModelEditor.setPrefWidth(prefWidth);
 			chipModelEditor.setItems(sidBlasterModels);
-			chipModelEditor.setValue(deviceMapping.getChipModel());
+			chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
 			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
 
-			Button removeButton = new Button("", new ImageView(new Image(url.openStream())));
+			ImageView graphic = new ImageView(new Image(url.openStream(), 8, 8, true, true));
+			Button removeButton = new Button("", graphic);
 			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
 			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
 				sidBlasterDeviceParent.getChildren()
@@ -383,7 +388,16 @@ public class ToolBar extends C64VBox implements UIPart {
 				emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
 			});
 
-			VBox vbox = new VBox(5, serialNumEditor, chipModelEditor, removeButton, new Separator());
+			CheckBox usedCheckbox = new CheckBox(bundle.getString("SIDBLASTER_USED"));
+			usedCheckbox.setSelected(deviceMapping.isUsed());
+			usedCheckbox.setOnAction(action -> deviceMapping.setUsed(usedCheckbox.isSelected()));
+
+			Region region = new Region();
+			HBox hbox = new HBox(usedCheckbox, region, removeButton);
+			HBox.setHgrow(region, Priority.ALWAYS);
+			HBox.setHgrow(removeButton, Priority.NEVER);
+
+			VBox vbox = new VBox(5, hbox, serialNumEditor, chipModelEditor, new Separator());
 			vbox.setMaxWidth(prefWidth);
 			sidBlasterDeviceParent.getChildren().add(vbox);
 
@@ -451,7 +465,6 @@ public class ToolBar extends C64VBox implements UIPart {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		DeviceMapping deviceMapping = new DeviceMapping();
-		deviceMapping.setChipModel(ChipModel.AUTO);
 		emulationSection.getSidBlasterDeviceList().add(deviceMapping);
 		addDeviceMappingToUI(deviceMapping);
 	}

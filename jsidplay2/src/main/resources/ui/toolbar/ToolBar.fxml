@@ -138,7 +138,7 @@
 				<TitledPane text="%SIDBLASTER" expanded="false">
 					<VBox>
 						<Label text="%SIDBLASTER_DEVICE_LIST" alignment="CENTER_RIGHT" />
-						<ScrollPane fx:id="sidBlasterScrollPane" maxHeight="320"
+						<ScrollPane fx:id="sidBlasterScrollPane" maxHeight="380"
 							vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
 							<VBox fx:id="sidBlasterDeviceParent" style="-fx-padding: 8px" spacing="5">
 							</VBox>

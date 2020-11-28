@@ -374,7 +374,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	private List<DeviceMapping> sidBlasterDeviceList = DEFAULT_SIDBLASTER_DEVICE_LIST.stream()
-			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel()))
+			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
 			.collect(Collectors.toList());
 
 	public void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
