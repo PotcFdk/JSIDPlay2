@@ -36,7 +36,7 @@
 					<children>
 						<TitledPane id="background" fx:id="monitor" text="%MONITOR"
 							collapsible="false" GridPane.columnIndex="0" GridPane.rowIndex="0">
-							<StackPane>
+							<StackPane translateY="-20">
 								<Canvas fx:id="screen" />
 								<ImageView fx:id="monitorBorder">
 									<image>
