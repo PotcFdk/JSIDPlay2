@@ -97,27 +97,6 @@ import ui.entities.config.SidPlay2Section;
 
 public class ToolBar extends C64VBox implements UIPart {
 
-	protected final class EmulationChange implements PropertyChangeListener {
-
-		@Override
-		public void propertyChange(PropertyChangeEvent event) {
-			if (event.getNewValue() == State.START) {
-				Platform.runLater(() -> {
-					util.getPlayer().configureMixer(mixer -> {
-						List<String> serialNumbers = new ArrayList<>(MAX_SIDS);
-						if (mixer instanceof SidBlasterBuilder) {
-							SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
-							for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-								serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
-							}
-						}
-						setSidBlasterDevicesActive(serialNumbers);
-					});
-				});
-			}
-		}
-	}
-
 	private StateChangeListener propertyChangeListener;
 
 	private class StateChangeListener implements PropertyChangeListener {
@@ -131,6 +110,16 @@ public class ToolBar extends C64VBox implements UIPart {
 						&& util.getPlayer().getAudioDriver().isRecording()) {
 					saveRecordingLabel.setDisable(false);
 				}
+				util.getPlayer().configureMixer(mixer -> {
+					List<String> serialNumbers = new ArrayList<>();
+					if (mixer instanceof SidBlasterBuilder) {
+						SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
+						for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+							serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
+						}
+					}
+					setActiveSidBlasterDevices(serialNumbers);
+				});
 			});
 		}
 
@@ -189,8 +178,6 @@ public class ToolBar extends C64VBox implements UIPart {
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
 	private ObservableList<ChipModel> sidBlasterModels;
-
-	private PropertyChangeListener emulationChange;
 
 	private boolean duringInitialization;
 
@@ -380,68 +367,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
-		emulationChange = new EmulationChange();
-		util.getPlayer().stateProperty().addListener(emulationChange);
-
 		this.duringInitialization = false;
-	}
-
-	private void addDeviceMappingToUI(DeviceMapping deviceMapping) {
-		final ResourceBundle bundle = util.getBundle();
-		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		try {
-			int prefWidth = 140;
-			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
-			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
-
-			TextField serialNumEditor = new TextField(deviceMapping.getSerialNum());
-			serialNumEditor.setPrefWidth(prefWidth);
-			serialNumEditor.setPromptText(bundle.getString("SIDBLASTER_SERIALNUM_PROMPT_TEXT"));
-			serialNumEditor.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_SERIALNUM_TIP")));
-			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
-			serialNumEditor.textProperty().addListener((obj, o, n) -> checkTextField(serialNumEditor,
-					pattern.matcher(n).find(), "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
-
-			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
-			chipModelEditor.setPrefWidth(prefWidth);
-			chipModelEditor.setItems(sidBlasterModels);
-			chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
-			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
-			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
-
-			ImageView graphic = new ImageView(new Image(url.openStream(), 8, 8, true, true));
-			Button removeButton = new Button("", graphic);
-			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
-			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
-				sidBlasterDeviceParent.getChildren()
-						.remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
-				emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
-			});
-
-			CheckBox usedCheckbox = new CheckBox(bundle.getString("SIDBLASTER_USED"));
-			usedCheckbox.setSelected(deviceMapping.isUsed());
-			usedCheckbox.setOnAction(action -> deviceMapping.setUsed(usedCheckbox.isSelected()));
-
-			Region region = new Region();
-			HBox hbox = new HBox(usedCheckbox, region, removeButton);
-			HBox.setHgrow(region, Priority.ALWAYS);
-			HBox.setHgrow(removeButton, Priority.NEVER);
-
-			VBox vbox = new VBox(5, hbox, serialNumEditor, chipModelEditor, new Separator());
-			vbox.setMaxWidth(prefWidth);
-			vbox.getStyleClass().add("sidblaster-device");
-			vbox.getProperties().put("serialNo", deviceMapping.getSerialNum());
-
-			sidBlasterDeviceParent.getChildren().add(vbox);
-
-			// scroll to bottom automatically
-			Platform.runLater(() -> {
-				sidBlasterDeviceParent.requestLayout();
-				Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@FXML
@@ -723,7 +649,65 @@ public class ToolBar extends C64VBox implements UIPart {
 		}
 	}
 
-	private void setSidBlasterDevicesActive(List<String> serialNumbers) {
+	private void addDeviceMappingToUI(DeviceMapping deviceMapping) {
+		final ResourceBundle bundle = util.getBundle();
+		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		try {
+			int prefWidth = 140;
+			URL url = getClass().getResource("/ui/icons/remove_sidblaster.png");
+			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
+
+			TextField serialNumEditor = new TextField(deviceMapping.getSerialNum());
+			serialNumEditor.setPrefWidth(prefWidth);
+			serialNumEditor.setPromptText(bundle.getString("SIDBLASTER_SERIALNUM_PROMPT_TEXT"));
+			serialNumEditor.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_SERIALNUM_TIP")));
+			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
+			serialNumEditor.textProperty().addListener((obj, o, n) -> checkTextField(serialNumEditor,
+					pattern.matcher(n).find(), "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
+
+			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
+			chipModelEditor.setPrefWidth(prefWidth);
+			chipModelEditor.setItems(sidBlasterModels);
+			chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
+			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
+			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
+
+			ImageView graphic = new ImageView(new Image(url.openStream(), 8, 8, true, true));
+			Button removeButton = new Button("", graphic);
+			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
+			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
+				sidBlasterDeviceParent.getChildren()
+						.remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
+				emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
+			});
+
+			CheckBox usedCheckbox = new CheckBox(bundle.getString("SIDBLASTER_USED"));
+			usedCheckbox.setSelected(deviceMapping.isUsed());
+			usedCheckbox.setOnAction(action -> deviceMapping.setUsed(usedCheckbox.isSelected()));
+
+			Region region = new Region();
+			HBox hbox = new HBox(usedCheckbox, region, removeButton);
+			HBox.setHgrow(region, Priority.ALWAYS);
+			HBox.setHgrow(removeButton, Priority.NEVER);
+
+			VBox vbox = new VBox(5, hbox, serialNumEditor, chipModelEditor, new Separator());
+			vbox.setMaxWidth(prefWidth);
+			vbox.getStyleClass().add("sidblaster-device");
+			vbox.getProperties().put("serialNo", deviceMapping.getSerialNum());
+
+			sidBlasterDeviceParent.getChildren().add(vbox);
+
+			// scroll to bottom automatically
+			Platform.runLater(() -> {
+				sidBlasterDeviceParent.requestLayout();
+				Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));
+			});
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void setActiveSidBlasterDevices(List<String> serialNumbers) {
 		for (Node node : sidBlasterDeviceParent.getChildren()) {
 			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
 
