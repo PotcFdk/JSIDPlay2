@@ -32,6 +32,7 @@ import javax.sound.sampled.Mixer.Info;
 
 import builder.netsiddev.NetSIDDevConnection;
 import builder.sidblaster.SidBlasterBuilder;
+import builder.sidblaster.SidBlasterTestBuilder;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -73,6 +74,7 @@ import libsidplay.common.SamplingRate;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTuneError;
 import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
@@ -80,6 +82,7 @@ import server.restful.common.Connectors;
 import sidplay.Player;
 import sidplay.audio.Audio;
 import sidplay.audio.JavaSound;
+import sidplay.ini.IniConfig;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -105,21 +108,24 @@ public class ToolBar extends C64VBox implements UIPart {
 			Platform.runLater(() -> {
 				if (event.getNewValue() == State.START) {
 					saveRecordingLabel.setDisable(true);
+					if (testPlayer != null) {
+						testPlayer.stopC64();
+					}
+					util.getPlayer().configureMixer(mixer -> {
+						List<String> serialNumbers = new ArrayList<>();
+						if (mixer instanceof SidBlasterBuilder) {
+							SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
+							for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+								serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
+							}
+						}
+						setActiveSidBlasterDevices(serialNumbers);
+					});
 				}
 				if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
 						&& util.getPlayer().getAudioDriver().isRecording()) {
 					saveRecordingLabel.setDisable(false);
 				}
-				util.getPlayer().configureMixer(mixer -> {
-					List<String> serialNumbers = new ArrayList<>();
-					if (mixer instanceof SidBlasterBuilder) {
-						SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
-						for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-							serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
-						}
-					}
-					setActiveSidBlasterDevices(serialNumbers);
-				});
 			});
 		}
 
@@ -186,6 +192,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	 */
 	private JSIDPlay2Server jsidplay2Server;
 
+	private Player testPlayer;
+
 	public ToolBar() {
 		super();
 	}
@@ -238,7 +246,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioBufferSize.valueProperty().bindBidirectional(audioSection.audioBufferSizeProperty());
 
 		engineBox.setConverter(new EnumToStringConverter<Engine>(bundle));
-		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.values()));
+		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.EMULATION, Engine.NETSID, Engine.HARDSID,
+				Engine.SIDBLASTER));
 		engineBox.valueProperty().addListener((obj, o, n) -> {
 			hardsid6581Box.setDisable(!Engine.HARDSID.equals(n));
 			hardsid8580Box.setDisable(!Engine.HARDSID.equals(n));
@@ -685,8 +694,13 @@ public class ToolBar extends C64VBox implements UIPart {
 			usedCheckbox.setSelected(deviceMapping.isUsed());
 			usedCheckbox.setOnAction(action -> deviceMapping.setUsed(usedCheckbox.isSelected()));
 
+			Button testButton = new Button(bundle.getString("SIDBLASTER_TEST"));
+			testButton.addEventHandler(ActionEvent.ACTION, action -> testSidBlaster(deviceMapping.getSerialNum()));
+
+			VBox functionsVbox = new VBox(usedCheckbox, testButton);
+
 			Region region = new Region();
-			HBox hbox = new HBox(usedCheckbox, region, removeButton);
+			HBox hbox = new HBox(functionsVbox, region, removeButton);
 			HBox.setHgrow(region, Priority.ALWAYS);
 			HBox.setHgrow(removeButton, Priority.NEVER);
 
@@ -717,6 +731,41 @@ public class ToolBar extends C64VBox implements UIPart {
 			}
 		}
 
+	}
+
+	private void testSidBlaster(String serialNo) {
+		try {
+			util.getPlayer().stopC64(true);
+
+			if (testPlayer != null) {
+				testPlayer.stopC64();
+			}
+			if (testPlayer == null) {
+				testPlayer = new Player(new IniConfig(false, null));
+				testPlayer.stateProperty().addListener(event -> {
+					Platform.runLater(() -> {
+						if (event.getNewValue() == State.START) {
+							testPlayer.configureMixer(mixer -> {
+								List<String> serialNumbers = new ArrayList<>();
+								if (mixer instanceof SidBlasterBuilder) {
+									SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
+									for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+										serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
+									}
+								}
+								setActiveSidBlasterDevices(serialNumbers);
+							});
+						}
+					});
+				});
+			}
+			testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER_TEST);
+			SidBlasterTestBuilder.serialNoToTest = serialNo;
+			testPlayer.play(SidTune.load("sidblaster_test.sid",
+					ToolBar.class.getResourceAsStream("/builder/sidblaster/sidblaster_test.sid")));
+		} catch (IOException | SidTuneError e) {
+			openErrorDialog(e.getMessage());
+		}
 	}
 
 	private String getHostname() {

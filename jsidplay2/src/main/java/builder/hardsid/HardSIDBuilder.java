@@ -4,11 +4,15 @@ import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.sun.jna.DefaultTypeMapper;
+import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.platform.EnumConverter;
 
-import builder.hardsid.HardSID.UsbWaitState;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
@@ -81,13 +85,25 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
-				hardSID = Native.load("hardsid_usb", HardSID.class);
+				hardSID = Native.load("hardsid_usb", HardSID.class, createOptions());
 				init();
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows is required to use " + HARDSID + " soundcard!");
 				throw e;
 			}
 		}
+	}
+
+	private Map<String, Object> createOptions() {
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(Library.OPTION_TYPE_MAPPER, new DefaultTypeMapper() {
+			{
+				addTypeConverter(WState.class, new EnumConverter<WState>(WState.class));
+				addTypeConverter(SysMode.class, new EnumConverter<SysMode>(SysMode.class));
+				addTypeConverter(DeviceType.class, new EnumConverter<DeviceType>(DeviceType.class));
+			}
+		});
+		return options;
 	}
 
 	private void init() {
@@ -214,7 +230,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		while (hardSID.hardsid_usb_flush(deviceID) == UsbWaitState.HSID_USB_WSTATE_BUSY) {
+		while (hardSID.hardsid_usb_flush(deviceID) == WState.WSTATE_BUSY) {
 			try {
 				Thread.sleep(0);
 			} catch (InterruptedException e) {
@@ -282,7 +298,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 			lastSIDWriteTime += REGULAR_DELAY;
 
 			while (hardSID.hardsid_usb_delay(deviceID,
-					(short) (REGULAR_DELAY >> fastForwardFactor)) == UsbWaitState.HSID_USB_WSTATE_BUSY) {
+					(short) (REGULAR_DELAY >> fastForwardFactor)) == WState.WSTATE_BUSY) {
 				try {
 					Thread.sleep(0);
 				} catch (InterruptedException e) {

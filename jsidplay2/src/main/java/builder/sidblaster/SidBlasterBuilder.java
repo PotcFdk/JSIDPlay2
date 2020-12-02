@@ -31,7 +31,7 @@ import sidplay.audio.AudioDriver;
  */
 public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
-	private static final short REGULAR_DELAY = 128;
+	private static final short REGULAR_DELAY = 4096/* 128 works for Andreas Schumm *//* 4096 forks for me */;
 
 	/**
 	 * System event context.
@@ -61,7 +61,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Serial numbers of SIDBlaster devices.
 	 */
-	private static String[] serialNumbers;
+	static String[] serialNumbers;
 
 	/**
 	 * Already used SIDBlaster SIDs.
@@ -247,7 +247,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * @param sidNum    current SID number
 	 * @return SID index of the desired SIDBlaster device
 	 */
-	private SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
+	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
 		final Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
 
 		// use next free slot (prevent wrong type)

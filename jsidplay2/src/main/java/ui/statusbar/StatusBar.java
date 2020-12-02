@@ -427,6 +427,7 @@ public class StatusBar extends C64VBox implements UIPart {
 			break;
 		case HARDSID:
 		case SIDBLASTER:
+		case SIDBLASTER_TEST:
 			Integer deviceCount = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(),
 					null);
 			if (deviceCount != null) {

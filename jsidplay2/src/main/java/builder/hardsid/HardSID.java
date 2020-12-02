@@ -4,18 +4,16 @@ import com.sun.jna.Library;
 
 public interface HardSID extends Library {
 
-	public static interface UsbWaitState {
-		public static final int HSID_USB_WSTATE_OK = 1;
-		public static final int HSID_USB_WSTATE_BUSY = 2;
-		public static final int HSID_USB_WSTATE_ERROR = 3;
-		public static final int HSID_USB_WSTATE_END = 4;
-	}
-
 	/**
 	 * initializes the management library in sync or async mode and selects SIDPlay
 	 * mode on the device (sysmode=1)
 	 */
-	boolean hardsid_usb_init(boolean syncmode, byte sysmode);
+	boolean hardsid_usb_init(boolean syncmode, SysMode sysmode);
+
+	/**
+	 * closes the managament library
+	 */
+	void hardsid_usb_close();
 
 	/**
 	 * returns the number of USB HardSID devices plugged into the computer
@@ -28,22 +26,57 @@ public interface HardSID extends Library {
 	byte hardsid_usb_getsidcount(byte deviceID);
 
 	/**
+	 * read state
+	 */
+	WState hardsid_usb_readstate(byte devId);
+
+	/**
+	 * sync
+	 */
+	WState hardsid_usb_sync(byte devId);
+
+	/**
+	 * perform the communication in async or sync mode
+	 */
+	WState hardsid_usb_write_internal(byte devId);
+
+	/**
+	 * schedules a write command
+	 */
+	WState hardsid_usb_write_direct(byte dev_id, byte reg, byte data);
+
+	/**
 	 * schedules a write command (sidNum&lt;&lt;5 is part of Reg)
 	 */
-	int hardsid_usb_write(byte deviceID, byte reg, byte data);
+	WState hardsid_usb_write(byte deviceID, byte reg, byte data);
 
 	/**
 	 * plays the remaining data from the buffer
 	 */
-	int hardsid_usb_flush(byte deviceID);
+	WState hardsid_usb_flush(byte deviceID);
+
+	/**
+	 * selects one of the sysmodes on the device
+	 */
+	WState hardsid_usb_setmode(byte dev_id, SysMode newsysmode);
 
 	/**
 	 * schedules a delay command
 	 */
-	int hardsid_usb_delay(byte deviceID, short cycles);
+	WState hardsid_usb_delay(byte deviceID, short cycles);
 
 	/**
 	 * aborts the playback ASAP
 	 */
 	void hardsid_usb_abortplay(byte deviceID);
+
+	/**
+	 * queries driver state variables (such as errorpacketcount)
+	 */
+	int hardsid_usb_querystatus(byte dev_id);
+
+	/**
+	 * returns the device type (HardSID 4U, HardSID UPlay, etc...)
+	 */
+	DeviceType hardsid_usb_getdevicetype(byte dev_id);
 }
