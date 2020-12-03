@@ -4,7 +4,7 @@ import static libsidplay.common.SIDChip.REG_COUNT;
 
 import java.util.List;
 
-import builder.sidblaster.HardSID.HSID_USB_WSTATE;
+import builder.hardsid.WState;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -125,7 +125,7 @@ public class SIDBlasterEmu extends SIDEmu {
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, clocksSinceLastAccess, (byte) addr,
-					data) == HSID_USB_WSTATE.HSID_USB_WSTATE_BUSY.getRc()) {
+					data) == WState.WSTATE_BUSY) {
 				;
 			}
 		});

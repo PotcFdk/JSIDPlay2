@@ -5,12 +5,17 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.sun.jna.DefaultTypeMapper;
+import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.platform.EnumConverter;
 
+import builder.hardsid.WState;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
@@ -82,13 +87,23 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
-				hardSID = Native.load("hardsid", HardSID.class);
+				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows is required to use " + SIDBLASTER + " soundcard!");
 				throw e;
 			}
 		}
+	}
+
+	private Map<String, Object> createOptions() {
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(Library.OPTION_TYPE_MAPPER, new DefaultTypeMapper() {
+			{
+				addTypeConverter(WState.class, new EnumConverter<WState>(WState.class));
+			}
+		});
+		return options;
 	}
 
 	private void init() {

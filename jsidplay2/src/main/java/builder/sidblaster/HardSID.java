@@ -3,20 +3,9 @@ package builder.sidblaster;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
 
+import builder.hardsid.WState;
+
 public interface HardSID extends Library {
-	enum HSID_USB_WSTATE {
-		HSID_USB_WSTATE_OK(1), HSID_USB_WSTATE_BUSY(2), HSID_USB_WSTATE_ERROR(3), HSID_USB_WSTATE_END(4);
-
-		private int rc;
-
-		private HSID_USB_WSTATE(int rc) {
-			this.rc = rc;
-		}
-
-		int getRc() {
-			return rc;
-		}
-	}
 
 	// Version 2 Interface (Cycle exact interface)
 
@@ -148,7 +137,7 @@ public interface HardSID extends Library {
 	/**
 	 * @since 2.09
 	 */
-	byte HardSID_Try_Write(byte DeviceID, short Cycles, byte SID_reg, byte data);
+	WState HardSID_Try_Write(byte DeviceID, short Cycles, byte SID_reg, byte data);
 
 	/**
 	 * @since SIDBlasterUSB 5.14beta
