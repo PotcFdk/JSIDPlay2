@@ -8,7 +8,5 @@ public enum Engine {
 	/** Hardware (HardSID4U USB device) */
 	HARDSID,
 	/** Hardware (SidBlaster USB device) */
-	SIDBLASTER,
-	/** Hardware (SidBlaster USB device) test mode */
-	SIDBLASTER_TEST
+	SIDBLASTER
 }

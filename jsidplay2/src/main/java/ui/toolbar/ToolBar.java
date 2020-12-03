@@ -32,7 +32,6 @@ import javax.sound.sampled.Mixer.Info;
 
 import builder.netsiddev.NetSIDDevConnection;
 import builder.sidblaster.SidBlasterBuilder;
-import builder.sidblaster.SidBlasterTestBuilder;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -69,6 +68,7 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.Mixer;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.common.Ultimate64Mode;
@@ -112,14 +112,9 @@ public class ToolBar extends C64VBox implements UIPart {
 						testPlayer.stopC64();
 					}
 					util.getPlayer().configureMixer(mixer -> {
-						List<String> serialNumbers = new ArrayList<>();
-						if (mixer instanceof SidBlasterBuilder) {
-							SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
-							for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-								serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
-							}
-						}
-						setActiveSidBlasterDevices(serialNumbers);
+						Platform.runLater(() -> {
+							setActiveSidBlasterDevices(mixer);
+						});
 					});
 				}
 				if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
@@ -721,7 +716,37 @@ public class ToolBar extends C64VBox implements UIPart {
 		}
 	}
 
-	private void setActiveSidBlasterDevices(List<String> serialNumbers) {
+	private void testSidBlaster(String serialNo) {
+		try {
+			util.getPlayer().stopC64(true);
+
+			if (testPlayer == null) {
+				testPlayer = new Player(new IniConfig(false, null));
+				testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER);
+				testPlayer.stateProperty().addListener(event -> {
+					if (event.getNewValue() == State.START) {
+						testPlayer.configureMixer(mixer -> ((SidBlasterBuilder) mixer).setTestMode(serialNo));
+						testPlayer.configureMixer(mixer -> Platform.runLater(() -> setActiveSidBlasterDevices(mixer)));
+					}
+				});
+			} else {
+				testPlayer.stopC64();
+			}
+			testPlayer.play(SidTune.load("sidblaster_test.sid",
+					ToolBar.class.getResourceAsStream("/builder/sidblaster/sidblaster_test.sid")));
+		} catch (IOException | SidTuneError e) {
+			openErrorDialog(e.getMessage());
+		}
+	}
+
+	private void setActiveSidBlasterDevices(Mixer mixer) {
+		List<String> serialNumbers = new ArrayList<>();
+		if (mixer instanceof SidBlasterBuilder) {
+			SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
+			for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+				serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
+			}
+		}
 		for (Node node : sidBlasterDeviceParent.getChildren()) {
 			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
 
@@ -729,42 +754,6 @@ public class ToolBar extends C64VBox implements UIPart {
 			if (serialNoOfDevice != null && serialNumbers.contains(serialNoOfDevice)) {
 				node.getStyleClass().add("active");
 			}
-		}
-
-	}
-
-	private void testSidBlaster(String serialNo) {
-		try {
-			util.getPlayer().stopC64(true);
-
-			if (testPlayer != null) {
-				testPlayer.stopC64();
-			}
-			if (testPlayer == null) {
-				testPlayer = new Player(new IniConfig(false, null));
-				testPlayer.stateProperty().addListener(event -> {
-					Platform.runLater(() -> {
-						if (event.getNewValue() == State.START) {
-							testPlayer.configureMixer(mixer -> {
-								List<String> serialNumbers = new ArrayList<>();
-								if (mixer instanceof SidBlasterBuilder) {
-									SidBlasterBuilder sidBlasterBuilder = (SidBlasterBuilder) mixer;
-									for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-										serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
-									}
-								}
-								setActiveSidBlasterDevices(serialNumbers);
-							});
-						}
-					});
-				});
-			}
-			testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER_TEST);
-			SidBlasterTestBuilder.serialNoToTest = serialNo;
-			testPlayer.play(SidTune.load("sidblaster_test.sid",
-					ToolBar.class.getResourceAsStream("/builder/sidblaster/sidblaster_test.sid")));
-		} catch (IOException | SidTuneError e) {
-			openErrorDialog(e.getMessage());
 		}
 	}
 

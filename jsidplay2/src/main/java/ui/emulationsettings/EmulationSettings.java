@@ -7,7 +7,6 @@ import static libsidplay.common.Emulation.RESIDFP;
 import static libsidplay.common.Engine.HARDSID;
 import static libsidplay.common.Engine.NETSID;
 import static libsidplay.common.Engine.SIDBLASTER;
-import static libsidplay.common.Engine.SIDBLASTER_TEST;
 import static libsidplay.common.SIDChip.FC_MAX;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
@@ -354,8 +353,8 @@ public class EmulationSettings extends C64Window {
 	private void enableStereoSettings(SidTune tune) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		boolean hardwareBasedSid = emulationSection.getEngine() == HARDSID || emulationSection.getEngine() == SIDBLASTER
-				|| emulationSection.getEngine() == SIDBLASTER_TEST;
+		boolean hardwareBasedSid = emulationSection.getEngine() == HARDSID
+				|| emulationSection.getEngine() == SIDBLASTER;
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);
 		boolean isForcedStereo = emulationSection.isForceStereoTune();

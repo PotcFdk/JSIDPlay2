@@ -46,7 +46,6 @@ import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
 import builder.resid.SIDMixer;
 import builder.sidblaster.SidBlasterBuilder;
-import builder.sidblaster.SidBlasterTestBuilder;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Engine;
@@ -781,8 +780,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case SIDBLASTER:
 			return new SidBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
-		case SIDBLASTER_TEST:
-			return new SidBlasterTestBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}

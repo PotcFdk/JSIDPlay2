@@ -74,6 +74,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
+	private String serialNoToTest;
+
 	public SidBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
@@ -104,7 +106,13 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 
-		SimpleEntry<Integer, ChipModel> deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum);
+		final SimpleEntry<Integer, ChipModel> deviceIdAndChipModel;
+		if (serialNoToTest != null) {
+			deviceIdAndChipModel = getModelDependantDeviceIdToTest(chipModel, sidNum);
+		} else {
+			deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum);
+		}
+
 		Integer deviceId = deviceIdAndChipModel.getKey();
 		ChipModel model = deviceIdAndChipModel.getValue();
 
@@ -268,6 +276,27 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 		// no slot left
 		return new SimpleEntry<>(null, null);
+	}
+
+	/**
+	 * Test specific device
+	 * 
+	 * @param serialNo serial number to test
+	 */
+	public void setTestMode(String serialNo) {
+		this.serialNoToTest = serialNo;
+	}
+
+	/**
+	 * TEST MODE: use specific device for sound output
+	 */
+	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceIdToTest(final ChipModel chipModel, int sidNum) {
+		for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
+			if (serialNumbers[deviceId].equals(serialNoToTest)) {
+				return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
+			}
+		}
+		return new SimpleEntry<Integer, ChipModel>(0, chipModel);
 	}
 
 	private boolean isSerialNumAlreadyUsed(String serialNo) {
