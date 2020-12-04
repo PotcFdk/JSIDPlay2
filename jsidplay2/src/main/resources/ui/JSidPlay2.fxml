@@ -27,7 +27,9 @@
 				<TabPane focusTraversable="false" fx:id="tabbedPane"
 					tabClosingPolicy="ALL_TABS" />
 			</center>
+			<bottom>
+				<StatusBar HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+			</bottom>
 		</BorderPane>
-		<StatusBar HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
 	</VBox>
 </Scene>

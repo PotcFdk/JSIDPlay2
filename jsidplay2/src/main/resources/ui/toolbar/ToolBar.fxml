@@ -137,14 +137,14 @@
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%SIDBLASTER" expanded="false">
-					<VBox>
+					<VBox spacing="10">
 						<Label text="%SIDBLASTER_DEVICE_LIST" alignment="CENTER_RIGHT" />
-						<ScrollPane fx:id="sidBlasterScrollPane" maxHeight="380"
+						<ScrollPane fx:id="sidBlasterScrollPane" maxHeight="400"
 							vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
 							<VBox fx:id="sidBlasterDeviceParent" style="-fx-padding: 8px" spacing="5">
 							</VBox>
 						</ScrollPane>
-						<VBox spacing="5">
+						<VBox>
 							<HBox>
 								<Button onAction="#addSidBlaster">
 									<tooltip>

@@ -79,8 +79,6 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
-	private String serialNoToTest;
-
 	public SidBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
@@ -122,8 +120,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 
 		final SimpleEntry<Integer, ChipModel> deviceIdAndChipModel;
-		if (serialNoToTest != null) {
-			deviceIdAndChipModel = getModelDependantDeviceIdToTest(chipModel, sidNum);
+		if (audioSection.getDevice() != 0) {
+			deviceIdAndChipModel = getModelDependantDeviceIdToTest(chipModel, audioSection.getDevice());
 		} else {
 			deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum);
 		}
@@ -294,20 +292,14 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	/**
-	 * Test specific device
-	 * 
-	 * @param serialNo serial number to test
-	 */
-	public void setTestMode(String serialNo) {
-		this.serialNoToTest = serialNo;
-	}
-
-	/**
 	 * TEST MODE: use specific device for sound output
+	 * 
+	 * @param deviceIdToTest
 	 */
-	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceIdToTest(final ChipModel chipModel, int sidNum) {
+	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceIdToTest(final ChipModel chipModel,
+			int deviceIdToTest) {
 		for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
-			if (serialNumbers[deviceId].equals(serialNoToTest)) {
+			if (deviceId == deviceIdToTest - 1) {
 				return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
 			}
 		}

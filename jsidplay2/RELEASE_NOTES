@@ -14,7 +14,4 @@ Next TODOs:
 - Windows seem to hide set "default settings" buttons
 
 Sidblaster todos:
-Smaller widgets (too large in width)
-Further click on test button should stop the test
-Add "S.No:" label to text field
-minimize window: let status-bar always being visible (even if sidblaster toolbat had being expanded)
+minimize window: let status-bar always being visible (even if sidblaster toolbar had being expanded)
