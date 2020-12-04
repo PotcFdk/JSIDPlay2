@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -424,7 +425,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void addSidBlaster() {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
 		DeviceMapping deviceMapping = new DeviceMapping();
 		emulationSection.getSidBlasterDeviceList().add(deviceMapping);
@@ -433,12 +434,12 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void autodetect() {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		try {
-			// first fetch serial numbers
-			new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
-					util.getPlayer().getC64().getClock());
+		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
+		try {
+			if (SidBlasterBuilder.getSerialNumbers() == null) {
+				triggerFetchSerialNumbers();
+			}
 			// overwrite device list
 			emulationSection.getSidBlasterDeviceList().clear();
 			sidBlasterDeviceParent.getChildren().clear();
@@ -652,6 +653,11 @@ public class ToolBar extends C64VBox implements UIPart {
 		}
 	}
 
+	private void triggerFetchSerialNumbers() {
+		new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
+				util.getPlayer().getC64().getClock());
+	}
+
 	private void addDeviceMappingToUI(DeviceMapping deviceMapping) {
 		final ResourceBundle bundle = util.getBundle();
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
@@ -734,6 +740,9 @@ public class ToolBar extends C64VBox implements UIPart {
 				testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER);
 			}
 
+			if (SidBlasterBuilder.getSerialNumbers() == null) {
+				triggerFetchSerialNumbers();
+			}
 			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
 			int deviceId;
 			for (deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
@@ -744,7 +753,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			boolean newDevice = !Objects.equals(testPlayer.getConfig().getAudioSection().getDevice(), deviceId + 1);
 			testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
 
-			setActiveSidBlasterDevice(SidBlasterBuilder.getSerialNumbers()[deviceId]);
+			setActiveSidBlasterDevice(serial -> Objects.equals(serialNo, serial));
 
 			if (testPlayer.stateProperty().get() == State.QUIT) {
 				testPlayer.play(SidTune.load("sidblaster_test.sid",
@@ -762,17 +771,6 @@ public class ToolBar extends C64VBox implements UIPart {
 		}
 	}
 
-	private void setActiveSidBlasterDevice(String serialNo) {
-		for (Node node : sidBlasterDeviceParent.getChildren()) {
-			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
-
-			node.getStyleClass().remove("active");
-			if (Objects.equals(serialNo, serialNoOfDevice)) {
-				node.getStyleClass().add("active");
-			}
-		}
-	}
-
 	private void setActiveSidBlasterDevices(Mixer mixer) {
 		List<String> serialNumbers = new ArrayList<>();
 		if (mixer instanceof SidBlasterBuilder) {
@@ -781,11 +779,15 @@ public class ToolBar extends C64VBox implements UIPart {
 				serialNumbers.add(sidBlasterBuilder.getDeviceName(sidNum));
 			}
 		}
+		setActiveSidBlasterDevice(serialNoOfDevice -> serialNumbers.contains(serialNoOfDevice));
+	}
+
+	private void setActiveSidBlasterDevice(Predicate<String> serialNoSelector) {
 		for (Node node : sidBlasterDeviceParent.getChildren()) {
 			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
 
 			node.getStyleClass().remove("active");
-			if (serialNoOfDevice != null && serialNumbers.contains(serialNoOfDevice)) {
+			if (serialNoSelector.test(serialNoOfDevice)) {
 				node.getStyleClass().add("active");
 			}
 		}
