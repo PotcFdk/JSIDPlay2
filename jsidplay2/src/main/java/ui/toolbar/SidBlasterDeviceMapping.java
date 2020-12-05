@@ -31,7 +31,7 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 
 	private DeviceMapping deviceMapping;
 
-	private Consumer<DeviceMapping> testSidBlasterDevice, removeSidBlasterDevice;
+	private Consumer<DeviceMapping> testSidBlasterDeviceConsumer, removeSidBlasterDeviceConsumer;
 
 	public SidBlasterDeviceMapping() {
 		super();
@@ -64,22 +64,24 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 
 	@FXML
 	private void remove() {
-		removeSidBlasterDevice.accept(deviceMapping);
+		removeSidBlasterDeviceConsumer.accept(deviceMapping);
 	}
 
 	@FXML
 	private void testSidBlaster() {
-		testSidBlasterDevice.accept(deviceMapping);
+		testSidBlasterDeviceConsumer.accept(deviceMapping);
 	}
 
-	public void init(DeviceMapping deviceMapping, Consumer<DeviceMapping> testSidBlasterDevice,
-			Consumer<DeviceMapping> removeSidBlasterDevice) {
+	void init(DeviceMapping deviceMapping, Consumer<DeviceMapping> testSidBlasterDeviceConsumer,
+			Consumer<DeviceMapping> removeSidBlasterDeviceConsumer) {
 		this.deviceMapping = deviceMapping;
-		this.testSidBlasterDevice = testSidBlasterDevice;
-		this.removeSidBlasterDevice = removeSidBlasterDevice;
+		this.testSidBlasterDeviceConsumer = testSidBlasterDeviceConsumer;
+		this.removeSidBlasterDeviceConsumer = removeSidBlasterDeviceConsumer;
 
 		usedCheckbox.setSelected(deviceMapping.isUsed());
+
 		serialNumEditor.setText(deviceMapping.getSerialNum());
+
 		chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
 	}
 

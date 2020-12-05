@@ -24,7 +24,7 @@
 	<VBox spacing="5">
 		<HBox>
 			<Label text="%SIDBLASTER_SERIAL_NO" alignment="BASELINE_LEFT" />
-			<Region HBox.hgrow="SOMETIMES" />
+			<Region HBox.hgrow="ALWAYS" />
 			<CheckBox fx:id="usedCheckbox" onAction="#setUsed">
 				<tooltip>
 					<Tooltip text="%SIDBLASTER_USED_TIP" />
@@ -43,7 +43,7 @@
 				<graphic>
 					<ImageView fitWidth="16" fitHeight="16">
 						<image>
-							<Image url="@/ui/icons/play.png"/>
+							<Image url="@/ui/icons/play.png" />
 						</image>
 					</ImageView>
 				</graphic>
@@ -51,8 +51,8 @@
 					<Tooltip text="%SIDBLASTER_TEST_TIP" />
 				</tooltip>
 			</Button>
-			<Region HBox.hgrow="SOMETIMES" />
-			<Button fx:id="removeButton" onAction="#remove" HBox.hgrow="NEVER">
+			<Region HBox.hgrow="ALWAYS" />
+			<Button fx:id="removeButton" onAction="#remove">
 				<graphic>
 					<ImageView fitWidth="8" fitHeight="8">
 						<image>

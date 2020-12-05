@@ -421,7 +421,6 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void autodetect() {
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
-
 		try {
 			if (SidBlasterBuilder.getSerialNumbers() == null) {
 				triggerFetchSerialNumbers();
