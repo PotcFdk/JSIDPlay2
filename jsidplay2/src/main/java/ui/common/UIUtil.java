@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.function.BooleanSupplier;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -13,6 +14,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import sidplay.Player;
@@ -20,6 +23,9 @@ import ui.JSidPlay2Main;
 import ui.entities.config.Configuration;
 
 public class UIUtil {
+
+	private static final String CELL_VALUE_OK = "cellValueOk";
+	private static final String CELL_VALUE_ERROR = "cellValueError";
 
 	private static final Image PLAYED_ICON = new Image(JSidPlay2Main.class.getResource("icons/play.png").toString());
 
@@ -90,6 +96,26 @@ public class UIUtil {
 		}
 		root.lookupAll(".tab-pane").forEach(
 				tabPaneNode -> ((TabPane) tabPaneNode).getTabs().stream().forEach(tab -> tab.setGraphic(null)));
+	}
+
+	public void checkTextField(TextField textField, BooleanSupplier valueCheck, Runnable applyCorrectValue,
+			String tipKey, String formatKey) {
+		final Tooltip tooltip = new Tooltip();
+		try {
+			textField.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+			if (valueCheck.getAsBoolean()) {
+				applyCorrectValue.run();
+				tooltip.setText(bundle.getString(tipKey));
+				textField.setTooltip(tooltip);
+				textField.getStyleClass().add(CELL_VALUE_OK);
+			} else {
+				throw new NumberFormatException();
+			}
+		} catch (final NumberFormatException e) {
+			tooltip.setText(bundle.getString(formatKey));
+			textField.setTooltip(tooltip);
+			textField.getStyleClass().add(CELL_VALUE_ERROR);
+		}
 	}
 
 	public final DoubleProperty progressProperty(Scene scene) {

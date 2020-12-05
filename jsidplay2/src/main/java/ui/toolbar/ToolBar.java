@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,10 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.Mixer.Info;
@@ -38,9 +35,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -52,15 +47,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -126,8 +115,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	}
 
-	private static final String CELL_VALUE_OK = "cellValueOk";
-	private static final String CELL_VALUE_ERROR = "cellValueError";
+	private static final String SIDBLASTER_TEST_SID = "/builder/sidblaster/sidblaster_test.sid";
 
 	@FXML
 	private ComboBox<SamplingMethod> samplingBox;
@@ -177,8 +165,6 @@ public class ToolBar extends C64VBox implements UIPart {
 	protected ProgressBar progress;
 
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
-
-	private ObservableList<ChipModel> sidBlasterModels;
 
 	private boolean duringInitialization;
 
@@ -257,8 +243,9 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
 				new TimeToStringConverter());
-		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> checkTextField(defaultTime,
-				n.intValue() != -1, "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
+		sidplay2Section.defaultPlayLengthProperty()
+				.addListener((obj, o, n) -> util.checkTextField(defaultTime, () -> n.intValue() != -1, () -> {
+				}, "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
 		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> {
 			if (n.intValue() != -1) {
 				util.getPlayer().getTimer().updateEnd();
@@ -266,14 +253,13 @@ public class ToolBar extends C64VBox implements UIPart {
 		});
 		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
 				new PositiveNumberToStringConverter<>(2048));
-		audioSection.bufferSizeProperty().addListener((obj, o, n) -> checkTextField(bufferSize, n.intValue() >= 2048,
-				"BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
-
-		sidBlasterModels = FXCollections.<ChipModel>observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580);
-		emulationSection.getSidBlasterDeviceList().stream().forEach(this::addDeviceMappingToUI);
+		audioSection.bufferSizeProperty()
+				.addListener((obj, o, n) -> util.checkTextField(bufferSize, () -> n.intValue() >= 2048, () -> {
+				}, "BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));
 
 		sidBlasterWriteBufferSize.valueProperty()
 				.bindBidirectional(emulationSection.sidBlasterWriteBufferSizeProperty());
+		emulationSection.getSidBlasterDeviceList().stream().forEach(this::addSidBlasterDeviceMapping);
 
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
@@ -427,9 +413,9 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void addSidBlaster() {
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		DeviceMapping deviceMapping = new DeviceMapping();
+		DeviceMapping deviceMapping = new DeviceMapping("", ChipModel.MOS8580, true);
 		emulationSection.getSidBlasterDeviceList().add(deviceMapping);
-		addDeviceMappingToUI(deviceMapping);
+		addSidBlasterDeviceMapping(deviceMapping);
 	}
 
 	@FXML
@@ -446,7 +432,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			for (String serialNumber : SidBlasterBuilder.getSerialNumbers()) {
 				DeviceMapping deviceMapping = new DeviceMapping(serialNumber, ChipModel.MOS8580, true);
 				emulationSection.getSidBlasterDeviceList().add(deviceMapping);
-				addDeviceMappingToUI(deviceMapping);
+				addSidBlasterDeviceMapping(deviceMapping);
 			}
 		} catch (Error error) {
 			openErrorDialog(error.getMessage());
@@ -639,99 +625,28 @@ public class ToolBar extends C64VBox implements UIPart {
 		stopAppServer();
 	}
 
-	private void checkTextField(TextField textField, boolean valueCorrect, String tipKey, String formatKey) {
-		final Tooltip tooltip = new Tooltip();
-		textField.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-		if (valueCorrect) {
-			tooltip.setText(util.getBundle().getString(tipKey));
-			textField.setTooltip(tooltip);
-			textField.getStyleClass().add(CELL_VALUE_OK);
-		} else {
-			tooltip.setText(util.getBundle().getString(formatKey));
-			textField.setTooltip(tooltip);
-			textField.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+	private void addSidBlasterDeviceMapping(DeviceMapping deviceMapping) {
+		SidBlasterDeviceMapping sidBlasterDeviceMapping = new SidBlasterDeviceMapping(util.getWindow(),
+				util.getPlayer());
+		sidBlasterDeviceMapping.init(deviceMapping, this::testSidBlasterDevice, this::removeSidBlasterDeviceMapping);
+		sidBlasterDeviceParent.getChildren().add(sidBlasterDeviceMapping);
+
+		// scroll to bottom automatically
+		Platform.runLater(() -> {
+			sidBlasterDeviceParent.requestLayout();
+			Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));
+		});
 	}
 
-	private void triggerFetchSerialNumbers() {
-		new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
-				util.getPlayer().getC64().getClock());
-	}
-
-	private void addDeviceMappingToUI(DeviceMapping deviceMapping) {
-		final ResourceBundle bundle = util.getBundle();
+	private void removeSidBlasterDeviceMapping(DeviceMapping deviceMapping) {
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		try {
-			int prefWidth = 110;
-			URL removeUrl = getClass().getResource("/ui/icons/remove_sidblaster.png");
-			URL testUrl = getClass().getResource("/ui/icons/play.png");
 
-			Pattern pattern = Pattern.compile("^$|" + bundle.getString("SIDBLASTER_SERIALNUM_FORMAT"));
+		sidBlasterDeviceParent.getChildren().remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
+		emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
 
-			TextField serialNumEditor = new TextField(deviceMapping.getSerialNum());
-			serialNumEditor.setPrefWidth(prefWidth);
-			serialNumEditor.setPromptText(bundle.getString("SIDBLASTER_SERIALNUM_PROMPT_TEXT"));
-			serialNumEditor.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_SERIALNUM_TIP")));
-			serialNumEditor.textProperty().addListener((obj, o, n) -> deviceMapping.setSerialNum(n));
-			serialNumEditor.textProperty().addListener((obj, o, n) -> checkTextField(serialNumEditor,
-					pattern.matcher(n).find(), "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
-
-			ComboBox<ChipModel> chipModelEditor = new ComboBox<ChipModel>();
-			chipModelEditor.setPrefWidth(prefWidth);
-			chipModelEditor.setItems(sidBlasterModels);
-			chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
-			chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
-			chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
-
-			ImageView graphic = new ImageView(new Image(removeUrl.openStream(), 8, 8, true, true));
-			Button removeButton = new Button("", graphic);
-			removeButton.setTooltip(new Tooltip(bundle.getString("REMOVE_SIDBLASTER_TIP")));
-			removeButton.addEventHandler(ActionEvent.ACTION, action -> {
-				sidBlasterDeviceParent.getChildren()
-						.remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
-				emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
-			});
-
-			ImageView testGraphic = new ImageView(new Image(testUrl.openStream(), 16, 16, true, true));
-			Button testButton = new Button("", testGraphic);
-			testButton.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_TEST_TIP")));
-			testButton.addEventHandler(ActionEvent.ACTION, action -> testSidBlaster(deviceMapping.getSerialNum()));
-
-			Region region = new Region();
-			HBox hbox = new HBox(testButton, region, removeButton);
-			HBox.setHgrow(region, Priority.SOMETIMES);
-			HBox.setHgrow(removeButton, Priority.NEVER);
-
-			CheckBox usedCheckbox = new CheckBox("");
-			usedCheckbox.setTooltip(new Tooltip(bundle.getString("SIDBLASTER_USED_TIP")));
-			usedCheckbox.setSelected(deviceMapping.isUsed());
-			usedCheckbox.setOnAction(action -> deviceMapping.setUsed(usedCheckbox.isSelected()));
-
-			Region region2 = new Region();
-			Label serialNumLbl = new Label(bundle.getString("SIDBLASTER_SERIAL_NO"));
-			serialNumLbl.setAlignment(Pos.BASELINE_LEFT);
-
-			HBox serialNumAndTest = new HBox(serialNumLbl, region2, usedCheckbox);
-			HBox.setHgrow(region2, Priority.SOMETIMES);
-
-			VBox vbox = new VBox(5, serialNumAndTest, serialNumEditor, chipModelEditor, hbox, new Separator());
-			vbox.setMaxWidth(prefWidth);
-			vbox.getStyleClass().add("sidblaster-device");
-			vbox.getProperties().put("serialNo", deviceMapping.getSerialNum());
-
-			sidBlasterDeviceParent.getChildren().add(vbox);
-
-			// scroll to bottom automatically
-			Platform.runLater(() -> {
-				sidBlasterDeviceParent.requestLayout();
-				Platform.runLater(() -> sidBlasterScrollPane.setVvalue(1.0));
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
-	private void testSidBlaster(String serialNo) {
+	private void testSidBlasterDevice(DeviceMapping deviceMapping) {
 		try {
 			util.getPlayer().stopC64(true);
 
@@ -746,29 +661,34 @@ public class ToolBar extends C64VBox implements UIPart {
 			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
 			int deviceId;
 			for (deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
-				if (Objects.equals(serialNumbers[deviceId], serialNo)) {
+				if (Objects.equals(serialNumbers[deviceId], deviceMapping.getSerialNum())) {
 					break;
 				}
 			}
 			boolean newDevice = !Objects.equals(testPlayer.getConfig().getAudioSection().getDevice(), deviceId + 1);
 			testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
 
-			setActiveSidBlasterDevice(serial -> Objects.equals(serialNo, serial));
+			setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
 
 			if (testPlayer.stateProperty().get() == State.QUIT) {
-				testPlayer.play(SidTune.load("sidblaster_test.sid",
-						ToolBar.class.getResourceAsStream("/builder/sidblaster/sidblaster_test.sid")));
+				testPlayer.play(
+						SidTune.load("sidblaster_test.sid", ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
 			} else {
 				testPlayer.stopC64();
 
 				if (newDevice) {
 					testPlayer.play(SidTune.load("sidblaster_test.sid",
-							ToolBar.class.getResourceAsStream("/builder/sidblaster/sidblaster_test.sid")));
+							ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
 				}
 			}
 		} catch (IOException | SidTuneError e) {
 			openErrorDialog(e.getMessage());
 		}
+	}
+
+	private void triggerFetchSerialNumbers() {
+		new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
+				util.getPlayer().getC64().getClock());
 	}
 
 	private void setActiveSidBlasterDevices(Mixer mixer) {

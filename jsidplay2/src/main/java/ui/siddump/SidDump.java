@@ -36,8 +36,6 @@ import ui.common.UIPart;
 public class SidDump extends C64VBox implements UIPart {
 
 	public static final String ID = "SIDDUMP";
-	private static final String CELL_VALUE_OK = "cellValueOk";
-	private static final String CELL_VALUE_ERROR = "cellValueError";
 
 	@FXML
 	private Button loadDump, saveDump, stop;
@@ -104,22 +102,13 @@ public class SidDump extends C64VBox implements UIPart {
 		};
 		util.getPlayer().stateProperty().addListener(changeListener);
 
-		maxRecordLength.textProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			maxRecordLength.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		maxRecordLength.textProperty().addListener((obj, o, n) -> util.checkTextField(maxRecordLength, () -> {
 			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
-			if (seconds != -1) {
-				sidDumpExtension.setRecordLength(seconds);
+			return seconds != -1;
+		}, () -> {
+			sidDumpExtension.setRecordLength(seconds);
+		}, "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
 
-				tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_TIP"));
-				maxRecordLength.setTooltip(tooltip);
-				maxRecordLength.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				tooltip.setText(util.getBundle().getString("MAX_RECORD_LENGTH_FORMAT"));
-				maxRecordLength.setTooltip(tooltip);
-				maxRecordLength.getStyleClass().add(CELL_VALUE_ERROR);
-			}
-		});
 		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
 		SortedList<SidDumpOutput> sortedList = new SortedList<>(sidDumpOutputs);
 		sortedList.comparatorProperty().bind(dumpTable.comparatorProperty());
@@ -225,163 +214,67 @@ public class SidDump extends C64VBox implements UIPart {
 
 	@FXML
 	private void doSetNoteSpacing() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			noteSpacing.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (Integer.parseInt(noteSpacing.getText()) >= 0) {
-				tooltip.setText(util.getBundle().getString("NOTE_SPACING_TIP"));
-				noteSpacing.setTooltip(tooltip);
-				noteSpacing.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("NOTE_SPACING_NEG"));
-			noteSpacing.setTooltip(tooltip);
-			noteSpacing.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		util.checkTextField(noteSpacing, () -> Integer.parseInt(noteSpacing.getText()) >= 0, () -> {
+		}, "NOTE_SPACING_TIP", "NOTE_SPACING_NEG");
 	}
 
 	@FXML
 	private void doSetPatternSpacing() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			patternSpacing.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (Integer.parseInt(patternSpacing.getText()) >= 0) {
-				tooltip.setText(util.getBundle().getString("PATTERN_SPACING_TIP"));
-				patternSpacing.setTooltip(tooltip);
-				patternSpacing.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("PATTERN_SPACING_NEG"));
-			patternSpacing.setTooltip(tooltip);
-			patternSpacing.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		util.checkTextField(patternSpacing, () -> Integer.parseInt(patternSpacing.getText()) >= 0, () -> {
+		}, "PATTERN_SPACING_TIP", "PATTERN_SPACING_NEG");
 	}
 
 	@FXML
 	private void doSetOldNoteFactor() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			oldNoteFactor.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (Float.parseFloat(oldNoteFactor.getText()) >= 1) {
-				tooltip.setText(util.getBundle().getString("OLD_NOTE_FACTOR_TIP"));
-				oldNoteFactor.setTooltip(tooltip);
-				oldNoteFactor.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("OLD_NOTE_FACTOR_NEG"));
-			oldNoteFactor.setTooltip(tooltip);
-			oldNoteFactor.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		util.checkTextField(oldNoteFactor, () -> Float.parseFloat(oldNoteFactor.getText()) >= 1, () -> {
+		}, "OLD_NOTE_FACTOR_TIP", "OLD_NOTE_FACTOR_NEG");
 	}
 
 	@FXML
 	private void doSetBaseFreq() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			baseFreq.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (Integer.decode(baseFreq.getText()) >= 0) {
-				tooltip.setText(util.getBundle().getString("BASE_FREQ_TIP"));
-				baseFreq.setTooltip(tooltip);
-				baseFreq.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("BASE_FREQ_HEX"));
-			baseFreq.setTooltip(tooltip);
-			baseFreq.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		util.checkTextField(baseFreq, () -> Integer.decode(baseFreq.getText()) >= 0, () -> {
+		}, "BASE_FREQ_TIP", "BASE_FREQ_HEX");
 	}
 
 	@FXML
 	private void doSetTableFontSize() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			tableFontSize.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		util.checkTextField(tableFontSize, () -> {
 			int fontSizeVal = Integer.parseInt(tableFontSize.getText());
-			if (fontSizeVal > 0 && fontSizeVal <= 24) {
-				tooltip.setText(util.getBundle().getString("TABLE_FONT_SIZE_TIP"));
-				tableFontSize.setTooltip(tooltip);
-				tableFontSize.getStyleClass().add(CELL_VALUE_OK);
-				dumpTable.setStyle(String.format("-fx-font-size:%d.0px;}", fontSizeVal));
-				for (TableColumn<SidDumpOutput, ?> column : dumpTable.getColumns()) {
-					column.setStyle(String.format("-fx-font-size:%d.0px;", fontSizeVal));
+			return fontSizeVal > 0 && fontSizeVal <= 24;
+		}, () -> {
+			int fontSizeVal = Integer.parseInt(tableFontSize.getText());
+			dumpTable.setStyle(String.format("-fx-font-size:%d.0px;}", fontSizeVal));
+			for (TableColumn<SidDumpOutput, ?> column : dumpTable.getColumns()) {
+				column.setStyle(String.format("-fx-font-size:%d.0px;", fontSizeVal));
 
-				}
-			} else {
-				throw new NumberFormatException();
 			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("TABLE_FONT_SIZE_NEG"));
-			tableFontSize.setTooltip(tooltip);
-			tableFontSize.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		}, "TABLE_FONT_SIZE_TIP", "TABLE_FONT_SIZE_NEG");
 	}
 
 	@FXML
 	private void doSetBaseNote() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			baseNote.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		util.checkTextField(baseNote, () -> {
 			int baseNoteVal = Integer.decode(baseNote.getText());
-			if (baseNoteVal >= 128 && baseNoteVal <= 223) {
-				tooltip.setText(util.getBundle().getString("BASE_NOTE_TIP"));
-				baseNote.setTooltip(tooltip);
-				baseNote.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("BASE_NOTE_HEX"));
-			baseNote.setTooltip(tooltip);
-			baseNote.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+			return baseNoteVal >= 128 && baseNoteVal <= 223;
+		}, () -> {
+		}, "BASE_NOTE_TIP", "BASE_NOTE_HEX");
 	}
 
 	@FXML
 	private void doSetCallsPerFrame() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			callsPerFrame.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
+		util.checkTextField(callsPerFrame, () -> {
 			final int speed = Integer.parseInt(callsPerFrame.getText());
-			if (speed >= 1) {
-				tooltip.setText(util.getBundle().getString("CALLS_PER_FRAME_TIP"));
-				callsPerFrame.setTooltip(tooltip);
-				callsPerFrame.getStyleClass().add(CELL_VALUE_OK);
-				sidDumpExtension.setReplayFrequency(speed * 50);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("CALLS_PER_FRAME_NEG"));
-			callsPerFrame.setTooltip(tooltip);
-			callsPerFrame.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+			return speed >= 1;
+		}, () -> {
+			final int speed = Integer.parseInt(callsPerFrame.getText());
+			sidDumpExtension.setReplayFrequency(speed * 50);
+		}, "CALLS_PER_FRAME_TIP", "CALLS_PER_FRAME_NEG");
 	}
 
 	@FXML
 	private void doSetFirstFrame() {
-		final Tooltip tooltip = new Tooltip();
-		try {
-			firstFrame.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (Long.parseLong(firstFrame.getText()) >= 0) {
-				tooltip.setText(util.getBundle().getString("FIRST_FRAME_TIP"));
-				firstFrame.setTooltip(tooltip);
-				firstFrame.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (final NumberFormatException e) {
-			tooltip.setText(util.getBundle().getString("FIRST_FRAME_NEG"));
-			firstFrame.setTooltip(tooltip);
-			firstFrame.getStyleClass().add(CELL_VALUE_ERROR);
-		}
+		util.checkTextField(firstFrame, () -> Long.parseLong(firstFrame.getText()) >= 0, () -> {
+		}, "FIRST_FRAME_TIP", "FIRST_FRAME_NEG");
 	}
 
 	private void setTune(SidTune tune) {

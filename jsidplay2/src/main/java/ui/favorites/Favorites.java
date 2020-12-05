@@ -22,7 +22,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -47,9 +46,6 @@ import ui.filefilter.TuneFileExtensions;
 public class Favorites extends C64VBox implements UIPart {
 
 	public static final String ID = "FAVORITES";
-
-	private static final String CELL_VALUE_OK = "cellValueOk";
-	private static final String CELL_VALUE_ERROR = "cellValueError";
 
 	@FXML
 	private Button autoConfiguration;
@@ -96,37 +92,16 @@ public class Favorites extends C64VBox implements UIPart {
 
 		Bindings.bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(),
 				new TimeToStringConverter());
-		sidplay2Section.fadeInTimeProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			fadeInTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (n.intValue() != -1) {
-				util.getPlayer().getTimer().updateEnd();
-				tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_TIP"));
-				fadeInTime.setTooltip(tooltip);
-				fadeInTime.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				tooltip.setText(util.getBundle().getString("FADE_IN_LENGTH_FORMAT"));
-				fadeInTime.setTooltip(tooltip);
-				fadeInTime.getStyleClass().add(CELL_VALUE_ERROR);
-			}
-		});
+		sidplay2Section.fadeInTimeProperty()
+				.addListener((obj, o, n) -> util.checkTextField(fadeInTime, () -> n.intValue() != -1,
+						() -> util.getPlayer().getTimer().updateEnd(), "FADE_IN_LENGTH_TIP", "FADE_IN_LENGTH_FORMAT"));
 
 		Bindings.bindBidirectional(fadeOutTime.textProperty(), sidplay2Section.fadeOutTimeProperty(),
 				new TimeToStringConverter());
-		sidplay2Section.fadeOutTimeProperty().addListener((obj, o, n) -> {
-			final Tooltip tooltip = new Tooltip();
-			fadeOutTime.getStyleClass().removeAll(CELL_VALUE_OK, CELL_VALUE_ERROR);
-			if (n.doubleValue() != -1) {
-				util.getPlayer().getTimer().updateEnd();
-				tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_TIP"));
-				fadeOutTime.setTooltip(tooltip);
-				fadeOutTime.getStyleClass().add(CELL_VALUE_OK);
-			} else {
-				tooltip.setText(util.getBundle().getString("FADE_OUT_LENGTH_FORMAT"));
-				fadeOutTime.setTooltip(tooltip);
-				fadeOutTime.getStyleClass().add(CELL_VALUE_ERROR);
-			}
-		});
+		sidplay2Section.fadeOutTimeProperty()
+				.addListener((obj, o, n) -> util.checkTextField(fadeOutTime, () -> n.intValue() != -1,
+						() -> util.getPlayer().getTimer().updateEnd(), "FADE_OUT_LENGTH_TIP",
+						"FADE_OUT_LENGTH_FORMAT"));
 
 		PlaybackType pt = sidplay2Section.getPlaybackType();
 		switch (pt) {

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.collections.FXCollections?> 
+<?scenebuilder-preview-i18n-resource SidBlasterDeviceMapping.properties?>
+
+<!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
+
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.toolbar.SidBlasterDeviceMapping"> -->
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
+	<VBox spacing="5">
+		<HBox>
+			<Label text="%SIDBLASTER_SERIAL_NO" alignment="BASELINE_LEFT" />
+			<Region HBox.hgrow="SOMETIMES" />
+			<CheckBox fx:id="usedCheckbox" onAction="#setUsed">
+				<tooltip>
+					<Tooltip text="%SIDBLASTER_USED_TIP" />
+				</tooltip>
+			</CheckBox>
+		</HBox>
+		<TextField fx:id="serialNumEditor" promptText="%SIDBLASTER_SERIALNUM_PROMPT_TEXT"
+			prefWidth="110">
+			<tooltip>
+				<Tooltip text="%SIDBLASTER_SERIALNUM_TIP" />
+			</tooltip>
+		</TextField>
+		<ComboBox fx:id="chipModelEditor" prefWidth="110" />
+		<HBox>
+			<Button fx:id="testButton" onAction="#testSidBlaster">
+				<graphic>
+					<ImageView fitWidth="16" fitHeight="16">
+						<image>
+							<Image url="@/ui/icons/play.png"/>
+						</image>
+					</ImageView>
+				</graphic>
+				<tooltip>
+					<Tooltip text="%SIDBLASTER_TEST_TIP" />
+				</tooltip>
+			</Button>
+			<Region HBox.hgrow="SOMETIMES" />
+			<Button fx:id="removeButton" onAction="#remove" HBox.hgrow="NEVER">
+				<graphic>
+					<ImageView fitWidth="8" fitHeight="8">
+						<image>
+							<Image url="@/ui/icons/remove_sidblaster.png" />
+						</image>
+					</ImageView>
+				</graphic>
+				<tooltip>
+					<Tooltip text="%REMOVE_SIDBLASTER_TIP" />
+				</tooltip>
+			</Button>
+		</HBox>
+		<Separator />
+	</VBox>
+</fx:root>
+<!-- </Scene> -->
