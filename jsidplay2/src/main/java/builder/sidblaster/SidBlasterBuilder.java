@@ -119,12 +119,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 
-		final SimpleEntry<Integer, ChipModel> deviceIdAndChipModel;
-		if (audioSection.getDevice() != 0) {
-			deviceIdAndChipModel = getModelDependantDeviceIdToTest(chipModel, audioSection.getDevice());
-		} else {
-			deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum);
-		}
+		SimpleEntry<Integer, ChipModel> deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum,
+				emulationSection.getSidBlasterSerialNumber());
 
 		Integer deviceId = deviceIdAndChipModel.getKey();
 		ChipModel model = deviceIdAndChipModel.getValue();
@@ -264,46 +260,45 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Get SIDBlaster device index based on the desired chip model.
 	 *
-	 * @param chipModel desired chip model
-	 * @param sidNum    current SID number
+	 * @param chipModel              desired chip model
+	 * @param sidNum                 current SID number
+	 * @param sidBlasterSerialNumber serial number of device to use (for testing)
 	 * @return SID index of the desired SIDBlaster device
 	 */
-	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum) {
-		final Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
+	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum,
+			String sidBlasterSerialNumber) {
+		if (sidBlasterSerialNumber != null) {
 
-		// use next free slot (prevent wrong type)
-		for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
-			String serialNo = serialNumbers[deviceId];
-
-			if (!isSerialNumAlreadyUsed(serialNo) && chipModel == deviceMap.get(serialNo)) {
-				return new SimpleEntry<>(deviceId, chipModel);
+			// Choose one specific device for sound output
+			for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
+				if (Objects.equals(serialNumbers[deviceId], sidBlasterSerialNumber)) {
+					return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
+				}
 			}
-		}
-		// Nothing matched? Use next free slot (no matter what type)
-		for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
-			String serialNo = serialNumbers[deviceId];
+		} else {
 
-			if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null) {
-				return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
+			// choose best fitting device for sound output
+			final Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
+
+			// use next free slot (prevent wrong type)
+			for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
+				String serialNo = serialNumbers[deviceId];
+
+				if (!isSerialNumAlreadyUsed(serialNo) && chipModel == deviceMap.get(serialNo)) {
+					return new SimpleEntry<>(deviceId, chipModel);
+				}
+			}
+			// Nothing matched? Use next free slot (no matter what type)
+			for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
+				String serialNo = serialNumbers[deviceId];
+
+				if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null) {
+					return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
+				}
 			}
 		}
 		// no slot left
 		return new SimpleEntry<>(null, null);
-	}
-
-	/**
-	 * TEST MODE: use specific device for sound output
-	 * 
-	 * @param deviceIdToTest
-	 */
-	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceIdToTest(final ChipModel chipModel,
-			int deviceIdToTest) {
-		for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
-			if (deviceId == deviceIdToTest - 1) {
-				return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
-			}
-		}
-		return new SimpleEntry<Integer, ChipModel>(0, chipModel);
 	}
 
 	private boolean isSerialNumAlreadyUsed(String serialNo) {

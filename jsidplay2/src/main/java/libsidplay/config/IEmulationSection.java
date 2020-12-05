@@ -189,6 +189,20 @@ public interface IEmulationSection {
 	void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize);
 
 	/**
+	 * Getter of the SIDBlaster serial number
+	 * 
+	 * @return the SIDBlaster serial number
+	 */
+	String getSidBlasterSerialNumber();
+
+	/**
+	 * Setter of the SIDBlaster serial number
+	 * 
+	 * @param sidBlasterSerialNumber SIDBlaster serial number
+	 */
+	void setSidBlasterSerialNumber(String sidBlasterSerialNumber);
+
+	/**
 	 * Getter of the host name of a NetworkSIDDevice.
 	 *
 	 * @return host name of a NetworkSIDDevice

@@ -651,22 +651,14 @@ public class ToolBar extends C64VBox implements UIPart {
 			if (SidBlasterBuilder.getSerialNumbers() == null) {
 				triggerFetchSerialNumbers();
 			}
-			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
-			int deviceId;
-			for (deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
-				if (Objects.equals(serialNumbers[deviceId], deviceMapping.getSerialNum())) {
-					testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
+			if (isSelected) {
+				util.getPlayer().stopC64(true);
 
-					if (isSelected) {
-						util.getPlayer().stopC64(true);
+				setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
 
-						setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
-
-						testPlayer.play(SidTune.load("sidblaster_test.sid",
-								ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
-					}
-					break;
-				}
+				testPlayer.getConfig().getEmulationSection().setSidBlasterSerialNumber(deviceMapping.getSerialNum());
+				testPlayer.play(
+						SidTune.load("sidblaster_test.sid", ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
 			}
 		} catch (IOException | SidTuneError e) {
 			openErrorDialog(e.getMessage());
