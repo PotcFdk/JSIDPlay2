@@ -698,7 +698,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	private void setActiveSidBlasterDevice(Predicate<String> serialNoSelector) {
 		for (Node node : sidBlasterDeviceParent.getChildren()) {
-			String serialNoOfDevice = (String) node.getProperties().get("serialNo");
+			SidBlasterDeviceMapping sidBlasterDeviceMapping = (SidBlasterDeviceMapping) node;
+			String serialNoOfDevice = sidBlasterDeviceMapping.getSerialNo();
 
 			node.getStyleClass().remove("active");
 			if (serialNoSelector.test(serialNoOfDevice)) {
