@@ -36,7 +36,7 @@ import sidplay.audio.AudioDriver;
  */
 public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
-	private static final short REGULAR_DELAY = 4096/* 128 works for Andreas Schumm *//* 4096 forks for me */;
+	private static final short REGULAR_DELAY = 4096;
 
 	/**
 	 * System event context.
@@ -267,17 +267,9 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 */
 	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum,
 			String sidBlasterSerialNumber) {
-		if (sidBlasterSerialNumber != null) {
+		if (sidBlasterSerialNumber == null) {
+			// DEFAULT: choose best fitting device for sound output
 
-			// Choose one specific device for sound output
-			for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
-				if (Objects.equals(serialNumbers[deviceId], sidBlasterSerialNumber)) {
-					return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
-				}
-			}
-		} else {
-
-			// choose best fitting device for sound output
 			final Map<String, ChipModel> deviceMap = config.getEmulationSection().getSidBlasterDeviceMap();
 
 			// use next free slot (prevent wrong type)
@@ -294,6 +286,14 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 				if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null) {
 					return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
+				}
+			}
+		} else {
+			// TEST: Choose one specific device for sound output
+
+			for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
+				if (Objects.equals(serialNumbers[deviceId], sidBlasterSerialNumber)) {
+					return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
 				}
 			}
 		}
