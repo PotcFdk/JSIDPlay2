@@ -98,15 +98,15 @@ public class ToolBar extends C64VBox implements UIPart {
 		@Override
 		public void propertyChange(PropertyChangeEvent event) {
 			Platform.runLater(() -> {
-				if (event.getNewValue() == State.START) {
-					saveRecordingLabel.setDisable(true);
+				if (event.getNewValue() == State.OPEN) {
 					if (testPlayer != null) {
 						testPlayer.stopC64();
 					}
+				} else if (event.getNewValue() == State.START) {
+					saveRecordingLabel.setDisable(true);
 					util.getPlayer()
 							.configureMixer(mixer -> Platform.runLater(() -> setActiveSidBlasterDevices(mixer)));
-				}
-				if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
+				} else if ((event.getNewValue() == State.END || event.getNewValue() == State.QUIT)
 						&& util.getPlayer().getAudioDriver().isRecording()) {
 					saveRecordingLabel.setDisable(false);
 				}
@@ -168,14 +168,11 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
-	private boolean duringInitialization;
-
-	/**
-	 * JSIPlay2 REST based web-services
-	 */
 	private JSIDPlay2Server jsidplay2Server;
 
 	private Player testPlayer;
+
+	private boolean duringInitialization;
 
 	public ToolBar() {
 		super();
@@ -246,13 +243,8 @@ public class ToolBar extends C64VBox implements UIPart {
 		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
 				new TimeToStringConverter());
 		sidplay2Section.defaultPlayLengthProperty()
-				.addListener((obj, o, n) -> util.checkTextField(defaultTime, () -> n.intValue() != -1, () -> {
-				}, "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
-		sidplay2Section.defaultPlayLengthProperty().addListener((obj, o, n) -> {
-			if (n.intValue() != -1) {
-				util.getPlayer().getTimer().updateEnd();
-			}
-		});
+				.addListener((obj, o, n) -> util.checkTextField(defaultTime, () -> n.intValue() != -1,
+						() -> util.getPlayer().getTimer().updateEnd(), "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
 		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
 				new PositiveNumberToStringConverter<>(2048));
 		audioSection.bufferSizeProperty()
