@@ -653,8 +653,9 @@ public class ToolBar extends C64VBox implements UIPart {
 			if (testPlayer == null) {
 				testPlayer = new Player(new IniConfig(false, null));
 				testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER);
+			} else {
+				testPlayer.stopC64();
 			}
-
 			if (SidBlasterBuilder.getSerialNumbers() == null) {
 				triggerFetchSerialNumbers();
 			}
@@ -662,18 +663,18 @@ public class ToolBar extends C64VBox implements UIPart {
 			int deviceId;
 			for (deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
 				if (Objects.equals(serialNumbers[deviceId], deviceMapping.getSerialNum())) {
+					testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
+
+					if (isSelected) {
+						util.getPlayer().stopC64(true);
+
+						setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
+
+						testPlayer.play(SidTune.load("sidblaster_test.sid",
+								ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
+					}
 					break;
 				}
-			}
-			testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
-
-			setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
-
-			testPlayer.stopC64();
-			if (isSelected) {
-				util.getPlayer().stopC64(true);
-				testPlayer.play(
-						SidTune.load("sidblaster_test.sid", ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
 			}
 		} catch (IOException | SidTuneError e) {
 			openErrorDialog(e.getMessage());
