@@ -85,6 +85,9 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 		this.testSidBlasterDeviceConsumer = testSidBlasterDeviceConsumer;
 		this.removeSidBlasterDeviceConsumer = removeSidBlasterDeviceConsumer;
 
+		getStyleClass().add("sidblaster-device");
+		getProperties().put("serialNo", deviceMapping.getSerialNum());
+
 		usedCheckbox.setSelected(deviceMapping.isUsed());
 
 		serialNumEditor.setText(deviceMapping.getSerialNum());
