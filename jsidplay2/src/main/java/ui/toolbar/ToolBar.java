@@ -118,6 +118,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	private static final String SIDBLASTER_TEST_SID = "/builder/sidblaster/sidblaster_test.sid";
 
 	@FXML
+	private ToggleGroup testButtonGroup;
+	@FXML
 	private ComboBox<SamplingMethod> samplingBox;
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
@@ -627,7 +629,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void addSidBlasterDeviceMapping(DeviceMapping deviceMapping) {
 		SidBlasterDeviceMapping sidBlasterDeviceMapping = new SidBlasterDeviceMapping(util.getWindow(),
 				util.getPlayer());
-		sidBlasterDeviceMapping.init(deviceMapping, this::testSidBlasterDevice, this::removeSidBlasterDeviceMapping);
+		sidBlasterDeviceMapping.init(deviceMapping, this::testSidBlasterDevice, this::removeSidBlasterDeviceMapping,
+				testButtonGroup);
 		sidBlasterDeviceParent.getChildren().add(sidBlasterDeviceMapping);
 
 		// scroll to bottom automatically
@@ -645,10 +648,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	}
 
-	private void testSidBlasterDevice(DeviceMapping deviceMapping) {
+	private void testSidBlasterDevice(DeviceMapping deviceMapping, Boolean isSelected) {
 		try {
-			util.getPlayer().stopC64(true);
-
 			if (testPlayer == null) {
 				testPlayer = new Player(new IniConfig(false, null));
 				testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER);
@@ -664,21 +665,15 @@ public class ToolBar extends C64VBox implements UIPart {
 					break;
 				}
 			}
-			boolean newDevice = !Objects.equals(testPlayer.getConfig().getAudioSection().getDevice(), deviceId + 1);
 			testPlayer.getConfig().getAudioSection().setDevice(deviceId + 1);
 
 			setActiveSidBlasterDevice(serial -> Objects.equals(deviceMapping.getSerialNum(), serial));
 
-			if (testPlayer.stateProperty().get() == State.QUIT) {
+			testPlayer.stopC64();
+			if (isSelected) {
+				util.getPlayer().stopC64(true);
 				testPlayer.play(
 						SidTune.load("sidblaster_test.sid", ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
-			} else {
-				testPlayer.stopC64();
-
-				if (newDevice) {
-					testPlayer.play(SidTune.load("sidblaster_test.sid",
-							ToolBar.class.getResourceAsStream(SIDBLASTER_TEST_SID)));
-				}
 			}
 		} catch (IOException | SidTuneError e) {
 			openErrorDialog(e.getMessage());

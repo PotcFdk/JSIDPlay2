@@ -33,6 +33,9 @@
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.toolbar.ToolBar"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<VBox>
+		<fx:define>
+			<ToggleGroup fx:id="testButtonGroup" />
+		</fx:define>
 		<AnchorPane>
 			<fx:define>
 				<ToggleGroup fx:id="playSourceGroup" />

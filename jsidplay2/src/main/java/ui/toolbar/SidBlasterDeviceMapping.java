@@ -2,6 +2,7 @@ package ui.toolbar;
 
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -10,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import libsidplay.common.ChipModel;
 import sidplay.Player;
 import ui.common.C64VBox;
@@ -29,9 +32,13 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<ChipModel> chipModelEditor;
 
+	@FXML
+	private ToggleButton testButton;
+
 	private DeviceMapping deviceMapping;
 
-	private Consumer<DeviceMapping> testSidBlasterDeviceConsumer, removeSidBlasterDeviceConsumer;
+	private BiConsumer<DeviceMapping, Boolean> testSidBlasterDeviceConsumer;
+	private Consumer<DeviceMapping> removeSidBlasterDeviceConsumer;
 
 	public SidBlasterDeviceMapping() {
 		super();
@@ -69,11 +76,11 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 
 	@FXML
 	private void testSidBlaster() {
-		testSidBlasterDeviceConsumer.accept(deviceMapping);
+		testSidBlasterDeviceConsumer.accept(deviceMapping, testButton.isSelected());
 	}
 
-	void init(DeviceMapping deviceMapping, Consumer<DeviceMapping> testSidBlasterDeviceConsumer,
-			Consumer<DeviceMapping> removeSidBlasterDeviceConsumer) {
+	void init(DeviceMapping deviceMapping, BiConsumer<DeviceMapping, Boolean> testSidBlasterDeviceConsumer,
+			Consumer<DeviceMapping> removeSidBlasterDeviceConsumer, ToggleGroup testButtonGroup) {
 		this.deviceMapping = deviceMapping;
 		this.testSidBlasterDeviceConsumer = testSidBlasterDeviceConsumer;
 		this.removeSidBlasterDeviceConsumer = removeSidBlasterDeviceConsumer;
@@ -83,6 +90,7 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 		serialNumEditor.setText(deviceMapping.getSerialNum());
 
 		chipModelEditor.setValue(Optional.ofNullable(deviceMapping.getChipModel()).orElse(ChipModel.MOS8580));
+		testButton.setToggleGroup(testButtonGroup);
 	}
 
 }
