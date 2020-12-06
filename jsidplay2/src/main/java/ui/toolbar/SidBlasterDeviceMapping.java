@@ -38,6 +38,7 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 	private DeviceMapping deviceMapping;
 
 	private BiConsumer<DeviceMapping, Boolean> testSidBlasterDeviceConsumer;
+
 	private Consumer<DeviceMapping> removeSidBlasterDeviceConsumer;
 
 	public SidBlasterDeviceMapping() {

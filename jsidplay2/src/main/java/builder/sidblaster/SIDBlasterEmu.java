@@ -118,15 +118,17 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void write(int addr, final byte data) {
-		// clock();
+		clock();
 		super.write(addr, data);
-		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 
 		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
-			while (hardSID.HardSID_Try_Write(deviceID, clocksSinceLastAccess, (byte) addr,
-					data) == WState.WSTATE_BUSY) {
-				;
+			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, data) == WState.WSTATE_BUSY) {
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		});
 	}

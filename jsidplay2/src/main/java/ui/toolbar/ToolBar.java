@@ -637,7 +637,6 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		sidBlasterDeviceParent.getChildren().remove(emulationSection.getSidBlasterDeviceList().indexOf(deviceMapping));
 		emulationSection.getSidBlasterDeviceList().remove(deviceMapping);
-
 	}
 
 	private void testSidBlasterDevice(DeviceMapping deviceMapping, Boolean isSelected) {
