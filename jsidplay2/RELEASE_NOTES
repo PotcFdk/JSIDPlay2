@@ -2,9 +2,9 @@ Release Notes:
 ==============
 - App: Loop song did not work
 - Video Screen gives a much clearer picture now, blurryness removed
-- hardware cards did not seem to ensure the minimum 4 cycle delay between writes in fake stereo mode
-- SIDBlaster: unlimited number of devices, configure serial numbers, magic auto-configuration of devices
-- HardSID4U: 64 bit driver added (no more 32-bit driver required)
+- hardware cards did not seem to ensure the minimum 4 cycle delay between writes in fake stereo mode (hang-ups fixed)
+- SIDBlaster: unlimited number of devices, configure serial numbers, magic auto-configuration of all devices
+- HardSID4U: 64 bit driver added (no more 32-bit Java required)
 
 Next TODOs:
 - Playlist starts with last recently player tune on last startup (just click continue)
