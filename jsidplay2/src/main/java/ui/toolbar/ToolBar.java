@@ -665,8 +665,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	private void triggerFetchSerialNumbers() {
-		new SidBlasterBuilder(util.getPlayer().getC64().getEventScheduler(), util.getConfig(),
-				util.getPlayer().getC64().getClock());
+		new SidBlasterBuilder(null, util.getConfig(), null);
 	}
 
 	private void setActiveSidBlasterDevices(Mixer mixer) {

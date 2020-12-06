@@ -14,6 +14,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
+import builder.sidblaster.SidBlasterBuilder;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
@@ -62,6 +63,7 @@ final public class ConsolePlayer {
 			if (help || !filename.isPresent()) {
 				commander.usage();
 				printSoundcardDevices();
+				printSIDBlasterDevices();
 				exit(1);
 			}
 			IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
@@ -116,6 +118,27 @@ final public class ConsolePlayer {
 			System.out.printf("    --deviceIndex %d -> %s (%s)\n", deviceIdx++, device.getName(),
 					device.getDescription());
 		}
+	}
+
+	private void printSIDBlasterDevices() {
+		String osName = System.getProperty("os.name").toLowerCase();
+		if (osName.toLowerCase().startsWith("win")) {
+			triggerFetchSerialNumbers();
+			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
+			if (serialNumbers.length > 0) {
+				System.out.println();
+				System.out.println("Detected SIDBlaster device serial numbers: (configure INI file accordingly)");
+				int deviceIdx = 0;
+				for (String serialNumber : serialNumbers) {
+					System.out.printf("    SIDBlasterMapping_%d=%s=MOS8580\n", deviceIdx++, serialNumber);
+				}
+			}
+		}
+
+	}
+
+	private void triggerFetchSerialNumbers() {
+		new SidBlasterBuilder(null, config, null);
 	}
 
 	private void exit(int rc) {
