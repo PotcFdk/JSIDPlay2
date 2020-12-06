@@ -63,7 +63,7 @@ final public class ConsolePlayer {
 			if (help || !filename.isPresent()) {
 				commander.usage();
 				printSoundcardDevices();
-				printSIDBlasterDevices();
+				printSidBlasterDevices();
 				exit(1);
 			}
 			IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
@@ -120,14 +120,13 @@ final public class ConsolePlayer {
 		}
 	}
 
-	private void printSIDBlasterDevices() {
+	private void printSidBlasterDevices() {
 		String osName = System.getProperty("os.name").toLowerCase();
 		if (osName.toLowerCase().startsWith("win")) {
 			triggerFetchSerialNumbers();
 			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
 			if (serialNumbers.length > 0) {
-				System.out.println();
-				System.out.println("Detected SIDBlaster device serial numbers: (configure INI file accordingly)");
+				System.out.println("\nDetected SIDBlaster device serial numbers: (configure INI file accordingly)");
 				int deviceIdx = 0;
 				for (String serialNumber : serialNumbers) {
 					System.out.printf("    SIDBlasterMapping_%d=%s=MOS8580\n", deviceIdx++, serialNumber);
