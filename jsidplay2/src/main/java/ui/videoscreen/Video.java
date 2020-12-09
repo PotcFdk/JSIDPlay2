@@ -95,6 +95,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	private Label tapeName, diskName, cartridgeName;
 
 	private Keyboard virtualKeyboard;
+
 	private Timeline timer;
 
 	private ImageQueue<Image> imageQueue;
@@ -411,11 +412,11 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 				releaseC64Key(keyTableEntry);
 			}
 
-			if (event.isShiftDown()) {
-				releaseC64Key(KeyTableEntry.SHIFT_LEFT);
-			}
 			if (event.isControlDown()) {
 				releaseC64Key(KeyTableEntry.COMMODORE);
+			}
+			if (event.isShiftDown()) {
+				releaseC64Key(KeyTableEntry.SHIFT_LEFT);
 			}
 			// prevent focus traversal using cursor keys or tab!
 			monitor.requestFocus();
