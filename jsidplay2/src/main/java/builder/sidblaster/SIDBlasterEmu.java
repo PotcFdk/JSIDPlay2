@@ -112,7 +112,7 @@ public class SIDBlasterEmu extends SIDEmu {
 	@Override
 	public byte read(int addr) {
 		clock();
-		// not supported by SIDBlaster
+		// not supported
 		return (byte) 0xff;
 	}
 
@@ -142,7 +142,7 @@ public class SIDBlasterEmu extends SIDEmu {
 	}
 
 	private void doWriteDelayed(Runnable runnable) {
-		if (hardSIDBuilder.getDelayInCycles(sidNum) > 0) {
+		if (hardSIDBuilder.getDelay(sidNum) > 0) {
 			context.schedule(new Event("Delayed SID output") {
 				@Override
 				public void event() throws InterruptedException {
@@ -150,7 +150,7 @@ public class SIDBlasterEmu extends SIDEmu {
 						runnable.run();
 					}
 				}
-			}, hardSIDBuilder.getDelayInCycles(sidNum));
+			}, hardSIDBuilder.getDelay(sidNum));
 		} else {
 			runnable.run();
 		}

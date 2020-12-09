@@ -33,7 +33,7 @@ public interface HardSID extends Library {
 	 */
 	void HardSID_Sync(byte DeviceID);
 
-	byte HardSID_Write(byte DeviceID, short Cycles, byte SID_reg, byte data);
+	void HardSID_Write(byte DeviceID, short Cycles, byte SID_reg, byte data);
 
 	/**
 	 * Internal version number for this DLL e.g. 0x0202 (2.02)
@@ -144,6 +144,11 @@ public interface HardSID extends Library {
 	 */
 	void HardSID_GetSerial(byte DeviceID, Memory mem);
 
+	/**
+	 * @since SIDBlasterUSB 5.15beta
+	 */
+	void HardSID_SetWriteBufferSize(byte bufferSize);
+
 	default String GetSerial(byte deviceID) {
 		Memory mem = new Memory(9L);
 		mem.setMemory(0L, 9L, (byte) 0);
@@ -151,8 +156,4 @@ public interface HardSID extends Library {
 		return mem.getString(0L, "US_ASCII");
 	}
 
-	/**
-	 * @since SIDBlasterUSB 5.15beta
-	 */
-	void HardSID_SetWriteBufferSize(byte bufferSize);
 }

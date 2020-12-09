@@ -199,7 +199,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		// XXX unsupported by HardSID4U
 	}
 
-	public int getDelayInCycles(int sidNum) {
+	public int getDelay(int sidNum) {
 		return delayInCycles[sidNum];
 	}
 

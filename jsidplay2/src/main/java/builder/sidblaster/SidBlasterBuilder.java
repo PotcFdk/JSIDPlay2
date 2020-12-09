@@ -221,7 +221,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		// XXX unsupported by SIDBlaster
 	}
 
-	public int getDelayInCycles(int sidNum) {
+	public int getDelay(int sidNum) {
 		return delayInCycles[sidNum];
 	}
 
@@ -265,7 +265,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * @param sidBlasterSerialNumber serial number of device to use (for testing)
 	 * @return SID index of the desired SIDBlaster device
 	 */
-	protected SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum,
+	private SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum,
 			String sidBlasterSerialNumber) {
 		if (sidBlasterSerialNumber == null) {
 			// DEFAULT: choose best fitting device for sound output
