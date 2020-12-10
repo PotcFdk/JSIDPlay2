@@ -1,7 +1,5 @@
 package builder.sidblaster;
 
-import static libsidplay.common.SIDChip.REG_COUNT;
-
 import java.util.List;
 
 import builder.hardsid.WState;
@@ -64,8 +62,6 @@ public class SIDBlasterEmu extends SIDEmu {
 		}
 	}
 
-	private static final short SHORTEST_DELAY = 4;
-
 	private final Event event = new Event("HardSID Delay") {
 		@Override
 		public void event() {
@@ -101,12 +97,7 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void reset(final byte volume) {
-		hardSID.HardSID_Flush(deviceID);
-		for (byte reg = 0; reg < REG_COUNT; reg++) {
-			hardSID.HardSID_Try_Write(deviceID, SHORTEST_DELAY, reg, (byte) 0);
-		}
-		hardSID.HardSID_Sync(deviceID);
-		hardSID.HardSID_Reset2(deviceID, volume);
+		hardSID.HardSID_Reset(deviceID);
 	}
 
 	@Override
