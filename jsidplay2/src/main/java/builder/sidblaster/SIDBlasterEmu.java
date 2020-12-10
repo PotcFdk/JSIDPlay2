@@ -83,8 +83,6 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final ChipModel chipModel;
 
-	private boolean doReadWriteDelayed;
-
 	public SIDBlasterEmu(EventScheduler context, SidBlasterBuilder hardSIDBuilder, final HardSID hardSID,
 			final byte deviceId, int sidNum, ChipModel model) {
 		this.context = context;
@@ -112,7 +110,6 @@ public class SIDBlasterEmu extends SIDEmu {
 		clock();
 		super.write(addr, data);
 
-		doReadWriteDelayed = true;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, data) == WState.WSTATE_BUSY) {
 				try {
@@ -137,9 +134,7 @@ public class SIDBlasterEmu extends SIDEmu {
 			context.schedule(new Event("Delayed SID output") {
 				@Override
 				public void event() throws InterruptedException {
-					if (doReadWriteDelayed) {
-						runnable.run();
-					}
+					runnable.run();
 				}
 			}, hardSIDBuilder.getDelay(sidNum));
 		} else {
@@ -160,7 +155,6 @@ public class SIDBlasterEmu extends SIDEmu {
 		reset((byte) 0x0);
 		context.cancel(event);
 		hardSID.HardSID_Unlock(deviceID);
-		doReadWriteDelayed = false;
 	}
 
 	@Override
