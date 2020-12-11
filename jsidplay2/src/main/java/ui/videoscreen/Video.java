@@ -364,11 +364,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 * Connect VIC output with screen.
 	 */
 	private void setupVideoScreen(final CPUClock cpuClock) {
-		if (cpuClock == CPUClock.PAL) {
-			scaleY = PAL_SCALE_Y;
-		} else {
-			scaleY = NTSC_SCALE_Y;
-		}
+		scaleY = (cpuClock == CPUClock.PAL) ? PAL_SCALE_Y : NTSC_SCALE_Y;
 		pauseTransition.setDuration(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
 		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
@@ -378,7 +374,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	}
 
 	private void updateScaling() {
-		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+		final SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		double scale = sidplay2Section.getVideoScaling();
 		for (Node node : Arrays.asList(monitorBorder, screen, breadbox, pc64)) {
