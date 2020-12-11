@@ -124,9 +124,8 @@ public class SIDBlasterEmu extends SIDEmu {
 	@Override
 	public void clock() {
 		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
-		doWriteDelayed(() -> {
-			hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess);
-		});
+
+		doWriteDelayed(() -> hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess));
 	}
 
 	private void doWriteDelayed(Runnable runnable) {
