@@ -6,12 +6,9 @@ Release Notes:
 - SIDBlaster: unlimited number of devices, configure serial numbers, magic auto-configuration of all devices
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
 
-Next TODOs:
+TODOs:
 - Playlist starts with last recently player tune on last startup (just click continue)
 - Only hide maximize window without being utility app
 - HVSC update website
 - Whatssid update HVSC
 - Windows seem to hide set "default settings" buttons
-
-Sidblaster todos:
-minimize window: let status-bar always being visible (even if sidblaster toolbar had being expanded)
