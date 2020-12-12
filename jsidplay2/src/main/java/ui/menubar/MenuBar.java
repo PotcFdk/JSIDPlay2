@@ -42,6 +42,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -241,18 +242,19 @@ public class MenuBar extends C64VBox implements UIPart {
 			});
 		}
 
-		util.getWindow().getStage().maximizedProperty()
+		Stage stage = util.getWindow().getStage();
+		stage.maximizedProperty()
 				.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (getScene() != null) {
 				Node node = getScene().lookup("#tabbedPane");
 				node.setVisible(!newValue);
 				node.setManaged(!newValue);
-				util.getWindow().getStage().setResizable(!newValue);
+				stage.setResizable(!newValue);
 				if (newValue.booleanValue()) {
 					sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
 					sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
-					util.getWindow().getStage().sizeToScene();
+					stage.sizeToScene();
 				} else {
 					getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
 					getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
@@ -260,6 +262,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			}
 		});
 		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
+
 		if (getScene() != null) {
 			getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
