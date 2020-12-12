@@ -241,6 +241,8 @@ public class MenuBar extends C64VBox implements UIPart {
 			});
 		}
 
+		util.getWindow().getStage().maximizedProperty()
+				.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (getScene() != null) {
 				Node node = getScene().lookup("#tabbedPane");
