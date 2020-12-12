@@ -24,7 +24,7 @@
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<VBox spacing="5">
 		<HBox>
-			<Label text="%SIDBLASTER_SERIAL_NO" alignment="BASELINE_LEFT" />
+			<Label text="%SIDBLASTER_SERIAL_NO" />
 			<Region HBox.hgrow="ALWAYS" />
 			<CheckBox fx:id="usedCheckbox" onAction="#setUsed">
 				<tooltip>
