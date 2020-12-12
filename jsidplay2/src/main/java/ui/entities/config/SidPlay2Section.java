@@ -52,19 +52,9 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final int DEFAULT_FRAME_WIDTH = 1310;
 	public static final int DEFAULT_FRAME_HEIGHT = 1024;
-	public static final int DEFAULT_FRAME_WIDTH_MINIMIZED = 1310;
-	public static final int DEFAULT_FRAME_HEIGHT_MINIMIZED;
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
-	static {
-		String OS = System.getProperty("os.name").toLowerCase();
-		if (OS.indexOf("nux") >= 0) {
-			DEFAULT_FRAME_HEIGHT_MINIMIZED = 173;
-		} else {
-			DEFAULT_FRAME_HEIGHT_MINIMIZED = 190;
-		}
-	}
 
 	public SidPlay2Section() {
 		Bindings.bindBidirectional(this.demos, demosFile, new FileToStringConverter());
