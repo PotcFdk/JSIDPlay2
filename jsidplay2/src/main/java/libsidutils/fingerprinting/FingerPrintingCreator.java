@@ -186,13 +186,13 @@ public class FingerPrintingCreator {
 					previousTune.getMD5Digest(MD5Method.MD5_CONTENTS))
 					&& player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.) == previousSidDatabase
 							.getTuneLength(previousTune)) {
-				for (int i = 1; i < tune.getInfo().getSongs(); i++) {
+				for (int i = 1; i <= tune.getInfo().getSongs(); i++) {
 					File wavFile = new File(getRecordingFilename(file, tune, i) + whatsSidDriver.getExtension());
 					File previousWavFile = new File(
 							getRecordingFilename(previousFile, previousTune, i) + whatsSidDriver.getExtension());
 					if (!wavFile.exists() && previousWavFile.exists()) {
 						System.out.println(String.format("Tune is unchanged, copy %s to %s", previousWavFile, wavFile));
-						Files.copy(previousFile.toPath(), wavFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						Files.copy(previousWavFile.toPath(), wavFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 					}
 				}
 			}
