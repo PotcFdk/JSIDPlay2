@@ -243,6 +243,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		}
 
 		Stage stage = util.getWindow().getStage();
+		stage.setResizable(!sidplay2Section.isMinimized());
 		stage.maximizedProperty()
 				.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
