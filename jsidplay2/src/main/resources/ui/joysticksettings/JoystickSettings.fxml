@@ -20,9 +20,9 @@
 <Scene xmlns:fx="http://javafx.com/fxml">
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.joysticksettings.JoystickSettings"> -->
 	<HBox>
-		<TitledPane text="%PORT_1" collapsible="false">
-			<VBox>
-				<GridPane>
+		<TitledPane text="%PORT_1" collapsible="false" prefWidth="500">
+			<VBox spacing="10">
+				<GridPane vgap="5" hgap="5">
 					<CheckBox text="%JOYSTICK_IN_PORT_1_ENABLED" fx:id="activateJoy1"
 						onAction="#doActivateJoy1" GridPane.columnIndex="0"
 						GridPane.rowIndex="0" GridPane.columnSpan="3" />
@@ -82,9 +82,9 @@
 				</TableView>
 			</VBox>
 		</TitledPane>
-		<TitledPane text="%PORT_2" collapsible="false">
-			<VBox>
-				<GridPane>
+		<TitledPane text="%PORT_2" collapsible="false" prefWidth="500">
+			<VBox spacing="10">
+				<GridPane vgap="5" hgap="5">
 					<CheckBox text="%JOYSTICK_IN_PORT_2_ENABLED" fx:id="activateJoy2"
 						onAction="#doActivateJoy2" GridPane.columnIndex="0"
 						GridPane.rowIndex="0" GridPane.columnSpan="3" />

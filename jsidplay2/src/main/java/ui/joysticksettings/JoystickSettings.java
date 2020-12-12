@@ -81,6 +81,11 @@ public class JoystickSettings extends C64Window {
 		ControllerEnvironment controllerEnv = ControllerEnvironment.getDefaultEnvironment();
 		Controller[] controllers = controllerEnv.getControllers();
 
+		if (controllers.length == 0 && System.getProperty("os.name").startsWith("Linux")) {
+			System.err.println("If you can use sudo, try the following command and start JSIDPlay2 again:");
+			System.err.println("sudo chmod go+r /dev/input/*");
+		}
+
 		devices.addAll(controllers);
 
 		JoystickSection joystickSettings = util.getConfig().getJoystickSection();

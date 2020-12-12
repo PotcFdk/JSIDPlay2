@@ -33,7 +33,7 @@
 <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@EmulationSettings.css">
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@EmulationSettings.css" fx:controller="ui.emulationsettings.EmulationSettings"> -->
 	<ScrollPane>
-		<VBox>
+		<VBox spacing="10">
 			<TitledPane text="%VOLUME_CONTROL">
 				<GridPane gridLinesVisible="true">
 					<VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
@@ -123,8 +123,8 @@
 				</GridPane>
 			</TitledPane>
 			<TitledPane text="%SID_CONTROL">
-				<VBox>
-					<HBox>
+				<VBox spacing="10">
+					<HBox spacing="5">
 						<Label text="%STEREO_MODE" />
 						<ComboBox fx:id="stereoMode" onAction="#setStereoMode"
 							maxWidth="200" />
@@ -141,7 +141,7 @@
 							</tooltip>
 						</ComboBox>
 					</HBox>
-					<HBox>
+					<HBox spacing="5">
 						<Label text="%DEFAULT_EMULATION" />
 						<ComboBox fx:id="defaultEmulation" onAction="#setDefaultEmulation" />
 						<Label text="%DEFAULT_SID" />
@@ -161,8 +161,8 @@
 							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
 						</padding>
 						<top>
-							<VBox>
-								<HBox>
+							<VBox spacing="10">
+								<HBox spacing="5">
 									<Label text="%MAIN_EMULATION" />
 									<ComboBox fx:id="sid1Emulation" onAction="#setSid1Emulation"
 										maxWidth="150" />
@@ -178,7 +178,7 @@
 										</graphic>
 									</Button>
 								</HBox>
-								<HBox>
+								<HBox spacing="5">
 									<Label text="%FILTER_DEFINITION" />
 									<ComboBox fx:id="mainFilter" onAction="#setMainFilter" />
 								</HBox>
@@ -207,8 +207,8 @@
 							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
 						</padding>
 						<top>
-							<VBox>
-								<HBox>
+							<VBox spacing="10">
+								<HBox spacing="5">
 									<Label text="%SECOND_EMULATION" />
 									<ComboBox fx:id="sid2Emulation" onAction="#setSid2Emulation"
 										maxWidth="150" />
@@ -246,8 +246,8 @@
 							<Insets top="10.0" bottom="10.0" left="10.0" right="10.0" />
 						</padding>
 						<top>
-							<VBox>
-								<HBox>
+							<VBox spacing="10">
+								<HBox spacing="5">
 									<Label text="%THIRD_EMULATION" />
 									<ComboBox fx:id="sid3Emulation" onAction="#setSid3Emulation"
 										maxWidth="150" />

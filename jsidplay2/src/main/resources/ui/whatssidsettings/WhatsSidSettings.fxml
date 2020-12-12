@@ -23,9 +23,9 @@
 	<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@WhatsSidSettings.css" 
 		fx:controller="ui.audiosettings.WhatsSidSettings"> -->
 	<ScrollPane>
-		<VBox>
+		<VBox spacing="10">
 			<TitledPane text="%WHATSSID">
-				<VBox>
+				<VBox spacing="5">
 					<CheckBox fx:id="enable" text="%ENABLE"></CheckBox>
 					<Label text="%URL" alignment="CENTER_RIGHT" />
 					<TextField fx:id="url">
