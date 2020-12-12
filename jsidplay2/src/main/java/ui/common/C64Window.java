@@ -12,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import sidplay.Player;
 import ui.entities.config.Configuration;
 import ui.entities.config.service.ConfigService;
@@ -73,7 +72,6 @@ public abstract class C64Window implements UIPart, Initializable {
 		}
 		stage.setOnCloseRequest(event -> close());
 		stage.setScene(scene);
-		stage.initStyle(StageStyle.UTILITY);
 	}
 
 	public void open() {

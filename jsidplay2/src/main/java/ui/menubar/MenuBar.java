@@ -1,8 +1,6 @@
 package ui.menubar;
 
 import static libsidplay.sidtune.SidTune.RESET;
-import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_HEIGHT_MINIMIZED;
-import static ui.entities.config.SidPlay2Section.DEFAULT_FRAME_WIDTH_MINIMIZED;
 
 import java.awt.Graphics2D;
 import java.awt.Transparency;
@@ -27,6 +25,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -43,7 +42,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.StageStyle;
 import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
@@ -245,18 +243,18 @@ public class MenuBar extends C64VBox implements UIPart {
 
 		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (getScene() != null) {
+				Node node = getScene().lookup("#tabbedPane");
+				node.setVisible(!newValue);
+				node.setManaged(!newValue);
+				util.getWindow().getStage().setResizable(!newValue);
 				if (newValue.booleanValue()) {
 					sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
 					sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
-					getScene().getWindow().setWidth(DEFAULT_FRAME_WIDTH_MINIMIZED);
-					getScene().getWindow().setHeight(DEFAULT_FRAME_HEIGHT_MINIMIZED);
-					util.getWindow().getStage().setResizable(false);
+					util.getWindow().getStage().sizeToScene();
 				} else {
 					getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
 					getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
-					util.getWindow().getStage().setResizable(true);
 				}
-				getScene().lookup("#tabbedPane").setVisible(!newValue);
 			}
 		});
 		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
@@ -1229,7 +1227,6 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	private void openErrorDialog(String msg) {
 		Alert alert = new Alert(AlertType.ERROR, msg);
-		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
 		alert.showAndWait();
 	}

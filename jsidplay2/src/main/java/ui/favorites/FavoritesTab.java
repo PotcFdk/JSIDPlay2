@@ -45,7 +45,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.StageStyle;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -600,7 +599,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 	private void openErrorDialog(String msg) {
 		Alert alert = new Alert(AlertType.ERROR, "");
-		alert.initStyle(StageStyle.UTILITY);
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
 		TextArea textArea = new TextArea(msg);
 		textArea.setEditable(false);
