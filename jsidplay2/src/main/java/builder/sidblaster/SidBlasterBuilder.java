@@ -66,14 +66,14 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Serial numbers of SIDBlaster devices.
 	 */
-	static String[] serialNumbers;
+	private static String[] serialNumbers;
 
 	/**
 	 * Already used SIDBlaster SIDs.
 	 */
 	private List<SIDBlasterEmu> sids = new ArrayList<>();
 
-	protected long lastSIDWriteTime;
+	private long lastSIDWriteTime;
 
 	private int fastForwardFactor;
 

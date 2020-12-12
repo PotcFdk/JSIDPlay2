@@ -73,7 +73,7 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	 */
 	private byte deviceID;
 
-	protected long lastSIDWriteTime;
+	private long lastSIDWriteTime;
 
 	private int fastForwardFactor;
 
