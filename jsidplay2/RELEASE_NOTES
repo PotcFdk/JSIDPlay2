@@ -2,13 +2,13 @@ Release Notes:
 ==============
 - App: Loop song did not work
 - Video Screen gives a much clearer picture now, blurryness removed
-- hardware cards did not seem to ensure the minimum 4 cycle delay between writes in fake stereo mode (hang-ups fixed)
-- SIDBlaster: unlimited number of devices, configure serial numbers, magic auto-configuration of all devices
+- Window handling improved (minimize/maximize window)
+- SIDBlaster: magic auto-configuration of all devices added, unlimited number of devices, configuration of serial numbers
+- hardware support fixed in fake stereo mode with delay
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
 
 TODOs:
 - Playlist starts with last recently player tune on last startup (just click continue)
-- Only hide maximize window without being utility app
 - HVSC update website
 - Whatssid update HVSC
 - Windows seem to hide set "default settings" buttons
