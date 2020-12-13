@@ -1,5 +1,7 @@
 package libsidplay.sidtune;
 
+import static java.util.Optional.ofNullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -62,11 +64,16 @@ public class MP3Tune extends SidTune {
 		mp3.mp3Filename = file.getAbsolutePath();
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			mp3.decoder.read(randomAccessFile);
-			final String title = mp3.decoder.getTitle();
+
+			String title = ofNullable(mp3.decoder.getTitle()).map(MP3Tune::replaceNonPrintable).orElse(null);
+			String interpret = ofNullable(mp3.decoder.getInterpret()).map(MP3Tune::replaceNonPrintable).orElse(null);
+			String albumInterpret = ofNullable(mp3.decoder.getAlbumInterpret()).map(MP3Tune::replaceNonPrintable)
+					.orElse(null);
+			String genre = ofNullable(mp3.decoder.getGenre()).map(MP3Tune::replaceNonPrintable).orElse(null);
+			String album = ofNullable(mp3.decoder.getAlbum()).map(MP3Tune::replaceNonPrintable).orElse(null);
+			String year = ofNullable(mp3.decoder.getYear()).map(MP3Tune::replaceNonPrintable).orElse(null);
+
 			mp3.info.infoString.add(title != null ? title : PathUtils.getFilenameWithoutSuffix(file.getName()));
-			String interpret = mp3.decoder.getInterpret();
-			String albumInterpret = mp3.decoder.getAlbumInterpret();
-			String genre = mp3.decoder.getGenre();
 			if (interpret != null) {
 				mp3.info.infoString.add(interpret);
 			} else if (albumInterpret != null) {
@@ -74,8 +81,6 @@ public class MP3Tune extends SidTune {
 			} else {
 				mp3.info.infoString.add("<?>");
 			}
-			String album = mp3.decoder.getAlbum();
-			String year = mp3.decoder.getYear();
 			if (album != null && year != null) {
 				mp3.info.infoString.add(album + " (" + year + ")" + (genre != null ? " / " + genre : ""));
 			} else if (album != null) {
@@ -112,4 +117,7 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
+	private static String replaceNonPrintable(String str) {
+		return str.replaceAll("\\p{Cntrl}", "");
+	}
 }
