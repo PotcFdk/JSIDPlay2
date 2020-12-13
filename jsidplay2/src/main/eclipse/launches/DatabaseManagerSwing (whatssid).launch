@@ -10,7 +10,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.hsqldb.util.DatabaseManagerSwing"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--url jdbc:mysql://192.168.1.150:3306/whatssid?useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC --user newuser --password password&#13;&#10;--driver com.mysql.cj.jdbc.Driver"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--url jdbc:mysql://192.168.1.150:3306/hvsc73?useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC --user newuser --password password&#13;&#10;--driver com.mysql.cj.jdbc.Driver"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>
