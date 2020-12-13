@@ -1,6 +1,9 @@
 package ui.entities.config.service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -57,22 +60,26 @@ public class ConfigService {
 	}
 
 	public Configuration load() {
+		final File configPath = getConfigPath();
+
 		switch (configurationType) {
 		case DATABASE:
 			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
-					PathUtils.getFilenameWithoutSuffix(getConfigPath().getAbsolutePath()), "", "", Database.HSQL_FILE))
+					PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath()), "", "", Database.HSQL_FILE))
 					.createEntityManager();
-			return get();
+			return get(configPath);
 
 		case XML:
 		default:
 			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
 					new PersistenceProperties(CONFIG_FILE, "", "", Database.HSQL_MEM)).createEntityManager();
-			return importCfg(getConfigPath());
+			return importCfg(configPath);
 		}
 	}
 
 	public void save(Configuration configuration) {
+		final File configPath = getConfigPath();
+
 		switch (configurationType) {
 		case DATABASE:
 			persist(configuration);
@@ -80,7 +87,7 @@ public class ConfigService {
 
 		case XML:
 		default:
-			exportCfg(configuration, getConfigPath());
+			exportCfg(configuration, configPath);
 			break;
 		}
 	}
@@ -92,7 +99,7 @@ public class ConfigService {
 	 *
 	 * @return configuration
 	 */
-	private Configuration get() {
+	private Configuration get(File configPath) {
 		Configuration configuration = null;
 		// read configuration from database
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -106,7 +113,6 @@ public class ConfigService {
 			if (configuration.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
 				return configuration;
 			}
-			File configPath = getConfigPath();
 			createBackup(configuration, configPath);
 		}
 		// remove old configuration
@@ -197,11 +203,11 @@ public class ConfigService {
 						persist(mergedConfig);
 						return mergedConfig;
 					}
-					File configPath = getConfigPath();
-					createBackup(detachedConfig, configPath);
+					createBackup(detachedConfig, file);
 				}
 			} catch (JAXBException e) {
 				System.err.println(e.getMessage());
+				createBackup(file);
 			}
 		}
 		return create();
@@ -249,6 +255,17 @@ public class ConfigService {
 	private void createBackup(Configuration configuration, File configPath) {
 		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
 		exportCfg(configuration, file);
+	}
+
+	private void createBackup(File configPath) {
+		File bakFile = new File(configPath.getParentFile(), configPath.getName() + ".bak");
+		try {
+			if (!bakFile.exists()) {
+				Files.copy(configPath.toPath(), bakFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+		} catch (IOException e1) {
+			// ignore
+		}
 	}
 
 }
