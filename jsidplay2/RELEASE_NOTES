@@ -8,6 +8,3 @@ Release Notes:
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
 - Whatssid update HVSC
 - HVSC update website
-
-TODOs:
-- Playlist starts with last recently player tune on last startup (just click continue)
