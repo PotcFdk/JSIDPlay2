@@ -6,8 +6,8 @@ Release Notes:
 - SIDBlaster: magic auto-configuration of all devices added, unlimited number of devices, configuration of serial numbers
 - hardware support fixed in fake stereo mode with delay
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
+- Whatssid update HVSC
+- HVSC update website
 
 TODOs:
 - Playlist starts with last recently player tune on last startup (just click continue)
-- HVSC update website
-- Whatssid update HVSC
