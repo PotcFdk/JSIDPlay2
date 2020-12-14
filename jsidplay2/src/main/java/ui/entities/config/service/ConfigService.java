@@ -65,14 +65,14 @@ public class ConfigService {
 		switch (configurationType) {
 		case DATABASE:
 			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
-					PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath()), "", "", Database.HSQL_FILE))
+					Database.HSQL_FILE, "", "", PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath())))
 					.createEntityManager();
 			return get(configPath);
 
 		case XML:
 		default:
 			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(CONFIG_FILE, "", "", Database.HSQL_MEM)).createEntityManager();
+					new PersistenceProperties(Database.HSQL_MEM, "", "", CONFIG_FILE)).createEntityManager();
 			return importCfg(configPath);
 		}
 	}

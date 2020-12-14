@@ -276,7 +276,7 @@ public class OnlineContent {
 		String persistenceUnitName = collectionType == CGSC ? CGSC_DS : HVSC_DS;
 		File dbFilename = new File(rootFile.getParentFile(), collectionType.toString());
 		EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
-				new PersistenceProperties(dbFilename.getAbsolutePath(), "", "", Database.HSQL_FILE));
+				new PersistenceProperties(Database.HSQL_FILE, "", "", dbFilename.getAbsolutePath()));
 		EntityManager em = emFactory.createEntityManager();
 
 		Player player = new Player(IniDefaults.DEFAULTS);
