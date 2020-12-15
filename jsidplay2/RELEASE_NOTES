@@ -1,10 +1,8 @@
 Release Notes:
 ==============
-- App: Loop song did not work
 - Video Screen gives a much clearer picture now, blurryness removed
 - Window handling improved (minimize/maximize window)
-- SIDBlaster: magic auto-configuration of all devices added, unlimited number of devices, configuration of serial numbers
-- hardware support fixed in fake stereo mode with delay
+- SIDBlaster: magic wand added (auto-configuration) and additional manual configuration of serial numbers
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
-- Whatssid update HVSC
-- HVSC update website
+- HardSID4U+SIDBlaster fixed fake stereo mode using delay
+- App: Loop song fixed
