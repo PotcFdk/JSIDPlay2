@@ -252,7 +252,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				node.setVisible(!newValue);
 				node.setManaged(!newValue);
 				stage.setResizable(!newValue);
-				if (newValue.booleanValue()) {
+				if (newValue) {
 					sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
 					sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
 					stage.sizeToScene();
