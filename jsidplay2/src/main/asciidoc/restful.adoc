@@ -347,11 +347,43 @@ java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.Fi
 audio fingerprintings. This can be pathToHVSC or the path for CGSC!
 
 *Note:* The pathToMusicCollection is traversed recursively and every
-song is converted to a 8KHz WAV recording. You will need a lot of
-disk space to store them (around hundreds of MB)!
+song is converted to a 8KHz WAV recording. You will need about 250GB disk space to store them!
 After every created WAV file an audio fingerprint is created and stored in the database.
 
 Now you can use WhatsSID? tune recognition.
+
+=== Update of Whatssid database
+
+Updates of Whatssid database are done in much shorter times.
+Last update to HVSC#73 took around 24 hours.
+A new database will be created (in the following example named "hvsc73").
+It re-uses WAV files of unmodified tunes compared to the last HVSC version.
+Therefore you need to specify the previously used HVSC directory containing
+all the WAV files which are so time consuming to create from scratch.
+The newly created HVSC folder will get copied recordings from there and
+if tunes were changed or added, only they will be created from scratch.
+
+Keep in mind in the end the update requires another 250GB of disk space for the new WAV recordings.
+
+[source,subs="attributes+"]
+----
+#!/bin/bash -x
+cd /home/ken/Downloads/{artifactId}-{version}
+pkill -f server.restful.JSIDPlay2Server
+java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
+	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc73?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUsername <username> \
+	--whatsSIDDatabasePassword <password> \
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
+	--hvsc <pathToHVSC># <1>
+	--previousDirectory <previousPathToHVSC> <2>
+	<pathToMusicCollection> & # <2>
+----
+<1> pathToHVSC is used to read song length file database contained in HVSC
+<2> previousPathToHVSC is the formerly used pathToHVSC containing WAV recordings among the SID files.
+<3> pathToMusicCollection is the base directory to recursively create
+audio fingerprintings. This can be pathToHVSC or the path for CGSC!
 
 === Launch JSIDPlay2 AppServer with additional WhatsSID? tune recognition
 
