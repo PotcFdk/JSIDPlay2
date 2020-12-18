@@ -262,7 +262,8 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 *
 	 * @param chipModel              desired chip model
 	 * @param sidNum                 current SID number
-	 * @param sidBlasterSerialNumber serial number of device to use (for testing)
+	 * @param sidBlasterSerialNumber hard-wired serial number of device to test with
+	 *                               (null - choose best fitting device)
 	 * @return SID index of the desired SIDBlaster device
 	 */
 	private SimpleEntry<Integer, ChipModel> getModelDependantDeviceId(final ChipModel chipModel, int sidNum,
@@ -291,7 +292,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		} else {
 			// TEST: Choose one specific device for sound output
 
-			for (int deviceId = 0; deviceId < serialNumbers.length; deviceId++) {
+			for (int deviceId = 0; deviceId < deviceCount; deviceId++) {
 				if (Objects.equals(serialNumbers[deviceId], sidBlasterSerialNumber)) {
 					return new SimpleEntry<Integer, ChipModel>(deviceId, chipModel);
 				}
