@@ -23,7 +23,7 @@
 			<directory>${basedir}/src/main/deploy/jsidplay2</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-                <include>jsidplay2.png</include>
+                <include>jsidplay2.ico</include>
             </includes>			
 		</fileSet>
 	</fileSets>

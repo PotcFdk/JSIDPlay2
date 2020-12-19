@@ -1151,6 +1151,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(":\n");
 		credits.append("\tCopyright (©) 2007-" + LAST_MODIFIED.get(Calendar.YEAR) + " Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
+		credits.append("Icon used from Wikimedia\n");
+		credits.append("\tCreative Commons License Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)\n");
+		credits.append("\thttps://creativecommons.org/licenses/by-sa/3.0/legalcode\n");
 		credits.append("Distortion Simulation and development: Antti S. Lankila\n");
 		credits.append("\thttp://bel.fi/~alankila/c64-sw/\n");
 		credits.append("Network SID Device:\n");
