@@ -2,7 +2,7 @@ Release Notes:
 ==============
 - Video Screen gives a much clearer picture now, blurryness removed
 - Window handling improved (minimize/maximize window)
-- SIDBlaster: magic wand added (auto-configuration) and additional manual configuration of serial numbers
+- SIDBlaster: magic wand added (auto-configuration), serial numbers shown
 - HardSID4U: 64 bit driver added (no more 32-bit Java required)
 - HardSID4U+SIDBlaster fixed fake stereo mode using delay
 - App: Loop song fixed
