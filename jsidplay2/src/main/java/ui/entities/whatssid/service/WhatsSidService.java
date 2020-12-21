@@ -4,10 +4,8 @@ import java.io.IOException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -98,11 +96,9 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
-		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
+		Root<MusicInfo> root = query.from(MusicInfo.class);
 
-		Path<Integer> idMusicInfo = musicInfo.<Integer>get(MusicInfo_.idMusicInfo);
-
-		query.select(musicInfo).where(cb.equal(idMusicInfo, songNoBean.getSongNo()));
+		query.select(root).where(cb.equal(root.get(MusicInfo_.idMusicInfo), songNoBean.getSongNo()));
 
 		return em.createQuery(query).getSingleResult().toBean();
 	}
@@ -117,13 +113,9 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		}
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
-		Root<HashTable> hashTable = query.from(HashTable.class);
+		Root<HashTable> root = query.from(HashTable.class);
 
-		In<Integer> in = cb.in(hashTable.<Integer>get(HashTable_.hash));
-		for (int hash : intArrayBean.getHash()) {
-			in.value(hash);
-		}
-		query.select(hashTable).where(in);
+		query.select(root).where(root.get(HashTable_.hash).in(intArrayBean.getHash()));
 
 		em.createQuery(query).getResultList().stream().map(hash -> hash.toBean()).forEach(result.getHashes()::add);
 		return result;
@@ -136,27 +128,21 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> query = cb.createQuery(Long.class);
-		Root<MusicInfo> musicInfo = query.from(MusicInfo.class);
+		Root<MusicInfo> root = query.from(MusicInfo.class);
 
-		Path<Integer> songNo = musicInfo.<Integer>get(MusicInfo_.songNo);
-		Predicate songNoPredicate = cb.equal(songNo, musicInfoBean.getSongNo());
+		Predicate songNoPredicate = cb.equal(root.get(MusicInfo_.songNo), musicInfoBean.getSongNo());
 
-		Path<String> title = musicInfo.<String>get(MusicInfo_.title);
-		Predicate titlePredicate = cb.equal(title, musicInfoBean.getTitle());
+		Predicate titlePredicate = cb.equal(root.get(MusicInfo_.title), musicInfoBean.getTitle());
 
-		Path<String> artist = musicInfo.<String>get(MusicInfo_.artist);
-		Predicate artistPredicate = cb.equal(artist, musicInfoBean.getArtist());
+		Predicate artistPredicate = cb.equal(root.get(MusicInfo_.artist), musicInfoBean.getArtist());
 
-		Path<String> album = musicInfo.<String>get(MusicInfo_.album);
-		Predicate albumPredicate = cb.equal(album, musicInfoBean.getAlbum());
+		Predicate albumPredicate = cb.equal(root.get(MusicInfo_.album), musicInfoBean.getAlbum());
 
-		Path<String> fileDir = musicInfo.<String>get(MusicInfo_.fileDir);
-		Predicate fileDirPredicate = cb.equal(fileDir, musicInfoBean.getFileDir());
+		Predicate fileDirPredicate = cb.equal(root.get(MusicInfo_.fileDir), musicInfoBean.getFileDir());
 
-		Path<String> infoDir = musicInfo.<String>get(MusicInfo_.infoDir);
-		Predicate infoDirPredicate = cb.equal(infoDir, musicInfoBean.getInfoDir());
+		Predicate infoDirPredicate = cb.equal(root.get(MusicInfo_.infoDir), musicInfoBean.getInfoDir());
 
-		query.select(cb.count(musicInfo)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
+		query.select(cb.count(root)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
 				fileDirPredicate, infoDirPredicate));
 
 		return em.createQuery(query).getSingleResult() > 0;

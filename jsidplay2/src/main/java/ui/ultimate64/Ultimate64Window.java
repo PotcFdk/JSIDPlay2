@@ -159,7 +159,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 			EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-			palEmulation = new PALEmulation(VICChipModel.MOS6569R3);
+			palEmulation = new PALEmulation(VICChipModel.MOS6567R8);
 			palEmulation.setPalEmulationEnable(enablePalEmulation.isSelected());
 			Palette palette = palEmulation.getPalette();
 			palette.setBrightness(sidplay2Section.getBrightness());

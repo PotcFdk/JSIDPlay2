@@ -5,5 +5,5 @@ Path=/home/ken/Downloads/jsiddevice-${project.version}
 Exec=java -jar jsiddevice-${project.version}.jar
 Terminal=false
 Type=Application
-Icon=/home/ken/Downloads/jsiddevice-${project.version}/jsidplay2.png
+Icon=/home/ken/Downloads/jsiddevice-${project.version}/jsiddevice.png
 Categories=

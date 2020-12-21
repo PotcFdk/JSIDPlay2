@@ -24,6 +24,7 @@
 			<outputDirectory></outputDirectory>
 			<includes>
                 <include>jsidplay2.ico</include>
+                <include>jsidplay2.png</include>
             </includes>			
 		</fileSet>
 	</fileSets>
