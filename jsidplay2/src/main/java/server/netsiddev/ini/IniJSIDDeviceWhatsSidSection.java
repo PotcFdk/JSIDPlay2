@@ -35,7 +35,7 @@ public class IniJSIDDeviceWhatsSidSection extends IniSection {
 	}
 
 	public float getMinimumRelativeConfidence() {
-		return iniReader.getPropertyFloat("WhatsSID", "Minimum Relative Confidence", 4.5f);
+		return iniReader.getPropertyFloat("WhatsSID", "Minimum Relative Confidence", 10f);
 	}
 
 }
