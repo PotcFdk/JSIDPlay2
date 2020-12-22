@@ -1168,8 +1168,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append("Music recognition system\n");
 		credits.append("\tCopyright (©) 2019 J. Pery <hsyecheng@hotmail.com>\n");
 		credits.append("\thttps://github.com/JPery/Audio-Fingerprinting\n");
-		credits.append("graphical output:\n" + "\t(©) 2007 Joakim Eriksson\n");
-		credits.append("\t(©) 2009, 2010 Antti S. Lankila\n");
+		credits.append("graphical output:\n" + "\tCopyright (©) 2007 Joakim Eriksson\n");
+		credits.append("\tCopyright (©) 2009, 2010 Antti S. Lankila\n");
 		credits.append("MP3 encoder/decoder (jump3r), based on Lame\n");
 		credits.append("\tCopyright (©) 2010-2011 Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");
