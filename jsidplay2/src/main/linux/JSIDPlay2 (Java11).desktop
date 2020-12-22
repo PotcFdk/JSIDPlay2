@@ -2,7 +2,7 @@
 Name=JSIDPlay2 (Java11)
 Name[de_DE]=JSIDPlay2 (Java11)
 Path=/home/ken/Downloads/${project.artifactId}-${project.version}-java11-linux
-Exec=/bin/bash -c 'export LD_LIBRARY_PATH=~/Downloads/${project.artifactId}-${project.version}-java11-linux ; java --module-path ~/Downloads/${project.artifactId}-${project.version}-java11-linux --add-modules javafx.controls,javafx.web,javafx.fxml --add-opens java.base/java.io=org.apache.tomcat.embed.core -jar ${project.artifactId}-${project.version}.jar'
+Exec=/bin/bash -c "export LD_LIBRARY_PATH=~/Downloads/${project.artifactId}-${project.version}-java11-linux ; java --module-path ~/Downloads/${project.artifactId}-${project.version}-java11-linux --add-modules javafx.controls,javafx.web,javafx.fxml --add-opens java.base/java.io=org.apache.tomcat.embed.core -jar ${project.artifactId}-${project.version}.jar"
 Terminal=false
 Type=Application
 Icon=/home/ken/Downloads/${project.artifactId}-${project.version}-java11-linux/jsidplay2.png
