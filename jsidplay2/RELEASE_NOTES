@@ -6,3 +6,4 @@ Release Notes:
 - HardSID4U: 64 bit library added (no more 32-bit Java required)
 - HardSID4U+SIDBlaster fake stereo mode using delay fixed
 - App: Loop song fixed
+- WHATSSID? tune recognition updated to HVSC#74
