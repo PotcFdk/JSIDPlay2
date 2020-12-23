@@ -63,14 +63,14 @@ Eventually uncomment line in C64VBox.java (see TODO marker), still not sure, why
 HardSID4U:
 ==========
 Alternative 1 (use unsigned drivers):
-Install USB Driver (hardsidusb.*) from directory resources/driver
+Install USB Driver (hardsidusb.*) from directory path	src/test/resources/hardsid
 Now, reboot your computer into "disable driver signing" mode.
 - Press F8 on every Windows boot
 - Choose deactivate Driver signature checks and continue booting.
 
 Alternative 2 (use signed drivers)
 Open a new command prompt (important: use open as Administrator)
-Extract signtools.zip from directory resources/driver containing important exe files.
+Extract signtools.zip from directory src/test/resources/hardsid containing important exe files.
 Please type the following commands
 makecert -$ individual -r -pe -ss "Self Signed Drivers" -n CN="Self Signed Drivers" selfsign.cer
 certmgr /add selfsign.cer /s /r localMachine root
