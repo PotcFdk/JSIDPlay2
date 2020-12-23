@@ -9,6 +9,7 @@ import static sidplay.audio.AudioConfig.getDefaultBufferSize;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -105,7 +106,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 				javaSound.buffer().putShort(valL);
 				if (!javaSound.buffer().putShort(valR).hasRemaining()) {
 					javaSound.write();
-					javaSound.buffer().clear();
+					((Buffer) javaSound.buffer()).clear();
 				}
 				if (whatsSidEnabled) {
 					if (whatsSidSupport.output(valL, valR)) {

@@ -32,6 +32,7 @@ package libsidplay.components.c1530;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -217,7 +218,7 @@ public class Tap {
 	private void writeFilesize(final int[] buf) throws IOException {
 		ByteBuffer b = ByteBuffer.wrap(new byte[1 << 2]).order(ByteOrder.LITTLE_ENDIAN);
 		b.asIntBuffer().put(buf, 0, 1);
-		b.rewind();
+		((Buffer) b).rewind();
 		fd.write(b.array(), 0, 1 << 2);
 	}
 
