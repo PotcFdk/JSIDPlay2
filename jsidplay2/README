@@ -92,20 +92,12 @@ Lower your microphone volume level to prevent overdrive noise
 MYSQL - get estimate row count of database:
 select  table_rows
 from    information_schema.tables
-where   table_schema = 'whatssid'
+where   table_schema = 'hvsc74'
   and   table_name = 'HashTable' ;
 
-This will display list of all tables that has minimum of 500MB of unused space:
-select table_name,
-round(data_length/1024/1024) as data_length_mb, 
-round(data_free/1024/1024) as data_free_mb 
- from information_schema.tables 
- where round(data_free/1024/1024) > 500 
- order by data_free_mb;
- 
 optimize table:
 mysql -u newuser -p"password"
-use whatssid
+use hvsc74
 OPTIMIZE TABLE HashTable
 
 Heap Memory Analyzer - To find memory leaks you can use:
@@ -115,18 +107,7 @@ Increase max memory, if required to load huge heap dumps in file MemoryAnalyzer.
 -Xmx=5g
 In MAT - Load heap dump: File/Open heap.bin
 
-Chameleon C64 hardware - Command-Line to send programs:
-sudo gedit /lib/udev/rules.d/100-local-permissions.rules:
-SUBSYSTEMS=="usb" ATTRS{idVendor}=="18d8" ATTRS{idProduct}=="201d" MODE:="0777" SYMLINK+="Chameleon"
-RESET (reset.txt consists of exactly one zero byte)
-./chacocmd  --addr  0x80000000 --writemem ./reset.txt
-SEND PROGRAM
-./chacocmd  --addr  0x0801 --writemem radiantx_spiral_silicon_towers.mem 
-
 TODO:
 =====
-libresidfp introduced a new envelopegenerator and a new filter8580 recently.
-(Nov. 2016)
-
 - App: download sid register writes and siddump
 - Playlists are wanted to be shared online

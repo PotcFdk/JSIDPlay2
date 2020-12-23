@@ -335,7 +335,7 @@ cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
@@ -355,8 +355,8 @@ Now you can use WhatsSID? tune recognition.
 === Update of Whatssid database
 
 Updates of Whatssid database are done in much shorter times.
-Last update to HVSC#73 took around 24 hours.
-A new database will be created (in the following example named "hvsc73").
+Last update to hvsc74 took around 24 hours.
+A new database will be created (in the following example named "hvsc74").
 It re-uses WAV files of unmodified tunes compared to the last HVSC version.
 Therefore you need to specify the previously used HVSC directory containing
 all the WAV files which are so time consuming to create from scratch.
@@ -372,7 +372,7 @@ cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
 java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc73?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
@@ -407,7 +407,7 @@ java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Serve
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTPS \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
@@ -436,7 +436,7 @@ ExecStart=java \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTP_HTTPS \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/whatssid?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect
