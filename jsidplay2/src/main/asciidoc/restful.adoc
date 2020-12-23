@@ -378,7 +378,7 @@ java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.Fi
 	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
 	--hvsc <pathToHVSC># <1>
 	--previousDirectory <previousPathToHVSC> <2>
-	<pathToMusicCollection> & # <2>
+	<pathToMusicCollection> & # <3>
 ----
 <1> pathToHVSC is used to read song length file database contained in HVSC
 <2> previousPathToHVSC is the formerly used pathToHVSC containing WAV recordings among the SID files.
