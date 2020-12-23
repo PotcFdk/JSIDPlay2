@@ -33,7 +33,9 @@ import ui.filefilter.TuneFileFilter;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
- * currently played tune
+ * currently played tune.
+ *
+ * This is the main class to create or Update a WHATSSID database.
  *
  * This is the program to create the fingerprintings for all tunes of a
  * collection.

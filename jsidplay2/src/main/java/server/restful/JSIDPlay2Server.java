@@ -67,6 +67,15 @@ import ui.entities.config.SidPlay2Section;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 
+/**
+ * 
+ * Server part of JSIDPlay2 to answer server requests like: 1st) get a stream
+ * with SID music as MP3 for the mobile version of JSIDPlay2 or 2nd) WHATSSID -
+ * which tune is currently played.
+ * 
+ * @author ken
+ *
+ */
 @Parameters(resourceBundle = "server.restful.JSIDPlay2Server")
 public class JSIDPlay2Server {
 

@@ -28,6 +28,13 @@ import sidplay.consoleplayer.VerboseValidator;
 import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.ini.IniConfig;
 
+/**
+ * 
+ * Main class of the console based JSIDPlay2.
+ * 
+ * @author ken
+ *
+ */
 @Parameters(resourceBundle = "sidplay.ConsolePlayer")
 final public class ConsolePlayer {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true, order = 10000)

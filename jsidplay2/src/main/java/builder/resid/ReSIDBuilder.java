@@ -29,6 +29,13 @@ import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 
+/**
+ * 
+ * Support of software emulated SIDs.
+ * 
+ * @author ken
+ *
+ */
 public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 
 	public ReSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {

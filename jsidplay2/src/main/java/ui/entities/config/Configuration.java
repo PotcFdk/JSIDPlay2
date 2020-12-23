@@ -35,6 +35,13 @@ import libsidplay.config.IFilterSection;
 import ui.console.Console;
 import ui.videoscreen.Video;
 
+/**
+ * 
+ * Configuration of the UI version of JSIDPlay2.
+ * 
+ * @author ken
+ *
+ */
 @Entity
 @Access(AccessType.PROPERTY)
 @XmlRootElement

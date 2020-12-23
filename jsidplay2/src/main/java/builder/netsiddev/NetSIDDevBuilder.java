@@ -32,6 +32,13 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
+/**
+ * 
+ * Support of network enabled SID devices using the network SID protocol.
+ * 
+ * @author ken
+ *
+ */
 public class NetSIDDevBuilder implements SIDBuilder, Mixer {
 
 	private final IConfig config;

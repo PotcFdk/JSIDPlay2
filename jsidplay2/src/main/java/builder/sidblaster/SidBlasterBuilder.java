@@ -30,6 +30,8 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
 /**
+ * 
+ * Support of SIDBlaster mini USB devices.
  *
  * @author Ken Händel
  *

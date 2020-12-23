@@ -33,6 +33,9 @@ import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 
 /**
+ * 
+ * Main class of the UI version of JSIDPlay2.
+ * 
  * @author Ken Händel
  * @author Joakim Eriksson
  *

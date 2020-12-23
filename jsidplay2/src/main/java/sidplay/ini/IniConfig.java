@@ -34,6 +34,9 @@ import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 
 /**
+ * 
+ * Configuration of the console version of JSIDPlay2.
+ * 
  * INI configuration file support responsible to load and save all emulator
  * settings.
  *

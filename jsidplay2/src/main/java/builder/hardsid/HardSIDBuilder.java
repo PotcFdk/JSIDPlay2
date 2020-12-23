@@ -26,6 +26,8 @@ import sidplay.audio.AudioDriver;
 
 /**
  *
+ * Support of HARDSID USB devices like HardSID4U.
+ * 
  * @author Ken Händel
  *
  */

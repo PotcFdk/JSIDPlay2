@@ -54,6 +54,13 @@ import ui.musiccollection.MusicCollectionType;
 import ui.musiccollection.search.SearchIndexCreator;
 import ui.musiccollection.search.SearchIndexerThread;
 
+/**
+ * Helper class to create all the optional downloadable content of our
+ * web-server during deployment.
+ * 
+ * @author ken
+ *
+ */
 @Parameters(resourceBundle = "build.OnlineContent")
 public class OnlineContent {
 
