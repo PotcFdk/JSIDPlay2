@@ -53,7 +53,6 @@ ZIP - Every emulation format can be contained within a ZIP file. We treat ZIPs l
 7. What sound output JSIDPlay2 supports?
 Normally a sound card is used to play music, but you can choose the following things alternatively:
 - Buy a HardSID4U soundcard for your PC (www.hardsid.com) and choose that for sound output. Connection is via USB cable.
-  Be aware, that 32-bit driver in combinaton with 32-bit Java is supported, only!
 - Use a JSIDDevice for sound output communicating via socket connection (port 6581)
 - Listen to MP3 sound file (Yes, we support playback of MP3 even the collection in playlists!)
 - Listen a tune and write a WAV file to your harddisk at the same time.
