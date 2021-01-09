@@ -8,6 +8,12 @@ import javafx.util.Builder;
 import javafx.util.BuilderFactory;
 import sidplay.Player;
 
+/**
+ * This is the JavaFX glue to propagate the player model to all UI parts.
+ * 
+ * @author ken
+ *
+ */
 final class UIBuilder implements BuilderFactory {
 
 	private C64Window window;

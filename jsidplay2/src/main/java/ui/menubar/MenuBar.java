@@ -298,7 +298,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		util.getPlayer().setWhatsSidHook(musicInfoWithConfidence -> {
 			Platform.runLater(() -> {
 				System.out.println(musicInfoWithConfidence);
-				Toast.makeText(whatssidPositioner, musicInfoWithConfidence.toString(), 5);
+				Toast.makeText("whatssid", whatssidPositioner, musicInfoWithConfidence.toString(), 5);
 			});
 		});
 		util.getPlayer().startC64();

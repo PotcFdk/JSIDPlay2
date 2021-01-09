@@ -129,7 +129,6 @@ public class FavoritesSection {
 			attribute = HVSCEntry_.released;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
 			DEF_COLUMNS.add(dbFavoriteColumn);
-
 		}
 		return columns.get(DEF_COLUMNS);
 	}

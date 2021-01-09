@@ -53,15 +53,14 @@ public class UIUtil {
 	}
 
 	public Object parse(Object root) {
-		FXMLLoader fxmlLoader = new FXMLLoader();
 		URL fxml = this.controller.getFxml();
+
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		fxmlLoader.setRoot(root);
 		fxmlLoader.setLocation(fxml);
 		fxmlLoader.setBuilderFactory(new UIBuilder(this.window, this.player));
 		fxmlLoader.setResources(this.bundle);
 		fxmlLoader.setController(this.controller);
-		if (root != null) {
-			fxmlLoader.setRoot(root);
-		}
 		try (InputStream is = fxml.openStream()) {
 			return fxmlLoader.load(is);
 		} catch (IOException e) {

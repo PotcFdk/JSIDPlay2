@@ -13,14 +13,14 @@ import javafx.stage.Popup;
 
 public final class Toast {
 
-	public static void makeText(Node ownerNode, String toastMsg, int seconds) {
+	public static void makeText(String id, Node ownerNode, String toastMsg, int seconds) {
 		Popup popup = new Popup();
 		popup.setAutoFix(true);
 		popup.setAutoHide(true);
 		popup.setHideOnEscape(true);
 
 		Label label = new Label();
-		label.setId("whatssid");
+		label.setId(id);
 		label.setText(toastMsg);
 		label.setOnMouseClicked(evt -> popup.hide());
 		popup.getContent().add(label);

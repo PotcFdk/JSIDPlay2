@@ -124,7 +124,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						if (result != null) {
 							Platform.runLater(() -> {
 								System.out.println(result);
-								Toast.makeText(whatssidPositioner, result.toString(), 5);
+								Toast.makeText("whatssid", whatssidPositioner, result.toString(), 5);
 							});
 						}
 					} catch (Exception e) {
