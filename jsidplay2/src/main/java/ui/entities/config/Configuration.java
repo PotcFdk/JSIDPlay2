@@ -25,13 +25,16 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.beust.jcommander.ParametersDelegate;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.config.IConfig;
 import libsidplay.config.IFilterSection;
+import ui.common.LazyListField;
+import ui.common.ObservableLazyListField;
+import ui.common.ShadowField;
 import ui.console.Console;
 import ui.videoscreen.Video;
 
@@ -270,39 +273,34 @@ public class Configuration implements IConfig {
 		return whatsSidSection;
 	}
 
-	private String currentFavorite;
+	private ShadowField<StringProperty, String> currentFavorite = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public void setCurrentFavorite(String currentFavorite) {
-		this.currentFavorite = currentFavorite;
+		this.currentFavorite.set(currentFavorite);
 	}
 
 	public String getCurrentFavorite() {
-		return currentFavorite;
+		return currentFavorite.get();
 	}
 
-	protected List<FavoritesSection> favorites = INITIAL_FAVORITES;
+	public StringProperty currentFavoriteProperty() {
+		return currentFavorite.property();
+	}
 
-	private ObservableList<FavoritesSection> observableFavorites;
+	private ObservableLazyListField<FavoritesSection> favorites = new ObservableLazyListField<>(INITIAL_FAVORITES);
 
 	public void setFavorites(List<FavoritesSection> favorites) {
-		this.favorites = favorites;
+		this.favorites.set(favorites);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
-		if (favorites == null) {
-			favorites = new ArrayList<>();
-		}
-		return getObservableFavorites();
+		return favorites.get();
 	}
 
 	@Transient
 	public ObservableList<FavoritesSection> getObservableFavorites() {
-		if (observableFavorites == null) {
-			observableFavorites = FXCollections.<FavoritesSection>observableArrayList(favorites);
-			Bindings.bindContent(favorites, observableFavorites);
-		}
-		return observableFavorites;
+		return favorites.getObservableList();
 	}
 
 	private Assembly64Section assembly64Section = new Assembly64Section();
@@ -316,51 +314,47 @@ public class Configuration implements IConfig {
 		return assembly64Section;
 	}
 
-	protected List<ViewEntity> views = INITIAL_VIEWS;
+	private ObservableLazyListField<ViewEntity> views = new ObservableLazyListField<>(INITIAL_VIEWS);
 
-	private ObservableList<ViewEntity> observableViews;
+	public void setViews(List<ViewEntity> views) {
+		this.views.set(views);
+	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
-		if (observableViews == null) {
-			observableViews = FXCollections.<ViewEntity>observableArrayList(views);
-			Bindings.bindContent(views, observableViews);
-		}
-		return observableViews;
+		return views.get();
 	}
 
-	public void setViews(List<ViewEntity> views) {
-		this.views = views;
+	@Transient
+	public ObservableList<ViewEntity> getObservableViews() {
+		return views.getObservableList();
 	}
 
-	private List<FilterSection> filter = INITIAL_FILTERS;
+	private LazyListField<FilterSection> filter = new LazyListField<>(INITIAL_FILTERS);
 
 	public void setFilterSection(List<FilterSection> filter) {
-		this.filter = filter;
+		this.filter.set(filter);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilterSection() {
-		if (filter == null) {
-			filter = new ArrayList<>();
-		}
-		return filter;
+		return filter.get();
 	}
 
-	private List<KeyTableEntity> keyCodeMap = INITIAL_KEYCODES;
+	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>(INITIAL_KEYCODES);
 
 	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
-		this.keyCodeMap = keyCodeMap;
+		this.keyCodeMap.set(keyCodeMap);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
-		return keyCodeMap;
+		return keyCodeMap.get();
 	}
 
 	public KeyTableEntry getKeyTabEntry(String key) {
-		for (KeyTableEntity keyCode : keyCodeMap) {
+		for (KeyTableEntity keyCode : getKeyCodeMap()) {
 			if (keyCode.getKeyCodeName().equals(key)) {
 				return keyCode.getEntry();
 			}

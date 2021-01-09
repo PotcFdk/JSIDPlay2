@@ -9,12 +9,14 @@ import javax.persistence.Embeddable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.config.IPrinterSection;
+import ui.common.ShadowField;
 
 @Embeddable
 @Access(AccessType.PROPERTY)
 public class PrinterSection implements IPrinterSection {
 
-	private BooleanProperty printerOnProperty = new SimpleBooleanProperty(DEFAULT_PRINTER_ON);
+	private ShadowField<BooleanProperty, Boolean> printerOnProperty = new ShadowField<>(DEFAULT_PRINTER_ON,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isPrinterOn() {
@@ -27,7 +29,7 @@ public class PrinterSection implements IPrinterSection {
 	}
 
 	public BooleanProperty printerOnProperty() {
-		return printerOnProperty;
+		return printerOnProperty.property();
 	}
 
 }

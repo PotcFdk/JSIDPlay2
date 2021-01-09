@@ -33,23 +33,30 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
 import ui.common.FileToStringConverter;
+import ui.common.ShadowField;
 import ui.favorites.PlaybackType;
 
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {
 
+	private static final String DEF_TMP_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
+			+ ".jsidplay2";
 	boolean DEFAULT_ENABLE_PROXY = false;
 	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
+	public static final int DEF_FRAME_X = 0;
+	public static final int DEF_FRAME_Y = 0;
 	public static final int DEFAULT_FRAME_WIDTH = 1310;
 	public static final int DEFAULT_FRAME_HEIGHT = 1024;
 	public static final boolean DEFAULT_MINIMIZED = false;
@@ -57,12 +64,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
 
 	public SidPlay2Section() {
-		Bindings.bindBidirectional(this.demos, demosFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.hvmec, hvmecFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.mags, magsFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.hvsc, hvscFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.cgsc, cgscFile, new FileToStringConverter());
-		Bindings.bindBidirectional(this.gameBase64, gameBase64File, new FileToStringConverter());
+		Bindings.bindBidirectional(this.demos.property(), demosFile.property(), new FileToStringConverter());
+		Bindings.bindBidirectional(this.hvmec.property(), hvmecFile.property(), new FileToStringConverter());
+		Bindings.bindBidirectional(this.mags.property(), magsFile.property(), new FileToStringConverter());
+		Bindings.bindBidirectional(this.hvsc.property(), hvscFile.property(), new FileToStringConverter());
+		Bindings.bindBidirectional(this.cgsc.property(), cgscFile.property(), new FileToStringConverter());
+		Bindings.bindBidirectional(this.gameBase64.property(), gameBase64File.property(), new FileToStringConverter());
 	}
 
 	private int version;
@@ -77,7 +84,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private BooleanProperty enableDatabaseProperty = new SimpleBooleanProperty(DEFAULT_ENABLE_DATABASE);
+	private ShadowField<BooleanProperty, Boolean> enableDatabaseProperty = new ShadowField<>(DEFAULT_ENABLE_DATABASE,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isEnableDatabase() {
@@ -90,14 +98,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty enableDatabaseProperty() {
-		return enableDatabaseProperty;
+		return enableDatabaseProperty.property();
 	}
 
-	private DoubleProperty startTimeProperty = new SimpleDoubleProperty(DEFAULT_START_TIME);
+	private ShadowField<DoubleProperty, Number> startTimeProperty = new ShadowField<>(DEFAULT_START_TIME,
+			number -> new SimpleDoubleProperty(number.doubleValue()));
 
 	@Override
 	public double getStartTime() {
-		return startTimeProperty.get();
+		return startTimeProperty.get().doubleValue();
 	}
 
 	@Override
@@ -106,14 +115,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public DoubleProperty startTimeProperty() {
-		return startTimeProperty;
+		return startTimeProperty.property();
 	}
 
-	private DoubleProperty defaultPlayLengthProperty = new SimpleDoubleProperty(DEFAULT_PLAY_LENGTH);
+	private ShadowField<DoubleProperty, Number> defaultPlayLengthProperty = new ShadowField<>(DEFAULT_PLAY_LENGTH,
+			number -> new SimpleDoubleProperty(number.doubleValue()));
 
 	@Override
 	public double getDefaultPlayLength() {
-		return defaultPlayLengthProperty.get();
+		return defaultPlayLengthProperty.get().doubleValue();
 	}
 
 	@Override
@@ -122,14 +132,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public DoubleProperty defaultPlayLengthProperty() {
-		return defaultPlayLengthProperty;
+		return defaultPlayLengthProperty.property();
 	}
 
-	private DoubleProperty fadeInTimeProperty = new SimpleDoubleProperty(DEFAULT_FADE_IN_TIME);
+	private ShadowField<DoubleProperty, Number> fadeInTimeProperty = new ShadowField<>(DEFAULT_FADE_IN_TIME,
+			number -> new SimpleDoubleProperty(number.doubleValue()));
 
 	@Override
 	public double getFadeInTime() {
-		return fadeInTimeProperty.get();
+		return fadeInTimeProperty.get().doubleValue();
 	}
 
 	@Override
@@ -138,14 +149,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public DoubleProperty fadeInTimeProperty() {
-		return fadeInTimeProperty;
+		return fadeInTimeProperty.property();
 	}
 
-	private DoubleProperty fadeOutTimeProperty = new SimpleDoubleProperty(DEFAULT_FADE_OUT_TIME);
+	private ShadowField<DoubleProperty, Number> fadeOutTimeProperty = new ShadowField<>(DEFAULT_FADE_OUT_TIME,
+			number -> new SimpleDoubleProperty(number.doubleValue()));
 
 	@Override
 	public double getFadeOutTime() {
-		return fadeOutTimeProperty.get();
+		return fadeOutTimeProperty.get().doubleValue();
 	}
 
 	@Override
@@ -154,33 +166,44 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public DoubleProperty fadeOutTimeProperty() {
-		return fadeOutTimeProperty;
+		return fadeOutTimeProperty.property();
 	}
 
-	private PlaybackType playbackType = DEFAULT_PLAYBACK_TYPE;
+	private ShadowField<ObjectProperty<PlaybackType>, PlaybackType> playbackType = new ShadowField<>(
+			DEFAULT_PLAYBACK_TYPE, SimpleObjectProperty::new);
 
 	@Enumerated(EnumType.STRING)
 	public PlaybackType getPlaybackType() {
-		return playbackType;
+		return playbackType.get();
 	}
 
 	public void setPlaybackType(PlaybackType playbackType) {
-		this.playbackType = playbackType;
+		this.playbackType.set(playbackType);
 	}
 
-	private boolean loop = DEFAULT_LOOP;
+	public ObjectProperty<PlaybackType> playbackTypeProperty() {
+		return playbackType.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> loopProperty = new ShadowField<>(DEFAULT_LOOP,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isLoop() {
-		return loop;
+		return loopProperty.get();
 	}
 
 	@Override
 	public void setLoop(boolean loop) {
-		this.loop = loop;
+		this.loopProperty.set(loop);
 	}
 
-	private BooleanProperty singleProperty = new SimpleBooleanProperty(DEFAULT_SINGLE_TRACK);
+	public BooleanProperty loopProperty() {
+		return loopProperty.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> singleProperty = new ShadowField<>(DEFAULT_SINGLE_TRACK,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isSingle() {
@@ -193,16 +216,17 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty singleProperty() {
-		return singleProperty;
+		return singleProperty.property();
 	}
 
-	private ObjectProperty<File> hvmecFile = new SimpleObjectProperty<>();
-	private StringProperty hvmec = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> hvmecFile = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getHVMECFile() {
 		return hvmecFile.get();
 	}
+
+	private ShadowField<StringProperty, String> hvmec = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public String getHVMEC() {
 		return hvmec.get();
@@ -213,16 +237,17 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public StringProperty hvmecProperty() {
-		return hvmec;
+		return hvmec.property();
 	}
 
-	private ObjectProperty<File> demosFile = new SimpleObjectProperty<>();
-	private StringProperty demos = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> demosFile = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getDemosFile() {
 		return demosFile.get();
 	}
+
+	private ShadowField<StringProperty, String> demos = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public String getDemos() {
 		return demos.get();
@@ -233,19 +258,20 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public StringProperty demosProperty() {
-		return demos;
+		return demos.property();
 	}
 
-	private ObjectProperty<File> magsFile = new SimpleObjectProperty<>();
-	private StringProperty mags = new SimpleStringProperty();
-
-	public String getMags() {
-		return mags.get();
-	}
+	private ShadowField<ObjectProperty<File>, File> magsFile = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getMagsFile() {
 		return magsFile.get();
+	}
+
+	private ShadowField<StringProperty, String> mags = new ShadowField<>(null, SimpleStringProperty::new);
+
+	public String getMags() {
+		return mags.get();
 	}
 
 	public void setMags(String mags) {
@@ -253,16 +279,17 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public StringProperty magsProperty() {
-		return mags;
+		return mags.property();
 	}
 
-	private ObjectProperty<File> cgscFile = new SimpleObjectProperty<>();
-	private StringProperty cgsc = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> cgscFile = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getCgscFile() {
 		return cgscFile.get();
 	}
+
+	private ShadowField<StringProperty, String> cgsc = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public String getCgsc() {
 		return cgsc.get();
@@ -273,16 +300,17 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public StringProperty cgscProperty() {
-		return cgsc;
+		return cgsc.property();
 	}
 
-	private ObjectProperty<File> hvscFile = new SimpleObjectProperty<>();
-	private StringProperty hvsc = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> hvscFile = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getHvscFile() {
 		return hvscFile.get();
 	}
+
+	private ShadowField<StringProperty, String> hvsc = new ShadowField<>(null, SimpleStringProperty::new);
 
 	@Override
 	public String getHvsc() {
@@ -295,16 +323,17 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public StringProperty hvscProperty() {
-		return hvsc;
+		return hvsc.property();
 	}
 
-	private ObjectProperty<File> gameBase64File = new SimpleObjectProperty<>();
-	private StringProperty gameBase64 = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> gameBase64File = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Transient
 	public File getGameBase64File() {
 		return gameBase64File.get();
 	}
+
+	private ShadowField<StringProperty, String> gameBase64 = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public String getGameBase64() {
 		return gameBase64.get();
@@ -314,7 +343,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.gameBase64.set(gameBase64);
 	}
 
-	private BooleanProperty enableProxyProperty = new SimpleBooleanProperty(DEFAULT_ENABLE_PROXY);
+	public StringProperty gameBase64Property() {
+		return gameBase64.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> enableProxyProperty = new ShadowField<>(DEFAULT_ENABLE_PROXY,
+			SimpleBooleanProperty::new);
 
 	public boolean isEnableProxy() {
 		return enableProxyProperty.get();
@@ -325,13 +359,14 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty enableProxyProperty() {
-		return enableProxyProperty;
+		return enableProxyProperty.property();
 	}
 
-	private StringProperty proxyHostnameProperty = new SimpleStringProperty();
+	private ShadowField<StringProperty, String> proxyHostnameProperty = new ShadowField<>(null,
+			SimpleStringProperty::new);
 
 	public StringProperty proxyHostnameProperty() {
-		return proxyHostnameProperty;
+		return proxyHostnameProperty.property();
 	}
 
 	public String getProxyHostname() {
@@ -342,10 +377,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyHostnameProperty.set(hostname);
 	}
 
-	private ObjectProperty<Integer> proxyPortProperty = new SimpleObjectProperty<>(DEFAULT_PROXY_PORT);
+	private ShadowField<ObjectProperty<Integer>, Integer> proxyPortProperty = new ShadowField<>(DEFAULT_PROXY_PORT,
+			SimpleObjectProperty::new);
 
 	public ObjectProperty<Integer> proxyPortProperty() {
-		return proxyPortProperty;
+		return proxyPortProperty.property();
 	}
 
 	public int getProxyPort() {
@@ -365,79 +401,110 @@ public class SidPlay2Section implements ISidPlay2Section {
 		}
 	}
 
-	private String lastDirectory;
+	private ShadowField<StringProperty, String> lastDirectoryProperty = new ShadowField<>(null,
+			SimpleStringProperty::new);
 
 	@Override
 	public String getLastDirectory() {
-		return lastDirectory;
+		return lastDirectoryProperty.get();
 	}
 
 	@Override
 	public void setLastDirectory(String lastDirectory) {
-		this.lastDirectory = lastDirectory;
+		this.lastDirectoryProperty.set(lastDirectory);
+	}
+
+	public StringProperty lastDirectoryProperty() {
+		return lastDirectoryProperty.property();
 	}
 
 	@Transient
 	public File getLastDirectoryFolder() {
-		if (lastDirectory != null && new TFile(lastDirectory).isDirectory()) {
-			return new TFile(lastDirectory);
+		if (getLastDirectory() != null && new TFile(getLastDirectory()).isDirectory()) {
+			return new TFile(getLastDirectory());
 		}
 		return null;
 	}
 
-	private String tmpDir = System.getProperty("user.home") + System.getProperty("file.separator") + ".jsidplay2";
+	private ShadowField<StringProperty, String> tmpDirProperty = new ShadowField<>(DEF_TMP_DIR,
+			SimpleStringProperty::new);
 
 	@Override
 	public String getTmpDir() {
-		return tmpDir;
+		return tmpDirProperty.get();
 	}
 
 	@Override
 	public void setTmpDir(String tmpDir) {
-		this.tmpDir = tmpDir;
+		this.tmpDirProperty.set(tmpDir);
 	}
 
-	private int frameX;
+	public StringProperty tmpDirProperty() {
+		return tmpDirProperty.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameXProperty = new ShadowField<>(DEF_FRAME_X,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getFrameX() {
-		return frameX;
+		return frameXProperty.get().intValue();
 	}
 
 	public void setFrameX(int frameX) {
-		this.frameX = frameX;
+		this.frameXProperty.set(frameX);
 	}
 
-	private int frameY;
+	public IntegerProperty frameXProperty() {
+		return frameXProperty.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameYProperty = new ShadowField<>(DEF_FRAME_Y,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getFrameY() {
-		return frameY;
+		return frameYProperty.get().intValue();
 	}
 
 	public void setFrameY(int frameY) {
-		this.frameY = frameY;
+		this.frameYProperty.set(frameY);
 	}
 
-	private int frameWidth = DEFAULT_FRAME_WIDTH;
+	public IntegerProperty frameYProperty() {
+		return frameYProperty.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameWidthProperty = new ShadowField<>(DEFAULT_FRAME_WIDTH,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getFrameWidth() {
-		return frameWidth;
+		return frameWidthProperty.get().intValue();
 	}
 
 	public void setFrameWidth(int frameWidth) {
-		this.frameWidth = frameWidth;
+		this.frameWidthProperty.set(frameWidth);
 	}
 
-	private int frameHeight = DEFAULT_FRAME_HEIGHT;
+	public IntegerProperty frameWidthProperty() {
+		return frameWidthProperty.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameHeightProperty = new ShadowField<>(DEFAULT_FRAME_HEIGHT,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getFrameHeight() {
-		return frameHeight;
+		return frameHeightProperty.get().intValue();
 	}
 
 	public void setFrameHeight(int frameHeight) {
-		this.frameHeight = frameHeight;
+		this.frameHeightProperty.set(frameHeight);
 	}
 
-	private BooleanProperty minimizedProperty = new SimpleBooleanProperty(DEFAULT_MINIMIZED);
+	public IntegerProperty frameHeightProperty() {
+		return frameHeightProperty.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> minimizedProperty = new ShadowField<>(DEFAULT_MINIMIZED,
+			SimpleBooleanProperty::new);
 
 	public boolean isMinimized() {
 		return minimizedProperty.get();
@@ -448,33 +515,40 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty minimizedProperty() {
-		return minimizedProperty;
+		return minimizedProperty.property();
 	}
 
-	private int minimizedWidth;
+	private ShadowField<IntegerProperty, Number> minimizedWidthProperty = new ShadowField<>(0,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getMinimizedWidth() {
-		return minimizedWidth;
+		return minimizedWidthProperty.get().intValue();
 	}
 
 	public void setMinimizedWidth(int minimizedWidth) {
-		this.minimizedWidth = minimizedWidth;
+		this.minimizedWidthProperty.set(minimizedWidth);
 	}
 
-	private int minimizedHeight;
+	public IntegerProperty minimizedWidthProperty() {
+		return minimizedWidthProperty.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> minimizedHeightProperty = new ShadowField<>(0,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public int getMinimizedHeight() {
-		return minimizedHeight;
+		return minimizedHeightProperty.get().intValue();
 	}
 
 	public void setMinimizedHeight(int minimizedHeight) {
-		this.minimizedHeight = minimizedHeight;
+		this.minimizedHeightProperty.set(minimizedHeight);
 	}
 
-	private FloatProperty videoScalingProperty = new SimpleFloatProperty(DEFAULT_VIDEO_SCALING);
+	private ShadowField<FloatProperty, Number> videoScalingProperty = new ShadowField<>(DEFAULT_VIDEO_SCALING,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public float getVideoScaling() {
-		return videoScalingProperty.get();
+		return videoScalingProperty.get().floatValue();
 	}
 
 	public void setVideoScaling(float videoScaling) {
@@ -482,10 +556,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public FloatProperty videoScalingProperty() {
-		return videoScalingProperty;
+		return videoScalingProperty.property();
 	}
 
-	private ObjectProperty<Boolean> showMonitorProperty = new SimpleObjectProperty<>(DEFAULT_SHOW_MONITOR);
+	private ShadowField<ObjectProperty<Boolean>, Boolean> showMonitorProperty = new ShadowField<>(DEFAULT_SHOW_MONITOR,
+			SimpleObjectProperty::new);
 
 	public boolean isShowMonitor() {
 		return showMonitorProperty.get();
@@ -496,13 +571,14 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public ObjectProperty<Boolean> showMonitorProperty() {
-		return showMonitorProperty;
+		return showMonitorProperty.property();
 	}
 
-	private BooleanProperty palEmulationProperty = new SimpleBooleanProperty(DEFAULT_PAL_EMULATION);
+	private ShadowField<BooleanProperty, Boolean> palEmulationProperty = new ShadowField<>(DEFAULT_PAL_EMULATION,
+			SimpleBooleanProperty::new);
 
 	public BooleanProperty palEmulationProperty() {
-		return palEmulationProperty;
+		return palEmulationProperty.property();
 	}
 
 	@Override
@@ -515,11 +591,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 		palEmulationProperty.set(isPalEmulation);
 	}
 
-	private FloatProperty brightnessProperty = new SimpleFloatProperty(DEFAULT_BRIGHTNESS);
+	private ShadowField<FloatProperty, Number> brightnessProperty = new ShadowField<>(DEFAULT_BRIGHTNESS,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getBrightness() {
-		return brightnessProperty.get();
+		return brightnessProperty.get().floatValue();
 	}
 
 	@Override
@@ -528,14 +605,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty brightnessProperty() {
-		return brightnessProperty;
+		return brightnessProperty.property();
 	}
 
-	private FloatProperty contrastProperty = new SimpleFloatProperty(DEFAULT_CONTRAST);
+	private ShadowField<FloatProperty, Number> contrastProperty = new ShadowField<>(DEFAULT_CONTRAST,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getContrast() {
-		return contrastProperty.get();
+		return contrastProperty.get().floatValue();
 	}
 
 	@Override
@@ -544,14 +622,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty contrastProperty() {
-		return contrastProperty;
+		return contrastProperty.property();
 	}
 
-	private FloatProperty gammaProperty = new SimpleFloatProperty(DEFAULT_GAMMA);
+	private ShadowField<FloatProperty, Number> gammaProperty = new ShadowField<>(DEFAULT_GAMMA,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getGamma() {
-		return gammaProperty.get();
+		return gammaProperty.get().floatValue();
 	}
 
 	@Override
@@ -560,14 +639,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty gammaProperty() {
-		return gammaProperty;
+		return gammaProperty.property();
 	}
 
-	private FloatProperty saturationProperty = new SimpleFloatProperty(DEFAULT_SATURATION);
+	private ShadowField<FloatProperty, Number> saturationProperty = new ShadowField<>(DEFAULT_SATURATION,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getSaturation() {
-		return saturationProperty.get();
+		return saturationProperty.get().floatValue();
 	}
 
 	@Override
@@ -576,14 +656,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty saturationProperty() {
-		return saturationProperty;
+		return saturationProperty.property();
 	}
 
-	private FloatProperty phaseShiftProperty = new SimpleFloatProperty(DEFAULT_PHASE_SHIFT);
+	private ShadowField<FloatProperty, Number> phaseShiftProperty = new ShadowField<>(DEFAULT_PHASE_SHIFT,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getPhaseShift() {
-		return phaseShiftProperty.get();
+		return phaseShiftProperty.get().floatValue();
 	}
 
 	@Override
@@ -592,14 +673,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty phaseShiftProperty() {
-		return phaseShiftProperty;
+		return phaseShiftProperty.property();
 	}
 
-	private FloatProperty offsetProperty = new SimpleFloatProperty(DEFAULT_OFFSET);
+	private ShadowField<FloatProperty, Number> offsetProperty = new ShadowField<>(DEFAULT_OFFSET,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getOffset() {
-		return offsetProperty.get();
+		return offsetProperty.get().floatValue();
 	}
 
 	@Override
@@ -608,14 +690,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty offsetProperty() {
-		return offsetProperty;
+		return offsetProperty.property();
 	}
 
-	private FloatProperty tintProperty = new SimpleFloatProperty(DEFAULT_TINT);
+	private ShadowField<FloatProperty, Number> tintProperty = new ShadowField<>(DEFAULT_TINT,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getTint() {
-		return tintProperty.get();
+		return tintProperty.get().floatValue();
 	}
 
 	@Override
@@ -624,14 +707,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty tintProperty() {
-		return tintProperty;
+		return tintProperty.property();
 	}
 
-	private FloatProperty blurProperty = new SimpleFloatProperty(DEFAULT_BLUR);
+	private ShadowField<FloatProperty, Number> blurProperty = new ShadowField<>(DEFAULT_BLUR,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getBlur() {
-		return blurProperty.get();
+		return blurProperty.get().floatValue();
 	}
 
 	@Override
@@ -640,14 +724,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty blurProperty() {
-		return blurProperty;
+		return blurProperty.property();
 	}
 
-	private FloatProperty bleedProperty = new SimpleFloatProperty(DEFAULT_BLEED);
+	private ShadowField<FloatProperty, Number> bleedProperty = new ShadowField<>(DEFAULT_BLEED,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getBleed() {
-		return bleedProperty.get();
+		return bleedProperty.get().floatValue();
 	}
 
 	@Override
@@ -656,10 +741,11 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public final FloatProperty bleedProperty() {
-		return bleedProperty;
+		return bleedProperty.property();
 	}
 
-	private BooleanProperty turboTapeProperty = new SimpleBooleanProperty(DEFAULT_TURBO_TAPE);
+	private ShadowField<BooleanProperty, Boolean> turboTapeProperty = new ShadowField<>(DEFAULT_TURBO_TAPE,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isTurboTape() {
@@ -672,6 +758,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	public BooleanProperty turboTapeProperty() {
-		return turboTapeProperty;
+		return turboTapeProperty.property();
 	}
 }

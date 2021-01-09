@@ -50,22 +50,22 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 import ui.common.FileToStringConverter;
+import ui.common.ShadowField;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
 
 	public AudioSection() {
-		Bindings.bindBidirectional(this.mp3, mp3File, new FileToStringConverter());
+		Bindings.bindBidirectional(this.mp3.property(), mp3File.property(), new FileToStringConverter());
 	}
 
-	private ObjectProperty<Audio> audio = new SimpleObjectProperty<>(DEFAULT_AUDIO);
+	private ShadowField<ObjectProperty<Audio>, Audio> audio = new ShadowField<>(DEFAULT_AUDIO,
+			SimpleObjectProperty::new);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -79,14 +79,15 @@ public class AudioSection implements IAudioSection {
 	}
 
 	public ObjectProperty<Audio> audioProperty() {
-		return audio;
+		return audio.property();
 	}
 
-	private IntegerProperty device = new SimpleIntegerProperty(DEFAULT_DEVICE);
+	private ShadowField<IntegerProperty, Number> device = new ShadowField<>(DEFAULT_DEVICE,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	@Override
 	public int getDevice() {
-		return device.get();
+		return device.get().intValue();
 	}
 
 	@Override
@@ -95,10 +96,11 @@ public class AudioSection implements IAudioSection {
 	}
 
 	public IntegerProperty deviceProperty() {
-		return device;
+		return device.property();
 	}
 
-	private ObjectProperty<SamplingRate> samplingRate = new SimpleObjectProperty<>(DEFAULT_SAMPLING_RATE);
+	private ShadowField<ObjectProperty<SamplingRate>, SamplingRate> samplingRate = new ShadowField<>(
+			DEFAULT_SAMPLING_RATE, SimpleObjectProperty::new);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -112,10 +114,11 @@ public class AudioSection implements IAudioSection {
 	}
 
 	public ObjectProperty<SamplingRate> samplingRateProperty() {
-		return samplingRate;
+		return samplingRate.property();
 	}
 
-	private ObjectProperty<SamplingMethod> sampling = new SimpleObjectProperty<>(DEFAULT_SAMPLING);
+	private ShadowField<ObjectProperty<SamplingMethod>, SamplingMethod> sampling = new ShadowField<>(DEFAULT_SAMPLING,
+			SimpleObjectProperty::new);
 
 	@Enumerated(EnumType.STRING)
 	@Override
@@ -129,18 +132,19 @@ public class AudioSection implements IAudioSection {
 	}
 
 	public ObjectProperty<SamplingMethod> samplingProperty() {
-		return sampling;
+		return sampling.property();
 	}
 
-	private FloatProperty mainVolume = new SimpleFloatProperty(DEFAULT_MAIN_VOLUME);
+	private ShadowField<FloatProperty, Number> mainVolume = new ShadowField<>(DEFAULT_MAIN_VOLUME,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty mainVolumeProperty() {
-		return mainVolume;
+		return mainVolume.property();
 	}
 
 	@Override
 	public float getMainVolume() {
-		return this.mainVolume.get();
+		return this.mainVolume.get().floatValue();
 	}
 
 	@Override
@@ -148,15 +152,16 @@ public class AudioSection implements IAudioSection {
 		this.mainVolume.set(volume);
 	}
 
-	private FloatProperty secondVolume = new SimpleFloatProperty(DEFAULT_SECOND_VOLUME);
+	private ShadowField<FloatProperty, Number> secondVolume = new ShadowField<>(DEFAULT_SECOND_VOLUME,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty secondVolumeProperty() {
-		return secondVolume;
+		return secondVolume.property();
 	}
 
 	@Override
 	public float getSecondVolume() {
-		return this.secondVolume.get();
+		return this.secondVolume.get().floatValue();
 	}
 
 	@Override
@@ -164,15 +169,16 @@ public class AudioSection implements IAudioSection {
 		this.secondVolume.set(volume);
 	}
 
-	private FloatProperty thirdVolume = new SimpleFloatProperty(DEFAULT_THIRD_VOLUME);
+	private ShadowField<FloatProperty, Number> thirdVolume = new ShadowField<>(DEFAULT_THIRD_VOLUME,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty thirdVolumeProperty() {
-		return thirdVolume;
+		return thirdVolume.property();
 	}
 
 	@Override
 	public float getThirdVolume() {
-		return this.thirdVolume.get();
+		return this.thirdVolume.get().floatValue();
 	}
 
 	@Override
@@ -180,15 +186,16 @@ public class AudioSection implements IAudioSection {
 		this.thirdVolume.set(volume);
 	}
 
-	private FloatProperty mainBalance = new SimpleFloatProperty(DEFAULT_MAIN_BALANCE);
+	private ShadowField<FloatProperty, Number> mainBalance = new ShadowField<>(DEFAULT_MAIN_BALANCE,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty mainBalanceProperty() {
-		return mainBalance;
+		return mainBalance.property();
 	}
 
 	@Override
 	public float getMainBalance() {
-		return this.mainBalance.get();
+		return this.mainBalance.get().floatValue();
 	}
 
 	@Override
@@ -196,15 +203,16 @@ public class AudioSection implements IAudioSection {
 		this.mainBalance.set(balance);
 	}
 
-	private FloatProperty secondBalance = new SimpleFloatProperty(DEFAULT_SECOND_BALANCE);
+	private ShadowField<FloatProperty, Number> secondBalance = new ShadowField<>(DEFAULT_SECOND_BALANCE,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty secondBalanceProperty() {
-		return secondBalance;
+		return secondBalance.property();
 	}
 
 	@Override
 	public float getSecondBalance() {
-		return this.secondBalance.get();
+		return this.secondBalance.get().floatValue();
 	}
 
 	@Override
@@ -212,15 +220,16 @@ public class AudioSection implements IAudioSection {
 		this.secondBalance.set(right);
 	}
 
-	private FloatProperty thirdBalance = new SimpleFloatProperty(DEFAULT_THIRD_BALANCE);
+	private ShadowField<FloatProperty, Number> thirdBalance = new ShadowField<>(DEFAULT_THIRD_BALANCE,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	public FloatProperty thirdBalanceProperty() {
-		return thirdBalance;
+		return thirdBalance.property();
 	}
 
 	@Override
 	public float getThirdBalance() {
-		return this.thirdBalance.get();
+		return this.thirdBalance.get().floatValue();
 	}
 
 	@Override
@@ -228,15 +237,16 @@ public class AudioSection implements IAudioSection {
 		this.thirdBalance.set(third);
 	}
 
-	private IntegerProperty mainDelay = new SimpleIntegerProperty(DEFAULT_MAIN_DELAY);
+	private ShadowField<IntegerProperty, Number> mainDelay = new ShadowField<>(DEFAULT_MAIN_DELAY,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public IntegerProperty mainDelayProperty() {
-		return mainDelay;
+		return mainDelay.property();
 	}
 
 	@Override
 	public int getMainDelay() {
-		return this.mainDelay.get();
+		return this.mainDelay.get().intValue();
 	}
 
 	@Override
@@ -244,15 +254,16 @@ public class AudioSection implements IAudioSection {
 		this.mainDelay.set(delay);
 	}
 
-	private IntegerProperty secondDelay = new SimpleIntegerProperty(DEFAULT_SECOND_DELAY);
+	private ShadowField<IntegerProperty, Number> secondDelay = new ShadowField<>(DEFAULT_SECOND_DELAY,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public IntegerProperty secondDelayProperty() {
-		return secondDelay;
+		return secondDelay.property();
 	}
 
 	@Override
 	public int getSecondDelay() {
-		return this.secondDelay.get();
+		return this.secondDelay.get().intValue();
 	}
 
 	@Override
@@ -260,15 +271,16 @@ public class AudioSection implements IAudioSection {
 		this.secondDelay.set(delay);
 	}
 
-	private IntegerProperty thirdDelay = new SimpleIntegerProperty(DEFAULT_THIRD_DELAY);
+	private ShadowField<IntegerProperty, Number> thirdDelay = new ShadowField<>(DEFAULT_THIRD_DELAY,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public IntegerProperty thirdDelayProperty() {
-		return this.thirdDelay;
+		return this.thirdDelay.property();
 	}
 
 	@Override
 	public int getThirdDelay() {
-		return this.thirdDelay.get();
+		return this.thirdDelay.get().intValue();
 	}
 
 	@Override
@@ -276,15 +288,16 @@ public class AudioSection implements IAudioSection {
 		this.thirdDelay.set(delay);
 	}
 
-	private IntegerProperty bufferSize = new SimpleIntegerProperty(DEFAULT_BUFFER_SIZE);
+	private ShadowField<IntegerProperty, Number> bufferSize = new ShadowField<>(DEFAULT_BUFFER_SIZE,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public IntegerProperty bufferSizeProperty() {
-		return bufferSize;
+		return bufferSize.property();
 	}
 
 	@Override
 	public int getBufferSize() {
-		return bufferSize.get();
+		return bufferSize.get().intValue();
 	}
 
 	@Override
@@ -292,10 +305,11 @@ public class AudioSection implements IAudioSection {
 		this.bufferSize.set(bufferSize);
 	}
 
-	private ObjectProperty<Integer> audioBufferSize = new SimpleObjectProperty<>(DEFAULT_AUDIO_BUFFER_SIZE);
+	private ShadowField<ObjectProperty<Integer>, Integer> audioBufferSize = new ShadowField<>(DEFAULT_AUDIO_BUFFER_SIZE,
+			SimpleObjectProperty::new);
 
 	public ObjectProperty<Integer> audioBufferSizeProperty() {
-		return audioBufferSize;
+		return audioBufferSize.property();
 	}
 
 	@Override
@@ -308,7 +322,8 @@ public class AudioSection implements IAudioSection {
 		this.audioBufferSize.set(audioBufferSize);
 	}
 
-	private BooleanProperty playOriginal = new SimpleBooleanProperty(DEFAULT_PLAY_ORIGINAL);
+	private ShadowField<BooleanProperty, Boolean> playOriginal = new ShadowField<>(DEFAULT_PLAY_ORIGINAL,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isPlayOriginal() {
@@ -321,15 +336,16 @@ public class AudioSection implements IAudioSection {
 	}
 
 	public BooleanProperty playOriginalProperty() {
-		return playOriginal;
+		return playOriginal.property();
 	}
 
-	private ObjectProperty<File> mp3File = new SimpleObjectProperty<>();
-	private StringProperty mp3 = new SimpleStringProperty();
+	private ShadowField<ObjectProperty<File>, File> mp3File = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	public ObjectProperty<File> mp3FileProperty() {
-		return mp3File;
+		return mp3File.property();
 	}
+
+	private ShadowField<ObjectProperty<String>, String> mp3 = new ShadowField<>(null, SimpleObjectProperty::new);
 
 	@Override
 	public String getMp3File() {
@@ -341,292 +357,309 @@ public class AudioSection implements IAudioSection {
 		this.mp3.set(recording);
 	}
 
-	private ObjectProperty<Integer> cbrProperty = new SimpleObjectProperty<>(DEFAULT_CBR);
+	private ShadowField<ObjectProperty<Integer>, Integer> cbr = new ShadowField<>(DEFAULT_CBR,
+			SimpleObjectProperty::new);
 
 	@Override
 	public int getCbr() {
-		return cbrProperty.get();
+		return cbr.get();
 	}
 
 	@Override
 	public void setCbr(int cbr) {
-		this.cbrProperty.set(cbr);
+		this.cbr.set(cbr);
 	}
 
 	public ObjectProperty<Integer> cbrProperty() {
-		return cbrProperty;
+		return cbr.property();
 	}
 
-	private BooleanProperty vbrProperty = new SimpleBooleanProperty(DEFAULT_VBR);
+	private ShadowField<BooleanProperty, Boolean> vbr = new ShadowField<>(DEFAULT_VBR, SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isVbr() {
-		return vbrProperty.get();
+		return vbr.get();
 	}
 
 	@Override
 	public void setVbr(boolean vbr) {
-		vbrProperty.set(vbr);
+		this.vbr.set(vbr);
 	}
 
 	public BooleanProperty vbrProperty() {
-		return vbrProperty;
+		return vbr.property();
 	}
 
-	private ObjectProperty<Integer> vbrQualityProperty = new SimpleObjectProperty<>(DEFAULT_VBR_QUALITY);
+	private ShadowField<ObjectProperty<Integer>, Integer> vbrQuality = new ShadowField<>(DEFAULT_VBR_QUALITY,
+			SimpleObjectProperty::new);
 
 	@Override
 	public int getVbrQuality() {
-		return vbrQualityProperty.get();
+		return vbrQuality.get();
 	}
 
 	@Override
 	public void setVbrQuality(int vbrQuality) {
-		this.vbrQualityProperty.set(vbrQuality);
+		this.vbrQuality.set(vbrQuality);
 	}
 
 	public ObjectProperty<Integer> vbrQualityProperty() {
-		return vbrQualityProperty;
+		return vbrQuality.property();
 	}
 
-	private FloatProperty aviCompressionQualityProperty = new SimpleFloatProperty(DEFAULT_AVI_COMPRESSION_QUALITY);
+	private ShadowField<FloatProperty, Number> aviCompressionQuality = new ShadowField<>(
+			DEFAULT_AVI_COMPRESSION_QUALITY, number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getAviCompressionQuality() {
-		return aviCompressionQualityProperty.get();
+		return aviCompressionQuality.get().floatValue();
 	}
 
 	@Override
 	public void setAviCompressionQuality(float aviCompressionQuality) {
-		aviCompressionQualityProperty.set(aviCompressionQuality);
+		this.aviCompressionQuality.set(aviCompressionQuality);
 	}
 
 	public FloatProperty aviCompressionQualityProperty() {
-		return aviCompressionQualityProperty;
+		return aviCompressionQuality.property();
 	}
 
-	private BooleanProperty delayBypassProperty = new SimpleBooleanProperty(DEFAULT_DELAY_BYPASS);
+	private ShadowField<BooleanProperty, Boolean> delayBypass = new ShadowField<>(DEFAULT_DELAY_BYPASS,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean getDelayBypass() {
-		return delayBypassProperty.get();
+		return delayBypass.get();
 	}
 
 	@Override
 	public void setDelayBypass(boolean delayBypass) {
-		delayBypassProperty.set(delayBypass);
+		this.delayBypass.set(delayBypass);
 	}
 
 	public BooleanProperty delayBypassProperty() {
-		return delayBypassProperty;
+		return delayBypass.property();
 	}
 
-	private IntegerProperty delayProperty = new SimpleIntegerProperty(DEFAULT_DELAY);
+	private ShadowField<IntegerProperty, Number> delay = new ShadowField<>(DEFAULT_DELAY,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	@Override
 	public int getDelay() {
-		return delayProperty.get();
+		return delay.get().intValue();
 	}
 
 	@Override
 	public void setDelay(int delay) {
-		delayProperty.set(delay);
+		this.delay.set(delay);
 	}
 
 	public IntegerProperty delayProperty() {
-		return delayProperty;
+		return delay.property();
 	}
 
-	private IntegerProperty delayDryLevelProperty = new SimpleIntegerProperty(DEFAULT_DELAY_DRY_LEVEL);
+	private ShadowField<IntegerProperty, Number> delayDryLevel = new ShadowField<>(DEFAULT_DELAY_DRY_LEVEL,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	@Override
 	public int getDelayDryLevel() {
-		return delayDryLevelProperty.get();
+		return delayDryLevel.get().intValue();
 	}
 
 	@Override
 	public void setDelayDryLevel(int delayDryLevel) {
-		delayDryLevelProperty.set(delayDryLevel);
+		this.delayDryLevel.set(delayDryLevel);
 	}
 
 	public IntegerProperty delayDryLevelProperty() {
-		return delayDryLevelProperty;
+		return delayDryLevel.property();
 	}
 
-	private IntegerProperty delayWetLevelProperty = new SimpleIntegerProperty(DEFAULT_DELAY_WET_LEVEL);
+	private ShadowField<IntegerProperty, Number> delayWetLevel = new ShadowField<>(DEFAULT_DELAY_WET_LEVEL,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	@Override
 	public int getDelayWetLevel() {
-		return delayWetLevelProperty.get();
+		return delayWetLevel.get().intValue();
 	}
 
 	@Override
 	public void setDelayWetLevel(int delayWetLevel) {
-		delayWetLevelProperty.set(delayWetLevel);
+		this.delayWetLevel.set(delayWetLevel);
 	}
 
 	public IntegerProperty delayWetLevelProperty() {
-		return delayWetLevelProperty;
+		return delayWetLevel.property();
 	}
 
-	private IntegerProperty delayFeedbackLevelProperty = new SimpleIntegerProperty(DEFAULT_DELAY_FEEDBACK_LEVEL);
+	private ShadowField<IntegerProperty, Number> delayFeedbackLevel = new ShadowField<>(DEFAULT_DELAY_FEEDBACK_LEVEL,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	@Override
 	public int getDelayFeedbackLevel() {
-		return delayFeedbackLevelProperty.get();
+		return delayFeedbackLevel.get().intValue();
 	}
 
 	@Override
 	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
-		delayFeedbackLevelProperty.set(delayFeedbackLevel);
+		this.delayFeedbackLevel.set(delayFeedbackLevel);
 	}
 
 	public IntegerProperty delayFeedbackLevelProperty() {
-		return delayFeedbackLevelProperty;
+		return delayFeedbackLevel.property();
 	}
 
-	private BooleanProperty reverbBypassProperty = new SimpleBooleanProperty(DEFAULT_REVERB_BYPASS);
+	private ShadowField<BooleanProperty, Boolean> reverbBypass = new ShadowField<>(DEFAULT_REVERB_BYPASS,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean getReverbBypass() {
-		return reverbBypassProperty.get();
+		return reverbBypass.get();
 	}
 
 	@Override
 	public void setReverbBypass(boolean reverbBypass) {
-		reverbBypassProperty.set(reverbBypass);
+		this.reverbBypass.set(reverbBypass);
 	}
 
 	public BooleanProperty reverbBypassProperty() {
-		return reverbBypassProperty;
+		return reverbBypass.property();
 	}
 
-	private FloatProperty reverbComb1DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB1_DELAY);
+	private ShadowField<FloatProperty, Number> reverbComb1Delay = new ShadowField<>(DEFAULT_REVERB_COMB1_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbComb1Delay() {
-		return reverbComb1DelayProperty.get();
+		return reverbComb1Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbComb1Delay(float reverbComb1Delay) {
-		reverbComb1DelayProperty.set(reverbComb1Delay);
+		this.reverbComb1Delay.set(reverbComb1Delay);
 	}
 
 	public FloatProperty reverbComb1DelayProperty() {
-		return reverbComb1DelayProperty;
+		return reverbComb1Delay.property();
 	}
 
-	private FloatProperty reverbComb2DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB2_DELAY);
+	private ShadowField<FloatProperty, Number> reverbComb2Delay = new ShadowField<>(DEFAULT_REVERB_COMB2_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbComb2Delay() {
-		return reverbComb2DelayProperty.get();
+		return reverbComb2Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbComb2Delay(float reverbComb2Delay) {
-		reverbComb2DelayProperty.set(reverbComb2Delay);
+		this.reverbComb2Delay.set(reverbComb2Delay);
 	}
 
 	public FloatProperty reverbComb2DelayProperty() {
-		return reverbComb2DelayProperty;
+		return reverbComb2Delay.property();
 	}
 
-	private FloatProperty reverbComb3DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB3_DELAY);
+	private ShadowField<FloatProperty, Number> reverbComb3Delay = new ShadowField<>(DEFAULT_REVERB_COMB3_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbComb3Delay() {
-		return reverbComb3DelayProperty.get();
+		return reverbComb3Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbComb3Delay(float reverbComb3Delay) {
-		reverbComb3DelayProperty.set(reverbComb3Delay);
+		this.reverbComb3Delay.set(reverbComb3Delay);
 	}
 
 	public FloatProperty reverbComb3DelayProperty() {
-		return reverbComb3DelayProperty;
+		return reverbComb3Delay.property();
 	}
 
-	private FloatProperty reverbComb4DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_COMB4_DELAY);
+	private ShadowField<FloatProperty, Number> reverbComb4Delay = new ShadowField<>(DEFAULT_REVERB_COMB4_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbComb4Delay() {
-		return reverbComb4DelayProperty.get();
+		return reverbComb4Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbComb4Delay(float reverbComb4Delay) {
-		reverbComb4DelayProperty.set(reverbComb4Delay);
+		this.reverbComb4Delay.set(reverbComb4Delay);
 	}
 
 	public FloatProperty reverbComb4DelayProperty() {
-		return reverbComb4DelayProperty;
+		return reverbComb4Delay.property();
 	}
 
-	private FloatProperty reverbAllPass1DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_ALL_PASS1_DELAY);
+	private ShadowField<FloatProperty, Number> reverbAllPass1Delay = new ShadowField<>(DEFAULT_REVERB_ALL_PASS1_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbAllPass1Delay() {
-		return reverbAllPass1DelayProperty.get();
+		return reverbAllPass1Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbAllPass1Delay(float reverbAllPass1Delay) {
-		reverbAllPass1DelayProperty.set(reverbAllPass1Delay);
+		this.reverbAllPass1Delay.set(reverbAllPass1Delay);
 	}
 
 	public FloatProperty reverbAllPass1DelayProperty() {
-		return reverbAllPass1DelayProperty;
+		return reverbAllPass1Delay.property();
 	}
 
-	private FloatProperty reverbAllPass2DelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_ALL_PASS2_DELAY);
+	private ShadowField<FloatProperty, Number> reverbAllPass2Delay = new ShadowField<>(DEFAULT_REVERB_ALL_PASS2_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbAllPass2Delay() {
-		return reverbAllPass2DelayProperty.get();
+		return reverbAllPass2Delay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbAllPass2Delay(float reverbAllPass2Delay) {
-		reverbAllPass2DelayProperty.set(reverbAllPass2Delay);
+		this.reverbAllPass2Delay.set(reverbAllPass2Delay);
 	}
 
 	public FloatProperty reverbAllPass2DelayProperty() {
-		return reverbAllPass2DelayProperty;
+		return reverbAllPass2Delay.property();
 	}
 
-	private FloatProperty reverbSustainDelayProperty = new SimpleFloatProperty(DEFAULT_REVERB_SUSTAIN_DELAY);
+	private ShadowField<FloatProperty, Number> reverbSustainDelay = new ShadowField<>(DEFAULT_REVERB_SUSTAIN_DELAY,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbSustainDelay() {
-		return reverbSustainDelayProperty.get();
+		return reverbSustainDelay.get().floatValue();
 	}
 
 	@Override
 	public void setReverbSustainDelay(float reverbSustainDelay) {
-		reverbSustainDelayProperty.set(reverbSustainDelay);
+		this.reverbSustainDelay.set(reverbSustainDelay);
 	}
 
 	public FloatProperty reverbSustainDelayProperty() {
-		return reverbSustainDelayProperty;
+		return reverbSustainDelay.property();
 	}
 
-	private FloatProperty reverbDryWetMixProperty = new SimpleFloatProperty(DEFAULT_REVERB_DRY_WET_MIX);
+	private ShadowField<FloatProperty, Number> reverbDryWetMix = new ShadowField<>(DEFAULT_REVERB_DRY_WET_MIX,
+			number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getReverbDryWetMix() {
-		return reverbDryWetMixProperty.get();
+		return reverbDryWetMix.get().floatValue();
 	}
 
 	@Override
 	public void setReverbDryWetMix(float reverbDryWetMix) {
-		reverbDryWetMixProperty.set(reverbDryWetMix);
+		this.reverbDryWetMix.set(reverbDryWetMix);
 	}
 
 	public FloatProperty reverbDryWetMixProperty() {
-		return reverbDryWetMixProperty;
+		return reverbDryWetMix.property();
 	}
 
 }

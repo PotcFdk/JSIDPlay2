@@ -1,6 +1,7 @@
 package ui.entities.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -16,15 +17,24 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import ui.common.LazyListField;
+import ui.common.ObservableLazyListField;
+import ui.common.ShadowField;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class FavoritesSection {
+
+	private List<FavoriteColumn> DEF_COLUMNS;
 
 	private Integer id;
 
@@ -39,98 +49,110 @@ public class FavoritesSection {
 		this.id = id;
 	}
 
-	private String name;
+	private ShadowField<StringProperty, String> name = new ShadowField<>(null, SimpleStringProperty::new);
 
 	public String getName() {
-		return name;
+		return name.get();
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name.set(name);
 	}
 
-	private Double width;
+	public StringProperty nameProperty() {
+		return name.property();
+	}
+
+	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(0,
+			number -> new SimpleDoubleProperty(number.doubleValue()));
 
 	public Double getWidth() {
-		return width;
+		return width.get().doubleValue();
 	}
 
 	public void setWidth(Double width) {
-		this.width = width;
+		this.width.set(width);
 	}
 
-	private Integer selectedRowFrom = -1;
+	public DoubleProperty widthProperty() {
+		return width.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> selectedRowFrom = new ShadowField<>(-1,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public Integer getSelectedRowFrom() {
-		return selectedRowFrom;
+		return selectedRowFrom.get().intValue();
 	}
 
 	public void setSelectedRowFrom(Integer selectedRowFrom) {
-		this.selectedRowFrom = selectedRowFrom;
+		this.selectedRowFrom.set(selectedRowFrom);
 	}
 
-	private Integer selectedRowTo = -1;
+	public IntegerProperty selectedRowFromProperty() {
+		return selectedRowFrom.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> selectedRowTo = new ShadowField<>(-1,
+			number -> new SimpleIntegerProperty(number.intValue()));
 
 	public Integer getSelectedRowTo() {
-		return selectedRowTo;
+		return selectedRowTo.get().intValue();
 	}
 
 	public void setSelectedRowTo(Integer selectedRowTo) {
-		this.selectedRowTo = selectedRowTo;
+		this.selectedRowTo.set(selectedRowTo);
 	}
 
-	private List<FavoriteColumn> columns;
+	public IntegerProperty selectedRowToProperty() {
+		return selectedRowTo.property();
+	}
+
+	private LazyListField<FavoriteColumn> columns = new LazyListField<>(Collections.emptyList());
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoriteColumn> getColumns() {
-		if (columns == null) {
-			columns = new ArrayList<>();
+		// Singular attributes cannot be resolved that early, therefore:
+		if (DEF_COLUMNS == null) {
+			DEF_COLUMNS = new ArrayList<>();
 			FavoriteColumn dbFavoriteColumn;
 			SingularAttribute<?, ?> attribute;
 			dbFavoriteColumn = new FavoriteColumn();
 			attribute = HVSCEntry_.title;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			columns.add(dbFavoriteColumn);
+			DEF_COLUMNS.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
 			attribute = HVSCEntry_.author;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			columns.add(dbFavoriteColumn);
+			DEF_COLUMNS.add(dbFavoriteColumn);
 			dbFavoriteColumn = new FavoriteColumn();
 			attribute = HVSCEntry_.released;
 			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			columns.add(dbFavoriteColumn);
+			DEF_COLUMNS.add(dbFavoriteColumn);
+
 		}
-		return columns;
+		return columns.get(DEF_COLUMNS);
 	}
 
 	public void setColumns(List<FavoriteColumn> columns) {
-		this.columns = columns;
+		this.columns.set(columns);
 	}
 
-	protected List<HVSCEntry> favorites;
-
-	protected ObservableList<HVSCEntry> observableFavorites;
+	private ObservableLazyListField<HVSCEntry> favorites = new ObservableLazyListField<>();
 
 	public void setFavorites(List<HVSCEntry> favorites) {
-		this.favorites = favorites;
+		this.favorites.set(favorites);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
-		if (favorites == null) {
-			favorites = new ArrayList<>();
-		}
-		return getObservableFavorites();
+		return favorites.get();
 	}
 
 	@Transient
 	public ObservableList<HVSCEntry> getObservableFavorites() {
-		if (observableFavorites == null) {
-			observableFavorites = FXCollections.<HVSCEntry>observableArrayList(favorites);
-			Bindings.bindContent(favorites, observableFavorites);
-		}
-		return observableFavorites;
+		return favorites.getObservableList();
 	}
 
 }

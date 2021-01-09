@@ -22,12 +22,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.IWhatsSidSection;
+import ui.common.ShadowField;
 
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.WhatsSidSection")
 public class WhatsSidSection implements IWhatsSidSection {
 
-	private BooleanProperty enableProperty = new SimpleBooleanProperty(DEFAULT_WHATSSID_ENABLE);
+	private ShadowField<BooleanProperty, Boolean> enableProperty = new ShadowField<>(DEFAULT_WHATSSID_ENABLE,
+			SimpleBooleanProperty::new);
 
 	@Override
 	public boolean isEnable() {
@@ -40,10 +42,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public BooleanProperty enableProperty() {
-		return enableProperty;
+		return enableProperty.property();
 	}
 
-	private StringProperty urlProperty = new SimpleStringProperty(DEFAULT_WHATSSID_URL);
+	private ShadowField<StringProperty, String> urlProperty = new ShadowField<>(DEFAULT_WHATSSID_URL,
+			SimpleStringProperty::new);
 
 	@Override
 	public String getUrl() {
@@ -56,10 +59,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public StringProperty urlProperty() {
-		return urlProperty;
+		return urlProperty.property();
 	}
 
-	private StringProperty usernameProperty = new SimpleStringProperty(DEFAULT_WHATSSID_USERNAME);
+	private ShadowField<StringProperty, String> usernameProperty = new ShadowField<>(DEFAULT_WHATSSID_USERNAME,
+			SimpleStringProperty::new);
 
 	@Override
 	public String getUsername() {
@@ -72,10 +76,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public StringProperty usernameProperty() {
-		return usernameProperty;
+		return usernameProperty.property();
 	}
 
-	private StringProperty passwordProperty = new SimpleStringProperty(DEFAULT_WHATSSID_PASSWORD);
+	private ShadowField<StringProperty, String> passwordProperty = new ShadowField<>(DEFAULT_WHATSSID_PASSWORD,
+			SimpleStringProperty::new);
 
 	@Override
 	public String getPassword() {
@@ -88,10 +93,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public StringProperty passwordProperty() {
-		return passwordProperty;
+		return passwordProperty.property();
 	}
 
-	private ObjectProperty<Integer> captureTimeProperty = new SimpleObjectProperty<>(DEFAULT_WHATSSID_CAPTURE_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> captureTimeProperty = new ShadowField<>(
+			DEFAULT_WHATSSID_CAPTURE_TIME, SimpleObjectProperty::new);
 
 	@Override
 	public int getCaptureTime() {
@@ -104,11 +110,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public ObjectProperty<Integer> captureTimeProperty() {
-		return captureTimeProperty;
+		return captureTimeProperty.property();
 	}
 
-	private ObjectProperty<Integer> matchStartTimeProperty = new SimpleObjectProperty<>(
-			DEFAULT_WHATSSID_MATCH_START_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> matchStartTimeProperty = new ShadowField<>(
+			DEFAULT_WHATSSID_MATCH_START_TIME, SimpleObjectProperty::new);
 
 	@Override
 	public int getMatchStartTime() {
@@ -121,11 +127,11 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public ObjectProperty<Integer> matchStartTimeProperty() {
-		return matchStartTimeProperty;
+		return matchStartTimeProperty.property();
 	}
 
-	private ObjectProperty<Integer> matchRetryTimeProperty = new SimpleObjectProperty<>(
-			DEFAULT_WHATSSID_MATCH_RETRY_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> matchRetryTimeProperty = new ShadowField<>(
+			DEFAULT_WHATSSID_MATCH_RETRY_TIME, SimpleObjectProperty::new);
 
 	@Override
 	public int getMatchRetryTime() {
@@ -138,15 +144,15 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public ObjectProperty<Integer> matchRetryTimeProperty() {
-		return matchRetryTimeProperty;
+		return matchRetryTimeProperty.property();
 	}
 
-	private FloatProperty minimumRelativeConfidenceProperty = new SimpleFloatProperty(
-			DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
+	private ShadowField<FloatProperty, Number> minimumRelativeConfidenceProperty = new ShadowField<>(
+			DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE, number -> new SimpleFloatProperty(number.floatValue()));
 
 	@Override
 	public float getMinimumRelativeConfidence() {
-		return minimumRelativeConfidenceProperty.get();
+		return minimumRelativeConfidenceProperty.get().floatValue();
 	}
 
 	@Override
@@ -155,6 +161,6 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	public FloatProperty minimumRelativeConfidenceProperty() {
-		return minimumRelativeConfidenceProperty;
+		return minimumRelativeConfidenceProperty.property();
 	}
 }

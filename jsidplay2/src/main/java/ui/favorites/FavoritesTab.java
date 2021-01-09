@@ -344,7 +344,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 			favoritesSection.setWidth(newValue.doubleValue());
 		});
 		Double width = favoritesSection.getWidth();
-		if (width != null) {
+		if (width != 0) {
 			pathColumn.setPrefWidth(width.doubleValue());
 		}
 		for (FavoriteColumn favoriteColumn : favoritesSection.getColumns()) {

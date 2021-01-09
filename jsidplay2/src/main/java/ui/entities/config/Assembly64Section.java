@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import ui.common.LazyListField;
+
 @Embeddable
 @Access(AccessType.PROPERTY)
 public class Assembly64Section {
@@ -42,18 +44,15 @@ public class Assembly64Section {
 		INITIAL_COLUMNS.add(ratingColumn);
 	}
 
-	private List<Assembly64Column> columns = INITIAL_COLUMNS;
+	private LazyListField<Assembly64Column> columns = new LazyListField<>(INITIAL_COLUMNS);
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Assembly64Column> getColumns() {
-		if (columns == null) {
-			columns = new ArrayList<>();
-		}
-		return columns;
+		return columns.get();
 	}
 
 	public void setColumns(List<Assembly64Column> columns) {
-		this.columns = columns;
+		this.columns.set(columns);
 	}
 
 }
