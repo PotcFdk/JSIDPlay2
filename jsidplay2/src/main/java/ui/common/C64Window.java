@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
-import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -43,7 +42,6 @@ public abstract class C64Window implements UIPart, Initializable {
 	 */
 	public C64Window(Player player) {
 		this(new Stage(), player);
-		Platform.runLater(() -> this.stage.centerOnScreen());
 	}
 
 	@Override
@@ -67,9 +65,7 @@ public abstract class C64Window implements UIPart, Initializable {
 			}
 		});
 		stage.getIcons().add(new Image(util.getBundle().getString("ICON")));
-		if (stage.getTitle() == null) {
-			stage.setTitle(util.getBundle().getString("TITLE"));
-		}
+		stage.setTitle(util.getBundle().getString("TITLE"));
 		stage.setOnCloseRequest(event -> close());
 		stage.setScene(scene);
 	}

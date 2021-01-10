@@ -76,8 +76,8 @@ public class UIUtil {
 		do {
 			if (node instanceof UIPart && node.getParent().getParent() instanceof TabPane) {
 				TabPane tabPane = (TabPane) node.getParent().getParent();
-				final Node thenode = node;
-				tabPane.getTabs().stream().filter(tab -> tab.getContent().equals(thenode)).findFirst()
+				final Node theNode = node;
+				tabPane.getTabs().stream().filter(tab -> tab.getContent().equals(theNode)).findFirst()
 						.ifPresent(tab -> tab.setGraphic(new ImageView(PLAYED_ICON)));
 			}
 			node = node.getParent();
