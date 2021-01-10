@@ -10,28 +10,28 @@ import javafx.beans.value.WritableValue;
  * @author khaendel
  *
  * @param <P> JavaFX object property class
- * @param <O> JavaFX object property value class
+ * @param <V> JavaFX object property value class
  */
-public class ShadowField<P extends WritableValue<O>, O> {
+public class ShadowField<P extends WritableValue<V>, V> {
 
-	private O _shadowFieldValue;
+	private Function<V, P> propertyCreator;
+
+	private V _shadowValue;
 
 	private P property;
 
-	private Function<O, P> propertyCreator;
-
-	public ShadowField(O initialValue, Function<O, P> propertyCreator) {
-		_shadowFieldValue = initialValue;
+	public ShadowField(Function<V, P> propertyCreator, V initialValue) {
 		this.propertyCreator = propertyCreator;
+		_shadowValue = initialValue;
 	}
 
-	public final O get() {
-		return property == null ? _shadowFieldValue : property.getValue();
+	public final V get() {
+		return property == null ? _shadowValue : property.getValue();
 	}
 
-	public final void set(O value) {
+	public final void set(V value) {
 		if (property == null) {
-			_shadowFieldValue = value;
+			_shadowValue = value;
 		} else {
 			property.setValue(value);
 		}
@@ -39,7 +39,7 @@ public class ShadowField<P extends WritableValue<O>, O> {
 
 	public P property() {
 		if (property == null) {
-			property = propertyCreator.apply(_shadowFieldValue);
+			property = propertyCreator.apply(_shadowValue);
 		}
 		return property;
 	}

@@ -28,8 +28,8 @@ import ui.common.properties.ShadowField;
 @Parameters(resourceBundle = "ui.entities.config.WhatsSidSection")
 public class WhatsSidSection implements IWhatsSidSection {
 
-	private ShadowField<BooleanProperty, Boolean> enableProperty = new ShadowField<>(DEFAULT_WHATSSID_ENABLE,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> enableProperty = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_WHATSSID_ENABLE);
 
 	@Override
 	public boolean isEnable() {
@@ -45,8 +45,8 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return enableProperty.property();
 	}
 
-	private ShadowField<StringProperty, String> urlProperty = new ShadowField<>(DEFAULT_WHATSSID_URL,
-			SimpleStringProperty::new);
+	private ShadowField<StringProperty, String> urlProperty = new ShadowField<>(SimpleStringProperty::new,
+			DEFAULT_WHATSSID_URL);
 
 	@Override
 	public String getUrl() {
@@ -62,8 +62,8 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return urlProperty.property();
 	}
 
-	private ShadowField<StringProperty, String> usernameProperty = new ShadowField<>(DEFAULT_WHATSSID_USERNAME,
-			SimpleStringProperty::new);
+	private ShadowField<StringProperty, String> usernameProperty = new ShadowField<>(SimpleStringProperty::new,
+			DEFAULT_WHATSSID_USERNAME);
 
 	@Override
 	public String getUsername() {
@@ -79,8 +79,8 @@ public class WhatsSidSection implements IWhatsSidSection {
 		return usernameProperty.property();
 	}
 
-	private ShadowField<StringProperty, String> passwordProperty = new ShadowField<>(DEFAULT_WHATSSID_PASSWORD,
-			SimpleStringProperty::new);
+	private ShadowField<StringProperty, String> passwordProperty = new ShadowField<>(SimpleStringProperty::new,
+			DEFAULT_WHATSSID_PASSWORD);
 
 	@Override
 	public String getPassword() {
@@ -97,7 +97,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> captureTimeProperty = new ShadowField<>(
-			DEFAULT_WHATSSID_CAPTURE_TIME, SimpleObjectProperty::new);
+			SimpleObjectProperty::new, DEFAULT_WHATSSID_CAPTURE_TIME);
 
 	@Override
 	public int getCaptureTime() {
@@ -114,7 +114,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> matchStartTimeProperty = new ShadowField<>(
-			DEFAULT_WHATSSID_MATCH_START_TIME, SimpleObjectProperty::new);
+			SimpleObjectProperty::new, DEFAULT_WHATSSID_MATCH_START_TIME);
 
 	@Override
 	public int getMatchStartTime() {
@@ -131,7 +131,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> matchRetryTimeProperty = new ShadowField<>(
-			DEFAULT_WHATSSID_MATCH_RETRY_TIME, SimpleObjectProperty::new);
+			SimpleObjectProperty::new, DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 
 	@Override
 	public int getMatchRetryTime() {
@@ -148,7 +148,7 @@ public class WhatsSidSection implements IWhatsSidSection {
 	}
 
 	private ShadowField<FloatProperty, Number> minimumRelativeConfidenceProperty = new ShadowField<>(
-			DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE, number -> new SimpleFloatProperty(number.floatValue()));
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 
 	@Override
 	public float getMinimumRelativeConfidence() {

@@ -53,7 +53,7 @@ public class FavoritesSection {
 		this.id = id;
 	}
 
-	private ShadowField<StringProperty, String> name = new ShadowField<>(null, SimpleStringProperty::new);
+	private ShadowField<StringProperty, String> name = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getName() {
 		return name.get();
@@ -67,8 +67,8 @@ public class FavoritesSection {
 		return name.property();
 	}
 
-	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(0,
-			number -> new SimpleDoubleProperty(number.doubleValue()));
+	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
 	public Double getWidth() {
 		return width.get().doubleValue();
@@ -82,8 +82,8 @@ public class FavoritesSection {
 		return width.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> selectedRowFrom = new ShadowField<>(-1,
-			number -> new SimpleIntegerProperty(number.intValue()));
+	private ShadowField<IntegerProperty, Number> selectedRowFrom = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
 	public Integer getSelectedRowFrom() {
 		return selectedRowFrom.get().intValue();
@@ -97,8 +97,8 @@ public class FavoritesSection {
 		return selectedRowFrom.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> selectedRowTo = new ShadowField<>(-1,
-			number -> new SimpleIntegerProperty(number.intValue()));
+	private ShadowField<IntegerProperty, Number> selectedRowTo = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
 	public Integer getSelectedRowTo() {
 		return selectedRowTo.get().intValue();

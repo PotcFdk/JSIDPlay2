@@ -15,8 +15,8 @@ import ui.common.properties.ShadowField;
 @Access(AccessType.PROPERTY)
 public class PrinterSection implements IPrinterSection {
 
-	private ShadowField<BooleanProperty, Boolean> printerOnProperty = new ShadowField<>(DEFAULT_PRINTER_ON,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> printerOnProperty = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_PRINTER_ON);
 
 	@Override
 	public boolean isPrinterOn() {

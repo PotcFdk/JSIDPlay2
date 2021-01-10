@@ -29,8 +29,8 @@ public class C1541Section implements IC1541Section {
 	public static final boolean DEFAULT_DRIVE_SOUND = false;
 	public static final ExtendImagePolicy DEFAULT_EXTEND_IMAGE_POLICY = ExtendImagePolicy.EXTEND_ACCESS;
 
-	private ShadowField<BooleanProperty, Boolean> driveOn = new ShadowField<>(DEFAULT_DRIVE_ON,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> driveOn = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_DRIVE_ON);
 
 	public BooleanProperty driveOnProperty() {
 		return driveOn.property();
@@ -46,8 +46,8 @@ public class C1541Section implements IC1541Section {
 		this.driveOn.set(driveOn);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> driveSoundOn = new ShadowField<>(DEFAULT_DRIVE_SOUND,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> driveSoundOn = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_DRIVE_SOUND);
 
 	public BooleanProperty driveSoundOnProperty() {
 		return driveSoundOn.property();
@@ -61,8 +61,8 @@ public class C1541Section implements IC1541Section {
 		this.driveSoundOn.set(driveSoundOn);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> parallelCable = new ShadowField<>(DEFAULT_PARALLEL_CABLE,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> parallelCable = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_PARALLEL_CABLE);
 
 	public BooleanProperty parallelCableProperty() {
 		return parallelCable.property();
@@ -78,8 +78,8 @@ public class C1541Section implements IC1541Section {
 		this.parallelCable.set(parallelCable);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> jiffyDosInstalled = new ShadowField<>(DEFAULT_JIFFYDOS_INSTALLED,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> jiffyDosInstalled = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_JIFFYDOS_INSTALLED);
 
 	public BooleanProperty jiffyDosInstalledProperty() {
 		return jiffyDosInstalled.property();
@@ -95,8 +95,8 @@ public class C1541Section implements IC1541Section {
 		this.jiffyDosInstalled.set(on);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled0 = new ShadowField<>(DEFAULT_RAM_EXPAND_0X2000,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled0 = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_RAM_EXPAND_0X2000);
 
 	public BooleanProperty ramExpansionEnabled0Property() {
 		return ramExpansionEnabled0.property();
@@ -112,8 +112,8 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled0.set(on);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled1 = new ShadowField<>(DEFAULT_RAM_EXPAND_0X4000,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled1 = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_RAM_EXPAND_0X4000);
 
 	public BooleanProperty ramExpansionEnabled1Property() {
 		return ramExpansionEnabled1.property();
@@ -129,8 +129,8 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled1.set(on);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled2 = new ShadowField<>(DEFAULT_RAM_EXPAND_0X6000,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled2 = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_RAM_EXPAND_0X6000);
 
 	public BooleanProperty ramExpansionEnabled2Property() {
 		return ramExpansionEnabled2.property();
@@ -146,8 +146,8 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled2.set(on);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled3 = new ShadowField<>(DEFAULT_RAM_EXPAND_0X8000,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled3 = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_RAM_EXPAND_0X8000);
 
 	public BooleanProperty ramExpansionEnabled3Property() {
 		return ramExpansionEnabled3.property();
@@ -163,8 +163,8 @@ public class C1541Section implements IC1541Section {
 		this.ramExpansionEnabled3.set(on);
 	}
 
-	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled4 = new ShadowField<>(DEFAULT_RAM_EXPAND_0XA000,
-			SimpleBooleanProperty::new);
+	private ShadowField<BooleanProperty, Boolean> ramExpansionEnabled4 = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_RAM_EXPAND_0XA000);
 
 	public BooleanProperty ramExpansionEnabled4Property() {
 		return ramExpansionEnabled4.property();
@@ -181,7 +181,7 @@ public class C1541Section implements IC1541Section {
 	}
 
 	private ShadowField<ObjectProperty<ExtendImagePolicy>, ExtendImagePolicy> extendImagePolicy = new ShadowField<>(
-			DEFAULT_EXTEND_IMAGE_POLICY, SimpleObjectProperty::new);
+			SimpleObjectProperty::new, DEFAULT_EXTEND_IMAGE_POLICY);
 
 	public ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
 		return extendImagePolicy.property();
@@ -196,8 +196,8 @@ public class C1541Section implements IC1541Section {
 		this.extendImagePolicy.set(policy);
 	}
 
-	private ShadowField<ObjectProperty<FloppyType>, FloppyType> floppyType = new ShadowField<>(DEFAULT_FLOPPY_TYPE,
-			SimpleObjectProperty::new);
+	private ShadowField<ObjectProperty<FloppyType>, FloppyType> floppyType = new ShadowField<>(
+			SimpleObjectProperty::new, DEFAULT_FLOPPY_TYPE);
 
 	public ObjectProperty<FloppyType> floppyTypeProperty() {
 		return floppyType.property();

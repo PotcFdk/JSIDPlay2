@@ -273,7 +273,7 @@ public class Configuration implements IConfig {
 		return whatsSidSection;
 	}
 
-	private ShadowField<StringProperty, String> currentFavorite = new ShadowField<>(null, SimpleStringProperty::new);
+	private ShadowField<StringProperty, String> currentFavorite = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public void setCurrentFavorite(String currentFavorite) {
 		this.currentFavorite.set(currentFavorite);
