@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.config.IPrinterSection;
-import ui.common.ShadowField;
+import ui.common.properties.ShadowField;
 
 @Embeddable
 @Access(AccessType.PROPERTY)

@@ -17,8 +17,8 @@ import libsidplay.common.ChipModel;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.EnumToStringConverter;
 import ui.common.UIPart;
+import ui.common.converter.EnumToStringConverter;
 import ui.entities.config.DeviceMapping;
 
 public class SidBlasterDeviceMapping extends C64VBox implements UIPart {

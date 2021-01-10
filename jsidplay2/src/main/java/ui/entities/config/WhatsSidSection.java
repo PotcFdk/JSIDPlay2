@@ -22,7 +22,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.IWhatsSidSection;
-import ui.common.ShadowField;
+import ui.common.properties.ShadowField;
 
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.WhatsSidSection")

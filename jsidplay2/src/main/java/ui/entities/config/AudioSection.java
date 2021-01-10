@@ -54,8 +54,8 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
-import ui.common.FileToStringConverter;
-import ui.common.ShadowField;
+import ui.common.converter.FileToStringConverter;
+import ui.common.properties.ShadowField;
 
 @Embeddable
 public class AudioSection implements IAudioSection {

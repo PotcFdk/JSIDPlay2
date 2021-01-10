@@ -32,9 +32,9 @@ import javafx.scene.input.KeyCode;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.config.IConfig;
 import libsidplay.config.IFilterSection;
-import ui.common.LazyListField;
-import ui.common.ObservableLazyListField;
-import ui.common.ShadowField;
+import ui.common.properties.LazyListField;
+import ui.common.properties.ObservableLazyListField;
+import ui.common.properties.ShadowField;
 import ui.console.Console;
 import ui.videoscreen.Video;
 

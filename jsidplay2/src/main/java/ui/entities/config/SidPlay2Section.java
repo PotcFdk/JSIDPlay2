@@ -43,8 +43,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
-import ui.common.FileToStringConverter;
-import ui.common.ShadowField;
+import ui.common.converter.FileToStringConverter;
+import ui.common.properties.ShadowField;
 import ui.favorites.PlaybackType;
 
 @Embeddable

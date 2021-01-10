@@ -30,8 +30,8 @@ import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.TimeToStringConverter;
 import ui.common.UIPart;
+import ui.common.converter.TimeToStringConverter;
 
 public class SidDump extends C64VBox implements UIPart {
 

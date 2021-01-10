@@ -1,4 +1,4 @@
-package ui.common;
+package ui.common.properties;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,7 +21,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IC1541Section;
-import ui.common.ShadowField;
+import ui.common.properties.ShadowField;
 
 @Embeddable
 public class C1541Section implements IC1541Section {

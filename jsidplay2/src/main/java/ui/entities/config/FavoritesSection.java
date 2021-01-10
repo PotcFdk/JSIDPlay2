@@ -24,9 +24,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
-import ui.common.LazyListField;
-import ui.common.ObservableLazyListField;
-import ui.common.ShadowField;
+import ui.common.properties.LazyListField;
+import ui.common.properties.ObservableLazyListField;
+import ui.common.properties.ShadowField;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 

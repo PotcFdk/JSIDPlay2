@@ -28,7 +28,7 @@ import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import sidplay.Player;
 import ui.common.C64Window;
-import ui.common.NumberToStringConverter;
+import ui.common.converter.NumberToStringConverter;
 import ui.entities.config.AudioSection;
 
 public class AudioSettings extends C64Window {

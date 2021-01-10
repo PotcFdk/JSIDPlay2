@@ -1,4 +1,4 @@
-package ui.common;
+package ui.common.converter;
 
 import java.text.NumberFormat;
 import java.text.ParseException;

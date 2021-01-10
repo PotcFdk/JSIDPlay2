@@ -9,7 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import ui.common.LazyListField;
+import ui.common.properties.LazyListField;
 
 @Embeddable
 @Access(AccessType.PROPERTY)

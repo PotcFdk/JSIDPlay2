@@ -94,9 +94,9 @@ import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
-import ui.common.FileToStringConverter;
-import ui.common.LazyListField;
-import ui.common.ShadowField;
+import ui.common.converter.FileToStringConverter;
+import ui.common.properties.LazyListField;
+import ui.common.properties.ShadowField;
 
 @Embeddable
 @Parameters(resourceBundle = "ui.entities.config.EmulationSection")
