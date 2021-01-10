@@ -50,7 +50,8 @@
 					<contextMenu>
 						<ContextMenu fx:id="contextMenu">
 							<items>
-								<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN" onAction="#removeColumn" />
+								<MenuItem fx:id="removeColumn" text="%REMOVE_COLUMN"
+									onAction="#removeColumn" />
 								<Menu fx:id="addColumnMenu" text="%ADD_COLUMN" />
 								<MenuItem fx:id="showStil" text="%SHOW_STIL" onAction="#showStil" />
 								<MenuItem text="%EXPORT_TO_DIR" onAction="#exportToDir" />

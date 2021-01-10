@@ -26,9 +26,8 @@
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.gamebase.GameBase"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
-		<GridPane AnchorPane.bottomAnchor="10"
-			AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10"
-			AnchorPane.topAnchor="10">
+		<GridPane AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+			AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 			<children>
 				<CheckBox text="%AUTO_CONFIGURATION" fx:id="enableGameBase"
 					onAction="#doEnableGameBase" GridPane.rowIndex="0"
@@ -37,15 +36,14 @@
 					<Label text="%REG_EXPR_FILTER" />
 					<TextField fx:id="filterField" />
 				</HBox>
-				<TitledPane fx:id="contents" text="%INDEX"
-					collapsible="false" GridPane.rowIndex="2" GridPane.columnIndex="0"
-					GridPane.rowSpan="7" GridPane.valignment="TOP"
-					GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+				<TitledPane fx:id="contents" text="%INDEX" collapsible="false"
+					GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.rowSpan="7"
+					GridPane.valignment="TOP" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 					<TabPane focusTraversable="false" fx:id="letter"
 						tabClosingPolicy="UNAVAILABLE">
 						<tabs>
 							<Tab text="#" disable="true">
-								<GameBasePage/>
+								<GameBasePage />
 							</Tab>
 							<Tab text="A" disable="true">
 								<GameBasePage />
@@ -128,10 +126,10 @@
 						</tabs>
 					</TabPane>
 				</TitledPane>
-				<ImageView fitWidth="320"
-					fitHeight="200" GridPane.halignment="CENTER"
-					GridPane.valignment="CENTER" preserveRatio="true"
-					GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="screenshot"/>
+				<ImageView fitWidth="320" fitHeight="200"
+					GridPane.halignment="CENTER" GridPane.valignment="CENTER"
+					preserveRatio="true" GridPane.rowIndex="2" GridPane.columnIndex="1"
+					fx:id="screenshot" />
 				<TitledPane text="%INFOS" collapsible="false"
 					GridPane.rowIndex="3" GridPane.columnIndex="1">
 					<TextField fx:id="infos" />
@@ -152,9 +150,8 @@
 					GridPane.rowIndex="7" GridPane.columnIndex="1">
 					<TextArea fx:id="comment" />
 				</TitledPane>
-				<Button text="%MUSIC_GET" fx:id="linkMusic"
-					onAction="#downloadMusic" GridPane.rowIndex="8"
-					GridPane.columnIndex="1" />
+				<Button text="%MUSIC_GET" fx:id="linkMusic" onAction="#downloadMusic"
+					GridPane.rowIndex="8" GridPane.columnIndex="1" />
 				<TitledPane text="%CONFIGURATION" collapsible="true"
 					expanded="false" GridPane.rowIndex="9" GridPane.columnIndex="0"
 					GridPane.columnSpan="3">
@@ -170,16 +167,16 @@
 								</ImageView>
 							</graphic>
 						</Button>
-						<Hyperlink text="%DOWNLOAD" textFill="BLUE"
-							underline="true" onAction="#gotoURL" />
+						<Hyperlink text="%DOWNLOAD" textFill="BLUE" underline="true"
+							onAction="#gotoURL" />
 					</HBox>
 				</TitledPane>
 			</children>
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES"
-					minWidth="10.0" percentWidth="60.0" prefWidth="100.0" />
-				<ColumnConstraints hgrow="SOMETIMES"
-					minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="60.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="40.0" prefWidth="100.0" />
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints vgrow="SOMETIMES" minHeight="10.0"

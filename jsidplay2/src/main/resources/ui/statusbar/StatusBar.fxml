@@ -14,7 +14,7 @@
 <!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.statusbar.StatusBar"> -->
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox">
 	<AnchorPane>
-		<Label fx:id="status" AnchorPane.leftAnchor="10"/>
+		<Label fx:id="status" AnchorPane.leftAnchor="10" />
 	</AnchorPane>
 </fx:root>
 <!-- </Scene> -->

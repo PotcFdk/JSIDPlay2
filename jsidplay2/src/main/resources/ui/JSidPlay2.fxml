@@ -13,7 +13,8 @@
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
 <!-- Ctrl+Shift+C to toggle comment -->
 
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@JSidPlay2.css" fx:controller="ui.JSidPlay2" > -->
+<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@JSidPlay2.css" 
+	fx:controller="ui.JSidPlay2" > -->
 <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@JSidPlay2.css">
 	<VBox>
 		<BorderPane xmlns:fx="http://javafx.com/fxml">
@@ -29,6 +30,6 @@
 			</center>
 		</BorderPane>
 		<!-- must be ouside of border pane to not shift out menu bar -->
-		<StatusBar HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+		<StatusBar HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
 	</VBox>
 </Scene>

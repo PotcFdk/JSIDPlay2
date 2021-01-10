@@ -12,7 +12,8 @@
 <!-- Ctrl+Shift+C to toggle comment -->
 
 <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@Update.css">
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@Update.css" fx:controller="ui.update.Update"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@Update.css" 
+		fx:controller="ui.update.Update"> -->
 	<BorderPane>
 		<center>
 			<TextArea editable="false" wrapText="false" fx:id="update" />

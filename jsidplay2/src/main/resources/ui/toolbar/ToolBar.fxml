@@ -144,8 +144,9 @@
 						<Label text="%SIDBLASTER_DEVICE_LIST" alignment="CENTER_RIGHT" />
 						<ScrollPane fx:id="sidBlasterScrollPane" maxHeight="400"
 							vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
-							<VBox fx:id="sidBlasterDeviceParent" style="-fx-padding: 8px" spacing="5">
-							</VBox>
+							<VBox fx:id="sidBlasterDeviceParent" style="-fx-padding: 8px"
+								spacing="5" />
+
 						</ScrollPane>
 						<VBox>
 							<HBox>
@@ -277,8 +278,8 @@
 									selected="true" toggleGroup="$appServerGroup" fx:id="stopAppServer" />
 							</HBox>
 							<Label text="%APP_SERVER_CONNECTORS" />
-							<ComboBox fx:id="appServerConnectorsBox" maxWidth="150">
-							</ComboBox>
+							<ComboBox fx:id="appServerConnectorsBox" maxWidth="150" />
+
 							<Label text="%APP_SERVER_PORT" fx:id="appServerPortLbl" />
 							<TypeTextField type="Integer" fx:id="appServerPort"
 								prefWidth="60">

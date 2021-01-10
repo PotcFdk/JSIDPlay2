@@ -25,7 +25,7 @@
 		<VBox spacing="10">
 			<TitledPane text="%WHATSSID">
 				<VBox spacing="5">
-					<CheckBox fx:id="enable" text="%ENABLE"></CheckBox>
+					<CheckBox fx:id="enable" text="%ENABLE" />
 					<Label text="%URL" alignment="CENTER_RIGHT" />
 					<TextField fx:id="url">
 						<tooltip>

@@ -14,7 +14,8 @@
 <!-- Ctrl+Shift+C to toggle comment -->
 
 <Scene xmlns:fx="http://javafx.com/fxml" height="768" stylesheets="@About.css">
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" height="768" stylesheets="@About.css" fx:controller="ui.about.About"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" height="768" stylesheets="@About.css" 
+		fx:controller="ui.about.About"> -->
 	<BorderPane>
 		<center>
 			<ScrollPane fitToHeight="false" fitToWidth="false"

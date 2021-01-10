@@ -18,7 +18,7 @@
 <!-- Ctrl+Shift+C to toggle comment -->
 
 <Scene xmlns:fx="http://javafx.com/fxml">
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.joysticksettings.JoystickSettings"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" fx:controller="ui.joysticksettings.JoystickSettings"> -->
 	<HBox>
 		<TitledPane text="%PORT_1" collapsible="false" prefWidth="500">
 			<VBox spacing="10">

@@ -56,7 +56,7 @@
 								prefWidth="400" />
 						</tooltip>
 					</ComboBox>
-					<Region minWidth="390"></Region>
+					<Region minWidth="390" />
 					<CheckBox text="%ENABLE_PAL_EMULATION" fx:id="enablePalEmulation"
 						onAction="#setEnablePalEmulation" />
 					<ToggleButton focusTraversable="false" fx:id="videoStreaming"

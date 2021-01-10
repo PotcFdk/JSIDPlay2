@@ -18,13 +18,14 @@
 <!-- Ctrl+Shift+C to toggle comment -->
 
 <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@AudioSettings.css">
-<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@AudioSettings.css" fx:controller="ui.audiosettings.AudioSettings"> -->
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@AudioSettings.css" 
+		fx:controller="ui.audiosettings.AudioSettings"> -->
 	<ScrollPane>
 		<VBox>
 			<TitledPane text="%DELAY_POST_PROCESSOR">
 				<GridPane>
 					<VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
-						<CheckBox fx:id="bypassDelay" text="%BYPASS"></CheckBox>
+						<CheckBox fx:id="bypassDelay" text="%BYPASS" />
 					</VBox>
 					<HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
 						<VBox alignment="TOP_CENTER" minWidth="150">
@@ -57,7 +58,7 @@
 			<TitledPane text="%REVERB_POST_PROCESSOR">
 				<GridPane>
 					<VBox GridPane.rowIndex="0" GridPane.columnIndex="0">
-						<CheckBox fx:id="bypassReverb" text="%BYPASS"></CheckBox>
+						<CheckBox fx:id="bypassReverb" text="%BYPASS" />
 					</VBox>
 					<HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
 						<VBox alignment="TOP_CENTER" minWidth="150">
