@@ -102,6 +102,9 @@ import ui.common.properties.ShadowField;
 @Parameters(resourceBundle = "ui.entities.config.EmulationSection")
 public class EmulationSection implements IEmulationSection {
 
+	/**
+	 * Auto-detect PSID tune settings.
+	 */
 	public static final boolean DEFAULT_DETECT_PSID64_CHIP_MODEL = true;
 
 	/**
@@ -137,6 +140,13 @@ public class EmulationSection implements IEmulationSection {
 	 * network packets.
 	 */
 	public static final int DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT = 30001;
+
+	private final List<DeviceMapping> INITIAL_SIDBLASTER_DEVICE_LIST;
+	{
+		INITIAL_SIDBLASTER_DEVICE_LIST = DEFAULT_SIDBLASTER_DEVICE_LIST.stream().map(
+				deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
+				.collect(Collectors.toList());
+	}
 
 	public EmulationSection() {
 		Bindings.bindBidirectional(this.appServerKeystore.property(), appServerKeystoreFile.property(),
@@ -390,10 +400,7 @@ public class EmulationSection implements IEmulationSection {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	private LazyListField<DeviceMapping> sidBlasterDeviceList = new LazyListField<>(DEFAULT_SIDBLASTER_DEVICE_LIST
-			.stream()
-			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
-			.collect(Collectors.toList()));
+	private LazyListField<DeviceMapping> sidBlasterDeviceList = new LazyListField<>();
 
 	public void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
 		this.sidBlasterDeviceList.set(sidBlasterDeviceList);
@@ -402,7 +409,7 @@ public class EmulationSection implements IEmulationSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<DeviceMapping> getSidBlasterDeviceList() {
-		return sidBlasterDeviceList.get();
+		return sidBlasterDeviceList.get(INITIAL_SIDBLASTER_DEVICE_LIST);
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> sidBlasterWriteBufferSize = new ShadowField<>(

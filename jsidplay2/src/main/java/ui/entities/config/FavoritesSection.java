@@ -1,7 +1,6 @@
 package ui.entities.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -33,6 +32,11 @@ import ui.entities.collection.HVSCEntry_;
 @Entity
 @Access(AccessType.PROPERTY)
 public class FavoritesSection {
+
+	private final List<HVSCEntry> INITIAL_FAVORITES;
+	{
+		INITIAL_FAVORITES = new ArrayList<>();
+	}
 
 	private List<FavoriteColumn> DEF_COLUMNS;
 
@@ -108,7 +112,7 @@ public class FavoritesSection {
 		return selectedRowTo.property();
 	}
 
-	private LazyListField<FavoriteColumn> columns = new LazyListField<>(Collections.emptyList());
+	private LazyListField<FavoriteColumn> columns = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoriteColumn> getColumns() {
@@ -146,7 +150,7 @@ public class FavoritesSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
-		return favorites.get();
+		return favorites.get(INITIAL_FAVORITES);
 	}
 
 	@Transient

@@ -44,11 +44,11 @@ public class Assembly64Section {
 		INITIAL_COLUMNS.add(ratingColumn);
 	}
 
-	private LazyListField<Assembly64Column> columns = new LazyListField<>(INITIAL_COLUMNS);
+	private LazyListField<Assembly64Column> columns = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Assembly64Column> getColumns() {
-		return columns.get();
+		return columns.get(INITIAL_COLUMNS);
 	}
 
 	public void setColumns(List<Assembly64Column> columns) {

@@ -287,7 +287,7 @@ public class Configuration implements IConfig {
 		return currentFavorite.property();
 	}
 
-	private ObservableLazyListField<FavoritesSection> favorites = new ObservableLazyListField<>(INITIAL_FAVORITES);
+	private ObservableLazyListField<FavoritesSection> favorites = new ObservableLazyListField<>();
 
 	public void setFavorites(List<FavoritesSection> favorites) {
 		this.favorites.set(favorites);
@@ -295,7 +295,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
-		return favorites.get();
+		return favorites.get(INITIAL_FAVORITES);
 	}
 
 	@Transient
@@ -314,7 +314,7 @@ public class Configuration implements IConfig {
 		return assembly64Section;
 	}
 
-	private ObservableLazyListField<ViewEntity> views = new ObservableLazyListField<>(INITIAL_VIEWS);
+	private ObservableLazyListField<ViewEntity> views = new ObservableLazyListField<>();
 
 	public void setViews(List<ViewEntity> views) {
 		this.views.set(views);
@@ -322,7 +322,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
-		return views.get();
+		return views.get(INITIAL_VIEWS);
 	}
 
 	@Transient
@@ -330,7 +330,7 @@ public class Configuration implements IConfig {
 		return views.getObservableList();
 	}
 
-	private LazyListField<FilterSection> filter = new LazyListField<>(INITIAL_FILTERS);
+	private LazyListField<FilterSection> filter = new LazyListField<>();
 
 	public void setFilterSection(List<FilterSection> filter) {
 		this.filter.set(filter);
@@ -339,10 +339,10 @@ public class Configuration implements IConfig {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilterSection() {
-		return filter.get();
+		return filter.get(INITIAL_FILTERS);
 	}
 
-	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>(INITIAL_KEYCODES);
+	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>();
 
 	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
 		this.keyCodeMap.set(keyCodeMap);
@@ -350,7 +350,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
-		return keyCodeMap.get();
+		return keyCodeMap.get(INITIAL_KEYCODES);
 	}
 
 	public KeyTableEntry getKeyTabEntry(String key) {

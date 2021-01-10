@@ -1,6 +1,5 @@
 package ui.common.properties;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.binding.Bindings;
@@ -18,20 +17,13 @@ public class ObservableLazyListField<O> {
 
 	private ObservableList<O> observableList;
 
-	public ObservableLazyListField() {
+	public final void set(List<O> list) {
+		this.list = list;
 	}
 
-	public ObservableLazyListField(List<O> initialvalue) {
-		this.list = initialvalue;
-	}
-
-	public final void set(List<O> favorites) {
-		this.list = favorites;
-	}
-
-	public final List<O> get() {
+	public final List<O> get(List<O> initialvalue) {
 		if (list == null) {
-			list = new ArrayList<>();
+			list = initialvalue;
 		}
 		return getObservableList();
 	}
