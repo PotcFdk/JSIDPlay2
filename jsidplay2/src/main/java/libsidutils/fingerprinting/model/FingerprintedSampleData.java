@@ -97,7 +97,7 @@ public class FingerprintedSampleData {
 				}
 				bytes = monoBuffer.array();
 			} else if (stream.getFormat().getChannels() == 1) {
-				bytes = new byte[(int) stream.getFrameLength()];
+				bytes = new byte[(int) stream.getFrameLength() * Short.BYTES];
 				stream.read(bytes);
 			} else {
 				throw new IOException("Number of channels must be one or two");
