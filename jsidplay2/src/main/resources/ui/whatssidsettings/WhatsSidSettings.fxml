@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.GridPane?>
-<?import ui.common.KnobSkin?>
 <?import ui.common.TypeTextField?>
 <?scenebuilder-preview-i18n-resource WhatsSidSettings.properties?>
 

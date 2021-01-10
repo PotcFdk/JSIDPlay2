@@ -23,7 +23,6 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
-<?import ui.common.KnobSkin?>
 <?import ui.emulationsettings.LogarithmicAxis?>
 <?scenebuilder-preview-i18n-resource EmulationSettings.properties?>
 
