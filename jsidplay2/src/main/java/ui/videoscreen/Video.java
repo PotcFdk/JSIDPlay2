@@ -58,11 +58,11 @@ import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.common.UIPart;
 import ui.common.converter.NumberToStringConverter;
+import ui.common.filefilter.CartFileExtensions;
+import ui.common.filefilter.DiskFileExtensions;
+import ui.common.filefilter.TapeFileExtensions;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.CartFileExtensions;
-import ui.filefilter.DiskFileExtensions;
-import ui.filefilter.TapeFileExtensions;
 import ui.virtualKeyboard.Keyboard;
 
 public class Video extends C64VBox implements UIPart, VideoDriver {

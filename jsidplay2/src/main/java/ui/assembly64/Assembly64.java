@@ -85,11 +85,11 @@ import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
 import ui.common.converter.IntegerToStringConverter;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.TapeFileFilter;
 import ui.directory.Directory;
 import ui.entities.config.Assembly64Column;
 import ui.entities.config.Assembly64ColumnType;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.TapeFileFilter;
 
 public class Assembly64 extends C64VBox implements UIPart {
 

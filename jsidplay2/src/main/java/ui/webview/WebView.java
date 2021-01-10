@@ -37,8 +37,8 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
-import ui.download.DownloadThread;
-import ui.download.IDownloadListener;
+import ui.common.download.DownloadThread;
+import ui.common.download.IDownloadListener;
 import ui.tuneinfos.TuneInfos;
 
 public class WebView extends C64VBox implements UIPart {

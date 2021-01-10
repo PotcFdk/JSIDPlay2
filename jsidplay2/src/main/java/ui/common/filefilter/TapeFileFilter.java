@@ -1,13 +1,13 @@
-package ui.filefilter;
+package ui.common.filefilter;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 
-public class DiskFileFilter implements FileFilter {
+public class TapeFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".d64", ".g64", ".nib", ".zip", ".d64.gz",
-			".g64.gz", ".nib.gz" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".tap", ".t64", ".prg", ".p00", ".zip",
+			".tap.gz", ".t64.gz", ".prg.gz", ".p00.gz" };
 
 	@Override
 	public boolean accept(File file) {

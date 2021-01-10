@@ -27,9 +27,9 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
+import ui.common.filefilter.TuneFileFilter;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
-import ui.filefilter.TuneFileFilter;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a

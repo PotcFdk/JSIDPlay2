@@ -37,14 +37,14 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.Convenience;
 import ui.common.UIPart;
+import ui.common.download.DownloadThread;
+import ui.common.download.ProgressListener;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.DocsFileFilter;
+import ui.common.filefilter.ScreenshotFileFilter;
+import ui.common.filefilter.TapeFileFilter;
 import ui.directory.Directory;
-import ui.download.DownloadThread;
-import ui.download.ProgressListener;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.DocsFileFilter;
-import ui.filefilter.ScreenshotFileFilter;
-import ui.filefilter.TapeFileFilter;
 
 public class DiskCollection extends C64VBox implements UIPart {
 

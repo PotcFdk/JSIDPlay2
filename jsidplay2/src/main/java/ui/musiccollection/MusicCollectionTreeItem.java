@@ -15,8 +15,8 @@ import libsidutils.PathUtils;
 import libsidutils.stil.STIL.STILEntry;
 import sidplay.Player;
 import ui.JSidPlay2Main;
+import ui.common.filefilter.TuneFileFilter;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.TuneFileFilter;
 
 public class MusicCollectionTreeItem extends TreeItem<File> {
 

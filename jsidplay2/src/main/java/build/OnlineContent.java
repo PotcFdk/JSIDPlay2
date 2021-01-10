@@ -47,7 +47,7 @@ import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.ini.IniDefaults;
-import ui.download.DownloadThread;
+import ui.common.download.DownloadThread;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.musiccollection.MusicCollectionType;

@@ -1,16 +1,12 @@
-/**
- *
- */
-package ui.filefilter;
+package ui.common.filefilter;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 
-public final class TuneFileFilter implements FileFilter {
+public class CartFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".sid", ".dat", ".c64", ".prg", ".t64", ".p00",
-			".mus", ".str", ".mp3", ".zip" };
+	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".reu", ".crt" };
 
 	@Override
 	public boolean accept(File file) {
@@ -29,4 +25,5 @@ public final class TuneFileFilter implements FileFilter {
 		}
 		return false;
 	}
+
 }

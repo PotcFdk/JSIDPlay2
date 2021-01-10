@@ -35,13 +35,13 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.converter.TimeToStringConverter;
-import ui.download.DownloadThread;
-import ui.download.ProgressListener;
+import ui.common.download.DownloadThread;
+import ui.common.download.ProgressListener;
+import ui.common.filefilter.FavoritesExtension;
+import ui.common.filefilter.TuneFileExtensions;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.OnlineSection;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.FavoritesExtension;
-import ui.filefilter.TuneFileExtensions;
 
 public class Favorites extends C64VBox implements UIPart {
 

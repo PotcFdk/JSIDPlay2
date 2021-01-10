@@ -1,7 +1,7 @@
 /**
  *
  */
-package ui.filefilter;
+package ui.common.filefilter;
 
 import java.io.File;
 import java.io.FileFilter;

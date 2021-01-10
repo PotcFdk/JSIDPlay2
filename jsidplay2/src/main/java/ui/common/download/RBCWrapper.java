@@ -1,4 +1,4 @@
-package ui.download;
+package ui.common.download;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

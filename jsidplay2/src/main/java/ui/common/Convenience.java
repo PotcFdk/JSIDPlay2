@@ -13,10 +13,10 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.Extract7Zip;
 import sidplay.Player;
-import ui.filefilter.CartFileFilter;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.TapeFileFilter;
-import ui.filefilter.TuneFileFilter;
+import ui.common.filefilter.CartFileFilter;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.TapeFileFilter;
+import ui.common.filefilter.TuneFileFilter;
 
 /**
  * Automation for the Player.

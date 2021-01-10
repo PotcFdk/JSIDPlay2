@@ -16,10 +16,10 @@ import libsidutils.directory.Directory;
 import libsidutils.directory.DiskDirectory;
 import libsidutils.directory.T64Directory;
 import sidplay.Player;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.TuneFileFilter;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.TuneFileFilter;
 
 public class PseudoDirectory {
 

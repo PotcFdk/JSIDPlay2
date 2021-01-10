@@ -45,11 +45,11 @@ import sidplay.audio.MP4Driver;
 import sidplay.audio.WAVDriver.WAVStream;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
+import ui.common.filefilter.CartFileFilter;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.TapeFileFilter;
+import ui.common.filefilter.TuneFileFilter;
 import ui.entities.config.Configuration;
-import ui.filefilter.CartFileFilter;
-import ui.filefilter.DiskFileFilter;
-import ui.filefilter.TapeFileFilter;
-import ui.filefilter.TuneFileFilter;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {

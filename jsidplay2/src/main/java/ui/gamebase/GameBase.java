@@ -33,13 +33,13 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.UIUtil;
-import ui.download.DownloadThread;
-import ui.download.ProgressListener;
+import ui.common.download.DownloadThread;
+import ui.common.download.ProgressListener;
+import ui.common.filefilter.MDBFileExtensions;
 import ui.entities.Database;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
-import ui.filefilter.MDBFileExtensions;
 
 public class GameBase extends C64VBox implements UIPart {
 

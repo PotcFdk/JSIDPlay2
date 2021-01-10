@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
 
-import ui.filefilter.TuneFileFilter;
+import ui.common.filefilter.TuneFileFilter;
 
 public class SearchIndexerThread extends SearchThread {
 

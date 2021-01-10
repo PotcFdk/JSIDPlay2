@@ -53,13 +53,13 @@ import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
+import ui.common.filefilter.FavoritesExtension;
+import ui.common.filefilter.TuneFileFilter;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.FavoriteColumn;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
-import ui.filefilter.FavoritesExtension;
-import ui.filefilter.TuneFileFilter;
 import ui.stilview.STILView;
 
 public class FavoritesTab extends C64VBox implements UIPart {
