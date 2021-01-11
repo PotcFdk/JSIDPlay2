@@ -5,7 +5,6 @@ import static sidplay.ini.IniDefaults.DEFAULTS;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.Access;
@@ -31,7 +30,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.config.IConfig;
-import libsidplay.config.IFilterSection;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ObservableLazyListField;
 import ui.common.properties.ShadowField;
@@ -53,7 +51,7 @@ public class Configuration implements IConfig {
 
 	private final List<FilterSection> INITIAL_FILTERS;
 	{
-		INITIAL_FILTERS = DEFAULTS.getFilterSection().stream().map((Function<IFilterSection, FilterSection>) f -> {
+		INITIAL_FILTERS = DEFAULTS.getFilterSection().stream().map(f -> {
 			FilterSection dbFilterSection = new FilterSection();
 			if (f.isReSIDFilter8580()) {
 				dbFilterSection.setName(f.getName());
