@@ -23,10 +23,12 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.binding.Bindings;
@@ -43,7 +45,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
+import ui.common.converter.FileAttributeConverter;
 import ui.common.converter.FileToStringConverter;
+import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 import ui.favorites.PlaybackType;
 
@@ -64,12 +68,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
 
 	public SidPlay2Section() {
-		Bindings.bindBidirectional(this.demos.property(), demosFile.property(), new FileToStringConverter());
-		Bindings.bindBidirectional(this.hvmec.property(), hvmecFile.property(), new FileToStringConverter());
-		Bindings.bindBidirectional(this.mags.property(), magsFile.property(), new FileToStringConverter());
 		Bindings.bindBidirectional(this.hvsc.property(), hvscFile.property(), new FileToStringConverter());
 		Bindings.bindBidirectional(this.cgsc.property(), cgscFile.property(), new FileToStringConverter());
-		Bindings.bindBidirectional(this.gameBase64.property(), gameBase64File.property(), new FileToStringConverter());
 	}
 
 	private int version;
@@ -219,66 +219,51 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return singleProperty.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> hvmecFile = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> hvmec = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getHVMECFile() {
-		return hvmecFile.get();
-	}
-
-	private ShadowField<StringProperty, String> hvmec = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getHVMEC() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getHVMEC() {
 		return hvmec.get();
 	}
 
-	public void setHVMEC(String hVMEC) {
+	public void setHVMEC(File hVMEC) {
 		hvmec.set(hVMEC);
 	}
 
-	public StringProperty hvmecProperty() {
+	public ObjectProperty<File> hvmecProperty() {
 		return hvmec.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> demosFile = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> demos = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getDemosFile() {
-		return demosFile.get();
-	}
-
-	private ShadowField<StringProperty, String> demos = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getDemos() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getDemos() {
 		return demos.get();
 	}
 
-	public void setDemos(String demos) {
+	public void setDemos(File demos) {
 		this.demos.set(demos);
 	}
 
-	public StringProperty demosProperty() {
+	public ObjectProperty<File> demosProperty() {
 		return demos.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> magsFile = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> mags = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getMagsFile() {
-		return magsFile.get();
-	}
-
-	private ShadowField<StringProperty, String> mags = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getMags() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getMags() {
 		return mags.get();
 	}
 
-	public void setMags(String mags) {
+	public void setMags(File mags) {
 		this.mags.set(mags);
 	}
 
-	public StringProperty magsProperty() {
+	public ObjectProperty<File> magsProperty() {
 		return mags.property();
 	}
 
@@ -326,24 +311,19 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return hvsc.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> gameBase64File = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> gameBase64 = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getGameBase64File() {
-		return gameBase64File.get();
-	}
-
-	private ShadowField<StringProperty, String> gameBase64 = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getGameBase64() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getGameBase64() {
 		return gameBase64.get();
 	}
 
-	public void setGameBase64(String gameBase64) {
+	public void setGameBase64(File gameBase64) {
 		this.gameBase64.set(gameBase64);
 	}
 
-	public StringProperty gameBase64Property() {
+	public ObjectProperty<File> gameBase64Property() {
 		return gameBase64.property();
 	}
 

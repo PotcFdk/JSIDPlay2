@@ -23,7 +23,7 @@ import lowlevel.ID3V2Decoder;
  */
 public class MP3Tune extends SidTune {
 
-	private String mp3Filename;
+	private File mp3;
 
 	/**
 	 * MP3 decoder.
@@ -61,7 +61,7 @@ public class MP3Tune extends SidTune {
 		}
 		final MP3Tune mp3 = new MP3Tune();
 
-		mp3.mp3Filename = file.getAbsolutePath();
+		mp3.mp3 = file;
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
 			mp3.decoder.read(randomAccessFile);
 
@@ -107,8 +107,8 @@ public class MP3Tune extends SidTune {
 		return null;
 	}
 
-	public String getMP3Filename() {
-		return mp3Filename;
+	public File getMP3() {
+		return mp3;
 	}
 
 	@Override

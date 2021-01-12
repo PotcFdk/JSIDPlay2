@@ -34,6 +34,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
 
+import java.io.File;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
@@ -313,12 +315,12 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	public final String getMp3File() {
-		return iniReader.getPropertyString("Audio", "MP3 File", DEFAULT_MP3_FILE);
+	public final File getMp3() {
+		return iniReader.getPropertyFile("Audio", "MP3 File", DEFAULT_MP3_FILE);
 	}
 
 	@Override
-	public final void setMp3File(final String recording) {
+	public final void setMp3(final File recording) {
 		iniReader.setProperty("Audio", "MP3 File", recording);
 	}
 
@@ -495,7 +497,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 		result.append("samplingRate=").append(getSamplingRate()).append(",");
 		result.append("sampling=").append(getSampling()).append(",");
 		result.append("playOriginal=").append(isPlayOriginal()).append(",");
-		result.append("mp3File=").append(getMp3File()).append(",");
+		result.append("mp3=").append(getMp3()).append(",");
 		result.append("mainVolume=").append(getMainVolume()).append(",");
 		result.append("secondVolume=").append(getSecondVolume()).append(",");
 		result.append("thirdVolume=").append(getThirdVolume()).append(",");

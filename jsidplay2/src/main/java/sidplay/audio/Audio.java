@@ -94,7 +94,7 @@ public enum Audio {
 	 */
 	public final AudioDriver getAudioDriver(final IAudioSection audioSection, final SidTune tune) {
 		if (tune instanceof MP3Tune) {
-			audioSection.setMp3File(((MP3Tune) tune).getMP3Filename());
+			audioSection.setMp3(((MP3Tune) tune).getMP3());
 			audioSection.setPlayOriginal(true);
 			return COMPARE_MP3.getAudioDriver();
 		}

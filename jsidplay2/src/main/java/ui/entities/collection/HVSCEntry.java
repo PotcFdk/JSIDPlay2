@@ -29,8 +29,8 @@ import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
+import ui.common.converter.LocalDateTimeXmlAdapter;
 import libsidplay.sidtune.SidTuneInfo;
-import ui.common.XmlLocalDateTimeAdapter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -355,7 +355,7 @@ public class HVSCEntry {
 
 	private LocalDateTime fileDate;
 
-	@XmlJavaTypeAdapter(XmlLocalDateTimeAdapter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	public LocalDateTime getFileDate() {
 		return fileDate;
 	}

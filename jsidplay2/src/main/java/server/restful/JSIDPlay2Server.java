@@ -307,7 +307,7 @@ public class JSIDPlay2Server {
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
 		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.RSA);
 		certificate.setCertificateKeystoreType(KeyStore.getDefaultType());
-		certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile());
+		certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile().getAbsolutePath());
 		certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
 		certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
 		certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());

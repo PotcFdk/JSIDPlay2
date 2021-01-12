@@ -47,18 +47,18 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
 			throws IOException, LineUnavailableException, InterruptedException {
-		String mp3File = audioSection.getMp3File();
-		if (mp3File == null || !new File(mp3File).exists()) {
-			throw new FileNotFoundException(mp3File);
+		File mp3 = audioSection.getMp3();
+		if (mp3 == null || !mp3.exists()) {
+			throw new FileNotFoundException(mp3.getAbsolutePath());
 		}
-		jump3r = new LameDecoder(mp3File);
+		jump3r = new LameDecoder(mp3.getAbsolutePath());
 		int sampleRate = jump3r.getSampleRate();
 		int channels = jump3r.getChannels();
 		int frameSize = jump3r.getFrameSize();
 		Optional<SamplingRate> samplingRateFound = Arrays.asList(SamplingRate.values()).stream()
 				.filter(samplingRate -> samplingRate.getFrequency() == sampleRate).findFirst();
 		if (!samplingRateFound.isPresent()) {
-			throw new IOException("Unsupported sample rate: " + sampleRate + " in " + mp3File);
+			throw new IOException("Unsupported sample rate: " + sampleRate + " in " + mp3);
 		}
 		if (sampleRate != audioSection.getSamplingRate().getFrequency()) {
 			audioSection.setSamplingRate(samplingRateFound.get());

@@ -154,17 +154,17 @@ public class DiskCollection extends C64VBox implements UIPart {
 				switch (getType()) {
 				case HVMEC:
 					this.downloadUrl = util.getConfig().getOnlineSection().getHvmecUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getHVMECFile();
+					initialRoot = util.getConfig().getSidplay2Section().getHVMEC();
 					break;
 
 				case DEMOS:
 					this.downloadUrl = util.getConfig().getOnlineSection().getDemosUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getDemosFile();
+					initialRoot = util.getConfig().getSidplay2Section().getDemos();
 					break;
 
 				case MAGS:
 					this.downloadUrl = util.getConfig().getOnlineSection().getMagazinesUrl();
-					initialRoot = util.getConfig().getSidplay2Section().getMagsFile();
+					initialRoot = util.getConfig().getSidplay2Section().getMags();
 					break;
 
 				default:
@@ -250,11 +250,11 @@ public class DiskCollection extends C64VBox implements UIPart {
 			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile, theRootFile, fileBrowserFileFilter));
 
 			if (getType() == DiskCollectionType.HVMEC) {
-				util.getConfig().getSidplay2Section().setHVMEC(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setHVMEC(rootFile);
 			} else if (getType() == DiskCollectionType.DEMOS) {
-				util.getConfig().getSidplay2Section().setDemos(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setDemos(rootFile);
 			} else if (getType() == DiskCollectionType.MAGS) {
-				util.getConfig().getSidplay2Section().setMags(rootFile.getAbsolutePath());
+				util.getConfig().getSidplay2Section().setMags(rootFile);
 			}
 		}
 	}

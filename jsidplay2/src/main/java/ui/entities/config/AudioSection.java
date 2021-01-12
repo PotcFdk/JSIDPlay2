@@ -37,11 +37,12 @@ import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
 
 import java.io.File;
 
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -54,15 +55,12 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
-import ui.common.converter.FileToStringConverter;
+import ui.common.converter.FileAttributeConverter;
+import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 
 @Embeddable
 public class AudioSection implements IAudioSection {
-
-	public AudioSection() {
-		Bindings.bindBidirectional(this.mp3.property(), mp3File.property(), new FileToStringConverter());
-	}
 
 	private ShadowField<ObjectProperty<Audio>, Audio> audio = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_AUDIO);
@@ -339,21 +337,17 @@ public class AudioSection implements IAudioSection {
 		return playOriginal.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> mp3File = new ShadowField<>(SimpleObjectProperty::new, null);
-
-	public ObjectProperty<File> mp3FileProperty() {
-		return mp3File.property();
-	}
-
-	private ShadowField<ObjectProperty<String>, String> mp3 = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> mp3 = new ShadowField<>(SimpleObjectProperty::new, null);
 
 	@Override
-	public String getMp3File() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getMp3() {
 		return this.mp3.get();
 	}
 
 	@Override
-	public void setMp3File(String recording) {
+	public void setMp3(File recording) {
 		this.mp3.set(recording);
 	}
 

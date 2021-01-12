@@ -1,5 +1,7 @@
 package libsidplay.config;
 
+import java.io.File;
+
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import sidplay.audio.Audio;
@@ -231,20 +233,18 @@ public interface IAudioSection {
 	void setPlayOriginal(boolean original);
 
 	/**
-	 * Audio Driver: Compare with MP3 recording - Getter of the recorded tune
-	 * filename.
+	 * Audio Driver: Compare with MP3 recording - Getter of the recorded tune file.
 	 *
-	 * @return the recorded tune filename
+	 * @return the recorded tune file
 	 */
-	String getMp3File();
+	File getMp3();
 
 	/**
-	 * Audio Driver: Compare with MP3 recording - Setter of the recorded tune
-	 * filename.
+	 * Audio Driver: Compare with MP3 recording - Setter of the recorded tune file.
 	 *
-	 * @param recording the recorded tune filename
+	 * @param recording the recorded tune file
 	 */
-	void setMp3File(String recording);
+	void setMp3(File recording);
 
 	/**
 	 * Audio Driver: MP3 recording - Getter of the constant bit rate.

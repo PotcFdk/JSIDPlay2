@@ -266,6 +266,14 @@ public class IniReader {
 		return defaultValue;
 	}
 
+	public File getPropertyFile(final String section, final String key, final File defaultValue) {
+		final String s = getPropertyString(section, key, null);
+		if (s != null) {
+			return new File(s);
+		}
+		return defaultValue;
+	}
+
 	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<T> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {

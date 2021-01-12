@@ -68,17 +68,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -94,7 +95,9 @@ import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
-import ui.common.converter.FileToStringConverter;
+import ui.common.converter.FileAttributeConverter;
+import ui.common.converter.FileStringConverter;
+import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ShadowField;
 
@@ -146,11 +149,6 @@ public class EmulationSection implements IEmulationSection {
 		INITIAL_SIDBLASTER_DEVICE_LIST = DEFAULT_SIDBLASTER_DEVICE_LIST.stream().map(
 				deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
 				.collect(Collectors.toList());
-	}
-
-	public EmulationSection() {
-		Bindings.bindBidirectional(this.appServerKeystore.property(), appServerKeystoreFile.property(),
-				new FileToStringConverter());
 	}
 
 	private ShadowField<ObjectProperty<Engine>, Engine> engine = new ShadowField<>(SimpleObjectProperty::new,
@@ -643,21 +641,18 @@ public class EmulationSection implements IEmulationSection {
 		this.appServerSecurePort.set(securePort);
 	}
 
-	private ShadowField<ObjectProperty<File>, File> appServerKeystoreFile = new ShadowField<>(SimpleObjectProperty::new,
+	private ShadowField<ObjectProperty<File>, File> appServerKeystore = new ShadowField<>(SimpleObjectProperty::new,
 			null);
 
-	public ObjectProperty<File> appServerKeystoreFileProperty() {
-		return appServerKeystoreFile.property();
-	}
-
-	private ShadowField<StringProperty, String> appServerKeystore = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getAppServerKeystoreFile() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getAppServerKeystoreFile() {
 		return this.appServerKeystore.get();
 	}
 
-	@Parameter(names = { "--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", order = 3)
-	public void setAppServerKeystoreFile(String appServerKeystoreFile) {
+	@Parameter(names = {
+			"--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", converter = FileStringConverter.class, order = 3)
+	public void setAppServerKeystoreFile(File appServerKeystoreFile) {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}
 

@@ -796,7 +796,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 								Configuration config = util.getConfig();
 								SidPlay2Section sidplay2Section = config.getSidplay2Section();
 								AudioSection audioSection = config.getAudioSection();
-								audioSection.setMp3File(downloadedFile.getAbsolutePath());
+								audioSection.setMp3(downloadedFile);
 								audioSection.setPlayOriginal(true);
 								audioSection.setAudio(Audio.COMPARE_MP3);
 								playTune(PathUtils.getFile(hvscName + ".sid", sidplay2Section.getHvscFile(), null));

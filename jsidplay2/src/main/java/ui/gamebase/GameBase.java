@@ -67,7 +67,7 @@ public class GameBase extends C64VBox implements UIPart {
 					setLettersDisable(true);
 				});
 				File dbFile = new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName());
-				sidplay2.setGameBase64(dbFile.getAbsolutePath());
+				sidplay2.setGameBase64(dbFile);
 				connect(dbFile);
 				Platform.runLater(() -> {
 					gameBaseFile.setText(dbFile.getAbsolutePath());
@@ -158,10 +158,10 @@ public class GameBase extends C64VBox implements UIPart {
 		});
 		Platform.runLater(() -> {
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			String initialRoot = sidPlay2Section.getGameBase64();
-			if (initialRoot != null && new File(initialRoot).exists()) {
-				gameBaseFile.setText(initialRoot);
-				setRoot(new File(initialRoot));
+			File initialRoot = sidPlay2Section.getGameBase64();
+			if (initialRoot != null && initialRoot.exists()) {
+				gameBaseFile.setText(initialRoot.getAbsolutePath());
+				setRoot(initialRoot);
 			}
 		});
 	}
@@ -213,8 +213,8 @@ public class GameBase extends C64VBox implements UIPart {
 		if (file != null) {
 			gameBaseFile.setText(file.getAbsolutePath());
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			sidPlay2Section.setGameBase64(file.getAbsolutePath());
-			File theRootFile = sidPlay2Section.getGameBase64File();
+			sidPlay2Section.setGameBase64(file);
+			File theRootFile = sidPlay2Section.getGameBase64();
 			gameBaseFile.setText(file.getAbsolutePath());
 			setRoot(theRootFile);
 		}
@@ -246,7 +246,6 @@ public class GameBase extends C64VBox implements UIPart {
 	protected void connect(File dbFile) {
 		if (em != null) {
 			em.close();
-			em.getEntityManagerFactory().close();
 		}
 		em = Persistence
 				.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,

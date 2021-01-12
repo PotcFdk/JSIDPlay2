@@ -2,18 +2,18 @@ package ui.common.converter;
 
 import java.io.File;
 
-import de.schlichtherle.truezip.file.TFile;
 import javafx.util.StringConverter;
 
-public class FileToStringConverter extends StringConverter<File> {
+public class FileToStringConverter extends StringConverter<File> implements IFileToStringConverter {
+
 	@Override
 	public String toString(File file) {
-		return file != null ? file.getAbsolutePath() : "";
+		return toString(file);
 	}
 
 	@Override
-	public File fromString(String string) {
-		return new TFile(string);
+	public File fromString(String fileString) {
+		return fromString(fileString);
 	}
 
 }

@@ -500,7 +500,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		fileDialog.getExtensionFilters().add(extFilter);
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getEmulationSection().setAppServerKeystoreFile(file.getAbsolutePath());
+			util.getConfig().getEmulationSection().setAppServerKeystoreFile(file);
 		}
 	}
 
@@ -549,7 +549,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		fileDialog.getExtensionFilters().add(extFilter);
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getAudioSection().setMp3File(file.getAbsolutePath());
+			util.getConfig().getAudioSection().setMp3(file);
 			if (util.getPlayer().getTune() instanceof MP3Tune) {
 				util.getPlayer().setTune(SidTune.RESET);
 			}

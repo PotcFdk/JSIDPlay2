@@ -1,4 +1,4 @@
-package ui.common;
+package ui.common.converter;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class XmlLocalDateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
+public class LocalDateTimeXmlAdapter extends XmlAdapter<String, LocalDateTime> {
 	@Override
 	public String marshal(LocalDateTime localDateTime) throws Exception {
 		return localDateTime.format(ISO_DATE_TIME);
