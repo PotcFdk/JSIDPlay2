@@ -8,12 +8,12 @@ public class FileToStringConverter extends StringConverter<File> implements IFil
 
 	@Override
 	public String toString(File file) {
-		return toString(file);
+		return IFileToStringConverter.super.toString(file);
 	}
 
 	@Override
 	public File fromString(String fileString) {
-		return fromString(fileString);
+		return IFileToStringConverter.super.fromString(fileString);
 	}
 
 }
