@@ -250,11 +250,11 @@ public class DiskCollection extends C64VBox implements UIPart {
 			fileBrowser.setRoot(new DiskCollectionTreeItem(theRootFile, theRootFile, fileBrowserFileFilter));
 
 			if (getType() == DiskCollectionType.HVMEC) {
-				util.getConfig().getSidplay2Section().setHVMEC(rootFile);
+				util.getConfig().getSidplay2Section().setHVMEC(theRootFile);
 			} else if (getType() == DiskCollectionType.DEMOS) {
-				util.getConfig().getSidplay2Section().setDemos(rootFile);
+				util.getConfig().getSidplay2Section().setDemos(theRootFile);
 			} else if (getType() == DiskCollectionType.MAGS) {
-				util.getConfig().getSidplay2Section().setMags(rootFile);
+				util.getConfig().getSidplay2Section().setMags(theRootFile);
 			}
 		}
 	}

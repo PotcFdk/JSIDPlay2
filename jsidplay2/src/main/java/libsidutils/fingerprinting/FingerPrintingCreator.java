@@ -17,6 +17,7 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.common.SamplingRate;
+import libsidplay.config.converter.FileToStringConverter;
 import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -76,8 +77,9 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
 	private Boolean deleteAll = Boolean.FALSE;
 
-	@Parameter(names = { "--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY")
-	private String previousDirectory;
+	@Parameter(names = {
+			"--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY", converter = FileToStringConverter.class)
+	private File previousDirectory;
 
 	@Parameter(description = "directory")
 	private String directory;
@@ -178,7 +180,7 @@ public class FingerPrintingCreator {
 	}
 
 	private void copyRecordingsOfPreviousDirectory(File file, SidTune tune) throws IOException, SidTuneError {
-		File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+		File theCollectionFile = config.getSidplay2Section().getHvsc();
 		String collectionName = PathUtils.getCollectionName(theCollectionFile, file);
 
 		File previousFile = new File(previousDirectory, collectionName);

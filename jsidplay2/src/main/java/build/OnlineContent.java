@@ -288,8 +288,8 @@ public class OnlineContent {
 
 		Player player = new Player(IniDefaults.DEFAULTS);
 		if (collectionType == MusicCollectionType.HVSC) {
-			setSIDDatabase(player, zipFile);
-			setSTIL(player, zipFile);
+			setSIDDatabase(player, rootFile);
+			setSTIL(player, rootFile);
 		}
 
 		SearchIndexCreator searchIndexCreator = new SearchIndexCreator(rootFile, player, em);
@@ -315,7 +315,7 @@ public class OnlineContent {
 		org.hsqldb.DatabaseManager.closeDatabases(org.hsqldb.Database.CLOSEMODE_NORMAL);
 	}
 
-	private void setSTIL(Player player, String zipFile) throws NoSuchFieldException, IllegalAccessException {
+	private void setSTIL(Player player, File zipFile) throws NoSuchFieldException, IllegalAccessException {
 		try (InputStream input = new TFileInputStream(new TFile(zipFile, STIL.STIL_FILE))) {
 			player.setSTIL(new STIL(input));
 		} catch (IOException e) {
@@ -323,7 +323,7 @@ public class OnlineContent {
 		}
 	}
 
-	private void setSIDDatabase(Player player, String zipFile) {
+	private void setSIDDatabase(Player player, File zipFile) {
 		try {
 			player.setSidDatabase(new SidDatabase(zipFile));
 		} catch (IOException e) {

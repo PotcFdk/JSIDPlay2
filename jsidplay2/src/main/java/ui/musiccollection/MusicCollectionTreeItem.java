@@ -38,7 +38,7 @@ public class MusicCollectionTreeItem extends TreeItem<File> {
 		this.isLeaf = file.isFile();
 		if (isLeaf && player != null) {
 			SidPlay2Section sidPlay2Section = (SidPlay2Section) player.getConfig().getSidplay2Section();
-			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
+			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvsc(), file);
 			this.stilEntry = player.getStilEntry(collectionName);
 			this.hasSTIL = stilEntry != null;
 		}

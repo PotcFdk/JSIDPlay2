@@ -116,7 +116,7 @@ public class WhatsSidDriver implements AudioDriver {
 					String song = tune != SidTune.RESET ? " (" + tune.getInfo().getCurrentSong() + ")" : "";
 					System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath() + song);
 
-					File theCollectionFile = new File(config.getSidplay2Section().getHvsc());
+					File theCollectionFile = config.getSidplay2Section().getHvsc();
 					String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
 
 					fingerprintInserter.insert(tune, collectionName, recordingFilename);

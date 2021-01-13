@@ -282,11 +282,11 @@ public class MusicCollection extends C64VBox implements UIPart {
 				File initialRoot;
 				switch (getType()) {
 				case HVSC:
-					initialRoot = util.getConfig().getSidplay2Section().getHvscFile();
+					initialRoot = util.getConfig().getSidplay2Section().getHvsc();
 					break;
 
 				case CGSC:
-					initialRoot = util.getConfig().getSidplay2Section().getCgscFile();
+					initialRoot = util.getConfig().getSidplay2Section().getCgsc();
 					break;
 
 				default:
@@ -354,7 +354,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			c.setVerbose(true);
 			try {
 				c.convertFiles(util.getPlayer(), new File[] { selectedItem.getValue() }, directory,
-						sidPlay2Section.getHvscFile());
+						sidPlay2Section.getHvsc());
 			} catch (IOException | SidTuneError e) {
 				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()), getType());
 			}
@@ -560,18 +560,20 @@ public class MusicCollection extends C64VBox implements UIPart {
 	private void setRoot(final File rootFile) {
 		try {
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+			final File theRootFile = new TFile(rootFile);
+
 			if (getType() == MusicCollectionType.HVSC) {
-				util.getPlayer().setSidDatabase(new SidDatabase(rootFile.getAbsolutePath()));
-				setSTIL(rootFile.getAbsolutePath());
-				sidPlay2Section.setHvsc(rootFile.getAbsolutePath());
-				setViewRoot(sidPlay2Section.getHvscFile());
+				util.getPlayer().setSidDatabase(new SidDatabase(theRootFile));
+				setSTIL(theRootFile);
+				sidPlay2Section.setHvsc(theRootFile);
+				setViewRoot(sidPlay2Section.getHvsc());
 			} else if (getType() == MusicCollectionType.CGSC) {
-				sidPlay2Section.setCgsc(rootFile.getAbsolutePath());
-				setViewRoot(sidPlay2Section.getCgscFile());
+				sidPlay2Section.setCgsc(theRootFile);
+				setViewRoot(sidPlay2Section.getCgsc());
 			}
 
 			closeDatabase();
-			File dbFilename = new File(rootFile.getParentFile(), type.get().toString());
+			File dbFilename = new File(theRootFile.getParentFile(), type.get().toString());
 			PersistenceProperties pp = new PersistenceProperties(Database.HSQL_FILE, "", "",
 					dbFilename.getAbsolutePath());
 			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(), pp);
@@ -604,8 +606,8 @@ public class MusicCollection extends C64VBox implements UIPart {
 		doResetSearch();
 	}
 
-	private void setSTIL(String hvscRoot) throws IOException, NoSuchFieldException, IllegalAccessException {
-		try (InputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
+	private void setSTIL(File rootFile) throws IOException, NoSuchFieldException, IllegalAccessException {
+		try (InputStream input = new TFileInputStream(new TFile(rootFile, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
 		}
 	}
@@ -799,7 +801,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 								audioSection.setMp3(downloadedFile);
 								audioSection.setPlayOriginal(true);
 								audioSection.setAudio(Audio.COMPARE_MP3);
-								playTune(PathUtils.getFile(hvscName + ".sid", sidplay2Section.getHvscFile(), null));
+								playTune(PathUtils.getFile(hvscName + ".sid", sidplay2Section.getHvsc(), null));
 							});
 						}
 					}
@@ -815,7 +817,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		soasc6581R3.setDisable(true);
 		soasc6581R4.setDisable(true);
 		soasc8580R5.setDisable(true);
-		File hvscFile = util.getConfig().getSidplay2Section().getHvscFile();
+		File hvscFile = util.getConfig().getSidplay2Section().getHvsc();
 		hvscName = PathUtils.getCollectionName(hvscFile, tuneFile);
 		if (hvscName != null) {
 			hvscName = hvscName.replace(".sid", "");
@@ -863,9 +865,9 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 			String collectionName;
 			if (getType() == MusicCollectionType.HVSC) {
-				collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
+				collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvsc(), file);
 			} else {
-				collectionName = PathUtils.getCollectionName(sidPlay2Section.getCgscFile(), file);
+				collectionName = PathUtils.getCollectionName(sidPlay2Section.getCgsc(), file);
 			}
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 					collectionName, file, tune);

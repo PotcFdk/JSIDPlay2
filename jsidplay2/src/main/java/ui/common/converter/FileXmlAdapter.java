@@ -4,6 +4,8 @@ import java.io.File;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import libsidplay.config.converter.IFileToStringConverter;
+
 public class FileXmlAdapter extends XmlAdapter<String, File> implements IFileToStringConverter {
 	@Override
 	public String marshal(File file) throws Exception {

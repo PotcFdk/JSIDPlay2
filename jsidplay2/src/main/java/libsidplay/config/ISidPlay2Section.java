@@ -1,5 +1,7 @@
 package libsidplay.config;
 
+import java.io.File;
+
 public interface ISidPlay2Section {
 
 	/**
@@ -77,14 +79,14 @@ public interface ISidPlay2Section {
 	 *
 	 * @return the HVSC collection directory
 	 */
-	String getHvsc();
+	File getHvsc();
 
 	/**
 	 * Setter of the HVSC collection directory.
 	 *
 	 * @param hvsc the HVSC collection directory
 	 */
-	void setHvsc(String hvsc);
+	void setHvsc(File hvsc);
 
 	/**
 	 * Do we play a single song per tune?

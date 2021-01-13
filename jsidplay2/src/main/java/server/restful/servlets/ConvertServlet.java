@@ -169,7 +169,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private void convertAudio(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
-		String root = util.getConfiguration().getSidplay2Section().getHvsc();
+		File root = util.getConfiguration().getSidplay2Section().getHvsc();
 		if (root != null) {
 			player.setSidDatabase(new SidDatabase(root));
 		}

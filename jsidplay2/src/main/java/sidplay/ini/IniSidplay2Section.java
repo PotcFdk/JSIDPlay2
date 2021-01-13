@@ -21,6 +21,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,6 +30,7 @@ import com.beust.jcommander.Parameters;
 
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
+import libsidplay.config.converter.FileToStringConverter;
 import sidplay.consoleplayer.ParameterTimeConverter;
 
 /**
@@ -139,13 +141,13 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public final String getHvsc() {
-		return iniReader.getPropertyString("SIDPlay2", "HVSC Dir", DEFAULT_HVSC_DIR);
+	public final File getHvsc() {
+		return iniReader.getPropertyFile("SIDPlay2", "HVSC Dir", DEFAULT_HVSC_DIR);
 	}
 
 	@Override
-	@Parameter(names = { "--hvsc" }, descriptionKey = "HVSC_DIR", order = 7)
-	public final void setHvsc(final String hvsc) {
+	@Parameter(names = { "--hvsc" }, descriptionKey = "HVSC_DIR", converter = FileToStringConverter.class, order = 7)
+	public final void setHvsc(final File hvsc) {
 		iniReader.setProperty("SIDPlay2", "HVSC Dir", hvsc);
 	}
 

@@ -206,7 +206,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	private File getHVSCFile(HVSCEntry hvscEntry) {
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		return hvscEntry != null
-				? PathUtils.getFile(hvscEntry.getPath(), sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile())
+				? PathUtils.getFile(hvscEntry.getPath(), sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc())
 				: null;
 	}
 
@@ -298,7 +298,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 			c.setTmpDir(sidPlay2Section.getTmpDir());
 			c.setVerbose(false);
 			try {
-				c.convertFiles(util.getPlayer(), files.toArray(new File[0]), directory, sidPlay2Section.getHvscFile());
+				c.convertFiles(util.getPlayer(), files.toArray(new File[0]), directory, sidPlay2Section.getHvsc());
 			} catch (IOException | SidTuneError e) {
 				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
@@ -430,7 +430,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 					// backward compatibility
 					line = line.substring(7);
 				}
-				File file = PathUtils.getFile(line, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
+				File file = PathUtils.getFile(line, sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc());
 				if (file != null) {
 					result = String.join("", result, addFavorite(file));
 				}
@@ -489,7 +489,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		SidTune tune;
 		try {
 			tune = SidTune.load(file);
-			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvscFile(), file);
+			String collectionName = PathUtils.getCollectionName(sidPlay2Section.getHvsc(), file);
 			HVSCEntry entry = new HVSCEntry(() -> util.getPlayer().getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.),
 					collectionName, file, tune);
 			favoritesSection.getFavorites().add(entry);

@@ -1,8 +1,8 @@
-package ui.common.converter;
+package libsidplay.config.converter;
 
 import java.io.File;
 
-import de.schlichtherle.truezip.file.TFile;
+import libsidutils.ZipFileUtils;
 
 public interface IFileToStringConverter {
 
@@ -11,6 +11,6 @@ public interface IFileToStringConverter {
 	}
 
 	default File fromString(String fileString) {
-		return fileString != null && !"".equals(fileString) ? new TFile(fileString) : null;
+		return fileString != null && !"".equals(fileString) ? ZipFileUtils.newFile(fileString) : null;
 	}
 }

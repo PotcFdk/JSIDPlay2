@@ -1196,7 +1196,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
 		if (rndPath != null) {
-			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvscFile(), sidPlay2Section.getCgscFile());
+			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc());
 			hvsc();
 			util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
 					.filter(tab -> tab.getId().equals(MusicCollectionType.HVSC.name())).findFirst().get().getContent());

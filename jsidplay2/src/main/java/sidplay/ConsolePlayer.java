@@ -109,7 +109,7 @@ final public class ConsolePlayer {
 	}
 
 	private void setSIDDatabase(final Player player) {
-		String hvscRoot = player.getConfig().getSidplay2Section().getHvsc();
+		File hvscRoot = player.getConfig().getSidplay2Section().getHvsc();
 		if (hvscRoot != null) {
 			try {
 				player.setSidDatabase(new SidDatabase(hvscRoot));

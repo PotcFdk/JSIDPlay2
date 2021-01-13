@@ -73,7 +73,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 			return null;
 		}
 		SidTune tune = SidTune.load(tuneFile);
-		String root = util.getConfiguration().getSidplay2Section().getHvsc();
+		File root = util.getConfiguration().getSidplay2Section().getHvsc();
 		DoubleSupplier songLengthFnct = () -> 0;
 		if (root != null) {
 			SidDatabase db = new SidDatabase(root);

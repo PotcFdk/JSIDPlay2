@@ -193,8 +193,8 @@ public class GameBase extends C64VBox implements UIPart {
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
 			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvscFile(),
-					sidPlay2Section.getCgscFile());
+			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvsc(),
+					sidPlay2Section.getCgsc());
 			try {
 				util.getPlayer().play(SidTune.load(file));
 				util.setPlayingTab(this);

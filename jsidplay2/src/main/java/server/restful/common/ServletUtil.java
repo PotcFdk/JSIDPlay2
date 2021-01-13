@@ -44,34 +44,32 @@ public class ServletUtil {
 		if (path == null || path.equals("/")) {
 			return getRoot(adminRole);
 		} else if (path.startsWith(C64_MUSIC)) {
-			String root = configuration.getSidplay2Section().getHvsc();
-			File rootFile = configuration.getSidplay2Section().getHvscFile();
-			return getCollectionFiles(rootFile, root, path, filter, C64_MUSIC, adminRole);
+			File root = configuration.getSidplay2Section().getHvsc();
+			return getCollectionFiles(root, path, filter, C64_MUSIC, adminRole);
 		} else if (path.startsWith(CGSC)) {
-			String root = configuration.getSidplay2Section().getCgsc();
-			File rootFile = configuration.getSidplay2Section().getCgscFile();
-			return getCollectionFiles(rootFile, root, path, filter, CGSC, adminRole);
+			File root = configuration.getSidplay2Section().getCgsc();
+			return getCollectionFiles(root, path, filter, CGSC, adminRole);
 		}
 		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
 			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
 			String directoryValue = splitted.length > 0 ? splitted[0] : null;
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
 			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
-				File rootFile = new TFile(directoryValue);
-				return getCollectionFiles(rootFile, directoryValue, path, filter, directoryLogicalName, adminRole);
+				File root = new TFile(directoryValue);
+				return getCollectionFiles(root, path, filter, directoryLogicalName, adminRole);
 			}
 		}
 		return getRoot(adminRole);
 	}
 
-	private List<String> getCollectionFiles(File rootFile, String root, String path, String filter,
-			String virtualCollectionRoot, boolean adminRole) {
+	private List<String> getCollectionFiles(File rootFile, String path, String filter, String virtualCollectionRoot,
+			boolean adminRole) {
 		ArrayList<String> result = new ArrayList<>();
 		if (rootFile != null) {
 			if (path.endsWith("/")) {
 				path = path.substring(0, path.length() - 1);
 			}
-			File file = ZipFileUtils.newFile(root, path.substring(virtualCollectionRoot.length()));
+			File file = ZipFileUtils.newFile(rootFile, path.substring(virtualCollectionRoot.length()));
 			File[] listFiles = file.listFiles(pathname -> {
 				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp")) {
 					return false;
@@ -113,10 +111,10 @@ public class ServletUtil {
 
 	public File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
 		if (path.startsWith(C64_MUSIC)) {
-			File rootFile = configuration.getSidplay2Section().getHvscFile();
+			File rootFile = configuration.getSidplay2Section().getHvsc();
 			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);
 		} else if (path.startsWith(CGSC)) {
-			File rootFile = configuration.getSidplay2Section().getCgscFile();
+			File rootFile = configuration.getSidplay2Section().getCgsc();
 			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
 		}
 		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
@@ -132,10 +130,9 @@ public class ServletUtil {
 	}
 
 	public String getFavoriteFilename(HVSCEntry entry) {
-		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvscFile(), null).size() > 0) {
+		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvsc(), null).size() > 0) {
 			return C64_MUSIC + entry.getPath();
-		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgscFile(), null)
-				.size() > 0) {
+		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgsc(), null).size() > 0) {
 			return CGSC + entry.getPath();
 		}
 		return null;

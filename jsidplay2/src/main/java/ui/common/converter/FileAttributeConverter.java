@@ -5,6 +5,8 @@ import java.io.File;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import libsidplay.config.converter.IFileToStringConverter;
+
 @Converter
 public class FileAttributeConverter implements AttributeConverter<File, String>, IFileToStringConverter {
 

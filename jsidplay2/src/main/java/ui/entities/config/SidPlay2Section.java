@@ -31,7 +31,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.schlichtherle.truezip.file.TFile;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -46,7 +45,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
 import ui.common.converter.FileAttributeConverter;
-import ui.common.converter.FileToStringConverter;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 import ui.favorites.PlaybackType;
@@ -66,11 +64,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final boolean DEFAULT_MINIMIZED = false;
 	public static final float DEFAULT_VIDEO_SCALING = 2f;
 	public static final boolean DEFAULT_SHOW_MONITOR = true;
-
-	public SidPlay2Section() {
-		Bindings.bindBidirectional(this.hvsc.property(), hvscFile.property(), new FileToStringConverter());
-		Bindings.bindBidirectional(this.cgsc.property(), cgscFile.property(), new FileToStringConverter());
-	}
 
 	private int version;
 
@@ -267,47 +260,37 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return mags.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> cgscFile = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> cgsc = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getCgscFile() {
-		return cgscFile.get();
-	}
-
-	private ShadowField<StringProperty, String> cgsc = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public String getCgsc() {
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getCgsc() {
 		return cgsc.get();
 	}
 
-	public void setCgsc(String cgsc) {
+	public void setCgsc(File cgsc) {
 		this.cgsc.set(cgsc);
 	}
 
-	public StringProperty cgscProperty() {
+	public ObjectProperty<File> cgscProperty() {
 		return cgsc.property();
 	}
 
-	private ShadowField<ObjectProperty<File>, File> hvscFile = new ShadowField<>(SimpleObjectProperty::new, null);
+	private ShadowField<ObjectProperty<File>, File> hvsc = new ShadowField<>(SimpleObjectProperty::new, null);
 
-	@Transient
-	public File getHvscFile() {
-		return hvscFile.get();
-	}
-
-	private ShadowField<StringProperty, String> hvsc = new ShadowField<>(SimpleStringProperty::new, null);
-
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@Override
-	public String getHvsc() {
+	public File getHvsc() {
 		return hvsc.get();
 	}
 
 	@Override
-	public void setHvsc(String hvsc) {
+	public void setHvsc(File hvsc) {
 		this.hvsc.set(hvsc);
 	}
 
-	public StringProperty hvscProperty() {
+	public ObjectProperty<File> hvscProperty() {
 		return hvsc.property();
 	}
 

@@ -82,13 +82,13 @@ public class Favorites extends C64VBox implements UIPart {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
-		if (sidplay2Section.getHvscFile() != null) {
+		if (sidplay2Section.getHvsc() != null) {
 			setSongLengthDatabase(sidplay2Section.getHvsc());
 			setSTIL(sidplay2Section.getHvsc());
 		}
-		autoConfiguration.setDisable(sidplay2Section.getHvscFile() == null);
+		autoConfiguration.setDisable(sidplay2Section.getHvsc() == null);
 		sidplay2Section.hvscProperty()
-				.addListener((obj, o, n) -> autoConfiguration.setDisable(sidplay2Section.getHvscFile() == null));
+				.addListener((obj, o, n) -> autoConfiguration.setDisable(sidplay2Section.getHvsc() == null));
 
 		Bindings.bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(),
 				new TimeToStringConverter());
@@ -346,7 +346,7 @@ public class Favorites extends C64VBox implements UIPart {
 		util.getConfig().getSidplay2Section().setLoop(true);
 	}
 
-	private void setSongLengthDatabase(String hvscRoot) {
+	private void setSongLengthDatabase(File hvscRoot) {
 		try {
 			util.getPlayer().setSidDatabase(new SidDatabase(hvscRoot));
 		} catch (IOException e) {
@@ -354,7 +354,7 @@ public class Favorites extends C64VBox implements UIPart {
 		}
 	}
 
-	private void setSTIL(String hvscRoot) {
+	private void setSTIL(File hvscRoot) {
 		try (InputStream input = new TFileInputStream(new TFile(hvscRoot, STIL.STIL_FILE))) {
 			util.getPlayer().setSTIL(new STIL(input));
 		} catch (FileNotFoundException e) {

@@ -33,13 +33,13 @@ public class SidDatabase {
 	private MD5Method version;
 	private final IniReader database;
 
-	public SidDatabase(final String hvscRoot) throws IOException {
+	public SidDatabase(final File hvscRoot) throws IOException {
 		try (InputStream is = getInputStreamAndSetVersion(hvscRoot)) {
 			database = new IniReader(is);
 		}
 	}
 
-	private InputStream getInputStreamAndSetVersion(String hvscRoot) throws FileNotFoundException {
+	private InputStream getInputStreamAndSetVersion(File hvscRoot) throws FileNotFoundException {
 		File file = ZipFileUtils.newFile(hvscRoot, SONGLENGTHS_FILE_TXT);
 		version = MD5Method.MD5_PSID_HEADER;
 		File songLengthFileMd5 = ZipFileUtils.newFile(hvscRoot, SONGLENGTHS_FILE_MD5);

@@ -94,9 +94,9 @@ import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
+import libsidplay.config.converter.FileToStringConverter;
 import server.restful.common.Connectors;
 import ui.common.converter.FileAttributeConverter;
-import ui.common.converter.FileStringConverter;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ShadowField;
@@ -651,7 +651,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	@Parameter(names = {
-			"--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", converter = FileStringConverter.class, order = 3)
+			"--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", converter = FileToStringConverter.class, order = 3)
 	public void setAppServerKeystoreFile(File appServerKeystoreFile) {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}

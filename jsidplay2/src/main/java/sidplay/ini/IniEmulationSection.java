@@ -78,6 +78,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
+import libsidplay.config.converter.NegatedBooleanConverter;
 
 /**
  * Emulation section of the INI file.
