@@ -8,8 +8,11 @@ public class IntegerToStringConverter extends StringConverter<Integer> {
 
 	private ResourceBundle bundle;
 
-	public IntegerToStringConverter(ResourceBundle bundle) {
+	private String zeroBundleKey;
+
+	public IntegerToStringConverter(ResourceBundle bundle, String zeroBundleKey) {
 		this.bundle = bundle;
+		this.zeroBundleKey = zeroBundleKey;
 	}
 
 	@Override
@@ -20,7 +23,7 @@ public class IntegerToStringConverter extends StringConverter<Integer> {
 	@Override
 	public String toString(Integer rating) {
 		if (rating.intValue() == 0) {
-			return bundle.getString("ALL_CONTENT");
+			return bundle.getString(zeroBundleKey);
 		}
 		return String.valueOf(rating);
 	}

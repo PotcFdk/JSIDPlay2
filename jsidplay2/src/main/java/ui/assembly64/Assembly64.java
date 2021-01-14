@@ -242,12 +242,12 @@ public class Assembly64 extends C64VBox implements UIPart {
 		yearComboBox.setItems(FXCollections.<Integer>observableArrayList(
 				concat(of(0), rangeClosed(1980, Year.now().getValue())).boxed().collect(Collectors.toList())));
 		yearComboBox.getSelectionModel().select(0);
-		yearComboBox.setConverter(new IntegerToStringConverter(util.getBundle()));
+		yearComboBox.setConverter(new IntegerToStringConverter(util.getBundle(), "ALL_CONTENT"));
 
 		ratingComboBox.setItems(FXCollections
 				.<Integer>observableArrayList(concat(of(0), rangeClosed(1, 10)).boxed().collect(Collectors.toList())));
 		ratingComboBox.getSelectionModel().select(0);
-		ratingComboBox.setConverter(new IntegerToStringConverter(util.getBundle()));
+		ratingComboBox.setConverter(new IntegerToStringConverter(util.getBundle(), "ALL_CONTENT"));
 
 		ageComboBox.setConverter(new EnumToStringConverter<Age>(util.getBundle()));
 		ageComboBox.setItems(FXCollections.<Age>observableArrayList(Age.values()));
