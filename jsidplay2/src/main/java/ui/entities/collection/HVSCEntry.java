@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -29,12 +30,16 @@ import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
-import ui.common.converter.LocalDateTimeXmlAdapter;
 import libsidplay.sidtune.SidTuneInfo;
+import ui.common.converter.LocalDateTimeXmlAdapter;
+import ui.common.properties.LazyListField;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class HVSCEntry {
+
+	public static final List<StilEntry> DEFAULT_STIL = Collections.emptyList();
+
 	public HVSCEntry() {
 	}
 
@@ -415,18 +420,15 @@ public class HVSCEntry {
 		this.stilGlbComment = stilComment;
 	}
 
-	private List<StilEntry> stil;
+	private LazyListField<StilEntry> stil = new LazyListField<StilEntry>();
 
 	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	public List<StilEntry> getStil() {
-		if (stil == null) {
-			stil = new ArrayList<>();
-		}
-		return stil;
+		return stil.get(new ArrayList<>(DEFAULT_STIL));
 	}
 
 	public void setStil(List<StilEntry> stil) {
-		this.stil = stil;
+		this.stil.set(stil);
 	}
 
 }
