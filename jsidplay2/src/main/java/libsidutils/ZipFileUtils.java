@@ -23,20 +23,16 @@ public class ZipFileUtils {
 	private static final int COPY_BUFFER_CHUNK_SIZE = 16 * 1024;
 
 	private static Constructor<? extends InputStream> INPUT_STREAM;
-	private static Constructor<File> FILE_BY_PARENT;
 	private static Constructor<File> FILE;
 
 	static {
 		try {
 			// standard java.io functionality
-			FILE = File.class.getConstructor(String.class);
-			FILE_BY_PARENT = File.class.getConstructor(File.class, String.class);
+			FILE = File.class.getConstructor(File.class, String.class);
 			INPUT_STREAM = FileInputStream.class.getConstructor(File.class);
 			// support for files contained in a ZIP (optionally in the classpath)
-			FILE = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile")
-					.getConstructor(String.class);
-			FILE_BY_PARENT = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile")
-					.getConstructor(File.class, String.class);
+			FILE = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile").getConstructor(File.class,
+					String.class);
 			INPUT_STREAM = (Constructor<InputStream>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
 					.getConstructor(File.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
@@ -45,7 +41,7 @@ public class ZipFileUtils {
 
 	public static File newFile(String fileString) {
 		try {
-			return FILE.newInstance(fileString);
+			return FILE.newInstance(null, fileString);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return new File(fileString);
@@ -54,7 +50,7 @@ public class ZipFileUtils {
 
 	public static File newFile(File parent, String child) {
 		try {
-			return FILE_BY_PARENT.newInstance(parent, child);
+			return FILE.newInstance(parent, child);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return new File(parent, child);
