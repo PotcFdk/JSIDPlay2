@@ -49,92 +49,83 @@ import ui.videoscreen.Video;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class Configuration implements IConfig {
 
-	private final List<FilterSection> INITIAL_FILTERS;
-	{
-		INITIAL_FILTERS = DEFAULTS.getFilterSection().stream().map(FilterSection::new).collect(Collectors.toList());
-	}
+	public static final List<FilterSection> DEFAULT_FILTERS = DEFAULTS.getFilterSection().stream()
+			.map(FilterSection::new).collect(Collectors.toList());
 
-	private final List<ViewEntity> INITIAL_VIEWS;
-	{
-		INITIAL_VIEWS = new ArrayList<>(Arrays.asList(new ViewEntity(Console.ID), new ViewEntity(Video.ID)));
-	}
+	public static final List<ViewEntity> DEFAULT_VIEWS = Arrays.asList(new ViewEntity(Console.ID),
+			new ViewEntity(Video.ID));
 
-	private final List<FavoritesSection> INITIAL_FAVORITES;
-	{
-		INITIAL_FAVORITES = new ArrayList<>(Arrays.asList(new FavoritesSection()));
-	}
+	public static final List<FavoritesSection> DEFAULT_FAVORITES = Arrays.asList(new FavoritesSection());
 
-	private final List<KeyTableEntity> INITIAL_KEYCODES;
-	{
-		INITIAL_KEYCODES = new ArrayList<>(Arrays.asList(new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
-				new KeyTableEntity(KeyCode.BACK_SLASH.getName(), KeyTableEntry.ARROW_LEFT),
-				new KeyTableEntity(KeyCode.DIGIT1.getName(), KeyTableEntry.ONE),
-				new KeyTableEntity(KeyCode.DIGIT2.getName(), KeyTableEntry.TWO),
-				new KeyTableEntity(KeyCode.DIGIT3.getName(), KeyTableEntry.THREE),
-				new KeyTableEntity(KeyCode.DIGIT4.getName(), KeyTableEntry.FOUR),
-				new KeyTableEntity(KeyCode.DIGIT5.getName(), KeyTableEntry.FIVE),
-				new KeyTableEntity(KeyCode.DIGIT6.getName(), KeyTableEntry.SIX),
-				new KeyTableEntity(KeyCode.DIGIT7.getName(), KeyTableEntry.SEVEN),
-				new KeyTableEntity(KeyCode.DIGIT8.getName(), KeyTableEntry.EIGHT),
-				new KeyTableEntity(KeyCode.DIGIT9.getName(), KeyTableEntry.NINE),
-				new KeyTableEntity(KeyCode.DIGIT0.getName(), KeyTableEntry.ZERO),
-				new KeyTableEntity(KeyCode.OPEN_BRACKET.getName(), KeyTableEntry.PLUS),
-				new KeyTableEntity(KeyCode.CLOSE_BRACKET.getName(), KeyTableEntry.MINUS),
-				new KeyTableEntity(KeyCode.POUND.getName(), KeyTableEntry.POUND),
-				new KeyTableEntity(KeyCode.HOME.getName(), KeyTableEntry.CLEAR_HOME),
-				new KeyTableEntity(KeyCode.BACK_SPACE.getName(), KeyTableEntry.INS_DEL),
+	public static final List<KeyTableEntity> DEFAULT_KEYCODES = Arrays.asList(
+			new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
+			new KeyTableEntity(KeyCode.BACK_SLASH.getName(), KeyTableEntry.ARROW_LEFT),
+			new KeyTableEntity(KeyCode.DIGIT1.getName(), KeyTableEntry.ONE),
+			new KeyTableEntity(KeyCode.DIGIT2.getName(), KeyTableEntry.TWO),
+			new KeyTableEntity(KeyCode.DIGIT3.getName(), KeyTableEntry.THREE),
+			new KeyTableEntity(KeyCode.DIGIT4.getName(), KeyTableEntry.FOUR),
+			new KeyTableEntity(KeyCode.DIGIT5.getName(), KeyTableEntry.FIVE),
+			new KeyTableEntity(KeyCode.DIGIT6.getName(), KeyTableEntry.SIX),
+			new KeyTableEntity(KeyCode.DIGIT7.getName(), KeyTableEntry.SEVEN),
+			new KeyTableEntity(KeyCode.DIGIT8.getName(), KeyTableEntry.EIGHT),
+			new KeyTableEntity(KeyCode.DIGIT9.getName(), KeyTableEntry.NINE),
+			new KeyTableEntity(KeyCode.DIGIT0.getName(), KeyTableEntry.ZERO),
+			new KeyTableEntity(KeyCode.OPEN_BRACKET.getName(), KeyTableEntry.PLUS),
+			new KeyTableEntity(KeyCode.CLOSE_BRACKET.getName(), KeyTableEntry.MINUS),
+			new KeyTableEntity(KeyCode.POUND.getName(), KeyTableEntry.POUND),
+			new KeyTableEntity(KeyCode.HOME.getName(), KeyTableEntry.CLEAR_HOME),
+			new KeyTableEntity(KeyCode.BACK_SPACE.getName(), KeyTableEntry.INS_DEL),
 
-				new KeyTableEntity(KeyCode.Q.getName(), KeyTableEntry.Q),
-				new KeyTableEntity(KeyCode.W.getName(), KeyTableEntry.W),
-				new KeyTableEntity(KeyCode.E.getName(), KeyTableEntry.E),
-				new KeyTableEntity(KeyCode.R.getName(), KeyTableEntry.R),
-				new KeyTableEntity(KeyCode.T.getName(), KeyTableEntry.T),
-				new KeyTableEntity(KeyCode.Y.getName(), KeyTableEntry.Y),
-				new KeyTableEntity(KeyCode.U.getName(), KeyTableEntry.U),
-				new KeyTableEntity(KeyCode.I.getName(), KeyTableEntry.I),
-				new KeyTableEntity(KeyCode.O.getName(), KeyTableEntry.O),
-				new KeyTableEntity(KeyCode.P.getName(), KeyTableEntry.P),
-				new KeyTableEntity(KeyCode.SEMICOLON.getName(), KeyTableEntry.AT),
-				new KeyTableEntity(KeyCode.PLUS.getName(), KeyTableEntry.STAR),
-				new KeyTableEntity(KeyCode.LESS.getName(), KeyTableEntry.ARROW_UP),
+			new KeyTableEntity(KeyCode.Q.getName(), KeyTableEntry.Q),
+			new KeyTableEntity(KeyCode.W.getName(), KeyTableEntry.W),
+			new KeyTableEntity(KeyCode.E.getName(), KeyTableEntry.E),
+			new KeyTableEntity(KeyCode.R.getName(), KeyTableEntry.R),
+			new KeyTableEntity(KeyCode.T.getName(), KeyTableEntry.T),
+			new KeyTableEntity(KeyCode.Y.getName(), KeyTableEntry.Y),
+			new KeyTableEntity(KeyCode.U.getName(), KeyTableEntry.U),
+			new KeyTableEntity(KeyCode.I.getName(), KeyTableEntry.I),
+			new KeyTableEntity(KeyCode.O.getName(), KeyTableEntry.O),
+			new KeyTableEntity(KeyCode.P.getName(), KeyTableEntry.P),
+			new KeyTableEntity(KeyCode.SEMICOLON.getName(), KeyTableEntry.AT),
+			new KeyTableEntity(KeyCode.PLUS.getName(), KeyTableEntry.STAR),
+			new KeyTableEntity(KeyCode.LESS.getName(), KeyTableEntry.ARROW_UP),
 
-				new KeyTableEntity(KeyCode.ESCAPE.getName(), KeyTableEntry.RUN_STOP),
-				new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
-				new KeyTableEntity(KeyCode.S.getName(), KeyTableEntry.S),
-				new KeyTableEntity(KeyCode.D.getName(), KeyTableEntry.D),
-				new KeyTableEntity(KeyCode.F.getName(), KeyTableEntry.F),
-				new KeyTableEntity(KeyCode.G.getName(), KeyTableEntry.G),
-				new KeyTableEntity(KeyCode.H.getName(), KeyTableEntry.H),
-				new KeyTableEntity(KeyCode.J.getName(), KeyTableEntry.J),
-				new KeyTableEntity(KeyCode.K.getName(), KeyTableEntry.K),
-				new KeyTableEntity(KeyCode.L.getName(), KeyTableEntry.L),
-				new KeyTableEntity(KeyCode.BACK_QUOTE.getName(), KeyTableEntry.COLON),
-				new KeyTableEntity(KeyCode.QUOTE.getName(), KeyTableEntry.SEMICOLON),
-				new KeyTableEntity(KeyCode.SLASH.getName(), KeyTableEntry.EQUALS),
-				new KeyTableEntity(KeyCode.ENTER.getName(), KeyTableEntry.RETURN),
+			new KeyTableEntity(KeyCode.ESCAPE.getName(), KeyTableEntry.RUN_STOP),
+			new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
+			new KeyTableEntity(KeyCode.S.getName(), KeyTableEntry.S),
+			new KeyTableEntity(KeyCode.D.getName(), KeyTableEntry.D),
+			new KeyTableEntity(KeyCode.F.getName(), KeyTableEntry.F),
+			new KeyTableEntity(KeyCode.G.getName(), KeyTableEntry.G),
+			new KeyTableEntity(KeyCode.H.getName(), KeyTableEntry.H),
+			new KeyTableEntity(KeyCode.J.getName(), KeyTableEntry.J),
+			new KeyTableEntity(KeyCode.K.getName(), KeyTableEntry.K),
+			new KeyTableEntity(KeyCode.L.getName(), KeyTableEntry.L),
+			new KeyTableEntity(KeyCode.BACK_QUOTE.getName(), KeyTableEntry.COLON),
+			new KeyTableEntity(KeyCode.QUOTE.getName(), KeyTableEntry.SEMICOLON),
+			new KeyTableEntity(KeyCode.SLASH.getName(), KeyTableEntry.EQUALS),
+			new KeyTableEntity(KeyCode.ENTER.getName(), KeyTableEntry.RETURN),
 
-				new KeyTableEntity(KeyCode.Z.getName(), KeyTableEntry.Z),
-				new KeyTableEntity(KeyCode.X.getName(), KeyTableEntry.X),
-				new KeyTableEntity(KeyCode.C.getName(), KeyTableEntry.C),
-				new KeyTableEntity(KeyCode.V.getName(), KeyTableEntry.V),
-				new KeyTableEntity(KeyCode.B.getName(), KeyTableEntry.B),
-				new KeyTableEntity(KeyCode.N.getName(), KeyTableEntry.N),
-				new KeyTableEntity(KeyCode.M.getName(), KeyTableEntry.M),
-				new KeyTableEntity(KeyCode.COMMA.getName(), KeyTableEntry.COMMA),
-				new KeyTableEntity(KeyCode.PERIOD.getName(), KeyTableEntry.PERIOD),
-				new KeyTableEntity(KeyCode.MINUS.getName(), KeyTableEntry.SLASH),
-				new KeyTableEntity(KeyCode.DOWN.getName(), KeyTableEntry.CURSOR_UP_DOWN),
-				new KeyTableEntity(KeyCode.UP.getName(), KeyTableEntry.CURSOR_UP_DOWN),
-				new KeyTableEntity(KeyCode.RIGHT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
-				new KeyTableEntity(KeyCode.LEFT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
+			new KeyTableEntity(KeyCode.Z.getName(), KeyTableEntry.Z),
+			new KeyTableEntity(KeyCode.X.getName(), KeyTableEntry.X),
+			new KeyTableEntity(KeyCode.C.getName(), KeyTableEntry.C),
+			new KeyTableEntity(KeyCode.V.getName(), KeyTableEntry.V),
+			new KeyTableEntity(KeyCode.B.getName(), KeyTableEntry.B),
+			new KeyTableEntity(KeyCode.N.getName(), KeyTableEntry.N),
+			new KeyTableEntity(KeyCode.M.getName(), KeyTableEntry.M),
+			new KeyTableEntity(KeyCode.COMMA.getName(), KeyTableEntry.COMMA),
+			new KeyTableEntity(KeyCode.PERIOD.getName(), KeyTableEntry.PERIOD),
+			new KeyTableEntity(KeyCode.MINUS.getName(), KeyTableEntry.SLASH),
+			new KeyTableEntity(KeyCode.DOWN.getName(), KeyTableEntry.CURSOR_UP_DOWN),
+			new KeyTableEntity(KeyCode.UP.getName(), KeyTableEntry.CURSOR_UP_DOWN),
+			new KeyTableEntity(KeyCode.RIGHT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
+			new KeyTableEntity(KeyCode.LEFT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
 
-				new KeyTableEntity(KeyCode.SPACE.getName(), KeyTableEntry.SPACE),
+			new KeyTableEntity(KeyCode.SPACE.getName(), KeyTableEntry.SPACE),
 
-				new KeyTableEntity(KeyCode.F1.getName(), KeyTableEntry.F1),
-				new KeyTableEntity(KeyCode.F3.getName(), KeyTableEntry.F3),
-				new KeyTableEntity(KeyCode.F5.getName(), KeyTableEntry.F5),
-				new KeyTableEntity(KeyCode.F7.getName(), KeyTableEntry.F7)));
-	}
+			new KeyTableEntity(KeyCode.F1.getName(), KeyTableEntry.F1),
+			new KeyTableEntity(KeyCode.F3.getName(), KeyTableEntry.F3),
+			new KeyTableEntity(KeyCode.F5.getName(), KeyTableEntry.F5),
+			new KeyTableEntity(KeyCode.F7.getName(), KeyTableEntry.F7));
 
 	private Integer id;
 
@@ -267,7 +258,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
-		return favorites.get(INITIAL_FAVORITES);
+		return favorites.get(new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
 	@Transient
@@ -294,7 +285,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
-		return views.get(INITIAL_VIEWS);
+		return views.get(new ArrayList<>(DEFAULT_VIEWS));
 	}
 
 	@Transient
@@ -311,7 +302,7 @@ public class Configuration implements IConfig {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilterSection() {
-		return filter.get(INITIAL_FILTERS);
+		return filter.get(new ArrayList<>(DEFAULT_FILTERS));
 	}
 
 	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>();
@@ -322,17 +313,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
-		return keyCodeMap.get(INITIAL_KEYCODES);
-	}
-
-	@Transient
-	public KeyTableEntry getKeyTabEntry(String key) {
-		for (KeyTableEntity keyCode : getKeyCodeMap()) {
-			if (keyCode.getKeyCodeName().equals(key)) {
-				return keyCode.getEntry();
-			}
-		}
-		return null;
+		return keyCodeMap.get(new ArrayList<>(DEFAULT_KEYCODES));
 	}
 
 }

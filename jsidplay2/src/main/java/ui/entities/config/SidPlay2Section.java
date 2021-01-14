@@ -52,13 +52,13 @@ import ui.favorites.PlaybackType;
 @Embeddable
 public class SidPlay2Section implements ISidPlay2Section {
 
-	private static final String DEF_TMP_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
-			+ ".jsidplay2";
-	boolean DEFAULT_ENABLE_PROXY = false;
-	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
-	public static final int DEF_FRAME_X = 0;
-	public static final int DEF_FRAME_Y = 0;
+	public static final boolean DEFAULT_ENABLE_PROXY = false;
+	public static final int DEFAULT_PROXY_PORT = 80;
+	public static final String DEFAULT_TMP_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
+			+ ".jsidplay2";
+	public static final int DEFAULT_FRAME_X = 0;
+	public static final int DEFAULT_FRAME_Y = 0;
 	public static final int DEFAULT_FRAME_WIDTH = 1310;
 	public static final int DEFAULT_FRAME_HEIGHT = 1024;
 	public static final boolean DEFAULT_MINIMIZED = false;
@@ -390,7 +390,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private ShadowField<StringProperty, String> tmpDirProperty = new ShadowField<>(SimpleStringProperty::new,
-			DEF_TMP_DIR);
+			DEFAULT_TMP_DIR);
 
 	@Override
 	public String getTmpDir() {
@@ -407,7 +407,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private ShadowField<IntegerProperty, Number> frameXProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEF_FRAME_X);
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_X);
 
 	public int getFrameX() {
 		return frameXProperty.get().intValue();
@@ -422,7 +422,7 @@ public class SidPlay2Section implements ISidPlay2Section {
 	}
 
 	private ShadowField<IntegerProperty, Number> frameYProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEF_FRAME_Y);
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_Y);
 
 	public int getFrameY() {
 		return frameYProperty.get().intValue();

@@ -6,12 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class FavoriteColumn {
 	private Integer id;
+
+	public FavoriteColumn() {
+	}
+
+	public FavoriteColumn(SingularAttribute<?, ?> attribute) {
+		columnProperty = attribute.getName();
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)

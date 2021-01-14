@@ -523,8 +523,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		MenuItem menuItem = new MenuItem();
 		menuItem.setText(attribute.getName());
 		menuItem.setOnAction(event -> {
-			FavoriteColumn favoriteColumn = new FavoriteColumn();
-			favoriteColumn.setColumnProperty(attribute.getName());
+			FavoriteColumn favoriteColumn = new FavoriteColumn(attribute);
 			favoritesSection.getColumns().add(favoriteColumn);
 			addColumn(attribute, favoriteColumn);
 		});

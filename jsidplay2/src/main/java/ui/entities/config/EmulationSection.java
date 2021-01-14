@@ -64,6 +64,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -144,12 +145,9 @@ public class EmulationSection implements IEmulationSection {
 	 */
 	public static final int DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT = 30001;
 
-	private final List<DeviceMapping> INITIAL_SIDBLASTER_DEVICE_LIST;
-	{
-		INITIAL_SIDBLASTER_DEVICE_LIST = DEFAULT_SIDBLASTER_DEVICE_LIST.stream().map(
-				deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
-				.collect(Collectors.toList());
-	}
+	private static final List<DeviceMapping> DEFAULT_SIDBLASTER_DEVICES = DEFAULT_SIDBLASTER_DEVICE_LIST.stream()
+			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
+			.collect(Collectors.toList());
 
 	private ShadowField<ObjectProperty<Engine>, Engine> engine = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_ENGINE);
@@ -407,7 +405,7 @@ public class EmulationSection implements IEmulationSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<DeviceMapping> getSidBlasterDeviceList() {
-		return sidBlasterDeviceList.get(INITIAL_SIDBLASTER_DEVICE_LIST);
+		return sidBlasterDeviceList.get(new ArrayList<>(DEFAULT_SIDBLASTER_DEVICES));
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> sidBlasterWriteBufferSize = new ShadowField<>(

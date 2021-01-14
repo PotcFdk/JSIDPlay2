@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javafx.animation.Animation;
@@ -62,6 +63,7 @@ import ui.common.filefilter.CartFileExtensions;
 import ui.common.filefilter.DiskFileExtensions;
 import ui.common.filefilter.TapeFileExtensions;
 import ui.entities.config.EmulationSection;
+import ui.entities.config.KeyTableEntity;
 import ui.entities.config.SidPlay2Section;
 import ui.virtualKeyboard.Keyboard;
 
@@ -394,7 +396,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	private void setupKeyboard() {
 		monitor.setOnKeyPressed(event -> {
 			event.consume();
-			KeyTableEntry keyTableEntry = util.getConfig().getKeyTabEntry(event.getCode().getName());
+			Optional<KeyTableEntry> keyTableEntry = util.getConfig().getKeyCodeMap().stream()
+					.filter(keyCode -> keyCode.getKeyCodeName().equals(event.getCode().getName()))
+					.map(KeyTableEntity::getEntry).findFirst();
 
 			if (event.isShiftDown()) {
 				pressC64Key(KeyTableEntry.SHIFT_LEFT);
@@ -403,9 +407,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 				pressC64Key(KeyTableEntry.COMMODORE);
 			}
 
-			if (keyTableEntry != null) {
-				pressC64Key(keyTableEntry);
-				releaseC64Key(keyTableEntry);
+			if (keyTableEntry.isPresent()) {
+				pressC64Key(keyTableEntry.get());
+				releaseC64Key(keyTableEntry.get());
 			}
 
 			if (event.isControlDown()) {

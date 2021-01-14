@@ -1,6 +1,12 @@
 package ui.entities.config;
 
+import static ui.entities.collection.HVSCEntry_.author;
+import static ui.entities.collection.HVSCEntry_.released;
+import static ui.entities.collection.HVSCEntry_.title;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -12,7 +18,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -27,18 +32,14 @@ import ui.common.properties.LazyListField;
 import ui.common.properties.ObservableLazyListField;
 import ui.common.properties.ShadowField;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.collection.HVSCEntry_;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class FavoritesSection {
 
-	private final List<HVSCEntry> INITIAL_FAVORITES;
-	{
-		INITIAL_FAVORITES = new ArrayList<>();
-	}
+	public static final List<HVSCEntry> DEFAULT_FAVORITES = Collections.emptyList();
 
-	private List<FavoriteColumn> DEF_COLUMNS;
+	public static List<FavoriteColumn> DEFAULT_COLUMNS;
 
 	private Integer id;
 
@@ -116,25 +117,12 @@ public class FavoritesSection {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoriteColumn> getColumns() {
-		// Singular attributes cannot be resolved that early, therefore:
-		if (DEF_COLUMNS == null) {
-			DEF_COLUMNS = new ArrayList<>();
-			FavoriteColumn dbFavoriteColumn;
-			SingularAttribute<?, ?> attribute;
-			dbFavoriteColumn = new FavoriteColumn();
-			attribute = HVSCEntry_.title;
-			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			DEF_COLUMNS.add(dbFavoriteColumn);
-			dbFavoriteColumn = new FavoriteColumn();
-			attribute = HVSCEntry_.author;
-			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			DEF_COLUMNS.add(dbFavoriteColumn);
-			dbFavoriteColumn = new FavoriteColumn();
-			attribute = HVSCEntry_.released;
-			dbFavoriteColumn.setColumnProperty(attribute.getName());
-			DEF_COLUMNS.add(dbFavoriteColumn);
+		// Singular attributes cannot be resolved that early, therefore lazy:
+		if (DEFAULT_COLUMNS == null) {
+			DEFAULT_COLUMNS = Arrays.asList(new FavoriteColumn(title), new FavoriteColumn(author),
+					new FavoriteColumn(released));
 		}
-		return columns.get(DEF_COLUMNS);
+		return columns.get(new ArrayList<>(DEFAULT_COLUMNS));
 	}
 
 	public void setColumns(List<FavoriteColumn> columns) {
@@ -150,7 +138,7 @@ public class FavoritesSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
-		return favorites.get(INITIAL_FAVORITES);
+		return favorites.get(new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
 	@Transient

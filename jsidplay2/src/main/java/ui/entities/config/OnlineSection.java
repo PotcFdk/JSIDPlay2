@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class OnlineSection {
 
-	private static final double DEFAULT_ZOOM = 1.5;
+	public static final double DEFAULT_ZOOM = 1.5;
 	public static final String DEFAULT_ASSEMBLY64_URL = "https://hackerswithstyle.se";
 
 	/**
