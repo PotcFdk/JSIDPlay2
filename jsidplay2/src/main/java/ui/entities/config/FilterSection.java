@@ -11,6 +11,35 @@ import libsidplay.config.IFilterSection;
 @Access(AccessType.PROPERTY)
 public class FilterSection implements IFilterSection {
 
+	public FilterSection() {
+	}
+
+	public FilterSection(IFilterSection f) {
+		if (f.isReSIDFilter8580()) {
+			name = f.getName();
+			filter8580CurvePosition = f.getFilter8580CurvePosition();
+		} else if (f.isReSIDFilter6581()) {
+			name = f.getName();
+			filter6581CurvePosition = f.getFilter6581CurvePosition();
+		} else if (f.isReSIDfpFilter8580()) {
+			name = f.getName();
+			k = f.getK();
+			b = f.getB();
+			voiceNonlinearity = f.getVoiceNonlinearity();
+			resonanceFactor = f.getResonanceFactor();
+		} else if (f.isReSIDfpFilter6581()) {
+			name = f.getName();
+			attenuation = f.getAttenuation();
+			nonlinearity = f.getNonlinearity();
+			voiceNonlinearity = f.getVoiceNonlinearity();
+			baseresistance = f.getBaseresistance();
+			offset = f.getOffset();
+			steepness = f.getSteepness();
+			minimumfetresistance = f.getMinimumfetresistance();
+			resonanceFactor = f.getResonanceFactor();
+		}
+	}
+
 	private String name;
 
 	@Id

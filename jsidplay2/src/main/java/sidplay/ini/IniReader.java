@@ -19,13 +19,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,25 +200,6 @@ public class IniReader {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Float.parseFloat(s);
-		}
-		return defaultValue;
-	}
-
-	public float[] getFloats(final String section, final String key, final float[] defaultValue) {
-		final String s = getPropertyString(section, key, null);
-		if (s != null) {
-			List<Float> floats = new ArrayList<>();
-			try (Scanner scanner = new Scanner(s)) {
-				scanner.useDelimiter(",");
-				while (scanner.hasNext()) {
-					floats.add(Float.parseFloat(scanner.next().trim()));
-				}
-			}
-			float[] result = new float[floats.size()];
-			for (int i = 0; i < result.length; i++) {
-				result[i] = floats.get(i);
-			}
-			return result;
 		}
 		return defaultValue;
 	}

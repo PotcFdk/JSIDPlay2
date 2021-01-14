@@ -51,38 +51,17 @@ public class Configuration implements IConfig {
 
 	private final List<FilterSection> INITIAL_FILTERS;
 	{
-		INITIAL_FILTERS = DEFAULTS.getFilterSection().stream().map(f -> {
-			FilterSection dbFilterSection = new FilterSection();
-			if (f.isReSIDFilter8580()) {
-				dbFilterSection.setName(f.getName());
-				dbFilterSection.setFilter8580CurvePosition(f.getFilter8580CurvePosition());
-			} else if (f.isReSIDFilter6581()) {
-				dbFilterSection.setName(f.getName());
-				dbFilterSection.setFilter6581CurvePosition(f.getFilter6581CurvePosition());
-			} else if (f.isReSIDfpFilter8580()) {
-				dbFilterSection.setName(f.getName());
-				dbFilterSection.setK(f.getK());
-				dbFilterSection.setB(f.getB());
-				dbFilterSection.setVoiceNonlinearity(f.getVoiceNonlinearity());
-				dbFilterSection.setResonanceFactor(f.getResonanceFactor());
-			} else if (f.isReSIDfpFilter6581()) {
-				dbFilterSection.setName(f.getName());
-				dbFilterSection.setAttenuation(f.getAttenuation());
-				dbFilterSection.setNonlinearity(f.getNonlinearity());
-				dbFilterSection.setVoiceNonlinearity(f.getVoiceNonlinearity());
-				dbFilterSection.setBaseresistance(f.getBaseresistance());
-				dbFilterSection.setOffset(f.getOffset());
-				dbFilterSection.setSteepness(f.getSteepness());
-				dbFilterSection.setMinimumfetresistance(f.getMinimumfetresistance());
-				dbFilterSection.setResonanceFactor(f.getResonanceFactor());
-			}
-			return dbFilterSection;
-		}).collect(Collectors.toList());
+		INITIAL_FILTERS = DEFAULTS.getFilterSection().stream().map(FilterSection::new).collect(Collectors.toList());
 	}
 
 	private final List<ViewEntity> INITIAL_VIEWS;
 	{
 		INITIAL_VIEWS = new ArrayList<>(Arrays.asList(new ViewEntity(Console.ID), new ViewEntity(Video.ID)));
+	}
+
+	private final List<FavoritesSection> INITIAL_FAVORITES;
+	{
+		INITIAL_FAVORITES = new ArrayList<>(Arrays.asList(new FavoritesSection()));
 	}
 
 	private final List<KeyTableEntity> INITIAL_KEYCODES;
@@ -155,11 +134,6 @@ public class Configuration implements IConfig {
 				new KeyTableEntity(KeyCode.F3.getName(), KeyTableEntry.F3),
 				new KeyTableEntity(KeyCode.F5.getName(), KeyTableEntry.F5),
 				new KeyTableEntity(KeyCode.F7.getName(), KeyTableEntry.F7)));
-	}
-
-	private final List<FavoritesSection> INITIAL_FAVORITES;
-	{
-		INITIAL_FAVORITES = new ArrayList<>(Arrays.asList(new FavoritesSection()));
 	}
 
 	private Integer id;
@@ -351,6 +325,7 @@ public class Configuration implements IConfig {
 		return keyCodeMap.get(INITIAL_KEYCODES);
 	}
 
+	@Transient
 	public KeyTableEntry getKeyTabEntry(String key) {
 		for (KeyTableEntity keyCode : getKeyCodeMap()) {
 			if (keyCode.getKeyCodeName().equals(key)) {
