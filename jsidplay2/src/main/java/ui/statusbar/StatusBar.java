@@ -66,7 +66,7 @@ public class StatusBar extends C64VBox implements UIPart {
 			TRACKSOUND_AUDIOCLIP.open(trackSoundAudioClip);
 			TRACKSOUND_AUDIOCLIP.setLoopPoints(0, -1);
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException | IllegalArgumentException e) {
-			throw new ExceptionInInitializerError();
+			System.err.println("Warn: drive sounds not available:" + e.getMessage());
 		}
 	}
 
