@@ -47,8 +47,8 @@ import ui.entities.config.EmulationSection;
 
 public class StatusBar extends C64VBox implements UIPart {
 
-	private static final Clip MOTORSOUND_AUDIOCLIP;
-	private static final Clip TRACKSOUND_AUDIOCLIP;
+	private static Clip MOTORSOUND_AUDIOCLIP;
+	private static Clip TRACKSOUND_AUDIOCLIP;
 
 	static {
 		try {
