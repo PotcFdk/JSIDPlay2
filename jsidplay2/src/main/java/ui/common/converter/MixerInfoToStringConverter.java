@@ -13,6 +13,6 @@ public class MixerInfoToStringConverter extends StringConverter<Info> {
 
 	@Override
 	public String toString(Info info) {
-		return info.getName();
+		return info != null ? info.getName() : "???";
 	}
 }
