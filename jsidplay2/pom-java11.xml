@@ -720,6 +720,7 @@
 									<filtering>true</filtering>
 									<includes>
 										<include>**/*.desktop</include>
+										<include>**/*.sh</include>
 									</includes>
 								</resource>
 								<resource>
@@ -727,6 +728,7 @@
 									<filtering>false</filtering>
 									<excludes>
 										<exclude>**/*.desktop</exclude>
+										<exclude>**/*.sh</exclude>
 									</excludes>
 								</resource>
 							</resources>

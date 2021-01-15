@@ -16,6 +16,7 @@
 			<outputDirectory></outputDirectory>
 			<includes>
                 <include>JSIDPlay2*.desktop</include>
+                <include>JSIDPlay2*.sh</include>
             </includes>			
 			<filtered>true</filtered>
 		</fileSet>
