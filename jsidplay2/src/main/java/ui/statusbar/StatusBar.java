@@ -65,7 +65,7 @@ public class StatusBar extends C64VBox implements UIPart {
 					.getLine(new DataLine.Info(Clip.class, trackSoundAudioClip.getFormat()));
 			TRACKSOUND_AUDIOCLIP.open(trackSoundAudioClip);
 			TRACKSOUND_AUDIOCLIP.setLoopPoints(0, -1);
-		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException | IllegalArgumentException e) {
 			throw new ExceptionInInitializerError();
 		}
 	}
@@ -168,18 +168,22 @@ public class StatusBar extends C64VBox implements UIPart {
 		final C1541 c1541 = getFirstFloppy();
 		// Disk motor status
 		boolean motorOn = c1541Section.isDriveSoundOn() && c1541.getDiskController().isMotorOn();
-		if (!oldMotorOn && motorOn) {
-			MOTORSOUND_AUDIOCLIP.loop(Clip.LOOP_CONTINUOUSLY);
-		} else if (oldMotorOn && !motorOn) {
-			MOTORSOUND_AUDIOCLIP.stop();
+		if (MOTORSOUND_AUDIOCLIP != null) {
+			if (!oldMotorOn && motorOn) {
+				MOTORSOUND_AUDIOCLIP.loop(Clip.LOOP_CONTINUOUSLY);
+			} else if (oldMotorOn && !motorOn) {
+				MOTORSOUND_AUDIOCLIP.stop();
+			}
 		}
 		oldMotorOn = motorOn;
 		// Read/Write head position (half tracks)
 		final int halfTrack = c1541.getDiskController().getHalfTrack();
-		if (oldHalfTrack != halfTrack && motorOn) {
-			TRACKSOUND_AUDIOCLIP.stop();
-			TRACKSOUND_AUDIOCLIP.setFramePosition(0);
-			TRACKSOUND_AUDIOCLIP.start();
+		if (TRACKSOUND_AUDIOCLIP != null) {
+			if (oldHalfTrack != halfTrack && motorOn) {
+				TRACKSOUND_AUDIOCLIP.stop();
+				TRACKSOUND_AUDIOCLIP.setFramePosition(0);
+				TRACKSOUND_AUDIOCLIP.start();
+			}
 		}
 		oldHalfTrack = halfTrack;
 		// Get status information of the datasette
@@ -225,8 +229,12 @@ public class StatusBar extends C64VBox implements UIPart {
 
 	@Override
 	public void doClose() {
-		closeClip(MOTORSOUND_AUDIOCLIP);
-		closeClip(TRACKSOUND_AUDIOCLIP);
+		if (MOTORSOUND_AUDIOCLIP != null) {
+			closeClip(MOTORSOUND_AUDIOCLIP);
+		}
+		if (TRACKSOUND_AUDIOCLIP != null) {
+			closeClip(TRACKSOUND_AUDIOCLIP);
+		}
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 	}
 
