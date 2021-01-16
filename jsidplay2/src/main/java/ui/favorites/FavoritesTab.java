@@ -243,7 +243,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	private void exportToDir() {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(sidplay2Section.getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(sidplay2Section.getLastDirectory());
 		File directory = fileDialog.showDialog(favoritesTable.getScene().getWindow());
 		if (directory != null) {
 			sidplay2Section.setLastDirectory(directory);
@@ -286,7 +286,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	private void convertToPsid64() {
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectory());
 		File directory = fileDialog.showDialog(favoritesTable.getScene().getWindow());
 		if (directory != null) {
 			sidPlay2Section.setLastDirectory(directory);

@@ -279,7 +279,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
@@ -296,7 +296,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
@@ -313,7 +313,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	@FXML
 	private void insertCartridge() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));

@@ -25,10 +25,8 @@ import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -324,10 +322,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	private ShadowField<StringProperty, String> proxyHostname = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public StringProperty proxyHostnameProperty() {
-		return proxyHostname.property();
-	}
-
 	public String getProxyHostname() {
 		return proxyHostname.get();
 	}
@@ -336,12 +330,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.proxyHostname.set(hostname);
 	}
 
+	public StringProperty proxyHostnameProperty() {
+		return proxyHostname.property();
+	}
+
 	private ShadowField<ObjectProperty<Integer>, Integer> proxyPort = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_PROXY_PORT);
-
-	public ObjectProperty<Integer> proxyPortProperty() {
-		return proxyPort.property();
-	}
 
 	public int getProxyPort() {
 		return proxyPort.get();
@@ -349,6 +343,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public void setProxyPort(int port) {
 		this.proxyPort.set(port);
+	}
+
+	public ObjectProperty<Integer> proxyPortProperty() {
+		return proxyPort.property();
 	}
 
 	private ShadowField<ObjectProperty<File>, File> lastDirectory = new ShadowField<>(SimpleObjectProperty::new, null);
@@ -519,10 +517,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private ShadowField<BooleanProperty, Boolean> palEmulation = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_PAL_EMULATION);
 
-	public BooleanProperty palEmulationProperty() {
-		return palEmulation.property();
-	}
-
 	@Override
 	public boolean isPalEmulation() {
 		return palEmulation.get();
@@ -531,6 +525,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	public void setPalEmulation(boolean isPalEmulation) {
 		palEmulation.set(isPalEmulation);
+	}
+
+	public BooleanProperty palEmulationProperty() {
+		return palEmulation.property();
 	}
 
 	private ShadowField<FloatProperty, Number> brightness = new ShadowField<>(
@@ -701,14 +699,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	public BooleanProperty turboTapeProperty() {
 		return turboTape.property();
-	}
-
-	@Transient
-	public File getLastDirectoryFolder() {
-		if (getLastDirectory() != null && new TFile(getLastDirectory()).isDirectory()) {
-			return new TFile(getLastDirectory());
-		}
-		return null;
 	}
 
 }

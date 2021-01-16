@@ -345,7 +345,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		TreeItem<File> selectedItem = fileBrowser.getSelectionModel().getSelectedItem();
 		DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectory());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene().getWindow());
 		if (directory != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(directory);
@@ -487,7 +487,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@FXML
 	private void doBrowse() {
 		final DirectoryChooser fileDialog = new DirectoryChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(directory);

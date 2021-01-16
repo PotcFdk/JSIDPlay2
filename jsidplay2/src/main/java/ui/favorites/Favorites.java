@@ -231,7 +231,7 @@ public class Favorites extends C64VBox implements UIPart {
 	@FXML
 	private void addFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final List<File> files = fileDialog.showOpenMultipleDialog(favoritesList.getScene().getWindow());
@@ -265,7 +265,7 @@ public class Favorites extends C64VBox implements UIPart {
 	@FXML
 	private void loadFavorites() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
@@ -282,7 +282,7 @@ public class Favorites extends C64VBox implements UIPart {
 	@FXML
 	private void saveFavoritesAs() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());

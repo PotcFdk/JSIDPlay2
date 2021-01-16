@@ -364,7 +364,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 			final DirectoryChooser fileDialog = new DirectoryChooser();
 			fileDialog.setTitle(util.getBundle().getString("SAVE_RECORDING"));
-			fileDialog.setInitialDirectory(sidplay2Section.getLastDirectoryFolder());
+			fileDialog.setInitialDirectory(sidplay2Section.getLastDirectory());
 			File directory = fileDialog.showDialog(getScene().getWindow());
 			if (directory != null) {
 				sidplay2Section.setLastDirectory(directory);

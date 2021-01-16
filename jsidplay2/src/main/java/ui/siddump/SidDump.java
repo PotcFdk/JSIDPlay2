@@ -135,7 +135,7 @@ public class SidDump extends C64VBox implements UIPart {
 	@FXML
 	private void doLoadDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
@@ -155,7 +155,7 @@ public class SidDump extends C64VBox implements UIPart {
 	@FXML
 	private void doSaveDump() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());

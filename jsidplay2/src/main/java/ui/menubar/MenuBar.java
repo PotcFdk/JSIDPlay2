@@ -313,7 +313,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void load() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
@@ -330,7 +330,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void save() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showSaveDialog(getScene().getWindow());
@@ -347,7 +347,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void playVideo() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
@@ -502,7 +502,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void insertTape() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(TapeFileExtensions.DESCRIPTION, TapeFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_TAPE"));
@@ -595,7 +595,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void insertDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(DiskFileExtensions.DESCRIPTION, DiskFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_DISK"));
@@ -626,7 +626,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void insertEmptyDisk() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters().add(new ExtensionFilter("Disk Image (D64)", "*.d64"));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_EMPTY_DISK"));
 		final File file = fileDialog.showSaveDialog(getScene().getWindow());
@@ -1097,7 +1097,7 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	private void chooseCartridge(final CartridgeType type) {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(CartFileExtensions.DESCRIPTION, CartFileExtensions.EXTENSIONS));
 		fileDialog.setTitle(util.getBundle().getString("INSERT_CARTRIDGE"));

@@ -225,7 +225,7 @@ public class SidReg extends C64VBox implements UIPart {
 	@FXML
 	private void doSaveRegs() {
 		final FileChooser fileDialog = new FileChooser();
-		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
+		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		final File file = fileDialog.showSaveDialog(saveRegs.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
