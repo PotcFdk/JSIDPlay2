@@ -191,7 +191,7 @@ public class Disassembler extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File file = fileDialog.showSaveDialog(save.getScene().getWindow());
 		if (file != null) {
-			sidplay2.setLastDirectory(file.getParent());
+			sidplay2.setLastDirectory(file.getParentFile());
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				int start = Integer.decode(startAddress.getText());
 				int end = Integer.decode(endAddress.getText()) + 1;

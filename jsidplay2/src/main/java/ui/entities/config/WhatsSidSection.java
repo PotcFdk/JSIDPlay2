@@ -28,139 +28,139 @@ import ui.common.properties.ShadowField;
 @Parameters(resourceBundle = "ui.entities.config.WhatsSidSection")
 public class WhatsSidSection implements IWhatsSidSection {
 
-	private ShadowField<BooleanProperty, Boolean> enableProperty = new ShadowField<>(SimpleBooleanProperty::new,
+	private ShadowField<BooleanProperty, Boolean> enable = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_WHATSSID_ENABLE);
 
 	@Override
 	public boolean isEnable() {
-		return enableProperty.get();
+		return enable.get();
 	}
 
 	@Override
 	public void setEnable(boolean enable) {
-		this.enableProperty.set(enable);
+		this.enable.set(enable);
 	}
 
 	public BooleanProperty enableProperty() {
-		return enableProperty.property();
+		return enable.property();
 	}
 
-	private ShadowField<StringProperty, String> urlProperty = new ShadowField<>(SimpleStringProperty::new,
+	private ShadowField<StringProperty, String> url = new ShadowField<>(SimpleStringProperty::new,
 			DEFAULT_WHATSSID_URL);
 
 	@Override
 	public String getUrl() {
-		return urlProperty.get();
+		return url.get();
 	}
 
 	@Override
 	public void setUrl(String url) {
-		this.urlProperty.set(url);
+		this.url.set(url);
 	}
 
 	public StringProperty urlProperty() {
-		return urlProperty.property();
+		return url.property();
 	}
 
-	private ShadowField<StringProperty, String> usernameProperty = new ShadowField<>(SimpleStringProperty::new,
+	private ShadowField<StringProperty, String> username = new ShadowField<>(SimpleStringProperty::new,
 			DEFAULT_WHATSSID_USERNAME);
 
 	@Override
 	public String getUsername() {
-		return usernameProperty.get();
+		return username.get();
 	}
 
 	@Override
 	public void setUsername(String username) {
-		this.usernameProperty.set(username);
+		this.username.set(username);
 	}
 
 	public StringProperty usernameProperty() {
-		return usernameProperty.property();
+		return username.property();
 	}
 
-	private ShadowField<StringProperty, String> passwordProperty = new ShadowField<>(SimpleStringProperty::new,
+	private ShadowField<StringProperty, String> password = new ShadowField<>(SimpleStringProperty::new,
 			DEFAULT_WHATSSID_PASSWORD);
 
 	@Override
 	public String getPassword() {
-		return passwordProperty.get();
+		return password.get();
 	}
 
 	@Override
 	public void setPassword(String password) {
-		this.passwordProperty.set(password);
+		this.password.set(password);
 	}
 
 	public StringProperty passwordProperty() {
-		return passwordProperty.property();
+		return password.property();
 	}
 
-	private ShadowField<ObjectProperty<Integer>, Integer> captureTimeProperty = new ShadowField<>(
-			SimpleObjectProperty::new, DEFAULT_WHATSSID_CAPTURE_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> captureTime = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_WHATSSID_CAPTURE_TIME);
 
 	@Override
 	public int getCaptureTime() {
-		return captureTimeProperty.get();
+		return captureTime.get();
 	}
 
 	@Override
 	public void setCaptureTime(int captureTime) {
-		this.captureTimeProperty.set(captureTime);
+		this.captureTime.set(captureTime);
 	}
 
 	public ObjectProperty<Integer> captureTimeProperty() {
-		return captureTimeProperty.property();
+		return captureTime.property();
 	}
 
-	private ShadowField<ObjectProperty<Integer>, Integer> matchStartTimeProperty = new ShadowField<>(
-			SimpleObjectProperty::new, DEFAULT_WHATSSID_MATCH_START_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> matchStartTime = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_WHATSSID_MATCH_START_TIME);
 
 	@Override
 	public int getMatchStartTime() {
-		return matchStartTimeProperty.get();
+		return matchStartTime.get();
 	}
 
 	@Override
 	public void setMatchStartTime(int matchStartTime) {
-		this.matchStartTimeProperty.set(matchStartTime);
+		this.matchStartTime.set(matchStartTime);
 	}
 
 	public ObjectProperty<Integer> matchStartTimeProperty() {
-		return matchStartTimeProperty.property();
+		return matchStartTime.property();
 	}
 
-	private ShadowField<ObjectProperty<Integer>, Integer> matchRetryTimeProperty = new ShadowField<>(
-			SimpleObjectProperty::new, DEFAULT_WHATSSID_MATCH_RETRY_TIME);
+	private ShadowField<ObjectProperty<Integer>, Integer> matchRetryTime = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 
 	@Override
 	public int getMatchRetryTime() {
-		return matchRetryTimeProperty.get();
+		return matchRetryTime.get();
 	}
 
 	@Override
 	public void setMatchRetryTime(int matchRetryTime) {
-		matchRetryTimeProperty.set(matchRetryTime);
+		this.matchRetryTime.set(matchRetryTime);
 	}
 
 	public ObjectProperty<Integer> matchRetryTimeProperty() {
-		return matchRetryTimeProperty.property();
+		return matchRetryTime.property();
 	}
 
-	private ShadowField<FloatProperty, Number> minimumRelativeConfidenceProperty = new ShadowField<>(
+	private ShadowField<FloatProperty, Number> minimumRelativeConfidence = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 
 	@Override
 	public float getMinimumRelativeConfidence() {
-		return minimumRelativeConfidenceProperty.get().floatValue();
+		return minimumRelativeConfidence.get().floatValue();
 	}
 
 	@Override
 	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
-		minimumRelativeConfidenceProperty.set(minimumRelativeConfidence);
+		this.minimumRelativeConfidence.set(minimumRelativeConfidence);
 	}
 
 	public FloatProperty minimumRelativeConfidenceProperty() {
-		return minimumRelativeConfidenceProperty.property();
+		return minimumRelativeConfidence.property();
 	}
 }

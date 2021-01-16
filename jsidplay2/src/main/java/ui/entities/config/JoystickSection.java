@@ -2,6 +2,12 @@ package ui.entities.config;
 
 import javax.persistence.Embeddable;
 
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import ui.common.properties.ShadowField;
+
 @Embeddable
 public class JoystickSection {
 
@@ -17,224 +23,324 @@ public class JoystickSection {
 	public static final float DEFAULT_COMPONENT_VALUE_RIGHT_2 = 1.f;
 	public static final float DEFAULT_COMPONENT_VALUE_BTN_2 = 1.f;
 
-	private String deviceName1;
+	private ShadowField<StringProperty, String> deviceName1 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getDeviceName1() {
-		return deviceName1;
+		return deviceName1.get();
 	}
 
 	public void setDeviceName1(String deviceName) {
-		this.deviceName1 = deviceName;
+		this.deviceName1.set(deviceName);
 	}
 
-	private String deviceName2;
+	public StringProperty deviceName1Property() {
+		return deviceName1.property();
+	}
+
+	private ShadowField<StringProperty, String> deviceName2 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getDeviceName2() {
-		return deviceName2;
+		return deviceName2.get();
 	}
 
 	public void setDeviceName2(String deviceName) {
-		this.deviceName2 = deviceName;
+		this.deviceName2.set(deviceName);
 	}
 
-	private String componentNameUp1;
+	public StringProperty deviceName2Property() {
+		return deviceName2.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameUp1 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameUp1() {
-		return componentNameUp1;
+		return componentNameUp1.get();
 	}
 
 	public void setComponentNameUp1(String componentNameUp) {
-		this.componentNameUp1 = componentNameUp;
+		this.componentNameUp1.set(componentNameUp);
 	}
 
-	private String componentNameUp2;
+	public StringProperty componentNameUp1Property() {
+		return componentNameUp1.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameUp2 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameUp2() {
-		return componentNameUp2;
+		return componentNameUp2.get();
 	}
 
 	public void setComponentNameUp2(String componentNameUp) {
-		this.componentNameUp2 = componentNameUp;
+		this.componentNameUp2.set(componentNameUp);
 	}
 
-	private String componentNameDown1;
+	public StringProperty componentNameUp2Property() {
+		return componentNameUp2.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameDown1 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameDown1() {
-		return componentNameDown1;
+		return componentNameDown1.get();
 	}
 
 	public void setComponentNameDown1(String componentNameDown) {
-		this.componentNameDown1 = componentNameDown;
+		this.componentNameDown1.set(componentNameDown);
 	}
 
-	private String componentNameDown2;
+	public StringProperty componentNameDown1Property() {
+		return componentNameDown1.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameDown2 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameDown2() {
-		return componentNameDown2;
+		return componentNameDown2.get();
 	}
 
 	public void setComponentNameDown2(String componentNameDown) {
-		this.componentNameDown2 = componentNameDown;
+		this.componentNameDown2.set(componentNameDown);
 	}
 
-	private String componentNameLeft1;
+	public StringProperty componentNameDown2Property() {
+		return componentNameDown2.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameLeft1 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameLeft1() {
-		return componentNameLeft1;
+		return componentNameLeft1.get();
 	}
 
 	public void setComponentNameLeft1(String componentNameLeft) {
-		this.componentNameLeft1 = componentNameLeft;
+		this.componentNameLeft1.set(componentNameLeft);
 	}
 
-	private String componentNameLeft2;
+	public StringProperty componentNameLeft1Property() {
+		return componentNameLeft1.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameLeft2 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameLeft2() {
-		return componentNameLeft2;
+		return componentNameLeft2.get();
 	}
 
 	public void setComponentNameLeft2(String componentNameLeft) {
-		this.componentNameLeft2 = componentNameLeft;
+		this.componentNameLeft2.set(componentNameLeft);
 	}
 
-	private String componentNameRight1;
+	public StringProperty componentNameLeft2Property() {
+		return componentNameLeft2.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameRight1 = new ShadowField<>(SimpleStringProperty::new,
+			null);
 
 	public String getComponentNameRight1() {
-		return componentNameRight1;
+		return componentNameRight1.get();
 	}
 
 	public void setComponentNameRight1(String componentNameRight) {
-		this.componentNameRight1 = componentNameRight;
+		this.componentNameRight1.set(componentNameRight);
 	}
 
-	private String componentNameRight2;
+	public StringProperty componentNameRight1Property() {
+		return componentNameRight1.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameRight2 = new ShadowField<>(SimpleStringProperty::new,
+			null);
 
 	public String getComponentNameRight2() {
-		return componentNameRight2;
+		return componentNameRight2.get();
 	}
 
 	public void setComponentNameRight2(String componentNameRight) {
-		this.componentNameRight2 = componentNameRight;
+		this.componentNameRight2.set(componentNameRight);
 	}
 
-	private String componentNameBtn1;
+	public StringProperty componentNameRight2Property() {
+		return componentNameRight2.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameBtn1 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameBtn1() {
-		return componentNameBtn1;
+		return componentNameBtn1.get();
 	}
 
 	public void setComponentNameBtn1(String componentNameBtn) {
-		this.componentNameBtn1 = componentNameBtn;
+		this.componentNameBtn1.set(componentNameBtn);
 	}
 
-	private String componentNameBtn2;
+	public StringProperty componentNameBtn1Property() {
+		return componentNameBtn1.property();
+	}
+
+	private ShadowField<StringProperty, String> componentNameBtn2 = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getComponentNameBtn2() {
-		return componentNameBtn2;
+		return componentNameBtn2.get();
 	}
 
 	public void setComponentNameBtn2(String componentNameBtn) {
-		this.componentNameBtn2 = componentNameBtn;
+		this.componentNameBtn2.set(componentNameBtn);
 	}
 
-	private float componentValueUp1 = DEFAULT_COMPONENT_VALUE_UP_1;
+	public StringProperty componentNameBtn2Property() {
+		return componentNameBtn2.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueUp1 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_UP_1);
 
 	public float getComponentValueUp1() {
-		return componentValueUp1;
+		return componentValueUp1.get().floatValue();
 	}
 
 	public void setComponentValueUp1(float componentValueUp) {
-		this.componentValueUp1 = componentValueUp;
+		this.componentValueUp1.set(componentValueUp);
 	}
 
-	private float componentValueUp2 = DEFAULT_COMPONENT_VALUE_UP_2;
+	public FloatProperty componentValueUp1Property() {
+		return componentValueUp1.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueUp2 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_UP_2);
 
 	public float getComponentValueUp2() {
-		return componentValueUp2;
+		return componentValueUp2.get().floatValue();
 	}
 
 	public void setComponentValueUp2(float componentValueUp) {
-		this.componentValueUp2 = componentValueUp;
+		this.componentValueUp2.set(componentValueUp);
 	}
 
-	private float componentValueDown1 = DEFAULT_COMPONENT_VALUE_DOWN_1;
+	public FloatProperty componentValueUp2Property() {
+		return componentValueUp2.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueDown1 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_DOWN_1);
 
 	public float getComponentValueDown1() {
-		return componentValueDown1;
+		return componentValueDown1.get().floatValue();
 	}
 
 	public void setComponentValueDown1(float componentValueDown) {
-		this.componentValueDown1 = componentValueDown;
+		this.componentValueDown1.set(componentValueDown);
 	}
 
-	private float componentValueDown2 = DEFAULT_COMPONENT_VALUE_DOWN_2;
+	public FloatProperty componentValueDown1Property() {
+		return componentValueDown1.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueDown2 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_DOWN_2);
 
 	public float getComponentValueDown2() {
-		return componentValueDown2;
+		return componentValueDown2.get().floatValue();
 	}
 
 	public void setComponentValueDown2(float componentValueDown) {
-		this.componentValueDown2 = componentValueDown;
+		this.componentValueDown2.set(componentValueDown);
 	}
 
-	private float componentValueLeft1 = DEFAULT_COMPONENT_VALUE_LEFT_1;
+	public FloatProperty componentValueDown2Property() {
+		return componentValueDown2.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueLeft1 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_LEFT_1);
 
 	public float getComponentValueLeft1() {
-		return componentValueLeft1;
+		return componentValueLeft1.get().floatValue();
 	}
 
 	public void setComponentValueLeft1(float componentValueLeft) {
-		this.componentValueLeft1 = componentValueLeft;
+		this.componentValueLeft1.set(componentValueLeft);
 	}
 
-	private float componentValueLeft2 = DEFAULT_COMPONENT_VALUE_LEFT_2;
+	public FloatProperty componentValueLeft1Property() {
+		return componentValueLeft1.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueLeft2 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_LEFT_2);
 
 	public float getComponentValueLeft2() {
-		return componentValueLeft2;
+		return componentValueLeft2.get().floatValue();
 	}
 
 	public void setComponentValueLeft2(float componentValueLeft) {
-		this.componentValueLeft2 = componentValueLeft;
+		this.componentValueLeft2.set(componentValueLeft);
 	}
 
-	private float componentValueRight1 = DEFAULT_COMPONENT_VALUE_RIGHT_1;
+	public FloatProperty componentValueLeft2Property() {
+		return componentValueLeft2.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueRight1 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_RIGHT_1);
 
 	public float getComponentValueRight1() {
-		return componentValueRight1;
+		return componentValueRight1.get().floatValue();
 	}
 
 	public void setComponentValueRight1(float componentValueRight) {
-		this.componentValueRight1 = componentValueRight;
+		this.componentValueRight1.set(componentValueRight);
 	}
 
-	private float componentValueRight2 = DEFAULT_COMPONENT_VALUE_RIGHT_2;
+	public FloatProperty componentValueRight1Property() {
+		return componentValueRight1.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueRight2 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_RIGHT_2);
 
 	public float getComponentValueRight2() {
-		return componentValueRight2;
+		return componentValueRight2.get().floatValue();
 	}
 
 	public void setComponentValueRight2(float componentValueRight) {
-		this.componentValueRight2 = componentValueRight;
+		this.componentValueRight2.set(componentValueRight);
 	}
 
-	private float componentValueBtn1 = DEFAULT_COMPONENT_VALUE_BTN_1;
+	public FloatProperty componentValueRight2Property() {
+		return componentValueRight2.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueBtn1 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_BTN_1);
 
 	public float getComponentValueBtn1() {
-		return componentValueBtn1;
+		return componentValueBtn1.get().floatValue();
 	}
 
 	public void setComponentValueBtn1(float componentValueBtn) {
-		this.componentValueBtn1 = componentValueBtn;
+		this.componentValueBtn1.set(componentValueBtn);
 	}
 
-	private float componentValueBtn2 = DEFAULT_COMPONENT_VALUE_BTN_2;
+	public FloatProperty componentValueBtn1Property() {
+		return componentValueBtn1.property();
+	}
+
+	private ShadowField<FloatProperty, Number> componentValueBtn2 = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_COMPONENT_VALUE_BTN_2);
 
 	public float getComponentValueBtn2() {
-		return componentValueBtn2;
+		return componentValueBtn2.get().floatValue();
 	}
 
 	public void setComponentValueBtn2(float componentValueBtn) {
-		this.componentValueBtn2 = componentValueBtn;
+		this.componentValueBtn2.set(componentValueBtn);
+	}
+
+	public FloatProperty componentValueBtn2Property() {
+		return componentValueBtn2.property();
 	}
 
 }

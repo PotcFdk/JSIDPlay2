@@ -348,7 +348,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
 		final File directory = fileDialog.showDialog(fileBrowser.getScene().getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(directory.getAbsolutePath());
+			util.getConfig().getSidplay2Section().setLastDirectory(directory);
 			Psid64 c = new Psid64();
 			c.setTmpDir(util.getConfig().getSidplay2Section().getTmpDir());
 			c.setVerbose(true);
@@ -490,7 +490,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(directory.getAbsolutePath());
+			util.getConfig().getSidplay2Section().setLastDirectory(directory);
 			setRoot(directory);
 		}
 	}

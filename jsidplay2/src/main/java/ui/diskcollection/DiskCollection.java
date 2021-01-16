@@ -237,7 +237,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(sidplay2.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(autoConfiguration.getScene().getWindow());
 		if (directory != null) {
-			sidplay2.setLastDirectory(directory.getAbsolutePath());
+			sidplay2.setLastDirectory(directory);
 			setRootFile(directory);
 		}
 	}

@@ -40,7 +40,7 @@ public interface IniDefaults {
 	boolean DEFAULT_LOOP = SIDPLAY2_SECTION.isLoop();
 	boolean DEFAULT_SINGLE_TRACK = SIDPLAY2_SECTION.isSingle();
 	File DEFAULT_HVSC_DIR = SIDPLAY2_SECTION.getHvsc();
-	String DEFAULT_LAST_DIR = SIDPLAY2_SECTION.getLastDirectory();
+	File DEFAULT_LAST_DIR = SIDPLAY2_SECTION.getLastDirectory();
 	boolean DEFAULT_PAL_EMULATION = SIDPLAY2_SECTION.isPalEmulation();
 	float DEFAULT_BRIGHTNESS = SIDPLAY2_SECTION.getBrightness();
 	float DEFAULT_CONTRAST = SIDPLAY2_SECTION.getContrast();

@@ -20,8 +20,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_TINT;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
 import java.io.File;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
@@ -77,89 +75,89 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.version = version;
 	}
 
-	private ShadowField<BooleanProperty, Boolean> enableDatabaseProperty = new ShadowField<>(SimpleBooleanProperty::new,
+	private ShadowField<BooleanProperty, Boolean> enableDatabase = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_ENABLE_DATABASE);
 
 	@Override
 	public boolean isEnableDatabase() {
-		return enableDatabaseProperty.get();
+		return enableDatabase.get();
 	}
 
 	@Override
 	public void setEnableDatabase(boolean isEnableDatabase) {
-		enableDatabaseProperty.set(isEnableDatabase);
+		enableDatabase.set(isEnableDatabase);
 	}
 
 	public BooleanProperty enableDatabaseProperty() {
-		return enableDatabaseProperty.property();
+		return enableDatabase.property();
 	}
 
-	private ShadowField<DoubleProperty, Number> startTimeProperty = new ShadowField<>(
+	private ShadowField<DoubleProperty, Number> startTime = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_START_TIME);
 
 	@Override
 	public double getStartTime() {
-		return startTimeProperty.get().doubleValue();
+		return startTime.get().doubleValue();
 	}
 
 	@Override
 	public void setStartTime(double startTime) {
-		startTimeProperty.set(startTime);
+		this.startTime.set(startTime);
 	}
 
 	public DoubleProperty startTimeProperty() {
-		return startTimeProperty.property();
+		return startTime.property();
 	}
 
-	private ShadowField<DoubleProperty, Number> defaultPlayLengthProperty = new ShadowField<>(
+	private ShadowField<DoubleProperty, Number> defaultPlayLength = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_PLAY_LENGTH);
 
 	@Override
 	public double getDefaultPlayLength() {
-		return defaultPlayLengthProperty.get().doubleValue();
+		return defaultPlayLength.get().doubleValue();
 	}
 
 	@Override
 	public void setDefaultPlayLength(double defaultPlayLength) {
-		defaultPlayLengthProperty.set(defaultPlayLength);
+		this.defaultPlayLength.set(defaultPlayLength);
 	}
 
 	public DoubleProperty defaultPlayLengthProperty() {
-		return defaultPlayLengthProperty.property();
+		return defaultPlayLength.property();
 	}
 
-	private ShadowField<DoubleProperty, Number> fadeInTimeProperty = new ShadowField<>(
+	private ShadowField<DoubleProperty, Number> fadeInTime = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FADE_IN_TIME);
 
 	@Override
 	public double getFadeInTime() {
-		return fadeInTimeProperty.get().doubleValue();
+		return fadeInTime.get().doubleValue();
 	}
 
 	@Override
 	public void setFadeInTime(double fadeInTime) {
-		fadeInTimeProperty.set(fadeInTime);
+		this.fadeInTime.set(fadeInTime);
 	}
 
 	public DoubleProperty fadeInTimeProperty() {
-		return fadeInTimeProperty.property();
+		return fadeInTime.property();
 	}
 
-	private ShadowField<DoubleProperty, Number> fadeOutTimeProperty = new ShadowField<>(
+	private ShadowField<DoubleProperty, Number> fadeOutTime = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FADE_OUT_TIME);
 
 	@Override
 	public double getFadeOutTime() {
-		return fadeOutTimeProperty.get().doubleValue();
+		return fadeOutTime.get().doubleValue();
 	}
 
 	@Override
 	public void setFadeOutTime(double fadeOutTime) {
-		fadeOutTimeProperty.set(fadeOutTime);
+		this.fadeOutTime.set(fadeOutTime);
 	}
 
 	public DoubleProperty fadeOutTimeProperty() {
-		return fadeOutTimeProperty.property();
+		return fadeOutTime.property();
 	}
 
 	private ShadowField<ObjectProperty<PlaybackType>, PlaybackType> playbackType = new ShadowField<>(
@@ -178,38 +176,37 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return playbackType.property();
 	}
 
-	private ShadowField<BooleanProperty, Boolean> loopProperty = new ShadowField<>(SimpleBooleanProperty::new,
-			DEFAULT_LOOP);
+	private ShadowField<BooleanProperty, Boolean> loop = new ShadowField<>(SimpleBooleanProperty::new, DEFAULT_LOOP);
 
 	@Override
 	public boolean isLoop() {
-		return loopProperty.get();
+		return loop.get();
 	}
 
 	@Override
 	public void setLoop(boolean loop) {
-		this.loopProperty.set(loop);
+		this.loop.set(loop);
 	}
 
 	public BooleanProperty loopProperty() {
-		return loopProperty.property();
+		return loop.property();
 	}
 
-	private ShadowField<BooleanProperty, Boolean> singleProperty = new ShadowField<>(SimpleBooleanProperty::new,
+	private ShadowField<BooleanProperty, Boolean> single = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_SINGLE_TRACK);
 
 	@Override
 	public boolean isSingle() {
-		return singleProperty.get();
+		return single.get();
 	}
 
 	@Override
 	public void setSingle(boolean isSingle) {
-		singleProperty.set(isSingle);
+		single.set(isSingle);
 	}
 
 	public BooleanProperty singleProperty() {
-		return singleProperty.property();
+		return single.property();
 	}
 
 	private ShadowField<ObjectProperty<File>, File> hvmec = new ShadowField<>(SimpleObjectProperty::new, null);
@@ -310,75 +307,400 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gameBase64.property();
 	}
 
-	private ShadowField<BooleanProperty, Boolean> enableProxyProperty = new ShadowField<>(SimpleBooleanProperty::new,
+	private ShadowField<BooleanProperty, Boolean> enableProxy = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_ENABLE_PROXY);
 
 	public boolean isEnableProxy() {
-		return enableProxyProperty.get();
+		return enableProxy.get();
 	}
 
 	public void setEnableProxy(boolean isEnableProxy) {
-		singleProperty.set(isEnableProxy);
+		single.set(isEnableProxy);
 	}
 
 	public BooleanProperty enableProxyProperty() {
-		return enableProxyProperty.property();
+		return enableProxy.property();
 	}
 
-	private ShadowField<StringProperty, String> proxyHostnameProperty = new ShadowField<>(SimpleStringProperty::new,
-			null);
+	private ShadowField<StringProperty, String> proxyHostname = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public StringProperty proxyHostnameProperty() {
-		return proxyHostnameProperty.property();
+		return proxyHostname.property();
 	}
 
 	public String getProxyHostname() {
-		return proxyHostnameProperty.get();
+		return proxyHostname.get();
 	}
 
 	public void setProxyHostname(String hostname) {
-		this.proxyHostnameProperty.set(hostname);
+		this.proxyHostname.set(hostname);
 	}
 
-	private ShadowField<ObjectProperty<Integer>, Integer> proxyPortProperty = new ShadowField<>(
-			SimpleObjectProperty::new, DEFAULT_PROXY_PORT);
+	private ShadowField<ObjectProperty<Integer>, Integer> proxyPort = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_PROXY_PORT);
 
 	public ObjectProperty<Integer> proxyPortProperty() {
-		return proxyPortProperty.property();
+		return proxyPort.property();
 	}
 
 	public int getProxyPort() {
-		return proxyPortProperty.get();
+		return proxyPort.get();
 	}
 
 	public void setProxyPort(int port) {
-		this.proxyPortProperty.set(port);
+		this.proxyPort.set(port);
 	}
 
-	@Transient
-	public Proxy getProxy() {
-		if (isEnableProxy()) {
-			return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(getProxyHostname(), getProxyPort()));
-		} else {
-			return Proxy.NO_PROXY;
-		}
-	}
-
-	private ShadowField<StringProperty, String> lastDirectoryProperty = new ShadowField<>(SimpleStringProperty::new,
-			null);
+	private ShadowField<ObjectProperty<File>, File> lastDirectory = new ShadowField<>(SimpleObjectProperty::new, null);
 
 	@Override
-	public String getLastDirectory() {
-		return lastDirectoryProperty.get();
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	public File getLastDirectory() {
+		return lastDirectory.get();
 	}
 
 	@Override
-	public void setLastDirectory(String lastDirectory) {
-		this.lastDirectoryProperty.set(lastDirectory);
+	public void setLastDirectory(File lastDirectory) {
+		this.lastDirectory.set(lastDirectory);
 	}
 
-	public StringProperty lastDirectoryProperty() {
-		return lastDirectoryProperty.property();
+	public ObjectProperty<File> lastDirectoryProperty() {
+		return lastDirectory.property();
+	}
+
+	private ShadowField<StringProperty, String> tmpDir = new ShadowField<>(SimpleStringProperty::new, DEFAULT_TMP_DIR);
+
+	@Override
+	public String getTmpDir() {
+		return tmpDir.get();
+	}
+
+	@Override
+	public void setTmpDir(String tmpDir) {
+		this.tmpDir.set(tmpDir);
+	}
+
+	public StringProperty tmpDirProperty() {
+		return tmpDir.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameX = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_X);
+
+	public int getFrameX() {
+		return frameX.get().intValue();
+	}
+
+	public void setFrameX(int frameX) {
+		this.frameX.set(frameX);
+	}
+
+	public IntegerProperty frameXProperty() {
+		return frameX.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameY = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_Y);
+
+	public int getFrameY() {
+		return frameY.get().intValue();
+	}
+
+	public void setFrameY(int frameY) {
+		this.frameY.set(frameY);
+	}
+
+	public IntegerProperty frameYProperty() {
+		return frameY.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameWidth = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_WIDTH);
+
+	public int getFrameWidth() {
+		return frameWidth.get().intValue();
+	}
+
+	public void setFrameWidth(int frameWidth) {
+		this.frameWidth.set(frameWidth);
+	}
+
+	public IntegerProperty frameWidthProperty() {
+		return frameWidth.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> frameHeight = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_HEIGHT);
+
+	public int getFrameHeight() {
+		return frameHeight.get().intValue();
+	}
+
+	public void setFrameHeight(int frameHeight) {
+		this.frameHeight.set(frameHeight);
+	}
+
+	public IntegerProperty frameHeightProperty() {
+		return frameHeight.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> minimized = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_MINIMIZED);
+
+	public boolean isMinimized() {
+		return minimized.get();
+	}
+
+	public void setMinimized(boolean isMinimized) {
+		minimized.set(isMinimized);
+	}
+
+	public BooleanProperty minimizedProperty() {
+		return minimized.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> minimizedWidth = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), 0);
+
+	public int getMinimizedWidth() {
+		return minimizedWidth.get().intValue();
+	}
+
+	public void setMinimizedWidth(int minimizedWidth) {
+		this.minimizedWidth.set(minimizedWidth);
+	}
+
+	public IntegerProperty minimizedWidthProperty() {
+		return minimizedWidth.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> minimizedProperty = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), 0);
+
+	public int getMinimizedHeight() {
+		return minimizedProperty.get().intValue();
+	}
+
+	public void setMinimizedHeight(int minimizedHeight) {
+		this.minimizedProperty.set(minimizedHeight);
+	}
+
+	private ShadowField<FloatProperty, Number> videoScaling = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_VIDEO_SCALING);
+
+	public float getVideoScaling() {
+		return videoScaling.get().floatValue();
+	}
+
+	public void setVideoScaling(float videoScaling) {
+		this.videoScaling.set(videoScaling);
+	}
+
+	public FloatProperty videoScalingProperty() {
+		return videoScaling.property();
+	}
+
+	private ShadowField<ObjectProperty<Boolean>, Boolean> showMonitor = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_SHOW_MONITOR);
+
+	public boolean isShowMonitor() {
+		return showMonitor.get();
+	}
+
+	public void setShowMonitor(boolean showMonitor) {
+		this.showMonitor.set(showMonitor);
+	}
+
+	public ObjectProperty<Boolean> showMonitorProperty() {
+		return showMonitor.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> palEmulation = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_PAL_EMULATION);
+
+	public BooleanProperty palEmulationProperty() {
+		return palEmulation.property();
+	}
+
+	@Override
+	public boolean isPalEmulation() {
+		return palEmulation.get();
+	}
+
+	@Override
+	public void setPalEmulation(boolean isPalEmulation) {
+		palEmulation.set(isPalEmulation);
+	}
+
+	private ShadowField<FloatProperty, Number> brightness = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BRIGHTNESS);
+
+	@Override
+	public float getBrightness() {
+		return brightness.get().floatValue();
+	}
+
+	@Override
+	public void setBrightness(float brightness) {
+		this.brightness.set(brightness);
+	}
+
+	public final FloatProperty brightnessProperty() {
+		return brightness.property();
+	}
+
+	private ShadowField<FloatProperty, Number> contrast = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_CONTRAST);
+
+	@Override
+	public float getContrast() {
+		return contrast.get().floatValue();
+	}
+
+	@Override
+	public void setContrast(float contrast) {
+		this.contrast.set(contrast);
+	}
+
+	public final FloatProperty contrastProperty() {
+		return contrast.property();
+	}
+
+	private ShadowField<FloatProperty, Number> gamma = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_GAMMA);
+
+	@Override
+	public float getGamma() {
+		return gamma.get().floatValue();
+	}
+
+	@Override
+	public void setGamma(float gamma) {
+		this.gamma.set(gamma);
+	}
+
+	public final FloatProperty gammaProperty() {
+		return gamma.property();
+	}
+
+	private ShadowField<FloatProperty, Number> saturation = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SATURATION);
+
+	@Override
+	public float getSaturation() {
+		return saturation.get().floatValue();
+	}
+
+	@Override
+	public void setSaturation(float saturation) {
+		this.saturation.set(saturation);
+	}
+
+	public final FloatProperty saturationProperty() {
+		return saturation.property();
+	}
+
+	private ShadowField<FloatProperty, Number> phaseShift = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_PHASE_SHIFT);
+
+	@Override
+	public float getPhaseShift() {
+		return phaseShift.get().floatValue();
+	}
+
+	@Override
+	public void setPhaseShift(float phaseShift) {
+		this.phaseShift.set(phaseShift);
+	}
+
+	public final FloatProperty phaseShiftProperty() {
+		return phaseShift.property();
+	}
+
+	private ShadowField<FloatProperty, Number> offset = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_OFFSET);
+
+	@Override
+	public float getOffset() {
+		return offset.get().floatValue();
+	}
+
+	@Override
+	public void setOffset(float offset) {
+		this.offset.set(offset);
+	}
+
+	public final FloatProperty offsetProperty() {
+		return offset.property();
+	}
+
+	private ShadowField<FloatProperty, Number> tint = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_TINT);
+
+	@Override
+	public float getTint() {
+		return tint.get().floatValue();
+	}
+
+	@Override
+	public void setTint(float tint) {
+		this.tint.set(tint);
+	}
+
+	public final FloatProperty tintProperty() {
+		return tint.property();
+	}
+
+	private ShadowField<FloatProperty, Number> blur = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLUR);
+
+	@Override
+	public float getBlur() {
+		return blur.get().floatValue();
+	}
+
+	@Override
+	public void setBlur(float blur) {
+		this.blur.set(blur);
+	}
+
+	public final FloatProperty blurProperty() {
+		return blur.property();
+	}
+
+	private ShadowField<FloatProperty, Number> bleed = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLEED);
+
+	@Override
+	public float getBleed() {
+		return bleed.get().floatValue();
+	}
+
+	@Override
+	public void setBleed(float bleed) {
+		this.bleed.set(bleed);
+	}
+
+	public final FloatProperty bleedProperty() {
+		return bleed.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> turboTape = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_TURBO_TAPE);
+
+	@Override
+	public boolean isTurboTape() {
+		return turboTape.get();
+	}
+
+	@Override
+	public void setTurboTape(boolean turboTape) {
+		this.turboTape.set(turboTape);
+	}
+
+	public BooleanProperty turboTapeProperty() {
+		return turboTape.property();
 	}
 
 	@Transient
@@ -389,338 +711,4 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return null;
 	}
 
-	private ShadowField<StringProperty, String> tmpDirProperty = new ShadowField<>(SimpleStringProperty::new,
-			DEFAULT_TMP_DIR);
-
-	@Override
-	public String getTmpDir() {
-		return tmpDirProperty.get();
-	}
-
-	@Override
-	public void setTmpDir(String tmpDir) {
-		this.tmpDirProperty.set(tmpDir);
-	}
-
-	public StringProperty tmpDirProperty() {
-		return tmpDirProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> frameXProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_X);
-
-	public int getFrameX() {
-		return frameXProperty.get().intValue();
-	}
-
-	public void setFrameX(int frameX) {
-		this.frameXProperty.set(frameX);
-	}
-
-	public IntegerProperty frameXProperty() {
-		return frameXProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> frameYProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_Y);
-
-	public int getFrameY() {
-		return frameYProperty.get().intValue();
-	}
-
-	public void setFrameY(int frameY) {
-		this.frameYProperty.set(frameY);
-	}
-
-	public IntegerProperty frameYProperty() {
-		return frameYProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> frameWidthProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_WIDTH);
-
-	public int getFrameWidth() {
-		return frameWidthProperty.get().intValue();
-	}
-
-	public void setFrameWidth(int frameWidth) {
-		this.frameWidthProperty.set(frameWidth);
-	}
-
-	public IntegerProperty frameWidthProperty() {
-		return frameWidthProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> frameHeightProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_HEIGHT);
-
-	public int getFrameHeight() {
-		return frameHeightProperty.get().intValue();
-	}
-
-	public void setFrameHeight(int frameHeight) {
-		this.frameHeightProperty.set(frameHeight);
-	}
-
-	public IntegerProperty frameHeightProperty() {
-		return frameHeightProperty.property();
-	}
-
-	private ShadowField<BooleanProperty, Boolean> minimizedProperty = new ShadowField<>(SimpleBooleanProperty::new,
-			DEFAULT_MINIMIZED);
-
-	public boolean isMinimized() {
-		return minimizedProperty.get();
-	}
-
-	public void setMinimized(boolean isMinimized) {
-		minimizedProperty.set(isMinimized);
-	}
-
-	public BooleanProperty minimizedProperty() {
-		return minimizedProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> minimizedWidthProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
-
-	public int getMinimizedWidth() {
-		return minimizedWidthProperty.get().intValue();
-	}
-
-	public void setMinimizedWidth(int minimizedWidth) {
-		this.minimizedWidthProperty.set(minimizedWidth);
-	}
-
-	public IntegerProperty minimizedWidthProperty() {
-		return minimizedWidthProperty.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> minimizedHeightProperty = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
-
-	public int getMinimizedHeight() {
-		return minimizedHeightProperty.get().intValue();
-	}
-
-	public void setMinimizedHeight(int minimizedHeight) {
-		this.minimizedHeightProperty.set(minimizedHeight);
-	}
-
-	private ShadowField<FloatProperty, Number> videoScalingProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_VIDEO_SCALING);
-
-	public float getVideoScaling() {
-		return videoScalingProperty.get().floatValue();
-	}
-
-	public void setVideoScaling(float videoScaling) {
-		videoScalingProperty.set(videoScaling);
-	}
-
-	public FloatProperty videoScalingProperty() {
-		return videoScalingProperty.property();
-	}
-
-	private ShadowField<ObjectProperty<Boolean>, Boolean> showMonitorProperty = new ShadowField<>(
-			SimpleObjectProperty::new, DEFAULT_SHOW_MONITOR);
-
-	public boolean isShowMonitor() {
-		return showMonitorProperty.get();
-	}
-
-	public void setShowMonitor(boolean showMonitor) {
-		showMonitorProperty.set(showMonitor);
-	}
-
-	public ObjectProperty<Boolean> showMonitorProperty() {
-		return showMonitorProperty.property();
-	}
-
-	private ShadowField<BooleanProperty, Boolean> palEmulationProperty = new ShadowField<>(SimpleBooleanProperty::new,
-			DEFAULT_PAL_EMULATION);
-
-	public BooleanProperty palEmulationProperty() {
-		return palEmulationProperty.property();
-	}
-
-	@Override
-	public boolean isPalEmulation() {
-		return palEmulationProperty.get();
-	}
-
-	@Override
-	public void setPalEmulation(boolean isPalEmulation) {
-		palEmulationProperty.set(isPalEmulation);
-	}
-
-	private ShadowField<FloatProperty, Number> brightnessProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BRIGHTNESS);
-
-	@Override
-	public float getBrightness() {
-		return brightnessProperty.get().floatValue();
-	}
-
-	@Override
-	public void setBrightness(float brightness) {
-		this.brightnessProperty.set(brightness);
-	}
-
-	public final FloatProperty brightnessProperty() {
-		return brightnessProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> contrastProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_CONTRAST);
-
-	@Override
-	public float getContrast() {
-		return contrastProperty.get().floatValue();
-	}
-
-	@Override
-	public void setContrast(float contrast) {
-		this.contrastProperty.set(contrast);
-	}
-
-	public final FloatProperty contrastProperty() {
-		return contrastProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> gammaProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_GAMMA);
-
-	@Override
-	public float getGamma() {
-		return gammaProperty.get().floatValue();
-	}
-
-	@Override
-	public void setGamma(float gamma) {
-		this.gammaProperty.set(gamma);
-	}
-
-	public final FloatProperty gammaProperty() {
-		return gammaProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> saturationProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SATURATION);
-
-	@Override
-	public float getSaturation() {
-		return saturationProperty.get().floatValue();
-	}
-
-	@Override
-	public void setSaturation(float saturation) {
-		this.saturationProperty.set(saturation);
-	}
-
-	public final FloatProperty saturationProperty() {
-		return saturationProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> phaseShiftProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_PHASE_SHIFT);
-
-	@Override
-	public float getPhaseShift() {
-		return phaseShiftProperty.get().floatValue();
-	}
-
-	@Override
-	public void setPhaseShift(float phaseShift) {
-		this.phaseShiftProperty.set(phaseShift);
-	}
-
-	public final FloatProperty phaseShiftProperty() {
-		return phaseShiftProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> offsetProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_OFFSET);
-
-	@Override
-	public float getOffset() {
-		return offsetProperty.get().floatValue();
-	}
-
-	@Override
-	public void setOffset(float offset) {
-		this.offsetProperty.set(offset);
-	}
-
-	public final FloatProperty offsetProperty() {
-		return offsetProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> tintProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_TINT);
-
-	@Override
-	public float getTint() {
-		return tintProperty.get().floatValue();
-	}
-
-	@Override
-	public void setTint(float tint) {
-		this.tintProperty.set(tint);
-	}
-
-	public final FloatProperty tintProperty() {
-		return tintProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> blurProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLUR);
-
-	@Override
-	public float getBlur() {
-		return blurProperty.get().floatValue();
-	}
-
-	@Override
-	public void setBlur(float blur) {
-		this.blurProperty.set(blur);
-	}
-
-	public final FloatProperty blurProperty() {
-		return blurProperty.property();
-	}
-
-	private ShadowField<FloatProperty, Number> bleedProperty = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLEED);
-
-	@Override
-	public float getBleed() {
-		return bleedProperty.get().floatValue();
-	}
-
-	@Override
-	public void setBleed(float bleed) {
-		this.bleedProperty.set(bleed);
-	}
-
-	public final FloatProperty bleedProperty() {
-		return bleedProperty.property();
-	}
-
-	private ShadowField<BooleanProperty, Boolean> turboTapeProperty = new ShadowField<>(SimpleBooleanProperty::new,
-			DEFAULT_TURBO_TAPE);
-
-	@Override
-	public boolean isTurboTape() {
-		return turboTapeProperty.get();
-	}
-
-	@Override
-	public void setTurboTape(boolean turboTape) {
-		turboTapeProperty.set(turboTape);
-	}
-
-	public BooleanProperty turboTapeProperty() {
-		return turboTapeProperty.property();
-	}
 }

@@ -228,7 +228,7 @@ public class SidReg extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveRegs.getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".csv");
 			try (PrintStream ps = new PrintStream(target)) {
 				SidRegDriver.writeHeader(ps);

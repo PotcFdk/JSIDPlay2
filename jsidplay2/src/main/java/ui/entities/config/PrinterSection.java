@@ -15,21 +15,21 @@ import ui.common.properties.ShadowField;
 @Access(AccessType.PROPERTY)
 public class PrinterSection implements IPrinterSection {
 
-	private ShadowField<BooleanProperty, Boolean> printerOnProperty = new ShadowField<>(SimpleBooleanProperty::new,
+	private ShadowField<BooleanProperty, Boolean> printerOn = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_PRINTER_ON);
 
 	@Override
 	public boolean isPrinterOn() {
-		return printerOnProperty.get();
+		return printerOn.get();
 	}
 
 	@Override
 	public void setPrinterOn(boolean printerOn) {
-		printerOnProperty.set(printerOn);
+		this.printerOn.set(printerOn);
 	}
 
 	public BooleanProperty printerOnProperty() {
-		return printerOnProperty.property();
+		return printerOn.property();
 	}
 
 }

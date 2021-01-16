@@ -318,7 +318,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			try {
 				playTune(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
@@ -335,7 +335,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				.add(new ExtensionFilter(TuneFileExtensions.DESCRIPTION, TuneFileExtensions.EXTENSIONS));
 		final File file = fileDialog.showSaveDialog(getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			try {
 				util.getPlayer().getTune().save(file.getAbsolutePath());
 			} catch (IOException e) {
@@ -631,7 +631,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		fileDialog.setTitle(util.getBundle().getString("INSERT_EMPTY_DISK"));
 		final File file = fileDialog.showSaveDialog(getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".d64");
 			try (DataOutputStream os = new DataOutputStream(new FileOutputStream(target))) {
 				os.write(EMPTY_DISK);

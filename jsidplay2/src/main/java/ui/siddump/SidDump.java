@@ -138,7 +138,7 @@ public class SidDump extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		final File file = fileDialog.showOpenDialog(loadDump.getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			sidDumpExtension.load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension.getNoteSpacing()));
 			patternSpacing.setText(String.valueOf(sidDumpExtension.getPatternSpacing()));
@@ -158,7 +158,7 @@ public class SidDump extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectoryFolder());
 		final File file = fileDialog.showSaveDialog(saveDump.getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}

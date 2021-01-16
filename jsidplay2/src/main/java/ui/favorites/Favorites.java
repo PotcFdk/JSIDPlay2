@@ -237,7 +237,7 @@ public class Favorites extends C64VBox implements UIPart {
 		final List<File> files = fileDialog.showOpenMultipleDialog(favoritesList.getScene().getWindow());
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			Tab tab = getSelectedTab();
 
 			FavoritesTab selectedTab = (FavoritesTab) tab.getContent();
@@ -270,7 +270,7 @@ public class Favorites extends C64VBox implements UIPart {
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			try {
 				((FavoritesTab) getSelectedTab().getContent()).loadFavorites(file);
 			} catch (IOException e1) {
@@ -287,7 +287,7 @@ public class Favorites extends C64VBox implements UIPart {
 				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSION));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
-			util.getConfig().getSidplay2Section().setLastDirectory(file.getParent());
+			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".js2");
 			try {
 				((FavoritesTab) getSelectedTab().getContent()).saveFavorites(target);

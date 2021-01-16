@@ -152,12 +152,12 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public final String getLastDirectory() {
-		return iniReader.getPropertyString("SIDPlay2", "Last Directory", DEFAULT_LAST_DIR);
+	public final File getLastDirectory() {
+		return iniReader.getPropertyFile("SIDPlay2", "Last Directory", DEFAULT_LAST_DIR);
 	}
 
 	@Override
-	public final void setLastDirectory(final String lastDir) {
+	public final void setLastDirectory(final File lastDir) {
 		iniReader.setProperty("SIDPlay2", "Last Directory", lastDir);
 	}
 

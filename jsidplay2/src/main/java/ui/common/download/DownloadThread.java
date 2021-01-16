@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -27,6 +26,7 @@ import java.util.zip.CheckedInputStream;
 import de.schlichtherle.truezip.file.TFile;
 import libsidutils.InternetUtils;
 import ui.entities.config.Configuration;
+import ui.entities.config.SidPlay2Section;
 
 /**
  * DownloadManager downloads a large file from a server. If the file is splitted
@@ -163,9 +163,9 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private boolean checkExistingURL(URL currentURL) {
+		SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		try {
-			Proxy proxy = config.getSidplay2Section().getProxy();
-			URLConnection connection = InternetUtils.openConnection(currentURL, proxy);
+			URLConnection connection = InternetUtils.openConnection(currentURL, sidplay2Section);
 			return connection.getContentLength() >= 0;
 		} catch (IOException e) {
 			return false;
@@ -173,6 +173,8 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	}
 
 	private File download(URL currentURL, boolean retry, boolean useAlreadyAvailableFile) throws IOException {
+		SidPlay2Section sidplay2Section = config.getSidplay2Section();
+
 		String decoded = URLDecoder.decode(currentURL.toString(), UTF_8.name());
 		int tries = 0;
 		do {
@@ -180,8 +182,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 			FileOutputStream fos = null;
 			try {
-				Proxy proxy = config.getSidplay2Section().getProxy();
-				URLConnection connection = InternetUtils.openConnection(currentURL, proxy);
+				URLConnection connection = InternetUtils.openConnection(currentURL, sidplay2Section);
 				currentURL = connection.getURL();
 				long contentLength = connection.getContentLengthLong();
 				File file = createLocalFile(currentURL);

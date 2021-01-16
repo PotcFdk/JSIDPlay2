@@ -246,7 +246,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(sidplay2Section.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene().getWindow());
 		if (directory != null) {
-			sidplay2Section.setLastDirectory(directory.getAbsolutePath());
+			sidplay2Section.setLastDirectory(directory);
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel().getSelectedItems()) {
 				File file = getHVSCFile(hvscEntry);
 				copyToUniqueName(file, directory, file.getName(), 1);
@@ -289,7 +289,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		fileDialog.setInitialDirectory(sidPlay2Section.getLastDirectoryFolder());
 		File directory = fileDialog.showDialog(favoritesTable.getScene().getWindow());
 		if (directory != null) {
-			sidPlay2Section.setLastDirectory(directory.getAbsolutePath());
+			sidPlay2Section.setLastDirectory(directory);
 			final ArrayList<File> files = new ArrayList<>();
 			for (HVSCEntry hvscEntry : favoritesTable.getSelectionModel().getSelectedItems()) {
 				files.add(getHVSCFile(hvscEntry));

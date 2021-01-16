@@ -1,7 +1,6 @@
 package ui.update;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
@@ -20,6 +19,7 @@ import libsidutils.InternetUtils;
 import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.common.C64Window;
+import ui.entities.config.SidPlay2Section;
 
 public class Update extends C64Window {
 
@@ -42,6 +42,8 @@ public class Update extends C64Window {
 	@FXML
 	@Override
 	protected void initialize() {
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
+
 		update.setText(util.getBundle().getString("PLEASE_WAIT"));
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(1000));
 		SequentialTransition sequentialTransition = new SequentialTransition(pauseTransition);
@@ -59,8 +61,7 @@ public class Update extends C64Window {
 			int[] latestVersion = null;
 			try {
 				Properties latestProperties = new Properties();
-				Proxy proxy = util.getConfig().getSidplay2Section().getProxy();
-				URLConnection connection = InternetUtils.openConnection(new URL(ONLINE_VERSION_RES), proxy);
+				URLConnection connection = InternetUtils.openConnection(new URL(ONLINE_VERSION_RES), sidplay2Section);
 				latestProperties.load(connection.getInputStream());
 				latestVersion = getVersionNumbers(latestProperties.getProperty("version"));
 			} catch (NullPointerException | IOException e) {

@@ -21,6 +21,8 @@ import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.input.KeyCode.U;
 import static javafx.scene.input.KeyCode.UNDERSCORE;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class CIATest extends JSIDPlay2Test {
 
 	@Before
 	public void before() {
-		config.getSidplay2Section().setLastDirectory("src/test/resources/cia");
+		config.getSidplay2Section().setLastDirectory(new File("src/test/resources/cia"));
 	}
 
 	@Test

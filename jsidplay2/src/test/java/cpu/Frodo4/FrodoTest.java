@@ -21,6 +21,8 @@ import static javafx.scene.input.KeyCode.S;
 import static javafx.scene.input.KeyCode.Y;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class FrodoTest extends JSIDPlay2Test {
 
 	@Before
 	public void before() {
-		config.getSidplay2Section().setLastDirectory("src/test/resources/cpu/Frodo4");
+		config.getSidplay2Section().setLastDirectory(new File("src/test/resources/cpu/Frodo4"));
 	}
 
 	@Test

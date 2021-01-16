@@ -439,7 +439,7 @@ public class HardwareEnsemble implements Ultimate64 {
 		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.OFF) {
 			sendInsertDisk(config, file);
 		}
-		config.getSidplay2Section().setLastDirectory(file.getParent());
+		config.getSidplay2Section().setLastDirectory(file.getParentFile());
 		if (config.getEmulationSection().getUltimate64Mode() != Ultimate64Mode.STANDALONE) {
 			// automatically turn drive on
 			config.getC1541Section().setDriveOn(true);
@@ -482,7 +482,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	 * @throws IOException image read error
 	 */
 	public final void insertTape(final File file) throws IOException, SidTuneError {
-		config.getSidplay2Section().setLastDirectory(file.getParent());
+		config.getSidplay2Section().setLastDirectory(file.getParentFile());
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
 			final String tmpDir = config.getSidplay2Section().getTmpDir();
@@ -524,7 +524,7 @@ public class HardwareEnsemble implements Ultimate64 {
 	 * @throws IOException image read error
 	 */
 	public final void insertCartridge(final CartridgeType type, final File file) throws IOException {
-		config.getSidplay2Section().setLastDirectory(file.getParent());
+		config.getSidplay2Section().setLastDirectory(file.getParentFile());
 		c64.ejectCartridge();
 		c64.setCartridge(type, file);
 	}

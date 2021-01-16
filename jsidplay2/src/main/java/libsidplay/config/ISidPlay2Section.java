@@ -107,14 +107,14 @@ public interface ISidPlay2Section {
 	 *
 	 * @return the last accessed directory in the file browser
 	 */
-	String getLastDirectory();
+	File getLastDirectory();
 
 	/**
 	 * Setter of the last accessed directory in the file browser.
 	 *
 	 * @param lastDir the last accessed directory in the file browser
 	 */
-	void setLastDirectory(String lastDir);
+	void setLastDirectory(File lastDir);
 
 	/**
 	 * Getter of the temporary directory for JSIDPlay2.
