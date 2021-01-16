@@ -146,8 +146,7 @@ public class EmulationSection implements IEmulationSection {
 	public static final int DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT = 30001;
 
 	private static final List<DeviceMapping> DEFAULT_SIDBLASTER_DEVICES = DEFAULT_SIDBLASTER_DEVICE_LIST.stream()
-			.map(deviceMapping -> new DeviceMapping(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true))
-			.collect(Collectors.toList());
+			.map(DeviceMapping::new).collect(Collectors.toList());
 
 	private ShadowField<ObjectProperty<Engine>, Engine> engine = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_ENGINE);

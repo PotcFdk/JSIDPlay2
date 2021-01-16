@@ -71,6 +71,10 @@ public class DeviceMapping implements IDeviceMapping {
 		super();
 	}
 
+	public DeviceMapping(IDeviceMapping deviceMapping) {
+		this(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true);
+	}
+
 	public DeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
 		this.serialNum = serialNum;
 		this.chipModel = chipModel;
