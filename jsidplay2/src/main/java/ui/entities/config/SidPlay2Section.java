@@ -484,6 +484,36 @@ public class SidPlay2Section implements ISidPlay2Section {
 		this.minimizedProperty.set(minimizedHeight);
 	}
 
+	private ShadowField<IntegerProperty, Number> minimizedX = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), 0);
+
+	public int getMinimizedX() {
+		return minimizedX.get().intValue();
+	}
+
+	public void setMinimizedX(int minimizedX) {
+		this.minimizedX.set(minimizedX);
+	}
+
+	public IntegerProperty minimizedXProperty() {
+		return minimizedX.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> minimizedY = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), 0);
+
+	public int getMinimizedY() {
+		return minimizedY.get().intValue();
+	}
+
+	public void setMinimizedY(int minimizedY) {
+		this.minimizedY.set(minimizedY);
+	}
+
+	public IntegerProperty minimizedYProperty() {
+		return minimizedY.property();
+	}
+
 	private ShadowField<FloatProperty, Number> videoScaling = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_VIDEO_SCALING);
 
