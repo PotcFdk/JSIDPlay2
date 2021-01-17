@@ -40,7 +40,6 @@ import ui.common.download.ProgressListener;
 import ui.common.filefilter.FavoritesExtension;
 import ui.common.filefilter.TuneFileExtensions;
 import ui.entities.config.FavoritesSection;
-import ui.entities.config.OnlineSection;
 import ui.entities.config.SidPlay2Section;
 
 public class Favorites extends C64VBox implements UIPart {
@@ -221,7 +220,7 @@ public class Favorites extends C64VBox implements UIPart {
 								}
 							});
 						}
-					}, new URL(OnlineSection.JSIDPLAY2_JS2_URL), false);
+					}, new URL(util.getConfig().getOnlineSection().getFavoritesUrl()), false);
 			downloadThread.start();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

@@ -5,8 +5,6 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
-import static ui.entities.config.OnlineSection.JSIDPLAY2_APP_URL;
-import static ui.entities.config.OnlineSection.ONLINE_PLAYER_URL;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -603,12 +601,12 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void onlinePlayer() {
-		DesktopIntegration.browse(ONLINE_PLAYER_URL);
+		DesktopIntegration.browse(util.getConfig().getOnlineSection().getOnlinePlayerUrl());
 	}
 
 	@FXML
 	private void downloadApp() {
-		DesktopIntegration.browse(JSIDPLAY2_APP_URL);
+		DesktopIntegration.browse(util.getConfig().getOnlineSection().getAppUrl());
 	}
 
 	@Override
