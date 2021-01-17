@@ -1,0 +1,70 @@
+<!--?xml version="1.0" encoding="iso-8859-1"?-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional">
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title>Your chip instead of mine</title>
+<link rel="stylesheet" type="text/css" href="Your%20chip%20instead%20of%20mine-Dateien/sid.css">
+</head>
+<body>
+<h1>Do you want to hear <u>your</u> chip emulated instead of some lame-ass developer's crappy sound chip?</h1>
+
+<p>Now you can! With the help of Lord Nightmare, we can make your dreams come
+true! Download the <a href="https://bel.fi/alankila/c64-sw/fc-curves/sidtestdisk_4.0C1.d64">sidtestdisk 4.0C1.d64</a>, and make me a Hi-Fi recording of the output of the program.
+</p>
+
+<h2>Instructions</h2>
+
+<p>Modify your C64. Take out the SID chip and locate the third pin from
+top right (number 26, I think). It is the AIN (audio in) pin, and it sucks in most
+of the system noise, especially the display whirr. We need to ensure it
+is grounded or floating. The easiest fix is to make it floating: bend
+it slightly off, so it doesn't enter the socket on chip insertion.
+If you are very adventurous you could also try to improve the SID input voltage
+with additional capacitors and coils. It will help a little, but this modification is what counts.
+</p>
+
+<p>Each run of the program makes 2048 / 8 = 256 measurements of about 5.6
+seconds each. Therefore it takes about 24,5 minutes to run the program once.</p>
+
+<p>You need to run the program twice, once selecting 1=highpass and once 3=lowpass test. I do <strong>not</strong> need or use the bandpass filter result.
+You should get two samplings with very quiet filtered sounds, with the filter
+cutoff increased each time.</p>
+
+<p>Do try to ensure that the output is high quality. Use 48 kHz sampling rate,
+16-bit mono. There is no need to go for 96 kHz or 24 bit. There isn't that
+much detail in the recording.</p>
+
+<p>Do not post-process the audio in any way. At most compress it with a
+<strong>lossless</strong> codec such as FLAC.</p>
+
+<p>Each sample is delimited by a loud snap, courtesy of the filter, which is
+used by my splitter program to cut the samples into pieces for analysis.</p>
+
+<p>The sound is going to be very quiet, so you can probably turn volume pretty
+high up, if you can. Try to tune it such that the loud snaps hardclip just
+barely.  Use the highpass test for checking the sound level, as it is loudest
+at the beginning.
+<strong>Do not adjust level during and between the actual
+recordings. This would break the analysis.</strong></p>
+
+<h2>What about the distortion?</h2>
+
+<p>The distortion is a thorny problem. I rather start from the nondistorted
+sound and look into adding it, than start from the distorted and try to
+work the rest of it out. I have got pretty good model for the distortion
+anyway, so I can add it quite easily. The nondistorted FC curve is the most
+fundamental artifact I can get.</p>
+
+<h2>Ok, I got the files, now what?</h2>
+
+<p>Make them available on the web, and ping me at ircnet using nick alankila
+or mail me at alankila@bel.fi. Alternatively, you can run the scripts yourself.
+<a href="https://bel.fi/alankila/c64-sw/fc-curves/">fc-curves -directory contains the current scripts and pile of sampled chips</a>.</p>
+
+<p>The output is type 1 -style definition. Fit to type 3 definitions so far is manual. Please use <a href="https://bel.fi/alankila/c64-sw/fc-curves/type3designer.html">type 3 designer</a> to
+convert type 1 definitions to type 3 definitions. Batteries not
+included—manual work is required.</p>
+
+
+
+</body></html>

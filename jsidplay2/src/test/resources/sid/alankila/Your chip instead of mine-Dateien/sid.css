@@ -1,0 +1,106 @@
+    body {
+	color: black;
+	background-color: white;
+	margin: 0 0 0 0;
+    }
+    p {
+	margin-left: 2em;
+	margin-right: 2em;
+	text-align: justify;
+    }
+    ul, dl, ol {
+	margin-left: 2em;
+	margin-right: 2em;
+    }
+    dt {
+	margin-top: 1em;
+	font-weight: bold;
+    }
+    h1 {
+	padding: 4px;
+	margin-top: 0;
+	border-bottom: 1px solid black;
+	font-size: 125%;
+	background-color: #eee;
+    }
+    h2 {
+	padding: 4px;
+	margin-top: 4em;
+	border-bottom: 1px solid #888;
+	font-size: 100%;
+	background-color: #eee;
+    }
+    pre {
+	padding: 1em;
+	border: 1px solid #888;
+	background-color: #eee;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 6em;
+	margin-right: 6em;
+    }
+    pre em {
+	color: #060;
+    }
+    table {
+	padding-left: 2em;
+	padding-right: 2em;
+	margin: auto;
+	border: 1px solid #888;
+	border-collapse: collapse;
+	empty-cells: show;
+    }
+    table td {
+	vertical-align: top;
+	border: 1px dotted #ccc;
+	background-color: #f4f4f4;
+    }
+    table.samples tr>th:first-child+th {
+	background-color: #e0f0e0;
+    }
+    table.samples tr>td:first-child+td {
+	background-color: #dfd;
+    }
+    table th {
+	text-align: left;
+	vertical-align: top;
+	border: 1px dotted #aaa;
+	border-bottom: 1px solid #aaa;
+	background-color: #eee;
+    }
+    table td,
+    table th {
+	padding: 6px;
+    }
+    table td:first-child,
+    table th:first-child {
+	border-left: none;
+    }
+    form {
+	border: 1px outset #eee;
+	margin-left: 2em;
+	margin-right: 2em;
+	padding: 1em;
+	background-color: #f4f4f4;
+    }
+    input:focus {
+	border-color:black;
+    }
+    input:hover {
+	background-color: #eef;
+    }
+    div.imgview {
+	margin-left: 6em;
+	margin-right: 6em;
+	padding: 0.5em;
+	font-size: 80%;
+	border: 1px solid #888;
+	background-color: #eee;
+	text-align: center;
+	font-style: italic;
+	margin-bottom: 1em;
+    }
+
+    .ngproblem {
+	background-color: #fdf;
+    }
