@@ -139,7 +139,7 @@ public class FavoritesSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
-		return favorites.get(new ArrayList<>(DEFAULT_FAVORITES));
+		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
 	@Transient

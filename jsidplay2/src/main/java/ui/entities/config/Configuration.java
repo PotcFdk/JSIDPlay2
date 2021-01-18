@@ -258,7 +258,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
-		return favorites.get(new ArrayList<>(DEFAULT_FAVORITES));
+		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
 	@Transient
@@ -285,7 +285,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
-		return views.get(new ArrayList<>(DEFAULT_VIEWS));
+		return views.get(() -> new ArrayList<>(DEFAULT_VIEWS));
 	}
 
 	@Transient
