@@ -17,6 +17,24 @@ import libsidplay.config.IDeviceMapping;
 @Access(AccessType.PROPERTY)
 public class DeviceMapping implements IDeviceMapping {
 
+	public DeviceMapping() {
+		super();
+	}
+
+	public DeviceMapping(DeviceMapping deviceMapping) {
+		this(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), deviceMapping.isUsed());
+	}
+
+	public DeviceMapping(IDeviceMapping deviceMapping) {
+		this(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true);
+	}
+
+	public DeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
+		this.serialNum = serialNum;
+		this.chipModel = chipModel;
+		this.used = used;
+	}
+
 	private Integer id;
 
 	@Id
@@ -65,20 +83,6 @@ public class DeviceMapping implements IDeviceMapping {
 	@Override
 	public void setChipModel(ChipModel chipModel) {
 		this.chipModel = chipModel;
-	}
-
-	public DeviceMapping() {
-		super();
-	}
-
-	public DeviceMapping(IDeviceMapping deviceMapping) {
-		this(deviceMapping.getSerialNum(), deviceMapping.getChipModel(), true);
-	}
-
-	public DeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
-		this.serialNum = serialNum;
-		this.chipModel = chipModel;
-		this.used = used;
 	}
 
 }

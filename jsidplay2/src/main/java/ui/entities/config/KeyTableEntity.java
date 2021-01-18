@@ -19,6 +19,11 @@ public class KeyTableEntity {
 	public KeyTableEntity() {
 	}
 
+	public KeyTableEntity(KeyTableEntity keyTableEntity) {
+		this.keyCodeName = keyTableEntity.keyCodeName;
+		this.entry = keyTableEntity.entry;
+	}
+
 	public KeyTableEntity(String keyCode, KeyTableEntry entry) {
 		this.keyCodeName = keyCode;
 		this.entry = entry;

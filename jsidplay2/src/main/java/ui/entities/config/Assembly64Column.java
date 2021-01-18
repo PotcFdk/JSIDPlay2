@@ -19,6 +19,11 @@ public class Assembly64Column {
 	public Assembly64Column() {
 	}
 
+	public Assembly64Column(Assembly64Column assembly64Column) {
+		columnType = assembly64Column.columnType;
+		width = assembly64Column.width;
+	}
+
 	public Assembly64Column(Assembly64ColumnType category) {
 		columnType = category;
 		width = category.getDefaultWidth();

@@ -1,5 +1,6 @@
 package ui.entities.config;
 
+import static java.util.stream.Collectors.toList;
 import static ui.entities.collection.HVSCEntry_.author;
 import static ui.entities.collection.HVSCEntry_.released;
 import static ui.entities.collection.HVSCEntry_.title;
@@ -122,7 +123,7 @@ public class FavoritesSection {
 			DEFAULT_COLUMNS = Arrays.asList(new FavoriteColumn(title), new FavoriteColumn(author),
 					new FavoriteColumn(released));
 		}
-		return columns.get(new ArrayList<>(DEFAULT_COLUMNS));
+		return columns.get(() -> DEFAULT_COLUMNS.stream().map(FavoriteColumn::new).collect(toList()));
 	}
 
 	public void setColumns(List<FavoriteColumn> columns) {

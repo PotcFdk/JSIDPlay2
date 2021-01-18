@@ -17,6 +17,11 @@ public class FavoriteColumn {
 	public FavoriteColumn() {
 	}
 
+	public FavoriteColumn(FavoriteColumn column) {
+		columnProperty = column.columnProperty;
+		width = column.width;
+	}
+
 	public FavoriteColumn(SingularAttribute<?, ?> attribute) {
 		columnProperty = attribute.getName();
 	}

@@ -1,6 +1,7 @@
 package ui.common.properties;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author ken
@@ -15,9 +16,9 @@ public class LazyListField<O> {
 		this.list = list;
 	}
 
-	public final List<O> get(List<O> initialvalue) {
+	public final List<O> get(Supplier<List<O>> initialvalueSupplier) {
 		if (list == null) {
-			list = initialvalue;
+			list = initialvalueSupplier.get();
 		}
 		return list;
 	}

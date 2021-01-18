@@ -1,5 +1,6 @@
 package ui.entities.config;
 
+import static java.util.stream.Collectors.toList;
 import static server.restful.common.Connectors.HTTP;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
@@ -64,9 +65,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_USE_FILTER;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_STEREO_FILTER;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
@@ -146,7 +145,7 @@ public class EmulationSection implements IEmulationSection {
 	public static final int DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT = 30001;
 
 	private static final List<DeviceMapping> DEFAULT_SIDBLASTER_DEVICES = DEFAULT_SIDBLASTER_DEVICE_LIST.stream()
-			.map(DeviceMapping::new).collect(Collectors.toList());
+			.map(DeviceMapping::new).collect(toList());
 
 	private ShadowField<ObjectProperty<Engine>, Engine> engine = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_ENGINE);
@@ -404,7 +403,8 @@ public class EmulationSection implements IEmulationSection {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<DeviceMapping> getSidBlasterDeviceList() {
-		return sidBlasterDeviceList.get(new ArrayList<>(DEFAULT_SIDBLASTER_DEVICES));
+		return sidBlasterDeviceList
+				.get(() -> DEFAULT_SIDBLASTER_DEVICES.stream().map(DeviceMapping::new).collect(toList()));
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> sidBlasterWriteBufferSize = new ShadowField<>(

@@ -18,6 +18,14 @@ public class StilEntry {
 	public StilEntry() {
 	}
 
+	public StilEntry(StilEntry stilEntry) {
+		stilName = stilEntry.stilName;
+		stilAuthor = stilEntry.stilAuthor;
+		stilTitle = stilEntry.stilTitle;
+		stilArtist = stilEntry.stilArtist;
+		stilComment = stilEntry.stilComment;
+	}
+
 	public StilEntry(Info info) {
 		stilName = info.name;
 		stilAuthor = info.author;

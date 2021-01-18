@@ -369,7 +369,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 				});
 		// Initially select last selected row
 		Integer from = favoritesSection.getSelectedRowFrom();
-		if (from != null && from != -1) {
+		if (from != null && from != -1 && from < favoritesSection.getFavorites().size()) {
 			favoritesTable.getSelectionModel().select(from);
 			HVSCEntry hvscEntry = favoritesSection.getFavorites().get(from);
 			favoritesTable.scrollTo(hvscEntry);

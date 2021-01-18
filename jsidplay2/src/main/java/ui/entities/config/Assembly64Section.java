@@ -1,5 +1,6 @@
 package ui.entities.config;
 
+import static java.util.stream.Collectors.toList;
 import static ui.entities.config.Assembly64ColumnType.CATEGORY;
 import static ui.entities.config.Assembly64ColumnType.EVENT;
 import static ui.entities.config.Assembly64ColumnType.GROUP;
@@ -7,7 +8,6 @@ import static ui.entities.config.Assembly64ColumnType.NAME;
 import static ui.entities.config.Assembly64ColumnType.RATING;
 import static ui.entities.config.Assembly64ColumnType.RELEASED;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class Assembly64Section {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<Assembly64Column> getColumns() {
-		return columns.get(new ArrayList<>(DEFAULT_COLUMNS));
+		return columns.get(() -> DEFAULT_COLUMNS.stream().map(Assembly64Column::new).collect(toList()));
 	}
 
 	public void setColumns(List<Assembly64Column> columns) {

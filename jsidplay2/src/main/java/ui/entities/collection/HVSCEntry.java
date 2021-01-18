@@ -1,10 +1,11 @@
 package ui.entities.collection;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -424,7 +425,7 @@ public class HVSCEntry {
 
 	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
 	public List<StilEntry> getStil() {
-		return stil.get(new ArrayList<>(DEFAULT_STIL));
+		return stil.get(() -> DEFAULT_STIL.stream().map(StilEntry::new).collect(toList()));
 	}
 
 	public void setStil(List<StilEntry> stil) {

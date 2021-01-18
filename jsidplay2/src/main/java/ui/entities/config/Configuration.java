@@ -1,11 +1,11 @@
 package ui.entities.config;
 
+import static java.util.stream.Collectors.toList;
 import static sidplay.ini.IniDefaults.DEFAULTS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -50,7 +50,7 @@ import ui.videoscreen.Video;
 public class Configuration implements IConfig {
 
 	public static final List<FilterSection> DEFAULT_FILTERS = DEFAULTS.getFilterSection().stream()
-			.map(FilterSection::new).collect(Collectors.toList());
+			.map(FilterSection::new).collect(toList());
 
 	public static final List<ViewEntity> DEFAULT_VIEWS = Arrays.asList(new ViewEntity(Console.ID),
 			new ViewEntity(Video.ID));
@@ -302,7 +302,7 @@ public class Configuration implements IConfig {
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilterSection() {
-		return filter.get(new ArrayList<>(DEFAULT_FILTERS));
+		return filter.get(() -> DEFAULT_FILTERS.stream().map(FilterSection::new).collect(toList()));
 	}
 
 	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>();
@@ -313,7 +313,7 @@ public class Configuration implements IConfig {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
-		return keyCodeMap.get(new ArrayList<>(DEFAULT_KEYCODES));
+		return keyCodeMap.get(() -> DEFAULT_KEYCODES.stream().map(KeyTableEntity::new).collect(toList()));
 	}
 
 }
