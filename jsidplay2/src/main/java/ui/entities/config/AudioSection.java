@@ -136,10 +136,6 @@ public class AudioSection implements IAudioSection {
 	private ShadowField<FloatProperty, Number> mainVolume = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_MAIN_VOLUME);
 
-	public FloatProperty mainVolumeProperty() {
-		return mainVolume.property();
-	}
-
 	@Override
 	public float getMainVolume() {
 		return this.mainVolume.get().floatValue();
@@ -150,12 +146,12 @@ public class AudioSection implements IAudioSection {
 		this.mainVolume.set(volume);
 	}
 
+	public FloatProperty mainVolumeProperty() {
+		return mainVolume.property();
+	}
+
 	private ShadowField<FloatProperty, Number> secondVolume = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SECOND_VOLUME);
-
-	public FloatProperty secondVolumeProperty() {
-		return secondVolume.property();
-	}
 
 	@Override
 	public float getSecondVolume() {
@@ -167,12 +163,12 @@ public class AudioSection implements IAudioSection {
 		this.secondVolume.set(volume);
 	}
 
+	public FloatProperty secondVolumeProperty() {
+		return secondVolume.property();
+	}
+
 	private ShadowField<FloatProperty, Number> thirdVolume = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_THIRD_VOLUME);
-
-	public FloatProperty thirdVolumeProperty() {
-		return thirdVolume.property();
-	}
 
 	@Override
 	public float getThirdVolume() {
@@ -184,12 +180,12 @@ public class AudioSection implements IAudioSection {
 		this.thirdVolume.set(volume);
 	}
 
+	public FloatProperty thirdVolumeProperty() {
+		return thirdVolume.property();
+	}
+
 	private ShadowField<FloatProperty, Number> mainBalance = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_MAIN_BALANCE);
-
-	public FloatProperty mainBalanceProperty() {
-		return mainBalance.property();
-	}
 
 	@Override
 	public float getMainBalance() {
@@ -201,12 +197,12 @@ public class AudioSection implements IAudioSection {
 		this.mainBalance.set(balance);
 	}
 
+	public FloatProperty mainBalanceProperty() {
+		return mainBalance.property();
+	}
+
 	private ShadowField<FloatProperty, Number> secondBalance = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SECOND_BALANCE);
-
-	public FloatProperty secondBalanceProperty() {
-		return secondBalance.property();
-	}
 
 	@Override
 	public float getSecondBalance() {
@@ -218,12 +214,12 @@ public class AudioSection implements IAudioSection {
 		this.secondBalance.set(right);
 	}
 
+	public FloatProperty secondBalanceProperty() {
+		return secondBalance.property();
+	}
+
 	private ShadowField<FloatProperty, Number> thirdBalance = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_THIRD_BALANCE);
-
-	public FloatProperty thirdBalanceProperty() {
-		return thirdBalance.property();
-	}
 
 	@Override
 	public float getThirdBalance() {
@@ -235,12 +231,12 @@ public class AudioSection implements IAudioSection {
 		this.thirdBalance.set(third);
 	}
 
+	public FloatProperty thirdBalanceProperty() {
+		return thirdBalance.property();
+	}
+
 	private ShadowField<IntegerProperty, Number> mainDelay = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_MAIN_DELAY);
-
-	public IntegerProperty mainDelayProperty() {
-		return mainDelay.property();
-	}
 
 	@Override
 	public int getMainDelay() {
@@ -252,12 +248,12 @@ public class AudioSection implements IAudioSection {
 		this.mainDelay.set(delay);
 	}
 
+	public IntegerProperty mainDelayProperty() {
+		return mainDelay.property();
+	}
+
 	private ShadowField<IntegerProperty, Number> secondDelay = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_SECOND_DELAY);
-
-	public IntegerProperty secondDelayProperty() {
-		return secondDelay.property();
-	}
 
 	@Override
 	public int getSecondDelay() {
@@ -269,12 +265,12 @@ public class AudioSection implements IAudioSection {
 		this.secondDelay.set(delay);
 	}
 
+	public IntegerProperty secondDelayProperty() {
+		return secondDelay.property();
+	}
+
 	private ShadowField<IntegerProperty, Number> thirdDelay = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_THIRD_DELAY);
-
-	public IntegerProperty thirdDelayProperty() {
-		return this.thirdDelay.property();
-	}
 
 	@Override
 	public int getThirdDelay() {
@@ -286,12 +282,12 @@ public class AudioSection implements IAudioSection {
 		this.thirdDelay.set(delay);
 	}
 
+	public IntegerProperty thirdDelayProperty() {
+		return this.thirdDelay.property();
+	}
+
 	private ShadowField<IntegerProperty, Number> bufferSize = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_BUFFER_SIZE);
-
-	public IntegerProperty bufferSizeProperty() {
-		return bufferSize.property();
-	}
 
 	@Override
 	public int getBufferSize() {
@@ -303,12 +299,12 @@ public class AudioSection implements IAudioSection {
 		this.bufferSize.set(bufferSize);
 	}
 
+	public IntegerProperty bufferSizeProperty() {
+		return bufferSize.property();
+	}
+
 	private ShadowField<ObjectProperty<Integer>, Integer> audioBufferSize = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_AUDIO_BUFFER_SIZE);
-
-	public ObjectProperty<Integer> audioBufferSizeProperty() {
-		return audioBufferSize.property();
-	}
 
 	@Override
 	public int getAudioBufferSize() {
@@ -318,6 +314,10 @@ public class AudioSection implements IAudioSection {
 	@Override
 	public void setAudioBufferSize(int audioBufferSize) {
 		this.audioBufferSize.set(audioBufferSize);
+	}
+
+	public ObjectProperty<Integer> audioBufferSizeProperty() {
+		return audioBufferSize.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> playOriginal = new ShadowField<>(SimpleBooleanProperty::new,
@@ -349,6 +349,10 @@ public class AudioSection implements IAudioSection {
 	@Override
 	public void setMp3(File recording) {
 		this.mp3.set(recording);
+	}
+
+	public ObjectProperty<File> mp3Property() {
+		return mp3.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> cbr = new ShadowField<>(SimpleObjectProperty::new,

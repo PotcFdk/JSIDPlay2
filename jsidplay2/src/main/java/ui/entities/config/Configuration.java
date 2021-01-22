@@ -142,14 +142,14 @@ public class Configuration implements IConfig {
 
 	private SidPlay2Section sidplay2 = new SidPlay2Section();
 
-	public void setSidplay2Section(SidPlay2Section sidplay2) {
-		this.sidplay2 = sidplay2;
-	}
-
 	@Embedded
 	@Override
 	public SidPlay2Section getSidplay2Section() {
 		return sidplay2;
+	}
+
+	public void setSidplay2Section(SidPlay2Section sidplay2) {
+		this.sidplay2 = sidplay2;
 	}
 
 	private OnlineSection online = new OnlineSection();
@@ -165,21 +165,17 @@ public class Configuration implements IConfig {
 
 	private C1541Section c1541 = new C1541Section();
 
-	public void setC1541Section(C1541Section c1541) {
-		this.c1541 = c1541;
-	}
-
 	@Override
 	@Embedded
 	public C1541Section getC1541Section() {
 		return c1541;
 	}
 
-	private PrinterSection printer = new PrinterSection();
-
-	public void setPrinterSection(PrinterSection printer) {
-		this.printer = printer;
+	public void setC1541Section(C1541Section c1541) {
+		this.c1541 = c1541;
 	}
+
+	private PrinterSection printer = new PrinterSection();
 
 	@Embedded
 	@Override
@@ -187,22 +183,22 @@ public class Configuration implements IConfig {
 		return printer;
 	}
 
-	private JoystickSection joystickSection = new JoystickSection();
-
-	public void setJoystickSection(JoystickSection joystick) {
-		this.joystickSection = joystick;
+	public void setPrinterSection(PrinterSection printer) {
+		this.printer = printer;
 	}
+
+	private JoystickSection joystickSection = new JoystickSection();
 
 	@Embedded
 	public JoystickSection getJoystickSection() {
 		return joystickSection;
 	}
 
-	private AudioSection audioSection = new AudioSection();
-
-	public void setAudioSection(AudioSection audio) {
-		this.audioSection = audio;
+	public void setJoystickSection(JoystickSection joystick) {
+		this.joystickSection = joystick;
 	}
+
+	private AudioSection audioSection = new AudioSection();
 
 	@Embedded
 	@Override
@@ -210,12 +206,12 @@ public class Configuration implements IConfig {
 		return audioSection;
 	}
 
+	public void setAudioSection(AudioSection audio) {
+		this.audioSection = audio;
+	}
+
 	@ParametersDelegate
 	private EmulationSection emulationSection = new EmulationSection();
-
-	public void setEmulationSection(EmulationSection emulation) {
-		this.emulationSection = emulation;
-	}
 
 	@Embedded
 	@Override
@@ -223,12 +219,12 @@ public class Configuration implements IConfig {
 		return emulationSection;
 	}
 
+	public void setEmulationSection(EmulationSection emulation) {
+		this.emulationSection = emulation;
+	}
+
 	@ParametersDelegate
 	private WhatsSidSection whatsSidSection = new WhatsSidSection();
-
-	public void setWhatsSidSection(WhatsSidSection whatsSidSection) {
-		this.whatsSidSection = whatsSidSection;
-	}
 
 	@Embedded
 	@Override
@@ -236,14 +232,18 @@ public class Configuration implements IConfig {
 		return whatsSidSection;
 	}
 
-	private ShadowField<StringProperty, String> currentFavorite = new ShadowField<>(SimpleStringProperty::new, null);
-
-	public void setCurrentFavorite(String currentFavorite) {
-		this.currentFavorite.set(currentFavorite);
+	public void setWhatsSidSection(WhatsSidSection whatsSidSection) {
+		this.whatsSidSection = whatsSidSection;
 	}
+
+	private ShadowField<StringProperty, String> currentFavorite = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getCurrentFavorite() {
 		return currentFavorite.get();
+	}
+
+	public void setCurrentFavorite(String currentFavorite) {
+		this.currentFavorite.set(currentFavorite);
 	}
 
 	public StringProperty currentFavoriteProperty() {
@@ -252,13 +252,13 @@ public class Configuration implements IConfig {
 
 	private ObservableLazyListField<FavoritesSection> favorites = new ObservableLazyListField<>();
 
-	public void setFavorites(List<FavoritesSection> favorites) {
-		this.favorites.set(favorites);
-	}
-
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<FavoritesSection> getFavorites() {
 		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
+	}
+
+	public void setFavorites(List<FavoritesSection> favorites) {
+		this.favorites.set(favorites);
 	}
 
 	@Transient
@@ -268,24 +268,24 @@ public class Configuration implements IConfig {
 
 	private Assembly64Section assembly64Section = new Assembly64Section();
 
-	public void setAssembly64Section(Assembly64Section assembly64Section) {
-		this.assembly64Section = assembly64Section;
-	}
-
 	@Embedded
 	public Assembly64Section getAssembly64Section() {
 		return assembly64Section;
 	}
 
-	private ObservableLazyListField<ViewEntity> views = new ObservableLazyListField<>();
-
-	public void setViews(List<ViewEntity> views) {
-		this.views.set(views);
+	public void setAssembly64Section(Assembly64Section assembly64Section) {
+		this.assembly64Section = assembly64Section;
 	}
+
+	private ObservableLazyListField<ViewEntity> views = new ObservableLazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<ViewEntity> getViews() {
 		return views.get(() -> new ArrayList<>(DEFAULT_VIEWS));
+	}
+
+	public void setViews(List<ViewEntity> views) {
+		this.views.set(views);
 	}
 
 	@Transient
@@ -295,25 +295,25 @@ public class Configuration implements IConfig {
 
 	private LazyListField<FilterSection> filter = new LazyListField<>();
 
-	public void setFilterSection(List<FilterSection> filter) {
-		this.filter.set(filter);
-	}
-
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
 	public List<FilterSection> getFilterSection() {
 		return filter.get(() -> DEFAULT_FILTERS.stream().map(FilterSection::new).collect(toList()));
 	}
 
-	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>();
-
-	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
-		this.keyCodeMap.set(keyCodeMap);
+	public void setFilterSection(List<FilterSection> filter) {
+		this.filter.set(filter);
 	}
+
+	private LazyListField<KeyTableEntity> keyCodeMap = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
 	public List<KeyTableEntity> getKeyCodeMap() {
 		return keyCodeMap.get(() -> DEFAULT_KEYCODES.stream().map(KeyTableEntity::new).collect(toList()));
+	}
+
+	public void setKeyCodeMap(List<KeyTableEntity> keyCodeMap) {
+		this.keyCodeMap.set(keyCodeMap);
 	}
 
 }

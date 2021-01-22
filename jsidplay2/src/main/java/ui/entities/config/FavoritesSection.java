@@ -132,14 +132,14 @@ public class FavoritesSection {
 
 	private ObservableLazyListField<HVSCEntry> favorites = new ObservableLazyListField<>();
 
-	public void setFavorites(List<HVSCEntry> favorites) {
-		this.favorites.set(favorites);
-	}
-
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
 	public List<HVSCEntry> getFavorites() {
 		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
+	}
+
+	public void setFavorites(List<HVSCEntry> favorites) {
+		this.favorites.set(favorites);
 	}
 
 	@Transient
