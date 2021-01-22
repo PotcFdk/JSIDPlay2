@@ -15,7 +15,7 @@ import libsidutils.fingerprinting.rest.beans.HashBean;
 @Entity
 @Access(AccessType.PROPERTY)
 @Table(name = "HashTable", indexes = { @Index(columnList = "idHashTable", unique = true),
-		@Index(columnList = "hash", name = "hash") })
+		@Index(columnList = "HASH", name = "hash") })
 public class HashTable {
 
 	private int idHashTable;

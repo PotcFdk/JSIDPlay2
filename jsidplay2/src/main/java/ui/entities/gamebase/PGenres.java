@@ -6,12 +6,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "PGENRES")
+@Table(name = "PGENRES", indexes = {
+		@Index(name = "PGENRES_PARENTGENRE_INDEX", columnList = "PARENTGENRE", unique = false),
+		@Index(name = "PGENRES_PG_ID", columnList = "PG_ID", unique = false) })
 @Access(AccessType.PROPERTY)
 public class PGenres {
 	private int id;

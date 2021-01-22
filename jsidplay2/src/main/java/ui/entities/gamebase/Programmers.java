@@ -6,12 +6,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "PROGRAMMERS")
+@Table(name = "PROGRAMMERS", indexes = {
+		@Index(name = "PROGRAMMERS_PROGRAMMER_INDEX", columnList = "PROGRAMMER", unique = false) })
 @Access(AccessType.PROPERTY)
 public class Programmers {
 	private int id;

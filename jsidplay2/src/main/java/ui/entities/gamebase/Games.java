@@ -6,13 +6,19 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Access(AccessType.PROPERTY)
-@Table(name = "GAMES")
+@Table(name = "GAMES", indexes = { @Index(name = "GAMES_NAME", columnList = "NAME", unique = false),
+		@Index(name = "GAMES_MU_ID", columnList = "MU_ID", unique = false),
+		@Index(name = "GAMES_GE_ID", columnList = "GE_ID", unique = false),
+		@Index(name = "GAMES_PU_ID", columnList = "PU_ID", unique = false),
+		@Index(name = "GAMES_PR_ID", columnList = "PR_ID", unique = false),
+		@Index(name = "GAMES_COMMENT_INDEX", columnList = "COMMENT", unique = false) })
 public class Games {
 	private int id;
 

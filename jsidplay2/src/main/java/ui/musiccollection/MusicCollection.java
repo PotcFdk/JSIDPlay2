@@ -81,6 +81,7 @@ import ui.common.TypeTextField;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
 import ui.common.download.DownloadThread;
+import ui.common.download.MultiDownload;
 import ui.common.download.ProgressListener;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.Database;
@@ -407,42 +408,16 @@ public class MusicCollection extends C64VBox implements UIPart {
 		if (autoConfiguration.isSelected()) {
 			autoConfiguration.setDisable(true);
 			closeDatabase();
-			try {
-				new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
 
-					@Override
-					public void downloaded(final File downloadedFile) {
-						try {
-							new DownloadThread(util.getConfig(), new ProgressListener(util, fileBrowser.getScene()) {
-
-								@Override
-								public void downloaded(final File downloadedFile) {
-									try {
-										new DownloadThread(util.getConfig(),
-												new ProgressListener(util, fileBrowser.getScene()) {
-													@Override
-													public void downloaded(final File downloadedFile) {
-														Platform.runLater(() -> {
-															autoConfiguration.setDisable(false);
-															if (downloadedFile != null) {
-																setRoot(downloadedFile);
-															}
-														});
-													}
-												}, new URL(url), true).start();
-									} catch (MalformedURLException e) {
-										e.printStackTrace();
-									}
-								}
-							}, new URL(urlSearchIndexProperties), false).start();
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						}
+			MultiDownload multiDownload = new MultiDownload(util, fileBrowser.getScene(), downloadedFile -> {
+				Platform.runLater(() -> {
+					autoConfiguration.setDisable(false);
+					if (downloadedFile != null) {
+						setRoot(downloadedFile);
 					}
-				}, new URL(urlSearchIndex), false).start();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
+				});
+			});
+			multiDownload.download(Arrays.asList(urlSearchIndex, urlSearchIndexProperties, url));
 		}
 	}
 
