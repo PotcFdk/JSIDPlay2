@@ -698,7 +698,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					interactivityHook.accept(Player.this);
 				}
 			} catch (EndTuneException e) {
-				stateProperty.set(END);
+				stateProperty.set(config.getSidplay2Section().isLoop() ? RESTART : END);
 			} catch (NextTuneException e) {
 				if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 					nextSong();
