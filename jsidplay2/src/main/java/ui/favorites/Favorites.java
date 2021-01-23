@@ -1,5 +1,7 @@
 package ui.favorites;
 
+import static javafx.beans.binding.Bindings.bindBidirectional;
+
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +15,6 @@ import java.util.Random;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -89,13 +90,12 @@ public class Favorites extends C64VBox implements UIPart {
 		sidplay2Section.hvscProperty()
 				.addListener((obj, o, n) -> autoConfiguration.setDisable(sidplay2Section.getHvsc() == null));
 
-		Bindings.bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(),
-				new TimeToStringConverter());
+		bindBidirectional(fadeInTime.textProperty(), sidplay2Section.fadeInTimeProperty(), new TimeToStringConverter());
 		sidplay2Section.fadeInTimeProperty()
 				.addListener((obj, o, n) -> util.checkTextField(fadeInTime, () -> n.intValue() != -1,
 						() -> util.getPlayer().getTimer().updateEnd(), "FADE_IN_LENGTH_TIP", "FADE_IN_LENGTH_FORMAT"));
 
-		Bindings.bindBidirectional(fadeOutTime.textProperty(), sidplay2Section.fadeOutTimeProperty(),
+		bindBidirectional(fadeOutTime.textProperty(), sidplay2Section.fadeOutTimeProperty(),
 				new TimeToStringConverter());
 		sidplay2Section.fadeOutTimeProperty()
 				.addListener((obj, o, n) -> util.checkTextField(fadeOutTime, () -> n.intValue() != -1,

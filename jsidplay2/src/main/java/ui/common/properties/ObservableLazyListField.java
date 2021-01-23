@@ -1,9 +1,10 @@
 package ui.common.properties;
 
+import static javafx.beans.binding.Bindings.bindContent;
+
 import java.util.List;
 import java.util.function.Supplier;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -32,7 +33,7 @@ public class ObservableLazyListField<O> {
 	public ObservableList<O> getObservableList() {
 		if (observableList == null) {
 			observableList = FXCollections.<O>observableArrayList(list);
-			Bindings.bindContent(list, observableList);
+			bindContent(list, observableList);
 		}
 		return observableList;
 	}

@@ -1,6 +1,7 @@
 package ui.toolbar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javafx.beans.binding.Bindings.bindBidirectional;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
@@ -31,7 +32,6 @@ import javax.sound.sampled.Mixer.Info;
 import builder.netsiddev.NetSIDDevConnection;
 import builder.sidblaster.SidBlasterBuilder;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -139,7 +139,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private CheckBox enableSldb, singleSong, proxyEnable;
 	@FXML
-	private TextField bufferSize, defaultTime, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
+	private TextField bufferSize, defaultPlayLength, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
 			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword,
 			appServerKeyAlias, appServerKeyPassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
 			ultimate64StreamingVideoPort;
@@ -237,12 +237,12 @@ public class ToolBar extends C64VBox implements UIPart {
 		});
 		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
-		Bindings.bindBidirectional(defaultTime.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
+		bindBidirectional(defaultPlayLength.textProperty(), sidplay2Section.defaultPlayLengthProperty(),
 				new TimeToStringConverter());
 		sidplay2Section.defaultPlayLengthProperty()
-				.addListener((obj, o, n) -> util.checkTextField(defaultTime, () -> n.intValue() != -1,
+				.addListener((obj, o, n) -> util.checkTextField(defaultPlayLength, () -> n.intValue() != -1,
 						() -> util.getPlayer().getTimer().updateEnd(), "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
-		Bindings.bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
+		bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
 				new PositiveNumberToStringConverter<>(2048));
 		audioSection.bufferSizeProperty()
 				.addListener((obj, o, n) -> util.checkTextField(bufferSize, () -> n.intValue() >= 2048, () -> {
@@ -254,12 +254,10 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
 		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
-		Bindings.bindBidirectional(proxyPort.textProperty(), sidplay2Section.proxyPortProperty(),
-				new IntegerStringConverter());
+		bindBidirectional(proxyPort.textProperty(), sidplay2Section.proxyPortProperty(), new IntegerStringConverter());
 
 		hostname.textProperty().bindBidirectional(emulationSection.netSidDevHostProperty());
-		Bindings.bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(),
-				new IntegerStringConverter());
+		bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(), new IntegerStringConverter());
 
 		ultimate64Modes = FXCollections.<Ultimate64Mode>observableArrayList(Ultimate64Mode.values());
 		ultimate64Box.setConverter(new EnumToStringConverter<Ultimate64Mode>(bundle));
@@ -267,14 +265,14 @@ public class ToolBar extends C64VBox implements UIPart {
 		ultimate64Box.setItems(ultimate64Modes);
 
 		ultimate64Hostname.textProperty().bindBidirectional(emulationSection.ultimate64HostProperty());
-		Bindings.bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
+		bindBidirectional(ultimate64Port.textProperty(), emulationSection.ultimate64PortProperty(),
 				new IntegerStringConverter());
-		Bindings.bindBidirectional(ultimate64SyncDelay.textProperty(), emulationSection.ultimate64SyncDelayProperty(),
+		bindBidirectional(ultimate64SyncDelay.textProperty(), emulationSection.ultimate64SyncDelayProperty(),
 				new IntegerStringConverter());
 
-		Bindings.bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
+		bindBidirectional(appServerPort.textProperty(), emulationSection.appServerPortProperty(),
 				new IntegerStringConverter());
-		Bindings.bindBidirectional(appServerSecurePort.textProperty(), emulationSection.appServerSecurePortProperty(),
+		bindBidirectional(appServerSecurePort.textProperty(), emulationSection.appServerSecurePortProperty(),
 				new IntegerStringConverter());
 
 		appServerConnectorsBox.setConverter(new EnumToStringConverter<Connectors>(bundle));

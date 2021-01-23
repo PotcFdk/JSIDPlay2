@@ -79,7 +79,7 @@
 				</VBox>
 				<VBox>
 					<Label text="%DEFAULT_LENGTH" alignment="CENTER_RIGHT" />
-					<TextField fx:id="defaultTime" maxWidth="85">
+					<TextField fx:id="defaultPlayLength" maxWidth="85">
 						<tooltip>
 							<Tooltip text="%DEFAULT_LENGTH_TIP" />
 						</tooltip>

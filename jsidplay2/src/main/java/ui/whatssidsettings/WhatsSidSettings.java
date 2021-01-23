@@ -1,5 +1,6 @@
 package ui.whatssidsettings;
 
+import static javafx.beans.binding.Bindings.bindBidirectional;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
@@ -9,7 +10,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_PASSWORD;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_URL;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_USERNAME;
 
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -44,14 +44,14 @@ public class WhatsSidSettings extends C64Window {
 		url.textProperty().bindBidirectional(whatsSidSection.urlProperty());
 		username.textProperty().bindBidirectional(whatsSidSection.usernameProperty());
 		password.textProperty().bindBidirectional(whatsSidSection.passwordProperty());
-		Bindings.bindBidirectional(captureTime.textProperty(), whatsSidSection.captureTimeProperty(),
+		bindBidirectional(captureTime.textProperty(), whatsSidSection.captureTimeProperty(),
 				new IntegerStringConverter());
-		Bindings.bindBidirectional(matchStartTime.textProperty(), whatsSidSection.matchStartTimeProperty(),
+		bindBidirectional(matchStartTime.textProperty(), whatsSidSection.matchStartTimeProperty(),
 				new IntegerStringConverter());
-		Bindings.bindBidirectional(matchRetryTime.textProperty(), whatsSidSection.matchRetryTimeProperty(),
+		bindBidirectional(matchRetryTime.textProperty(), whatsSidSection.matchRetryTimeProperty(),
 				new IntegerStringConverter());
-		Bindings.bindBidirectional(minimumRelativeConfidence.textProperty(),
-				whatsSidSection.minimumRelativeConfidenceProperty(), new NumberStringConverter());
+		bindBidirectional(minimumRelativeConfidence.textProperty(), whatsSidSection.minimumRelativeConfidenceProperty(),
+				new NumberStringConverter());
 
 	}
 
