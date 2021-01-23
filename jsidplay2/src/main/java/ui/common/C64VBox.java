@@ -24,7 +24,7 @@ public abstract class C64VBox extends VBox implements UIPart, Initializable {
 		util = new UIUtil(null, new Player(configuration), this);
 		configService.close();
 		// TODO Uncomment line ONLY for JavaFX Preview in Eclipse of JSidPlay2.fxml
-		// and others, if you get problems in preview view
+		// and Oscilloscope.fxml, if you get problems in preview view
 //		util.parse(this);
 	}
 
