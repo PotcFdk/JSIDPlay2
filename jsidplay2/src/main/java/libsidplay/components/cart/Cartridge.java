@@ -19,6 +19,7 @@ import libsidplay.components.cart.supported.GeoRAM;
 import libsidplay.components.cart.supported.MagicDesk;
 import libsidplay.components.cart.supported.MikroAss;
 import libsidplay.components.cart.supported.Normal;
+import libsidplay.components.cart.supported.OceanType1;
 import libsidplay.components.cart.supported.REU;
 import libsidplay.components.cart.supported.Rex;
 import libsidplay.components.cart.supported.Zaxxon;
@@ -203,6 +204,8 @@ public class Cartridge {
 			return new EasyFlash(is, pla);
 		case MAGIC_DESK__DOMARK__HES_AUSTRALIA:
 			return new MagicDesk(is, pla);
+		case OCEAN_TYPE_1:
+			return new OceanType1(is, pla);
 		default:
 			throw new RuntimeException("Cartridges of format: " + type + " unsupported");
 		}
