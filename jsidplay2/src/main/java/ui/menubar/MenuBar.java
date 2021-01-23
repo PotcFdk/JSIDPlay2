@@ -1,6 +1,7 @@
 package ui.menubar;
 
 import static libsidplay.sidtune.SidTune.RESET;
+import static ui.common.BindingUtils.bindBidirectional;
 
 import java.awt.Graphics2D;
 import java.awt.Transparency;
@@ -36,6 +37,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
@@ -131,7 +133,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			expand4000, expand6000, expand8000, expandA000, turnPrinterOn;
 
 	@FXML
-	protected RadioMenuItem fastForward, normalSpeed, c1541, c1541_II, neverExtend, askExtend, accessExtend;
+	protected RadioMenuItem fastForward, normalSpeed;
 
 	@FXML
 	protected Menu help;
@@ -141,6 +143,9 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected Button previous2, next2, nextFavorite;
+
+	@FXML
+	private ToggleGroup floppyGroup, extensionGroup;
 
 	@FXML
 	private ToggleButton pauseContinue2, fastForward2, minimizeMaximize;
@@ -218,11 +223,10 @@ public class MenuBar extends C64VBox implements UIPart {
 		driveSoundOn.selectedProperty().bindBidirectional(c1541Section.driveSoundOnProperty());
 		turnPrinterOn.selectedProperty().bindBidirectional(printer.printerOnProperty());
 
-		FloppyType floppyType = c1541Section.getFloppyType();
-		(floppyType == FloppyType.C1541 ? c1541 : c1541_II).setSelected(true);
-		ExtendImagePolicy extendImagePolicy = c1541Section.getExtendImagePolicy();
-		(extendImagePolicy == ExtendImagePolicy.EXTEND_NEVER ? neverExtend
-				: extendImagePolicy == ExtendImagePolicy.EXTEND_ASK ? askExtend : accessExtend).setSelected(true);
+		bindBidirectional(floppyGroup, c1541Section.floppyTypeProperty(), FloppyType.class);
+
+		bindBidirectional(extensionGroup, c1541Section.extendImagePolicyProperty(), ExtendImagePolicy.class);
+
 		expand2000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled0Property());
 		expand4000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled1Property());
 		expand6000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled2Property());

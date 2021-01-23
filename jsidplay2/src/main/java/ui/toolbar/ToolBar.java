@@ -5,6 +5,7 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
+import static ui.common.BindingUtils.bindBidirectionalThreadSafe;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -75,7 +76,6 @@ import sidplay.ini.IniConfig;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.ThreadSafeBindings;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
 import ui.common.converter.MixerInfoToStringConverter;
@@ -212,7 +212,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		samplingRateBox.setConverter(new EnumToStringConverter<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
-		ThreadSafeBindings.bindBidirectional(samplingRateBox.valueProperty(), audioSection.samplingRateProperty());
+		bindBidirectionalThreadSafe(samplingRateBox.valueProperty(), audioSection.samplingRateProperty());
 
 		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());

@@ -39,15 +39,6 @@ public class ZipFileUtils {
 		}
 	}
 
-	public static File newFile(String fileString) {
-		try {
-			return FILE.newInstance(null, fileString);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			return new File(fileString);
-		}
-	}
-
 	public static File newFile(File parent, String child) {
 		try {
 			return FILE.newInstance(parent, child);

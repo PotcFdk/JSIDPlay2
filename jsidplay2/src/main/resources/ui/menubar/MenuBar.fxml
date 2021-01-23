@@ -175,17 +175,27 @@
 								fx:id="installJiffyDos" />
 							<Menu text="%FLOPPY_TYPE">
 								<RadioMenuItem text="%C1541" toggleGroup="$floppyGroup"
-									onAction="#floppyTypeC1541" fx:id="c1541" />
+									onAction="#floppyTypeC1541" fx:id="c1541">
+									<userData>C1541</userData>
+								</RadioMenuItem>
 								<RadioMenuItem text="%C1541-II" toggleGroup="$floppyGroup"
-									onAction="#floppyTypeC1541_II" fx:id="c1541_II" />
+									onAction="#floppyTypeC1541_II" fx:id="c1541_II">
+									<userData>C1541_II</userData>
+								</RadioMenuItem>
 							</Menu>
 							<Menu text="%40_TRACK_HANDLING">
 								<RadioMenuItem text="%NEVER_EXTEND" toggleGroup="$extensionGroup"
-									onAction="#extendNever" fx:id="neverExtend" />
+									onAction="#extendNever">
+									<userData>EXTEND_NEVER</userData>
+								</RadioMenuItem>
 								<RadioMenuItem text="%ASK_ON_EXTEND" toggleGroup="$extensionGroup"
-									onAction="#extendAsk" fx:id="askExtend" />
+									onAction="#extendAsk">
+									<userData>EXTEND_ASK</userData>
+								</RadioMenuItem>
 								<RadioMenuItem text="%EXTEND_ON_ACCESS"
-									toggleGroup="$extensionGroup" onAction="#extendAccess" fx:id="accessExtend" />
+									toggleGroup="$extensionGroup" onAction="#extendAccess">
+									<userData>EXTEND_ACCESS</userData>
+								</RadioMenuItem>
 							</Menu>
 							<Menu text="%MEMORY">
 								<CheckMenuItem text="%8K_RAM_EXPANSION_0X2000"

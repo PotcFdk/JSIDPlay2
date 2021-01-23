@@ -11,6 +11,6 @@ public interface IFileToStringConverter {
 	}
 
 	default File fromString(String fileString) {
-		return fileString != null && !"".equals(fileString) ? ZipFileUtils.newFile(fileString) : null;
+		return fileString != null && !"".equals(fileString) ? ZipFileUtils.newFile(null, fileString) : null;
 	}
 }
