@@ -527,7 +527,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		if (size <= 0) {
 			return "0 b";
 		}
-		final String[] units = new String[] { "b", "kb", "Mb", "Gb", "Tb" };
+		final String[] units = new String[] { "b", "Kb", "Mb", "Gb", "Tb" };
 		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
 		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}

@@ -205,7 +205,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			assert encodingType == 0; // or later 1 for RLE?
 
 			if (frameStart) {
-				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* linesPerPacket */);
+				IntBuffer pixels = IntBuffer.allocate(pixelsPerLine << 2 /* * linesPerPacket */);
 
 				int graphicsDataBuffer = 0;
 				int pixelDataOffset = 0;
