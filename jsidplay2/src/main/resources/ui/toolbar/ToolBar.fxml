@@ -253,9 +253,13 @@
 					<HBox spacing="5">
 						<VBox>
 							<RadioButton text="%EMU" fx:id="playEmulation"
-								toggleGroup="$playSourceGroup" />
+								toggleGroup="$playSourceGroup" >
+								<userData>false</userData>
+							</RadioButton>
 							<RadioButton text="%RECORDING" fx:id="playMP3"
-								toggleGroup="$playSourceGroup" />
+								toggleGroup="$playSourceGroup" >
+								<userData>true</userData>
+							</RadioButton>
 						</VBox>
 						<Button fx:id="mp3Browse" onAction="#doBrowse" text="Browse...">
 							<graphic>

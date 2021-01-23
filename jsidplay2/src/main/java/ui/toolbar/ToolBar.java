@@ -6,6 +6,7 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
+import static ui.common.BindingUtils.bindBidirectional;
 import static ui.common.BindingUtils.bindBidirectionalThreadSafe;
 
 import java.beans.PropertyChangeEvent;
@@ -324,9 +325,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		enableSldb.selectedProperty().bindBidirectional(sidplay2Section.enableDatabaseProperty());
 		singleSong.selectedProperty().bindBidirectional(sidplay2Section.singleProperty());
 
-		playEmulation.selectedProperty().set(!audioSection.isPlayOriginal());
-		playMP3.selectedProperty().addListener((obj, o, n) -> playEmulation.selectedProperty().set(!n));
-		playMP3.selectedProperty().bindBidirectional(audioSection.playOriginalProperty());
+		bindBidirectional(playSourceGroup, audioSection.playOriginalProperty());
 
 		appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
 		appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
