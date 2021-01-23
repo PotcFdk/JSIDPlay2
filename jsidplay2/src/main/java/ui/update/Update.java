@@ -66,7 +66,7 @@ public class Update extends C64Window {
 				latestVersion = getVersionNumbers(latestProperties.getProperty("version"));
 			} catch (NullPointerException | IOException e) {
 			}
-			final boolean updateAvailable = isUpdateAvailableNewer(currentVersion, latestVersion);
+			final boolean updateAvailable = isUpdateAvailable(currentVersion, latestVersion);
 			latestVersionLink.setVisible(updateAvailable);
 			update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
 		});
@@ -83,7 +83,7 @@ public class Update extends C64Window {
 		close();
 	}
 
-	private boolean isUpdateAvailableNewer(int[] currentVersion, int[] latestVersion) {
+	private boolean isUpdateAvailable(int[] currentVersion, int[] latestVersion) {
 		if (currentVersion == null || latestVersion == null) {
 			// undetermined local or remote version? Do not flag an update
 			return false;

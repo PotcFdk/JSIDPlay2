@@ -4,6 +4,7 @@ import java.net.URL;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
+import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.WritablePixelFormat;
@@ -39,6 +40,7 @@ public class Gauge extends C64VBox implements UIPart {
 		super(window, player);
 	}
 
+	@FXML
 	@Override
 	protected void initialize() {
 		width = (int) getArea().getWidth();
