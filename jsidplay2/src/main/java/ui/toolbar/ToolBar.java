@@ -6,8 +6,8 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
-import static ui.common.BindingUtils.bindBidirectional;
-import static ui.common.BindingUtils.bindBidirectionalThreadSafe;
+import static ui.common.properties.BindingUtils.bindBidirectional;
+import static ui.common.properties.BindingUtils.bindBidirectionalThreadSafe;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

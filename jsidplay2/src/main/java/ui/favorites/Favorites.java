@@ -1,7 +1,7 @@
 package ui.favorites;
 
 import static javafx.beans.binding.Bindings.bindBidirectional;
-import static ui.common.BindingUtils.bindBidirectional;
+import static ui.common.properties.BindingUtils.bindBidirectional;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;

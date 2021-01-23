@@ -1,7 +1,7 @@
 package ui.menubar;
 
 import static libsidplay.sidtune.SidTune.RESET;
-import static ui.common.BindingUtils.bindBidirectional;
+import static ui.common.properties.BindingUtils.bindBidirectional;
 
 import java.awt.Graphics2D;
 import java.awt.Transparency;

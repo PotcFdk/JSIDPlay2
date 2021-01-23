@@ -9,6 +9,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
+ * Lazy initialized observable list. Changes to the observable list are updated
+ * in the original list, automatically. The original list must not be changed
+ * directly anymore or unexpected results could occur.
+ * 
  * @author ken
  *
  * @param <O> list element class

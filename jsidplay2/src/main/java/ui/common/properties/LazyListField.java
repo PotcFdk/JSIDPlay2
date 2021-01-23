@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
+ * Lazy-initialized list.
+ * 
  * @author ken
  *
  * @param <O> list element class

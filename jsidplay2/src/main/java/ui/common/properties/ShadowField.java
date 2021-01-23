@@ -5,6 +5,9 @@ import java.util.function.Function;
 import javafx.beans.value.WritableValue;
 
 /**
+ * Lazy initialized shadowed property. A property is stored as a single value as
+ * long as no property is requested.
+ * 
  * https://www.dummies.com/programming/java/creating-properties-more-efficiently-in-javafx/
  *
  * @author khaendel
