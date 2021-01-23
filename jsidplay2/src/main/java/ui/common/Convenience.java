@@ -91,6 +91,7 @@ public class Convenience {
 			Extract7Zip extract7Zip = new Extract7Zip(zip, new File(tmpDir));
 			extract7Zip.extract();
 			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
+			TFile.rm_r(zip);
 		} else if (zip.isEntry()) {
 			// uncompress zip entry
 			File zipEntry = new File(tmpDir, zip.getName());

@@ -29,7 +29,7 @@ public final class PositiveNumberToStringConverter<T extends Number> extends Str
 		try {
 			Number number = NumberFormat.getInstance().parse(string);
 			if (number.doubleValue() < minValue) {
-				throw new ParseException("number must be greater than", minValue);
+				throw new ParseException("number must be greater or equal than", minValue);
 			}
 			return (T) number;
 		} catch (ParseException e) {

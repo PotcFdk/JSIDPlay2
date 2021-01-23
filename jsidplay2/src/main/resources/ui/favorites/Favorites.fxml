@@ -135,27 +135,35 @@
 							</tooltip>
 						</TextField>
 						<RadioButton text="%OFF" selected="true" toggleGroup="$playbackGroup"
-							fx:id="off" GridPane.rowIndex="1" GridPane.columnIndex="0"
-							onAction="#off" />
+							GridPane.rowIndex="1" GridPane.columnIndex="0" onAction="#off">
+							<userData>PLAYBACK_OFF</userData>
+						</RadioButton>
 						<RadioButton text="%NORMAL" toggleGroup="$playbackGroup"
-							fx:id="normal" GridPane.rowIndex="1" GridPane.columnIndex="1"
-							onAction="#normal" />
+							GridPane.rowIndex="1" GridPane.columnIndex="1" onAction="#normal">
+							<userData>NORMAL</userData>
+						</RadioButton>
 						<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
-							fx:id="randomOne" GridPane.rowIndex="1" GridPane.columnIndex="2"
-							onAction="#randomOne" />
+							GridPane.rowIndex="1" GridPane.columnIndex="2" onAction="#randomOne">
+							<userData>RANDOM_ONE</userData>
+						</RadioButton>
 						<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
-							fx:id="randomAll" GridPane.rowIndex="1" GridPane.columnIndex="3"
-							onAction="#randomAll" />
+							GridPane.rowIndex="1" GridPane.columnIndex="3" onAction="#randomAll">
+							<userData>RANDOM_ALL</userData>
+						</RadioButton>
 						<RadioButton text="%RANDOM_HVSC" toggleGroup="$playbackGroup"
-							fx:id="randomHVSC" GridPane.rowIndex="1" GridPane.columnIndex="4"
-							onAction="#randomHVSC" />
+							GridPane.rowIndex="1" GridPane.columnIndex="4" onAction="#randomHVSC">
+							<userData>RANDOM_HVSC</userData>
+						</RadioButton>
 
 						<RadioButton text="%REPEAT_OFF" selected="true"
-							toggleGroup="$repeatGroup" fx:id="repeatOff" GridPane.rowIndex="2"
-							GridPane.columnIndex="0" onAction="#repeatOff" />
+							toggleGroup="$repeatGroup" GridPane.rowIndex="2"
+							GridPane.columnIndex="0" onAction="#repeatOff">
+							<userData>false</userData>
+						</RadioButton>
 						<RadioButton text="%REPEAT_ONE_TUNE" toggleGroup="$repeatGroup"
-							fx:id="repeatOne" GridPane.rowIndex="2" GridPane.columnIndex="1"
-							onAction="#repeatOne" />
+							GridPane.rowIndex="2" GridPane.columnIndex="1" onAction="#repeatOne">
+							<userData>true</userData>
+						</RadioButton>
 					</GridPane>
 				</TitledPane>
 			</bottom>

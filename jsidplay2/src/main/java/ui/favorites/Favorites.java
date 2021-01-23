@@ -1,6 +1,7 @@
 package ui.favorites;
 
 import static javafx.beans.binding.Bindings.bindBidirectional;
+import static ui.common.BindingUtils.bindBidirectional;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -19,10 +20,10 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -56,7 +57,7 @@ public class Favorites extends C64VBox implements UIPart {
 	@FXML
 	protected TextField renameTab, fadeInTime, fadeOutTime;
 	@FXML
-	private RadioButton off, normal, randomOne, randomAll, randomHVSC, repeatOff, repeatOne;
+	private ToggleGroup playbackGroup, repeatGroup;
 
 	private FavoritesTab currentlyPlayedFavorites;
 	protected Random random = new Random();
@@ -102,32 +103,10 @@ public class Favorites extends C64VBox implements UIPart {
 						() -> util.getPlayer().getTimer().updateEnd(), "FADE_OUT_LENGTH_TIP",
 						"FADE_OUT_LENGTH_FORMAT"));
 
-		PlaybackType pt = sidplay2Section.getPlaybackType();
-		switch (pt) {
-		case PLAYBACK_OFF:
-			off.setSelected(true);
-			break;
-		case NORMAL:
-			normal.setSelected(true);
-			break;
-		case RANDOM_ONE:
-			randomOne.setSelected(true);
-			break;
-		case RANDOM_ALL:
-			randomAll.setSelected(true);
-			break;
-		case RANDOM_HVSC:
-			randomHVSC.setSelected(true);
-			break;
-		default:
-			off.setSelected(true);
-			break;
-		}
-		if (util.getConfig().getSidplay2Section().isLoop()) {
-			repeatOne.setSelected(true);
-		} else {
-			repeatOff.setSelected(true);
-		}
+		bindBidirectional(playbackGroup, sidplay2Section.playbackTypeProperty(), PlaybackType.class);
+
+		bindBidirectional(repeatGroup, sidplay2Section.loopProperty());
+
 		util.getPlayer().stateProperty().addListener(nextTuneListener);
 		List<? extends FavoritesSection> favorites = util.getConfig().getFavorites();
 		util.getConfig().getObservableFavorites()
