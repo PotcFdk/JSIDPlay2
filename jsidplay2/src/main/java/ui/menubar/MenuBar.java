@@ -246,33 +246,36 @@ public class MenuBar extends C64VBox implements UIPart {
 			});
 		}
 
-		Stage stage = util.getWindow().getStage();
-		stage.setResizable(!sidplay2Section.isMinimized());
-		stage.maximizedProperty()
-				.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
-		minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			if (getScene() != null) {
-				Node node = getScene().lookup("#tabbedPane");
-				node.setVisible(!newValue);
-				node.setManaged(!newValue);
-				stage.setResizable(!newValue);
-				if (newValue) {
-					sidplay2Section.setMinimizedX((int) getScene().getWindow().getX());
-					sidplay2Section.setMinimizedY((int) getScene().getWindow().getY());
-					sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
-					sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
-					stage.sizeToScene();
-					Platform.runLater(() -> minimizeMaximize.setDisable(false));
-				} else {
-					getScene().getWindow().setX(sidplay2Section.getMinimizedX());
-					getScene().getWindow().setY(sidplay2Section.getMinimizedY());
-					getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
-					getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
+		// preview view does not provide a window
+		if (util.getWindow() != null) {
+			Stage stage = util.getWindow().getStage();
+			stage.setResizable(!sidplay2Section.isMinimized());
+			stage.maximizedProperty()
+					.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
+			minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
+				if (getScene() != null) {
+					Node node = getScene().lookup("#tabbedPane");
+					node.setVisible(!newValue);
+					node.setManaged(!newValue);
+					stage.setResizable(!newValue);
+					if (newValue) {
+						sidplay2Section.setMinimizedX((int) getScene().getWindow().getX());
+						sidplay2Section.setMinimizedY((int) getScene().getWindow().getY());
+						sidplay2Section.setMinimizedWidth((int) getScene().getWindow().getWidth());
+						sidplay2Section.setMinimizedHeight((int) getScene().getWindow().getHeight());
+						stage.sizeToScene();
+						Platform.runLater(() -> minimizeMaximize.setDisable(false));
+					} else {
+						getScene().getWindow().setX(sidplay2Section.getMinimizedX());
+						getScene().getWindow().setY(sidplay2Section.getMinimizedY());
+						getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
+						getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
+					}
 				}
-			}
-		});
-		minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
+			});
+			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
 
+		}
 		if (getScene() != null) {
 			getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
