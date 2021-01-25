@@ -1,4 +1,4 @@
-package libsidplay.config.converter;
+package sidplay.ini.converter;
 
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.BaseConverter;

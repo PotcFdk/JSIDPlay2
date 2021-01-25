@@ -17,7 +17,6 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.common.SamplingRate;
-import libsidplay.config.converter.FileToStringConverter;
 import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -28,6 +27,7 @@ import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
 import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
+import sidplay.ini.converter.FileToStringConverter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;

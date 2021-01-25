@@ -1,4 +1,4 @@
-package libsidplay.config.converter;
+package sidplay.ini.converter;
 
 import java.io.File;
 

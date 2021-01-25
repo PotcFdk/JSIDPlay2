@@ -30,8 +30,8 @@ import com.beust.jcommander.Parameters;
 
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
-import libsidplay.config.converter.FileToStringConverter;
 import sidplay.consoleplayer.ParameterTimeConverter;
+import sidplay.ini.converter.FileToStringConverter;
 
 /**
  * SIDPlay2 section of the INI file.
