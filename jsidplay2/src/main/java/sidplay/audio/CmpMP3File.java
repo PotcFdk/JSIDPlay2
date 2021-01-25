@@ -18,8 +18,8 @@ import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import lowlevel.LameDecoder;
-import sidplay.audio.exceptions.EndTuneException;
-import sidplay.ini.IniConfigException;
+import sidplay.audio.exceptions.IniConfigException;
+import sidplay.audio.exceptions.SongEndException;
 
 /**
  * Sound driver to listen to emulation and MP3 recording in parallel.
@@ -102,7 +102,7 @@ public class CmpMP3File extends JavaSound {
 		}
 		super.write();
 		if (!decoded) {
-			throw new EndTuneException();
+			throw new SongEndException();
 		}
 	}
 

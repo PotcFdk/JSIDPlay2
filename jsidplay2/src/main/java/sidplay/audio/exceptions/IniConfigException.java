@@ -1,4 +1,4 @@
-package sidplay.ini;
+package sidplay.audio.exceptions;
 
 import java.io.IOException;
 

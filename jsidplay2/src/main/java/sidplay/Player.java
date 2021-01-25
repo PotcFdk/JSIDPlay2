@@ -77,13 +77,12 @@ import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
-import sidplay.audio.exceptions.EndTuneException;
-import sidplay.audio.exceptions.NextTuneException;
+import sidplay.audio.exceptions.IniConfigException;
+import sidplay.audio.exceptions.SongEndException;
 import sidplay.fingerprinting.IFingerprintMatcher;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WhatsSidSupport;
 import sidplay.ini.IniConfig;
-import sidplay.ini.IniConfigException;
 import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
 import sidplay.player.State;
@@ -697,12 +696,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				while (play()) {
 					interactivityHook.accept(Player.this);
 				}
-			} catch (EndTuneException e) {
-				stateProperty.set(config.getSidplay2Section().isLoop() ? RESTART : END);
-			} catch (NextTuneException e) {
-				if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
-					nextSong();
-				}
+			} catch (SongEndException e) {
+				timer.end();
 			} catch (IniConfigException e) {
 				System.out.println(e.getMessage());
 				stateProperty.set(RESTART);

@@ -15,7 +15,7 @@ import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
-import sidplay.audio.exceptions.NextTuneException;
+import sidplay.audio.exceptions.SongEndException;
 import sidplay.fingerprinting.IFingerprintInserter;
 
 /**
@@ -70,7 +70,7 @@ public class WhatsSidDriver implements AudioDriver {
 		this.recordingFilename = recordingFilename;
 
 		if (new File(recordingFilename).exists()) {
-			throw new NextTuneException();
+			throw new SongEndException();
 		}
 		System.out.println("Create: " + recordingFilename);
 
