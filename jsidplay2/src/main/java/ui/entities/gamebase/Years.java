@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Table(name = "YEARS")
 @Access(AccessType.PROPERTY)
@@ -47,5 +49,10 @@ public class Years {
 
 	public void setYear(int year) {
 		this.year = year;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

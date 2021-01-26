@@ -31,6 +31,7 @@ import com.beust.jcommander.Parameters;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import sidplay.consoleplayer.ParameterTimeConverter;
+import sidplay.ini.converter.BeanToStringConverter;
 import sidplay.ini.converter.FileToStringConverter;
 
 /**
@@ -285,27 +286,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("version=").append(getVersion()).append(",");
-		result.append("enableDatabase=").append(isEnableDatabase()).append(",");
-		result.append("defaultPlayLength=").append(getDefaultPlayLength()).append(",");
-		result.append("fadeInTime=").append(getFadeInTime()).append(",");
-		result.append("fadeOutTime=").append(getFadeOutTime()).append(",");
-		result.append("loop=").append(isLoop()).append(",");
-		result.append("single=").append(isSingle()).append(",");
-		result.append("hvsc=").append(getHvsc()).append(",");
-		result.append("lastDirectory=").append(getLastDirectory()).append(",");
-		result.append("tmpDir=").append(getTmpDir()).append(",");
-		result.append("brightness=").append(getBrightness()).append(",");
-		result.append("contrast=").append(getContrast()).append(",");
-		result.append("gamma=").append(getGamma()).append(",");
-		result.append("saturation=").append(getSaturation()).append(",");
-		result.append("phaseShift=").append(getPhaseShift()).append(",");
-		result.append("offset=").append(getOffset()).append(",");
-		result.append("tint=").append(getTint()).append(",");
-		result.append("blur=").append(getBlur()).append(",");
-		result.append("bleed=").append(getBleed()).append(",");
-		result.append("turboTape=").append(isTurboTape());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
+
 }

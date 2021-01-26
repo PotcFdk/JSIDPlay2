@@ -55,6 +55,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.FileAttributeConverter;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
@@ -660,4 +661,8 @@ public class AudioSection implements IAudioSection {
 		return reverbDryWetMix.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

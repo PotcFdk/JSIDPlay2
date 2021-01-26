@@ -13,6 +13,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 import libsidplay.config.IWhatsSidSection;
+import sidplay.ini.converter.BeanToStringConverter;
 
 /**
  * WhatsSID section of the INI file.
@@ -114,6 +115,11 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 			"--whatsSIDMinimumRelativeConfidence" }, descriptionKey = "WHATSSID_MINIMUM_RELATIVE_CONFIDENCE", order = 1053)
 	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
 		iniReader.setProperty("WhatsSID", "Minimum Relative Confidence", minimumRelativeConfidence);
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 
 }

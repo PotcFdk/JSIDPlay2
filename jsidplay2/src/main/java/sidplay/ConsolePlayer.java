@@ -128,8 +128,7 @@ final public class ConsolePlayer {
 	}
 
 	private void printSidBlasterDevices() {
-		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.toLowerCase().startsWith("win")) {
+		if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
 			triggerFetchSerialNumbers();
 			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
 			if (serialNumbers.length > 0) {

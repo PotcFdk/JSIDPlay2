@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class FavoriteColumn {
@@ -55,5 +57,10 @@ public class FavoriteColumn {
 
 	public void setWidth(Double width) {
 		this.width = width;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import libsidplay.config.IPrinterSection;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.ShadowField;
 
 @Embeddable
@@ -32,4 +33,8 @@ public class PrinterSection implements IPrinterSection {
 		return printerOn.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

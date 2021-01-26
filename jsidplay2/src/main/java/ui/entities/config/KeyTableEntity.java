@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
 import libsidplay.components.keyboard.KeyTableEntry;
+import sidplay.ini.converter.BeanToStringConverter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -63,4 +64,8 @@ public class KeyTableEntity {
 		this.keyCodeName = keyCodeName;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

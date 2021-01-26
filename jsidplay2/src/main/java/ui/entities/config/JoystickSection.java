@@ -6,6 +6,7 @@ import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.ShadowField;
 
 @Embeddable
@@ -343,4 +344,8 @@ public class JoystickSection {
 		return componentValueBtn2.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

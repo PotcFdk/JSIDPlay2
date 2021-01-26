@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.ini.converter.BeanToStringConverter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -120,5 +121,10 @@ public class MusicInfo {
 		result.setInfoDir(infoDir);
 		result.setAudioLength(audioLength);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

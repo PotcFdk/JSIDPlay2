@@ -78,6 +78,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IDeviceMapping;
 import libsidplay.config.IEmulationSection;
+import sidplay.ini.converter.BeanToStringConverter;
 import sidplay.ini.converter.NegatedBooleanConverter;
 
 /**
@@ -773,64 +774,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("engine=").append(getEngine()).append(",");
-		result.append("defaultEmulation=").append(getDefaultEmulation()).append(",");
-		result.append("userEmulation=").append(getUserEmulation()).append(",");
-		result.append("stereoEmulation=").append(getStereoEmulation()).append(",");
-		result.append("thirdEmulation=").append(getThirdEmulation()).append(",");
-		result.append("defaultClockSpeed=").append(getDefaultClockSpeed()).append(",");
-		result.append("userClockSpeed=").append(getUserClockSpeed()).append(",");
-		result.append("defaultSidModel=").append(getDefaultSidModel()).append(",");
-		result.append("userSidModel=").append(getUserSidModel()).append(",");
-		result.append("stereoSidModel=").append(getStereoSidModel()).append(",");
-		result.append("thirdSIDModel=").append(getThirdSIDModel()).append(",");
-		result.append("hardsid6581=").append(getHardsid6581()).append(",");
-		result.append("hardsid8580=").append(getHardsid8580()).append(",");
-		result.append("netSIDDevHost=").append(getNetSIDDevHost()).append(",");
-		result.append("netSIDDevPort=").append(getNetSIDDevPort()).append(",");
-		result.append("ultimate64Host=").append(getUltimate64Host()).append(",");
-		result.append("ultimate64Port=").append(getUltimate64Port()).append(",");
-		result.append("filter=").append(isFilter()).append(",");
-		result.append("stereoFilter=").append(isStereoFilter()).append(",");
-		result.append("thirdSIDFilter=").append(isThirdSIDFilter()).append(",");
-		result.append("sidNumToRead=").append(getSidNumToRead()).append(",");
-		result.append("digiBoost8580=").append(isDigiBoosted8580()).append(",");
-		result.append("dualSidBase=").append(getDualSidBase()).append(",");
-		result.append("thirdSIDBase=").append(getThirdSIDBase()).append(",");
-		result.append("fakeStereo=").append(isFakeStereo()).append(",");
-		result.append("forceStereoTune=").append(isForceStereoTune()).append(",");
-		result.append("force3SIDTume=").append(isForce3SIDTune()).append(",");
-		result.append("muteVoice1=").append(isMuteVoice1()).append(",");
-		result.append("muteVoice2=").append(isMuteVoice2()).append(",");
-		result.append("muteVoice3=").append(isMuteVoice3()).append(",");
-		result.append("muteVoice4=").append(isMuteVoice4()).append(",");
-		result.append("muteStereoVoice1=").append(isMuteStereoVoice1()).append(",");
-		result.append("muteStereoVoice2=").append(isMuteStereoVoice2()).append(",");
-		result.append("muteStereoVoice3=").append(isMuteStereoVoice3()).append(",");
-		result.append("muteStereoVoice4=").append(isMuteStereoVoice4()).append(",");
-		result.append("muteThirdSIDVoice1=").append(isMuteThirdSIDVoice1()).append(",");
-		result.append("muteThirdSIDVoice2=").append(isMuteThirdSIDVoice2()).append(",");
-		result.append("muteThirdSIDVoice3=").append(isMuteThirdSIDVoice3()).append(",");
-		result.append("muteThirdSIDVoice4=").append(isMuteThirdSIDVoice4()).append(",");
-		result.append("netSIDFilter6581=").append(getNetSIDFilter6581()).append(",");
-		result.append("netSIDStereoFilter6581=").append(getNetSIDStereoFilter6581()).append(",");
-		result.append("netSIDThirdSIDFilter6581=").append(getNetSIDThirdSIDFilter6581()).append(",");
-		result.append("netSIDFilter8580=").append(getNetSIDFilter8580()).append(",");
-		result.append("netSIDStereoFilter8580=").append(getNetSIDStereoFilter8580()).append(",");
-		result.append("netSIDThirdSIDFilter8580=").append(getNetSIDThirdSIDFilter8580()).append(",");
-		result.append("filter6581=").append(getFilter6581()).append(",");
-		result.append("stereoFilter6581=").append(getStereoFilter6581()).append(",");
-		result.append("thirdSidFilter6581=").append(getThirdSIDFilter6581()).append(",");
-		result.append("filter8580=").append(getFilter8580()).append(",");
-		result.append("stereoFilter8580=").append(getStereoFilter8580()).append(",");
-		result.append("thirdSidFilter8580=").append(getThirdSIDFilter8580()).append(",");
-		result.append("reSIDfpFilter6581=").append(getReSIDfpFilter6581()).append(",");
-		result.append("reSIDfpStereoFilter6581=").append(getReSIDfpStereoFilter6581()).append(",");
-		result.append("reSIDfpThirdSidFilter6581=").append(getReSIDfpThirdSIDFilter6581()).append(",");
-		result.append("reSIDfpFilter8580=").append(getReSIDfpFilter8580()).append(",");
-		result.append("reSIDfpStereoFilter8580=").append(getReSIDfpStereoFilter8580()).append(",");
-		result.append("reSIDfpThirdSidFilter8580=").append(getReSIDfpThirdSIDFilter8580());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
+
 }

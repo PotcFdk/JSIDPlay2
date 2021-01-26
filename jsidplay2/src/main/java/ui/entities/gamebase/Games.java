@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Access(AccessType.PROPERTY)
 @Table(name = "GAMES", indexes = { @Index(name = "GAMES_NAME", columnList = "NAME", unique = false),
@@ -171,6 +173,6 @@ public class Games {
 
 	@Override
 	public String toString() {
-		return name;
+		return BeanToStringConverter.toString(this);
 	}
 }

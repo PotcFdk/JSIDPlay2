@@ -43,6 +43,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
+import sidplay.ini.converter.BeanToStringConverter;
 
 /**
  * Audio section of the INI file.
@@ -491,24 +492,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("audio=").append(getAudio()).append(",");
-		result.append("device=").append(getDevice()).append(",");
-		result.append("samplingRate=").append(getSamplingRate()).append(",");
-		result.append("sampling=").append(getSampling()).append(",");
-		result.append("playOriginal=").append(isPlayOriginal()).append(",");
-		result.append("mp3=").append(getMp3()).append(",");
-		result.append("mainVolume=").append(getMainVolume()).append(",");
-		result.append("secondVolume=").append(getSecondVolume()).append(",");
-		result.append("thirdVolume=").append(getThirdVolume()).append(",");
-		result.append("mainBalance=").append(getMainBalance()).append(",");
-		result.append("secondBalance=").append(getSecondBalance()).append(",");
-		result.append("thirdBalance=").append(getThirdBalance()).append(",");
-		result.append("mainDelay=").append(getMainDelay()).append(",");
-		result.append("secondDelay=").append(getSecondDelay()).append(",");
-		result.append("thirdDelay=").append(getThirdDelay()).append(",");
-		result.append("bufferSize=").append(getBufferSize());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
 
 }

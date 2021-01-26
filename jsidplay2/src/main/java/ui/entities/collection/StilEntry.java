@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import libsidutils.stil.STIL.Info;
+import sidplay.ini.converter.BeanToStringConverter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -108,4 +109,8 @@ public class StilEntry {
 		this.stilComment = comment;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

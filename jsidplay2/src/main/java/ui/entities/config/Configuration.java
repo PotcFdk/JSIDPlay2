@@ -30,6 +30,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.config.IConfig;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ObservableLazyListField;
 import ui.common.properties.ShadowField;
@@ -316,4 +317,8 @@ public class Configuration implements IConfig {
 		this.keyCodeMap.set(keyCodeMap);
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

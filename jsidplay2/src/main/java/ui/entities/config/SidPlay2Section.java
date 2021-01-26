@@ -40,6 +40,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.FileAttributeConverter;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
@@ -735,4 +736,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return turboTape.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

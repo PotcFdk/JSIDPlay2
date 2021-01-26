@@ -2,6 +2,7 @@ package sidplay.ini;
 
 import libsidplay.common.ChipModel;
 import libsidplay.config.IDeviceMapping;
+import sidplay.ini.converter.BeanToStringConverter;
 
 public class IniDeviceMapping implements IDeviceMapping {
 
@@ -48,4 +49,8 @@ public class IniDeviceMapping implements IDeviceMapping {
 		this.chipModel = chipModel;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

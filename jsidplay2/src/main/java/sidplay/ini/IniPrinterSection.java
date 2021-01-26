@@ -3,6 +3,7 @@ package sidplay.ini;
 import static sidplay.ini.IniDefaults.DEFAULT_PRINTER_ON;
 
 import libsidplay.config.IPrinterSection;
+import sidplay.ini.converter.BeanToStringConverter;
 
 /**
  * C1541 section of the INI file.
@@ -38,9 +39,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("printerOn=").append(isPrinterOn());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
 
 }

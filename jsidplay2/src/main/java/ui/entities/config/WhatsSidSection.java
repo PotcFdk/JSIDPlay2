@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import libsidplay.config.IWhatsSidSection;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.ShadowField;
 
 @Embeddable
@@ -162,5 +163,10 @@ public class WhatsSidSection implements IWhatsSidSection {
 
 	public FloatProperty minimumRelativeConfidenceProperty() {
 		return minimumRelativeConfidence.property();
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

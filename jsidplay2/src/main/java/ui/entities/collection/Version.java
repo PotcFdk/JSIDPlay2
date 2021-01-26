@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class Version {
@@ -33,4 +35,8 @@ public class Version {
 		this.version = version;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

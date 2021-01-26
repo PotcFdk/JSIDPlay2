@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import libsidplay.config.IFilterSection;
+import sidplay.ini.converter.BeanToStringConverter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -195,5 +196,10 @@ public class FilterSection implements IFilterSection {
 	@Override
 	public void setResonanceFactor(float resonanceFactor) {
 		this.resonanceFactor = resonanceFactor;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

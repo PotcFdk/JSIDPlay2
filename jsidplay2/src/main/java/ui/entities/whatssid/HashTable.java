@@ -11,6 +11,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 import libsidutils.fingerprinting.rest.beans.HashBean;
+import sidplay.ini.converter.BeanToStringConverter;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -72,4 +73,8 @@ public class HashTable {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

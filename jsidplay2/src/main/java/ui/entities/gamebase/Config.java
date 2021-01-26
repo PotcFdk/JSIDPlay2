@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class Config {
@@ -43,4 +45,8 @@ public class Config {
 		this.officialUpdate = officialUpdate;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

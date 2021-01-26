@@ -17,6 +17,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.LazyListField;
 
 @Embeddable
@@ -38,4 +39,8 @@ public class Assembly64Section {
 		this.columns.set(columns);
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

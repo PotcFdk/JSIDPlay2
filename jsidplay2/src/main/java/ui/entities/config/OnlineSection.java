@@ -6,6 +6,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.ShadowField;
 
 @Embeddable
@@ -390,4 +391,8 @@ public class OnlineSection {
 		return zoom.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

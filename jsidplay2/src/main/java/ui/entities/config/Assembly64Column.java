@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class Assembly64Column {
@@ -59,5 +61,10 @@ public class Assembly64Column {
 
 	public void setWidth(Double width) {
 		this.width = width;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

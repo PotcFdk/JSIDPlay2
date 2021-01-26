@@ -12,6 +12,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_RAM_EXPAND_0XA000;
 
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IC1541Section;
+import sidplay.ini.converter.BeanToStringConverter;
 
 /**
  * C1541 section of the INI file.
@@ -157,17 +158,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("driveOn=").append(isDriveOn()).append(",");
-		result.append("parallelCable=").append(isParallelCable()).append(",");
-		result.append("jiffyDosInstalled=").append(isJiffyDosInstalled()).append(",");
-		result.append("ramExpansionEnabled0=").append(isRamExpansionEnabled0()).append(",");
-		result.append("ramExpansionEnabled1=").append(isRamExpansionEnabled1()).append(",");
-		result.append("ramExpansionEnabled2=").append(isRamExpansionEnabled2()).append(",");
-		result.append("ramExpansionEnabled3=").append(isRamExpansionEnabled3()).append(",");
-		result.append("ramExpansionEnabled4=").append(isRamExpansionEnabled4()).append(",");
-		result.append("floppyType=").append(getFloppyType());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
 
 }

@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 @Entity
 @Table(name = "GENRES", indexes = { @Index(name = "GENRES_GENRE_INDEX", columnList = "GENRE", unique = false),
 		@Index(name = "GENRES_PG_ID", columnList = "PG_ID", unique = false) })
@@ -63,4 +65,8 @@ public class Genres {
 		this.genre = genre;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

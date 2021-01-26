@@ -29,6 +29,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ObservableLazyListField;
 import ui.common.properties.ShadowField;
@@ -147,4 +148,8 @@ public class FavoritesSection {
 		return favorites.getObservableList();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

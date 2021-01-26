@@ -95,6 +95,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.config.IEmulationSection;
 import server.restful.common.Connectors;
+import sidplay.ini.converter.BeanToStringConverter;
 import sidplay.ini.converter.FileToStringConverter;
 import ui.common.converter.FileAttributeConverter;
 import ui.common.converter.FileXmlAdapter;
@@ -1394,4 +1395,8 @@ public class EmulationSection implements IEmulationSection {
 		return reSIDfp3rdSIDFilter8580.property();
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

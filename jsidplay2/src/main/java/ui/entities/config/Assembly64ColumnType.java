@@ -1,5 +1,7 @@
 package ui.entities.config;
 
+import sidplay.ini.converter.BeanToStringConverter;
+
 public enum Assembly64ColumnType {
 	NAME("name", String.class, 300), GROUP("group", String.class, 150), YEAR("year", Integer.class, 150),
 	HANDLE("handle", String.class, 150), EVENT("event", String.class, 150), RATING("rating", Integer.class, 150),
@@ -26,5 +28,10 @@ public enum Assembly64ColumnType {
 
 	public double getDefaultWidth() {
 		return defaultWidth;
+	}
+
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
 	}
 }

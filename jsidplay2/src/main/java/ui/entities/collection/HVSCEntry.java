@@ -32,6 +32,7 @@ import libsidplay.sidtune.SidTune.Compatibility;
 import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
+import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.LocalDateTimeXmlAdapter;
 import ui.common.properties.LazyListField;
 
@@ -432,4 +433,8 @@ public class HVSCEntry {
 		this.stil.set(stil);
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }

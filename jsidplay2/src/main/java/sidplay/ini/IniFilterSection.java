@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import libsidplay.config.IFilterSection;
+import sidplay.ini.converter.BeanToStringConverter;
 
 public class IniFilterSection implements IFilterSection {
 	private final IniReader ini;
@@ -144,20 +145,6 @@ public class IniFilterSection implements IFilterSection {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("name=").append(getName()).append(",");
-		result.append("filter8580CurvePosition=").append(getFilter8580CurvePosition()).append(",");
-		result.append("filter6581CurvePosition=").append(getFilter6581CurvePosition()).append(",");
-		result.append("attenuation=").append(getAttenuation()).append(",");
-		result.append("nonLinearity=").append(getNonlinearity()).append(",");
-		result.append("voiceNonLinearity=").append(getVoiceNonlinearity()).append(",");
-		result.append("baseresistance=").append(getBaseresistance()).append(",");
-		result.append("offset=").append(getOffset()).append(",");
-		result.append("steepness=").append(getSteepness()).append(",");
-		result.append("minimumfetresistance=").append(getMinimumfetresistance()).append(",");
-		result.append("k=").append(getK()).append(",");
-		result.append("b=").append(getB()).append(",");
-		result.append("resonanceFactor=").append(getResonanceFactor());
-		return result.toString();
+		return BeanToStringConverter.toString(this);
 	}
 }

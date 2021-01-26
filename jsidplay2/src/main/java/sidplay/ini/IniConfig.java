@@ -32,6 +32,7 @@ import libsidplay.config.IFilterSection;
 import libsidplay.config.IPrinterSection;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
+import sidplay.ini.converter.BeanToStringConverter;
 
 /**
  * 
@@ -237,4 +238,8 @@ public class IniConfig implements IConfig {
 		return whatsSidSection;
 	}
 
+	@Override
+	public String toString() {
+		return BeanToStringConverter.toString(this);
+	}
 }
