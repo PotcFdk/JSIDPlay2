@@ -18,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import libsidplay.components.c1541.C1541;
-import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -28,6 +27,7 @@ import sidplay.fingerprinting.FingerprintJsonClient;
 import ui.common.Convenience;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
+import ui.entities.config.WhatsSidSection;
 import ui.entities.config.service.ConfigService;
 import ui.entities.config.service.ConfigService.ConfigurationType;
 
@@ -99,8 +99,8 @@ public class JSidPlay2Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Configuration configuration = getConfigurationFromCommandLineArgs();
-			SidPlay2Section section = configuration.getSidplay2Section();
-			IWhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+			SidPlay2Section sidplay2Section = configuration.getSidplay2Section();
+			WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
 
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
@@ -110,33 +110,25 @@ public class JSidPlay2Main extends Application {
 			player.setMenuHook(menuHook);
 			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
 
-			// automatically load tune on start-up
-			Optional<String> filename = filenames.stream().findFirst();
-			if (filename.isPresent()) {
-				try {
-					new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA,
-							null);
-				} catch (IOException | SidTuneError e) {
-					System.err.println(e.getMessage());
-				}
-			}
+			autostartFilenames();
+
 			jSidplay2 = new JSidPlay2(primaryStage, player);
 
 			Scene scene = primaryStage.getScene();
 			if (scene != null) {
 				Window window = scene.getWindow();
 
-				window.setX(section.getFrameX());
-				section.frameXProperty().bind(window.xProperty());
+				window.setX(sidplay2Section.getFrameX());
+				sidplay2Section.frameXProperty().bind(window.xProperty());
 
-				window.setY(section.getFrameY());
-				section.frameYProperty().bind(window.yProperty());
+				window.setY(sidplay2Section.getFrameY());
+				sidplay2Section.frameYProperty().bind(window.yProperty());
 
-				window.setWidth(section.getFrameWidth());
-				section.frameWidthProperty().bind(window.widthProperty());
+				window.setWidth(sidplay2Section.getFrameWidth());
+				sidplay2Section.frameWidthProperty().bind(window.widthProperty());
 
-				window.setHeight(section.getFrameHeight());
-				section.frameHeightProperty().bind(window.heightProperty());
+				window.setHeight(sidplay2Section.getFrameHeight());
+				sidplay2Section.frameHeightProperty().bind(window.heightProperty());
 			}
 
 			jSidplay2.open();
@@ -154,13 +146,13 @@ public class JSidPlay2Main extends Application {
 			try {
 				floppy.getDiskController().ejectDisk();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 			}
 		}
 		try {
 			player.getDatasette().ejectTape();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 		configService.save((Configuration) player.getConfig());
 		configService.close();
@@ -205,6 +197,17 @@ public class JSidPlay2Main extends Application {
 	private Configuration getConfiguration() {
 		configService = new ConfigService(configurationType);
 		return configService.load();
+	}
+
+	private void autostartFilenames() {
+		Optional<String> filename = filenames.stream().findFirst();
+		if (filename.isPresent()) {
+			try {
+				new Convenience(player).autostart(new File(filename.get()), Convenience.LEXICALLY_FIRST_MEDIA, null);
+			} catch (IOException | SidTuneError e) {
+				System.err.println(e.getMessage());
+			}
+		}
 	}
 
 	/**
