@@ -30,12 +30,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -384,63 +382,63 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return tmpDir.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> frameX = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_X);
+	private ShadowField<DoubleProperty, Number> frameX = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_X);
 
-	public int getFrameX() {
-		return frameX.get().intValue();
+	public double getFrameX() {
+		return frameX.get().doubleValue();
 	}
 
-	public void setFrameX(int frameX) {
+	public void setFrameX(double frameX) {
 		this.frameX.set(frameX);
 	}
 
-	public IntegerProperty frameXProperty() {
+	public DoubleProperty frameXProperty() {
 		return frameX.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> frameY = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_Y);
+	private ShadowField<DoubleProperty, Number> frameY = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_Y);
 
-	public int getFrameY() {
-		return frameY.get().intValue();
+	public double getFrameY() {
+		return frameY.get().doubleValue();
 	}
 
-	public void setFrameY(int frameY) {
+	public void setFrameY(double frameY) {
 		this.frameY.set(frameY);
 	}
 
-	public IntegerProperty frameYProperty() {
+	public DoubleProperty frameYProperty() {
 		return frameY.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> frameWidth = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_WIDTH);
+	private ShadowField<DoubleProperty, Number> frameWidth = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_WIDTH);
 
-	public int getFrameWidth() {
-		return frameWidth.get().intValue();
+	public double getFrameWidth() {
+		return frameWidth.get().doubleValue();
 	}
 
-	public void setFrameWidth(int frameWidth) {
+	public void setFrameWidth(double frameWidth) {
 		this.frameWidth.set(frameWidth);
 	}
 
-	public IntegerProperty frameWidthProperty() {
+	public DoubleProperty frameWidthProperty() {
 		return frameWidth.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> frameHeight = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_FRAME_HEIGHT);
+	private ShadowField<DoubleProperty, Number> frameHeight = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_HEIGHT);
 
-	public int getFrameHeight() {
-		return frameHeight.get().intValue();
+	public double getFrameHeight() {
+		return frameHeight.get().doubleValue();
 	}
 
-	public void setFrameHeight(int frameHeight) {
+	public void setFrameHeight(double frameHeight) {
 		this.frameHeight.set(frameHeight);
 	}
 
-	public IntegerProperty frameHeightProperty() {
+	public DoubleProperty frameHeightProperty() {
 		return frameHeight.property();
 	}
 
@@ -459,64 +457,64 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return minimized.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> minimizedWidth = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
+	private ShadowField<DoubleProperty, Number> minimizedX = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public int getMinimizedWidth() {
-		return minimizedWidth.get().intValue();
+	public double getMinimizedX() {
+		return minimizedX.get().doubleValue();
 	}
 
-	public void setMinimizedWidth(int minimizedWidth) {
-		this.minimizedWidth.set(minimizedWidth);
-	}
-
-	public IntegerProperty minimizedWidthProperty() {
-		return minimizedWidth.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> minimizedHeight = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
-
-	public int getMinimizedHeight() {
-		return minimizedHeight.get().intValue();
-	}
-
-	public void setMinimizedHeight(int minimizedHeight) {
-		this.minimizedHeight.set(minimizedHeight);
-	}
-
-	public IntegerProperty minimizedHeightProperty() {
-		return minimizedHeight.property();
-	}
-
-	private ShadowField<IntegerProperty, Number> minimizedX = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
-
-	public int getMinimizedX() {
-		return minimizedX.get().intValue();
-	}
-
-	public void setMinimizedX(int minimizedX) {
+	public void setMinimizedX(double minimizedX) {
 		this.minimizedX.set(minimizedX);
 	}
 
-	public IntegerProperty minimizedXProperty() {
+	public DoubleProperty minimizedXProperty() {
 		return minimizedX.property();
 	}
 
-	private ShadowField<IntegerProperty, Number> minimizedY = new ShadowField<>(
-			number -> new SimpleIntegerProperty(number.intValue()), 0);
+	private ShadowField<DoubleProperty, Number> minimizedY = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public int getMinimizedY() {
-		return minimizedY.get().intValue();
+	public double getMinimizedY() {
+		return minimizedY.get().doubleValue();
 	}
 
-	public void setMinimizedY(int minimizedY) {
+	public void setMinimizedY(double minimizedY) {
 		this.minimizedY.set(minimizedY);
 	}
 
-	public IntegerProperty minimizedYProperty() {
+	public DoubleProperty minimizedYProperty() {
 		return minimizedY.property();
+	}
+
+	private ShadowField<DoubleProperty, Number> minimizedWidth = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
+
+	public double getMinimizedWidth() {
+		return minimizedWidth.get().doubleValue();
+	}
+
+	public void setMinimizedWidth(double minimizedWidth) {
+		this.minimizedWidth.set(minimizedWidth);
+	}
+
+	public DoubleProperty minimizedWidthProperty() {
+		return minimizedWidth.property();
+	}
+
+	private ShadowField<DoubleProperty, Number> minimizedHeight = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
+
+	public double getMinimizedHeight() {
+		return minimizedHeight.get().doubleValue();
+	}
+
+	public void setMinimizedHeight(double minimizedHeight) {
+		this.minimizedHeight.set(minimizedHeight);
+	}
+
+	public DoubleProperty minimizedHeightProperty() {
+		return minimizedHeight.property();
 	}
 
 	private ShadowField<FloatProperty, Number> videoScaling = new ShadowField<>(

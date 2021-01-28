@@ -557,7 +557,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (OS.indexOf("win") >= 0) {
 			SidPlay2Section section = util.getConfig().getSidplay2Section();
-			int x = section.getFrameX() + section.getFrameWidth() / 2;
+			int x = (int) (section.getFrameX() + section.getFrameWidth() / 2);
 			try {
 				Runtime.getRuntime().exec("sndvol -f " + x);
 			} catch (IOException e) {

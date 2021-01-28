@@ -14,7 +14,6 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -100,8 +99,9 @@ public class JSidPlay2Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Configuration configuration = getConfigurationFromCommandLineArgs();
-
+			SidPlay2Section section = configuration.getSidplay2Section();
 			IWhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
@@ -121,35 +121,25 @@ public class JSidPlay2Main extends Application {
 				}
 			}
 			jSidplay2 = new JSidPlay2(primaryStage, player);
-			// Set default position and size
-			final SidPlay2Section section = (SidPlay2Section) player.getConfig().getSidplay2Section();
-			int width = section.getFrameWidth();
-			int height = section.getFrameHeight();
 
-			final Scene scene = primaryStage.getScene();
+			Scene scene = primaryStage.getScene();
 			if (scene != null) {
 				Window window = scene.getWindow();
+
 				window.setX(section.getFrameX());
+				section.frameXProperty().bind(window.xProperty());
+
 				window.setY(section.getFrameY());
-				window.xProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameX(newValue.intValue()));
-				window.yProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameY(newValue.intValue()));
-				window.setWidth(width);
-				window.setHeight(height);
-				window.widthProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameWidth(newValue.intValue()));
-				window.heightProperty()
-						.addListener((observable, oldValue, newValue) -> section.setFrameHeight(newValue.intValue()));
+				section.frameYProperty().bind(window.yProperty());
+
+				window.setWidth(section.getFrameWidth());
+				section.frameWidthProperty().bind(window.widthProperty());
+
+				window.setHeight(section.getFrameHeight());
+				section.frameHeightProperty().bind(window.heightProperty());
 			}
+
 			jSidplay2.open();
-			Platform.runLater(() -> {
-				if (scene != null) {
-					Window window = scene.getWindow();
-					window.setWidth(width);
-					window.setHeight(height);
-				}
-			});
 		} catch (Throwable t) {
 			// Uncover unparsable view or other development errors
 			t.printStackTrace();
