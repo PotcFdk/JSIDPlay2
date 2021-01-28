@@ -252,6 +252,7 @@ public class MenuBar extends C64VBox implements UIPart {
 			stage.setResizable(!sidplay2Section.isMinimized());
 			stage.maximizedProperty()
 					.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
+			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
 			minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
 				if (getScene() != null) {
 					Node node = getScene().lookup("#tabbedPane");
@@ -273,8 +274,16 @@ public class MenuBar extends C64VBox implements UIPart {
 					}
 				}
 			});
-			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
-
+			if (sidplay2Section.isMinimized()) {
+				Platform.runLater(() -> {
+					if (getScene() != null) {
+						Node node = getScene().lookup("#tabbedPane");
+						node.setVisible(false);
+						node.setManaged(false);
+						stage.setResizable(false);
+					}
+				});
+			}
 		}
 		if (getScene() != null) {
 			getScene().setOnDragOver(event -> {
