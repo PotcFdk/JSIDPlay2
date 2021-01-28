@@ -249,43 +249,32 @@ public class MenuBar extends C64VBox implements UIPart {
 		// preview view does not provide a window
 		if (util.getWindow() != null) {
 			Stage stage = util.getWindow().getStage();
-			stage.setResizable(!sidplay2Section.isMinimized());
 			stage.maximizedProperty()
 					.addListener((observable, oldValue, newValue) -> minimizeMaximize.setDisable(newValue));
 			minimizeMaximize.selectedProperty().bindBidirectional(sidplay2Section.minimizedProperty());
 			minimizeMaximize.selectedProperty().addListener((observable, oldValue, newValue) -> {
-				if (getScene() != null) {
-					Node node = getScene().lookup("#tabbedPane");
-					node.setVisible(!newValue);
-					node.setManaged(!newValue);
-					stage.setResizable(!newValue);
-					if (newValue) {
-						sidplay2Section.setMinimizedX(getScene().getWindow().getX());
-						sidplay2Section.setMinimizedY(getScene().getWindow().getY());
-						sidplay2Section.setMinimizedWidth(getScene().getWindow().getWidth());
-						sidplay2Section.setMinimizedHeight(getScene().getWindow().getHeight());
-						stage.sizeToScene();
-						Platform.runLater(() -> minimizeMaximize.setDisable(false));
-					} else {
-						getScene().getWindow().setX(sidplay2Section.getMinimizedX());
-						getScene().getWindow().setY(sidplay2Section.getMinimizedY());
-						getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
-						getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
-					}
+				hideMainTabbedPane(stage, newValue);
+				if (newValue) {
+					sidplay2Section.setMinimizedX(getScene().getWindow().getX());
+					sidplay2Section.setMinimizedY(getScene().getWindow().getY());
+					sidplay2Section.setMinimizedWidth(getScene().getWindow().getWidth());
+					sidplay2Section.setMinimizedHeight(getScene().getWindow().getHeight());
+					resizeToMinHeight(stage);
+				} else {
+					getScene().getWindow().setX(sidplay2Section.getMinimizedX());
+					getScene().getWindow().setY(sidplay2Section.getMinimizedY());
+					getScene().getWindow().setWidth(sidplay2Section.getMinimizedWidth());
+					getScene().getWindow().setHeight(sidplay2Section.getMinimizedHeight());
 				}
 			});
 			if (sidplay2Section.isMinimized()) {
 				Platform.runLater(() -> {
-					if (getScene() != null) {
-						Node node = getScene().lookup("#tabbedPane");
-						node.setVisible(false);
-						node.setManaged(false);
-						stage.setResizable(false);
-					}
+					hideMainTabbedPane(stage, true);
+					resizeToMinHeight(stage);
 				});
 			}
 		}
-		if (getScene() != null) {
+		Platform.runLater(() -> {
 			getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
 				if (db.hasFiles()) {
@@ -314,7 +303,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				event.consume();
 			});
 			jSidPlay2.getTabbedPane().requestFocus();
-		}
+		});
 
 		util.getPlayer().setWhatsSidHook(musicInfoWithConfidence -> {
 			Platform.runLater(() -> {
@@ -328,6 +317,19 @@ public class MenuBar extends C64VBox implements UIPart {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
+	}
+
+	private void hideMainTabbedPane(Stage stage, Boolean hide) {
+		Node node = getScene().lookup("#tabbedPane");
+		node.setVisible(!hide);
+		node.setManaged(!hide);
+		stage.setResizable(!hide);
+	}
+
+	private void resizeToMinHeight(Stage stage) {
+		stage.sizeToScene();
+		// For Mac OSX:
+		Platform.runLater(() -> minimizeMaximize.setDisable(false));
 	}
 
 	@FXML
