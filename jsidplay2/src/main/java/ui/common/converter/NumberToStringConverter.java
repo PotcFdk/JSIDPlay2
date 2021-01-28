@@ -3,8 +3,9 @@ package ui.common.converter;
 import javafx.util.StringConverter;
 
 public final class NumberToStringConverter<T extends Number> extends StringConverter<T> {
-	private int factor;
-	private int decimalPlaces;
+
+	private final int factor;
+	private final int decimalPlaces;
 
 	/**
 	 * @param decimalPlaces decimal places

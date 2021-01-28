@@ -10,6 +10,7 @@ import libsidutils.siddatabase.TimeConverter;
  * Convert time in minutes and seconds (mm:ss.SSS) to number (seconds)
  */
 public class TimeToStringConverter extends NumberStringConverter {
+
 	@Override
 	public Number fromString(String time) {
 		return new TimeConverter().fromString(time);

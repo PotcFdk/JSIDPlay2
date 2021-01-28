@@ -6,9 +6,8 @@ import javafx.util.StringConverter;
 
 public class IntegerToStringConverter extends StringConverter<Integer> {
 
-	private ResourceBundle bundle;
-
-	private String zeroBundleKey;
+	private final ResourceBundle bundle;
+	private final String zeroBundleKey;
 
 	public IntegerToStringConverter(ResourceBundle bundle, String zeroBundleKey) {
 		this.bundle = bundle;

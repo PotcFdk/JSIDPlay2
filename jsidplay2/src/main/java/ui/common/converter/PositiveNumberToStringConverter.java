@@ -6,7 +6,8 @@ import java.text.ParseException;
 import javafx.util.StringConverter;
 
 public final class PositiveNumberToStringConverter<T extends Number> extends StringConverter<T> {
-	private int minValue;
+
+	private final int minValue;
 
 	/**
 	 * @param minValue minimum number value
