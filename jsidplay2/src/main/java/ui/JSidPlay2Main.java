@@ -98,9 +98,9 @@ public class JSidPlay2Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Configuration configuration = getConfigurationFromCommandLineArgs();
-			SidPlay2Section sidplay2Section = configuration.getSidplay2Section();
-			WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+			final Configuration configuration = getConfigurationFromCommandLineArgs();
+			final SidPlay2Section sidplay2Section = configuration.getSidplay2Section();
+			final WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
 
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
@@ -129,9 +129,9 @@ public class JSidPlay2Main extends Application {
 
 				window.setHeight(sidplay2Section.getFrameHeight());
 				sidplay2Section.frameHeightProperty().bind(window.heightProperty());
-			}
 
-			jSidplay2.open();
+				jSidplay2.open();
+			}
 		} catch (Throwable t) {
 			// Uncover unparsable view or other development errors
 			t.printStackTrace();

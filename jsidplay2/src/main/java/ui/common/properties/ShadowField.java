@@ -47,4 +47,8 @@ public class ShadowField<P extends WritableValue<V>, V> {
 		return property;
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(get());
+	}
 }
