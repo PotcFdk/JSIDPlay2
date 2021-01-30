@@ -26,11 +26,14 @@ public class BindingUtils {
 	 * @param configProperty property to bind
 	 */
 	public static <T> void bindBidirectionalThreadSafe(final ObjectProperty<T> objectProperty,
-			final ObjectProperty<T> configProperty) {
+			final ObjectProperty<T> configProperty, Runnable runnable) {
 
 		objectProperty.addListener((obj, o, n) -> configProperty.setValue(objectProperty.get()));
 
-		configProperty.addListener((obj, o, n) -> Platform.runLater(() -> objectProperty.setValue(n)));
+		configProperty.addListener((obj, o, n) -> {
+			runnable.run();
+			Platform.runLater(() -> objectProperty.setValue(n));
+		});
 
 		objectProperty.setValue(configProperty.get());
 	}

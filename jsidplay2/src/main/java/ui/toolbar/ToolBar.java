@@ -170,7 +170,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	private Player testPlayer;
 
-	private boolean duringInitialization;
+	private boolean duringInitialization, duringReplay;
 
 	public ToolBar() {
 		super();
@@ -213,7 +213,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		samplingRateBox.setConverter(new EnumToStringConverter<SamplingRate>(bundle));
 		samplingRateBox.setItems(FXCollections.<SamplingRate>observableArrayList(SamplingRate.values()));
-		bindBidirectionalThreadSafe(samplingRateBox.valueProperty(), audioSection.samplingRateProperty());
+		bindBidirectionalThreadSafe(samplingRateBox.valueProperty(), audioSection.samplingRateProperty(),
+				() -> duringReplay = util.getPlayer().stateProperty().get() == State.RESTART);
 
 		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
@@ -712,7 +713,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	private void restart() {
-		if (!duringInitialization) {
+		if (!duringInitialization && !duringReplay) {
 			util.getPlayer().play(util.getPlayer().getTune());
 		}
 	}

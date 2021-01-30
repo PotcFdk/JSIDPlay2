@@ -61,8 +61,8 @@ public class CmpMP3File extends JavaSound {
 			throw new IOException("Unsupported sample rate: " + sampleRate + " in " + mp3);
 		}
 		if (sampleRate != audioSection.getSamplingRate().getFrequency()) {
-			audioSection.setSamplingRate(samplingRateFound.get());
-			throw new IniConfigException("Sampling rate does not match " + sampleRate);
+			throw new IniConfigException("Sampling rate does not match " + sampleRate,
+					() -> audioSection.setSamplingRate(samplingRateFound.get()));
 		}
 		decodedMP3Buffer = ByteBuffer.wrap(new byte[frameSize * Short.BYTES * channels]).order(ByteOrder.nativeOrder());
 
