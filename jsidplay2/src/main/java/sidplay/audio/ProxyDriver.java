@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IConfig;
@@ -36,9 +37,9 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	}
 
 	@Override
-	public void configure(SidTune tune, IConfig config) {
-		driverOne.configure(tune, config);
-		driverTwo.configure(tune, config);
+	public void configure(SidTune tune, IConfig config, EventScheduler context) {
+		driverOne.configure(tune, config, context);
+		driverTwo.configure(tune, config, context);
 	}
 
 	@Override
@@ -79,12 +80,12 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	}
 
 	@Override
-	public void write(long time, int addr, byte data) {
+	public void write(int addr, byte data) {
 		if (driverOne instanceof SIDListener) {
-			((SIDListener) driverOne).write(time, addr, data);
+			((SIDListener) driverOne).write(addr, data);
 		}
 		if (driverTwo instanceof SIDListener) {
-			((SIDListener) driverTwo).write(time, addr, data);
+			((SIDListener) driverTwo).write(addr, data);
 		}
 	}
 

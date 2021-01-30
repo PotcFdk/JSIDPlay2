@@ -111,7 +111,7 @@ public final class PLA {
 	}
 
 	/** SID chip memory bank maps reads and writes to the assigned SID chip */
-	public class SIDBank extends Bank {
+	public static class SIDBank extends Bank {
 		/**
 		 * Size of mapping table. Each 32 bytes another SID chip is possible (it can be
 		 * assigned to IO range 0xd000-0xdfff: 4096b/32b=128 places).<BR>
@@ -135,9 +135,10 @@ public final class PLA {
 		private int[] sidBankUsed = new int[MAX_BANKS];
 
 		/**
-		 * SID chip listener
+		 * Consumer for SID register writes
 		 */
-		private SIDListener listener;
+		protected SIDListener listener = (reg, data) -> {
+		};
 
 		public void setSIDListener(SIDListener listener) {
 			this.listener = listener;
@@ -177,10 +178,7 @@ public final class PLA {
 			final SIDEmu sid = sidemu[sidmapper[address >> 5 & MAPPER_SIZE - 1]];
 			if (sid != null) {
 				sid.write(address & REG_COUNT - 1, value);
-				if (listener != null) {
-					final long time = context.getTime(Event.Phase.PHI2);
-					listener.write(time, address, value);
-				}
+				listener.write(address, value);
 			}
 		}
 

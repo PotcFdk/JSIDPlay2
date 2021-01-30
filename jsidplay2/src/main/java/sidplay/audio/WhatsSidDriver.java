@@ -11,6 +11,7 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
@@ -59,7 +60,7 @@ public class WhatsSidDriver implements AudioDriver {
 	}
 
 	@Override
-	public void configure(SidTune tune, IConfig config) {
+	public void configure(SidTune tune, IConfig config, EventScheduler context) {
 		this.tune = tune;
 		this.config = config;
 	}

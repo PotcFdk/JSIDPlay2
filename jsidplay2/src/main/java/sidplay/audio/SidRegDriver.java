@@ -10,7 +10,11 @@ import java.util.ResourceBundle;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.Event;
+import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
+import libsidplay.config.IConfig;
+import libsidplay.sidtune.SidTune;
 
 public class SidRegDriver implements SIDListener, AudioDriver {
 
@@ -60,9 +64,16 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 			"VOICE_3_FREQ_H", "VOICE_3_PULSE_L", "VOICE_3_PULSE_H", "VOICE_3_CTRL", "VOICE_3_AD", "VOICE_3_SR",
 			"FCUT_L", "FCUT_H", "FRES", "FVOL", "PADDLE1", "PADDLE2", "OSC3", "ENV3", "UNUSED", "UNUSED", "UNUSED" };
 
+	private EventScheduler context;
+
 	private PrintStream printStream;
 	private long fTime;
 	private ByteBuffer sampleBuffer;
+
+	@Override
+	public void configure(SidTune tune, IConfig config, EventScheduler context) {
+		this.context = context;
+	}
 
 	@Override
 	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
@@ -78,7 +89,8 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 	}
 
 	@Override
-	public void write(final long time, final int addr, final byte data) {
+	public void write(final int addr, final byte data) {
+		final long time = context.getTime(Event.Phase.PHI2);
 		if (fTime == 0) {
 			fTime = time;
 		}

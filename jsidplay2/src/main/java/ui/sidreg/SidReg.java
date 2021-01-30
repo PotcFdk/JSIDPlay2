@@ -241,7 +241,7 @@ public class SidReg extends C64VBox implements UIPart {
 
 	protected void recordSidWrites(final boolean enable) {
 		if (enable) {
-			sidRegExtension.init();
+			sidRegExtension.init(util.getPlayer().getC64().getEventScheduler());
 			util.getPlayer().addSidListener(sidRegExtension);
 		} else {
 			util.getPlayer().removeSidListener(sidRegExtension);

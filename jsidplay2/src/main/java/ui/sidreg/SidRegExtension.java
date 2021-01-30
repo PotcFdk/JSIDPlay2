@@ -1,14 +1,18 @@
 package ui.sidreg;
 
+import libsidplay.common.Event;
+import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
 import sidplay.audio.SidRegDriver.SidRegWrite;
 
 public abstract class SidRegExtension implements SIDListener {
 
+	private EventScheduler context;
 	private long fTime;
 
 	@Override
-	public void write(final long time, final int addr, final byte data) {
+	public void write(final int addr, final byte data) {
+		final long time = context.getTime(Event.Phase.PHI2);
 
 		if (fTime == 0) {
 			fTime = time;
@@ -20,9 +24,10 @@ public abstract class SidRegExtension implements SIDListener {
 		fTime = time;
 	}
 
-	public void init() {
+	public void init(EventScheduler context) {
 		clear();
-		fTime = 0;
+		this.context = context;
+		this.fTime = 0;
 	}
 
 	public abstract void clear();

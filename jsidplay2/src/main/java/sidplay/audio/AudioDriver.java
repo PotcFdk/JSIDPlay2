@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 
@@ -29,9 +30,10 @@ public interface AudioDriver {
 	/**
 	 * Add additional configuration where appropriate.
 	 *
-	 * @param config configuration
+	 * @param config  configuration
+	 * @param context
 	 */
-	default void configure(SidTune tune, IConfig config) {
+	default void configure(SidTune tune, IConfig config, EventScheduler context) {
 	}
 
 	/**

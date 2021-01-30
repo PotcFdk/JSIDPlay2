@@ -10,6 +10,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
@@ -97,7 +98,7 @@ public abstract class MP3Driver implements AudioDriver {
 	protected ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(SidTune tune, IConfig config) {
+	public void configure(SidTune tune, IConfig config, EventScheduler context) {
 		IAudioSection audioSection = config.getAudioSection();
 		cbr = audioSection.getCbr();
 		vbr = audioSection.isVbr();

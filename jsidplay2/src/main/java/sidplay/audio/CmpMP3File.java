@@ -13,6 +13,7 @@ import java.util.Optional;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
@@ -40,7 +41,7 @@ public class CmpMP3File extends JavaSound {
 	private IAudioSection audioSection;
 
 	@Override
-	public void configure(SidTune tune, IConfig config) {
+	public void configure(SidTune tune, IConfig config, EventScheduler context) {
 		this.audioSection = config.getAudioSection();
 	}
 

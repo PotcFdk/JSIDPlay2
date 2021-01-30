@@ -735,7 +735,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
 		// configure audio driver
-		getAudioDriver().configure(tune, config);
+		getAudioDriver().configure(tune, config, c64.getEventScheduler());
 
 		// open audio driver
 		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
@@ -1122,10 +1122,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	@Override
-	public void write(long time, int addr, byte data) {
+	public void write(int addr, byte data) {
 		Iterator<SIDListener> iterator = sidListeners.iterator();
 		while (iterator.hasNext()) {
-			iterator.next().write(time, addr, data);
+			iterator.next().write(addr, data);
 		}
 	}
 
