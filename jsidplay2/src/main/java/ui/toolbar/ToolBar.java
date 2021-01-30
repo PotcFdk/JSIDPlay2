@@ -713,9 +713,10 @@ public class ToolBar extends C64VBox implements UIPart {
 	}
 
 	private void restart() {
-		if (!duringInitialization && !duringReplay) {
+		if (!duringInitialization && !duringReplay && util.getPlayer().stateProperty().get() != State.RESTART) {
 			util.getPlayer().play(util.getPlayer().getTune());
 		}
+		duringReplay = false;
 	}
 
 }
