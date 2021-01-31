@@ -29,8 +29,8 @@ public interface AudioDriver {
 	/**
 	 * Add additional configuration where appropriate.
 	 *
-	 * @param config  configuration
-	 * @param context
+	 * @param audioSection additional audio configuration
+	 * @param context      event context
 	 */
 	default void configure(IAudioSection audioSection, EventScheduler context) {
 	}
