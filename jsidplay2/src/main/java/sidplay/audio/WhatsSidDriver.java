@@ -11,8 +11,6 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
-import libsidplay.common.EventScheduler;
-import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
@@ -47,7 +45,7 @@ public class WhatsSidDriver implements AudioDriver {
 
 	private SidTune tune;
 
-	private IConfig config;
+	private File hvsc;
 
 	private IFingerprintInserter fingerprintInserter;
 
@@ -55,14 +53,16 @@ public class WhatsSidDriver implements AudioDriver {
 		this.tuneFile = file;
 	}
 
-	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
-		this.fingerprintInserter = fingerprintInserter;
+	public void setTune(SidTune tune) {
+		this.tune = tune;
 	}
 
-	@Override
-	public void configure(SidTune tune, IConfig config, EventScheduler context) {
-		this.tune = tune;
-		this.config = config;
+	public void setHvsc(File hvsc) {
+		this.hvsc = hvsc;
+	}
+
+	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
+		this.fingerprintInserter = fingerprintInserter;
 	}
 
 	@Override
@@ -112,13 +112,12 @@ public class WhatsSidDriver implements AudioDriver {
 			}
 		}
 		if (recordingFilename != null && new File(recordingFilename).exists()) {
-			if (tuneFile != null && fingerprintInserter != null) {
+			if (hvsc != null && tune != null && tuneFile != null && fingerprintInserter != null) {
 				try {
 					String song = tune != SidTune.RESET ? " (" + tune.getInfo().getCurrentSong() + ")" : "";
 					System.out.println("Insert Fingerprint for " + tuneFile.getAbsolutePath() + song);
 
-					File theCollectionFile = config.getSidplay2Section().getHvsc();
-					String collectionName = PathUtils.getCollectionName(theCollectionFile, tuneFile);
+					String collectionName = PathUtils.getCollectionName(hvsc, tuneFile);
 
 					fingerprintInserter.insert(tune, collectionName, recordingFilename);
 				} catch (IOException e) {

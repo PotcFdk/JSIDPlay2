@@ -22,8 +22,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
-import libsidplay.config.IConfig;
-import libsidplay.sidtune.SidTune;
+import libsidplay.config.IAudioSection;
 
 public interface AudioDriver {
 
@@ -33,7 +32,7 @@ public interface AudioDriver {
 	 * @param config  configuration
 	 * @param context
 	 */
-	default void configure(SidTune tune, IConfig config, EventScheduler context) {
+	default void configure(IAudioSection audioSection, EventScheduler context) {
 	}
 
 	/**

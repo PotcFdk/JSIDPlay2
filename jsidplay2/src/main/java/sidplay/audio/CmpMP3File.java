@@ -16,8 +16,6 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
-import libsidplay.config.IConfig;
-import libsidplay.sidtune.SidTune;
 import lowlevel.LameDecoder;
 import sidplay.audio.exceptions.IniConfigException;
 import sidplay.audio.exceptions.SongEndException;
@@ -41,8 +39,8 @@ public class CmpMP3File extends JavaSound {
 	private IAudioSection audioSection;
 
 	@Override
-	public void configure(SidTune tune, IConfig config, EventScheduler context) {
-		this.audioSection = config.getAudioSection();
+	public void configure(IAudioSection audioSection, EventScheduler context) {
+		this.audioSection = audioSection;
 	}
 
 	@Override

@@ -111,6 +111,7 @@ public class FingerPrintingCreator {
 		config.getSidplay2Section().setEnableDatabase(true);
 
 		whatsSidDriver = new WhatsSidDriver();
+		whatsSidDriver.setHvsc(config.getSidplay2Section().getHvsc());
 
 		player = new Player(config);
 		player.setAudioDriver(whatsSidDriver);
@@ -161,6 +162,8 @@ public class FingerPrintingCreator {
 						copyRecordingsOfPreviousDirectory(file, tune);
 					}
 					whatsSidDriver.setTuneFile(file);
+					whatsSidDriver.setTune(tune);
+
 					player.setRecordingFilenameProvider(
 							theTune -> getRecordingFilename(file, theTune, theTune.getInfo().getCurrentSong()));
 					player.setTune(tune);

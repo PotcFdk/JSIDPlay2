@@ -29,8 +29,7 @@ import org.monte.media.math.Rational;
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.components.mos656x.VIC;
-import libsidplay.config.IConfig;
-import libsidplay.sidtune.SidTune;
+import libsidplay.config.IAudioSection;
 
 public class AVIDriver implements AudioDriver, VideoDriver {
 
@@ -43,8 +42,8 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(SidTune tune, IConfig config, EventScheduler context) {
-		aviVideoQuality = config.getAudioSection().getAviCompressionQuality();
+	public void configure(IAudioSection audioSection, EventScheduler context) {
+		aviVideoQuality = audioSection.getAviCompressionQuality();
 	}
 
 	@Override

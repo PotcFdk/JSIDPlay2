@@ -13,8 +13,7 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
-import libsidplay.config.IConfig;
-import libsidplay.sidtune.SidTune;
+import libsidplay.config.IAudioSection;
 
 public class SidRegDriver implements SIDListener, AudioDriver {
 
@@ -71,7 +70,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(SidTune tune, IConfig config, EventScheduler context) {
+	public void configure(IAudioSection audioSection, EventScheduler context) {
 		this.context = context;
 	}
 
