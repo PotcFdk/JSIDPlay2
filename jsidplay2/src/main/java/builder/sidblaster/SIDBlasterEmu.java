@@ -203,12 +203,12 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	public static final String credits() {
 		final StringBuffer credits = new StringBuffer();
-		credits.append("SIDBlaster Java version by Ken Händel <kschwiersch@yahoo.de> Copyright (©) 2007\n");
+		credits.append("SIDBlaster Java version by Ken Händel <kschwiersch@yahoo.de> Copyright (©) 2020\n");
 		credits.append("\tSupported by SIDBlaster-USB TicTac Edition (Andreas Schumm)\n");
 		credits.append("\thttp://crazy-midi.de\n");
+		credits.append("\tBased on SIDBlaster-USB by Davey (Das Phantom)\n");
+		credits.append("\tDLL created by Stein Pedersen\n");
 		credits.append("\tSIDBlaster test song by Hannes Malecki (Honey) of Welle: Erdball\n");
-		credits.append("\tBased on HardSID V1.0.1 Engine:\n");
-		credits.append("\tCopyright (©) 1999-2002 Simon White <sidplay2@yahoo.com>\n");
 		return credits.toString();
 	}
 
