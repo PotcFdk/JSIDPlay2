@@ -111,7 +111,6 @@ public class FingerPrintingCreator {
 		config.getSidplay2Section().setEnableDatabase(true);
 
 		whatsSidDriver = new WhatsSidDriver();
-		whatsSidDriver.setHvsc(config.getSidplay2Section().getHvsc());
 
 		player = new Player(config);
 		player.setAudioDriver(whatsSidDriver);
@@ -158,10 +157,13 @@ public class FingerPrintingCreator {
 			} else if (file.isFile()) {
 				if (TUNE_FILE_FILTER.accept(file)) {
 					SidTune tune = SidTune.load(file);
+					String collectionName = PathUtils.getCollectionName(config.getSidplay2Section().getHvsc(), file);
+
 					if (previousDirectory != null) {
-						copyRecordingsOfPreviousDirectory(file, tune);
+						copyRecordingsOfPreviousDirectory(file, tune, collectionName);
 					}
-					whatsSidDriver.setTuneFile(file);
+
+					whatsSidDriver.setCollectionName(collectionName);
 					whatsSidDriver.setTune(tune);
 
 					player.setRecordingFilenameProvider(
@@ -182,10 +184,8 @@ public class FingerPrintingCreator {
 		}
 	}
 
-	private void copyRecordingsOfPreviousDirectory(File file, SidTune tune) throws IOException, SidTuneError {
-		File theCollectionFile = config.getSidplay2Section().getHvsc();
-		String collectionName = PathUtils.getCollectionName(theCollectionFile, file);
-
+	private void copyRecordingsOfPreviousDirectory(File file, SidTune tune, String collectionName)
+			throws IOException, SidTuneError {
 		File previousFile = new File(previousDirectory, collectionName);
 		if (previousFile.exists()) {
 			SidTune previousTune = SidTune.load(previousFile);
