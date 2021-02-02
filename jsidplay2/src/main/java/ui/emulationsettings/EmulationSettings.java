@@ -478,8 +478,8 @@ public class EmulationSettings extends C64Window {
 	private void setFakeStereo() {
 		enableStereoSettings(util.getPlayer().getTune());
 		// fake stereo mode has an impact on mono and stereo filter curves
-		drawFilterCurve(0, mainFilter, mainFilterCurve);
-		drawFilterCurve(1, secondFilter, secondFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 0, mainFilter, mainFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 1, secondFilter, secondFilterCurve);
 	}
 
 	@FXML
@@ -488,9 +488,9 @@ public class EmulationSettings extends C64Window {
 
 		enableStereoSettings(util.getPlayer().getTune());
 		// stereo mode changes has an impact on all filter curves
-		drawFilterCurve(0, mainFilter, mainFilterCurve);
-		drawFilterCurve(1, secondFilter, secondFilterCurve);
-		drawFilterCurve(2, thirdFilter, thirdFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 0, mainFilter, mainFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 1, secondFilter, secondFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 2, thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML
@@ -503,17 +503,17 @@ public class EmulationSettings extends C64Window {
 
 	@FXML
 	private void setMainFilter() {
-		drawFilterCurve(0, mainFilter, mainFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 0, mainFilter, mainFilterCurve);
 	}
 
 	@FXML
 	private void setSecondFilter() {
-		drawFilterCurve(1, secondFilter, secondFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 1, secondFilter, secondFilterCurve);
 	}
 
 	@FXML
 	private void setThirdFilter() {
-		drawFilterCurve(2, thirdFilter, thirdFilterCurve);
+		drawFilterCurve(util.getPlayer().getTune(), 2, thirdFilter, thirdFilterCurve);
 	}
 
 	@FXML
@@ -639,20 +639,20 @@ public class EmulationSettings extends C64Window {
 	 * model.
 	 *
 	 * @param tune    currently played tune
-	 * @param num     SID chip number
+	 * @param sidNum  SID chip number
 	 * @param filters resulting filter list to add matching filter names to
 	 * @param filter  combo box to select currently selected filter
 	 */
-	private void updateFilterList(final SidTune tune, int num, ObservableList<String> filters,
+	private void updateFilterList(final SidTune tune, int sidNum, ObservableList<String> filters,
 			ComboBox<String> filter) {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
 		Engine engine = emulationSection.getEngine();
-		Emulation emulation = Emulation.getEmulation(emulationSection, tune, num);
-		ChipModel model = ChipModel.getChipModel(emulationSection, tune, num);
-		String filterName = emulationSection.getFilterName(num, engine, emulation, model);
-		boolean filterEnable = emulationSection.isFilterEnable(num);
+		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
+		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		String filterName = emulationSection.getFilterName(sidNum, engine, emulation, model);
+		boolean filterEnable = emulationSection.isFilterEnable(sidNum);
 
 		filters.clear();
 		if (engine == NETSID) {
@@ -693,11 +693,11 @@ public class EmulationSettings extends C64Window {
 	 * @param filterBox   filter combo box
 	 * @param filterCurve filter curve to update
 	 */
-	private void drawFilterCurve(int sidNum, ComboBox<String> filterBox, LineChart<Number, Number> filterCurve) {
+	private void drawFilterCurve(SidTune tune, int sidNum, ComboBox<String> filterBox,
+			LineChart<Number, Number> filterCurve) {
 		IEmulationSection emulationSection = util.getConfig().getEmulationSection();
 		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
-		SidTune tune = util.getPlayer().getTune();
 		Engine engine = emulationSection.getEngine();
 		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);

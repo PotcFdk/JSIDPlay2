@@ -1,4 +1,4 @@
-package sidplay.consoleplayer;
+package sidplay.ini.converter;
 
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.ParameterException;
