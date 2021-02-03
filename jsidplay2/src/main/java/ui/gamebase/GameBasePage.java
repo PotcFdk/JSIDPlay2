@@ -78,7 +78,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 						URL url = new URL(util.getConfig().getOnlineSection().getGb64ScreenshotUrl()
 								+ newValue.getScreenshotFilename().replace('\\', '/'));
 						if (screenshot == null) {
-							screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
+							screenshot = (ImageView) gamebaseTable.getScene().lookup("#gamebase_screenshot");
 						}
 						if (screenshot != null) {
 							Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
