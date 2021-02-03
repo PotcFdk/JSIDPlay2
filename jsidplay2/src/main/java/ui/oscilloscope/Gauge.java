@@ -29,7 +29,7 @@ public class Gauge extends C64VBox implements UIPart {
 	private int width;
 	private int height;
 
-	private String text;
+	protected String text;
 	private int voice;
 
 	public Gauge() {
@@ -57,7 +57,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 	private WritablePixelFormat<IntBuffer> format;
 
-	protected ImageQueue<int[]> imageQueue = new ImageQueue<>();
+	protected ImageQueue<GaugeImage> imageQueue = new ImageQueue<>();
 
 	@Override
 	public String getBundleName() {
@@ -112,11 +112,11 @@ public class Gauge extends C64VBox implements UIPart {
 	}
 
 	public void updateGauge(SIDEmu sidemu) {
-		getTitledPane().setText(text);
-
-		int[] pixels = imageQueue.poll();
-		if (pixels != null) {
-			getArea().getGraphicsContext2D().getPixelWriter().setPixels(0, 0, width, height, format, pixels, 0, width);
+		GaugeImage gaugeImage = imageQueue.poll();
+		if (gaugeImage != null) {
+			getTitledPane().setText(gaugeImage.getText());
+			getArea().getGraphicsContext2D().getPixelWriter().setPixels(0, 0, width, height, format,
+					gaugeImage.getPixels(), 0, width);
 		}
 	}
 
@@ -177,7 +177,7 @@ public class Gauge extends C64VBox implements UIPart {
 				drawLine(pixels, x, intStartPos, x, intEndPos, gaugeColors[shade]);
 			}
 		}
-		imageQueue.add(pixels);
+		imageQueue.add(new GaugeImage(pixels, text));
 	}
 
 	private void drawPoint(int[] pixels, int x, int y, int c) {
@@ -247,7 +247,7 @@ public class Gauge extends C64VBox implements UIPart {
 		return null;
 	}
 
-	protected ImageQueue<int[]> getImageQueue() {
+	protected ImageQueue<GaugeImage> getImageQueue() {
 		return imageQueue;
 	}
 

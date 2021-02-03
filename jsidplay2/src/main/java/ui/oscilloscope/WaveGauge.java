@@ -47,10 +47,32 @@ public final class WaveGauge extends SIDGauge {
 		if (sidemu != null) {
 			final byte wf = sidemu.readInternalRegister(4 + 7 * getVoice());
 			final byte filt = sidemu.readInternalRegister(0x17);
-			setText(String.format(localizer.getString("WAVE") + " %X %s%s%s%s", wf >> 4 & 0xf, (wf & 2) != 0 ? "S" : "",
-					(wf & 4) != 0 ? "R" : "", (wf & 8) != 0 ? "T" : "", (filt & 1 << getVoice()) != 0 ? "F" : ""));
+			text = createText(wf, filt);
 		}
 		super.addImage(sidemu);
+	}
+
+	private String createText(final byte wf, final byte filt) {
+		StringBuilder result = new StringBuilder();
+		if (localizer != null) {
+			result.append(localizer.getString("WAVE"));
+		}
+		result.append(" ");
+		result.append(Integer.toHexString(wf >> 4 & 0xf)); // WF
+		result.append(" ");
+		if ((wf & 2) != 0) {
+			result.append("S"); // SYNC
+		}
+		if ((wf & 4) != 0) {
+			result.append("R"); // RING MOD
+		}
+		if ((wf & 8) != 0) {
+			result.append("T"); // TEST
+		}
+		if ((filt & 1 << getVoice()) != 0) {
+			result.append("F"); // FILTER
+		}
+		return result.toString();
 	}
 
 }
