@@ -97,7 +97,8 @@ public class Oscilloscope extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		pauseTransition = new PauseTransition(Duration.millis(50));
+		pauseTransition = new PauseTransition(
+				Duration.millis(1000. / util.getPlayer().getC64().getClock().getScreenRefresh()));
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		highResolutionEvent = new HighResolutionEvent();
 		listener = event -> {
@@ -160,6 +161,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		for (int chipNum = 0; chipNum < MAX_SIDS; chipNum++) {
 			updateGauges(chipNum, Gauge::reset);
 		}
+		pauseTransition.setDuration(Duration.millis(1000. / util.getPlayer().getC64().getClock().getScreenRefresh()));
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
 				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
