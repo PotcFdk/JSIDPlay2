@@ -40,6 +40,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -533,35 +534,44 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void setRoot(final File rootFile) {
-		try {
-			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			final File theRootFile = new TFile(rootFile);
+		Task<Void> task = new Task<Void>() {
+			@Override
+			public Void call() throws Exception {
+				try {
+					SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+					final File theRootFile = new TFile(rootFile);
 
-			if (getType() == MusicCollectionType.HVSC) {
-				util.getPlayer().setSidDatabase(new SidDatabase(theRootFile));
-				setSTIL(theRootFile);
-				sidPlay2Section.setHvsc(theRootFile);
-				setViewRoot(sidPlay2Section.getHvsc());
-			} else if (getType() == MusicCollectionType.CGSC) {
-				sidPlay2Section.setCgsc(theRootFile);
-				setViewRoot(sidPlay2Section.getCgsc());
+					if (getType() == MusicCollectionType.HVSC) {
+						util.getPlayer().setSidDatabase(new SidDatabase(theRootFile));
+						setSTIL(theRootFile);
+						sidPlay2Section.setHvsc(theRootFile);
+						setViewRoot(sidPlay2Section.getHvsc());
+					} else if (getType() == MusicCollectionType.CGSC) {
+						sidPlay2Section.setCgsc(theRootFile);
+						setViewRoot(sidPlay2Section.getCgsc());
+					}
+
+					closeDatabase();
+					File dbFilename = new File(theRootFile.getParentFile(), type.get().toString());
+					PersistenceProperties pp = new PersistenceProperties(Database.HSQL_FILE, "", "",
+							dbFilename.getAbsolutePath());
+					EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(),
+							pp);
+					em = emFactory.createEntityManager();
+					versionService = new VersionService(em);
+				} catch (FileNotFoundException e) {
+					openErrorDialog(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()),
+							getType());
+				} catch (IOException | NoSuchFieldException | IllegalAccessException | PersistenceException
+						| IllegalStateException e) {
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw));
+					openErrorDialog(sw.toString(), getType());
+				}
+				return null;
 			}
-
-			closeDatabase();
-			File dbFilename = new File(theRootFile.getParentFile(), type.get().toString());
-			PersistenceProperties pp = new PersistenceProperties(Database.HSQL_FILE, "", "",
-					dbFilename.getAbsolutePath());
-			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(), pp);
-			em = emFactory.createEntityManager();
-			versionService = new VersionService(em);
-		} catch (FileNotFoundException e) {
-			openErrorDialog(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()), getType());
-		} catch (IOException | NoSuchFieldException | IllegalAccessException | PersistenceException
-				| IllegalStateException e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			openErrorDialog(sw.toString(), getType());
-		}
+		};
+		new Thread(task).start();
 	}
 
 	private void openErrorDialog(String msg, MusicCollectionType type) {
@@ -573,12 +583,14 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void setViewRoot(final File theRootFile) {
-		MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
-		cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItemsProperty);
-		fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
-		fileBrowser.setCellFactory(cellFactory);
-		collectionDir.setText(theRootFile.getAbsolutePath());
-		doResetSearch();
+		Platform.runLater(() -> {
+			MusicCollectionCellFactory cellFactory = new MusicCollectionCellFactory();
+			cellFactory.setCurrentlyPlayedTreeItems(currentlyPlayedTreeItemsProperty);
+			fileBrowser.setRoot(new MusicCollectionTreeItem(util.getPlayer(), theRootFile));
+			fileBrowser.setCellFactory(cellFactory);
+			collectionDir.setText(theRootFile.getAbsolutePath());
+			doResetSearch();
+		});
 	}
 
 	private void setSTIL(File rootFile) throws IOException, NoSuchFieldException, IllegalAccessException {

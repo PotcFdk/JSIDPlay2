@@ -61,7 +61,8 @@ public class WebView extends C64VBox implements UIPart {
 					Node node = anchors.item(i);
 					if (node instanceof EventTarget) {
 						EventTarget eventTarget = (EventTarget) node;
-						if (eventTarget.toString().matches("^(https?|ftp)://.*$")) {
+						if (eventTarget.toString().matches("^(https?|ftp)://.*$")
+								&& !eventTarget.toString().endsWith("#null")) {
 							eventTarget.addEventListener(CLICK_EVENT, this, false);
 						}
 					}

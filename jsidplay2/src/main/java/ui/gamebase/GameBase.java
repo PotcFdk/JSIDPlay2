@@ -12,6 +12,7 @@ import javax.persistence.Persistence;
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -68,10 +69,9 @@ public class GameBase extends C64VBox implements UIPart {
 				});
 				File dbFile = new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName());
 				sidplay2.setGameBase64(dbFile);
-				connect(dbFile);
+				setRoot(dbFile);
 				Platform.runLater(() -> {
 					gameBaseFile.setText(dbFile.getAbsolutePath());
-					enableGameBaseUI();
 				});
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -226,8 +226,15 @@ public class GameBase extends C64VBox implements UIPart {
 	}
 
 	private void setRoot(File file) {
-		connect(file);
-		enableGameBaseUI();
+		Task<Void> task = new Task<Void>() {
+			@Override
+			public Void call() throws Exception {
+				connect(file);
+				enableGameBaseUI();
+				return null;
+			}
+		};
+		new Thread(task).start();
 	}
 
 	private void enableGameBaseUI() {

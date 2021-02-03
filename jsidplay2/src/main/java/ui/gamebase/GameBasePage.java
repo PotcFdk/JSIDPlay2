@@ -12,6 +12,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
@@ -70,24 +71,31 @@ public class GameBasePage extends C64VBox implements UIPart {
 			}
 		});
 		gamebaseTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				if (newValue.getScreenshotFilename().isEmpty()) {
-					System.out.println("Screenshot is not available on GameBase64: " + newValue.getName());
-				} else {
-					try {
-						URL url = new URL(util.getConfig().getOnlineSection().getGb64ScreenshotUrl()
-								+ newValue.getScreenshotFilename().replace('\\', '/'));
-						if (screenshot == null) {
-							screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
+			Task<Void> task = new Task<Void>() {
+				@Override
+				public Void call() throws Exception {
+					if (newValue != null) {
+						if (newValue.getScreenshotFilename().isEmpty()) {
+							System.out.println("Screenshot is not available on GameBase64: " + newValue.getName());
+						} else {
+							try {
+								URL url = new URL(util.getConfig().getOnlineSection().getGb64ScreenshotUrl()
+										+ newValue.getScreenshotFilename().replace('\\', '/'));
+								if (screenshot == null) {
+									screenshot = (ImageView) gamebaseTable.getScene().lookup("#screenshot");
+								}
+								if (screenshot != null) {
+									Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
+								}
+							} catch (MalformedURLException e) {
+								System.err.println(e.getMessage());
+							}
 						}
-						if (screenshot != null) {
-							Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
-						}
-					} catch (MalformedURLException e) {
-						System.err.println(e.getMessage());
 					}
+					return null;
 				}
-			}
+			};
+			new Thread(task).start();
 		});
 	}
 
