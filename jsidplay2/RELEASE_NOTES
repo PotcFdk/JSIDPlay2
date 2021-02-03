@@ -2,3 +2,6 @@ Release Notes:
 ==============
 Cartridge support added for OCEAN_TYPE_1
 DnD repaired
+Oscilloscope view refresh rate fixed to prevent stuttering output
+parallel threads for long running jobs on startup
+server side tune recognition fixed, only half of the buffer was used for recognition
