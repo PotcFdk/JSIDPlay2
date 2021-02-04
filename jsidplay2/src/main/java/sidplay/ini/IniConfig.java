@@ -55,8 +55,11 @@ public class IniConfig implements IConfig {
 
 	@ParametersDelegate
 	private ISidPlay2Section sidplay2Section;
+	@ParametersDelegate
 	private IC1541Section c1541Section;
+	@ParametersDelegate
 	private IPrinterSection printerSection;
+	@ParametersDelegate
 	private IniConsoleSection consoleSection;
 	@ParametersDelegate
 	private IAudioSection audioSection;

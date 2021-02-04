@@ -293,48 +293,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addSidListener((SIDListener) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					final SIDMixer sidMixer = (SIDMixer) sidBuilder;
-
-					IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
-					int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
-					int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
-					if (sidDatabase != null) {
-						double songLength = sidDatabase.getSongLength(tune);
-						if (songLength > 0 && songLength < matchStartTimeInSeconds) {
-							// song too short? start at 90%
-							matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
-						}
-					}
-					WhatsSidSupport whatsSidSupport = sidMixer.getWhatsSidSupport();
-					whatsSidSupport.reset();
-					final SidTune tuneToCheck = tune;
-					c64.getEventScheduler().schedule(new Event("WhatsSID") {
-
-						@Override
-						public void event() throws InterruptedException {
-							final Thread whatsSidMatcherThread = new Thread(() -> {
-								// do not check tunes not played anymore!
-								if (Objects.equals(tuneToCheck, tune)) {
-									try {
-										if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
-											MusicInfoWithConfidenceBean result = whatsSidSupport
-													.match(fingerPrintMatcher);
-											if (result != null && Objects.equals(tuneToCheck, tune)) {
-												whatsSidHook.accept(result);
-											}
-										}
-									} catch (Exception e) {
-										// server not available? silently ignore!
-									} finally {
-										c64.getEventScheduler().schedule(this,
-												(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
-									}
-								}
-							});
-							whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
-							whatsSidMatcherThread.start();
-						}
-					}, (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
+					scheduleWhatsSidEvent((SIDMixer) sidBuilder);
 				}
 			}
 
@@ -386,6 +345,48 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				if (tune != RESET) {
 					configureMixer(mixer -> mixer.fadeOut(fadeOut));
 				}
+			}
+
+			private void scheduleWhatsSidEvent(final SIDMixer sidMixer) {
+				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+				int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
+				int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
+				if (sidDatabase != null) {
+					double songLength = sidDatabase.getSongLength(tune);
+					if (songLength > 0 && songLength < matchStartTimeInSeconds) {
+						// song too short? start at 90%
+						matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
+					}
+				}
+				WhatsSidSupport whatsSidSupport = sidMixer.getWhatsSidSupport();
+				whatsSidSupport.reset();
+				final SidTune tuneToCheck = tune;
+				c64.getEventScheduler().schedule(new Event("WhatsSID") {
+			
+					@Override
+					public void event() throws InterruptedException {
+						final Thread whatsSidMatcherThread = new Thread(() -> {
+							// do not check tunes not played anymore!
+							if (Objects.equals(tuneToCheck, tune)) {
+								try {
+									if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
+										MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
+										if (result != null && Objects.equals(tuneToCheck, tune)) {
+											whatsSidHook.accept(result);
+										}
+									}
+								} catch (Exception e) {
+									// server not available? silently ignore!
+								} finally {
+									c64.getEventScheduler().schedule(this,
+											(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
+								}
+							}
+						});
+						whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+						whatsSidMatcherThread.start();
+					}
+				}, (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
 			}
 
 		};
