@@ -124,7 +124,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 						if (result != null) {
 							Platform.runLater(() -> {
 								System.out.println(result);
-								Toast.makeText("whatssid", whatssidPositioner, result.toString(), 5);
+								Toast.makeText("whatssid", whatsSidPositioner, result.toString(), 5);
 							});
 						}
 					} catch (Exception e) {
@@ -260,7 +260,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	private CheckBox enablePalEmulation;
 
 	@FXML
-	protected Label whatssidPositioner;
+	protected Label whatsSidPositioner;
 
 	private boolean whatsSidEnabled;
 	private WhatsSidSupport whatsSidSupport;

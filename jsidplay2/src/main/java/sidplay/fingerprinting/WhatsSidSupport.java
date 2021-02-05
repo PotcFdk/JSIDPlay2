@@ -13,9 +13,9 @@ import sidplay.audio.WAVHeader;
 
 /**
  * 
- * WHATSSID? client part of tune recognition.
+ * WhatsSID? client part of tune recognition.
  * 
- * Use a WhatsSid capture buffer to match a currently played tune. Capture
+ * Use a WhatsSID capture buffer to match a currently played tune. Capture
  * buffer contains always the last N seconds of sound samples in a ring buffer.
  *
  * @author ken

@@ -352,9 +352,9 @@ After every created WAV file an audio fingerprint is created and stored in the d
 
 Now you can use WhatsSID? tune recognition.
 
-=== Update of Whatssid database
+=== Update of WhatsSID database
 
-Updates of Whatssid database are done in much shorter times.
+Updates of WhatsSID database are done in much shorter times.
 Last update to hvsc74 took around 24 hours.
 A new database will be created (in the following example named "hvsc74").
 It re-uses WAV files of unmodified tunes compared to the last HVSC version.

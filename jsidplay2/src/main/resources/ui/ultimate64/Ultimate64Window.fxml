@@ -65,7 +65,7 @@
 							<Tooltip text="%VIDEO_STREAMING_TIP" />
 						</tooltip>
 					</ToggleButton>
-					<Label fx:id="whatssidPositioner" />
+					<Label fx:id="whatsSidPositioner" />
 				</HBox>
 			</top>
 			<center>
