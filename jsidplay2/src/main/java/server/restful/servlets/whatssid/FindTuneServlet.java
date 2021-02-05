@@ -1,6 +1,7 @@
 package server.restful.servlets.whatssid;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
+import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class FindTuneServlet extends JSIDPlay2Servlet {
 		EntityManager entityManager = getEntityManager();
 		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
 		MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
-		entityManager.clear();
+		closeEntityManager();
 
 		setOutput(request, response, musicInfoBean, MusicInfoBean.class);
 	}

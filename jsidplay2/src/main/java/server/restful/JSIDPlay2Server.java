@@ -409,4 +409,13 @@ public class JSIDPlay2Server {
 		}
 		return em;
 	}
+
+	public static void closeEntityManager() {
+		EntityManager em = threadLocalEntityManager.get();
+
+		if (em != null) {
+			em.close();
+			threadLocalEntityManager.set(null);
+		}
+	}
 }
