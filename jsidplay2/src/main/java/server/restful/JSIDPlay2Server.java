@@ -359,14 +359,14 @@ public class JSIDPlay2Server {
 	}
 
 	private static void exit(int rc) {
-		if (entityManagerFactory != null) {
-			entityManagerFactory.close();
-		}
 		try {
+			if (entityManagerFactory != null) {
+				entityManagerFactory.close();
+			}
 			System.out.println("Press <enter> to exit the player!");
 			System.in.read();
 			System.exit(rc);
-		} catch (Exception e) {
+		} catch (IllegalStateException | IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
