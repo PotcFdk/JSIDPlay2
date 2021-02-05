@@ -9,18 +9,18 @@ public class IntArrayBean {
 	public IntArrayBean() {
 	}
 
-	public IntArrayBean(int[] hash) {
+	public IntArrayBean(Integer[] hash) {
 		this.hash = hash;
 	}
 
-	private int[] hash;
+	private Integer[] hash;
 
-	public int[] getHash() {
+	public Integer[] getHash() {
 		return hash;
 	}
 
 	@XmlElement(name = "hash")
-	public void setHash(int[] hash) {
+	public void setHash(Integer[] hash) {
 		this.hash = hash;
 	}
 

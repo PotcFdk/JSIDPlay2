@@ -1,7 +1,6 @@
 package ui.entities.whatssid.service;
 
 import java.io.IOException;
-import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -116,8 +115,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
 		Root<HashTable> root = query.from(HashTable.class);
 
-		query.select(root).where(root.get(HashTable_.hash)
-				.in((Object[]) IntStream.of(intArrayBean.getHash()).boxed().toArray(Integer[]::new)));
+		query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
 
 		em.createQuery(query).getResultList().stream().map(hash -> hash.toBean()).forEach(result.getHashes()::add);
 		return result;

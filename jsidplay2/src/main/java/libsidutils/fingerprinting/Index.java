@@ -38,8 +38,8 @@ public class Index {
 
 	public SongMatch search(Fingerprint fp, int minHit) {
 		ArrayList<Link> linkList = fp.getLinkList();
-		int[] linkHash = new int[linkList.size()];
-		int[] linkTime = new int[linkList.size()];
+		Integer[] linkHash = new Integer[linkList.size()];
+		Integer[] linkTime = new Integer[linkList.size()];
 		for (int i = 0; i < linkHash.length; i++) {
 			linkHash[i] = Hash.hash(linkList.get(i));
 			linkTime[i] = linkList.get(i).getStart().getIntTime();
@@ -48,7 +48,7 @@ public class Index {
 		return search(linkTime, linkHash, minHit);
 	}
 
-	public SongMatch search(int[] linkTime, int[] linkHash, int minHit) {
+	private SongMatch search(Integer[] linkTime, Integer[] linkHash, int minHit) {
 		HashMap<Integer, Integer> linkHashMap = new HashMap<>(linkHash.length);
 		for (int i = 0; i < linkHash.length; i++) {
 			linkHashMap.put(linkHash[i], linkTime[i]);
