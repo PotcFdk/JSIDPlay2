@@ -402,7 +402,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void addSidBlaster() {
 		final EmulationSection emulationSection = util.getConfig().getEmulationSection();
 
-		DeviceMapping deviceMapping = new DeviceMapping("", ChipModel.MOS8580, true);
+		DeviceMapping deviceMapping = new DeviceMapping("", ChipModel.AUTO, true);
 		emulationSection.getSidBlasterDeviceList().add(deviceMapping);
 		addSidBlasterDeviceMapping(deviceMapping);
 	}
