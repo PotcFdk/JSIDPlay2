@@ -14,10 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 

@@ -10,6 +10,11 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import libsidutils.fingerprinting.IFingerprintMatcher;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
+
 /**
  * Send WAV to a server to identify a tune by WhatsSID.
  *

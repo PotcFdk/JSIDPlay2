@@ -8,12 +8,10 @@ import libsidutils.fingerprinting.ini.IFingerprintConfig;
 import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.IdBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import sidplay.fingerprinting.IFingerprintInserter;
-import sidplay.fingerprinting.IFingerprintMatcher;
-import sidplay.fingerprinting.MusicInfoBean;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 
 public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 

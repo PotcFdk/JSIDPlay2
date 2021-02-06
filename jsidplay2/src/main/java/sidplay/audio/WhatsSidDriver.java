@@ -17,10 +17,10 @@ import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
+import libsidutils.fingerprinting.IFingerprintInserter;
+import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import sidplay.audio.exceptions.SongEndException;
-import sidplay.fingerprinting.IFingerprintInserter;
-import sidplay.fingerprinting.MusicInfoBean;
-import sidplay.fingerprinting.WavBean;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a

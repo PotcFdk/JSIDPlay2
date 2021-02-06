@@ -29,13 +29,13 @@ import libsidplay.common.ChipModel;
 import libsidplay.common.SIDChip;
 import libsidplay.common.SamplingMethod;
 import libsidplay.sidtune.PSidHeader;
+import libsidutils.fingerprinting.IFingerprintMatcher;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import server.netsiddev.ini.IniJSIDDeviceAudioSection;
 import server.netsiddev.ini.JSIDDeviceConfig;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.JavaSound;
 import sidplay.fingerprinting.FingerprintJsonClient;
-import sidplay.fingerprinting.IFingerprintMatcher;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
 import sidplay.fingerprinting.WhatsSidSupport;
 
 /**

@@ -1,4 +1,4 @@
-package sidplay.fingerprinting;
+package libsidutils.fingerprinting.rest.beans;
 
 import java.util.Objects;
 

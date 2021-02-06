@@ -17,7 +17,7 @@ import builder.resid.resample.Resampler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.fingerprinting.ini.IFingerprintConfig;
-import sidplay.fingerprinting.WavBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate

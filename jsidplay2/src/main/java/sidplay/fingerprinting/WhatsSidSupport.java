@@ -9,6 +9,9 @@ import java.util.Random;
 import builder.resid.resample.Resampler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidutils.fingerprinting.IFingerprintMatcher;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WavBean;
 import sidplay.audio.WAVHeader;
 
 /**
