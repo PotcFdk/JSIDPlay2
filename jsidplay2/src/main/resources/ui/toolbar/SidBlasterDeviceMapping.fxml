@@ -38,7 +38,11 @@
 				<Tooltip text="%SIDBLASTER_SERIALNUM_TIP" />
 			</tooltip>
 		</TextField>
-		<ComboBox fx:id="chipModelEditor" prefWidth="110" />
+		<ComboBox fx:id="chipModelEditor" prefWidth="110" >
+			<tooltip>
+				<Tooltip text="%CHIP_MODEL_TIP" />
+			</tooltip>
+		</ComboBox>
 		<HBox>
 			<ToggleButton fx:id="testButton" onAction="#testSidBlaster">
 				<graphic>
