@@ -146,7 +146,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Music player state.
 	 */
-	private ObjectProperty<State> stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
+	private ObjectProperty<State> stateProperty;
 	/**
 	 * Play timer.
 	 */
@@ -188,8 +188,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * <B>Note:</B> If audio driver has been set externally by
 	 * {@link Player#setAudioDriver(AudioDriver)}, audio is null!
 	 */
-	private SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver = new SimpleImmutableEntry<>(DEFAULT_AUDIO,
-			DEFAULT_AUDIO.getAudioDriver());
+	private SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -362,7 +361,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				whatsSidSupport.reset();
 				final SidTune tuneToCheck = tune;
 				c64.getEventScheduler().schedule(new Event("WhatsSID") {
-			
+
 					@Override
 					public void event() throws InterruptedException {
 						final Thread whatsSidMatcherThread = new Thread(() -> {
@@ -391,6 +390,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 
 		};
 		initializeTmpDir(config);
+		stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
+		audioAndDriver = new SimpleImmutableEntry<>(DEFAULT_AUDIO, DEFAULT_AUDIO.getAudioDriver());
 		recordingFilenameProvider = tune -> new File(config.getSidplay2Section().getTmpDir(), "jsidplay2")
 				.getAbsolutePath();
 	}
