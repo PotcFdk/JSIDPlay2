@@ -1,7 +1,5 @@
 package ui.entities.whatssid.service;
 
-import java.io.IOException;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -9,8 +7,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBean;
 import libsidutils.fingerprinting.rest.beans.HashBeans;
@@ -18,16 +14,12 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 import sidplay.fingerprinting.MusicInfoBean;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
 import ui.entities.whatssid.HashTable;
 import ui.entities.whatssid.HashTable_;
 import ui.entities.whatssid.MusicInfo;
 import ui.entities.whatssid.MusicInfo_;
 
 public class WhatsSidService implements FingerPrintingDataSource {
-
-	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig();
 
 	private EntityManager em;
 
@@ -146,11 +138,6 @@ public class WhatsSidService implements FingerPrintingDataSource {
 				fileDirPredicate, infoDirPredicate));
 
 		return em.createQuery(query).getSingleResult() > 0;
-	}
-
-	@Override
-	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException {
-		return new FingerPrinting(fingerprintConfig, this).match(wavBean);
 	}
 
 	public void deleteAll() {

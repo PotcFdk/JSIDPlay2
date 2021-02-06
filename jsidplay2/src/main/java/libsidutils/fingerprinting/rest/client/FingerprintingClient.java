@@ -8,7 +8,6 @@ import static server.restful.servlets.whatssid.FindTuneServlet.FIND_TUNE_PATH;
 import static server.restful.servlets.whatssid.InsertHashesServlet.INSERT_HASHES_PATH;
 import static server.restful.servlets.whatssid.InsertTuneServlet.INSERT_TUNE_PATH;
 import static server.restful.servlets.whatssid.TuneExistsServlet.TUNE_EXISTS_PATH;
-import static server.restful.servlets.whatssid.WhatsSidServlet.IDENTIFY_PATH;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -32,8 +31,6 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 import sidplay.fingerprinting.MusicInfoBean;
-import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
-import sidplay.fingerprinting.WavBean;
 
 public class FingerprintingClient implements FingerPrintingDataSource {
 
@@ -112,20 +109,6 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 
 			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
 				return receive(Boolean.class, connection);
-			}
-			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public MusicInfoWithConfidenceBean whatsSid(WavBean wavBean) throws IOException {
-		try {
-			HttpURLConnection connection = send(wavBean, WavBean.class, IDENTIFY_PATH, HttpMethod.POST);
-
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
-				return receive(MusicInfoWithConfidenceBean.class, connection);
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
 		} catch (Exception e) {

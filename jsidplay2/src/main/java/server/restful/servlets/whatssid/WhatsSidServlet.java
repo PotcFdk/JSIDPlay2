@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import sidplay.fingerprinting.MusicInfoWithConfidenceBean;
@@ -23,6 +25,8 @@ import ui.entities.whatssid.service.WhatsSidService;
 public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	public static final String IDENTIFY_PATH = "/whatssid";
+
+	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig();
 
 	@SuppressWarnings("unused")
 	private ServletUtil util;
@@ -48,7 +52,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 		EntityManager entityManager = getEntityManager();
 		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
-		MusicInfoWithConfidenceBean musicInfoWithConfidence = whatsSidService.whatsSid(wavBean);
+		final FingerPrinting fingerPrinting = new FingerPrinting(fingerprintConfig, whatsSidService);
+		MusicInfoWithConfidenceBean musicInfoWithConfidence = fingerPrinting.match(wavBean);
 		closeEntityManager();
 
 		setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
