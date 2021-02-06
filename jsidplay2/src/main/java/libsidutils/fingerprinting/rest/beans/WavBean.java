@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "wav")
 public class WavBean {
 
+	private byte[] wav;
+
 	public WavBean() {
 	}
 
 	public WavBean(byte[] wav) {
 		this.wav = wav;
 	}
-
-	private byte[] wav;
 
 	public byte[] getWav() {
 		return wav;

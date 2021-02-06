@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "hashes")
 public class IntArrayBean {
 
+	private Integer[] hash;
+
 	public IntArrayBean() {
 	}
 
 	public IntArrayBean(Integer[] hash) {
 		this.hash = hash;
 	}
-
-	private Integer[] hash;
 
 	public Integer[] getHash() {
 		return hash;
