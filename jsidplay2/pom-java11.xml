@@ -615,6 +615,10 @@
 								<include>libsidplay/common/SamplingMethod.class</include>
 								<include>libsidplay/common/SamplingRate.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
+								<include>libsidutils/fingerprinting/IFingerprintMatcher.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/WavBean.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/MusicInfoBean.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/MusicInfoWithConfidenceBean.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>
 								<include>libsidplay/config/IFilterSection.class</include>
 								<include>sidplay/fingerprinting/*.class</include>
@@ -660,6 +664,9 @@
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
 								<include>libsidutils/*.class</include>
+								<include>libsidutils/fingerprinting/IFingerprintMatcher.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/MusicInfoBean.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/MusicInfoWithConfidenceBean.class</include>
 								<include>libsidutils/prg2tap/*.class</include>
 								<include>libsidutils/prg2tap/*.bin</include>
 								<include>libsidutils/reloc65/*</include>
