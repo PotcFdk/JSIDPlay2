@@ -171,12 +171,12 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return serialNumbers;
 	}
 
-	public static SidType getSidType(byte deviceId) {
-		return hardSID.HardSID_GetSIDInfo(deviceId);
+	public static SidType getSidType(int deviceId) {
+		return hardSID.HardSID_GetSIDInfo((byte) deviceId);
 	}
 
-	public static int setSidType(byte deviceId, SidType sidType) {
-		return hardSID.HardSID_SetSIDInfo(deviceId, sidType);
+	public static int setSidType(int deviceId, SidType sidType) {
+		return hardSID.HardSID_SetSIDInfo((byte) deviceId, sidType);
 	}
 
 	@Override

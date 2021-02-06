@@ -417,7 +417,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			// overwrite device list
 			emulationSection.getSidBlasterDeviceList().clear();
 			sidBlasterDeviceParent.getChildren().clear();
-			for (byte i = 0; i < SidBlasterBuilder.getSerialNumbers().length; i++) {
+			for (int i = 0; i < SidBlasterBuilder.getSerialNumbers().length; i++) {
 				String serialNumber = SidBlasterBuilder.getSerialNumbers()[i];
 				ChipModel chipModel = SidBlasterBuilder.getSidType(i).asChipModel();
 				DeviceMapping deviceMapping = new DeviceMapping(serialNumber, chipModel, true);

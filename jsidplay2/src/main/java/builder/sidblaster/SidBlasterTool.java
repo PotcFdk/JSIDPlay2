@@ -30,7 +30,7 @@ public class SidBlasterTool {
 	private Command command;
 
 	@Parameter(names = { "--deviceId", "-d" }, descriptionKey = "DEVICE_ID", order = 2)
-	private byte deviceId;
+	private int deviceId;
 
 	@Parameter(names = { "--sidType", "-t" }, descriptionKey = "SID_TYPE", order = 3)
 	private SidType sidType = SIDTYPE_NONE;
