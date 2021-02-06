@@ -26,8 +26,6 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	public static final String IDENTIFY_PATH = "/whatssid";
 
-	private IniFingerprintConfig fingerprintConfig = new IniFingerprintConfig();
-
 	@SuppressWarnings("unused")
 	private ServletUtil util;
 
@@ -51,8 +49,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		WavBean wavBean = getInput(request, WavBean.class);
 
 		EntityManager entityManager = getEntityManager();
-		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
-		final FingerPrinting fingerPrinting = new FingerPrinting(fingerprintConfig, whatsSidService);
+		final IniFingerprintConfig config = new IniFingerprintConfig();
+		final FingerPrinting fingerPrinting = new FingerPrinting(config, new WhatsSidService(entityManager));
 		MusicInfoWithConfidenceBean musicInfoWithConfidence = fingerPrinting.match(wavBean);
 		closeEntityManager();
 
