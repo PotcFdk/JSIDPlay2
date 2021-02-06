@@ -1056,6 +1056,35 @@
 							</jre>
 						</configuration>
 					</execution>
+					<execution>
+						<id>launch4j-sidblaster</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>console</headerType>
+							<jar>${project.artifactId}-${project.version}.jar</jar>
+							<outfile>${project.build.directory}/standalone/sidblastertool-${project.version}.exe</outfile>
+							<errTitle>${project.name}</errTitle>
+							<chdir>.</chdir>
+							<priority>high</priority>
+							<downloadUrl>https://java.com/download</downloadUrl>
+							<supportUrl>https://sourceforge.net/projects/jsidplay2/</supportUrl>
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<icon>src/main/launch4j/jsidplay2.ico</icon>
+							<classPath>
+								<mainClass>builder.sidblaster.SidBlasterTool</mainClass>
+								<jarLocation>.</jarLocation>
+								<addDependencies>true</addDependencies>
+							</classPath>
+							<jre>
+								<minVersion>1.8.0</minVersion>
+							</jre>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

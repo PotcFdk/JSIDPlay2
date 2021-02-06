@@ -60,7 +60,7 @@ public class SidBlasterDeviceMapping extends C64VBox implements UIPart {
 				(obj, o, n) -> util.checkTextField(serialNumEditor, () -> pattern.matcher(n).find(), () -> {
 				}, "SIDBLASTER_SERIALNUM_TIP", "SIDBLASTER_SERIALNUM_FORMAT"));
 
-		chipModelEditor.setItems(FXCollections.<ChipModel>observableArrayList(ChipModel.MOS6581, ChipModel.MOS8580));
+		chipModelEditor.setItems(FXCollections.<ChipModel>observableArrayList(ChipModel.values()));
 		chipModelEditor.setConverter(new EnumToStringConverter<ChipModel>(bundle));
 		chipModelEditor.valueProperty().addListener((obj, o, n) -> deviceMapping.setChipModel(n));
 	}

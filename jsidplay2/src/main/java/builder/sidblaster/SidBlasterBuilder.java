@@ -101,6 +101,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		options.put(Library.OPTION_TYPE_MAPPER, new DefaultTypeMapper() {
 			{
 				addTypeConverter(WState.class, new EnumConverter<WState>(WState.class));
+				addTypeConverter(SidType.class, new EnumConverter<SidType>(SidType.class));
 			}
 		});
 		return options;
@@ -168,6 +169,14 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	public static String[] getSerialNumbers() {
 		return serialNumbers;
+	}
+
+	public static SidType getSidType(byte deviceId) {
+		return hardSID.HardSID_GetSIDInfo(deviceId);
+	}
+
+	public static int setSidType(byte deviceId, SidType sidType) {
+		return hardSID.HardSID_SetSIDInfo(deviceId, sidType);
 	}
 
 	@Override

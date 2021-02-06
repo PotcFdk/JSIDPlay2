@@ -76,7 +76,7 @@ public class ConsoleIO {
 
 	public void decodeKeys(Player player, InputStream in) {
 		try {
-			if (System.in.available() == 0) {
+			if (in.available() == 0) {
 				return;
 			}
 			final int key = in.read();

@@ -141,13 +141,25 @@ public interface HardSID extends Library {
 
 	/**
 	 * @since SIDBlasterUSB 5.14beta
+	 * @since 2.02
 	 */
 	void HardSID_GetSerial(byte DeviceID, Memory mem);
 
 	/**
 	 * @since SIDBlasterUSB 5.15beta
+	 * @since 2.03
 	 */
 	void HardSID_SetWriteBufferSize(byte bufferSize);
+
+	SidType HardSID_GetSIDInfo(byte DeviceID);
+
+	/**
+	 * Note: this function is "death end", host program must terminate after call
+	 * and the sidblaster must reconnect
+	 * 
+	 * @param sidType 0 (none), 1 (6581), 2 (8580)
+	 */
+	int HardSID_SetSIDInfo(byte DeviceID, SidType sidType);
 
 	default String GetSerial(byte deviceID) {
 		Memory mem = new Memory(9L);
