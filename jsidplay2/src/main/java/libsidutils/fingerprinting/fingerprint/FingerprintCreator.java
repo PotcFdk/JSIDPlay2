@@ -1,13 +1,11 @@
-package libsidutils.fingerprinting.model;
+package libsidutils.fingerprinting.fingerprint;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import java.util.Iterator;
 import java.util.Random;
 
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -18,60 +16,19 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import builder.resid.resample.Resampler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
-import libsidplay.sidtune.SidTune;
-import libsidutils.PathUtils;
-import libsidutils.fingerprinting.fingerprint.Fingerprint;
 import libsidutils.fingerprinting.ini.IFingerprintConfig;
-import sidplay.fingerprinting.MusicInfoBean;
 import sidplay.fingerprinting.WavBean;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate
  * of the sample data should be 8000.
  */
-public class FingerprintedSampleData {
-
-	private static final int SAMPLE_RATE = 8000;
-
-	private Fingerprint fingerprint;
-	private int songNo;
-	private String title, album, artist;
-	private double audioLength;
+public class FingerprintCreator {
 
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
 
-	private String fileDir;
-
-	private String infoDir;
-
-	private IFingerprintConfig config;
-
-	public FingerprintedSampleData(IFingerprintConfig config) {
-		this.config = config;
-	}
-
-	public Fingerprint getFingerprint() {
-		return fingerprint;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String getArtist() {
-		return artist;
-	}
-
-	public String getAlbum() {
-		return album;
-	}
-
-	public double getAudioLength() {
-		return audioLength;
-	}
-
-	public void setWav(WavBean wavBean) throws IOException {
+	public Fingerprint createFingerprint(IFingerprintConfig config, WavBean wavBean) throws IOException {
 		try {
 			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
@@ -104,7 +61,7 @@ public class FingerprintedSampleData {
 			}
 
 			// 2. down sampling to 8KHz
-			if (stream.getFormat().getSampleRate() != SAMPLE_RATE) {
+			if (stream.getFormat().getSampleRate() != Fingerprint.SAMPLE_RATE) {
 				Resampler downSampler = Resampler.createResampler(stream.getFormat().getSampleRate(),
 						SamplingMethod.RESAMPLE, SamplingRate.VERY_LOW.getFrequency(),
 						SamplingRate.VERY_LOW.getMiddleFrequency());
@@ -134,41 +91,10 @@ public class FingerprintedSampleData {
 			for (int i = 0; i < len; i++) {
 				data[i] = buf.getShort() / 32768f;
 			}
-
-			this.audioLength = len / (float) SAMPLE_RATE;
-			this.fingerprint = new Fingerprint(config, data, SAMPLE_RATE);
+			return new Fingerprint(config, data);
 		} catch (UnsupportedAudioFileException | IOException e) {
 			throw new IOException(e);
 		}
-	}
-
-	public void setMetaInfo(SidTune tune, String recordingFilename, String infoDir) {
-		if (tune != SidTune.RESET && tune.getInfo().getInfoString().size() == 3) {
-			Iterator<String> description = tune.getInfo().getInfoString().iterator();
-			this.songNo = tune.getInfo().getCurrentSong();
-			this.title = description.next();
-			this.artist = description.next();
-			this.album = description.next();
-		} else {
-			this.songNo = 1;
-			this.title = new File(PathUtils.getFilenameWithoutSuffix(infoDir)).getName();
-			this.artist = "???";
-			this.album = "???";
-		}
-		this.fileDir = recordingFilename;
-		this.infoDir = infoDir;
-	}
-
-	public MusicInfoBean toMusicInfoBean() {
-		MusicInfoBean musicInfoBean = new MusicInfoBean();
-		musicInfoBean.setSongNo(songNo);
-		musicInfoBean.setTitle(title);
-		musicInfoBean.setArtist(artist);
-		musicInfoBean.setAlbum(album);
-		musicInfoBean.setAudioLength(audioLength);
-		musicInfoBean.setFileDir(fileDir);
-		musicInfoBean.setInfoDir(infoDir);
-		return musicInfoBean;
 	}
 
 	private int triangularDithering() {

@@ -1,12 +1,10 @@
 package libsidutils.fingerprinting;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import libsidplay.sidtune.SidTune;
+import libsidutils.fingerprinting.fingerprint.Fingerprint;
+import libsidutils.fingerprinting.fingerprint.FingerprintCreator;
 import libsidutils.fingerprinting.ini.IFingerprintConfig;
-import libsidutils.fingerprinting.model.FingerprintedSampleData;
 import libsidutils.fingerprinting.model.SongMatch;
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.IdBean;
@@ -33,16 +31,15 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	}
 
 	@Override
-	public void insert(SidTune tune, String infoDir, String recordingFilename) throws IOException {
-		FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
-		fingerprintedSampleData.setMetaInfo(tune, recordingFilename, infoDir);
+	public void insert(MusicInfoBean musicInfoBean, WavBean wavBean) throws IOException {
+		if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
 
-		if (!fingerPrintingDataSource.tuneExists(fingerprintedSampleData.toMusicInfoBean())) {
-			WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 			if (wavBean.getWav().length > 0) {
-				fingerprintedSampleData.setWav(wavBean);
-				IdBean id = fingerPrintingDataSource.insertTune(fingerprintedSampleData.toMusicInfoBean());
-				fingerPrintingDataSource.insertHashes(fingerprintedSampleData.getFingerprint().toHashBeans(id));
+				Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean);
+				musicInfoBean.setAudioLength(fingerprint.getAudioLength());
+
+				IdBean id = fingerPrintingDataSource.insertTune(musicInfoBean);
+				fingerPrintingDataSource.insertHashes(fingerprint.toHashBeans(id));
 			}
 		}
 	}
@@ -50,12 +47,11 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	@Override
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
-			FingerprintedSampleData fingerprintedSampleData = new FingerprintedSampleData(config);
-			fingerprintedSampleData.setWav(wavBean);
+			Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean);
 
 			Index index = new Index();
 			index.setFingerPrintingClient(fingerPrintingDataSource);
-			SongMatch songMatch = index.search(fingerprintedSampleData.getFingerprint(), MIN_HIT);
+			SongMatch songMatch = index.search(fingerprint, MIN_HIT);
 
 			if (songMatch != null && songMatch.getIdSong() != -1) {
 				SongNoBean songNoBean = new SongNoBean();
@@ -64,7 +60,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 
 				MusicInfoWithConfidenceBean result = new MusicInfoWithConfidenceBean();
 				result.setMusicInfo(musicInfoBean);
-				result.setSongMatch(fingerprintedSampleData, songMatch);
+				result.setSongMatch(fingerprint, songMatch);
 
 				return result;
 			}

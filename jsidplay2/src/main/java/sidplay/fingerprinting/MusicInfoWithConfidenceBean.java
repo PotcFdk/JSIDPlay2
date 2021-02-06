@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import libsidutils.fingerprinting.model.FingerprintedSampleData;
+import libsidutils.fingerprinting.fingerprint.Fingerprint;
 import libsidutils.fingerprinting.model.SongMatch;
 
 @XmlRootElement(name = "musicInfoWithConfidence")
@@ -83,10 +83,9 @@ public class MusicInfoWithConfidenceBean {
 				offset, offsetSeconds);
 	}
 
-	public void setSongMatch(FingerprintedSampleData fingerprintedSampleData, SongMatch songMatch) {
+	public void setSongMatch(Fingerprint fingerprint, SongMatch songMatch) {
 		confidence = songMatch.getCount();
-		relativeConfidence = songMatch.getCount()
-				/ (double) fingerprintedSampleData.getFingerprint().getLinkList().size() * 100;
+		relativeConfidence = songMatch.getCount() / (double) fingerprint.getLinkList().size() * 100;
 		offset = songMatch.getTime();
 		offsetSeconds = songMatch.getTime() * 0.03225806451612903;
 	}

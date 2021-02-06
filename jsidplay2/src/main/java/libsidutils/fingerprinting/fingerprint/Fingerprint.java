@@ -64,6 +64,9 @@ import libsidutils.fingerprinting.spectrogram.Window;
  */
 public class Fingerprint {
 
+	static final int SAMPLE_RATE = 8000;
+
+	private int dataLen;
 	private int nPeaks, fftSize, overlap, c, peakRange;
 	private float[] range_time, range_freq;
 	private int[] Band;
@@ -73,7 +76,8 @@ public class Fingerprint {
 	private final ArrayList<Link> linkList = new ArrayList<>();
 	private final float[] freq, time;
 
-	public Fingerprint(IFingerprintConfig config, float[] data, float fs) {
+	public Fingerprint(IFingerprintConfig config, float[] data) {
+		dataLen = data.length;
 		IFingerprintSection fingerPrintSection = config.getFingerPrintSection();
 		nPeaks = fingerPrintSection.getNPeaks();
 		fftSize = fingerPrintSection.getFftSize();
@@ -87,7 +91,7 @@ public class Fingerprint {
 		maxFreq = fingerPrintSection.getMaxFreq();
 		minPower = fingerPrintSection.getMinPower();
 
-		Spectrogram spectrogram = new Spectrogram(data, Window.HANN, fftSize, overlap, fs);
+		Spectrogram spectrogram = new Spectrogram(data, Window.HANN, fftSize, overlap, SAMPLE_RATE);
 		ArrayList<float[]> stft = spectrogram.stft;
 		freq = spectrogram.freq;
 		time = spectrogram.time;
@@ -232,5 +236,9 @@ public class Fingerprint {
 			result.getHashes().add(hashBean);
 		}
 		return result;
+	}
+
+	public double getAudioLength() {
+		return dataLen / (float) SAMPLE_RATE;
 	}
 }

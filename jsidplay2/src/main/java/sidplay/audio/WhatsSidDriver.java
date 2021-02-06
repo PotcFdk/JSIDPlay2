@@ -7,14 +7,20 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
 
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
+import libsidutils.PathUtils;
 import libsidutils.fingerprinting.FingerPrintingCreator;
 import sidplay.audio.exceptions.SongEndException;
 import sidplay.fingerprinting.IFingerprintInserter;
+import sidplay.fingerprinting.MusicInfoBean;
+import sidplay.fingerprinting.WavBean;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
@@ -110,7 +116,10 @@ public class WhatsSidDriver implements AudioDriver {
 					System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName,
 							tune.getInfo().getCurrentSong());
 
-					fingerprintInserter.insert(tune, collectionName, recordingFilename);
+					MusicInfoBean musicInfoBean = createMusicInfoBean(tune, recordingFilename, collectionName);
+					WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
+
+					fingerprintInserter.insert(musicInfoBean, wavBean);
 				} catch (IOException e) {
 					throw new RuntimeException("Error reading WAV audio stream", e);
 				}
@@ -131,6 +140,34 @@ public class WhatsSidDriver implements AudioDriver {
 	@Override
 	public String getExtension() {
 		return ".wav";
+	}
+
+	private MusicInfoBean createMusicInfoBean(SidTune tune, String fileDir, String infoDir) {
+		if (tune != SidTune.RESET) {
+			Iterator<String> descriptionIterator = tune.getInfo().getInfoString().iterator();
+
+			return toMusicInfoBean(tune.getInfo().getCurrentSong(), getNextDescription(descriptionIterator),
+					getNextDescription(descriptionIterator), getNextDescription(descriptionIterator), fileDir, infoDir);
+		} else {
+			return toMusicInfoBean(1, new File(PathUtils.getFilenameWithoutSuffix(infoDir)).getName(), "<???>", "<???>",
+					fileDir, infoDir);
+		}
+	}
+
+	private String getNextDescription(Iterator<String> descriptionIterator) {
+		return descriptionIterator.hasNext() ? descriptionIterator.next() : "<???>";
+	}
+
+	private MusicInfoBean toMusicInfoBean(int songNo, String title, String artist, String album, String fileDir,
+			String infoDir) {
+		MusicInfoBean musicInfoBean = new MusicInfoBean();
+		musicInfoBean.setSongNo(songNo);
+		musicInfoBean.setTitle(title);
+		musicInfoBean.setArtist(artist);
+		musicInfoBean.setAlbum(album);
+		musicInfoBean.setFileDir(fileDir);
+		musicInfoBean.setInfoDir(infoDir);
+		return musicInfoBean;
 	}
 
 }
