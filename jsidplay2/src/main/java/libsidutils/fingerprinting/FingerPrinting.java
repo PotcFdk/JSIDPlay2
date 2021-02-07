@@ -30,9 +30,9 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 
 	@Override
 	public void insert(MusicInfoBean musicInfoBean, WavBean wavBean) throws IOException {
-		if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
+		if (wavBean != null && wavBean.getWav().length > 0) {
 
-			if (wavBean.getWav().length > 0) {
+			if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
 				Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean);
 				musicInfoBean.setAudioLength(fingerprint.getAudioLength());
 
@@ -45,6 +45,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	@Override
 	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
+
 			Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean);
 
 			Index index = new Index();

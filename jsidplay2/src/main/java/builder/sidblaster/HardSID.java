@@ -163,7 +163,7 @@ public interface HardSID extends Library {
 
 	default String GetSerial(byte deviceID) {
 		Memory mem = new Memory(9L);
-		mem.setMemory(0L, 9L, (byte) 0);
+		mem.clear();
 		HardSID_GetSerial(deviceID, mem);
 		return mem.getString(0L, "US_ASCII");
 	}
