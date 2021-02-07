@@ -36,7 +36,7 @@ import sidplay.audio.AudioDriver;
  * @author Ken Händel
  *
  */
-public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
+public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private static final short REGULAR_DELAY = 4096;
 
@@ -81,7 +81,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
-	public SidBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
+	public SIDBlasterBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
 		this.cpuClock = cpuClock;
@@ -101,7 +101,7 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		options.put(Library.OPTION_TYPE_MAPPER, new DefaultTypeMapper() {
 			{
 				addTypeConverter(WState.class, new EnumConverter<WState>(WState.class));
-				addTypeConverter(SidType.class, new EnumConverter<SidType>(SidType.class));
+				addTypeConverter(SIDType.class, new EnumConverter<SIDType>(SIDType.class));
 			}
 		});
 		return options;
@@ -171,11 +171,11 @@ public class SidBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return serialNumbers;
 	}
 
-	public static SidType getSidType(int deviceId) {
+	public static SIDType getSidType(int deviceId) {
 		return hardSID.HardSID_GetSIDInfo((byte) deviceId);
 	}
 
-	public static int setSidType(int deviceId, SidType sidType) {
+	public static int setSidType(int deviceId, SIDType sidType) {
 		return hardSID.HardSID_SetSIDInfo((byte) deviceId, sidType);
 	}
 

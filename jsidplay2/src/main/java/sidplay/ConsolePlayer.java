@@ -14,7 +14,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
-import builder.sidblaster.SidBlasterBuilder;
+import builder.sidblaster.SIDBlasterBuilder;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
@@ -130,7 +130,7 @@ final public class ConsolePlayer {
 	private void printSidBlasterDevices() {
 		if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
 			triggerFetchSerialNumbers();
-			String[] serialNumbers = SidBlasterBuilder.getSerialNumbers();
+			String[] serialNumbers = SIDBlasterBuilder.getSerialNumbers();
 			if (serialNumbers.length > 0) {
 				System.out.println("\nDetected SIDBlaster device serial numbers: (configure INI file accordingly)");
 				int deviceIdx = 0;
@@ -143,7 +143,7 @@ final public class ConsolePlayer {
 	}
 
 	private void triggerFetchSerialNumbers() {
-		new SidBlasterBuilder(null, config, null);
+		new SIDBlasterBuilder(null, config, null);
 	}
 
 	private void exit(int rc) {

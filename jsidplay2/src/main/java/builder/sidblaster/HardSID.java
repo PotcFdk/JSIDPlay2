@@ -151,7 +151,7 @@ public interface HardSID extends Library {
 	 */
 	void HardSID_SetWriteBufferSize(byte bufferSize);
 
-	SidType HardSID_GetSIDInfo(byte DeviceID);
+	SIDType HardSID_GetSIDInfo(byte DeviceID);
 
 	/**
 	 * Note: this function is "death end", host program must terminate after call
@@ -159,7 +159,7 @@ public interface HardSID extends Library {
 	 * 
 	 * @param sidType 0 (none), 1 (6581), 2 (8580)
 	 */
-	int HardSID_SetSIDInfo(byte DeviceID, SidType sidType);
+	int HardSID_SetSIDInfo(byte DeviceID, SIDType sidType);
 
 	default String GetSerial(byte deviceID) {
 		Memory mem = new Memory(9L);

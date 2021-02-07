@@ -30,7 +30,7 @@ public class SIDBlasterEmu extends SIDEmu {
 		private final int prevNum;
 		private final List<SIDBlasterEmu> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config, SidBlasterBuilder hardSIDBuilder,
+		public FakeStereo(final EventScheduler context, final IConfig config, SIDBlasterBuilder hardSIDBuilder,
 				final HardSID hardSID, final byte deviceId, final int sidNum, final ChipModel model,
 				final List<SIDBlasterEmu> sids) {
 			super(context, hardSIDBuilder, hardSID, deviceId, sidNum, model);
@@ -71,7 +71,7 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final EventScheduler context;
 
-	private final SidBlasterBuilder hardSIDBuilder;
+	private final SIDBlasterBuilder hardSIDBuilder;
 
 	private final HardSID hardSID;
 
@@ -83,7 +83,7 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final ChipModel chipModel;
 
-	public SIDBlasterEmu(EventScheduler context, SidBlasterBuilder hardSIDBuilder, final HardSID hardSID,
+	public SIDBlasterEmu(EventScheduler context, SIDBlasterBuilder hardSIDBuilder, final HardSID hardSID,
 			final byte deviceId, int sidNum, ChipModel model) {
 		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
