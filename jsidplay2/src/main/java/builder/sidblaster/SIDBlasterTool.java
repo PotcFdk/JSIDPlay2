@@ -59,6 +59,7 @@ public class SIDBlasterTool {
 		System.out.println(
 				"SIDBlaster tool by Andreas Schumm (https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition)");
 		System.out.println("Java Version by Ken Händel");
+		System.out.println("DLL created by Stein Pedersen");
 		System.out.println(
 				"===============================================================================================");
 
@@ -98,7 +99,7 @@ public class SIDBlasterTool {
 					int status = setSidType(deviceId, sidType);
 					System.out.printf("SET %d: serial=%s, type=%s (rc=%d)\n", deviceId, serialNumbers[deviceId],
 							sidType, status);
-					System.out.println("Done! Please exit tool and reconnect SIDBlaster!!!");
+					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
 					System.out.println("Press <enter> to exit!");
 					System.in.read();
 					System.exit(0);
