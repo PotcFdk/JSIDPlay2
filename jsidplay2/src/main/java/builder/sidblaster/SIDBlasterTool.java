@@ -1,7 +1,5 @@
 package builder.sidblaster;
 
-import static builder.sidblaster.Command.GET_SID_TYPE;
-import static builder.sidblaster.Command.SET_SID_TYPE;
 import static builder.sidblaster.SIDBlasterBuilder.getSerialNumbers;
 import static builder.sidblaster.SIDBlasterBuilder.getSidType;
 import static builder.sidblaster.SIDBlasterBuilder.setSidType;
@@ -9,7 +7,6 @@ import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Properties;
 
 import com.beust.jcommander.JCommander;
@@ -23,6 +20,10 @@ import ui.JSidPlay2Main;
 @Parameters(resourceBundle = "builder.sidblaster.SidBuilderTool")
 public class SIDBlasterTool {
 
+	static {
+		DebugUtil.init();
+	}
+
 	private static Properties properties = new Properties();
 	static {
 		properties.setProperty("version", "(beta)");
@@ -31,10 +32,6 @@ public class SIDBlasterTool {
 			properties.load(resource.openConnection().getInputStream());
 		} catch (NullPointerException | IOException e) {
 		}
-	}
-
-	static {
-		DebugUtil.init();
 	}
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
@@ -51,80 +48,92 @@ public class SIDBlasterTool {
 
 	private IniConfig config = new IniConfig(false, null);
 
-	private void create(String[] args) throws Exception {
-		System.out.println(
-				"===============================================================================================");
-		System.out.println("SIDBlaster tool is a tool to read or write settings of your SIDBlaster USB device");
-		System.out.println("Credits:");
-		System.out.println(
-				"SIDBlaster tool by Andreas Schumm (https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition)");
-		System.out.println("Java Version by Ken Händel");
-		System.out.println("DLL created by Stein Pedersen");
-		System.out.println(
-				"===============================================================================================");
+	private String[] serialNumbers;
 
+	private void create(String[] args) throws Exception {
 		JCommander commander = JCommander.newBuilder().addObject(this)
 				.programName("sidblastertool-" + properties.getProperty("version") + ".exe").build();
-		commander.parse(Arrays.asList(args).stream().map(arg -> arg == null ? "" : arg).toArray(String[]::new));
+		commander.parse(args);
+
+		System.out.println(credits());
+
 		if (command == null || help) {
 			commander.usage();
-			System.out.println("Press <enter> to exit!");
-			System.in.read();
-			System.exit(0);
+			exit(0);
 		}
 
 		// trigger read library
 		new SIDBlasterBuilder(null, config, null);
 
-		final String[] serialNumbers = getSerialNumbers();
-		if (command == GET_SID_TYPE) {
-			if (deviceId < serialNumbers.length) {
-				System.out.printf("GET %d: serial=%s, type= %s\n", deviceId, serialNumbers[deviceId],
-						getSidType(deviceId));
-			} else {
-				System.out.println("No SIDBlaster devices detected!");
-			}
-		} else if (command == SET_SID_TYPE) {
+		serialNumbers = getSerialNumbers();
 
-			if (deviceId < serialNumbers.length) {
-				System.out.printf("Do you really want to set SID type of device %d: serial=%s to %s (y/N)\n", deviceId,
-						serialNumbers[deviceId], sidType);
-				while (System.in.available() == 0) {
-					Thread.sleep(500);
-				}
-				final int key = System.in.read();
-				switch (key) {
-				case 'y':
-				case 'Y':
-					int status = setSidType(deviceId, sidType);
-					System.out.printf("SET %d: serial=%s, type=%s (rc=%d)\n", deviceId, serialNumbers[deviceId],
-							sidType, status);
-					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
-					System.out.println("Press <enter> to exit!");
-					System.in.read();
-					System.exit(0);
-					break;
-				case 'n':
-				case 'N':
-				default:
-					System.out.println("Aborted!");
-					break;
-				}
-			} else {
-				System.out.println("No SIDBlaster devices detected!");
-			}
-		} else {
-			// DEFAULT: command == INFO
-
-			if (serialNumbers.length > 0) {
-				System.out.println("SIDBlaster devices:");
-				for (byte i = 0; i < serialNumbers.length; i++) {
-					System.out.printf("%s = %s\n", serialNumbers[i], getSidType(i));
-				}
-			} else {
-				System.out.println("No SIDBlaster devices detected!");
-			}
+		if (serialNumbers.length == 0) {
+			System.out.println("No SIDBlaster devices detected!");
+			exit(1);
 		}
+		if (deviceId >= serialNumbers.length) {
+			System.out.printf("Illegal parameter value: deviceId=%d!\n", deviceId);
+			System.out.printf("Possible value range: 0..%d\n", serialNumbers.length - 1);
+			exit(1);
+		}
+
+		switch (command) {
+		case GET_SID_TYPE:
+			printCommand(deviceId, getSidType(deviceId));
+			break;
+
+		case SET_SID_TYPE:
+			printCommand(deviceId, sidType);
+			switch (proceed()) {
+			case 'y':
+			case 'Y':
+				System.out.printf("RC=%d\n", setSidType(deviceId, sidType));
+				System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+				break;
+
+			default:
+				System.out.println("Aborted by user!");
+				break;
+
+			}
+			break;
+
+		case INFO:
+		default:
+			System.out.println("Detected SIDBlaster devices:");
+			for (int i = 0; i < serialNumbers.length; i++) {
+				printCommand(i, getSidType(i));
+			}
+			break;
+
+		}
+	}
+
+	private String credits() {
+		StringBuilder result = new StringBuilder();
+		result.append("=========================================================================================\n");
+		result.append("SIDBlaster tool is a tool to read or write settings of your SIDBlaster USB device\n");
+		result.append("Original tool by Andreas Schumm(https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition)\n");
+		result.append("Java Version by Ken Händel\n");
+		result.append("DLL created by Stein Pedersen\n");
+		result.append("=========================================================================================\n");
+		return result.toString();
+	}
+
+	private void printCommand(int deviceId, SIDType sidType) {
+		final String serialNumber = serialNumbers[deviceId];
+		System.out.printf("command=%s deviceId=%d, serial=%s, type=%s\n", command, deviceId, serialNumber, sidType);
+	}
+
+	private int proceed() throws IOException {
+		System.out.println("You are about to write settings to SIDBlaster USB device. Are you sure to proceed? (y/N)");
+		return System.in.read();
+	}
+
+	private void exit(int rc) throws IOException {
+		System.out.println("Press <enter> to exit!");
+		System.in.read();
+		System.exit(rc);
 	}
 
 	public static void main(String[] args) throws Exception {
