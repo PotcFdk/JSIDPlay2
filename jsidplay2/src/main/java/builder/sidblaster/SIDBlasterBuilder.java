@@ -172,11 +172,11 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	public static SIDType getSidType(int deviceId) {
-		return hardSID.HardSID_GetSIDInfo((byte) deviceId);
+		return hardSID.HardSID_GetSIDType((byte) deviceId);
 	}
 
 	public static int setSidType(int deviceId, SIDType sidType) {
-		return hardSID.HardSID_SetSIDInfo((byte) deviceId, sidType);
+		return hardSID.HardSID_SetSIDType((byte) deviceId, sidType);
 	}
 
 	@Override
