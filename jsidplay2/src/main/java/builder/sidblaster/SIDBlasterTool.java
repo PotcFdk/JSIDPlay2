@@ -79,11 +79,11 @@ public class SIDBlasterTool {
 
 		switch (command) {
 		case GET_SID_TYPE:
-			printCommand(deviceId, getSidType(deviceId));
+			printCommand("command=" + command, deviceId, getSidType(deviceId));
 			break;
 
 		case SET_SID_TYPE:
-			printCommand(deviceId, sidType);
+			printCommand("command=" + command, deviceId, sidType);
 			switch (proceed()) {
 			case 'y':
 			case 'Y':
@@ -102,7 +102,7 @@ public class SIDBlasterTool {
 		default:
 			System.out.println("Detected SIDBlaster devices:");
 			for (int i = 0; i < serialNumbers.length; i++) {
-				printCommand(i, getSidType(i));
+				printCommand("\t", i, getSidType(i));
 			}
 			break;
 
@@ -120,9 +120,9 @@ public class SIDBlasterTool {
 		return result.toString();
 	}
 
-	private void printCommand(int deviceId, SIDType sidType) {
+	private void printCommand(String prolog, int deviceId, SIDType sidType) {
 		final String serialNumber = serialNumbers[deviceId];
-		System.out.printf("command=%s deviceId=%d, serial=%s, type=%s\n", command, deviceId, serialNumber, sidType);
+		System.out.printf("%s - deviceId=%d, serial=%s, type=%s\n", prolog, deviceId, serialNumber, sidType);
 	}
 
 	private int proceed() throws IOException {
