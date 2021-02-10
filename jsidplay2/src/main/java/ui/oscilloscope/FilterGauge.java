@@ -43,16 +43,14 @@ public final class FilterGauge extends SIDGauge {
 	public void addImage(SIDEmu sidemu) {
 		if (sidemu != null) {
 			final byte vol = sidemu.readInternalRegister(0x18);
-			text = createText(vol);
+			setText(createText(vol));
 		}
 		super.addImage(sidemu);
 	}
 
 	private String createText(final byte vol) {
 		StringBuilder result = new StringBuilder();
-		if (localizer != null) {
-			result.append(localizer.getString("FILTER"));
-		}
+		result.append(localizer.getString("FILTER"));
 		result.append(" ");
 		if ((vol & 0x10) != 0) {
 			result.append("L"); // LP

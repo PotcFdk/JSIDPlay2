@@ -16,9 +16,9 @@ import ui.common.ImageQueue;
 import ui.common.UIPart;
 
 public class Gauge extends C64VBox implements UIPart {
-	private static final int ALPHA = 0xff000000;
-	protected static final int[] gaugeColors = new int[256];
 
+	private static final int ALPHA = 0xff000000;
+	private static final int[] gaugeColors = new int[256];
 	static {
 		for (int i = 0; i < gaugeColors.length; i++) {
 			int color = Math.round((float) Math.sqrt(i / 255f) * 255f);
@@ -26,11 +26,11 @@ public class Gauge extends C64VBox implements UIPart {
 		}
 	}
 
+	private String text;
+	private int voice;
+
 	private int width;
 	private int height;
-
-	protected String text;
-	private int voice;
 
 	public Gauge() {
 		super();
@@ -57,7 +57,7 @@ public class Gauge extends C64VBox implements UIPart {
 
 	private WritablePixelFormat<IntBuffer> format;
 
-	protected ImageQueue<GaugeImage> imageQueue = new ImageQueue<>();
+	private ImageQueue<GaugeImage> imageQueue = new ImageQueue<>();
 
 	@Override
 	public String getBundleName() {
@@ -108,10 +108,10 @@ public class Gauge extends C64VBox implements UIPart {
 		dataPos = 0;
 		imageQueue.clear();
 		addImage(null);
-		updateGauge(null);
+		updateGauge();
 	}
 
-	public void updateGauge(SIDEmu sidemu) {
+	public void updateGauge() {
 		GaugeImage gaugeImage = imageQueue.poll();
 		if (gaugeImage != null) {
 			getTitledPane().setText(gaugeImage.getText());
@@ -121,8 +121,8 @@ public class Gauge extends C64VBox implements UIPart {
 	}
 
 	public void addImage(SIDEmu sidemu) {
-		int[] pixels = new int[width * height];
-		int shade = 255;
+		final int[] pixels = new int[width * height];
+		final int shade = 255;
 		for (int x = 0; x < width; x++) {
 			final int readPos = dataPos - width + x & dataMin.length - 1;
 
@@ -245,10 +245,6 @@ public class Gauge extends C64VBox implements UIPart {
 
 	protected Canvas getArea() {
 		return null;
-	}
-
-	protected ImageQueue<GaugeImage> getImageQueue() {
-		return imageQueue;
 	}
 
 	@Override

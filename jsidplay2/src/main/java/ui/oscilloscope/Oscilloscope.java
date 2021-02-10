@@ -129,6 +129,9 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		wave3Sid_0.setLocalizer(util.getBundle());
 		wave3Sid_1.setLocalizer(util.getBundle());
 		wave3Sid_2.setLocalizer(util.getBundle());
+		filterMono.setLocalizer(util.getBundle());
+		filterStereo.setLocalizer(util.getBundle());
+		filter3Sid.setLocalizer(util.getBundle());
 
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		muteVoice1.selectedProperty().bindBidirectional(emulationSection.muteVoice1Property());
@@ -163,7 +166,7 @@ public class Oscilloscope extends C64VBox implements UIPart {
 		}
 		pauseTransition.setDuration(Duration.millis(1000. / util.getPlayer().getC64().getClock().getScreenRefresh()));
 		pauseTransition.setOnFinished(evt -> util.getPlayer().getC64()
-				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, gauge -> gauge.updateGauge(sid))));
+				.configureSIDs((chipNum, sid) -> updateGauges(chipNum, Gauge::updateGauge)));
 		sequentialTransition.setCycleCount(Animation.INDEFINITE);
 		sequentialTransition.playFromStart();
 	}
