@@ -239,7 +239,6 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			Image image = imageQueue.poll();
 			if (image != null) {
 				currentImage = image;
-				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 				screen.getGraphicsContext2D().drawImage(image, 0, 0);
 			}
 		});
@@ -369,7 +368,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		scaleY = (cpuClock == CPUClock.PAL) ? PAL_SCALE_Y : NTSC_SCALE_Y;
 		pauseTransition.setDuration(Duration.millis(1000. / cpuClock.getScreenRefresh()));
 
-		screen.getGraphicsContext2D().clearRect(0, 0, screen.widthProperty().get(), screen.heightProperty().get());
+		screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 		screen.setWidth(util.getPlayer().getC64().getVIC().getBorderWidth());
 		screen.setHeight(util.getPlayer().getC64().getVIC().getBorderHeight());
 		updateScaling();
