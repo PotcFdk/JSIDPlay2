@@ -143,7 +143,7 @@ public interface HardSID extends Library {
 	 * @since SIDBlasterUSB 5.14beta
 	 * @since 2.02
 	 */
-	void HardSID_GetSerial(byte DeviceID, Memory mem);
+	void HardSID_GetSerial(Memory mem, int bufferSize, byte DeviceID);
 
 	/**
 	 * @since SIDBlasterUSB 5.15beta
@@ -164,7 +164,7 @@ public interface HardSID extends Library {
 	default String GetSerial(byte deviceID) {
 		Memory mem = new Memory(9L);
 		mem.clear();
-		HardSID_GetSerial(deviceID, mem);
+		HardSID_GetSerial(mem, 9, deviceID);
 		return mem.getString(0L, "US_ASCII");
 	}
 
