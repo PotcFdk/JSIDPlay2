@@ -196,7 +196,7 @@
 							<columns>
 								<TableColumn text="%FILENAME" fx:id="contentEntryFilenameColumn">
 									<cellValueFactory>
-										<PropertyValueFactory property="name" />
+										<PropertyValueFactory property="id" />
 									</cellValueFactory>
 								</TableColumn>
 							</columns>

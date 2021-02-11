@@ -25,6 +25,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,8 +33,6 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.ProcessingException;
@@ -313,7 +312,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			try {
 				util.getPlayer().insertDisk(contentEntryFile);
 			} catch (IOException e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getId()));
 			}
 		}
 	}
@@ -324,7 +323,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			try {
 				util.getPlayer().insertTape(contentEntryFile);
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot insert media file '%s'.", contentEntry.getId()));
 			}
 		}
 	}
@@ -357,8 +356,8 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void showContentEntryContextMenu() {
 		ContentEntry contentEntry = contentEntryTable.getSelectionModel().getSelectedItem();
-		insertDiskMenuItem.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getName())));
-		insertTapeMenuItem.setDisable(contentEntry == null || !tapeFileFilter.accept(new File(contentEntry.getName())));
+		insertDiskMenuItem.setDisable(contentEntry == null || !diskFileFilter.accept(new File(contentEntry.getId())));
+		insertTapeMenuItem.setDisable(contentEntry == null || !tapeFileFilter.accept(new File(contentEntry.getId())));
 		autostartMenuItem.setDisable(contentEntry == null);
 	}
 
@@ -568,7 +567,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private List<Category> requestCategories() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/categories").build();
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/categories").build();
 
 		try (Response response = requestUri(uri)) {
 			String responseString = readString(response);
@@ -596,18 +595,112 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void requestSearchResults() {
 		try {
 			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/find").path(
-					"/{name}/{group}/{year}/{handle}/{event}/{rating}/{category}/{fromstart}/{d64}/{t64}/{d71}/{d81}/{prg}/{tap}/{crt}/{sid}/{bin}/{g64}/{or}/{days}/{releasedFrom}/{releasedTo}")
-					.queryParam("offset", searchOffset).build(get(nameTextField), get(groupTextField),
-							get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL), get(handleTextField),
-							get(eventTextField), get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL),
-							get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL, MATCH_ALL),
-							get(searchFromStartCheckBox), get(d64CheckBox), get(t64CheckBox), get(d71CheckBox),
-							get(d81CheckBox), get(prgCheckBox), get(tapCheckBox), get(crtCheckBox), get(sidCheckBox),
-							get(binCheckBox), get(g64CheckBox), getOr(),
-							get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1),
-							get(releasedTextField, true), get(releasedTextField, false));
-			if (getNumberOfMatchAllRequestParameters(uri) == 9) {
+
+			final String name = get(nameTextField);
+			final String group = get(groupTextField);
+			final Object year = get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL);
+			final String handle = get(handleTextField);
+			final String event = get(eventTextField);
+			final Object rating = get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL);
+			final Object category = get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL,
+					MATCH_ALL);
+			final String searchFromStart = get(searchFromStartCheckBox);
+			final String d64 = get(d64CheckBox);
+			final String t64 = get(t64CheckBox);
+			final String d71 = get(d71CheckBox);
+			final String d81 = get(d81CheckBox);
+			final String prg = get(prgCheckBox);
+			final String tap = get(tapCheckBox);
+			final String crt = get(crtCheckBox);
+			final String sid = get(sidCheckBox);
+			final String bin = get(binCheckBox);
+			final String g64 = get(g64CheckBox);
+			final String or = getOr();
+			final Integer days = get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1);
+			final String dateFrom = get(releasedTextField, true);
+			final String dateTo = get(releasedTextField, false);
+			UriBuilder uriBuilder = UriBuilder.fromPath(assembly64Url + "/leet/search/v2");
+			int matchCount = 0;
+			if (name != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("name", name);
+			}
+			if (group != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("group", group);
+			}
+			if (year != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("year", year);
+			}
+			if (handle != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("handle", handle);
+			}
+			if (event != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("event", event);
+			}
+			if (rating != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("rating", rating);
+			}
+			if (category != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("category", category);
+			}
+			if (searchFromStart != null) {
+				uriBuilder = uriBuilder.queryParam("searchFromStart", searchFromStart);
+			}
+			if (d64 != null) {
+				uriBuilder = uriBuilder.queryParam("d64", d64);
+			}
+			if (t64 != null) {
+				uriBuilder = uriBuilder.queryParam("t64", t64);
+			}
+			if (d71 != null) {
+				uriBuilder = uriBuilder.queryParam("d71", d71);
+			}
+			if (d81 != null) {
+				uriBuilder = uriBuilder.queryParam("d81", d81);
+			}
+			if (prg != null) {
+				uriBuilder = uriBuilder.queryParam("prg", prg);
+			}
+			if (tap != null) {
+				uriBuilder = uriBuilder.queryParam("tap", tap);
+			}
+			if (crt != null) {
+				uriBuilder = uriBuilder.queryParam("crt", crt);
+			}
+			if (sid != null) {
+				uriBuilder = uriBuilder.queryParam("sid", sid);
+			}
+			if (bin != null) {
+				uriBuilder = uriBuilder.queryParam("bin", bin);
+			}
+			if (g64 != null) {
+				uriBuilder = uriBuilder.queryParam("g64", g64);
+			}
+			if (or != null) {
+				uriBuilder = uriBuilder.queryParam("or", or);
+			}
+			if (days != null) {
+				uriBuilder = uriBuilder.queryParam("days", days);
+			}
+			if (dateFrom != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("dateFrom", dateFrom);
+			}
+			if (dateTo != null) {
+				matchCount++;
+				uriBuilder = uriBuilder.queryParam("dateTo", dateTo);
+			}
+			uriBuilder = uriBuilder.queryParam("offset", searchOffset);
+
+			URI uri = uriBuilder.build();
+
+			if (matchCount == 0) {
 				// avoid to request everything, it would take too much time!
 				return;
 			}
@@ -638,15 +731,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private int getNumberOfMatchAllRequestParameters(URI uri) {
-		int result = 0;
-		Matcher matcher = Pattern.compile(MATCH_ALL, Pattern.LITERAL).matcher(uri.toString());
-		while (matcher.find()) {
-			result++;
-		}
-		return result;
-	}
-
 	private void getContentEntries(boolean doAutostart) {
 		searchResult = assembly64Table.getSelectionModel().getSelectedItem();
 		if (searchResult == null) {
@@ -664,8 +748,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 			}
 			directory.clear();
 			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/entries").path("/{id}/{categoryId}")
-					.build(searchResult.getId(), searchResult.getCategory().getId());
+			final String itemId = Base64.getEncoder().encodeToString(searchResult.getId().getBytes());
+			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/contententries")
+					.path("/{itemId}/{categoryId}").build(itemId, searchResult.getCategory().getId());
 			try (Response response = requestUri(uri)) {
 				ContentEntrySearchResult contentEntry = objectMapper.readValue(readString(response),
 						ContentEntrySearchResult.class);
@@ -690,7 +775,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try {
 			contentEntryFile = requestContentEntry(contentEntry);
 		} catch (ProcessingException | IOException e) {
-			System.err.println(String.format("Cannot DOWNLOAD file '%s'.", contentEntry.getName()));
+			System.err.println(String.format("Cannot DOWNLOAD file '%s'.", contentEntry.getId()));
 		}
 		directory.loadPreview(contentEntryFile);
 		if (doAutostart) {
@@ -700,7 +785,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private File requestContentEntry(ContentEntry contentEntry) throws FileNotFoundException, IOException {
 		// name without embedded sub-folder (sid/name.sid -> name.sid):
-		String name = new File(contentEntry.getName()).getName();
+		String name = new File(contentEntry.getId()).getName();
 		File contentEntryFile = new File(util.getConfig().getSidplay2Section().getTmpDir(), name);
 		File contentEntryChecksumFile = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 				PathUtils.getFilenameWithoutSuffix(name) + ".md5");
@@ -719,8 +804,10 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		// request file, create checksum
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/binary").path("/{id}/{categoryId}/{contentEntryId}")
-				.build(searchResult.getId(), searchResult.getCategory().getId(), contentEntry.getId());
+		final String itemId = Base64.getEncoder().encodeToString(searchResult.getId().getBytes());
+		final String fileId = Base64.getEncoder().encodeToString(contentEntry.getId().getBytes());
+		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/binary").path("/{itemId}/{categoryId}/{fileId}")
+				.build(itemId, searchResult.getCategory().getId(), fileId);
 		try (Response response = requestUri(uri);
 				OutputStream outputStream = new FileOutputStream(contentEntryFile);
 				PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
@@ -788,7 +875,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 					currentlyPlayedContentEntryRowProperty.set(contentEntry);
 				}
 			} catch (IOException | SidTuneError e) {
-				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getName()));
+				System.err.println(String.format("Cannot AUTOSTART file '%s'.", contentEntry.getId()));
 			}
 		}
 	}
