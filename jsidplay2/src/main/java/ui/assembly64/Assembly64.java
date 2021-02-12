@@ -444,31 +444,31 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private void setColumnWidth(Assembly64Column column, Number width) {
 		switch (column.getColumnType()) {
 		case NAME:
-			nameTextField.prefWidthProperty().set(width.doubleValue());
+			nameTextField.setPrefWidth(width.doubleValue());
 			break;
 		case GROUP:
-			groupTextField.prefWidthProperty().set(width.doubleValue());
+			groupTextField.setPrefWidth(width.doubleValue());
 			break;
 		case YEAR:
-			yearComboBox.prefWidthProperty().set(width.doubleValue());
+			yearComboBox.setPrefWidth(width.doubleValue());
 			break;
 		case HANDLE:
-			handleTextField.prefWidthProperty().set(width.doubleValue());
+			handleTextField.setPrefWidth(width.doubleValue());
 			break;
 		case EVENT:
-			eventTextField.prefWidthProperty().set(width.doubleValue());
+			eventTextField.setPrefWidth(width.doubleValue());
 			break;
 		case RATING:
-			ratingComboBox.prefWidthProperty().set(width.doubleValue());
+			ratingComboBox.setPrefWidth(width.doubleValue());
 			break;
 		case CATEGORY:
-			categoryComboBox.prefWidthProperty().set(width.doubleValue());
+			categoryComboBox.setPrefWidth(width.doubleValue());
 			break;
 		case UPDATED:
-			updatedTextField.prefWidthProperty().set(width.doubleValue());
+			updatedTextField.setPrefWidth(width.doubleValue());
 			break;
 		case RELEASED:
-			releasedTextField.prefWidthProperty().set(width.doubleValue());
+			releasedTextField.setPrefWidth(width.doubleValue());
 			break;
 		}
 	}
