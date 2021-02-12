@@ -6,7 +6,6 @@ import static java.util.stream.IntStream.of;
 import static java.util.stream.IntStream.rangeClosed;
 import static javafx.scene.control.ProgressIndicator.INDETERMINATE_PROGRESS;
 import static ui.assembly64.SearchResult.DATE_PATTERN;
-import static ui.assembly64.SearchResult.MATCH_ALL;
 import static ui.assembly64.SearchResult.NO;
 import static ui.assembly64.SearchResult.YES;
 
@@ -598,12 +597,11 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 			final String name = get(nameTextField);
 			final String group = get(groupTextField);
-			final Object year = get(yearComboBox, value -> value, value -> value == 0, MATCH_ALL);
+			final Integer year = get(yearComboBox, Function.identity(), Integer.valueOf(0)::equals, null);
 			final String handle = get(handleTextField);
 			final String event = get(eventTextField);
-			final Object rating = get(ratingComboBox, value -> value, value -> value == 0, MATCH_ALL);
-			final Object category = get(categoryComboBox, value -> value.getId(), value -> value == Category.ALL,
-					MATCH_ALL);
+			final Integer rating = get(ratingComboBox, value -> value, Integer.valueOf(0)::equals, null);
+			final Integer category = get(categoryComboBox, value -> value.getId(), Category.ALL::equals, null);
 			final String searchFromStart = get(searchFromStartCheckBox);
 			final String d64 = get(d64CheckBox);
 			final String t64 = get(t64CheckBox);
@@ -616,7 +614,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			final String bin = get(binCheckBox);
 			final String g64 = get(g64CheckBox);
 			final String or = getOr();
-			final Integer days = get(ageComboBox, value -> value.getDays(), value -> value == Age.ALL, -1);
+			final Integer days = get(ageComboBox, value -> value.getDays(), Age.ALL::equals, -1);
 			final String dateFrom = get(releasedTextField, true);
 			final String dateTo = get(releasedTextField, false);
 			UriBuilder uriBuilder = UriBuilder.fromPath(assembly64Url + "/leet/search/v2");
@@ -697,7 +695,6 @@ public class Assembly64 extends C64VBox implements UIPart {
 				uriBuilder = uriBuilder.queryParam("dateTo", dateTo);
 			}
 			uriBuilder = uriBuilder.queryParam("offset", searchOffset);
-
 			URI uri = uriBuilder.build();
 
 			if (matchCount == 0) {
@@ -749,8 +746,9 @@ public class Assembly64 extends C64VBox implements UIPart {
 			directory.clear();
 			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 			final String itemId = Base64.getEncoder().encodeToString(searchResult.getId().getBytes());
+			final Integer categoryId = searchResult.getCategory().getId();
 			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/contententries")
-					.path("/{itemId}/{categoryId}").build(itemId, searchResult.getCategory().getId());
+					.path("/{itemId}/{categoryId}").build(itemId, categoryId);
 			try (Response response = requestUri(uri)) {
 				ContentEntrySearchResult contentEntry = objectMapper.readValue(readString(response),
 						ContentEntrySearchResult.class);
@@ -836,7 +834,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			value = LocalDate.of(year.getValue(), dateFromTo ? 1 : 12, dateFromTo ? 1 : 31);
 		}
 		if (value == null) {
-			return MATCH_ALL;
+			return null;
 		}
 		return ((LocalDate) value).format(DateTimeFormatter.ofPattern(DATE_PATTERN));
 	}
@@ -852,7 +850,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private String get(TextField field) {
 		String value = field.getText().trim();
 		if (value.isEmpty()) {
-			return MATCH_ALL;
+			return null;
 		}
 		return value;
 	}

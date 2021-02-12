@@ -13,7 +13,6 @@ public class SearchResult {
 
 	public static final String YES = "Y";
 	public static final String NO = "N";
-	public static final String MATCH_ALL = null;
 	public static final String DATE_PATTERN = "yyyyMMdd";
 
 	private StringProperty idProperty = new SimpleStringProperty();
