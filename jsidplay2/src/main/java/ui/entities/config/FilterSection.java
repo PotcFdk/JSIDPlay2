@@ -5,8 +5,13 @@ import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.config.IFilterSection;
 import sidplay.ini.converter.BeanToStringConverter;
+import ui.common.properties.ShadowField;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -17,185 +22,245 @@ public class FilterSection implements IFilterSection {
 
 	public FilterSection(IFilterSection f) {
 		if (f.isReSIDFilter8580()) {
-			name = f.getName();
-			filter8580CurvePosition = f.getFilter8580CurvePosition();
+			setName(f.getName());
+			setFilter8580CurvePosition(f.getFilter8580CurvePosition());
 		} else if (f.isReSIDFilter6581()) {
-			name = f.getName();
-			filter6581CurvePosition = f.getFilter6581CurvePosition();
+			setName(f.getName());
+			setFilter6581CurvePosition(f.getFilter6581CurvePosition());
 		} else if (f.isReSIDfpFilter8580()) {
-			name = f.getName();
-			k = f.getK();
-			b = f.getB();
-			voiceNonlinearity = f.getVoiceNonlinearity();
-			resonanceFactor = f.getResonanceFactor();
+			setName(f.getName());
+			setK(f.getK());
+			setB(f.getB());
+			setVoiceNonlinearity(f.getVoiceNonlinearity());
+			setResonanceFactor(f.getResonanceFactor());
 		} else if (f.isReSIDfpFilter6581()) {
-			name = f.getName();
-			attenuation = f.getAttenuation();
-			nonlinearity = f.getNonlinearity();
-			voiceNonlinearity = f.getVoiceNonlinearity();
-			baseresistance = f.getBaseresistance();
-			offset = f.getOffset();
-			steepness = f.getSteepness();
-			minimumfetresistance = f.getMinimumfetresistance();
-			resonanceFactor = f.getResonanceFactor();
+			setName(f.getName());
+			setAttenuation(f.getAttenuation());
+			setNonlinearity(f.getNonlinearity());
+			setVoiceNonlinearity(f.getVoiceNonlinearity());
+			setBaseresistance(f.getBaseresistance());
+			setOffset(f.getOffset());
+			setSteepness(f.getSteepness());
+			setMinimumfetresistance(f.getMinimumfetresistance());
+			setResonanceFactor(f.getResonanceFactor());
 		}
 	}
 
-	private String name;
+	private ShadowField<StringProperty, String> name = new ShadowField<>(SimpleStringProperty::new, null);
 
 	@Id
 	@Override
 	public String getName() {
-		return name;
+		return name.get();
 	}
 
 	@Override
 	public void setName(String name) {
-		this.name = name;
+		this.name.set(name);
 	}
 
-	private float filter8580CurvePosition;
+	public StringProperty nameProperty() {
+		return name.property();
+	}
+
+	private ShadowField<FloatProperty, Number> filter8580CurvePosition = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getFilter8580CurvePosition() {
-		return filter8580CurvePosition;
+		return filter8580CurvePosition.get().floatValue();
 	}
 
 	@Override
 	public void setFilter8580CurvePosition(float filter8580CurvePosition) {
-		this.filter8580CurvePosition = filter8580CurvePosition;
+		this.filter8580CurvePosition.set(filter8580CurvePosition);
 	}
 
-	private float filter6581CurvePosition;
+	public FloatProperty filter8580CurvePositionProperty() {
+		return filter8580CurvePosition.property();
+	}
+
+	private ShadowField<FloatProperty, Number> filter6581CurvePosition = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getFilter6581CurvePosition() {
-		return filter6581CurvePosition;
+		return filter6581CurvePosition.get().floatValue();
 	}
 
 	@Override
 	public void setFilter6581CurvePosition(float filter6581CurvePosition) {
-		this.filter6581CurvePosition = filter6581CurvePosition;
+		this.filter6581CurvePosition.set(filter6581CurvePosition);
 	}
 
-	private float attenuation;
+	public FloatProperty filter6581CurvePositionProperty() {
+		return filter6581CurvePosition.property();
+	}
+
+	private ShadowField<FloatProperty, Number> attenuation = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getAttenuation() {
-		return attenuation;
+		return attenuation.get().floatValue();
 	}
 
 	@Override
 	public void setAttenuation(float attenuation) {
-		this.attenuation = attenuation;
+		this.attenuation.set(attenuation);
 	}
 
-	private float nonlinearity;
+	public FloatProperty attenuationProperty() {
+		return attenuation.property();
+	}
+
+	private ShadowField<FloatProperty, Number> nonlinearity = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getNonlinearity() {
-		return nonlinearity;
+		return nonlinearity.get().floatValue();
 	}
 
 	@Override
 	public void setNonlinearity(float nonlinearity) {
-		this.nonlinearity = nonlinearity;
+		this.nonlinearity.set(nonlinearity);
 	}
 
-	private float voiceNonlinearity;
+	public FloatProperty nonlinearityProperty() {
+		return nonlinearity.property();
+	}
+
+	private ShadowField<FloatProperty, Number> voiceNonlinearity = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getVoiceNonlinearity() {
-		return voiceNonlinearity;
+		return voiceNonlinearity.get().floatValue();
 	}
 
 	@Override
 	public void setVoiceNonlinearity(float voiceNonlinearity) {
-		this.voiceNonlinearity = voiceNonlinearity;
+		this.voiceNonlinearity.set(voiceNonlinearity);
 	}
 
-	private float baseresistance;
+	public FloatProperty voiceNonlinearityProperty() {
+		return voiceNonlinearity.property();
+	}
+
+	private ShadowField<FloatProperty, Number> baseresistance = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getBaseresistance() {
-		return baseresistance;
+		return baseresistance.get().floatValue();
 	}
 
 	@Override
 	public void setBaseresistance(float baseresistance) {
-		this.baseresistance = baseresistance;
+		this.baseresistance.set(baseresistance);
 	}
 
-	private float offset;
+	public FloatProperty baseresistanceProperty() {
+		return baseresistance.property();
+	}
+
+	private ShadowField<FloatProperty, Number> offset = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getOffset() {
-		return offset;
+		return offset.get().floatValue();
 	}
 
 	@Override
 	public void setOffset(float offset) {
-		this.offset = offset;
+		this.offset.set(offset);
 	}
 
-	private float steepness;
+	public FloatProperty offsetProperty() {
+		return offset.property();
+	}
+
+	private ShadowField<FloatProperty, Number> steepness = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getSteepness() {
-		return steepness;
+		return steepness.get().floatValue();
 	}
 
 	@Override
 	public void setSteepness(float steepness) {
-		this.steepness = steepness;
+		this.steepness.set(steepness);
 	}
 
-	private float minimumfetresistance;
+	public FloatProperty steepnessProperty() {
+		return steepness.property();
+	}
+
+	private ShadowField<FloatProperty, Number> minimumfetresistance = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getMinimumfetresistance() {
-		return minimumfetresistance;
+		return minimumfetresistance.get().floatValue();
 	}
 
 	@Override
 	public void setMinimumfetresistance(float minimumfetresistance) {
-		this.minimumfetresistance = minimumfetresistance;
+		this.minimumfetresistance.set(minimumfetresistance);
 	}
 
-	private float k;
+	public FloatProperty minimumfetresistanceProperty() {
+		return minimumfetresistance.property();
+	}
+
+	private ShadowField<FloatProperty, Number> k = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getK() {
-		return k;
+		return k.get().floatValue();
 	}
 
 	@Override
 	public void setK(float k) {
-		this.k = k;
+		this.k.set(k);
 	}
 
-	private float b;
+	public FloatProperty kProperty() {
+		return k.property();
+	}
+
+	private ShadowField<FloatProperty, Number> b = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getB() {
-		return b;
+		return b.get().floatValue();
 	}
 
 	@Override
 	public void setB(float b) {
-		this.b = b;
+		this.b.set(b);
 	}
 
-	private float resonanceFactor;
+	public FloatProperty bProperty() {
+		return b.property();
+	}
+
+	private ShadowField<FloatProperty, Number> resonanceFactor = new ShadowField<>(
+			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
 	public float getResonanceFactor() {
-		return resonanceFactor;
+		return resonanceFactor.get().floatValue();
 	}
 
 	@Override
 	public void setResonanceFactor(float resonanceFactor) {
-		this.resonanceFactor = resonanceFactor;
+		this.resonanceFactor.set(resonanceFactor);
 	}
 
 	@Override
