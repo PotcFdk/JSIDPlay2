@@ -158,7 +158,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Currently played tune.
 	 */
-	private SidTune tune = RESET;
+	private SidTune tune;
 	/**
 	 * Auto-start command to be typed-in after reset.
 	 */
@@ -370,6 +370,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 								try {
 									if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
 										MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
+										// do not show results not playing anymore
 										if (result != null && Objects.equals(tuneToCheck, tune)) {
 											whatsSidHook.accept(result);
 										}
@@ -687,14 +688,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		do {
 			try {
 				stateProperty.set(OPEN);
-				try {
-					open();
-				} finally {
-					stateProperty.set(START);
-				}
+				open();
+				stateProperty.set(START);
 				menuHook.accept(Player.this);
-				// Play next chunk of sound data
 				stateProperty.set(PLAY);
+				// Play next chunk of sound data
 				while (play()) {
 					interactivityHook.accept(Player.this);
 				}

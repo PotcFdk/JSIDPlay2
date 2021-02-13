@@ -1,7 +1,7 @@
 package server.netsiddev;
 
 public class InvalidCommandException extends Exception {
-	private static final long serialVersionUID = 8471931791732460074L;
+	private static final long serialVersionUID = 1L;
 
 	private final int dataLen;
 

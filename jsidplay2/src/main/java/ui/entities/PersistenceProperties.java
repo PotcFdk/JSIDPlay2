@@ -3,7 +3,7 @@ package ui.entities;
 import java.util.HashMap;
 
 public class PersistenceProperties extends HashMap<String, String> {
-	private static final long serialVersionUID = -4166092050575739736L;
+	private static final long serialVersionUID = 1L;
 
 	public static final String CONFIG_DS = "configuration-ds";
 	public static final String HVSC_DS = "hvsc-ds";

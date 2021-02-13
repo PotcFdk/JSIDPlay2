@@ -200,7 +200,7 @@ public class LogarithmicAxis extends ValueAxis<Number> {
 	 *
 	 */
 	public class IllegalLogarithmicRangeException extends Exception {
-		private static final long serialVersionUID = -1874700637219400970L;
+		private static final long serialVersionUID = 1L;
 
 		/**
 		 * @param message Error message

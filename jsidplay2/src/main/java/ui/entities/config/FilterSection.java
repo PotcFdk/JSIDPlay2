@@ -263,6 +263,10 @@ public class FilterSection implements IFilterSection {
 		this.resonanceFactor.set(resonanceFactor);
 	}
 
+	public FloatProperty resonanceFactorProperty() {
+		return resonanceFactor.property();
+	}
+
 	@Override
 	public String toString() {
 		return BeanToStringConverter.toString(this);

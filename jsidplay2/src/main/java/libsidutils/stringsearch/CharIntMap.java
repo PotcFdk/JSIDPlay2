@@ -49,7 +49,7 @@ import java.io.ObjectOutput;
  * @version 1.2
  */
 class CharIntMap implements Externalizable, Cloneable {
-	static final long serialVersionUID = 1351686633123489568L;
+	static final long serialVersionUID = 1L;
 
 	private int[] array;
 	private char lowest;

@@ -69,6 +69,10 @@ public class FavoriteColumn {
 		this.width.set(width);
 	}
 
+	public DoubleProperty widthProperty() {
+		return width.property();
+	}
+
 	@Override
 	public String toString() {
 		return BeanToStringConverter.toString(this);
