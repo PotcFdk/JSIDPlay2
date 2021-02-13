@@ -7,8 +7,6 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,13 +37,15 @@ public class FindTuneServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		SongNoBean songNoBean = getInput(request, SongNoBean.class);
+		try {
+			SongNoBean songNoBean = getInput(request, SongNoBean.class);
 
-		EntityManager entityManager = getEntityManager();
-		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
-		MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
-		closeEntityManager();
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			MusicInfoBean musicInfoBean = whatsSidService.findTune(songNoBean);
 
-		setOutput(request, response, musicInfoBean, MusicInfoBean.class);
+			setOutput(request, response, musicInfoBean, MusicInfoBean.class);
+		} finally {
+			closeEntityManager();
+		}
 	}
 }

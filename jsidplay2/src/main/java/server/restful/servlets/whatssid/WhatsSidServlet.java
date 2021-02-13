@@ -7,8 +7,6 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,14 +44,16 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		WavBean wavBean = getInput(request, WavBean.class);
+		try {
+			WavBean wavBean = getInput(request, WavBean.class);
 
-		EntityManager entityManager = getEntityManager();
-		final IniFingerprintConfig config = new IniFingerprintConfig();
-		final FingerPrinting fingerPrinting = new FingerPrinting(config, new WhatsSidService(entityManager));
-		MusicInfoWithConfidenceBean musicInfoWithConfidence = fingerPrinting.match(wavBean);
-		closeEntityManager();
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			MusicInfoWithConfidenceBean musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(),
+					whatsSidService).match(wavBean);
 
-		setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
+			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
+		} finally {
+			closeEntityManager();
+		}
 	}
 }

@@ -7,8 +7,6 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,11 +36,14 @@ public class InsertHashesServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		HashBeans hashes = getInput(request, HashBeans.class);
+		try {
+			HashBeans hashes = getInput(request, HashBeans.class);
 
-		EntityManager entityManager = getEntityManager();
-		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
-		whatsSidService.insertHashes(hashes);
-		closeEntityManager();
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			whatsSidService.insertHashes(hashes);
+
+		} finally {
+			closeEntityManager();
+		}
 	}
 }

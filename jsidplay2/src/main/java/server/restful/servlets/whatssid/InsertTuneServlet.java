@@ -7,8 +7,6 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,13 +37,15 @@ public class InsertTuneServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
+		try {
+			MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 
-		EntityManager entityManager = getEntityManager();
-		final WhatsSidService whatsSidService = new WhatsSidService(entityManager);
-		IdBean idBean = whatsSidService.insertTune(musicInfoBean);
-		closeEntityManager();
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			IdBean idBean = whatsSidService.insertTune(musicInfoBean);
 
-		setOutput(request, response, idBean, IdBean.class);
+			setOutput(request, response, idBean, IdBean.class);
+		} finally {
+			closeEntityManager();
+		}
 	}
 }
