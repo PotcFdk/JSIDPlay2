@@ -343,15 +343,15 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		pathColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
 			favoritesSection.setWidth(newValue.doubleValue());
 		});
-		Double width = favoritesSection.getWidth();
+		double width = favoritesSection.getWidth();
 		if (width != 0) {
-			pathColumn.setPrefWidth(width.doubleValue());
+			pathColumn.setPrefWidth(width);
 		}
 		for (FavoriteColumn favoriteColumn : favoritesSection.getColumns()) {
 			TableColumn<HVSCEntry, ?> column = columnsIt.next();
 			width = favoriteColumn.getWidth();
-			if (width != null) {
-				column.setPrefWidth(width.doubleValue());
+			if (width != 0) {
+				column.setPrefWidth(width);
 			}
 		}
 		favoritesSection.getObservableFavorites()
