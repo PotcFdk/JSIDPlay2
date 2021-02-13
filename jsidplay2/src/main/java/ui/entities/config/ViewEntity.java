@@ -8,7 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import sidplay.ini.converter.BeanToStringConverter;
+import ui.common.properties.ShadowField;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -18,7 +21,7 @@ public class ViewEntity {
 	}
 
 	public ViewEntity(String fxId) {
-		this.fxId = fxId;
+		setFxId(fxId);
 	}
 
 	private Integer id;
@@ -34,14 +37,18 @@ public class ViewEntity {
 		this.id = id;
 	}
 
-	private String fxId;
+	private ShadowField<StringProperty, String> fxId = new ShadowField<>(SimpleStringProperty::new, null);
 
 	public String getFxId() {
-		return fxId;
+		return fxId.get();
 	}
 
 	public void setFxId(String fxId) {
-		this.fxId = fxId;
+		this.fxId.set(fxId);
+	}
+
+	public StringProperty fxIdProperty() {
+		return fxId.property();
 	}
 
 	@Override

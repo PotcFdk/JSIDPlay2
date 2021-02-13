@@ -10,8 +10,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.components.keyboard.KeyTableEntry;
 import sidplay.ini.converter.BeanToStringConverter;
+import ui.common.properties.ShadowField;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -21,13 +26,13 @@ public class KeyTableEntity {
 	}
 
 	public KeyTableEntity(KeyTableEntity keyTableEntity) {
-		this.keyCodeName = keyTableEntity.keyCodeName;
-		this.entry = keyTableEntity.entry;
+		setKeyCodeName(keyTableEntity.getKeyCodeName());
+		setEntry(keyTableEntity.getEntry());
 	}
 
 	public KeyTableEntity(String keyCode, KeyTableEntry entry) {
-		this.keyCodeName = keyCode;
-		this.entry = entry;
+		setKeyCodeName(keyCode);
+		setEntry(entry);
 	}
 
 	private Integer id;
@@ -43,25 +48,34 @@ public class KeyTableEntity {
 		this.id = id;
 	}
 
-	private String keyCodeName;
-
-	private KeyTableEntry entry;
+	private ShadowField<ObjectProperty<KeyTableEntry>, KeyTableEntry> entry = new ShadowField<>(
+			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
 	public KeyTableEntry getEntry() {
-		return entry;
+		return entry.get();
 	}
 
 	public void setEntry(KeyTableEntry entry) {
-		this.entry = entry;
+		this.entry.set(entry);
 	}
 
+	public ObjectProperty<KeyTableEntry> entryProperty() {
+		return entry.property();
+	}
+
+	private ShadowField<StringProperty, String> keyCodeName = new ShadowField<>(SimpleStringProperty::new, null);
+
 	public String getKeyCodeName() {
-		return keyCodeName;
+		return keyCodeName.get();
 	}
 
 	public void setKeyCodeName(String keyCodeName) {
-		this.keyCodeName = keyCodeName;
+		this.keyCodeName.set(keyCodeName);
+	}
+
+	public StringProperty keyCodeNameProperty() {
+		return keyCodeName.property();
 	}
 
 	@Override
