@@ -10,7 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import sidplay.ini.converter.BeanToStringConverter;
+import ui.common.properties.ShadowField;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -22,13 +27,13 @@ public class Assembly64Column {
 	}
 
 	public Assembly64Column(Assembly64Column assembly64Column) {
-		columnType = assembly64Column.columnType;
-		width = assembly64Column.width;
+		setColumnType(assembly64Column.getColumnType());
+		setWidth(assembly64Column.getWidth());
 	}
 
-	public Assembly64Column(Assembly64ColumnType category) {
-		columnType = category;
-		width = category.getDefaultWidth();
+	public Assembly64Column(Assembly64ColumnType assembly64ColumnEnum) {
+		setColumnType(assembly64ColumnEnum);
+		setWidth(assembly64ColumnEnum.getDefaultWidth());
 	}
 
 	@Id
@@ -42,25 +47,35 @@ public class Assembly64Column {
 		this.id = id;
 	}
 
+	private ShadowField<ObjectProperty<Assembly64ColumnType>, Assembly64ColumnType> columnEnum = new ShadowField<>(
+			SimpleObjectProperty::new, null);
+
 	@Enumerated(EnumType.STRING)
-	private Assembly64ColumnType columnType;
-
 	public Assembly64ColumnType getColumnType() {
-		return columnType;
+		return columnEnum.get();
 	}
 
-	public void setColumnType(Assembly64ColumnType columnType) {
-		this.columnType = columnType;
+	public void setColumnType(Assembly64ColumnType columnEnum) {
+		this.columnEnum.set(columnEnum);
 	}
 
-	private Double width;
-
-	public Double getWidth() {
-		return width;
+	public ObjectProperty<Assembly64ColumnType> columnTypeProperty() {
+		return columnEnum.property();
 	}
 
-	public void setWidth(Double width) {
-		this.width = width;
+	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
+			number -> new SimpleDoubleProperty(number.floatValue()), 0);
+
+	public double getWidth() {
+		return width.get().doubleValue();
+	}
+
+	public void setWidth(double width) {
+		this.width.set(width);
+	}
+
+	public DoubleProperty widthProperty() {
+		return width.property();
 	}
 
 	@Override

@@ -48,7 +48,7 @@ import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.ini.IniDefaults;
 import ui.common.download.DownloadThread;
-import ui.entities.Database;
+import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.musiccollection.MusicCollectionType;
 import ui.musiccollection.search.SearchIndexCreator;
@@ -285,7 +285,7 @@ public class OnlineContent {
 		String persistenceUnitName = collectionType == CGSC ? CGSC_DS : HVSC_DS;
 		File dbFilename = new File(rootFile.getParentFile(), collectionType.toString());
 		EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
-				new PersistenceProperties(Database.HSQL_FILE, "", "", dbFilename.getAbsolutePath()));
+				new PersistenceProperties(DatabaseType.HSQL_FILE, "", "", dbFilename.getAbsolutePath()));
 		EntityManager em = emFactory.createEntityManager();
 
 		Player player = new Player(IniDefaults.DEFAULTS);

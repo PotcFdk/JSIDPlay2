@@ -18,7 +18,7 @@ import javax.xml.bind.Unmarshaller;
 
 import libsidplay.config.IConfig;
 import libsidutils.PathUtils;
-import ui.entities.Database;
+import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 
@@ -64,15 +64,19 @@ public class ConfigService {
 
 		switch (configurationType) {
 		case DATABASE:
-			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS, new PersistenceProperties(
-					Database.HSQL_FILE, "", "", PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath())))
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+							new PersistenceProperties(DatabaseType.HSQL_FILE, "", "",
+									PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath())))
 					.createEntityManager();
 			return get(configPath);
 
 		case XML:
 		default:
-			em = Persistence.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-					new PersistenceProperties(Database.HSQL_MEM, "", "", CONFIG_FILE)).createEntityManager();
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+							new PersistenceProperties(DatabaseType.HSQL_MEM, "", "", CONFIG_FILE))
+					.createEntityManager();
 			return importCfg(configPath);
 		}
 	}

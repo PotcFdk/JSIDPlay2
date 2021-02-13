@@ -37,7 +37,7 @@ import ui.common.UIUtil;
 import ui.common.download.DownloadThread;
 import ui.common.download.ProgressListener;
 import ui.common.filefilter.MDBFileExtensions;
-import ui.entities.Database;
+import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.service.GamesService;
@@ -256,7 +256,7 @@ public class GameBase extends C64VBox implements UIPart {
 		}
 		em = Persistence
 				.createEntityManagerFactory(PersistenceProperties.GAMEBASE_DS,
-						new PersistenceProperties(Database.MSACCESS, "", "", dbFile.getAbsolutePath()))
+						new PersistenceProperties(DatabaseType.MSACCESS, "", "", dbFile.getAbsolutePath()))
 				.createEntityManager();
 		gamesService = new GamesService(em);
 	}

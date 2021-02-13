@@ -85,7 +85,7 @@ import ui.common.download.DownloadThread;
 import ui.common.download.MultiDownload;
 import ui.common.download.ProgressListener;
 import ui.common.filefilter.TuneFileFilter;
-import ui.entities.Database;
+import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.service.VersionService;
@@ -553,7 +553,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 					closeDatabase();
 					File dbFilename = new File(theRootFile.getParentFile(), type.get().toString());
-					PersistenceProperties pp = new PersistenceProperties(Database.HSQL_FILE, "", "",
+					PersistenceProperties pp = new PersistenceProperties(DatabaseType.HSQL_FILE, "", "",
 							dbFilename.getAbsolutePath());
 					EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(type.get().getDataSource(),
 							pp);

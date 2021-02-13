@@ -28,7 +28,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -362,7 +361,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private void addAddColumnHeaderMenuItem(Assembly64ColumnType columnType) {
 		MenuItem menuItem = new MenuItem();
-		menuItem.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
+		menuItem.setText(util.getBundle().getString(columnType.name()));
 		menuItem.setOnAction(event -> {
 			Assembly64Column column = new Assembly64Column();
 			column.setColumnType(columnType);
@@ -382,7 +381,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 			TableColumn<SearchResult, Integer> tableColumnInteger = new TableColumn<>();
 			tableColumn = tableColumnInteger;
 			tableColumnInteger.setCellValueFactory(
-					new PropertyValueFactory<SearchResult, Integer>(columnType.getColumnProperty()));
+					new PropertyValueFactory<SearchResult, Integer>(columnType.name().toLowerCase()));
 			tableColumnInteger.setCellFactory(new ZeroIgnoringCellFactory());
 			break;
 		case UPDATED:
@@ -390,18 +389,18 @@ public class Assembly64 extends C64VBox implements UIPart {
 			TableColumn<SearchResult, LocalDate> tableColumnLocalDate = new TableColumn<>();
 			tableColumn = tableColumnLocalDate;
 			tableColumnLocalDate.setCellValueFactory(
-					new PropertyValueFactory<SearchResult, LocalDate>(columnType.getColumnProperty()));
+					new PropertyValueFactory<SearchResult, LocalDate>(columnType.name().toLowerCase()));
 			break;
 		default:
 			TableColumn<SearchResult, String> tableColumnString = new TableColumn<>();
 			tableColumn = tableColumnString;
 			tableColumnString.setCellValueFactory(
-					new PropertyValueFactory<SearchResult, String>(columnType.getColumnProperty()));
+					new PropertyValueFactory<SearchResult, String>(columnType.name().toLowerCase()));
 			break;
 		}
 		tableColumn.setUserData(column);
-		tableColumn.setText(util.getBundle().getString(columnType.getColumnProperty().toUpperCase(Locale.US)));
-		tableColumn.setPrefWidth(column.getWidth() != null ? column.getWidth().doubleValue() : DEFAULT_WIDTH);
+		tableColumn.setText(util.getBundle().getString(columnType.name()));
+		tableColumn.setPrefWidth(column.getWidth() != 0 ? column.getWidth() : DEFAULT_WIDTH);
 		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
 			column.setWidth(newValue.doubleValue());
 			setColumnWidth(column, newValue);

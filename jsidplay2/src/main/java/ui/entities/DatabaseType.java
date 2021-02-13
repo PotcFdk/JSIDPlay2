@@ -1,6 +1,6 @@
 package ui.entities;
 
-public enum Database {
+public enum DatabaseType {
 
 	/**
 	 * File-based Java Database
@@ -24,7 +24,7 @@ public enum Database {
 	private String jdbcUrl;
 	private String sqlDialect;
 
-	private Database(String driver, String url, String dialect) {
+	private DatabaseType(String driver, String url, String dialect) {
 		jdbcDriver = driver;
 		jdbcUrl = url;
 		sqlDialect = dialect;
