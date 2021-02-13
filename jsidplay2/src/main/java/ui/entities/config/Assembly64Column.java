@@ -31,9 +31,9 @@ public class Assembly64Column {
 		setWidth(assembly64Column.getWidth());
 	}
 
-	public Assembly64Column(Assembly64ColumnType assembly64ColumnEnum) {
-		setColumnType(assembly64ColumnEnum);
-		setWidth(assembly64ColumnEnum.getDefaultWidth());
+	public Assembly64Column(Assembly64ColumnType assembly64ColumnType) {
+		setColumnType(assembly64ColumnType);
+		setWidth(assembly64ColumnType.getDefaultWidth());
 	}
 
 	@Id
@@ -47,20 +47,20 @@ public class Assembly64Column {
 		this.id = id;
 	}
 
-	private ShadowField<ObjectProperty<Assembly64ColumnType>, Assembly64ColumnType> columnEnum = new ShadowField<>(
+	private ShadowField<ObjectProperty<Assembly64ColumnType>, Assembly64ColumnType> columnType = new ShadowField<>(
 			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
 	public Assembly64ColumnType getColumnType() {
-		return columnEnum.get();
+		return columnType.get();
 	}
 
-	public void setColumnType(Assembly64ColumnType columnEnum) {
-		this.columnEnum.set(columnEnum);
+	public void setColumnType(Assembly64ColumnType columnType) {
+		this.columnType.set(columnType);
 	}
 
 	public ObjectProperty<Assembly64ColumnType> columnTypeProperty() {
-		return columnEnum.property();
+		return columnType.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
