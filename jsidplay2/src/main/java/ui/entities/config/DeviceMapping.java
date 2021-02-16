@@ -38,8 +38,8 @@ public class DeviceMapping implements IDeviceMapping {
 	}
 
 	public DeviceMapping(String serialNum, ChipModel chipModel, boolean used) {
-		setSerialNum(getSerialNum());
-		setChipModel(getChipModel());
+		setSerialNum(serialNum);
+		setChipModel(chipModel);
 		setUsed(used);
 	}
 
