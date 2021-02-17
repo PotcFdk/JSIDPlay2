@@ -46,6 +46,10 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		this.password = password;
 	}
 
+	public void setUseXml(boolean useXml) {
+		this.useXml = useXml;
+	}
+
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		try {

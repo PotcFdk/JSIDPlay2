@@ -4,6 +4,7 @@ import static builder.sidblaster.SIDBlasterBuilder.getSerialNumbers;
 import static builder.sidblaster.SIDBlasterBuilder.getSidType;
 import static builder.sidblaster.SIDBlasterBuilder.setSidType;
 import static builder.sidblaster.SIDType.SIDTYPE_NONE;
+import static ui.common.util.VersionUtil.VERSION;
 
 import java.io.IOException;
 
@@ -16,7 +17,6 @@ import builder.sidblaster.SIDBlasterBuilder;
 import builder.sidblaster.SIDType;
 import sidplay.ini.IniConfig;
 import ui.common.util.DebugUtil;
-import ui.common.util.VersionUtil;
 
 @Parameters(resourceBundle = "builder.sidblaster.SidBuilderTool")
 public class SIDBlasterTool {
@@ -42,8 +42,8 @@ public class SIDBlasterTool {
 	private String[] serialNumbers;
 
 	private void create(String[] args) throws Exception {
-		JCommander commander = JCommander.newBuilder().addObject(this)
-				.programName("sidblastertool-" + VersionUtil.getVersion() + ".exe").build();
+		JCommander commander = JCommander.newBuilder().addObject(this).programName("sidblastertool-" + VERSION + ".exe")
+				.build();
 		commander.parse(args);
 
 		System.out.println(credits());

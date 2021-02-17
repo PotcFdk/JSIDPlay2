@@ -1,5 +1,8 @@
 package ui.update;
 
+import static ui.common.util.VersionUtil.VERSION;
+import static ui.common.util.VersionUtil.fetchRemoteVersion;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +16,6 @@ import javafx.util.Duration;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.util.DesktopUtil;
-import ui.common.util.VersionUtil;
 import ui.entities.config.SidPlay2Section;
 
 public class Update extends C64Window {
@@ -41,10 +43,9 @@ public class Update extends C64Window {
 		SequentialTransition sequentialTransition = new SequentialTransition(pauseTransition);
 		pauseTransition.setOnFinished(evt -> {
 
-			final String localVersion = VersionUtil.getVersion();
-			final String remoteVersion = VersionUtil.getRemoteVersion(sidplay2Section);
+			final String remoteVersion = fetchRemoteVersion(sidplay2Section);
 			boolean updateAvailable = remoteVersion != null
-					&& isUpdateAvailable(getVersionNumbers(localVersion), getVersionNumbers(remoteVersion));
+					&& isUpdateAvailable(getVersionNumbers(VERSION), getVersionNumbers(remoteVersion));
 
 			latestVersionLink.setVisible(updateAvailable);
 			update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
@@ -77,10 +78,11 @@ public class Update extends C64Window {
 		return false;
 	}
 
-	private int[] getVersionNumbers(String ver) {
-		Matcher m = Pattern.compile("(\\d+)\\.(\\d+)").matcher(ver);
+	private int[] getVersionNumbers(String version) {
+		Matcher m = Pattern.compile("(\\d+)\\.(\\d+)").matcher(version);
 		if (!m.matches()) {
-			throw new IllegalArgumentException("Malformed FW version");
+			System.err.println("Malformed version number: " + version);
+			return null;
 		}
 
 		return new int[] { Integer.parseInt(m.group(1)), // major

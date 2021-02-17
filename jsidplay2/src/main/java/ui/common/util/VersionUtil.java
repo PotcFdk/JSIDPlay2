@@ -1,6 +1,9 @@
 package ui.common.util;
 
+import static ui.common.util.InternetUtil.openConnection;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
@@ -10,32 +13,35 @@ import ui.entities.config.SidPlay2Section;
 
 public class VersionUtil {
 
-	private static final String ONLINE_VERSION_RES = "http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/latest.properties?format=raw";
+	private static final String LOCAL_VERSION_RESOURCE = "/META-INF/maven/jsidplay2/jsidplay2/pom.properties";
 
-	private static Properties properties = new Properties();
+	private static final String ONLINE_VERSION_RESOURCE = "http://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/latest.properties?format=raw";
 
-	public static void init() {
-		properties.setProperty("version", "(beta)");
+	public static String VERSION;
+
+	static {
 		try {
-			URL resource = JSidPlay2Main.class.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
-			properties.load(resource.openConnection().getInputStream());
-		} catch (NullPointerException | IOException e) {
+			URLConnection connection = JSidPlay2Main.class.getResource(LOCAL_VERSION_RESOURCE).openConnection();
+			VERSION = getVersion(connection);
+		} catch (Exception e) {
+			VERSION = "(beta)";
 		}
 	}
 
-	public static String getVersion() {
-		return properties.getProperty("version");
-	}
-
-	public static String getRemoteVersion(SidPlay2Section sidplay2Section) {
+	public static String fetchRemoteVersion(SidPlay2Section sidplay2Section) {
 		try {
-			Properties latestProperties = new Properties();
-			URLConnection connection = InternetUtil.openConnection(new URL(ONLINE_VERSION_RES), sidplay2Section);
-			latestProperties.load(connection.getInputStream());
-			return latestProperties.getProperty("version");
-		} catch (NullPointerException | IOException e) {
+			URLConnection connection = openConnection(new URL(ONLINE_VERSION_RESOURCE), sidplay2Section);
+			return getVersion(connection);
+		} catch (Exception e) {
 			return null;
 		}
+	}
 
+	private static String getVersion(URLConnection connection) throws IOException {
+		try (InputStream inputStream = connection.getInputStream()) {
+			Properties latestProperties = new Properties();
+			latestProperties.load(inputStream);
+			return latestProperties.getProperty("version");
+		}
 	}
 }
