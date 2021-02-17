@@ -1,4 +1,4 @@
-package sidplay.audio;
+package ui.tools.audio;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,11 +16,14 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
-import libsidutils.fingerprinting.FingerPrintingCreator;
 import libsidutils.fingerprinting.IFingerprintInserter;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
+import sidplay.audio.AudioConfig;
+import sidplay.audio.AudioDriver;
+import sidplay.audio.WAVHeader;
 import sidplay.audio.exceptions.SongEndException;
+import ui.tools.FingerPrintingCreator;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a

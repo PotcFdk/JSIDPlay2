@@ -1,4 +1,4 @@
-package builder.sidblaster;
+package ui.tools;
 
 import static builder.sidblaster.SIDBlasterBuilder.getSerialNumbers;
 import static builder.sidblaster.SIDBlasterBuilder.getSidType;
@@ -11,6 +11,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import builder.sidblaster.Command;
+import builder.sidblaster.SIDBlasterBuilder;
+import builder.sidblaster.SIDType;
 import sidplay.ini.IniConfig;
 import ui.common.util.DebugUtil;
 import ui.common.util.VersionUtil;

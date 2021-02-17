@@ -1076,7 +1076,7 @@
 							<stayAlive>false</stayAlive>
 							<icon>src/main/launch4j/jsidplay2.ico</icon>
 							<classPath>
-								<mainClass>builder.sidblaster.SIDBlasterTool</mainClass>
+								<mainClass>ui.tools.SIDBlasterTool</mainClass>
 								<jarLocation>.</jarLocation>
 								<addDependencies>true</addDependencies>
 							</classPath>

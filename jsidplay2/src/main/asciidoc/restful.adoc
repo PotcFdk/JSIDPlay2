@@ -333,7 +333,7 @@ and if database already contains the song.
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
+java -server -classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
 	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
@@ -370,7 +370,7 @@ Keep in mind in the end the update requires another 250GB of disk space for the 
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar libsidutils.fingerprinting.FingerPrintingCreator \
+java -server -classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
 	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \

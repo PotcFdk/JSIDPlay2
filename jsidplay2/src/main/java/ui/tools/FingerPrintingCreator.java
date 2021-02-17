@@ -1,4 +1,4 @@
-package libsidutils.fingerprinting;
+package ui.tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,16 +21,17 @@ import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import sidplay.Player;
-import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
 import sidplay.ini.converter.FileToStringConverter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.common.util.DebugUtil;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
+import ui.tools.audio.WhatsSidDriver;
 
 /**
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
