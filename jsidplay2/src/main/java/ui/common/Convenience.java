@@ -11,12 +11,12 @@ import de.schlichtherle.truezip.file.TFile;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.Extract7Zip;
 import sidplay.Player;
 import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
+import ui.common.util.Extract7ZipUtil;
 
 /**
  * Automation for the Player.
@@ -88,7 +88,7 @@ public class Convenience {
 			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			TFile.rm_r(zip);
 		} else if (file.getName().toLowerCase(Locale.US).endsWith("7z")) {
-			Extract7Zip extract7Zip = new Extract7Zip(zip, new File(tmpDir));
+			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(zip, new File(tmpDir));
 			extract7Zip.extract();
 			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
 			TFile.rm_r(zip);

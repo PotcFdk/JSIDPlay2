@@ -1,4 +1,4 @@
-package libsidutils;
+package ui.common.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -12,7 +12,7 @@ import java.net.URLDecoder;
 
 import ui.entities.config.SidPlay2Section;
 
-public class InternetUtils {
+public class InternetUtil {
 
 	public static URLConnection openConnection(URL currentURL, SidPlay2Section sidplay2Section) throws IOException {
 		while (true) {

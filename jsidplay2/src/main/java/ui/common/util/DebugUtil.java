@@ -1,4 +1,4 @@
-package libsidutils;
+package ui.common.util;
 
 import java.io.IOException;
 import java.util.logging.LogManager;

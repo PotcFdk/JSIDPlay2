@@ -23,13 +23,13 @@ import kickass.common.errors.AsmError;
 import kickass.common.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
 import libsidutils.assembler.KickAssembler;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
+import ui.common.util.DesktopUtil;
 
 public class Asm extends C64VBox implements UIPart {
 
@@ -95,7 +95,7 @@ public class Asm extends C64VBox implements UIPart {
 
 	@FXML
 	private void gotoHomepage() {
-		DesktopIntegration.browse(HOMEPAGE_URL);
+		DesktopUtil.browse(HOMEPAGE_URL);
 	}
 
 	@FXML

@@ -1,4 +1,4 @@
-package libsidutils;
+package ui.common.util;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-public class DesktopIntegration {
+public class DesktopUtil {
 
 	/**
 	 * Open a browser URL (and run in a separate daemon thread).

@@ -39,8 +39,6 @@ import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
 import de.schlichtherle.truezip.file.TVFS;
-import libsidutils.DebugUtil;
-import libsidutils.Extract7Zip;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
@@ -48,6 +46,8 @@ import libsidutils.stil.STIL;
 import sidplay.Player;
 import sidplay.ini.IniDefaults;
 import ui.common.download.DownloadThread;
+import ui.common.util.DebugUtil;
+import ui.common.util.Extract7ZipUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.musiccollection.MusicCollectionType;
@@ -229,7 +229,7 @@ public class OnlineContent {
 
 			System.out.println("Extracting archive, please wait a moment...");
 			File cgscZipFile = new File(deployDir, "/online/cgsc/CGSC.zip");
-			Extract7Zip extract7Zip = new Extract7Zip(new File(cgsc), new File(deployDir, "online/cgsc"));
+			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(new File(cgsc), new File(deployDir, "online/cgsc"));
 			extract7Zip.extract();
 
 			cgscZipFile.delete();
@@ -251,7 +251,7 @@ public class OnlineContent {
 
 			System.out.println("Extracting archive, please wait a moment...");
 			File hvscZipFile = new File(deployDir, "/online/hvsc/C64Music.zip");
-			Extract7Zip extract7Zip = new Extract7Zip(new File(hvsc), new File(deployDir, "online/hvsc"));
+			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(new File(hvsc), new File(deployDir, "online/hvsc"));
 			extract7Zip.extract();
 
 			hvscZipFile.delete();

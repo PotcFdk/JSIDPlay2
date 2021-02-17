@@ -33,7 +33,6 @@ import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.DesktopIntegration;
 import libsidutils.psid64.PSid64TuneInfo;
 import libsidutils.psid64.Psid64;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
@@ -42,6 +41,7 @@ import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
+import ui.common.util.DesktopUtil;
 import ui.entities.config.C1541Section;
 import ui.entities.config.EmulationSection;
 
@@ -145,7 +145,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		this.statusTooltip = new Tooltip();
 		this.status.setOnMouseClicked(e -> {
 			if (status.getUserData() != null) {
-				DesktopIntegration.browse(status.getUserData().toString());
+				DesktopUtil.browse(status.getUserData().toString());
 			}
 		});
 		propertyChangeListener = new StateChangeListener();

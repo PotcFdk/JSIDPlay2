@@ -6,32 +6,20 @@ import static builder.sidblaster.SIDBlasterBuilder.setSidType;
 import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import libsidutils.DebugUtil;
 import sidplay.ini.IniConfig;
-import ui.JSidPlay2Main;
+import ui.common.util.DebugUtil;
+import ui.common.util.VersionUtil;
 
 @Parameters(resourceBundle = "builder.sidblaster.SidBuilderTool")
 public class SIDBlasterTool {
 
 	static {
 		DebugUtil.init();
-	}
-
-	private static Properties properties = new Properties();
-	static {
-		properties.setProperty("version", "(beta)");
-		try {
-			URL resource = JSidPlay2Main.class.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
-			properties.load(resource.openConnection().getInputStream());
-		} catch (NullPointerException | IOException e) {
-		}
 	}
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
@@ -52,7 +40,7 @@ public class SIDBlasterTool {
 
 	private void create(String[] args) throws Exception {
 		JCommander commander = JCommander.newBuilder().addObject(this)
-				.programName("sidblastertool-" + properties.getProperty("version") + ".exe").build();
+				.programName("sidblastertool-" + VersionUtil.getVersion() + ".exe").build();
 		commander.parse(args);
 
 		System.out.println(credits());

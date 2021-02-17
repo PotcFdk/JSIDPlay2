@@ -66,7 +66,6 @@ import libsidplay.common.Ultimate64Mode;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DesktopIntegration;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
 import server.restful.common.Connectors;
@@ -82,6 +81,7 @@ import ui.common.converter.EnumToStringConverter;
 import ui.common.converter.MixerInfoToStringConverter;
 import ui.common.converter.PositiveNumberToStringConverter;
 import ui.common.converter.TimeToStringConverter;
+import ui.common.util.DesktopUtil;
 import ui.entities.config.AudioSection;
 import ui.entities.config.Configuration;
 import ui.entities.config.DeviceMapping;
@@ -526,7 +526,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
 		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
 				: emulationSection.getAppServerSecurePort();
-		DesktopIntegration.browse(appServerConnectors.getPreferredProtocol() + "://127.0.0.1:" + port);
+		DesktopUtil.browse(appServerConnectors.getPreferredProtocol() + "://127.0.0.1:" + port);
 	}
 
 	@FXML
@@ -601,12 +601,12 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void onlinePlayer() {
-		DesktopIntegration.browse(util.getConfig().getOnlineSection().getOnlinePlayerUrl());
+		DesktopUtil.browse(util.getConfig().getOnlineSection().getOnlinePlayerUrl());
 	}
 
 	@FXML
 	private void downloadApp() {
-		DesktopIntegration.browse(util.getConfig().getOnlineSection().getAppUrl());
+		DesktopUtil.browse(util.getConfig().getOnlineSection().getAppUrl());
 	}
 
 	@Override

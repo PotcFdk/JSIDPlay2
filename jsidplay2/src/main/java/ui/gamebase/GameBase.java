@@ -27,7 +27,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.C64VBox;
@@ -37,6 +36,7 @@ import ui.common.UIUtil;
 import ui.common.download.DownloadThread;
 import ui.common.download.ProgressListener;
 import ui.common.filefilter.MDBFileExtensions;
+import ui.common.util.DesktopUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
@@ -222,7 +222,7 @@ public class GameBase extends C64VBox implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		DesktopIntegration.browse(GB64_URL);
+		DesktopUtil.browse(GB64_URL);
 	}
 
 	private void setRoot(File file) {

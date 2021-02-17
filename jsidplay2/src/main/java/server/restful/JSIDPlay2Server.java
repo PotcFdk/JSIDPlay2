@@ -41,7 +41,6 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DebugUtil;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.servlets.ConvertServlet;
@@ -60,6 +59,7 @@ import server.restful.servlets.whatssid.InsertTuneServlet;
 import server.restful.servlets.whatssid.TuneExistsServlet;
 import server.restful.servlets.whatssid.WhatsSidServlet;
 import sidplay.Player;
+import ui.common.util.DebugUtil;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;

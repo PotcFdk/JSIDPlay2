@@ -1,27 +1,13 @@
 package ui.about;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 import sidplay.Player;
-import ui.JSidPlay2Main;
 import ui.common.C64Window;
+import ui.common.util.VersionUtil;
 
 public class About extends C64Window {
-	private static Properties properties = new Properties();
-
-	static {
-		properties.setProperty("version", "(beta)");
-		try {
-			URL resource = JSidPlay2Main.class.getResource("/META-INF/maven/jsidplay2/jsidplay2/pom.properties");
-			properties.load(resource.openConnection().getInputStream());
-		} catch (NullPointerException | IOException e) {
-		}
-	}
 
 	@FXML
 	private Text credits;
@@ -38,7 +24,7 @@ public class About extends C64Window {
 	@FXML
 	@Override
 	protected void initialize() {
-		credits.setText(util.getPlayer().getCredits(properties));
+		credits.setText(util.getPlayer().getCredits(VersionUtil.getVersion()));
 	}
 
 	@FXML

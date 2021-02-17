@@ -24,7 +24,7 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import de.schlichtherle.truezip.file.TFile;
-import libsidutils.InternetUtils;
+import ui.common.util.InternetUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;
 
@@ -165,7 +165,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 	private boolean checkExistingURL(URL currentURL) {
 		SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		try {
-			URLConnection connection = InternetUtils.openConnection(currentURL, sidplay2Section);
+			URLConnection connection = InternetUtil.openConnection(currentURL, sidplay2Section);
 			return connection.getContentLength() >= 0;
 		} catch (IOException e) {
 			return false;
@@ -182,7 +182,7 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 
 			FileOutputStream fos = null;
 			try {
-				URLConnection connection = InternetUtils.openConnection(currentURL, sidplay2Section);
+				URLConnection connection = InternetUtil.openConnection(currentURL, sidplay2Section);
 				currentURL = connection.getURL();
 				long contentLength = connection.getContentLengthLong();
 				File file = createLocalFile(currentURL);

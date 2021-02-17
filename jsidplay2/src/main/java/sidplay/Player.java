@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -1132,10 +1131,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * The credits for the authors of many parts of this emulator.
 	 *
-	 * @param properties containing dynamic values for the credits (e.g. version)
+	 * @param version containing version of JSIDPlay2
 	 * @return the credits
 	 */
-	public final String getCredits(final Properties properties) {
+	public final String getCredits(final String version) {
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Operating System:\n");
 		credits.append(System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")\n");
@@ -1143,7 +1142,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(System.getProperty("java.runtime.version"));
 		credits.append("\n" + System.getProperty("sun.arch.data.model") + " bits");
 		credits.append("\n\nJava Version and User Interface v");
-		credits.append(properties.getProperty("version"));
+		credits.append(version);
 		credits.append(":\n");
 		credits.append("\tCopyright (©) 2007-" + LAST_MODIFIED.get(Calendar.YEAR) + " Ken Händel\n");
 		credits.append("\thttp://sourceforge.net/projects/jsidplay2/\n");

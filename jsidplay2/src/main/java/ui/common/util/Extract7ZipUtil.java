@@ -1,4 +1,4 @@
-package libsidutils;
+package ui.common.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,7 +19,7 @@ import net.sf.sevenzipjbinding.SevenZip;
 import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 
-public class Extract7Zip {
+public class Extract7ZipUtil {
 
 	private class ExtractCallback implements IArchiveExtractCallback {
 		private IInArchive inArchive;
@@ -116,7 +116,7 @@ public class Extract7Zip {
 	private File outputDirectoryFile;
 	private List<File> filesList = new ArrayList<>();
 
-	public Extract7Zip(File archive, File outputDirectory) {
+	public Extract7ZipUtil(File archive, File outputDirectory) {
 		this.archive = archive;
 		this.outputDirectoryFile = outputDirectory;
 	}

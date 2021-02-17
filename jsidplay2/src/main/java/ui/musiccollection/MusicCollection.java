@@ -69,7 +69,6 @@ import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.psid64.Psid64;
 import libsidutils.siddatabase.SidDatabase;
@@ -85,6 +84,7 @@ import ui.common.download.DownloadThread;
 import ui.common.download.MultiDownload;
 import ui.common.download.ProgressListener;
 import ui.common.filefilter.TuneFileFilter;
+import ui.common.util.DesktopUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.collection.HVSCEntry;
@@ -473,7 +473,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 
 	@FXML
 	private void gotoURL() {
-		DesktopIntegration.browse(type.get().getUrl());
+		DesktopUtil.browse(type.get().getUrl());
 	}
 
 	@FXML

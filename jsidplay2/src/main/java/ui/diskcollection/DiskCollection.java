@@ -29,7 +29,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import sidplay.Player;
@@ -43,6 +42,7 @@ import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.DocsFileFilter;
 import ui.common.filefilter.ScreenshotFileFilter;
 import ui.common.filefilter.TapeFileFilter;
+import ui.common.util.DesktopUtil;
 import ui.directory.Directory;
 import ui.entities.config.SidPlay2Section;
 
@@ -269,7 +269,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 				e.printStackTrace();
 			}
 			dst.deleteOnExit();
-			DesktopIntegration.open(dst);
+			DesktopUtil.open(dst);
 		} else {
 			try {
 				File extractedFile = extract(file);

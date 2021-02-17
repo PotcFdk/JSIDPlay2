@@ -20,7 +20,6 @@ import libsidplay.common.SamplingRate;
 import libsidplay.sidtune.MD5Method;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.DebugUtil;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
@@ -29,6 +28,7 @@ import sidplay.audio.WhatsSidDriver;
 import sidplay.ini.IniConfig;
 import sidplay.ini.converter.FileToStringConverter;
 import ui.common.filefilter.TuneFileFilter;
+import ui.common.util.DebugUtil;
 import ui.entities.PersistenceProperties;
 import ui.entities.whatssid.service.WhatsSidService;
 

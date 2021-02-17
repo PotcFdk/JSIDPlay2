@@ -57,7 +57,6 @@ import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.DesktopIntegration;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import sidplay.player.PlayList;
@@ -77,6 +76,7 @@ import ui.common.filefilter.CartFileExtensions;
 import ui.common.filefilter.DiskFileExtensions;
 import ui.common.filefilter.TapeFileExtensions;
 import ui.common.filefilter.TuneFileExtensions;
+import ui.common.util.DesktopUtil;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
 import ui.diskcollection.DiskCollection;
@@ -1187,7 +1187,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				} else {
 					ImageIO.write(SwingFXUtils.fromFXImage(vicImage, null), format, file);
 				}
-				DesktopIntegration.open(file);
+				DesktopUtil.open(file);
 			} else {
 				System.err.println("Screenshot not possible, there is currently no frame!");
 			}
