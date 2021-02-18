@@ -26,6 +26,10 @@ public class IniJSIDDeviceWhatsSidSection extends IniSection {
 		return iniReader.getPropertyString("WhatsSID", "Password", "jsidplay2!");
 	}
 
+	public int getConnectionTimeout() {
+		return iniReader.getPropertyInt("WhatsSID", "Connection Timeout", 5000);
+	}
+
 	public int getCaptureTime() {
 		return iniReader.getPropertyInt("WhatsSID", "Capture Time", 15);
 	}

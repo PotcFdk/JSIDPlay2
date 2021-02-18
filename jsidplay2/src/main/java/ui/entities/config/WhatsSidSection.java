@@ -1,6 +1,7 @@
 package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CONNECTION_TIMEOUT;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
@@ -95,6 +96,23 @@ public class WhatsSidSection implements IWhatsSidSection {
 
 	public StringProperty passwordProperty() {
 		return password.property();
+	}
+
+	private ShadowField<ObjectProperty<Integer>, Integer> connectionTimeout = new ShadowField<>(
+			SimpleObjectProperty::new, DEFAULT_WHATSSID_CONNECTION_TIMEOUT);
+
+	@Override
+	public int getConnectionTimeout() {
+		return connectionTimeout.get();
+	}
+
+	@Override
+	public void setConnectionTimeout(int connectionTimeout) {
+		this.connectionTimeout.set(connectionTimeout);
+	}
+
+	public ObjectProperty<Integer> connectionTimeoutProperty() {
+		return connectionTimeout.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> captureTime = new ShadowField<>(SimpleObjectProperty::new,

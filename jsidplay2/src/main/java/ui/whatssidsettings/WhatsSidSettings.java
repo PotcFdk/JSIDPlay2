@@ -25,7 +25,8 @@ public class WhatsSidSettings extends C64Window {
 	private CheckBox enable;
 
 	@FXML
-	private TextField url, username, password, captureTime, matchStartTime, matchRetryTime, minimumRelativeConfidence;
+	private TextField url, username, password, connectionTimeout, captureTime, matchStartTime, matchRetryTime,
+			minimumRelativeConfidence;
 
 	public WhatsSidSettings() {
 		super();
@@ -44,6 +45,8 @@ public class WhatsSidSettings extends C64Window {
 		url.textProperty().bindBidirectional(whatsSidSection.urlProperty());
 		username.textProperty().bindBidirectional(whatsSidSection.usernameProperty());
 		password.textProperty().bindBidirectional(whatsSidSection.passwordProperty());
+		bindBidirectional(connectionTimeout.textProperty(), whatsSidSection.connectionTimeoutProperty(),
+				new IntegerStringConverter());
 		bindBidirectional(captureTime.textProperty(), whatsSidSection.captureTimeProperty(),
 				new IntegerStringConverter());
 		bindBidirectional(matchStartTime.textProperty(), whatsSidSection.matchStartTimeProperty(),

@@ -45,7 +45,8 @@ public class Settings extends SIDDeviceStage {
 
 	private JPasswordField whatsSidPassword;
 
-	private JFormattedTextField whatsSidCaptureTime, whatsSidMatchRetryTime, whatsSidMinimumRelativeConfidence;
+	private JFormattedTextField whatsSidConnectionTimeout, whatsSidCaptureTime, whatsSidMatchRetryTime,
+			whatsSidMinimumRelativeConfidence;
 
 	private JButton okButton;
 
@@ -182,6 +183,21 @@ public class Settings extends SIDDeviceStage {
 		whatsSidPassword.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(whatsSidPassword);
 
+		JLabel connectionTimeoutLabel = new JLabel(util.getBundle().getString("WHATSSID_CONNECTION_TIMEOUT"));
+		connectionTimeoutLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(connectionTimeoutLabel);
+
+		whatsSidConnectionTimeout = new JFormattedTextField(NumberFormat.getIntegerInstance());
+		whatsSidConnectionTimeout.setColumns(2);
+		whatsSidConnectionTimeout.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setWhatsSidConnectionTimeout();
+			}
+		});
+		whatsSidConnectionTimeout.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		whatsSidPane.add(whatsSidConnectionTimeout);
+
 		JLabel captureTimeLabel = new JLabel(util.getBundle().getString("WHATSSID_CAPTURE_TIME"));
 		captureTimeLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(captureTimeLabel);
@@ -268,6 +284,7 @@ public class Settings extends SIDDeviceStage {
 		whatsSidURl.setText(settings.getWhatsSidUrl());
 		whatsSidUsername.setText(settings.getWhatsSidUsername());
 		whatsSidPassword.setText(settings.getWhatsSidPassword());
+		whatsSidConnectionTimeout.setValue(settings.getWhatsSidConnectionTimeout());
 		whatsSidCaptureTime.setValue(settings.getWhatsSidCaptureTime());
 		whatsSidMatchRetryTime.setValue(settings.getWhatsSidMatchRetryTime());
 		whatsSidMinimumRelativeConfidence.setValue(settings.getWhatsSidMinimumRelativeConfidence());
@@ -326,6 +343,11 @@ public class Settings extends SIDDeviceStage {
 	private void setWhatsSidPassword() {
 		String whatsSidPasswd = new String(this.whatsSidPassword.getPassword());
 		settings.saveWhatsSidPassword(whatsSidPasswd);
+	}
+
+	private void setWhatsSidConnectionTimeout() {
+		Number whatsSidConnectionTimeout = (Number) this.whatsSidConnectionTimeout.getValue();
+		settings.saveWhatsSidConnectionTimeout(whatsSidConnectionTimeout.intValue());
 	}
 
 	private void setWhatsSidCaptureTime() {

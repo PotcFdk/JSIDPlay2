@@ -44,6 +44,12 @@
 							<Tooltip text="%PASSWORD_TIP" />
 						</tooltip>
 					</PasswordField>
+					<Label text="%CONNECTION_TIMEOUT" />
+					<TypeTextField type="Integer" fx:id="connectionTimeout">
+						<tooltip>
+							<Tooltip text="%CONNECTION_TIMEOUT_TIP" />
+						</tooltip>
+					</TypeTextField>
 					<Label text="%CAPTURE_TIME" />
 					<TypeTextField type="Integer" fx:id="captureTime">
 						<tooltip>

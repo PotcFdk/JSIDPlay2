@@ -59,6 +59,20 @@ public interface IWhatsSidSection {
 	void setPassword(String password);
 
 	/**
+	 * Getter of the WhatsSid connection timeout.
+	 * 
+	 * @return the WhatsSid connection timeout
+	 */
+	int getConnectionTimeout();
+
+	/**
+	 * Setter of the WhatsSid connection timeout.
+	 * 
+	 * @param connectionTimeout the WhatsSid connection timeout
+	 */
+	void setConnectionTimeout(int connectionTimeout);
+
+	/**
 	 * Getter of the capture time.
 	 *
 	 * @return the capture time

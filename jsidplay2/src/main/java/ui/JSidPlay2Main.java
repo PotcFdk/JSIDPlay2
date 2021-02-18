@@ -105,10 +105,11 @@ public class JSidPlay2Main extends Application {
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
+			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 			player = new Player(configuration);
 			player.setMenuHook(menuHook);
-			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
+			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 
 			autostartFilenames();
 

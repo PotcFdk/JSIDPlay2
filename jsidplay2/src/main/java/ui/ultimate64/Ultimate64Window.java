@@ -73,6 +73,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
+			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, 0, audioBufferSize.getValue());
 			javaSound.open(audioConfig, null, CPUClock.PAL);
@@ -81,7 +82,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),
 					whatsSidSection.getMinimumRelativeConfidence());
 			whatsSidSupport.reset();
-			fingerPrintMatcher = new FingerprintJsonClient(url, username, password);
+			fingerPrintMatcher = new FingerprintJsonClient(url, username, password, connectionTimeout);
 
 			serverSocket = new DatagramSocket(emulationSection.getUltimate64StreamingAudioPort());
 			serverSocket.setSoTimeout(SOCKET_CONNECT_TIMEOUT);

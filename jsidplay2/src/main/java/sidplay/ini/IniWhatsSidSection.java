@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CONNECTION_TIMEOUT;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
@@ -72,12 +73,23 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 	}
 
 	@Override
+	public int getConnectionTimeout() {
+		return iniReader.getPropertyInt("WhatsSID", "Connection Timeout", DEFAULT_WHATSSID_CONNECTION_TIMEOUT);
+	}
+
+	@Override
+	@Parameter(names = { "--whatsSIDConnectionTimeout" }, descriptionKey = "WHATSSID_CONNECTION_TIMEOUT", order = 1049)
+	public void setConnectionTimeout(int connectionTimeout) {
+		iniReader.setProperty("WhatsSID", "Connection Timeout", connectionTimeout);
+	}
+
+	@Override
 	public int getCaptureTime() {
 		return iniReader.getPropertyInt("WhatsSID", "Capture Time", DEFAULT_WHATSSID_CAPTURE_TIME);
 	}
 
 	@Override
-	@Parameter(names = { "--whatsSIDCaptureTime" }, descriptionKey = "WHATSSID_CAPTURE_TIME", order = 1049)
+	@Parameter(names = { "--whatsSIDCaptureTime" }, descriptionKey = "WHATSSID_CAPTURE_TIME", order = 1050)
 	public void setCaptureTime(int captureTime) {
 		iniReader.setProperty("WhatsSID", "Capture Time", captureTime);
 	}
@@ -88,7 +100,7 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 	}
 
 	@Override
-	@Parameter(names = { "--whatsSIDMatchStartTime" }, descriptionKey = "WHATSSID_MATCH_START_TIME", order = 1050)
+	@Parameter(names = { "--whatsSIDMatchStartTime" }, descriptionKey = "WHATSSID_MATCH_START_TIME", order = 1051)
 	public void setMatchStartTime(int matchStartTime) {
 		iniReader.setProperty("WhatsSID", "Match Start Time", matchStartTime);
 	}
@@ -99,7 +111,7 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 	}
 
 	@Override
-	@Parameter(names = { "--whatsSIDMatchRetryTime" }, descriptionKey = "WHATSSID_MATCH_RETRY_TIME", order = 1051)
+	@Parameter(names = { "--whatsSIDMatchRetryTime" }, descriptionKey = "WHATSSID_MATCH_RETRY_TIME", order = 1052)
 	public void setMatchRetryTime(int matchRetryTime) {
 		iniReader.setProperty("WhatsSID", "Match Retry Time", matchRetryTime);
 	}

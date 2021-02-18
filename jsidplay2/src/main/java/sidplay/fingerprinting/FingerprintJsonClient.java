@@ -26,11 +26,13 @@ public class FingerprintJsonClient implements IFingerprintMatcher {
 	private String url;
 	private String username;
 	private String password;
+	private int connectionTimeout;
 
-	public FingerprintJsonClient(String url, String username, String password) {
+	public FingerprintJsonClient(String url, String username, String password, int connectionTimeout) {
 		this.url = url;
 		this.username = username;
 		this.password = password;
+		this.connectionTimeout = connectionTimeout;
 	}
 
 	@Override
@@ -47,6 +49,7 @@ public class FingerprintJsonClient implements IFingerprintMatcher {
 		String wavBytes = getEncoder().encodeToString(wavBean.getWav());
 
 		HttpURLConnection connection = (HttpURLConnection) new URL(url + "/whatssid").openConnection();
+		connection.setConnectTimeout(connectionTimeout);
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod("POST");

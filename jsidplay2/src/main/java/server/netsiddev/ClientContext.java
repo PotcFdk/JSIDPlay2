@@ -773,7 +773,7 @@ class ClientContext {
 							try {
 								IFingerprintMatcher fingerprintMatcher = new FingerprintJsonClient(
 										settings.getWhatsSidUrl(), settings.getWhatsSidUsername(),
-										settings.getWhatsSidPassword());
+										settings.getWhatsSidPassword(), settings.getWhatsSidConnectionTimeout());
 								MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerprintMatcher);
 								if (result != null) {
 									clientContext.whatsSidResult = result;

@@ -16,6 +16,7 @@ public class SIDDeviceSettings {
 	private final static String PROPERTY_WHATSSID_ENABLE = "whatsSIDEnable";
 	private final static String PROPERTY_WHATSSID_USERNAME = "whatsSIDUsername";
 	private final static String PROPERTY_WHATSSID_PASSWORD = "whatsSIDPassword";
+	private final static String PROPERTY_WHATSSID_CONNECTION_TIMEOUT = "whatsSIDConnectionTimeout";
 	private final static String PROPERTY_WHATSSID_CAPTURE_TIME = "whatsSIDCaptureTime";
 	private final static String PROPERTY_WHATSSID_MATCH_RETRY_TIME = "whatsSIDMatchRetryTime";
 	private final static String PROPERTY_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE = "whatsSIDMinimumRelativeConfidence";
@@ -98,6 +99,13 @@ public class SIDDeviceSettings {
 	}
 
 	/**
+	 * @return WhatsSID connection timeout from the settings.
+	 */
+	public synchronized int getWhatsSidConnectionTimeout() {
+		return Integer.valueOf(props.getProperty(PROPERTY_WHATSSID_CONNECTION_TIMEOUT, "5000"));
+	}
+
+	/**
 	 * @return WhatsSID capture time from the settings.
 	 */
 	public synchronized int getWhatsSidCaptureTime() {
@@ -166,6 +174,11 @@ public class SIDDeviceSettings {
 
 	public void saveWhatsSidPassword(String whatsSidPassword) {
 		props.setProperty(PROPERTY_WHATSSID_PASSWORD, String.valueOf(whatsSidPassword));
+		save();
+	}
+
+	public void saveWhatsSidConnectionTimeout(int whatsSidConnectionTimeout) {
+		props.setProperty(PROPERTY_WHATSSID_CONNECTION_TIMEOUT, String.valueOf(whatsSidConnectionTimeout));
 		save();
 	}
 

@@ -78,6 +78,7 @@ final public class ConsolePlayer {
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
+			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 			final SidTune tune = SidTune.load(new File(filename.get()));
 			tune.getInfo().setSelectedSong(song);
@@ -87,7 +88,7 @@ final public class ConsolePlayer {
 			player.setMenuHook(obj -> consoleIO.menu(obj, verbose, quiet, System.out));
 			player.setInteractivityHook(obj -> consoleIO.decodeKeys(obj, System.in));
 			player.setWhatsSidHook(obj -> consoleIO.whatsSid(obj, quiet, System.out));
-			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password));
+			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 
 			if (config.getSidplay2Section().isEnableDatabase()) {
 				setSIDDatabase(player);
