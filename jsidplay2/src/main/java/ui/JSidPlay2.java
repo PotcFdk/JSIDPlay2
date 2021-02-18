@@ -1,5 +1,7 @@
 package ui;
 
+import static sidplay.Player.LAST_MODIFIED;
+
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Iterator;
@@ -37,11 +39,12 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 	@FXML
 	@Override
 	protected void initialize() {
-		String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Player.getReleaseDate().getTime());
-		if (getStage() != null) {
+		Platform.runLater(() -> {
+			// must be delayed, otherwise overridden by C64Window
+			String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(LAST_MODIFIED.getTime());
 			getStage().setTitle(util.getBundle().getString("TITLE") + String.format(", %s: %s %s",
 					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
-		}
+		});
 
 		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
