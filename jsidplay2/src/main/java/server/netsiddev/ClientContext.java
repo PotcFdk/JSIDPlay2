@@ -668,7 +668,7 @@ class ClientContext {
 							sc.register(selector, SelectionKey.OP_READ);
 							IniJSIDDeviceAudioSection audio = config.audio();
 							AudioConfig audioConfig = new AudioConfig(audio.getSamplingRate().getFrequency(), 2,
-									audio.getDevice(), audio.getAudioBufferSize());
+									audio.getAudioBufferSize());
 							ClientContext cc = new ClientContext(audioConfig, config.jsiddevice().getLatency());
 							clientContextMap.put(sc, cc);
 							System.out.println("New client: " + cc);

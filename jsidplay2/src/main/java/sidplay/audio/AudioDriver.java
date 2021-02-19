@@ -27,25 +27,18 @@ import libsidplay.config.IAudioSection;
 public interface AudioDriver {
 
 	/**
-	 * Add additional configuration where appropriate.
-	 *
-	 * @param audioSection additional audio configuration
-	 * @param context      event context
-	 */
-	default void configure(IAudioSection audioSection, EventScheduler context) {
-	}
-
-	/**
 	 * Open audio interface.
 	 *
 	 * The audio parameters may be manipulated by open().
 	 *
-	 * @param cfg               Configuration requested.
+	 * @param audioSection       audio configuration
 	 * @param recordingFilename name for a recording
+	 * @param cpuClock          CPU clock
+	 * @param context           event context
 	 * @throws IOException
 	 * @throws LineUnavailableException
 	 */
-	void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException;
 
 	/**

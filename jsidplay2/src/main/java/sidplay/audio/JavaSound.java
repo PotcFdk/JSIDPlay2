@@ -15,6 +15,8 @@ import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
+import libsidplay.config.IAudioSection;
 
 public class JavaSound implements AudioDriver {
 
@@ -24,10 +26,11 @@ public class JavaSound implements AudioDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		int device = cfg.getDevice();
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		List<Info> devices = getDevices();
+		int device = audioSection.getDevice();
 		open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);
 	}
 

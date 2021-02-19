@@ -10,6 +10,8 @@ import java.nio.ByteOrder;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
+import libsidplay.config.IAudioSection;
 
 /**
  * Abstract base class to output a WAV to an output stream.
@@ -92,8 +94,9 @@ public abstract class WAVDriver implements AudioDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		wavHeader = new WAVHeader(cfg.getChannels(), cfg.getFrameRate());
 
 		out = getOut(recordingFilename);

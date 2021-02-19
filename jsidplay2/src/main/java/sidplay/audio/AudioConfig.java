@@ -26,7 +26,6 @@ import libsidplay.config.IAudioSection;
 public class AudioConfig {
 	private final int frameRate;
 	private final int channels;
-	private final int deviceIdx;
 	private int audioBufferSize, bufferFrames;
 
 	/**
@@ -34,13 +33,11 @@ public class AudioConfig {
 	 *
 	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
-	 * @param deviceIdx       The sound device number.
 	 * @param audioBufferSize The audio buffer size (null for reasonable default).
 	 */
-	public AudioConfig(final int frameRate, final int channels, final int deviceIdx, Integer audioBufferSize) {
+	public AudioConfig(final int frameRate, final int channels, Integer audioBufferSize) {
 		this.frameRate = frameRate;
 		this.channels = channels;
-		this.deviceIdx = deviceIdx;
 		this.bufferFrames = this.audioBufferSize = audioBufferSize;
 	}
 
@@ -50,13 +47,12 @@ public class AudioConfig {
 	 * <B>Note:</B> The number of audio channels is always two to support stereo
 	 * tunes and to play mono tunes as stereo (fake stereo).
 	 *
-	 * @param audio audio configuration
+	 * @param audioSection audio configuration
 	 *
-	 * @return AudioConfig for current specification
+	 * @return audio audio configuration
 	 */
-	public static AudioConfig getInstance(final IAudioSection audio) {
-		return new AudioConfig(audio.getSamplingRate().getFrequency(), 2, audio.getDevice(),
-				audio.getAudioBufferSize());
+	public static AudioConfig getInstance(final IAudioSection audioSection) {
+		return new AudioConfig(audioSection.getSamplingRate().getFrequency(), 2, audioSection.getAudioBufferSize());
 	}
 
 	/**
@@ -119,15 +115,6 @@ public class AudioConfig {
 	 */
 	public final int getChannels() {
 		return channels;
-	}
-
-	/**
-	 * Get currently used audio device
-	 *
-	 * @return audio device
-	 */
-	public final int getDevice() {
-		return deviceIdx;
 	}
 
 	/**

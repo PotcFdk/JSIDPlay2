@@ -96,15 +96,12 @@ public abstract class MP3Driver implements AudioDriver {
 	protected ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(IAudioSection audioSection, EventScheduler context) {
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
+			throws IOException, LineUnavailableException, InterruptedException {
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		cbr = audioSection.getCbr();
 		vbr = audioSection.isVbr();
 		vbrQuality = audioSection.getVbrQuality();
-	}
-
-	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
-			throws IOException, LineUnavailableException, InterruptedException {
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);

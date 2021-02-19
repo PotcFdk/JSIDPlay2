@@ -75,8 +75,8 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			String password = whatsSidSection.getPassword();
 			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
-			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, 0, audioBufferSize.getValue());
-			javaSound.open(audioConfig, null, CPUClock.PAL);
+			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, audioBufferSize.getValue());
+			javaSound.open(audioConfig, null);
 
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),

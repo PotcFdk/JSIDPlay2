@@ -36,16 +36,10 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 	}
 
 	@Override
-	public void configure(IAudioSection audioSection, EventScheduler context) {
-		driverOne.configure(audioSection, context);
-		driverTwo.configure(audioSection, context);
-	}
-
-	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		driverOne.open(cfg, recordingFilename, cpuClock);
-		driverTwo.open(cfg, recordingFilename, cpuClock);
+		driverOne.open(audioSection, recordingFilename, cpuClock, context);
+		driverTwo.open(audioSection, recordingFilename, cpuClock, context);
 	}
 
 	@Override

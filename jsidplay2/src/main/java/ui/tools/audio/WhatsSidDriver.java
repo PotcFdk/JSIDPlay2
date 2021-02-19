@@ -14,6 +14,8 @@ import java.util.Iterator;
 import javax.sound.sampled.LineUnavailableException;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
+import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.IFingerprintInserter;
@@ -68,8 +70,9 @@ public class WhatsSidDriver implements AudioDriver {
 	}
 
 	@Override
-	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		this.recordingFilename = recordingFilename;
 
 		if (new File(recordingFilename).exists()) {

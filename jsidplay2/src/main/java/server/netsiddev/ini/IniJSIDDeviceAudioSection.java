@@ -16,14 +16,6 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 		super(iniReader);
 	}
 
-	public int getDevice() {
-		return iniReader.getPropertyInt("Audio", "Device", 0);
-	}
-
-	public void setDevice(int device) {
-		iniReader.setProperty("Audio", "Device", device);
-	}
-
 	/**
 	 * Getter of the Playback/Recording frequency.
 	 *

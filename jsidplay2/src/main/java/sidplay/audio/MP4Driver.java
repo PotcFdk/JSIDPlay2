@@ -40,7 +40,9 @@ import org.sheinbergon.aac.encoder.WAVAudioInput;
 import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 
 import libsidplay.common.CPUClock;
+import libsidplay.common.EventScheduler;
 import libsidplay.components.mos656x.VIC;
+import libsidplay.config.IAudioSection;
 import libsidutils.PathUtils;
 
 public class MP4Driver implements AudioDriver, VideoDriver {
@@ -54,8 +56,9 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		this.recordingFilename = recordingFilename;
 		try {
 			System.out.println("Recording, file=" + recordingFilename);

@@ -74,7 +74,6 @@ import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
-import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.VideoDriver;
@@ -697,6 +696,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				stateProperty.set(RESTART);
 				e.getConfigRepairer().run();
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
+				stateProperty.set(QUIT);
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
 				close();
@@ -729,11 +729,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			Audio audio = audioSection.getAudio();
 			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
 		}
-		// configure audio driver
-		getAudioDriver().configure(config.getAudioSection(), c64.getEventScheduler());
-
 		// open audio driver
-		getAudioDriver().open(AudioConfig.getInstance(audioSection), getRecordingFilename(), c64.getClock());
+		getAudioDriver().open(audioSection, getRecordingFilename(), c64.getClock(), c64.getEventScheduler());
 
 		// Check audio configuration, if audio driver has not been set by
 		// setAudioDriver()!

@@ -8,9 +8,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer.Info;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
@@ -39,13 +41,10 @@ public class CmpMP3File extends JavaSound {
 	private IAudioSection audioSection;
 
 	@Override
-	public void configure(IAudioSection audioSection, EventScheduler context) {
-		this.audioSection = audioSection;
-	}
-
-	@Override
-	public void open(final AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		this.audioSection = audioSection;
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		File mp3 = audioSection.getMp3();
 		if (mp3 == null || !mp3.exists()) {
 			throw new FileNotFoundException(mp3.getAbsolutePath());
@@ -69,12 +68,14 @@ public class CmpMP3File extends JavaSound {
 		mp3Buffer = ByteBuffer.allocateDirect(factor * frameSize * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.nativeOrder());
 
-		super.open(cfg, recordingFilename, cpuClock);
+		super.open(audioSection, recordingFilename, cpuClock, context);
 		if (buffer().capacity() < mp3Buffer.capacity()) {
 			// Prevent BufferOverflowException
 			cfg.setBufferFrames(mp3Buffer.capacity());
 			cfg.setAudioBufferSize(mp3Buffer.capacity());
-			super.open(cfg, recordingFilename, cpuClock);
+			List<Info> devices = getDevices();
+			int device = audioSection.getDevice();
+			super.open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);
 		}
 	}
 

@@ -42,14 +42,11 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	private ByteBuffer sampleBuffer;
 
 	@Override
-	public void configure(IAudioSection audioSection, EventScheduler context) {
-		aviVideoQuality = audioSection.getAviCompressionQuality();
-	}
-
-	@Override
-	public void open(AudioConfig cfg, String recordingFilename, CPUClock cpuClock)
+	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
 		System.out.println("Recording, file=" + recordingFilename);
+		AudioConfig cfg = AudioConfig.getInstance(audioSection);
+		aviVideoQuality = audioSection.getAviCompressionQuality();
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
 		videoTrack = aviWriter.addTrack(
