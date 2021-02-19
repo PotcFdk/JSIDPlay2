@@ -36,7 +36,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 
 	private String url;
 	private String username;
-	private Object password;
+	private String password;
 
 	private boolean useXml;
 
