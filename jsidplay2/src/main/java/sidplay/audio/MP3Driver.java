@@ -78,10 +78,6 @@ public abstract class MP3Driver implements AudioDriver {
 
 	}
 
-	private int cbr = LameEncoder.DEFAULT_BITRATE;
-	private int vbrQuality = LameEncoder.DEFAULT_QUALITY;
-	private boolean vbr = LameEncoder.DEFAULT_VBR;
-
 	/**
 	 * Jump3r encoder.
 	 */
@@ -99,13 +95,11 @@ public abstract class MP3Driver implements AudioDriver {
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
 		AudioConfig cfg = AudioConfig.getInstance(audioSection);
-		cbr = audioSection.getCbr();
-		vbr = audioSection.isVbr();
-		vbrQuality = audioSection.getVbrQuality();
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);
-		jump3r = new LameEncoder(audioFormat, cbr, MPEGMode.STEREO, vbrQuality, vbr);
+		jump3r = new LameEncoder(audioFormat, audioSection.getCbr(), MPEGMode.STEREO, audioSection.getVbrQuality(),
+				audioSection.isVbr());
 		out = getOut(recordingFilename);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())

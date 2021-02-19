@@ -33,8 +33,6 @@ import libsidplay.config.IAudioSection;
 
 public class AVIDriver implements AudioDriver, VideoDriver {
 
-	private float aviVideoQuality = 0.97f;
-
 	private AVIWriter aviWriter;
 	private int videoTrack, audioTrack;
 
@@ -46,13 +44,12 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 			throws IOException, LineUnavailableException, InterruptedException {
 		System.out.println("Recording, file=" + recordingFilename);
 		AudioConfig cfg = AudioConfig.getInstance(audioSection);
-		aviVideoQuality = audioSection.getAviCompressionQuality();
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
-		videoTrack = aviWriter.addTrack(
-				new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey, aviVideoQuality, MediaTypeKey,
-						MediaType.VIDEO, FrameRateKey, new Rational((long) cpuClock.getScreenRefresh(), 1), WidthKey,
-						VIC.MAX_WIDTH, HeightKey, VIC.MAX_HEIGHT));
+		videoTrack = aviWriter.addTrack(new Format(EncodingKey, ENCODING_AVI_MJPG, DepthKey, 24, QualityKey,
+				audioSection.getAviCompressionQuality(), MediaTypeKey, MediaType.VIDEO, FrameRateKey,
+				new Rational((long) cpuClock.getScreenRefresh(), 1), WidthKey, VIC.MAX_WIDTH, HeightKey,
+				VIC.MAX_HEIGHT));
 
 		audioTrack = aviWriter.addTrack(new Format(SampleRateKey, new Rational(cfg.getFrameRate(), 1), ChannelsKey,
 				cfg.getChannels(), SampleSizeInBitsKey, Short.SIZE, EncodingKey, ENCODING_PCM_SIGNED));
