@@ -6,13 +6,11 @@ import static ui.common.util.VersionUtil.fetchRemoteVersion;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
-import javafx.util.Duration;
 import sidplay.Player;
 import ui.common.C64Window;
 import ui.common.util.DesktopUtil;
@@ -39,18 +37,20 @@ public class Update extends C64Window {
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		update.setText(util.getBundle().getString("PLEASE_WAIT"));
-		PauseTransition pauseTransition = new PauseTransition(Duration.millis(1000));
-		SequentialTransition sequentialTransition = new SequentialTransition(pauseTransition);
-		pauseTransition.setOnFinished(evt -> {
 
-			final String remoteVersion = fetchRemoteVersion(sidplay2Section);
-			boolean updateAvailable = remoteVersion != null
-					&& isUpdateAvailable(getVersionNumbers(VERSION), getVersionNumbers(remoteVersion));
+		Task<Void> task = new Task<Void>() {
+			@Override
+			public Void call() throws Exception {
+				final String remoteVersion = fetchRemoteVersion(sidplay2Section);
+				boolean updateAvailable = remoteVersion != null
+						&& isUpdateAvailable(getVersionNumbers(VERSION), getVersionNumbers(remoteVersion));
 
-			latestVersionLink.setVisible(updateAvailable);
-			update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
-		});
-		sequentialTransition.playFromStart();
+				latestVersionLink.setVisible(updateAvailable);
+				update.setText(util.getBundle().getString(updateAvailable ? "UPDATE_AVAILABLE" : "NO_UPDATE"));
+				return null;
+			}
+		};
+		new Thread(task).start();
 	}
 
 	@FXML
