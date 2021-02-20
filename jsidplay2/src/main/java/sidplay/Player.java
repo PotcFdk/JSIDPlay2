@@ -305,7 +305,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			 */
 			@Override
 			public void end() {
-				if (tune != RESET || audioAndDriver.getKey() == null) {
+				if (tune != RESET || getAudio() == null) {
 					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
 					} else if (config.getSidplay2Section().isLoop()) {
@@ -718,6 +718,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final IAudioSection audioSection = config.getAudioSection();
+
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());
 
@@ -725,16 +726,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		setClock(CPUClock.getCPUClock(emulationSection, tune));
 
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
-		if (audioAndDriver.getKey() != null) {
-			Audio audio = audioSection.getAudio();
-			setAudioAndDriver(audio, audio.getAudioDriver(audioSection, tune));
+		if (getAudio() != null) {
+			setAudioAndDriver(audioSection.getAudio(), audioSection.getAudio().getAudioDriver(audioSection, tune));
 		}
 		// open audio driver
 		getAudioDriver().open(audioSection, getRecordingFilename(), c64.getClock(), c64.getEventScheduler());
 
 		// Check audio configuration, if audio driver has not been set by
 		// setAudioDriver()!
-		if (audioAndDriver.getKey() != null) {
+		if (getAudio() != null) {
 			verifyConfiguration(sidplay2Section);
 		}
 		sidBuilder = createSIDBuilder(c64.getClock());
@@ -773,25 +773,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
-	 * Get currently used audio driver.
-	 *
-	 * @return currently used audio driver
-	 */
-	public AudioDriver getAudioDriver() {
-		return this.audioAndDriver.getValue();
-	}
-
-	/**
-	 * Set audio for play-back
-	 *
-	 * @param audio audio for play-back
-	 * @throws IOException configuration error
-	 */
-	private final void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
-		this.audioAndDriver = new SimpleImmutableEntry<>(audio, audioDriver);
-	}
-
-	/**
 	 * Check the configuration.
 	 *
 	 * @throws IOException configuration error
@@ -812,6 +793,24 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
+	 * Get Audio of audio driver or null for custom audio drivers.
+	 * 
+	 * @return audio audio
+	 */
+	private Audio getAudio() {
+		return audioAndDriver.getKey();
+	}
+
+	/**
+	 * Get currently used audio driver.
+	 *
+	 * @return currently used audio driver
+	 */
+	public AudioDriver getAudioDriver() {
+		return this.audioAndDriver.getValue();
+	}
+
+	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
 	 * time the player plays a tune (e.g. {@link MP3Stream})
@@ -821,6 +820,16 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	public final void setAudioDriver(final AudioDriver audioDriver) throws IOException {
 		setAudioAndDriver(null, audioDriver);
+	}
+
+	/**
+	 * Set audio for play-back
+	 *
+	 * @param audio audio for play-back
+	 * @throws IOException configuration error
+	 */
+	private void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
+		this.audioAndDriver = new SimpleImmutableEntry<>(audio, audioDriver);
 	}
 
 	/**
