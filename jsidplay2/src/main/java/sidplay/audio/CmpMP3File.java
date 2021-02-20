@@ -8,11 +8,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer.Info;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
@@ -73,9 +71,7 @@ public class CmpMP3File extends JavaSound {
 			// Prevent BufferOverflowException
 			cfg.setBufferFrames(mp3Buffer.capacity());
 			cfg.setAudioBufferSize(mp3Buffer.capacity());
-			List<Info> devices = getDevices();
-			int device = audioSection.getDevice();
-			super.open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);
+			super.open(cfg, getMixerInfo(audioSection));
 		}
 	}
 

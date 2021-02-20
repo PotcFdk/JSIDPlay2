@@ -5,6 +5,7 @@ import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREA
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_OFF;
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_ON;
 import static sidplay.audio.AudioConfig.getDefaultBufferSize;
+import static sidplay.audio.JavaSound.getMixerInfo;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -48,6 +49,7 @@ import sidplay.fingerprinting.WhatsSidSupport;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.common.Toast;
+import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
 
@@ -68,15 +70,17 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 
 		@Override
 		protected void open() throws IOException, LineUnavailableException, InterruptedException {
-			EmulationSection emulationSection = util.getConfig().getEmulationSection();
-			IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
+			final AudioSection audioSection = util.getConfig().getAudioSection();
+			final EmulationSection emulationSection = util.getConfig().getEmulationSection();
+			final IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
+
 			String url = whatsSidSection.getUrl();
 			String username = whatsSidSection.getUsername();
 			String password = whatsSidSection.getPassword();
 			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, audioBufferSize.getValue());
-			javaSound.open(audioConfig, null);
+			javaSound.open(audioConfig, getMixerInfo(audioSection));
 
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),

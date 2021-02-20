@@ -28,10 +28,13 @@ public class JavaSound implements AudioDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		AudioConfig cfg = AudioConfig.getInstance(audioSection);
+		open(AudioConfig.getInstance(audioSection), getMixerInfo(audioSection));
+	}
+
+	public static final Mixer.Info getMixerInfo(IAudioSection audioSection) {
 		List<Info> devices = getDevices();
 		int device = audioSection.getDevice();
-		open(cfg, device >= 0 && device < devices.size() ? devices.get(device) : (Info) null);
+		return device >= 0 && device < devices.size() ? devices.get(device) : (Info) null;
 	}
 
 	public static final List<Info> getDevices() {
