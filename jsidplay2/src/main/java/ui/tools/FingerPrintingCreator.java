@@ -82,8 +82,8 @@ public class FingerPrintingCreator {
 			"--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY", converter = FileToStringConverter.class)
 	private File previousDirectory;
 
-	@Parameter(description = "directory")
-	private String directory;
+	@Parameter(description = "directory", converter = FileToStringConverter.class)
+	private File directory;
 
 	@ParametersDelegate
 	private IniConfig config = new IniConfig(true, null);
@@ -110,6 +110,8 @@ public class FingerPrintingCreator {
 		config.getAudioSection().setSamplingRate(SamplingRate.VERY_LOW);
 		config.getSidplay2Section().setDefaultPlayLength(180);
 		config.getSidplay2Section().setEnableDatabase(true);
+		config.getSidplay2Section().setSingle(false);
+		config.getSidplay2Section().setLoop(false);
 
 		whatsSidDriver = new WhatsSidDriver();
 
@@ -130,8 +132,7 @@ public class FingerPrintingCreator {
 		whatsSidDriver.setFingerprintInserter(new FingerPrinting(new IniFingerprintConfig(createIni), whatsSidService));
 
 		if (Boolean.TRUE.equals(deleteAll)) {
-			System.out.println("Delete all fingerprintings...");
-			whatsSidService.deleteAll();
+			deleteAllFingerprintings(whatsSidService);
 		}
 
 		try {
@@ -139,7 +140,7 @@ public class FingerPrintingCreator {
 				System.out.println(
 						"Create fingerprintings... (press q <return> to abort after the current tune has been fingerprinted)");
 
-				processDirectory(new File(directory), em);
+				processDirectory(directory, em);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -147,6 +148,28 @@ public class FingerPrintingCreator {
 			whatsSidService.close();
 			System.exit(0);
 		}
+	}
+
+	private void deleteAllFingerprintings(WhatsSidService whatsSidService) throws IOException {
+		System.out.println("Delete all fingerprintings...");
+		switch (proceed()) {
+		case 'y':
+		case 'Y':
+			whatsSidService.deleteAll();
+			System.out.println("Done!");
+			break;
+
+		default:
+			System.out.println("Aborted by user!");
+			break;
+
+		}
+	}
+
+	private int proceed() throws IOException {
+		System.out.println(
+				"You are about to delete all fingerprintings from the database. Are you sure to proceed? (y/N)");
+		return System.in.read();
 	}
 
 	private void processDirectory(File dir, EntityManager em) throws IOException, SidTuneError {
@@ -170,7 +193,6 @@ public class FingerPrintingCreator {
 					player.setRecordingFilenameProvider(
 							theTune -> getRecordingFilename(file, theTune, theTune.getInfo().getCurrentSong()));
 					player.setTune(tune);
-					player.getTune().getInfo().setSelectedSong(player.getTune().getInfo().getStartSong());
 					player.startC64();
 					player.stopC64(false);
 					em.clear();
