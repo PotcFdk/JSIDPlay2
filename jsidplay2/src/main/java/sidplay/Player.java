@@ -728,15 +728,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
 		if (getAudio() != null) {
 			setAudioAndDriver(audioSection.getAudio(), audioSection.getAudio().getAudioDriver(audioSection, tune));
+			verifyConfiguration(sidplay2Section);
 		}
 		// open audio driver
 		getAudioDriver().open(audioSection, getRecordingFilename(), c64.getClock(), c64.getEventScheduler());
 
-		// Check audio configuration, if audio driver has not been set by
-		// setAudioDriver()!
-		if (getAudio() != null) {
-			verifyConfiguration(sidplay2Section);
-		}
 		sidBuilder = createSIDBuilder(c64.getClock());
 
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
