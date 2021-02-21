@@ -41,8 +41,8 @@ public class CmpMP3File extends JavaSound {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		AudioConfig cfg = new AudioConfig(audioSection);
 		this.audioSection = audioSection;
-		AudioConfig cfg = AudioConfig.getInstance(audioSection);
 		File mp3 = audioSection.getMp3();
 		if (mp3 == null || !mp3.exists()) {
 			throw new FileNotFoundException(mp3.getAbsolutePath());
@@ -66,7 +66,7 @@ public class CmpMP3File extends JavaSound {
 		mp3Buffer = ByteBuffer.allocateDirect(factor * frameSize * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.nativeOrder());
 
-		super.open(audioSection, recordingFilename, cpuClock, context);
+		super.open(cfg, getMixerInfo(audioSection));
 		if (buffer().capacity() < mp3Buffer.capacity()) {
 			// Prevent BufferOverflowException
 			cfg.setBufferFrames(mp3Buffer.capacity());

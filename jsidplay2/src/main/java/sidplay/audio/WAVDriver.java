@@ -96,7 +96,7 @@ public abstract class WAVDriver implements AudioDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		AudioConfig cfg = AudioConfig.getInstance(audioSection);
+		AudioConfig cfg = new AudioConfig(audioSection);
 		wavHeader = new WAVHeader(cfg.getChannels(), cfg.getFrameRate());
 
 		out = getOut(recordingFilename);

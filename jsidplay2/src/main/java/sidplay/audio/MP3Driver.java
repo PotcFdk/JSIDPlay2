@@ -94,7 +94,7 @@ public abstract class MP3Driver implements AudioDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		AudioConfig cfg = AudioConfig.getInstance(audioSection);
+		AudioConfig cfg = new AudioConfig(audioSection);
 		boolean signed = true;
 		boolean bigEndian = false;
 		AudioFormat audioFormat = new AudioFormat(cfg.getFrameRate(), Short.SIZE, cfg.getChannels(), signed, bigEndian);

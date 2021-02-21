@@ -28,7 +28,7 @@ public class JavaSound implements AudioDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		open(AudioConfig.getInstance(audioSection), getMixerInfo(audioSection));
+		open(new AudioConfig(audioSection), getMixerInfo(audioSection));
 	}
 
 	public static final Mixer.Info getMixerInfo(IAudioSection audioSection) {

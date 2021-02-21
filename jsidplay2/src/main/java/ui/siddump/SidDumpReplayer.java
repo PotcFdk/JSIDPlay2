@@ -67,7 +67,7 @@ public class SidDumpReplayer {
 		/*
 		 * FIXME: support for HardSID playback of recordings is lost. Will fix later.
 		 */
-		agt = new AudioGeneratorThread(AudioConfig.getInstance(cfg.getAudioSection()));
+		agt = new AudioGeneratorThread(new AudioConfig(cfg.getAudioSection()));
 		agt.setSidArray(new SID[] { sid });
 		agt.setLevelAdjustment(0, decibelsToCentibels());
 		BlockingQueue<SIDWrite> queue = agt.getSidCommandQueue();
