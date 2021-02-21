@@ -24,9 +24,23 @@ import libsidplay.config.IAudioSection;
  *
  */
 public class AudioConfig {
+
 	private final int frameRate;
 	private final int channels;
 	private int audioBufferSize, bufferFrames;
+
+	/**
+	 * Return a detached AudioConfig instance corresponding to current
+	 * parameters.<BR>
+	 * <B>Note:</B> The number of audio channels is always two to support stereo
+	 * tunes and to play mono tunes as stereo (fake stereo).
+	 *
+	 * @param audioSection audio configuration
+	 *
+	 */
+	public AudioConfig(final IAudioSection audioSection) {
+		this(audioSection.getSamplingRate().getFrequency(), 2, audioSection.getAudioBufferSize());
+	}
 
 	/**
 	 * This instance represents the requested audio configuration.<BR>
@@ -39,20 +53,6 @@ public class AudioConfig {
 		this.frameRate = frameRate;
 		this.channels = channels;
 		this.bufferFrames = this.audioBufferSize = audioBufferSize;
-	}
-
-	/**
-	 * Return a detached AudioConfig instance corresponding to current
-	 * parameters.<BR>
-	 * <B>Note:</B> The number of audio channels is always two to support stereo
-	 * tunes and to play mono tunes as stereo (fake stereo).
-	 *
-	 * @param audioSection audio configuration
-	 *
-	 * @return audio audio configuration
-	 */
-	public AudioConfig(final IAudioSection audioSection) {
-		this(audioSection.getSamplingRate().getFrequency(), 2, audioSection.getAudioBufferSize());
 	}
 
 	/**
