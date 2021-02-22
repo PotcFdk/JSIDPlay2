@@ -109,7 +109,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 		query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
 
-		em.createQuery(query).getResultList().stream().map(hash -> hash.toBean()).forEach(result.getHashes()::add);
+		em.createQuery(query).getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
 		return result;
 	}
 
