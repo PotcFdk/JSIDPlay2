@@ -693,6 +693,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			} catch (SongEndException e) {
 				timer.end();
 			} catch (IniConfigException e) {
+				System.err.println(e.getMessage());
 				stateProperty.set(RESTART);
 				e.getConfigRepairer().run();
 			} catch (InterruptedException | IOException | LineUnavailableException e) {
@@ -776,10 +777,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
 		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
-			throw new IniConfigException(
-					"Unknown song length in record mode"
-							+ " (Please use option --defaultLength or configure song length database).\n"
-							+ "Set default length to " + sidplaySection.getDefaultPlayLength() + "sec.",
+			throw new IniConfigException("Unknown song length in record mode",
 					() -> sidplaySection.setDefaultPlayLength(180));
 		}
 		if (getAudioDriver().isRecording() && sidplaySection.isLoop()) {
