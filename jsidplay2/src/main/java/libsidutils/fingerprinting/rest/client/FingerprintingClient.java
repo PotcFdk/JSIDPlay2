@@ -32,18 +32,29 @@ import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
 
+/**
+ * This currently unused class makes it possible to create/fill the
+ * fingerprinting database on a remote machine. As an alternative the
+ * WhatssSidService implementation is used, instead, to create the database by
+ * the tool FingerPrintingCreator on the same machine.
+ * 
+ * @author ken
+ *
+ */
 public class FingerprintingClient implements FingerPrintingDataSource {
 
 	private String url;
 	private String username;
 	private String password;
+	private int connectionTimeout;
 
 	private boolean useXml;
 
-	public FingerprintingClient(String url, String username, String password) {
+	public FingerprintingClient(String url, String username, String password, int connectionTimeout) {
 		this.url = url;
 		this.username = username;
 		this.password = password;
+		this.connectionTimeout = connectionTimeout;
 	}
 
 	public void setUseXml(boolean useXml) {
@@ -123,6 +134,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	private <T> HttpURLConnection send(T parameter, Class<T> tClass, String requestPath, String requestMethod)
 			throws MalformedURLException, IOException, ProtocolException, JAXBException {
 		HttpURLConnection connection = (HttpURLConnection) new URL(url + requestPath).openConnection();
+		connection.setConnectTimeout(connectionTimeout);
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
 		connection.setRequestMethod(requestMethod);

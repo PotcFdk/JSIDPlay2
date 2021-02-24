@@ -64,7 +64,7 @@ import libsidutils.fingerprinting.spectrogram.Window;
  */
 public class Fingerprint {
 
-	static final int SAMPLE_RATE = 8000;
+	static final float SAMPLE_RATE = 8000;
 
 	private int dataLen;
 	private int nPeaks, fftSize, overlap, c, peakRange;
@@ -238,7 +238,7 @@ public class Fingerprint {
 		return result;
 	}
 
-	public double getAudioLength() {
-		return dataLen / (float) SAMPLE_RATE;
+	public float getAudioLength() {
+		return dataLen / SAMPLE_RATE;
 	}
 }

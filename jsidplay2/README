@@ -93,6 +93,12 @@ Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 Lower your microphone volume level to prevent overdrive noise
 
+Wenn der Lautstärkeregler unter Ubuntu nicht angezeigt wird:
+gsettings set com.canonical.indicator.sound visible true
+Wenn das Mikrofone ausgegraut ist:
+kmix
+Ausgabegerät auf Analog Stereo Duplex ändern
+
 General tips:
 =============
 
