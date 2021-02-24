@@ -35,8 +35,8 @@ public interface FingerPrintingDataSource {
 	 * Check if a tune is already in the database. Call this prior to inserting a
 	 * new tune.
 	 * 
-	 * @param intArray
-	 * @return
+	 * @param musicInfoBean tune information
+	 * @return tune exists
 	 */
 	boolean tuneExists(MusicInfoBean musicInfoBean);
 

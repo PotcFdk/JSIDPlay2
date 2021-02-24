@@ -34,9 +34,9 @@ import libsidutils.fingerprinting.rest.beans.SongNoBean;
 
 /**
  * This currently unused class makes it possible to create/fill the
- * fingerprinting database on a remote machine. As an alternative the
- * WhatssSidService implementation is used, instead, to create the database by
- * the tool FingerPrintingCreator on the same machine.
+ * fingerprinting database on a remote machine running JSIDPlay2Server. As an
+ * alternative the WhatssSidService implementation is used, instead, to create
+ * the database by the tool FingerPrintingCreator on the same machine.
  * 
  * @author ken
  *
