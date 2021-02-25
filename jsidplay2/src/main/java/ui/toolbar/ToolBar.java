@@ -13,8 +13,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -526,7 +530,30 @@ public class ToolBar extends C64VBox implements UIPart {
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
 		int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
 				: emulationSection.getAppServerSecurePort();
+
 		DesktopUtil.browse(appServerConnectors.getPreferredProtocol() + "://127.0.0.1:" + port);
+	}
+
+	@FXML
+	private void onlinePlayer() {
+		try {
+			EmulationSection emulationSection = util.getConfig().getEmulationSection();
+			Connectors appServerConnectors = emulationSection.getAppServerConnectors();
+			int port = appServerConnectors.getPreferredProtocol().equals("http") ? emulationSection.getAppServerPort()
+					: emulationSection.getAppServerSecurePort();
+
+			URI uri = new URL(util.getConfig().getOnlineSection().getOnlinePlayerUrl()).toURI();
+			URI localURI = new URI(appServerConnectors.getPreferredProtocol(), null, "127.0.0.1", port, uri.getPath(),
+					uri.getQuery(), uri.getFragment());
+			DesktopUtil.browse(localURI.toString());
+		} catch (MalformedURLException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void downloadApp() {
+		DesktopUtil.browse(util.getConfig().getOnlineSection().getAppUrl());
 	}
 
 	@FXML
@@ -597,16 +624,6 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void setVideoStandard() {
 		restart();
-	}
-
-	@FXML
-	private void onlinePlayer() {
-		DesktopUtil.browse(util.getConfig().getOnlineSection().getOnlinePlayerUrl());
-	}
-
-	@FXML
-	private void downloadApp() {
-		DesktopUtil.browse(util.getConfig().getOnlineSection().getAppUrl());
 	}
 
 	@Override

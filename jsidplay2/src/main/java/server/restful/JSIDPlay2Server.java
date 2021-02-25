@@ -31,8 +31,6 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
-import org.apache.tomcat.util.scan.StandardJarScanFilter;
-import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -43,6 +41,7 @@ import com.beust.jcommander.ParametersDelegate;
 import libsidplay.sidtune.SidTuneError;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
+import server.restful.common.NoOpJarScanner;
 import server.restful.servlets.ConvertServlet;
 import server.restful.servlets.DirectoryServlet;
 import server.restful.servlets.DownloadServlet;
@@ -241,6 +240,7 @@ public class JSIDPlay2Server {
 	private void setRealm(Tomcat tomcat) {
 		MemoryRealm realm = new MemoryRealm();
 		realm.setPathname(getRealmConfigURL().toExternalForm());
+
 		tomcat.getEngine().setRealm(realm);
 	}
 
@@ -291,6 +291,7 @@ public class JSIDPlay2Server {
 
 		Http11NioProtocol protocol = (Http11NioProtocol) httpConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerPort());
+
 		return httpConnector;
 	}
 
@@ -305,14 +306,17 @@ public class JSIDPlay2Server {
 		protocol.setSSLEnabled(true);
 
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
+
 		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.RSA);
 		certificate.setCertificateKeystoreType(KeyStore.getDefaultType());
 		certificate.setCertificateKeystoreFile(emulationSection.getAppServerKeystoreFile().getAbsolutePath());
 		certificate.setCertificateKeystorePassword(emulationSection.getAppServerKeystorePassword());
 		certificate.setCertificateKeyAlias(emulationSection.getAppServerKeyAlias());
 		certificate.setCertificateKeyPassword(emulationSection.getAppServerKeyPassword());
+
 		sslHostConfig.addCertificate(certificate);
 		protocol.addSslHostConfig(sslHostConfig);
+
 		return httpsConnector;
 	}
 
@@ -321,18 +325,8 @@ public class JSIDPlay2Server {
 	 */
 	private Context addWebApp(Tomcat tomcat, SidPlay2Section sidplay2Section) {
 		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT, sidplay2Section.getTmpDir());
-		context.addSecurityRole(ROLE_ADMIN);
-		context.addSecurityRole(ROLE_USER);
+		context.setJarScanner(new NoOpJarScanner());
 
-		StandardJarScanner jarScanner = (StandardJarScanner) context.getJarScanner();
-		jarScanner.setScanManifest(false);
-		jarScanner.setScanClassPath(false);
-		jarScanner.setScanAllDirectories(false);
-
-		StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
-		jarScanFilter.setTldSkip("*");
-		jarScanFilter.setDefaultTldScan(false);
-		jarScanFilter.setDefaultPluggabilityScan(false);
 		return context;
 	}
 
@@ -346,6 +340,7 @@ public class JSIDPlay2Server {
 
 		SecurityCollection collection = new SecurityCollection();
 		collection.addPattern(CONTEXT_ROOT_SERVLET + "/*");
+
 		constraint.addCollection(collection);
 		context.addConstraint(constraint);
 	}
