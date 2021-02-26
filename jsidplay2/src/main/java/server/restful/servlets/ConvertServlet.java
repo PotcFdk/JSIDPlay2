@@ -97,7 +97,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
 
-				IConfig config = new IniConfig(false, null);
+				IConfig config = new IniConfig();
 
 				String[] args = getRequestParameters(request);
 
@@ -116,7 +116,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 
-				IConfig config = new IniConfig(false, null);
+				IConfig config = new IniConfig();
 
 				String[] args = getRequestParameters(request);
 

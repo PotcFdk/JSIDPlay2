@@ -102,16 +102,16 @@ public class IniConfig implements IConfig {
 	 */
 	public static IniConfig getDefault() {
 		if (singleInstance == null) {
-			singleInstance = new IniConfig(false, null);
+			singleInstance = new IniConfig();
 		}
 		return singleInstance;
 	}
 
 	/**
-	 * Read configuration file (external or internal, if it does not exist).
+	 * Read internal configuration file.
 	 */
 	public IniConfig() {
-		this(false, getINIPath(false));
+		this(false, null);
 	}
 
 	/**
@@ -121,10 +121,10 @@ public class IniConfig implements IConfig {
 	 *                          create it
 	 */
 	public IniConfig(boolean createIfNotExists) {
-		this(createIfNotExists, getINIPath(createIfNotExists));
+		this(createIfNotExists, getINIPath());
 	}
 
-	public IniConfig(boolean createIfNotExists, File iniPath) {
+	private IniConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
 		if (iniPath != null && iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
@@ -157,18 +157,14 @@ public class IniConfig implements IConfig {
 	 *
 	 * @return the absolute path name of the INI file to use
 	 */
-	private static File getINIPath(boolean createIfNotExists) {
-		File configPlace = null;
+	private static File getINIPath() {
 		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			configPlace = new File(s, FILE_NAME);
+			File configPlace = new File(s, FILE_NAME);
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
-		if (createIfNotExists) {
-			return new File(System.getProperty("user.home"), FILE_NAME);
-		}
-		return configPlace;
+		return new File(System.getProperty("user.home"), FILE_NAME);
 	}
 
 	/**

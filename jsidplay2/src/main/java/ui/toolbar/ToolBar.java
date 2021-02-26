@@ -656,7 +656,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	private void testSidBlasterDevice(DeviceMapping deviceMapping, Boolean isSelected) {
 		try {
 			if (testPlayer == null) {
-				testPlayer = new Player(new IniConfig(false, null));
+				testPlayer = new Player(new IniConfig());
 				testPlayer.getConfig().getEmulationSection().setEngine(Engine.SIDBLASTER);
 			} else {
 				testPlayer.stopC64();

@@ -37,7 +37,7 @@ public class SIDBlasterTool {
 	@Parameter(names = { "--sidType", "-t" }, descriptionKey = "SID_TYPE", order = 3)
 	private SIDType sidType = SIDTYPE_NONE;
 
-	private IniConfig config = new IniConfig(false, null);
+	private IniConfig config = new IniConfig();
 
 	private String[] serialNumbers;
 
