@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,14 +20,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import libsidplay.sidtune.SidTune;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
+import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 
 @SuppressWarnings("serial")
 public class StartPageServlet extends JSIDPlay2Servlet {
 
-	public StartPageServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public StartPageServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		EmulationSection emulationSection = util.getConfiguration().getEmulationSection();
+		EmulationSection emulationSection = configuration.getEmulationSection();
 
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
 		String preferredProtocol = appServerConnectors.getPreferredProtocol();

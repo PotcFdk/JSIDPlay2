@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +19,13 @@ import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
+import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class StaticServlet extends JSIDPlay2Servlet {
 
-	public StaticServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public StaticServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 		if (filePath.startsWith("/")) {
 			filePath = filePath.substring(1);
 		}
-		File localFile = new File(util.getConfiguration().getSidplay2Section().getTmpDir(), filePath);
+		File localFile = new File(configuration.getSidplay2Section().getTmpDir(), filePath);
 		if (localFile.exists() && localFile.canRead()) {
 			return new FileInputStream(localFile);
 		}

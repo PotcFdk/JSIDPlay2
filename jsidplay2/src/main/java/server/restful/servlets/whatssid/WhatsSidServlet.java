@@ -5,6 +5,7 @@ import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,7 @@ import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
+import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 
 @SuppressWarnings("serial")
@@ -22,8 +23,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	public static final String IDENTIFY_PATH = "/whatssid";
 
-	public WhatsSidServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override

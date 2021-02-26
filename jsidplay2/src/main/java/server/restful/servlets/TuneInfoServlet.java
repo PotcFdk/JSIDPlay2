@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
@@ -21,15 +22,15 @@ import javafx.util.Pair;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
 import ui.entities.collection.HVSCEntry;
+import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
 
 @SuppressWarnings("serial")
 public class TuneInfoServlet extends JSIDPlay2Servlet {
 
-	public TuneInfoServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 			return null;
 		}
 		SidTune tune = SidTune.load(tuneFile);
-		File root = util.getConfiguration().getSidplay2Section().getHvsc();
+		File root = configuration.getSidplay2Section().getHvsc();
 		DoubleSupplier songLengthFnct = () -> 0;
 		if (root != null) {
 			SidDatabase db = new SidDatabase(root);

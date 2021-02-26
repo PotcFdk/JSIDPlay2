@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,14 +17,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.PathUtils;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
 import ui.entities.collection.HVSCEntry;
+import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class FavoritesServlet extends JSIDPlay2Servlet {
 
-	public FavoritesServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public FavoritesServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -47,18 +48,16 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 	}
 
 	private List<String> getFirstFavorites() {
-		List<String> filters = util.getConfiguration().getFavorites().stream().findFirst()
+		List<String> filters = configuration.getFavorites().stream().findFirst()
 				.map(favoritesSection -> favoritesSection.getFavorites()).orElseGet(Collections::emptyList).stream()
 				.map(favorite -> getFavoriteFilename(favorite)).filter(Objects::nonNull).collect(Collectors.toList());
 		return filters;
 	}
 
 	private String getFavoriteFilename(HVSCEntry entry) {
-		if (PathUtils.getFiles(entry.getPath(), util.getConfiguration().getSidplay2Section().getHvsc(), null)
-				.size() > 0) {
+		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvsc(), null).size() > 0) {
 			return C64_MUSIC + entry.getPath();
-		} else if (PathUtils.getFiles(entry.getPath(), util.getConfiguration().getSidplay2Section().getCgsc(), null)
-				.size() > 0) {
+		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgsc(), null).size() > 0) {
 			return CGSC + entry.getPath();
 		}
 		return null;

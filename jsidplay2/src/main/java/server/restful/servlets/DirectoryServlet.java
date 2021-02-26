@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,13 +23,13 @@ import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import server.restful.common.CollectionFileComparator;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
+import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class DirectoryServlet extends JSIDPlay2Servlet {
 
-	public DirectoryServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public DirectoryServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -59,14 +60,14 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 		if (path == null || path.equals("/")) {
 			return getRoot(adminRole);
 		} else if (path.startsWith(C64_MUSIC)) {
-			File root = util.getConfiguration().getSidplay2Section().getHvsc();
+			File root = configuration.getSidplay2Section().getHvsc();
 			return getCollectionFiles(root, path, filter, C64_MUSIC, adminRole);
 		} else if (path.startsWith(CGSC)) {
-			File root = util.getConfiguration().getSidplay2Section().getCgsc();
+			File root = configuration.getSidplay2Section().getCgsc();
 			return getCollectionFiles(root, path, filter, CGSC, adminRole);
 		}
-		for (String directoryLogicalName : util.getDirectoryProperties().stringPropertyNames()) {
-			String[] splitted = util.getDirectoryProperties().getProperty(directoryLogicalName).split(",");
+		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
+			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
 			String directoryValue = splitted.length > 0 ? splitted[0] : null;
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
 			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
@@ -114,8 +115,8 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 	private List<String> getRoot(boolean adminRole) {
 		List<String> result = new ArrayList<>(Arrays.asList(C64_MUSIC + "/", CGSC + "/"));
 
-		for (String directoryLogicalName : util.getDirectoryProperties().stringPropertyNames()) {
-			String[] splitted = util.getDirectoryProperties().getProperty(directoryLogicalName).split(",");
+		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
+			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
 			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
 			if (!needToBeAdmin || adminRole) {
 				result.add(directoryLogicalName + "/");

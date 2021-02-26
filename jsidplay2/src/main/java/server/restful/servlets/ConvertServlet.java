@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import com.beust.jcommander.JCommander;
@@ -34,7 +35,6 @@ import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.ServletUtil;
 import sidplay.Player;
 import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
@@ -48,6 +48,7 @@ import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
+import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -65,8 +66,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
 	private static final CartFileFilter cartFileFilter = new CartFileFilter();
 
-	public ConvertServlet(ServletUtil servletUtil) {
-		super(servletUtil);
+	public ConvertServlet(Configuration configuration, Properties directoryProperties) {
+		super(configuration, directoryProperties);
 	}
 
 	@Override
@@ -165,7 +166,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private void convertAudio(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
-		File root = util.getConfiguration().getSidplay2Section().getHvsc();
+		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
 			player.setSidDatabase(new SidDatabase(root));
 		}
