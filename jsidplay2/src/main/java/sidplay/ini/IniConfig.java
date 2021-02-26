@@ -126,7 +126,7 @@ public class IniConfig implements IConfig {
 
 	private IniConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
-		if (iniPath.exists()) {
+		if (iniPath != null && iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
@@ -143,7 +143,7 @@ public class IniConfig implements IConfig {
 		}
 
 		readInternal();
-		if (!iniPath.exists() && createIfNotExists) {
+		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}

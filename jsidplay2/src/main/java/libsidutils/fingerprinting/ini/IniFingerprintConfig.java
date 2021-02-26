@@ -52,7 +52,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 * Read configuration file (external or internal, if it does not exist).
 	 */
 	public IniFingerprintConfig() {
-		this(false, getINIPath());
+		this(false, null);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 
 	private IniFingerprintConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
-		if (iniPath.exists()) {
+		if (iniPath != null && iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
@@ -84,7 +84,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 		}
 
 		readInternal();
-		if (!iniPath.exists() && createIfNotExists) {
+		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
