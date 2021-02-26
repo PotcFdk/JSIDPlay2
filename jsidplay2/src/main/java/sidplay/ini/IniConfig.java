@@ -126,7 +126,7 @@ public class IniConfig implements IConfig {
 
 	private IniConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
-		if (iniPath != null && iniPath.exists()) {
+		if (iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
@@ -143,7 +143,7 @@ public class IniConfig implements IConfig {
 		}
 
 		readInternal();
-		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+		if (!iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
@@ -158,8 +158,8 @@ public class IniConfig implements IConfig {
 	 * @return the absolute path name of the INI file to use
 	 */
 	private static File getINIPath() {
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, FILE_NAME);
+		for (final String parent : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(parent, FILE_NAME);
 			if (configPlace.exists()) {
 				return configPlace;
 			}

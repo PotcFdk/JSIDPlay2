@@ -140,13 +140,13 @@ public class JSIDDeviceConfig {
 		iniPath = getINIPath();
 		read();
 
-		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+		if (!iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
 
 	private void read() {
-		if (iniPath != null && iniPath.exists()) {
+		if (iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
@@ -175,18 +175,13 @@ public class JSIDDeviceConfig {
 	 * @return the absolute path name of the INI file to use
 	 */
 	private File getINIPath() {
-		File configPlace = null;
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			if (s == null) {
-				continue;
-			}
-
-			configPlace = new File(s, FILE_NAME);
+		for (final String parent : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(parent, FILE_NAME);
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
-		return configPlace;
+		return new File(System.getProperty("user.home"), FILE_NAME);
 	}
 
 	/**

@@ -43,7 +43,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 */
 	public static IniFingerprintConfig getDefault() {
 		if (singleInstance == null) {
-			singleInstance = new IniFingerprintConfig(false, null);
+			singleInstance = new IniFingerprintConfig();
 		}
 		return singleInstance;
 	}
@@ -52,7 +52,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 * Read configuration file (external or internal, if it does not exist).
 	 */
 	public IniFingerprintConfig() {
-		this(false, getINIPath(false));
+		this(false, getINIPath());
 	}
 
 	/**
@@ -62,12 +62,12 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 *                          create it
 	 */
 	public IniFingerprintConfig(boolean createIfNotExists) {
-		this(createIfNotExists, getINIPath(createIfNotExists));
+		this(createIfNotExists, getINIPath());
 	}
 
-	public IniFingerprintConfig(boolean createIfNotExists, File iniPath) {
+	private IniFingerprintConfig(boolean createIfNotExists, File iniPath) {
 		this.iniPath = iniPath;
-		if (iniPath != null && iniPath.exists()) {
+		if (iniPath.exists()) {
 			try (InputStream is = new FileInputStream(iniPath)) {
 				iniReader = new IniReader(is);
 				clear();
@@ -84,7 +84,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 		}
 
 		readInternal();
-		if (iniPath != null && !iniPath.exists() && createIfNotExists) {
+		if (!iniPath.exists() && createIfNotExists) {
 			write();
 		}
 	}
@@ -98,18 +98,14 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	 *
 	 * @return the absolute path name of the INI file to use
 	 */
-	private static File getINIPath(boolean createIfNotExists) {
-		File configPlace = null;
-		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			configPlace = new File(s, FILE_NAME);
+	private static File getINIPath() {
+		for (final String parent : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
+			File configPlace = new File(parent, FILE_NAME);
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
-		if (createIfNotExists) {
-			return new File(System.getProperty("user.home"), FILE_NAME);
-		}
-		return configPlace;
+		return new File(System.getProperty("user.home"), FILE_NAME);
 	}
 
 	/**
