@@ -12,7 +12,6 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,16 +20,13 @@ import libsidplay.sidtune.SidTune;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.config.Configuration;
 import ui.entities.config.EmulationSection;
 
 @SuppressWarnings("serial")
 public class StartPageServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public StartPageServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public StartPageServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

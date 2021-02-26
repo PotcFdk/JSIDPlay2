@@ -25,6 +25,15 @@ import libsidutils.ZipFileUtils;
 @SuppressWarnings("serial")
 public abstract class JSIDPlay2Servlet extends HttpServlet {
 
+	protected static final String C64_MUSIC = "/C64Music";
+	protected static final String CGSC = "/CGSC";
+
+	protected ServletUtil util;
+
+	public JSIDPlay2Servlet(ServletUtil util) {
+		this.util = util;
+	}
+
 	public abstract String getServletPath();
 
 	@SuppressWarnings("unchecked")

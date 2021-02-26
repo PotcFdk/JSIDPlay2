@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,15 +19,12 @@ import libsidutils.ZipFileUtils;
 import server.restful.JSIDPlay2Server;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class StaticServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public StaticServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public StaticServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

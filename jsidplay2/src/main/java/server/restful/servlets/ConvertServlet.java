@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import com.beust.jcommander.JCommander;
@@ -49,7 +48,6 @@ import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
-import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -67,10 +65,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
 	private static final CartFileFilter cartFileFilter = new CartFileFilter();
 
-	private ServletUtil util;
-
-	public ConvertServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public ConvertServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

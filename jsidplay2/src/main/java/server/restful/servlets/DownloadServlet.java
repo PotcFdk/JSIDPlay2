@@ -12,22 +12,18 @@ import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class DownloadServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public DownloadServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public DownloadServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

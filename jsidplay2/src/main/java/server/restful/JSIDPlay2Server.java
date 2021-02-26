@@ -42,6 +42,7 @@ import libsidplay.sidtune.SidTuneError;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.NoOpJarScanner;
+import server.restful.common.ServletUtil;
 import server.restful.servlets.ConvertServlet;
 import server.restful.servlets.DirectoryServlet;
 import server.restful.servlets.DownloadServlet;
@@ -346,9 +347,9 @@ public class JSIDPlay2Server {
 	}
 
 	private void addServlets(Context context) throws Exception {
+		ServletUtil servletUtil = new ServletUtil(configuration, servletUtilProperties);
 		for (Class<? extends JSIDPlay2Servlet> servletCls : SERVLETS) {
-			JSIDPlay2Servlet servlet = servletCls.getDeclaredConstructor(Configuration.class, Properties.class)
-					.newInstance(configuration, servletUtilProperties);
+			JSIDPlay2Servlet servlet = servletCls.getDeclaredConstructor(ServletUtil.class).newInstance(servletUtil);
 			addServlet(context, servletCls.getSimpleName(), servlet).addMapping(servlet.getServletPath() + "/*");
 		}
 	}

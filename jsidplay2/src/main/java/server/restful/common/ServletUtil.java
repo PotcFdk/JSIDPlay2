@@ -1,35 +1,17 @@
 package server.restful.common;
 
+import static server.restful.common.JSIDPlay2Servlet.C64_MUSIC;
+import static server.restful.common.JSIDPlay2Servlet.CGSC;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import de.schlichtherle.truezip.file.TFile;
 import libsidutils.PathUtils;
-import libsidutils.ZipFileUtils;
-import ui.entities.collection.HVSCEntry;
 import ui.entities.config.Configuration;
 
 public class ServletUtil {
-
-	private static final String C64_MUSIC = "/C64Music";
-	private static final String CGSC = "/CGSC";
-
-	private static final Comparator<File> COLLECTION_FILE_COMPARATOR = (file1, file2) -> {
-		if (file1.isDirectory() && file2.isFile()) {
-			return -1;
-		} else if (file1.isFile() && file2.isDirectory()) {
-			return 1;
-		} else {
-			return file1.getName().compareToIgnoreCase(file2.getName());
-		}
-	};
 
 	private Configuration configuration;
 
@@ -40,73 +22,12 @@ public class ServletUtil {
 		this.directoryProperties = directoryProperties;
 	}
 
-	public List<String> getDirectory(String path, String filter, boolean adminRole) {
-		if (path == null || path.equals("/")) {
-			return getRoot(adminRole);
-		} else if (path.startsWith(C64_MUSIC)) {
-			File root = configuration.getSidplay2Section().getHvsc();
-			return getCollectionFiles(root, path, filter, C64_MUSIC, adminRole);
-		} else if (path.startsWith(CGSC)) {
-			File root = configuration.getSidplay2Section().getCgsc();
-			return getCollectionFiles(root, path, filter, CGSC, adminRole);
-		}
-		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
-			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
-			String directoryValue = splitted.length > 0 ? splitted[0] : null;
-			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
-			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
-				File root = new TFile(directoryValue);
-				return getCollectionFiles(root, path, filter, directoryLogicalName, adminRole);
-			}
-		}
-		return getRoot(adminRole);
+	public Configuration getConfiguration() {
+		return configuration;
 	}
 
-	private List<String> getCollectionFiles(File rootFile, String path, String filter, String virtualCollectionRoot,
-			boolean adminRole) {
-		ArrayList<String> result = new ArrayList<>();
-		if (rootFile != null) {
-			if (path.endsWith("/")) {
-				path = path.substring(0, path.length() - 1);
-			}
-			File file = ZipFileUtils.newFile(rootFile, path.substring(virtualCollectionRoot.length()));
-			File[] listFiles = file.listFiles(pathname -> {
-				if (pathname.isDirectory() && pathname.getName().endsWith(".tmp")) {
-					return false;
-				}
-				return pathname.isDirectory() || filter == null
-						|| pathname.getName().toLowerCase(Locale.US).matches(filter);
-			});
-			if (listFiles != null) {
-				List<File> asList = Arrays.asList(listFiles);
-				Collections.sort(asList, COLLECTION_FILE_COMPARATOR);
-				addPath(result, virtualCollectionRoot + PathUtils.getCollectionName(rootFile, file) + "/../", null);
-				for (File f : asList) {
-					addPath(result, virtualCollectionRoot + PathUtils.getCollectionName(rootFile, f), f);
-				}
-			}
-		}
-		if (result.isEmpty()) {
-			return getRoot(adminRole);
-		}
-		return result;
-	}
-
-	private void addPath(ArrayList<String> result, String path, File f) {
-		result.add(path + (f != null && f.isDirectory() ? "/" : ""));
-	}
-
-	private List<String> getRoot(boolean adminRole) {
-		List<String> result = new ArrayList<>(Arrays.asList(C64_MUSIC + "/", CGSC + "/"));
-
-		for (String directoryLogicalName : directoryProperties.stringPropertyNames()) {
-			String[] splitted = directoryProperties.getProperty(directoryLogicalName).split(",");
-			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
-			if (!needToBeAdmin || adminRole) {
-				result.add(directoryLogicalName + "/");
-			}
-		}
-		return result;
+	public Properties getDirectoryProperties() {
+		return directoryProperties;
 	}
 
 	public File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
@@ -127,19 +48,6 @@ public class ServletUtil {
 			}
 		}
 		throw new FileNotFoundException(path);
-	}
-
-	public String getFavoriteFilename(HVSCEntry entry) {
-		if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getHvsc(), null).size() > 0) {
-			return C64_MUSIC + entry.getPath();
-		} else if (PathUtils.getFiles(entry.getPath(), configuration.getSidplay2Section().getCgsc(), null).size() > 0) {
-			return CGSC + entry.getPath();
-		}
-		return null;
-	}
-
-	public Configuration getConfiguration() {
-		return configuration;
 	}
 
 }

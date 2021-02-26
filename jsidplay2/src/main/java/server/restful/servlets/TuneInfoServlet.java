@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
@@ -24,16 +23,13 @@ import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
 import ui.entities.collection.HVSCEntry;
-import ui.entities.config.Configuration;
 import ui.musiccollection.SearchCriteria;
 
 @SuppressWarnings("serial")
 public class TuneInfoServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public TuneInfoServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

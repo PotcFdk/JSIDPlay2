@@ -6,7 +6,6 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,16 +14,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.config.Configuration;
 import ui.entities.config.FilterSection;
 
 @SuppressWarnings("serial")
 public class FiltersServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public FiltersServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public FiltersServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override

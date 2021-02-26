@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
-import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,15 +18,12 @@ import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletUtil;
-import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class PhotoServlet extends JSIDPlay2Servlet {
 
-	private ServletUtil util;
-
-	public PhotoServlet(Configuration configuration, Properties directoryProperties) {
-		this.util = new ServletUtil(configuration, directoryProperties);
+	public PhotoServlet(ServletUtil servletUtil) {
+		super(servletUtil);
 	}
 
 	@Override
