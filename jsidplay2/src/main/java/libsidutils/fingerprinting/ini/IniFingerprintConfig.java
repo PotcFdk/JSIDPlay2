@@ -49,7 +49,7 @@ public class IniFingerprintConfig implements IFingerprintConfig {
 	}
 
 	/**
-	 * Read configuration file (external or internal, if it does not exist).
+	 * Read internal configuration file.
 	 */
 	public IniFingerprintConfig() {
 		this(false, null);
