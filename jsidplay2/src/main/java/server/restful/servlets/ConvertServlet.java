@@ -23,8 +23,6 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +32,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
+import server.restful.common.AdditionalServletParameters;
 import server.restful.common.JSIDPlay2Servlet;
 import sidplay.Player;
 import sidplay.audio.AVIDriver;
@@ -52,14 +51,6 @@ import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
-
-	@Parameters(resourceBundle = "server.restful.servlets.ConvertServlet")
-	private static class ServletParameters {
-
-		@Parameter(names = "--download", arity = 1, descriptionKey = "DOWNLOAD")
-		private Boolean download = Boolean.FALSE;
-
-	}
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -97,18 +88,18 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
 
-				IConfig config = new IniConfig();
+				final IConfig config = new IniConfig();
+				final AdditionalServletParameters servletParameters = new AdditionalServletParameters();
 
 				String[] args = getRequestParameters(request);
 
-				ServletParameters servletParameters = new ServletParameters();
-				JCommander.newBuilder().addObject(servletParameters).addObject(config).programName(getClass().getName())
+				JCommander.newBuilder().addObject(config).addObject(servletParameters).programName(getClass().getName())
 						.build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (Boolean.TRUE.equals(servletParameters.download)) {
+				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
@@ -116,18 +107,18 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 
-				IConfig config = new IniConfig();
+				final IConfig config = new IniConfig();
+				final AdditionalServletParameters servletParameters = new AdditionalServletParameters();
 
 				String[] args = getRequestParameters(request);
 
-				ServletParameters servletParameters = new ServletParameters();
-				JCommander.newBuilder().addObject(servletParameters).addObject(config).programName(getClass().getName())
+				JCommander.newBuilder().addObject(config).addObject(servletParameters).programName(getClass().getName())
 						.build().parse(args);
 
 				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (Boolean.TRUE.equals(servletParameters.download)) {
+				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
