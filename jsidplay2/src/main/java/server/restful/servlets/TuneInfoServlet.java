@@ -49,7 +49,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 		String filePath = request.getPathInfo();
 		try {
 			response.setContentType(MIME_TYPE_JSON.toString());
-			File tuneFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
+			File tuneFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
 			Map<String, String> tuneInfos = SearchCriteria
 					.getAttributeValues(hvscEntry,

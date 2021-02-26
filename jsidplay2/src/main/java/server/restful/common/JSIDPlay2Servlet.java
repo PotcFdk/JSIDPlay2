@@ -4,6 +4,8 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,11 +17,13 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.schlichtherle.truezip.file.TFile;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 
 @SuppressWarnings("serial")
@@ -87,6 +91,26 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		} catch (Exception e) {
 			// ignore client aborts
 		}
+	}
+
+	public File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
+		if (path.startsWith(C64_MUSIC)) {
+			File rootFile = util.getConfiguration().getSidplay2Section().getHvsc();
+			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);
+		} else if (path.startsWith(CGSC)) {
+			File rootFile = util.getConfiguration().getSidplay2Section().getCgsc();
+			return PathUtils.getFile(path.substring(CGSC.length()), null, rootFile);
+		}
+		for (String directoryLogicalName : util.getDirectoryProperties().stringPropertyNames()) {
+			String[] splitted = util.getDirectoryProperties().getProperty(directoryLogicalName).split(",");
+			String directoryValue = splitted.length > 0 ? splitted[0] : null;
+			boolean needToBeAdmin = splitted.length > 1 ? Boolean.parseBoolean(splitted[1]) : false;
+			if ((!needToBeAdmin || adminRole) && path.startsWith(directoryLogicalName) && directoryValue != null) {
+				return PathUtils.getFile(directoryValue + path.substring(directoryLogicalName.length()),
+						new TFile(directoryValue), null);
+			}
+		}
+		throw new FileNotFoundException(path);
 	}
 
 }

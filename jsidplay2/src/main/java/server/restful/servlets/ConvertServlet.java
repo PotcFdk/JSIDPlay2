@@ -91,7 +91,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
-		File file = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
+		File file = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 		try {
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
@@ -136,7 +136,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
-				copy(util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
+				copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			}
 		} catch (Exception e) {
 			response.setContentType(MIME_TYPE_TEXT.toString());

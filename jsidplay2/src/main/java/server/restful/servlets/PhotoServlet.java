@@ -43,7 +43,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 		String filePath = request.getPathInfo();
 		try {
 			response.setContentType(MIME_TYPE_JPG.toString());
-			File absoluteFile = util.getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
+			File absoluteFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));
 			if (photo == null) {
 				throw new FileNotFoundException(filePath + " (No such file or directory)");
