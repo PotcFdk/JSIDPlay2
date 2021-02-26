@@ -86,7 +86,7 @@ public class FingerPrintingCreator {
 	private File directory;
 
 	@ParametersDelegate
-	private IniConfig config = new IniConfig(true);
+	private IniConfig config = new IniConfig(false);
 
 	private Player player;
 
