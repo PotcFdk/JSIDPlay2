@@ -60,6 +60,17 @@ link:{codebase}libsidplay-{version}.jar[Download libsidplay] (only the library)
 
 link:{codebase}jsiddevice-{version}.jar[Download Network SID Device] (standalone)
 
+link:{codebase}SIDBlasterUSB_HardSID-emulation-driver.tar.gz[Download SIDBlaster Linux conversion alpha]
+
+Build commands for SIDBlaster Linux conversion:
+[source,subs="attributes+"]
+----
+cd build
+cd build
+cmake ..
+make
+----
+
 == Minimum System Requirement
 
 |===
