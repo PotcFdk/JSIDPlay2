@@ -42,8 +42,11 @@ import libsidplay.components.pla.PLA;
  */
 public final class MOS6569 extends VIC {
 
+	public static final int CYCLES_PER_LINE = 63;
+	public static final int MAX_RASTERS = 312;
+
 	public MOS6569(VICChipModel model, PLA pla, EventScheduler context) {
-		super(pla, context, 63, 312);
+		super(pla, context, CYCLES_PER_LINE, MAX_RASTERS);
 		palEmulation = new PALEmulation(model);
 	}
 

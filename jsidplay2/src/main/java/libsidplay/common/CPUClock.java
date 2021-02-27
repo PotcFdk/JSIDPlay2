@@ -3,21 +3,23 @@ package libsidplay.common;
 import static libsidplay.sidtune.SidTune.RESET;
 import static libsidplay.sidtune.SidTune.Clock.UNKNOWN;
 
+import libsidplay.components.mos656x.MOS6567;
+import libsidplay.components.mos656x.MOS6569;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
 
 public enum CPUClock {
-	/** PAL region clock frequency and screen refresh */
-	PAL(985248.4, 50),
-	/** NTSC region clock frequency and screen refresh */
-	NTSC(1022727.14, 60);
+	/** PAL region clock frequency and screen refresh parameters */
+	PAL(985248.4, MOS6569.CYCLES_PER_LINE, MOS6569.MAX_RASTERS),
+	/** NTSC region clock frequency and screen refresh parameters */
+	NTSC(1022727.14, MOS6567.CYCLES_PER_LINE, MOS6567.MAX_RASTERS);
 
 	private final double cpuFrequency, screenRefresh;
 
-	private CPUClock(double cpuFrequency, double screenRefresh) {
+	private CPUClock(double cpuFrequency, int cyclesPerLine, int maxRasters) {
 		this.cpuFrequency = cpuFrequency;
-		this.screenRefresh = screenRefresh;
+		this.screenRefresh = cpuFrequency / (cyclesPerLine * maxRasters);
 	}
 
 	public double getCpuFrequency() {
