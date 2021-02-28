@@ -61,7 +61,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		Format videoFormat = new Format(MediaTypeKey, VIDEO, EncodingKey, ENCODING_AVI_MJPG, WidthKey, MAX_WIDTH,
 				HeightKey, MAX_HEIGHT, DepthKey, 3/* RGB */ << 3, KeyFrameIntervalKey, 2, InterlaceKey, TRUE,
 				QualityKey, audioSection.getAviCompressionQuality(), FrameRateKey, valueOf(cpuClock.getScreenRefresh()),
-				PixelAspectRatioKey, valueOf(MAX_WIDTH / (double) MAX_HEIGHT));
+				PixelAspectRatioKey, valueOf(4, 3));
 		System.out.println(FormatFormatter.toString(videoFormat));
 		videoTrack = aviWriter.addTrack(videoFormat);
 

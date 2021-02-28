@@ -1,8 +1,9 @@
 Release Notes:
 ==============
-Multithreading added for faster startup
 Oscilloscope view refresh rate fixed for smoother output
-server side tune recognition fixed, only half of the buffer was used for recognition
+Better AVI/MP4 recordings: More exact CPU refresh rates, therefore audio and video stays in sync 
+Faster startup time due to the use of parallelization
+Server side tune recognition fixed, only half of the sound data was used for recognition
 Cartridge support added for OCEAN_TYPE_1
 DnD repaired
 SIDBlaster auto-detection: sidblastertool executable added to store SID chip type on USB device permanently
