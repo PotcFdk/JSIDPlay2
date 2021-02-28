@@ -78,7 +78,8 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 					.order(ByteOrder.LITTLE_ENDIAN);
 		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Error: 64-bit Java for Windows or Linux is required to use " + MP4 + " video driver!");
+			System.err.println(
+					"Error: 64-bit Java for Windows, Linux or OSX is required to use " + MP4 + " video driver!");
 			throw e;
 		}
 	}

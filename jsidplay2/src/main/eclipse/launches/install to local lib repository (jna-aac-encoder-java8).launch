@@ -6,10 +6,10 @@
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
 <listAttribute key="M2_PROPERTIES">
-<listEntry value="file=/home/ken/git/jna-aac-encoder/build/libs/jna-aac-encoder-0.1.6-SNAPSHOT.jar"/>
+<listEntry value="file=/home/ken/Downloads/jna-aac-encoder-0.1.6/build/libs/jna-aac-encoder-0.1.6-SNAPSHOT.jar"/>
 <listEntry value="groupId=org.sheinbergon"/>
 <listEntry value="artifactId=jna-aac-encoder-java8"/>
-<listEntry value="version=0.1.3"/>
+<listEntry value="version=0.1.6"/>
 <listEntry value="packaging=jar"/>
 <listEntry value="localRepositoryPath=lib"/>
 </listAttribute>
