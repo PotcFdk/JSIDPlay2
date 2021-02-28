@@ -16,10 +16,12 @@ public enum CPUClock {
 	NTSC(1022727.14, MOS6567.CYCLES_PER_LINE, MOS6567.MAX_RASTERS);
 
 	private final double cpuFrequency, screenRefresh;
+	private int cyclesPerFrame;
 
 	private CPUClock(double cpuFrequency, int cyclesPerLine, int maxRasters) {
 		this.cpuFrequency = cpuFrequency;
-		this.screenRefresh = cpuFrequency / (cyclesPerLine * maxRasters);
+		this.cyclesPerFrame = cyclesPerLine * maxRasters;
+		this.screenRefresh = cpuFrequency / cyclesPerFrame;
 	}
 
 	public double getCpuFrequency() {
@@ -28,6 +30,10 @@ public enum CPUClock {
 
 	public double getScreenRefresh() {
 		return screenRefresh;
+	}
+
+	public int getCyclesPerFrame() {
+		return cyclesPerFrame;
 	}
 
 	/**

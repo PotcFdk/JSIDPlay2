@@ -69,7 +69,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			pcmAudioStream = new BufferedOutputStream(new FileOutputStream(pcmAudioFile), 1 << 16);
 
 			sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile),
-					Rational.R((int) cpuClock.getScreenRefresh(), 1));
+					Rational.R((int) cpuClock.getCpuFrequency(), cpuClock.getCyclesPerFrame()));
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
 			aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
