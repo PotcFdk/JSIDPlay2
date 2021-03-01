@@ -4,19 +4,15 @@ import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 import static sidplay.audio.Audio.MP4;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -36,8 +32,9 @@ import org.mp4parser.muxer.tracks.AACTrackImpl;
 import org.mp4parser.muxer.tracks.TextTrackImpl;
 import org.sheinbergon.aac.encoder.AACAudioEncoder;
 import org.sheinbergon.aac.encoder.AACAudioOutput;
-import org.sheinbergon.aac.encoder.WAVAudioInput;
+import org.sheinbergon.aac.encoder.AACAudioOutput.Accumulator;
 import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
+import org.sheinbergon.aac.jna.FdkAACLibFacade;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
@@ -47,13 +44,13 @@ import libsidutils.PathUtils;
 
 public class MP4Driver implements AudioDriver, VideoDriver {
 
-	private OutputStream pcmAudioStream;
-	private File pcmAudioFile, videoFile;
+	private File videoFile;
 	private String recordingFilename;
 	private SequenceEncoder sequenceEncoder;
 	private Picture picture;
 	private AACAudioEncoder aacEncoder;
 	private ByteBuffer sampleBuffer;
+	private Accumulator accumulator;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
@@ -65,32 +62,41 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			new File(recordingFilename).delete();
 			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
 			videoFile = new File(recordingBaseName + "_video.mp4");
-			pcmAudioFile = new File(recordingBaseName + ".pcm");
-			pcmAudioStream = new BufferedOutputStream(new FileOutputStream(pcmAudioFile), 1 << 16);
 
 			sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile),
 					Rational.R((int) cpuClock.getCpuFrequency(), cpuClock.getCyclesPerFrame()));
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
+
+			accumulator = AACAudioOutput.accumulator();
 			aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
 
 			sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 					.order(ByteOrder.LITTLE_ENDIAN);
+
 		} catch (UnsatisfiedLinkError e) {
-			System.err.println(
-					"Error: 64-bit Java for Windows, Linux or OSX is required to use " + MP4 + " video driver!");
+			System.err.println("Error: 64-bit Java for Windows or Linux is required to use " + MP4 + " video driver!");
 			throw e;
 		}
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		try {
-			pcmAudioStream.write(sampleBuffer.array(), 0, sampleBuffer.position());
-		} catch (IOException e) {
-			throw new RuntimeException("Error writing PCM audio stream", e);
+		int offset = 0;
+		for (int i = 0; i < Math.max(1, sampleBuffer.capacity() / aacEncoder.inputBufferSize()); i++) {
+
+			byte[] buffer = new byte[Math.min(sampleBuffer.position() - offset, aacEncoder.inputBufferSize())];
+			System.arraycopy(sampleBuffer.array(), offset, buffer, 0, buffer.length);
+
+			aacEncoder.populateInputBuffer(buffer, buffer.length);
+			accumulator.accumulate(FdkAACLibFacade.encode(aacEncoder.getEncoder(), aacEncoder.getInBufferDescriptor(),
+					aacEncoder.getOutBufferDescriptor(), aacEncoder.getInArgs(), aacEncoder.getOutArgs(), buffer.length)
+					.orElseThrow(() -> new IllegalStateException("No encoded audio data returned")));
+
+			offset += aacEncoder.inputBufferSize();
 		}
+
 	}
 
 	@Override
@@ -111,10 +117,6 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 				sequenceEncoder.finish();
 				sequenceEncoder = null;
 			}
-			if (pcmAudioStream != null) {
-				pcmAudioStream.close();
-				pcmAudioStream = null;
-			}
 			if (encoded && videoFile.exists() && videoFile.canRead()
 					&& videoFile.length() > 56/* empty container size */) {
 				try (FileInputStream h264VideoInputStream = new FileInputStream(videoFile);
@@ -124,12 +126,12 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264RandomAccessSource,
 							videoFile.getName());
 					movie.addTrack(getSubtitles());
-					if (pcmAudioFile.exists() && pcmAudioFile.canRead() && pcmAudioFile.length() > 0) {
-						byte[] data = Files.readAllBytes(Paths.get(pcmAudioFile.getAbsolutePath()));
-						AACAudioOutput output = aacEncoder.encode(WAVAudioInput.pcms16le(data, data.length));
+
+					AACAudioOutput output = accumulator.done();
+					if (output.data() != null) {
 						movie.addTrack(new AACTrackImpl(new MemoryDataSourceImpl(ByteBuffer.wrap(output.data()))));
-						pcmAudioFile.delete();
 					}
+
 					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
 				} finally {
 					videoFile.delete();

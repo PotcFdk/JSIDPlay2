@@ -222,8 +222,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.sheinbergon</groupId>
-			<artifactId>jna-aac-encoder</artifactId>
-			<version>0.1.6</version>
+			<artifactId>jna-aac-encoder-java8</artifactId>
+			<version>0.1.6.1</version>
 		</dependency>
 		<dependency>
             <groupId>org.mp4parser</groupId>
