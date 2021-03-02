@@ -78,7 +78,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			factor = Math.max(1, sampleBuffer.capacity() / aacEncoder.inputBufferSize());
 
 		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Error: Java for Windows or Linux is required to use " + MP4 + " video driver!");
+			System.err.println("Error: Java for Windows, Linux or OSX is required to use " + MP4 + " video driver!");
 			throw e;
 		}
 	}
