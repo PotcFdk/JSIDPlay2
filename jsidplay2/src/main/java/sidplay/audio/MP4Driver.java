@@ -63,8 +63,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			String recordingBaseName = PathUtils.getFilenameWithoutSuffix(recordingFilename);
 			videoFile = new File(recordingBaseName + "_video.mp4");
 
-			sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile),
-					Rational.R((int) cpuClock.getCpuFrequency(), cpuClock.getCyclesPerFrame()));
+			sequenceEncoder = SequenceEncoder.createWithFps(NIOUtils.writableChannel(videoFile), valueOf(cpuClock));
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
 
@@ -161,6 +160,11 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 	@Override
 	public String getExtension() {
 		return ".mp4";
+	}
+
+	private Rational valueOf(CPUClock cpuClock) {
+		// greatest common divisor is 72 for PAL
+		return Rational.R((int) cpuClock.getCpuFrequency() / 72, cpuClock.getCyclesPerFrame() / 72);
 	}
 
 	private TextTrackImpl getSubtitles() {
