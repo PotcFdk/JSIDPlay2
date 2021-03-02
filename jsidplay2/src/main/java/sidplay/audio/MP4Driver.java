@@ -34,7 +34,6 @@ import org.sheinbergon.aac.encoder.AACAudioEncoder;
 import org.sheinbergon.aac.encoder.AACAudioOutput;
 import org.sheinbergon.aac.encoder.AACAudioOutput.Accumulator;
 import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
-import org.sheinbergon.aac.jna.FdkAACLibFacade;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
@@ -49,8 +48,9 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 	private SequenceEncoder sequenceEncoder;
 	private Picture picture;
 	private AACAudioEncoder aacEncoder;
+	private Accumulator aacAccumulator;
+	private int factor;
 	private ByteBuffer sampleBuffer;
-	private Accumulator accumulator;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
@@ -68,15 +68,17 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
 
-			accumulator = AACAudioOutput.accumulator();
+			aacAccumulator = AACAudioOutput.accumulator();
 			aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
 
 			sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 					.order(ByteOrder.LITTLE_ENDIAN);
 
+			factor = Math.max(1, sampleBuffer.capacity() / aacEncoder.inputBufferSize());
+
 		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Error: 64-bit Java for Windows or Linux is required to use " + MP4 + " video driver!");
+			System.err.println("Error: Java for Windows or Linux is required to use " + MP4 + " video driver!");
 			throw e;
 		}
 	}
@@ -84,15 +86,12 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 	@Override
 	public void write() throws InterruptedException {
 		int offset = 0;
-		for (int i = 0; i < Math.max(1, sampleBuffer.capacity() / aacEncoder.inputBufferSize()); i++) {
+		for (int i = 0; i < factor; i++) {
 
 			byte[] buffer = new byte[Math.min(sampleBuffer.position() - offset, aacEncoder.inputBufferSize())];
 			System.arraycopy(sampleBuffer.array(), offset, buffer, 0, buffer.length);
 
-			aacEncoder.populateInputBuffer(buffer, buffer.length);
-			accumulator.accumulate(FdkAACLibFacade.encode(aacEncoder.getEncoder(), aacEncoder.getInBufferDescriptor(),
-					aacEncoder.getOutBufferDescriptor(), aacEncoder.getInArgs(), aacEncoder.getOutArgs(), buffer.length)
-					.orElseThrow(() -> new IllegalStateException("No encoded audio data returned")));
+			aacEncoder.encode(aacAccumulator, buffer);
 
 			offset += aacEncoder.inputBufferSize();
 		}
@@ -127,7 +126,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 							videoFile.getName());
 					movie.addTrack(getSubtitles());
 
-					AACAudioOutput output = accumulator.done();
+					AACAudioOutput output = aacAccumulator.done();
 					if (output.data() != null) {
 						movie.addTrack(new AACTrackImpl(new MemoryDataSourceImpl(ByteBuffer.wrap(output.data()))));
 					}
