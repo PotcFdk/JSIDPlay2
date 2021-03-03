@@ -47,9 +47,10 @@ import libsidplay.config.IAudioSection;
 public class AVIDriver implements AudioDriver, VideoDriver {
 
 	private AVIWriter aviWriter;
+	private BufferedImage videoImage;
+
 	private int videoTrack, audioTrack;
 
-	private BufferedImage videoImage;
 	private ByteBuffer sampleBuffer;
 
 	@Override
@@ -60,10 +61,9 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		aviWriter = new AVIWriter(new File(recordingFilename));
 
 		Format videoFormat = new Format(MediaTypeKey, VIDEO, EncodingKey, ENCODING_AVI_MJPG, WidthKey, MAX_WIDTH,
-				HeightKey, MAX_HEIGHT, DepthKey, 3/* RGB */ << 3, InterlaceKey, TRUE, QualityKey,
+				HeightKey, MAX_HEIGHT, DepthKey, 3/* RGB */ * Byte.SIZE, InterlaceKey, TRUE, QualityKey,
 				audioSection.getAviCompressionQuality(), FrameRateKey, valueOf(cpuClock.getScreenRefresh()),
-				KeyFrameIntervalKey, (int) (cpuClock.getScreenRefresh() * 60), PixelAspectRatioKey,
-				pixelAspectRatio(cpuClock));
+				KeyFrameIntervalKey, getKeyFrameInterval(cpuClock), PixelAspectRatioKey, getPixelAspectRatio(cpuClock));
 		System.out.println(FormatFormatter.toString(videoFormat));
 		videoTrack = aviWriter.addTrack(videoFormat);
 
@@ -80,19 +80,6 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
-	public void accept(VIC vic) {
-		try {
-			if (aviWriter.isDataLimitReached()) {
-				throw new IOException("AVI file size limit reached!");
-			}
-			videoImage.setRGB(0, 0, MAX_WIDTH, MAX_HEIGHT, vic.getPixels().array(), 0, MAX_WIDTH);
-			aviWriter.write(videoTrack, videoImage, 1);
-		} catch (IOException e) {
-			throw new RuntimeException("Error writing AVI video stream", e);
-		}
-	}
-
-	@Override
 	public void write() throws InterruptedException {
 		try {
 			if (aviWriter.isDataLimitReached()) {
@@ -100,6 +87,19 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 			}
 			aviWriter.writeSamples(audioTrack, sampleBuffer.position() >> 2/* / (Short.BYTES * cfg.getChannels()) */,
 					sampleBuffer.array(), 0, sampleBuffer.position(), true);
+		} catch (IOException e) {
+			throw new RuntimeException("Error writing AVI video stream", e);
+		}
+	}
+
+	@Override
+	public void accept(VIC vic) {
+		try {
+			if (aviWriter.isDataLimitReached()) {
+				throw new IOException("AVI file size limit reached!");
+			}
+			videoImage.setRGB(0, 0, MAX_WIDTH, MAX_HEIGHT, vic.getPixels().array(), 0, MAX_WIDTH);
+			aviWriter.write(videoTrack, videoImage, 1);
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing AVI video stream", e);
 		}
@@ -117,6 +117,11 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 	}
 
 	@Override
+	public ByteBuffer buffer() {
+		return sampleBuffer;
+	}
+
+	@Override
 	public boolean isRecording() {
 		return true;
 	}
@@ -126,12 +131,12 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		return ".avi";
 	}
 
-	@Override
-	public ByteBuffer buffer() {
-		return sampleBuffer;
+	private int getKeyFrameInterval(CPUClock cpuClock) {
+		// one key frame per minute is enough
+		return (int) (cpuClock.getScreenRefresh() * 60);
 	}
 
-	private Rational pixelAspectRatio(CPUClock cpuClock) {
+	private Rational getPixelAspectRatio(CPUClock cpuClock) {
 		// http://hitmen.c02.at/temp/palstuff/
 		return cpuClock == CPUClock.PAL ? Rational.valueOf(1 / 0.936) : Rational.valueOf(1 / 0.750);
 	}

@@ -43,13 +43,16 @@ import libsidutils.PathUtils;
 
 public class MP4Driver implements AudioDriver, VideoDriver {
 
-	private File videoFile;
 	private String recordingFilename;
+
+	private File videoFile;
 	private SequenceEncoder sequenceEncoder;
 	private Picture picture;
+
 	private AACAudioEncoder aacEncoder;
 	private Accumulator aacAccumulator;
 	private int factor;
+
 	private ByteBuffer sampleBuffer;
 
 	@Override
@@ -67,9 +70,9 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
 
-			aacAccumulator = AACAudioOutput.accumulator();
 			aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
+			aacAccumulator = AACAudioOutput.accumulator();
 
 			sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 					.order(ByteOrder.LITTLE_ENDIAN);
@@ -94,7 +97,6 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 
 			offset += aacEncoder.inputBufferSize();
 		}
-
 	}
 
 	@Override
@@ -117,20 +119,23 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			}
 			if (encoded && videoFile.exists() && videoFile.canRead()
 					&& videoFile.length() > 56/* empty container size */) {
+
 				try (FileInputStream h264VideoInputStream = new FileInputStream(videoFile);
 						FileOutputStream mp4VideoOutputStream = new FileOutputStream(recordingFilename);
 						FileRandomAccessSourceImpl h264RandomAccessSource = new FileRandomAccessSourceImpl(
 								new RandomAccessFile(videoFile, "r"))) {
+
 					Movie movie = MovieCreator.build(h264VideoInputStream.getChannel(), h264RandomAccessSource,
 							videoFile.getName());
+
+					byte[] aacData = aacAccumulator.done().data();
+					if (aacData != null) {
+						movie.addTrack(new AACTrackImpl(new MemoryDataSourceImpl(ByteBuffer.wrap(aacData))));
+					}
 					movie.addTrack(getSubtitles());
 
-					AACAudioOutput output = aacAccumulator.done();
-					if (output.data() != null) {
-						movie.addTrack(new AACTrackImpl(new MemoryDataSourceImpl(ByteBuffer.wrap(output.data()))));
-					}
-
 					new DefaultMp4Builder().build(movie).writeContainer(mp4VideoOutputStream.getChannel());
+
 				} finally {
 					videoFile.delete();
 					// hack: remove remaining temporary files of mp4parser :-(
