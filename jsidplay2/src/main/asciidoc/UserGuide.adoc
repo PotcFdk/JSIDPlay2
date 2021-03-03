@@ -89,7 +89,9 @@ and using configurable base addresses for the second and the third SID chip at:
 Sound output can be recorded optionally as:
 
 * WAV (lossless)
+* FLAC (lossless)
 * MP3 audio (lossy)
+* AVI video (lossless)
 * MP4 video (lossy)
 
 == Supported Devices

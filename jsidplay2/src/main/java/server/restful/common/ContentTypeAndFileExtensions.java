@@ -19,17 +19,12 @@ public enum ContentTypeAndFileExtensions {
 	 * Audio formats
 	 */
 	MIME_TYPE_MPEG(create("audio/mpeg", (Charset) null), ".mpg", ".mpeg", ".mp3"),
-	/**
-	 * Audio formats
-	 */
 	MIME_TYPE_WAV(create("audio/wav", (Charset) null), ".wav"),
+	MIME_TYPE_FLAC(create("audio/flac", (Charset) null), ".flac"),
 	/**
 	 * Video formats
 	 */
 	MIME_TYPE_AVI(create("video/msvideo", (Charset) null), ".avi"),
-	/**
-	 * Video formats
-	 */
 	MIME_TYPE_MP4(create("video/mp4", (Charset) null), ".mp4"),
 	/**
 	 * SID formats

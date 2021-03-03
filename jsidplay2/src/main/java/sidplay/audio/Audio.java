@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
+import sidplay.audio.FLACDriver.FLACFile;
 import sidplay.audio.MP3Driver.MP3File;
 import sidplay.audio.WAVDriver.WavFile;
 
@@ -22,6 +23,8 @@ public enum Audio {
 	SOUNDCARD(JavaSound.class),
 	/** WAV file write. */
 	WAV(WavFile.class),
+	/** FLAC file write. */
+	FLAC(FLACFile.class),
 	/** MP3 file write. */
 	MP3(MP3File.class),
 	/** AVI file write. */
@@ -32,6 +35,8 @@ public enum Audio {
 	SID_REG(SidRegDriver.class),
 	/** Java Sound API plus WAV file write. */
 	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFile.class),
+	/** Java Sound API plus FLAC file write. */
+	LIVE_FLAC(ProxyDriver.class, JavaSound.class, FLACFile.class),
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3File.class),
 	/** Java Sound API plus AVI file write. */

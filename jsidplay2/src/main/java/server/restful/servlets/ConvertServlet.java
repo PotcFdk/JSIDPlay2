@@ -38,6 +38,7 @@ import sidplay.Player;
 import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
+import sidplay.audio.FLACDriver.FLACStream;
 import sidplay.audio.MP3Driver.MP3Stream;
 import sidplay.audio.MP4Driver;
 import sidplay.audio.WAVDriver.WAVStream;
@@ -148,7 +149,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
 		case WAV:
 			return new WAVStream(outputstream);
-
+		case FLAC:
+			return new FLACStream(outputstream);
 		case MP3:
 		default:
 			return new MP3Stream(outputstream);
