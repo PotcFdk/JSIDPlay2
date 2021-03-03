@@ -63,7 +63,7 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		Format videoFormat = new Format(MediaTypeKey, VIDEO, EncodingKey, ENCODING_AVI_MJPG, WidthKey, MAX_WIDTH,
 				HeightKey, MAX_HEIGHT, DepthKey, 3/* RGB */ * Byte.SIZE, InterlaceKey, TRUE, QualityKey,
 				audioSection.getAviCompressionQuality(), FrameRateKey, valueOf(cpuClock.getScreenRefresh()),
-				KeyFrameIntervalKey, getKeyFrameInterval(cpuClock), PixelAspectRatioKey, getPixelAspectRatio(cpuClock));
+				KeyFrameIntervalKey, getKeyFrameInterval(), PixelAspectRatioKey, getPixelAspectRatio(cpuClock));
 		System.out.println(FormatFormatter.toString(videoFormat));
 		videoTrack = aviWriter.addTrack(videoFormat);
 
@@ -131,9 +131,8 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		return ".avi";
 	}
 
-	private int getKeyFrameInterval(CPUClock cpuClock) {
-		// one key frame per minute is enough
-		return (int) (cpuClock.getScreenRefresh() * 60);
+	private int getKeyFrameInterval() {
+		return 2 /* key frames per second */;
 	}
 
 	private Rational getPixelAspectRatio(CPUClock cpuClock) {
