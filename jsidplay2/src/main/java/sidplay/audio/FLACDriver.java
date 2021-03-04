@@ -133,7 +133,9 @@ public abstract class FLACDriver implements AudioDriver {
 	@Override
 	public void close() {
 		try {
-			flacEncoder.encodeSamples(0, true);
+			if (flacEncoder != null) {
+				flacEncoder.encodeSamples(0, true);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException("Error writing FLAC audio stream", e);
 		}
