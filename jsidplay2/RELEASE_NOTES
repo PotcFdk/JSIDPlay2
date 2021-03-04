@@ -2,6 +2,7 @@ Release Notes:
 ==============
 Oscilloscope view refresh rate fixed for smoother output
 Better AVI/MP4 recordings: More exact CPU refresh rates, therefore audio and video stays in sync 
+MP4 Recording: better quality
 MP4 Recording: now supported on all platforms: Windows, Linux and Apple OSX
 FLAC recordings added
 Faster startup time due to the use of parallelization

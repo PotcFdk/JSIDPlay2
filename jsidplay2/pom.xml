@@ -151,7 +151,7 @@
 		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
-			<version>0.2.5</version>
+			<version>0.2.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sheinbergon</groupId>
