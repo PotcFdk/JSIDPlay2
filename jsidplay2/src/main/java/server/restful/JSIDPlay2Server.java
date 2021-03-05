@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
@@ -20,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
@@ -38,7 +40,6 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
-import libsidplay.sidtune.SidTuneError;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.NoOpJarScanner;
@@ -135,9 +136,9 @@ public class JSIDPlay2Server {
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class);
 
-	private static final ThreadLocal<EntityManager> threadLocalEntityManager = new ThreadLocal<>();
-
 	private static EntityManagerFactory entityManagerFactory;
+
+	private static final ThreadLocal<EntityManager> threadLocalEntityManager = new ThreadLocal<>();
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -179,14 +180,17 @@ public class JSIDPlay2Server {
 		Player.initializeTmpDir(configuration);
 	}
 
-	public synchronized void start() throws Exception {
+	public synchronized void start()
+			throws MalformedURLException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, LifecycleException {
+
 		if (tomcat == null) {
 			tomcat = createTomcat();
 			tomcat.start();
 		}
 	}
 
-	public synchronized void stop() throws Exception {
+	public synchronized void stop() throws LifecycleException {
 		if (tomcat != null && tomcat.getServer().getState() != LifecycleState.STOPPING_PREP
 				&& tomcat.getServer().getState() != LifecycleState.STOPPING
 				&& tomcat.getServer().getState() != LifecycleState.STOPPED
@@ -218,7 +222,9 @@ public class JSIDPlay2Server {
 		return result;
 	}
 
-	private Tomcat createTomcat() throws Exception {
+	private Tomcat createTomcat() throws MalformedURLException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+
 		SidPlay2Section sidplay2Section = configuration.getSidplay2Section();
 		EmulationSection emulationSection = configuration.getEmulationSection();
 
@@ -237,7 +243,7 @@ public class JSIDPlay2Server {
 		return tomcat;
 	}
 
-	private void setRealm(Tomcat tomcat) {
+	private void setRealm(Tomcat tomcat) throws MalformedURLException {
 		MemoryRealm realm = new MemoryRealm();
 		realm.setPathname(getRealmConfigURL().toExternalForm());
 
@@ -249,16 +255,13 @@ public class JSIDPlay2Server {
 	 * <B>Note:</B>If no configuration file is found internal configuration is used
 	 *
 	 * @return user, password and role configuration file
+	 * @throws MalformedURLException error locating the realm configuration
 	 */
-	private URL getRealmConfigURL() {
+	private URL getRealmConfigURL() throws MalformedURLException {
 		for (String dir : new String[] { System.getProperty("user.dir"), System.getProperty("user.home") }) {
 			File configPlace = new File(dir, REALM_CONFIG);
 			if (configPlace.exists()) {
-				try {
-					return configPlace.toURI().toURL();
-				} catch (MalformedURLException e) {
-					throw new Error(e); // Can't happen
-				}
+				return configPlace.toURI().toURL();
 			}
 		}
 		// built-in default configuration
@@ -345,7 +348,9 @@ public class JSIDPlay2Server {
 		context.addConstraint(constraint);
 	}
 
-	private void addServlets(Context context) throws Exception {
+	private void addServlets(Context context) throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+
 		for (Class<? extends JSIDPlay2Servlet> servletCls : SERVLETS) {
 			JSIDPlay2Servlet servlet = servletCls.getDeclaredConstructor(Configuration.class, Properties.class)
 					.newInstance(configuration, servletUtilProperties);
@@ -367,7 +372,7 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		try {
 			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
 
@@ -386,7 +391,9 @@ public class JSIDPlay2Server {
 								jsidplay2Server.whatsSidDatabasePassword, jsidplay2Server.whatsSidDatabaseDialect));
 			}
 			jsidplay2Server.start();
-		} catch (ParameterException | IOException | SidTuneError e) {
+		} catch (ParameterException | IOException | InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException
+				| LifecycleException e) {
 			System.err.println(e.getMessage());
 			exit(1);
 		}
