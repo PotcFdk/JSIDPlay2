@@ -78,17 +78,17 @@ public class Convenience {
 	public boolean autostart(File file, BiPredicate<File, File> isMediaToAttach, File autoStartFile)
 			throws IOException, SidTuneError {
 		player.getC64().ejectCartridge();
-		String tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
+		File tmpDir = player.getConfig().getSidplay2Section().getTmpDir();
 		TFile zip = new TFile(file);
 		File toAttach = null;
 		if (zip.isArchive()) {
 			// uncompress zip
-			TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
+			TFile.cp_rp(zip, tmpDir, TArchiveDetector.ALL);
 			// search media file to attach
 			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
 			TFile.rm_r(zip);
 		} else if (file.getName().toLowerCase(Locale.US).endsWith("7z")) {
-			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(zip, new File(tmpDir));
+			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(zip, tmpDir);
 			extract7Zip.extract();
 			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
 			TFile.rm_r(zip);
@@ -158,7 +158,7 @@ public class Convenience {
 	 * @param toAttach    current media to attach
 	 * @return media to attach
 	 */
-	private File getToAttach(String dir, File file, BiPredicate<File, File> mediaTester, File toAttach) {
+	private File getToAttach(File dir, File file, BiPredicate<File, File> mediaTester, File toAttach) {
 		final File[] listFiles = file.listFiles();
 		if (listFiles == null) {
 			return toAttach;
@@ -186,7 +186,7 @@ public class Convenience {
 					}
 				}
 			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
-				File toAttachChild = getToAttach(memberFile.getPath(), new TFile(memberFile), mediaTester, toAttach);
+				File toAttachChild = getToAttach(memberFile, new TFile(memberFile), mediaTester, toAttach);
 				if (toAttachChild != null) {
 					toAttach = toAttachChild;
 				}

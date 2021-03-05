@@ -230,7 +230,7 @@ public class JSIDPlay2Server {
 
 		Tomcat tomcat = new Tomcat();
 		tomcat.setAddDefaultWebXmlToWebapp(false);
-		tomcat.setBaseDir(sidplay2Section.getTmpDir());
+		tomcat.setBaseDir(sidplay2Section.getTmpDir().getAbsolutePath());
 
 		setRealm(tomcat);
 		setConnectors(tomcat, emulationSection);
@@ -327,7 +327,8 @@ public class JSIDPlay2Server {
 	 * <b>Note:</b> Base directory of the context root is .jsidplay2
 	 */
 	private Context addWebApp(Tomcat tomcat, SidPlay2Section sidplay2Section) {
-		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT, sidplay2Section.getTmpDir());
+		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT,
+				sidplay2Section.getTmpDir().getAbsolutePath());
 		context.setJarScanner(new NoOpJarScanner());
 
 		return context;

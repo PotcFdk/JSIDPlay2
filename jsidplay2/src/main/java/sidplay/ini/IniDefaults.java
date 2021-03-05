@@ -42,6 +42,7 @@ public interface IniDefaults {
 	File DEFAULT_HVSC_DIR = SIDPLAY2_SECTION.getHvsc();
 	File DEFAULT_LAST_DIR = SIDPLAY2_SECTION.getLastDirectory();
 	boolean DEFAULT_PAL_EMULATION = SIDPLAY2_SECTION.isPalEmulation();
+	File DEFAULT_TMP_DIR = new File(System.getProperty("user.home"), ".jsidplay2");
 	float DEFAULT_BRIGHTNESS = SIDPLAY2_SECTION.getBrightness();
 	float DEFAULT_CONTRAST = SIDPLAY2_SECTION.getContrast();
 	float DEFAULT_GAMMA = SIDPLAY2_SECTION.getGamma();

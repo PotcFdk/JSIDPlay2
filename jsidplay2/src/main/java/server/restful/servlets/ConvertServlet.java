@@ -181,7 +181,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		Player player = new Player(config);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
-				new File(config.getSidplay2Section().getTmpDir()));
+				config.getSidplay2Section().getTmpDir());
 		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);

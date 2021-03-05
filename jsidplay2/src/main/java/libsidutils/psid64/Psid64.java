@@ -91,10 +91,10 @@ public class Psid64 {
 	private KickAssembler assembler = new KickAssembler();
 	private SidTune tune;
 	private STILEntry stilEntry;
-	private String tmpDir;
+	private File tmpDir;
 	private boolean verbose, blankScreen;
 
-	public void setTmpDir(String tmpDir) {
+	public void setTmpDir(File tmpDir) {
 		this.tmpDir = tmpDir;
 	}
 

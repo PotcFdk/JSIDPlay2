@@ -19,6 +19,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
 import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
+import static sidplay.ini.IniDefaults.DEFAULT_TMP_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
 import java.io.File;
@@ -163,14 +164,13 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public final String getTmpDir() {
-		return iniReader.getPropertyString("SIDPlay2", "Temp Dir",
-				System.getProperty("user.home") + System.getProperty("file.separator") + ".jsidplay2");
+	public final File getTmpDir() {
+		return iniReader.getPropertyFile("SIDPlay2", "Temp Dir", DEFAULT_TMP_DIR);
 	}
 
 	@Override
-	public final void setTmpDir(final String path) {
-		iniReader.setProperty("SIDPlay2", "Temp Dir", path);
+	public final void setTmpDir(final File tmpDir) {
+		iniReader.setProperty("SIDPlay2", "Temp Dir", tmpDir);
 	}
 
 	@Override

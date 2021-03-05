@@ -485,7 +485,7 @@ public class HardwareEnsemble implements Ultimate64 {
 		config.getSidplay2Section().setLastDirectory(file.getParentFile());
 		if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".tap")) {
 			// Everything, which is not a tape convert to tape first
-			final String tmpDir = config.getSidplay2Section().getTmpDir();
+			final File tmpDir = config.getSidplay2Section().getTmpDir();
 			final File convertedTape = new File(tmpDir, file.getName() + ".tap");
 			convertedTape.deleteOnExit();
 			SidTune prog = SidTune.load(file);

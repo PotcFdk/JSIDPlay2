@@ -17,6 +17,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_SATURATION;
 import static sidplay.ini.IniDefaults.DEFAULT_SINGLE_TRACK;
 import static sidplay.ini.IniDefaults.DEFAULT_START_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_TINT;
+import static sidplay.ini.IniDefaults.DEFAULT_TMP_DIR;
 import static sidplay.ini.IniDefaults.DEFAULT_TURBO_TAPE;
 
 import java.io.File;
@@ -50,8 +51,6 @@ public class SidPlay2Section implements ISidPlay2Section {
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
 	public static final boolean DEFAULT_ENABLE_PROXY = false;
 	public static final int DEFAULT_PROXY_PORT = 80;
-	public static final String DEFAULT_TMP_DIR = System.getProperty("user.home") + System.getProperty("file.separator")
-			+ ".jsidplay2";
 	public static final int DEFAULT_FRAME_X = 0;
 	public static final int DEFAULT_FRAME_Y = 0;
 	public static final int DEFAULT_FRAME_WIDTH = 1310;
@@ -366,19 +365,20 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return lastDirectory.property();
 	}
 
-	private ShadowField<StringProperty, String> tmpDir = new ShadowField<>(SimpleStringProperty::new, DEFAULT_TMP_DIR);
+	private ShadowField<ObjectProperty<File>, File> tmpDir = new ShadowField<>(SimpleObjectProperty::new,
+			DEFAULT_TMP_DIR);
 
 	@Override
-	public String getTmpDir() {
+	public File getTmpDir() {
 		return tmpDir.get();
 	}
 
 	@Override
-	public void setTmpDir(String tmpDir) {
+	public void setTmpDir(File tmpDir) {
 		this.tmpDir.set(tmpDir);
 	}
 
-	public StringProperty tmpDirProperty() {
+	public ObjectProperty<File> tmpDirProperty() {
 		return tmpDir.property();
 	}
 

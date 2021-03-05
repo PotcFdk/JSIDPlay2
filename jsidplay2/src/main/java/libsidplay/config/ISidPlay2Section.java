@@ -119,18 +119,16 @@ public interface ISidPlay2Section {
 	/**
 	 * Getter of the temporary directory for JSIDPlay2.
 	 *
-	 * Default is <homeDir>/.jsidplay2
-	 *
 	 * @return the temporary directory for JSIDPlay2
 	 */
-	String getTmpDir();
+	File getTmpDir();
 
 	/**
 	 * Setter of the temporary directory for JSIDPlay2.
 	 *
-	 * @param path the temporary directory for JSIDPlay2
+	 * @param tmpDir the temporary directory for JSIDPlay2
 	 */
-	void setTmpDir(String path);
+	void setTmpDir(File tmpDir);
 
 	/**
 	 * Get PAL emulation enable.

@@ -396,7 +396,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * E.g. Recordings and converted tapes are saved here!
 	 */
 	public static void initializeTmpDir(IConfig config) {
-		File tmpDir = new File(config.getSidplay2Section().getTmpDir());
+		File tmpDir = config.getSidplay2Section().getTmpDir();
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
 		}

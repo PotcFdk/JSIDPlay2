@@ -261,7 +261,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 
 	protected void attachAndRunDemo(File file, final File autoStartFile) {
 		if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".pdf")) {
-			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
+			File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, file.getName());
 			try {
 				TFile.cp(file, dst);
@@ -329,7 +329,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
 			return extractGZip(file);
 		} else {
-			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
+			File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, file.getName());
 			TFile.cp(file, dst);
 			dst.deleteOnExit();
@@ -339,7 +339,7 @@ public class DiskCollection extends C64VBox implements UIPart {
 
 	private File extractGZip(File file) {
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
-			String tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
+			File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
 			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
 			try (InputStream is = new GZIPInputStream(ZipFileUtils.newFileInputStream(file))) {
 				TFile.cp(is, dst);

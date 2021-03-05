@@ -60,9 +60,9 @@ public class GameBase extends C64VBox implements UIPart {
 					return;
 				}
 				final SidPlay2Section sidplay2 = util.getConfig().getSidplay2Section();
-				final String tmpDir = sidplay2.getTmpDir();
+				final File tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
-				TFile.cp_rp(zip, new File(tmpDir), TArchiveDetector.ALL);
+				TFile.cp_rp(zip, tmpDir, TArchiveDetector.ALL);
 				Platform.runLater(() -> {
 					enableGameBase.setDisable(true);
 					setLettersDisable(true);
