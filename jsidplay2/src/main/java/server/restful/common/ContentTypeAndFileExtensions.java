@@ -21,6 +21,7 @@ public enum ContentTypeAndFileExtensions {
 	MIME_TYPE_MPEG(create("audio/mpeg", (Charset) null), ".mpg", ".mpeg", ".mp3"),
 	MIME_TYPE_WAV(create("audio/wav", (Charset) null), ".wav"),
 	MIME_TYPE_FLAC(create("audio/flac", (Charset) null), ".flac"),
+	MIME_TYPE_AAC(create("audio/aac", (Charset) null), ".aac"),
 	/**
 	 * Video formats
 	 */

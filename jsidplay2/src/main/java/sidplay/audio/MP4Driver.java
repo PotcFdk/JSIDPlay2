@@ -70,7 +70,7 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 			picture = Picture.createPicture(MAX_WIDTH, MAX_HEIGHT,
 					new byte[1][ColorSpace.RGB.nComp * MAX_WIDTH * MAX_HEIGHT], ColorSpace.RGB);
 
-			aacEncoder = AACAudioEncoder.builder().channels(2).sampleRate(cfg.getFrameRate())
+			aacEncoder = AACAudioEncoder.builder().channels(cfg.getChannels()).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
 			aacAccumulator = AACAudioOutput.accumulator();
 

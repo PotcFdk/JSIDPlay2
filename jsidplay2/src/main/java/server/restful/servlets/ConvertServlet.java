@@ -35,6 +35,7 @@ import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.AdditionalServletParameters;
 import server.restful.common.JSIDPlay2Servlet;
 import sidplay.Player;
+import sidplay.audio.AACDriver.AACStream;
 import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
@@ -151,6 +152,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			return new WAVStream(outputstream);
 		case FLAC:
 			return new FLACStream(outputstream);
+		case AAC:
+			return new AACStream(outputstream);
 		case MP3:
 		default:
 			return new MP3Stream(outputstream);

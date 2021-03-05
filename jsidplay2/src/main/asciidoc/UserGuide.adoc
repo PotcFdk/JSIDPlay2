@@ -90,6 +90,7 @@ Sound output can be recorded optionally as:
 
 * WAV (lossless)
 * FLAC (lossless)
+* AAC (lossy)
 * MP3 audio (lossy)
 * AVI video (lossless)
 * MP4 video (lossy)
