@@ -5,15 +5,21 @@ import java.util.Locale;
 public enum OS {
 	LINUX, WINDOWS, MAC, OTHER;
 
-	public static OS get() {
+	private static OS os;
+	static {
 		String OS = System.getProperty("os.name", "other").toLowerCase(Locale.ENGLISH);
 		if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-			return MAC;
+			os = MAC;
 		} else if (OS.indexOf("win") >= 0) {
-			return WINDOWS;
+			os = WINDOWS;
 		} else if (OS.indexOf("nux") >= 0) {
-			return LINUX;
+			os = LINUX;
+		} else {
+			os = OTHER;
 		}
-		return OTHER;
+	}
+
+	public static OS get() {
+		return os;
 	}
 }
