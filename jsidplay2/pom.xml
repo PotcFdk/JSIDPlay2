@@ -535,6 +535,7 @@
 								<include>builder/resid/resample/*.class</include>
 								<include>builder/resid/resid/*.class</include>
 								<include>builder/resid/residfp/*.class</include>
+								<include>libsidplay/common/OS.class</include>
 								<include>libsidplay/common/ChipModel.class</include>
 								<include>libsidplay/common/CPUClock.class</include>
 								<include>libsidplay/common/Potentiometer.class</include>

@@ -15,6 +15,7 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
 import builder.sidblaster.SIDBlasterBuilder;
+import libsidplay.common.OS;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
@@ -129,7 +130,7 @@ final public class ConsolePlayer {
 	}
 
 	private void printSidBlasterDevices() {
-		if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+		if (OS.get() == OS.WINDOWS) {
 			triggerFetchSerialNumbers();
 			String[] serialNumbers = SIDBlasterBuilder.getSerialNumbers();
 			if (serialNumbers.length > 0) {

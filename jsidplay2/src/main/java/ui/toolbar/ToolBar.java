@@ -64,6 +64,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.Mixer;
+import libsidplay.common.OS;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.common.Ultimate64Mode;
@@ -584,8 +585,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void showVolume() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		if (OS.indexOf("win") >= 0) {
+		OS os = OS.get();
+		if (os == OS.WINDOWS) {
 			SidPlay2Section section = util.getConfig().getSidplay2Section();
 			int x = (int) (section.getFrameX() + section.getFrameWidth() / 2);
 			try {
@@ -600,7 +601,7 @@ public class ToolBar extends C64VBox implements UIPart {
 					System.err.println(toolTip);
 				}
 			}
-		} else if (OS.indexOf("nux") >= 0) {
+		} else if (os == OS.LINUX) {
 			try {
 				Runtime.getRuntime().exec("pavucontrol");
 			} catch (IOException e2) {
@@ -613,8 +614,8 @@ public class ToolBar extends C64VBox implements UIPart {
 					System.err.println(toolTip);
 				}
 			}
-		} else if (OS.indexOf("mac") >= 0) {
-			String toolTip = "For OSX: N.Y.I!";
+		} else if (os == OS.MAC || os == OS.OTHER) {
+			String toolTip = "For " + os + ": N.Y.I!";
 			volumeButton.setDisable(true);
 			volumeButton.setTooltip(new Tooltip(toolTip));
 			System.err.println(toolTip);

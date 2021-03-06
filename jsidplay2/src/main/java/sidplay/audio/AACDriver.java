@@ -56,6 +56,7 @@ import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.OS;
 import libsidplay.config.IAudioSection;
 
 public abstract class AACDriver implements AudioDriver {
@@ -141,6 +142,10 @@ public abstract class AACDriver implements AudioDriver {
 
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error: Java for Windows, Linux or OSX is required to use " + AAC + " video driver!");
+			if (OS.get() == OS.LINUX) {
+				System.err.println("Try to install it yourself, use the following command and start JSIDPlay2 again:");
+				System.err.println("sudo apt-get install libfdk-aac-dev");
+			}
 			throw e;
 		}
 	}

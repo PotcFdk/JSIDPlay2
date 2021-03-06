@@ -11,6 +11,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.util.Duration;
+import libsidplay.common.OS;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
@@ -81,7 +82,7 @@ public class JoystickSettings extends C64Window {
 		ControllerEnvironment controllerEnv = ControllerEnvironment.getDefaultEnvironment();
 		Controller[] controllers = controllerEnv.getControllers();
 
-		if (controllers.length == 0 && System.getProperty("os.name").startsWith("Linux")) {
+		if (controllers.length == 0 && OS.get() == OS.LINUX) {
 			System.err.println("If you can use sudo, try the following command and start JSIDPlay2 again:");
 			System.err.println("sudo chmod go+r /dev/input/*");
 		}

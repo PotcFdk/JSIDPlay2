@@ -15,6 +15,7 @@
  */
 package sidplay.audio;
 
+import libsidplay.common.OS;
 import libsidplay.config.IAudioSection;
 
 /**
@@ -126,8 +127,7 @@ public class AudioConfig {
 	 * @return platform dependent default buffer size
 	 */
 	public static final int getDefaultBufferSize() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		if (OS.indexOf("nux") >= 0) {
+		if (OS.get() == OS.LINUX) {
 			return 16384;
 		} else {
 			return 2048;
