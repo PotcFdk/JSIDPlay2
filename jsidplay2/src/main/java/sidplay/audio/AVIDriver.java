@@ -131,13 +131,30 @@ public class AVIDriver implements AudioDriver, VideoDriver {
 		return ".avi";
 	}
 
+	/**
+	 * Perfect for 99% of streams: Keyframe Interval: 2<BR>
+	 * Great for recording: Keyframe Interval: 5
+	 * 
+	 * https://blog.mobcrush.com/boost-your-stream-quality-with-these-3-simple-settings-47ac974dbe56
+	 * 
+	 * @return N key frames every second
+	 */
 	private int getKeyFrameInterval() {
-		return 2 /* key frames per second */;
+		return 5;
 	}
 
+	/**
+	 * Pixels are taller than they are wide
+	 * 
+	 * PAL: 0.93568:0.99911
+	 * 
+	 * NTSC: 0.75000:1.00000
+	 * 
+	 * https://codebase64.org/doku.php?id=base:pixel_aspect_ratio
+	 * 
+	 */
 	private Rational getPixelAspectRatio(CPUClock cpuClock) {
-		// http://hitmen.c02.at/temp/palstuff/
-		return cpuClock == CPUClock.PAL ? Rational.valueOf(1 / 0.936) : Rational.valueOf(1 / 0.750);
+		return cpuClock == CPUClock.PAL ? Rational.valueOf(0.9365) : Rational.valueOf(0.750);
 	}
 
 }
