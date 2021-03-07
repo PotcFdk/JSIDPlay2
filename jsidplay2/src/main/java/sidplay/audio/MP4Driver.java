@@ -37,6 +37,7 @@ import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.OS;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidutils.PathUtils;
@@ -81,6 +82,10 @@ public class MP4Driver implements AudioDriver, VideoDriver {
 
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Error: Java for Windows, Linux or OSX is required to use " + MP4 + " video driver!");
+			if (OS.get() == OS.LINUX) {
+				System.err.println("Try to install it yourself, use the following command and start JSIDPlay2 again:");
+				System.err.println("sudo apt-get install libfdk-aac-dev");
+			}
 			throw e;
 		}
 	}
