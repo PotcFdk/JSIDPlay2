@@ -85,8 +85,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String filePath = request.getPathInfo();
-		File file = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 		try {
+			File file = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
 
