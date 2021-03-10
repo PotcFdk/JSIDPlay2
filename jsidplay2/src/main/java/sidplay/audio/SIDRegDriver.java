@@ -15,7 +15,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
 import libsidplay.config.IAudioSection;
 
-public class SidRegDriver implements SIDListener, AudioDriver {
+public class SIDRegDriver implements SIDListener, AudioDriver {
 
 	public static class SidRegWrite {
 		private long absCycles, relCycles;
@@ -55,7 +55,7 @@ public class SidRegDriver implements SIDListener, AudioDriver {
 
 	}
 
-	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.audio.SidRegDriver");
+	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.audio.SIDRegDriver");
 
 	public static final String DESCRIPTION[] = new String[] { "VOICE_1_FREQ_L", "VOICE_1_FREQ_H", "VOICE_1_PULSE_L",
 			"VOICE_1_PULSE_H", "VOICE_1_CTRL", "VOICE_1_AD", "VOICE_1_SR", "VOICE_2_FREQ_L", "VOICE_2_FREQ_H",

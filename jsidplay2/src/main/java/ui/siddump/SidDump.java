@@ -27,6 +27,7 @@ import libsidutils.siddump.SIDDumpConfiguration;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
 import server.netsiddev.InvalidCommandException;
 import sidplay.Player;
+import sidplay.audio.siddump.SidDumpOutput;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -55,7 +56,7 @@ public class SidDump extends C64VBox implements UIPart {
 
 	private ObservableList<SIDDumpPlayer> sidDumpPlayers;
 
-	protected SidDumpExtension sidDumpExtension;
+	protected SIDDumpExtension sidDumpExtension;
 
 	private int loadAddress, initAddress, playerAddress, subTune;
 
@@ -88,7 +89,7 @@ public class SidDump extends C64VBox implements UIPart {
 				});
 			}
 		};
-		sidDumpExtension = new SidDumpExtension(util.getPlayer(), util.getConfig()) {
+		sidDumpExtension = new SIDDumpExtension(util.getPlayer(), util.getConfig()) {
 
 			@Override
 			public void add(final SidDumpOutput output) {
@@ -105,9 +106,7 @@ public class SidDump extends C64VBox implements UIPart {
 		maxRecordLength.textProperty().addListener((obj, o, n) -> util.checkTextField(maxRecordLength, () -> {
 			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
 			return seconds != -1;
-		}, () -> {
-			sidDumpExtension.setRecordLength(seconds);
-		}, "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
+		}, () -> sidDumpExtension.setRecordLength(seconds), "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
 
 		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
 		SortedList<SidDumpOutput> sortedList = new SortedList<>(sidDumpOutputs);
@@ -130,6 +129,8 @@ public class SidDump extends C64VBox implements UIPart {
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(changeListener);
+		util.getPlayer().removeMOS6510Extension(sidDumpExtension);
+		util.getPlayer().removeSidListener(sidDumpExtension);
 	}
 
 	@FXML
@@ -192,15 +193,16 @@ public class SidDump extends C64VBox implements UIPart {
 	private void doStartStopRecording() {
 		if (startStopRecording.isSelected()) {
 			setTune(util.getPlayer().getTune());
-			util.getPlayer().getC64().setPlayRoutineObserver(sidDumpExtension);
+			util.getPlayer().addSidListener(sidDumpExtension);
+			util.getPlayer().addMOS6510Extension(sidDumpExtension);
 			// restart tune, before recording starts
 			util.setPlayingTab(this);
 			if (startStopPlayer.isSelected()) {
 				util.getPlayer().play(util.getPlayer().getTune());
 			}
 		} else {
-			util.getPlayer().getC64().setPlayRoutineObserver(null);
-			sidDumpExtension.stopRecording();
+			util.getPlayer().removeSidListener(sidDumpExtension);
+			util.getPlayer().removeMOS6510Extension(sidDumpExtension);
 			if (startStopPlayer.isSelected()) {
 				util.getPlayer().stopC64();
 			}
@@ -323,7 +325,7 @@ public class SidDump extends C64VBox implements UIPart {
 		}
 		sidDumpExtension.setLeftVolume(util.getConfig().getAudioSection().getMainVolume());
 		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel().getSelectedItem().getRegs());
-		sidDumpExtension.init();
+		sidDumpExtension.init(util.getPlayer().getC64().getClock());
 	}
 
 }

@@ -14,6 +14,7 @@ import server.netsiddev.AudioGeneratorThread;
 import server.netsiddev.InvalidCommandException;
 import server.netsiddev.SIDWrite;
 import sidplay.audio.AudioConfig;
+import sidplay.audio.siddump.SidDumpOutput;
 
 public class SidDumpReplayer {
 	private static final int SID_WRITE_DELAY = 6;

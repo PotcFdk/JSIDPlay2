@@ -58,6 +58,7 @@ import libsidplay.common.SIDEmu;
 import libsidplay.common.SIDListener;
 import libsidplay.common.Ultimate64Mode;
 import libsidplay.components.c1530.Datasette.Control;
+import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidplay.components.mos6510.MOS6510;
 import libsidplay.components.mos6526.MOS6526;
 import libsidplay.components.mos656x.VIC;
@@ -92,7 +93,7 @@ import sidplay.player.Timer;
  * @author Ken Händel
  *
  */
-public class Player extends HardwareEnsemble implements VideoDriver, SIDListener {
+public class Player extends HardwareEnsemble implements VideoDriver, SIDListener, IMOS6510Extension {
 
 	/** Build date calculated from our own modify time */
 	public static Calendar LAST_MODIFIED;
@@ -246,6 +247,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private List<SIDListener> sidListeners = new CopyOnWriteArrayList<>();
 
 	/**
+	 * Consumer for CPU JMP/JSR instructions
+	 */
+	private List<IMOS6510Extension> mos6510Extension = new CopyOnWriteArrayList<>();
+
+	/**
 	 * Fast forward: skipped VIC frames.
 	 */
 	private int fastForwardVICFrames;
@@ -284,6 +290,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				}
 				if (getAudioDriver() instanceof SIDListener) {
 					addSidListener((SIDListener) getAudioDriver());
+				}
+				if (getAudioDriver() instanceof IMOS6510Extension) {
+					addMOS6510Extension((IMOS6510Extension) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
 					scheduleWhatsSidEvent((SIDMixer) sidBuilder);
@@ -739,6 +748,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		configureMixer(mixer -> mixer.setAudioDriver(getAudioDriver()));
 		configureVICs(vic -> vic.setVideoDriver(this));
 		c64.setSIDListener(this);
+		c64.setPlayRoutineObserver(this);
 
 		fastForwardVICFrames = 0;
 
@@ -860,6 +870,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			}
 			if (getAudioDriver() instanceof SIDListener) {
 				removeSidListener((SIDListener) getAudioDriver());
+			}
+			if (getAudioDriver() instanceof IMOS6510Extension) {
+				removeMOS6510Extension((IMOS6510Extension) getAudioDriver());
 			}
 			// save still unwritten sound data
 			if ((getAudioDriver().isRecording() || stateProperty.get() != QUIT) && getAudioDriver().buffer() != null) {
@@ -1101,6 +1114,24 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
+	 * Add consumer of MOS6510 JMP/JSR instructions.
+	 *
+	 * @param mos6510Extension consumer of MOS6510 JMP/JSR instructions
+	 */
+	public void addMOS6510Extension(IMOS6510Extension mos6510Extension) {
+		this.mos6510Extension.add(mos6510Extension);
+	}
+
+	/**
+	 * Remove consumer of MOS6510 JMP/JSR instructions.
+	 *
+	 * @param mos6510Extension of MOS6510 JMP/JSR instructions
+	 */
+	public void removeMOS6510Extension(IMOS6510Extension mos6510Extension) {
+		this.mos6510Extension.remove(mos6510Extension);
+	}
+
+	/**
 	 * Fast forward skips frames and produces output for each Xth frame (X = 1x, 2x,
 	 * 4x, ... , 32x).
 	 */
@@ -1121,6 +1152,14 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		Iterator<SIDListener> iterator = sidListeners.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().write(addr, data);
+		}
+	}
+
+	@Override
+	public void jmpJsr() {
+		Iterator<IMOS6510Extension> iterator = mos6510Extension.iterator();
+		while (iterator.hasNext()) {
+			iterator.next().jmpJsr();
 		}
 	}
 

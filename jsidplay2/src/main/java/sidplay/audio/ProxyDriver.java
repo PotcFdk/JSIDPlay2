@@ -9,6 +9,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
+import libsidplay.components.mos6510.IMOS6510Extension;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 
@@ -20,7 +21,7 @@ import libsidplay.config.IAudioSection;
  * @author Ken Händel
  *
  */
-public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
+public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener, IMOS6510Extension {
 	private final AudioDriver driverOne;
 	private final AudioDriver driverTwo;
 
@@ -79,6 +80,16 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener {
 		}
 		if (driverTwo instanceof SIDListener) {
 			((SIDListener) driverTwo).write(addr, data);
+		}
+	}
+
+	@Override
+	public void jmpJsr() {
+		if (driverOne instanceof IMOS6510Extension) {
+			((IMOS6510Extension) driverOne).jmpJsr();
+		}
+		if (driverTwo instanceof IMOS6510Extension) {
+			((IMOS6510Extension) driverTwo).jmpJsr();
 		}
 	}
 

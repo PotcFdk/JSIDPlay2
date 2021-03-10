@@ -20,8 +20,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
 import libsidutils.PathUtils;
 import sidplay.Player;
-import sidplay.audio.SidRegDriver;
-import sidplay.audio.SidRegDriver.SidRegWrite;
+import sidplay.audio.SIDRegDriver;
+import sidplay.audio.SIDRegDriver.SidRegWrite;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -231,7 +231,7 @@ public class SidReg extends C64VBox implements UIPart {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".csv");
 			try (PrintStream ps = new PrintStream(target)) {
-				SidRegDriver.writeHeader(ps);
+				SIDRegDriver.writeHeader(ps);
 				filteredSidRegWrites.stream().forEach(sidRegWrite -> sidRegWrite.writeSidRegister(ps));
 			} catch (IOException e) {
 				e.printStackTrace();

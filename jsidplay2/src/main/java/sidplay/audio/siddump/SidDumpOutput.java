@@ -1,70 +1,52 @@
-package ui.siddump;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+package sidplay.audio.siddump;
 
 public class SidDumpOutput {
-	private StringProperty time = new SimpleStringProperty();
-	private StringProperty freq1 = new SimpleStringProperty();
-	private StringProperty note1 = new SimpleStringProperty();
-	private StringProperty wf1 = new SimpleStringProperty();
-	private StringProperty adsr1 = new SimpleStringProperty();
-	private StringProperty pul1 = new SimpleStringProperty();
-	private StringProperty freq2 = new SimpleStringProperty();
-	private StringProperty note2 = new SimpleStringProperty();
-	private StringProperty wf2 = new SimpleStringProperty();
-	private StringProperty adsr2 = new SimpleStringProperty();
-	private StringProperty pul2 = new SimpleStringProperty();
-	private StringProperty freq3 = new SimpleStringProperty();
-	private StringProperty note3 = new SimpleStringProperty();
-	private StringProperty wf3 = new SimpleStringProperty();
-	private StringProperty adsr3 = new SimpleStringProperty();
-	private StringProperty pul3 = new SimpleStringProperty();
-	private StringProperty fcut = new SimpleStringProperty();
-	private StringProperty rc = new SimpleStringProperty();
-	private StringProperty typ = new SimpleStringProperty();
-	private StringProperty v = new SimpleStringProperty();
+
+	private String time;
+	private String freq1, note1, wf1, adsr1, pul1;
+	private String freq2, note2, wf2, adsr2, pul2, freq3, note3, wf3, adsr3, pul3;
+	private String fcut, rc, typ, v;
 
 	public String getTime() {
-		return time.get();
+		return time;
 	}
 
 	public void setTime(String value) {
-		time.set(value);
+		time = value;
 	}
 
 	public String getFreq1() {
-		return freq1.get();
+		return freq1;
 	}
 
 	public void setFreq1(String value) {
-		freq1.set(value);
+		freq1 = value;
 	}
 
 	public String getFreq2() {
-		return freq2.get();
+		return freq2;
 	}
 
 	public void setFreq2(String value) {
-		freq2.set(value);
+		freq2 = value;
 	}
 
 	public String getFreq3() {
-		return freq3.get();
+		return freq3;
 	}
 
 	public void setFreq3(String value) {
-		freq3.set(value);
+		freq3 = value;
 	}
 
 	public String getFreq(int c) {
 		switch (c) {
 		case 0:
-			return freq1.get();
+			return freq1;
 		case 1:
-			return freq2.get();
+			return freq2;
 		case 2:
-			return freq3.get();
+			return freq3;
 
 		default:
 			return null;
@@ -74,13 +56,13 @@ public class SidDumpOutput {
 	public void setFreq(String value, int c) {
 		switch (c) {
 		case 0:
-			freq1.set(value);
+			freq1 = value;
 			break;
 		case 1:
-			freq2.set(value);
+			freq2 = value;
 			break;
 		case 2:
-			freq3.set(value);
+			freq3 = value;
 			break;
 
 		default:
@@ -89,37 +71,37 @@ public class SidDumpOutput {
 	}
 
 	public String getNote1() {
-		return note1.get();
+		return note1;
 	}
 
 	public void setNote1(String value) {
-		note1.set(value);
+		note1 = value;
 	}
 
 	public String getNote2() {
-		return note2.get();
+		return note2;
 	}
 
 	public void setNote2(String value) {
-		note2.set(value);
+		note2 = value;
 	}
 
 	public String getNote3() {
-		return note3.get();
+		return note3;
 	}
 
 	public void setNote3(String value) {
-		note3.set(value);
+		note3 = value;
 	}
 
 	public String getNote(int c) {
 		switch (c) {
 		case 0:
-			return note1.get();
+			return note1;
 		case 1:
-			return note2.get();
+			return note2;
 		case 2:
-			return note3.get();
+			return note3;
 
 		default:
 			return null;
@@ -129,13 +111,13 @@ public class SidDumpOutput {
 	public void setNote(String value, int c) {
 		switch (c) {
 		case 0:
-			note1.set(value);
+			note1 = value;
 			break;
 		case 1:
-			note2.set(value);
+			note2 = value;
 			break;
 		case 2:
-			note3.set(value);
+			note3 = value;
 			break;
 
 		default:
@@ -144,37 +126,37 @@ public class SidDumpOutput {
 	}
 
 	public String getWf1() {
-		return wf1.get();
+		return wf1;
 	}
 
 	public void setWf1(String value) {
-		wf1.set(value);
+		wf1 = value;
 	}
 
 	public String getWf2() {
-		return wf2.get();
+		return wf2;
 	}
 
 	public void setWf2(String value) {
-		wf2.set(value);
+		wf2 = value;
 	}
 
 	public String getWf3() {
-		return wf3.get();
+		return wf3;
 	}
 
 	public void setWf3(String value) {
-		wf3.set(value);
+		wf3 = value;
 	}
 
 	public String getWf(int c) {
 		switch (c) {
 		case 0:
-			return wf1.get();
+			return wf1;
 		case 1:
-			return wf2.get();
+			return wf2;
 		case 2:
-			return wf3.get();
+			return wf3;
 
 		default:
 			return null;
@@ -184,13 +166,13 @@ public class SidDumpOutput {
 	public void setWf(String value, int c) {
 		switch (c) {
 		case 0:
-			wf1.set(value);
+			wf1 = value;
 			break;
 		case 1:
-			wf2.set(value);
+			wf2 = value;
 			break;
 		case 2:
-			wf3.set(value);
+			wf3 = value;
 			break;
 
 		default:
@@ -199,37 +181,37 @@ public class SidDumpOutput {
 	}
 
 	public String getAdsr1() {
-		return adsr1.get();
+		return adsr1;
 	}
 
 	public void setAdsr1(String value) {
-		adsr1.set(value);
+		adsr1 = value;
 	}
 
 	public String getAdsr2() {
-		return adsr2.get();
+		return adsr2;
 	}
 
 	public void setAdsr2(String value) {
-		adsr2.set(value);
+		adsr2 = value;
 	}
 
 	public String getAdsr3() {
-		return adsr3.get();
+		return adsr3;
 	}
 
 	public void setAdsr3(String value) {
-		adsr3.set(value);
+		adsr3 = value;
 	}
 
 	public String getAdsr(int c) {
 		switch (c) {
 		case 0:
-			return adsr1.get();
+			return adsr1;
 		case 1:
-			return adsr2.get();
+			return adsr2;
 		case 2:
-			return adsr3.get();
+			return adsr3;
 
 		default:
 			return null;
@@ -239,13 +221,13 @@ public class SidDumpOutput {
 	public void setAdsr(String value, int c) {
 		switch (c) {
 		case 0:
-			adsr1.set(value);
+			adsr1 = value;
 			break;
 		case 1:
-			adsr2.set(value);
+			adsr2 = value;
 			break;
 		case 2:
-			adsr3.set(value);
+			adsr3 = value;
 			break;
 
 		default:
@@ -254,37 +236,37 @@ public class SidDumpOutput {
 	}
 
 	public String getPul1() {
-		return pul1.get();
+		return pul1;
 	}
 
 	public void setPul1(String value) {
-		pul1.set(value);
+		pul1 = value;
 	}
 
 	public String getPul2() {
-		return pul2.get();
+		return pul2;
 	}
 
 	public void setPul2(String value) {
-		pul2.set(value);
+		pul2 = value;
 	}
 
 	public String getPul3() {
-		return pul3.get();
+		return pul3;
 	}
 
 	public void setPul3(String value) {
-		pul3.set(value);
+		pul3 = value;
 	}
 
 	public String getPul(int c) {
 		switch (c) {
 		case 0:
-			return pul1.get();
+			return pul1;
 		case 1:
-			return pul2.get();
+			return pul2;
 		case 2:
-			return pul3.get();
+			return pul3;
 
 		default:
 			return null;
@@ -294,13 +276,13 @@ public class SidDumpOutput {
 	public void setPul(String value, int c) {
 		switch (c) {
 		case 0:
-			pul1.set(value);
+			pul1 = value;
 			break;
 		case 1:
-			pul2.set(value);
+			pul2 = value;
 			break;
 		case 2:
-			pul3.set(value);
+			pul3 = value;
 			break;
 
 		default:
@@ -309,34 +291,34 @@ public class SidDumpOutput {
 	}
 
 	public String getFcut() {
-		return fcut.get();
+		return fcut;
 	}
 
 	public void setFcut(String value) {
-		fcut.set(value);
+		fcut = value;
 	}
 
 	public String getRc() {
-		return rc.get();
+		return rc;
 	}
 
 	public void setRc(String value) {
-		rc.set(value);
+		rc = value;
 	}
 
 	public String getTyp() {
-		return typ.get();
+		return typ;
 	}
 
 	public void setTyp(String value) {
-		typ.set(value);
+		typ = value;
 	}
 
 	public String getV() {
-		return v.get();
+		return v;
 	}
 
 	public void setV(String value) {
-		v.set(value);
+		v = value;
 	}
 }

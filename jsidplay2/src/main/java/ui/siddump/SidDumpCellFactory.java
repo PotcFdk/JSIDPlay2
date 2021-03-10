@@ -3,6 +3,7 @@ package ui.siddump;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
+import sidplay.audio.siddump.SidDumpOutput;
 
 /**
  * Classify SidDump table cells for CSS styling.
