@@ -1,8 +1,18 @@
 package ui.siddump;
 
 import java.beans.PropertyChangeListener;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -25,8 +35,10 @@ import javafx.stage.FileChooser;
 import libsidplay.sidtune.SidTune;
 import libsidutils.siddump.SIDDumpConfiguration;
 import libsidutils.siddump.SIDDumpConfiguration.SIDDumpPlayer;
+import libsidutils.siddump.SIDDumpConfiguration.SIDDumpReg;
 import server.netsiddev.InvalidCommandException;
 import sidplay.Player;
+import sidplay.audio.siddump.SIDDumpExtension;
 import sidplay.audio.siddump.SidDumpOutput;
 import sidplay.player.State;
 import ui.common.C64VBox;
@@ -62,7 +74,24 @@ public class SidDump extends C64VBox implements UIPart {
 
 	private double seconds;
 
+	/**
+	 * Total record duration
+	 */
+	private double fSeconds;
+
+	public void setRecordLength(final double seconds) {
+		fSeconds = seconds;
+	}
+
 	private Thread fPlayerThread;
+
+	private Collection<SIDDumpReg> fRegOrder = null;
+
+	private int fReplayFreq = 50;
+
+	private float leftVolume;
+
+	private SidDumpReplayer replayer;
 
 	private PropertyChangeListener changeListener;
 
@@ -85,11 +114,11 @@ public class SidDump extends C64VBox implements UIPart {
 				Platform.runLater(() -> {
 					startStopRecording.setSelected(false);
 					replayAll.setDisable(false);
-					sidDumpExtension.stopRecording();
+					stopRecording();
 				});
 			}
 		};
-		sidDumpExtension = new SIDDumpExtension(util.getPlayer(), util.getConfig()) {
+		sidDumpExtension = new SIDDumpExtension() {
 
 			@Override
 			public void add(final SidDumpOutput output) {
@@ -97,16 +126,19 @@ public class SidDump extends C64VBox implements UIPart {
 			}
 
 			@Override
-			public void clear() {
-				Platform.runLater(() -> sidDumpOutputs.clear());
+			public boolean isWithinTimeWindow() {
+				return sidDumpExtension.getFrames() >= sidDumpExtension.getFirstFrame()
+						&& sidDumpExtension.getFrames() <= (long) (sidDumpExtension.getFirstFrame()
+								+ fSeconds * util.getPlayer().getC64().getClock().getScreenRefresh());
 			}
+
 		};
 		util.getPlayer().stateProperty().addListener(changeListener);
 
 		maxRecordLength.textProperty().addListener((obj, o, n) -> util.checkTextField(maxRecordLength, () -> {
 			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
 			return seconds != -1;
-		}, () -> sidDumpExtension.setRecordLength(seconds), "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
+		}, () -> setRecordLength(seconds), "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
 
 		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
 		SortedList<SidDumpOutput> sortedList = new SortedList<>(sidDumpOutputs);
@@ -140,15 +172,11 @@ public class SidDump extends C64VBox implements UIPart {
 		final File file = fileDialog.showOpenDialog(loadDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
-			sidDumpExtension.load(file.getAbsolutePath());
+			load(file.getAbsolutePath());
 			noteSpacing.setText(String.valueOf(sidDumpExtension.getNoteSpacing()));
 			patternSpacing.setText(String.valueOf(sidDumpExtension.getPatternSpacing()));
 			firstFrame.setText(String.valueOf(sidDumpExtension.getFirstFrame()));
 			lowResolutionMode.setSelected(sidDumpExtension.getLowRes());
-			loadAddress = sidDumpExtension.getLoadAddress();
-			initAddress = sidDumpExtension.getInitAddress();
-			playerAddress = sidDumpExtension.getPlayerAddress();
-			subTune = sidDumpExtension.getCurrentSong();
 			timeInSeconds.setSelected(sidDumpExtension.getTimeInSeconds());
 		}
 	}
@@ -160,7 +188,7 @@ public class SidDump extends C64VBox implements UIPart {
 		final File file = fileDialog.showSaveDialog(saveDump.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
-			sidDumpExtension.save(file.getAbsolutePath(), sidDumpOutputs);
+			save(file.getAbsolutePath(), sidDumpOutputs);
 		}
 	}
 
@@ -168,7 +196,7 @@ public class SidDump extends C64VBox implements UIPart {
 	private void doReplayAll() {
 		try {
 			while (fPlayerThread != null && fPlayerThread.isAlive()) {
-				sidDumpExtension.stopReplay();
+				stopReplay();
 				fPlayerThread.join(1000);
 				// This is only the last option, if the player can not be
 				// stopped clean
@@ -179,7 +207,7 @@ public class SidDump extends C64VBox implements UIPart {
 		if (replayAll.isSelected()) {
 			fPlayerThread = new Thread(() -> {
 				try {
-					sidDumpExtension.replay(sidDumpOutputs);
+					replay(sidDumpOutputs);
 				} catch (InvalidCommandException e) {
 					e.printStackTrace();
 				}
@@ -211,7 +239,7 @@ public class SidDump extends C64VBox implements UIPart {
 
 	@FXML
 	private void doSetPlayer() {
-		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel().getSelectedItem().getRegs());
+		fRegOrder = (regPlayer.getSelectionModel().getSelectedItem().getRegs());
 	}
 
 	@FXML
@@ -269,7 +297,7 @@ public class SidDump extends C64VBox implements UIPart {
 			return speed >= 1;
 		}, () -> {
 			final int speed = Integer.parseInt(callsPerFrame.getText());
-			sidDumpExtension.setReplayFrequency(speed * 50);
+			fReplayFreq = (speed * 50);
 		}, "CALLS_PER_FRAME_TIP", "CALLS_PER_FRAME_NEG");
 	}
 
@@ -287,13 +315,9 @@ public class SidDump extends C64VBox implements UIPart {
 		startStopRecording.setDisable(tune.getInfo().getPlayAddr() == 0);
 
 		loadAddress = tune.getInfo().getLoadAddr();
-		sidDumpExtension.setLoadAddress(loadAddress);
 		initAddress = tune.getInfo().getInitAddr();
-		sidDumpExtension.setInitAddress(initAddress);
 		playerAddress = tune.getInfo().getPlayAddr();
-		sidDumpExtension.setPayerAddress(playerAddress);
 		subTune = tune.getInfo().getCurrentSong();
-		sidDumpExtension.setCurrentSong(subTune);
 		sidDumpExtension.setFirstFrame(Long.valueOf(firstFrame.getText()));
 		if (seconds == 0) {
 			double length = util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0.);
@@ -305,9 +329,9 @@ public class SidDump extends C64VBox implements UIPart {
 				}
 			}
 			maxRecordLength.setText(new TimeToStringConverter().toString(length));
-			sidDumpExtension.setRecordLength(length);
+			setRecordLength(length);
 		} else {
-			sidDumpExtension.setRecordLength(seconds);
+			setRecordLength(seconds);
 		}
 		sidDumpExtension.setTimeInSeconds(timeInSeconds.isSelected());
 		sidDumpExtension.setOldNoteFactor(Float.parseFloat(oldNoteFactor.getText()));
@@ -323,9 +347,382 @@ public class SidDump extends C64VBox implements UIPart {
 		} else {
 			startStopRecording.setTooltip(new Tooltip(null));
 		}
-		sidDumpExtension.setLeftVolume(util.getConfig().getAudioSection().getMainVolume());
-		sidDumpExtension.setRegOrder(regPlayer.getSelectionModel().getSelectedItem().getRegs());
+		leftVolume = (util.getConfig().getAudioSection().getMainVolume());
+		fRegOrder = (regPlayer.getSelectionModel().getSelectedItem().getRegs());
 		sidDumpExtension.init(util.getPlayer().getC64().getClock());
+		Platform.runLater(() -> sidDumpOutputs.clear());
+
+	}
+
+	/**
+	 * Stop recording
+	 */
+	public void stopRecording() {
+		// set total recorded frames
+		// update table
+		sidDumpExtension.setFrames((long) (sidDumpExtension.getFirstFrame()
+				+ seconds * util.getPlayer().getC64().getClock().getScreenRefresh()));
+	}
+
+	/**
+	 * Re-load a SID dump file
+	 *
+	 * @param filename file name to load
+	 */
+	public void load(final String filename) {
+		// first clear table
+		Platform.runLater(() -> sidDumpOutputs.clear());
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename)))) {
+			// ignore header
+			String lineContents;
+			for (int i = 0; i < 7; i++) {
+				lineContents = br.readLine();
+				// System.out.println("Skipped: " + lineContents);
+				if (lineContents == null) {
+					System.err.println("unexpected end of file!");
+					return;
+				}
+				switch (i) {
+				case 0:
+					Scanner sc = new Scanner(lineContents);
+					sc.useDelimiter("\n");
+					sc.findInLine(
+							"Load address: \\$(\\p{XDigit}+) Init address: \\$(\\p{XDigit}+) Play address: \\$(\\p{XDigit}+)");
+					MatchResult result = sc.match();
+					for (int j = 0; j < result.groupCount(); j++) {
+						final String group = result.group(j + 1);
+						switch (j) {
+						case 0:
+							loadAddress = readNumber(group, 16);
+							break;
+
+						case 1:
+							initAddress = readNumber(group, 16);
+							break;
+
+						case 2:
+							playerAddress = readNumber(group, 16);
+							break;
+
+						default:
+							break;
+						}
+					}
+					break;
+
+				case 1:
+					sc = new Scanner(lineContents);
+					sc.useDelimiter("\n");
+					sc.findInLine("Calling initroutine with subtune (\\d+)");
+					result = sc.match();
+					for (int j = 0; j < result.groupCount(); j++) {
+						final String group = result.group(j + 1);
+						switch (j) {
+						case 0:
+							// Sub Tune
+							subTune = readNumber(group, 10) + 1;
+							break;
+
+						default:
+							break;
+						}
+					}
+					break;
+
+				case 2:
+					sc = new Scanner(lineContents);
+					sc.useDelimiter("\n");
+					sc.findInLine("Calling playroutine for (\\d+) frames\\, starting from frame (\\d+)");
+					result = sc.match();
+					for (int j = 0; j < result.groupCount(); j++) {
+						final String group = result.group(j + 1);
+						switch (j) {
+						case 0:
+							// frames
+							break;
+
+						case 1:
+							// first frame
+							sidDumpExtension.setFirstFrame(readNumber(group, 10));
+							break;
+
+						default:
+							break;
+						}
+					}
+					break;
+
+				case 3:
+					// "Middle C frequency is $1168"
+					sc = new Scanner(lineContents);
+					sc.useDelimiter("\n");
+					sc.findInLine("Middle C frequency is \\$(\\d+)");
+					result = sc.match();
+					for (int j = 0; j < result.groupCount(); j++) {
+						// ??? how to restore that?
+
+						// String group = result.group(j + 1);
+						// switch (j) {
+						// case 0:
+						// // middle freq
+						// // System.out.println("middle freq= " + group);
+						// break;
+						//
+						// default:
+						// break;
+						// }
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+			// read rows and columns
+			try (final Scanner sc = new Scanner(br)) {
+				sc.useDelimiter(" ?\\| ?");
+				sidDumpExtension.setNoteSpacing(0);
+				sidDumpExtension.setPatternSpacing(0);
+				sidDumpExtension.setLowRes(false);
+
+				int fFetchedRow = 0;
+				int fPatternNum = 1;
+				int fNoteNum = 1;
+
+				int lastFrame = 0;
+				loop: do {
+					final SidDumpOutput output = new SidDumpOutput();
+					int col = 0;
+					while (sc.hasNext()) {
+						final String next = sc.next();
+						if (next.trim().length() == 0) {
+							// line break
+							break;
+						}
+						switch (col) {
+						case 0:
+							if (next.startsWith("-") || next.startsWith("=")) {
+								output.setTime(next);
+								break;
+							}
+							// get frame of current row
+							lastFrame = Integer.parseInt(next.trim());
+							if (fFetchedRow == 1) {
+								// detect low-res recording
+								final int lowresdist = lastFrame;
+								if (lowresdist != 1) {
+									sidDumpExtension.setLowRes(true);
+									sidDumpExtension.setNoteSpacing(lowresdist);
+								}
+							}
+							// e.g. Frame=" 0"
+							output.setTime(next);
+							break;
+
+						case 1:
+						case 2:
+						case 3:
+							output.setFreq(next.substring(0, 4), col - 1);
+							output.setNote(next.substring(5, 13), col - 1);
+							output.setWf(next.substring(14, 16), col - 1);
+							output.setAdsr(next.substring(17, 21), col - 1);
+							output.setPul(next.substring(22, 25), col - 1);
+							break;
+
+						case 4:
+							// e.g. FCut RC Typ V = "3000 F2 Low F"
+							output.setFcut(next.substring(0, 4));
+							output.setRc(next.substring(5, 7));
+							output.setTyp(next.substring(8, 11));
+							output.setV(next.substring(12, 13));
+							break;
+
+						case 5:
+							add(output);
+							if (next.trim().startsWith("+=")) {
+								if (sidDumpExtension.getPatternSpacing() == 0) {
+									final int nextFrame = lastFrame + sidDumpExtension.getNoteSpacing();
+									sidDumpExtension.setPatternSpacing(nextFrame / sidDumpExtension.getNoteSpacing());
+								}
+								// pattern spacing?
+								fNoteNum = 1;
+								fPatternNum = addPatternSpacing(fPatternNum);
+							} else if (next.trim().startsWith("+-")) {
+								if (sidDumpExtension.getNoteSpacing() == 0) {
+									if (!sidDumpExtension.getLowRes()) {
+										sidDumpExtension.setNoteSpacing(fFetchedRow);
+									}
+								}
+								// note spacing?
+								fNoteNum = addNoteSpacing(fNoteNum);
+							}
+							continue loop;
+
+						default:
+							break;
+						}
+						col++;
+					}
+					add(output);
+				} while (sc.hasNext());
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		stopRecording();
+	}
+
+	private int readNumber(String number, int radix) {
+		try {
+			return Integer.parseInt(number, radix);
+		} catch (final NumberFormatException e) {
+			System.err.println(e.getMessage());
+			return 0;
+		}
+	}
+
+	/**
+	 * Put a note spacing row into the table
+	 */
+	private int addNoteSpacing(int noteNum) {
+		final SidDumpOutput noteSep = new SidDumpOutput();
+		noteSep.setTime(String.format("-N%03X", noteNum++));
+		for (int c = 0; c < 3; c++) {
+			noteSep.setFreq("----", c);
+			noteSep.setNote("--------", c);
+			noteSep.setWf("--", c);
+			noteSep.setAdsr("----", c);
+			noteSep.setPul("---", c);
+		}
+		noteSep.setFcut("----");
+		noteSep.setRc("--");
+		noteSep.setTyp("---");
+		noteSep.setV("-");
+		add(noteSep);
+		return noteNum;
+	}
+
+	/**
+	 * Put a pattern spacing row into the table
+	 */
+	private int addPatternSpacing(int fPatternNum) {
+		final SidDumpOutput patternSep = new SidDumpOutput();
+		patternSep.setTime(String.format("=P%03X", fPatternNum++));
+		for (int c = 0; c < 3; c++) {
+			patternSep.setFreq("====", c);
+			patternSep.setNote("========", c);
+			patternSep.setWf("==", c);
+			patternSep.setAdsr("====", c);
+			patternSep.setPul("===", c);
+		}
+		patternSep.setFcut("====");
+		patternSep.setRc("==");
+		patternSep.setTyp("===");
+		patternSep.setV("=");
+		add(patternSep);
+		return fPatternNum;
+	}
+
+	/**
+	 * Save table into file (create SID dump file)
+	 *
+	 * @param filename       file name
+	 * @param sidDumpOutputs
+	 */
+	public void save(final String filename, ObservableList<SidDumpOutput> sidDumpOutputs) {
+		try (final PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
+			out.println(String.format("Load address: $%04X Init address: $%04X Play address: $%04X", loadAddress,
+					initAddress, playerAddress));
+			out.println("Calling initroutine with subtune " + (subTune - 1));
+			out.println("Calling playroutine for "
+					+ (int) (seconds * util.getPlayer().getC64().getClock().getScreenRefresh())
+					+ " frames, starting from frame " + sidDumpExtension.getFirstFrame());
+			out.println(String.format("Middle C frequency is $%04X",
+					SIDDumpExtension.FREQ_TBL_LO_USE[48] | SIDDumpExtension.FREQ_TBL_HI_USE[48] << 8));
+			out.println();
+			out.println(
+					"| Frame | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | FCut RC Typ V |");
+			out.println(
+					"+-------+---------------------------+---------------------------+---------------------------+---------------+");
+			for (final SidDumpOutput putput : sidDumpOutputs) {
+				// String firstCol = row.get(0);
+				// if (firstCol.startsWith("=")) {
+				// out
+				// .println("+=======+===========================+===========================+===========================+===============+");
+				// continue;
+				// } else if (firstCol.startsWith("-")) {
+				// out
+				// .println("+-------+---------------------------+---------------------------+---------------------------+---------------+");
+				// continue;
+				// }
+				out.print("| ");
+				out.print(putput.getTime());
+				out.print(" | ");
+				out.print(putput.getFreq(0));
+				out.print(" ");
+				out.print(putput.getNote(0));
+				out.print(" ");
+				out.print(putput.getWf(0));
+				out.print(" ");
+				out.print(putput.getAdsr(0));
+				out.print(" ");
+				out.print(putput.getPul(0));
+				out.print(" | ");
+				out.print(putput.getFreq(1));
+				out.print(" ");
+				out.print(putput.getNote(1));
+				out.print(" ");
+				out.print(putput.getWf(1));
+				out.print(" ");
+				out.print(putput.getAdsr(1));
+				out.print(" ");
+				out.print(putput.getPul(1));
+				out.print(" | ");
+				out.print(putput.getFreq(2));
+				out.print(" ");
+				out.print(putput.getNote(2));
+				out.print(" ");
+				out.print(putput.getWf(2));
+				out.print(" ");
+				out.print(putput.getAdsr(2));
+				out.print(" ");
+				out.print(putput.getPul(2));
+				out.print(" | ");
+				out.print(putput.getFcut());
+				out.print(" ");
+				out.print(putput.getRc());
+				out.print(" ");
+				out.print(putput.getTyp());
+				out.print(" ");
+				out.print(putput.getV());
+				out.println(" |");
+			}
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void add(final SidDumpOutput output) {
+		Platform.runLater(() -> sidDumpOutputs.add(output));
+	}
+
+	/**
+	 * Replay a recorded SID dump
+	 *
+	 * @param sidDumpOutputs
+	 *
+	 * @throws InvalidCommandException
+	 */
+	public void replay(ObservableList<SidDumpOutput> sidDumpOutputs) throws InvalidCommandException {
+		replayer = new SidDumpReplayer(util.getPlayer().getConfig());
+		replayer.setLeftVolume(leftVolume);
+		replayer.setRegOrder(fRegOrder);
+		replayer.setReplayFrequency(fReplayFreq);
+		replayer.replay(sidDumpOutputs);
+	}
+
+	public void stopReplay() {
+		replayer.stopReplay();
 	}
 
 }

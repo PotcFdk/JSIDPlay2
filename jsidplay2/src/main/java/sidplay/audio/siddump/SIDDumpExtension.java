@@ -11,74 +11,133 @@ import libsidplay.components.mos6510.IMOS6510Extension;
 
 public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension {
 
-	public static final String FILTER_NAME[] = { "Off", "Low", "Bnd", "L+B", "Hi ", "L+H", "B+H", "LBH" };
+	private static final String FILTER_NAME[] = { "Off", "Low", "Bnd", "L+B", "Hi ", "L+H", "B+H", "LBH" };
 
-	public static final char FREQ_TBL_LO[] = { 0x17, 0x27, 0x39, 0x4b, 0x5f, 0x74, 0x8a, 0xa1, 0xba, 0xd4, 0xf0, 0x0e,
+	private static final char FREQ_TBL_LO[] = { 0x17, 0x27, 0x39, 0x4b, 0x5f, 0x74, 0x8a, 0xa1, 0xba, 0xd4, 0xf0, 0x0e,
 			0x2d, 0x4e, 0x71, 0x96, 0xbe, 0xe8, 0x14, 0x43, 0x74, 0xa9, 0xe1, 0x1c, 0x5a, 0x9c, 0xe2, 0x2d, 0x7c, 0xcf,
 			0x28, 0x85, 0xe8, 0x52, 0xc1, 0x37, 0xb4, 0x39, 0xc5, 0x5a, 0xf7, 0x9e, 0x4f, 0x0a, 0xd1, 0xa3, 0x82, 0x6e,
 			0x68, 0x71, 0x8a, 0xb3, 0xee, 0x3c, 0x9e, 0x15, 0xa2, 0x46, 0x04, 0xdc, 0xd0, 0xe2, 0x14, 0x67, 0xdd, 0x79,
 			0x3c, 0x29, 0x44, 0x8d, 0x08, 0xb8, 0xa1, 0xc5, 0x28, 0xcd, 0xba, 0xf1, 0x78, 0x53, 0x87, 0x1a, 0x10, 0x71,
 			0x42, 0x89, 0x4f, 0x9b, 0x74, 0xe2, 0xf0, 0xa6, 0x0e, 0x33, 0x20, 0xff };
 
-	public static final char FREQ_TBL_HI[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
+	private static final char FREQ_TBL_HI[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
 			0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05, 0x05,
 			0x06, 0x06, 0x06, 0x07, 0x07, 0x08, 0x08, 0x09, 0x09, 0x0a, 0x0a, 0x0b, 0x0c, 0x0d, 0x0d, 0x0e, 0x0f, 0x10,
 			0x11, 0x12, 0x13, 0x14, 0x15, 0x17, 0x18, 0x1a, 0x1b, 0x1d, 0x1f, 0x20, 0x22, 0x24, 0x27, 0x29, 0x2b, 0x2e,
 			0x31, 0x34, 0x37, 0x3a, 0x3e, 0x41, 0x45, 0x49, 0x4e, 0x52, 0x57, 0x5c, 0x62, 0x68, 0x6e, 0x75, 0x7c, 0x83,
 			0x8b, 0x93, 0x9c, 0xa5, 0xaf, 0xb9, 0xc4, 0xd0, 0xdd, 0xea, 0xf8, 0xff };
 
-	protected static final char FREQ_TBL_LO_USE[] = new char[FREQ_TBL_LO.length];
-	protected static final char FREQ_TBL_HI_USE[] = new char[FREQ_TBL_HI.length];
+	public static final char FREQ_TBL_LO_USE[] = new char[FREQ_TBL_LO.length];
+	public static final char FREQ_TBL_HI_USE[] = new char[FREQ_TBL_HI.length];
 
-	private boolean fFirstTime;
+	private boolean firstTime;
 
-	protected long fFrames;
+	private long frames;
 
-	/** parameter: when to start **/
-	protected long fFirstframe;
+	private long firstframe;
 
-	protected float fOldNoteFactor = 1.f;
+	private float oldNoteFactor = 1.f;
 
-	protected int fBaseFreq = 0;
+	private int baseFreq = 0;
 
-	protected int fBaseNote = 0xb0;
+	private int baseNote = 0xb0;
 
-	protected boolean fLowRes = false;
+	private boolean flowRes = false;
 
-	protected int fNoteSpacing = 0;
+	private int noteSpacing = 0;
 
-	protected int fPatternSpacing = 0;
+	private int patternSpacing = 0;
 
-	protected boolean fTimeInSeconds = true;
+	private boolean timeInSeconds = true;
 
-	private int fCounter;
+	private int counter;
 
-	private int fRows;
+	private int rows;
 
-	private final Channel fChannel[] = new Channel[3];
+	private final Channel channel[] = new Channel[3];
 
-	private final Channel fPrevChannel[] = new Channel[3];
+	private final Channel prevChannel[] = new Channel[3];
 
-	private final Channel fPrevChannel2[] = new Channel[3];
+	private final Channel prevChannel2[] = new Channel[3];
 
-	private Filter fFilter;
-	private Filter fPrevFilter;
+	private Filter filter;
+	private Filter prevFilter;
 
-	private int fPatternNum;
+	private int patternNum;
 
-	private int fNoteNum;
+	private int noteNum;
 
 	private final byte[] registers = new byte[REG_COUNT];
 
-	protected CPUClock cpuClock;
+	private CPUClock cpuClock;
 
 	public void init(CPUClock cpuClock) {
 		this.cpuClock = cpuClock;
 		clearChannelStructures();
 		recalibrateFreqTable();
-		fFirstTime = true;
-		fPatternNum = 1;
-		fNoteNum = 1;
+		firstTime = true;
+		patternNum = 1;
+		noteNum = 1;
+	}
+
+	public long getFirstFrame() {
+		return firstframe;
+	}
+
+	public void setFirstFrame(final long firstFrame) {
+		this.firstframe = firstFrame;
+	}
+
+	public long getFrames() {
+		return frames;
+	}
+
+	public void setFrames(long frames) {
+		this.frames = frames;
+	}
+
+	public boolean getTimeInSeconds() {
+		return timeInSeconds;
+	}
+
+	public void setTimeInSeconds(final boolean timeInSeconds) {
+		this.timeInSeconds = timeInSeconds;
+	}
+
+	public void setOldNoteFactor(final float oldNoteFactor) {
+		this.oldNoteFactor = oldNoteFactor;
+	}
+
+	public void setBaseFreq(final int baseFreq) {
+		this.baseFreq = baseFreq;
+	}
+
+	public void setBaseNote(final int baseNote) {
+		this.baseNote = baseNote;
+	}
+
+	public int getPatternSpacing() {
+		return patternSpacing;
+	}
+
+	public void setPatternSpacing(final int patternSpacing) {
+		this.patternSpacing = patternSpacing;
+	}
+
+	public int getNoteSpacing() {
+		return noteSpacing;
+	}
+
+	public void setNoteSpacing(final int noteSpacing) {
+		this.noteSpacing = noteSpacing;
+	}
+
+	public void setLowRes(final boolean lowRes) {
+		this.flowRes = lowRes;
+	}
+
+	public boolean getLowRes() {
+		return flowRes;
 	}
 
 	@Override
@@ -89,71 +148,71 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	@Override
 	public void jmpJsr() {
 		// ignore first call
-		if (fFirstTime) {
-			fFirstTime = false;
+		if (firstTime) {
+			firstTime = false;
 			return;
 		}
 
 		// Get SID parameters from each channel and the filter
-		for (int channel = 0; channel < 3; channel++) {
-			fChannel[channel].read(channel, registers);
+		for (int ch = 0; ch < 3; ch++) {
+			channel[ch].read(ch, registers);
 		}
-		fFilter.read(registers);
+		filter.read(registers);
 
 		// Frame display if first frame to be recorded is reached
 		if (isWithinTimeWindow()) {
 			SidDumpOutput output = new SidDumpOutput();
-			final long time = fFrames - fFirstframe;
+			final long time = frames - firstframe;
 
-			output.setTime(getTime(time, fTimeInSeconds));
+			output.setTime(getTime(time, timeInSeconds));
 
 			// Loop for each channel
 			for (int c = 0; c < 3; c++) {
 				int newnote = 0;
 
 				// Keyoff-keyon sequence detection
-				if (fChannel[c].getWave() >= 0x10) {
-					if (0 != (fChannel[c].getWave() & 1)
-							&& (0 == (fPrevChannel2[c].getWave() & 1) || fPrevChannel2[c].getWave() < 0x10)) {
-						fPrevChannel[c].setNote(-1);
+				if (channel[c].getWave() >= 0x10) {
+					if (0 != (channel[c].getWave() & 1)
+							&& (0 == (prevChannel2[c].getWave() & 1) || prevChannel2[c].getWave() < 0x10)) {
+						prevChannel[c].setNote(-1);
 					}
 				}
 
 				// Frequency
-				if (fFrames == fFirstframe || fPrevChannel[c].getNote() == -1
-						|| fChannel[c].getFreq() != fPrevChannel[c].getFreq()) {
+				if (frames == firstframe || prevChannel[c].getNote() == -1
+						|| channel[c].getFreq() != prevChannel[c].getFreq()) {
 					int d;
 					int dist = 0x7fffffff;
-					final int delta = fChannel[c].getFreq() - fPrevChannel2[c].getFreq();
-					output.setFreq(String.format("%04X", fChannel[c].getFreq()), c);
+					final int delta = channel[c].getFreq() - prevChannel2[c].getFreq();
+					output.setFreq(String.format("%04X", channel[c].getFreq()), c);
 
-					if (fChannel[c].getWave() >= 0x10) {
+					if (channel[c].getWave() >= 0x10) {
 						// Get new note number
 						for (d = 0; d < 96; d++) {
 							final int cmpfreq = FREQ_TBL_LO_USE[d] | FREQ_TBL_HI_USE[d] << 8;
-							final int freq = fChannel[c].getFreq();
+							final int freq = channel[c].getFreq();
 
 							if (Math.abs(freq - cmpfreq) < dist) {
 								dist = Math.abs(freq - cmpfreq);
 								// Favor the old note
-								if (d == fPrevChannel[c].getNote()) {
-									dist /= fOldNoteFactor;
+								if (d == prevChannel[c].getNote()) {
+									dist /= oldNoteFactor;
 								}
-								fChannel[c].setNote(d);
+								channel[c].setNote(d);
 							}
 						}
 						// Print new note
-						if (fChannel[c].getNote() != fPrevChannel[c]
+						if (channel[c].getNote() != prevChannel[c]
 								.getNote() /*
 											 * || changes [ FREQ_LO_1 + 7 * c] || changes [ FREQ_HI_1 + 7 * c]
 											 */) {
-							if (fPrevChannel[c].getNote() == -1) {
-								if (fLowRes) {
+							if (prevChannel[c].getNote() == -1) {
+								if (flowRes) {
 									newnote = 1;
 								}
-								output.setNote(fChannel[c].getNote(false), c);
+								output.setNote(channel[c].getNote(false), c);
 							} else {
-								output.setNote(fChannel[c].getNote(true), c);
+								output.setNote(channel[c].getNote(true), c);
 							}
 						} else {
 							// If same note, print frequency change
@@ -177,50 +236,50 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 				}
 
 				// Waveform
-				if (fFrames == fFirstframe || newnote != 0 || fChannel[c].getWave() != fPrevChannel[c].getWave()) {
-					output.setWf(String.format("%02X", fChannel[c].getWave()), c);
+				if (frames == firstframe || newnote != 0 || channel[c].getWave() != prevChannel[c].getWave()) {
+					output.setWf(String.format("%02X", channel[c].getWave()), c);
 				} else {
 					output.setWf("..", c);
 				}
 
 				// ADSR
-				if (fFrames == fFirstframe || newnote != 0 || fChannel[c].getAdsr() != fPrevChannel[c].getAdsr()) {
-					output.setAdsr(String.format("%04X", fChannel[c].getAdsr()), c);
+				if (frames == firstframe || newnote != 0 || channel[c].getAdsr() != prevChannel[c].getAdsr()) {
+					output.setAdsr(String.format("%04X", channel[c].getAdsr()), c);
 				} else {
 					output.setAdsr("....", c);
 				}
 
 				// Pulse
-				if (fFrames == fFirstframe || newnote != 0 || fChannel[c].getPulse() != fPrevChannel[c].getPulse()) {
-					output.setPul(String.format("%03X", fChannel[c].getPulse()), c);
+				if (frames == firstframe || newnote != 0 || channel[c].getPulse() != prevChannel[c].getPulse()) {
+					output.setPul(String.format("%03X", channel[c].getPulse()), c);
 				} else {
 					output.setPul("...", c);
 				}
 			}
 			// Filter cutoff
-			if (fFrames == fFirstframe || fFilter.getCutoff() != fPrevFilter.getCutoff()) {
-				output.setFcut(String.format("%04X", fFilter.getCutoff()));
+			if (frames == firstframe || filter.getCutoff() != prevFilter.getCutoff()) {
+				output.setFcut(String.format("%04X", filter.getCutoff()));
 			} else {
 				output.setFcut("....");
 			}
 
 			// Filter control
-			if (fFrames == fFirstframe || fFilter.getCtrl() != fPrevFilter.getCtrl()) {
-				output.setRc(String.format("%02X", fFilter.getCtrl()));
+			if (frames == firstframe || filter.getCtrl() != prevFilter.getCtrl()) {
+				output.setRc(String.format("%02X", filter.getCtrl()));
 			} else {
 				output.setRc("..");
 			}
 
 			// Filter passband
-			if (fFrames == fFirstframe || (fFilter.getType() & 0x70) != (fPrevFilter.getType() & 0x70)) {
-				output.setTyp(FILTER_NAME[fFilter.getType() >> 4 & 0x7]);
+			if (frames == firstframe || (filter.getType() & 0x70) != (prevFilter.getType() & 0x70)) {
+				output.setTyp(FILTER_NAME[filter.getType() >> 4 & 0x7]);
 			} else {
 				output.setTyp("...");
 			}
 
 			// Mastervolume
-			if (fFrames == fFirstframe || (fFilter.getType() & 0xf) != (fPrevFilter.getType() & 0xf)) {
-				output.setV(String.format("%01X", fFilter.getType() & 0xf));
+			if (frames == firstframe || (filter.getType() & 0xf) != (prevFilter.getType() & 0xf)) {
+				output.setV(String.format("%01X", filter.getType() & 0xf));
 			} else {
 				output.setV(".");
 			}
@@ -228,37 +287,37 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 			// End of frame display, print info so far and copy SID
 			// registers to
 			// old registers
-			if (!fLowRes || 0 == (fFrames - fFirstframe) % fNoteSpacing) {
+			if (!flowRes || 0 == (frames - firstframe) % noteSpacing) {
 				add(output);
-				for (int channel = 0; channel < 3; channel++) {
-					fPrevChannel[channel].assign(fChannel[channel]);
+				for (int ch = 0; ch < 3; ch++) {
+					prevChannel[ch].assign(channel[ch]);
 				}
-				fPrevFilter.assign(fFilter);
+				prevFilter.assign(filter);
 			}
-			for (int channel = 0; channel < 3; channel++) {
-				fPrevChannel2[channel].assign(fChannel[channel]);
+			for (int ch = 0; ch < 3; ch++) {
+				prevChannel2[ch].assign(channel[ch]);
 			}
 
 			// Print note/pattern separators
-			if (fNoteSpacing != 0) {
-				fCounter++;
-				if (fCounter >= fNoteSpacing) {
-					fCounter = 0;
-					if (fPatternSpacing != 0) {
-						fRows++;
-						if (fRows >= fPatternSpacing) {
-							fRows = 0;
+			if (noteSpacing != 0) {
+				counter++;
+				if (counter >= noteSpacing) {
+					counter = 0;
+					if (patternSpacing != 0) {
+						rows++;
+						if (rows >= patternSpacing) {
+							rows = 0;
 							addPatternSpacing();
-						} else if (!fLowRes) {
+						} else if (!flowRes) {
 							addNoteSpacing();
 						}
-					} else if (!fLowRes) {
+					} else if (!flowRes) {
 						addNoteSpacing();
 					}
 				}
 			}
 		}
-		fFrames++;
+		frames++;
 	}
 
 	private String getTime(long timeInFrames, boolean timeInSeconds) {
@@ -275,7 +334,7 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	 */
 	private void addNoteSpacing() {
 		final SidDumpOutput noteSep = new SidDumpOutput();
-		noteSep.setTime(String.format("-N%03X", fNoteNum++));
+		noteSep.setTime(String.format("-N%03X", noteNum++));
 		for (int c = 0; c < 3; c++) {
 			noteSep.setFreq("----", c);
 			noteSep.setNote("--------", c);
@@ -294,9 +353,9 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	 * Put a pattern spacing row into the table
 	 */
 	private void addPatternSpacing() {
-		fNoteNum = 1;
+		noteNum = 1;
 		final SidDumpOutput patternSep = new SidDumpOutput();
-		patternSep.setTime(String.format("=P%03X", fPatternNum++));
+		patternSep.setTime(String.format("=P%03X", patternNum++));
 		for (int c = 0; c < 3; c++) {
 			patternSep.setFreq("====", c);
 			patternSep.setNote("========", c);
@@ -314,19 +373,19 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	private void clearChannelStructures() {
 		// Clear channel structures in preparation & print first time info
 		for (int ch = 0; ch < 3; ch++) {
-			fChannel[ch] = new Channel();
-			fPrevChannel[ch] = new Channel();
-			fPrevChannel2[ch] = new Channel();
+			channel[ch] = new Channel();
+			prevChannel[ch] = new Channel();
+			prevChannel2[ch] = new Channel();
 		}
-		fFilter = new Filter();
-		fPrevFilter = new Filter();
-		fFrames = 0;
-		fCounter = 0;
-		fRows = 0;
+		filter = new Filter();
+		prevFilter = new Filter();
+		frames = 0;
+		counter = 0;
+		rows = 0;
 
 		// Check other parameters for correctness
-		if (fLowRes && 0 == fNoteSpacing) {
-			fLowRes = false;
+		if (flowRes && 0 == noteSpacing) {
+			flowRes = false;
 		}
 	}
 
@@ -334,14 +393,14 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 		System.arraycopy(FREQ_TBL_LO, 0, FREQ_TBL_LO_USE, 0, FREQ_TBL_LO.length);
 		System.arraycopy(FREQ_TBL_HI, 0, FREQ_TBL_HI_USE, 0, FREQ_TBL_HI.length);
 		// Re-calibrate frequency table
-		if (fBaseFreq != 0) {
-			fBaseNote &= 0x7f;
-			if (fBaseNote < 0 || fBaseNote > 96) {
+		if (baseFreq != 0) {
+			baseNote &= 0x7f;
+			if (baseNote < 0 || baseNote > 96) {
 				System.err.println("Warning: Calibration note out of range. Aborting recalibration.");
 			} else {
 				for (int c = 0; c < 96; c++) {
-					final double note = c - fBaseNote;
-					double freq = fBaseFreq * Math.pow(2.0, note / 12.0);
+					final double note = c - baseNote;
+					double freq = baseFreq * Math.pow(2.0, note / 12.0);
 					final int f = (int) freq;
 					if (freq > 0xffff) {
 						freq = 0xffff;
@@ -353,8 +412,8 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 		}
 	}
 
-	public abstract void add(final SidDumpOutput output);
-
 	public abstract boolean isWithinTimeWindow();
+
+	public abstract void add(final SidDumpOutput output);
 
 }

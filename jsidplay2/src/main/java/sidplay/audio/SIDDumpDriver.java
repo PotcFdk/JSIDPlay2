@@ -29,7 +29,7 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 		AudioConfig cfg = new AudioConfig(audioSection);
 
 		init(cpuClock);
-		fTimeInSeconds = false;
+		setTimeInSeconds(false);
 
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(recordingFilename)));
 
@@ -46,7 +46,7 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 
 	@Override
 	public boolean isWithinTimeWindow() {
-		return fFrames >= fFirstframe;
+		return getFrames() >= getFirstFrame();
 	}
 
 	@Override
