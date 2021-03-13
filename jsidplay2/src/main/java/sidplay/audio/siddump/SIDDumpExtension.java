@@ -27,32 +27,98 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 			0x31, 0x34, 0x37, 0x3a, 0x3e, 0x41, 0x45, 0x49, 0x4e, 0x52, 0x57, 0x5c, 0x62, 0x68, 0x6e, 0x75, 0x7c, 0x83,
 			0x8b, 0x93, 0x9c, 0xa5, 0xaf, 0xb9, 0xc4, 0xd0, 0xdd, 0xea, 0xf8, 0xff };
 
-	public static final char FREQ_TBL_LO_USE[] = new char[FREQ_TBL_LO.length];
-	public static final char FREQ_TBL_HI_USE[] = new char[FREQ_TBL_HI.length];
-
-	private boolean firstTime;
+	private char freqTableLo[] = new char[FREQ_TBL_LO.length];
+	private char freqTableHi[] = new char[FREQ_TBL_HI.length];
 
 	private long frames;
 
+	public long getFrames() {
+		return frames;
+	}
+
+	public void setFrames(long frames) {
+		this.frames = frames;
+	}
+
 	private long firstframe;
 
-	private float oldNoteFactor = 1.f;
+	public long getFirstFrame() {
+		return firstframe;
+	}
 
-	private int baseFreq = 0;
+	public void setFirstFrame(final long firstFrame) {
+		this.firstframe = firstFrame;
+	}
 
-	private int baseNote = 0xb0;
+	private float oldNoteFactor;
 
-	private boolean flowRes = false;
+	public float getOldNoteFactor() {
+		return oldNoteFactor;
+	}
 
-	private int noteSpacing = 0;
+	public void setOldNoteFactor(final float oldNoteFactor) {
+		this.oldNoteFactor = oldNoteFactor;
+	}
 
-	private int patternSpacing = 0;
+	private int baseFreq;
 
-	private boolean timeInSeconds = true;
+	public int getBaseFreq() {
+		return baseFreq;
+	}
 
-	private int counter;
+	public void setBaseFreq(final int baseFreq) {
+		this.baseFreq = baseFreq;
+	}
 
-	private int rows;
+	private int baseNote;
+
+	public int getBaseNote() {
+		return baseNote;
+	}
+
+	public void setBaseNote(final int baseNote) {
+		this.baseNote = baseNote;
+	}
+
+	private boolean flowRes;
+
+	public boolean getLowRes() {
+		return flowRes;
+	}
+
+	public void setLowRes(final boolean lowRes) {
+		this.flowRes = lowRes;
+	}
+
+	private int noteSpacing;
+
+	public int getNoteSpacing() {
+		return noteSpacing;
+	}
+
+	public void setNoteSpacing(final int noteSpacing) {
+		this.noteSpacing = noteSpacing;
+	}
+
+	private int patternSpacing;
+
+	public int getPatternSpacing() {
+		return patternSpacing;
+	}
+
+	public void setPatternSpacing(final int patternSpacing) {
+		this.patternSpacing = patternSpacing;
+	}
+
+	private boolean timeInSeconds;
+
+	public boolean getTimeInSeconds() {
+		return timeInSeconds;
+	}
+
+	public void setTimeInSeconds(final boolean timeInSeconds) {
+		this.timeInSeconds = timeInSeconds;
+	}
 
 	private final Channel channel[] = new Channel[3];
 
@@ -63,81 +129,31 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	private Filter filter;
 	private Filter prevFilter;
 
-	private int patternNum;
+	private boolean firstTime;
 
-	private int noteNum;
+	private int counter, rows, patternNum, noteNum;
 
 	private final byte[] registers = new byte[REG_COUNT];
 
 	private CPUClock cpuClock;
 
-	public void init(CPUClock cpuClock) {
-		this.cpuClock = cpuClock;
-		clearChannelStructures();
-		recalibrateFreqTable();
-		firstTime = true;
+	public SIDDumpExtension() {
 		patternNum = 1;
 		noteNum = 1;
+		oldNoteFactor = 1.f;
+		baseNote = 0xb0;
+		timeInSeconds = true;
 	}
 
-	public long getFirstFrame() {
-		return firstframe;
+	public void init(CPUClock cpuClock) {
+		this.cpuClock = cpuClock;
+		firstTime = true;
+		clearChannelStructures();
+		recalibrateFreqTable();
 	}
 
-	public void setFirstFrame(final long firstFrame) {
-		this.firstframe = firstFrame;
-	}
-
-	public long getFrames() {
-		return frames;
-	}
-
-	public void setFrames(long frames) {
-		this.frames = frames;
-	}
-
-	public boolean getTimeInSeconds() {
-		return timeInSeconds;
-	}
-
-	public void setTimeInSeconds(final boolean timeInSeconds) {
-		this.timeInSeconds = timeInSeconds;
-	}
-
-	public void setOldNoteFactor(final float oldNoteFactor) {
-		this.oldNoteFactor = oldNoteFactor;
-	}
-
-	public void setBaseFreq(final int baseFreq) {
-		this.baseFreq = baseFreq;
-	}
-
-	public void setBaseNote(final int baseNote) {
-		this.baseNote = baseNote;
-	}
-
-	public int getPatternSpacing() {
-		return patternSpacing;
-	}
-
-	public void setPatternSpacing(final int patternSpacing) {
-		this.patternSpacing = patternSpacing;
-	}
-
-	public int getNoteSpacing() {
-		return noteSpacing;
-	}
-
-	public void setNoteSpacing(final int noteSpacing) {
-		this.noteSpacing = noteSpacing;
-	}
-
-	public void setLowRes(final boolean lowRes) {
-		this.flowRes = lowRes;
-	}
-
-	public boolean getLowRes() {
-		return flowRes;
+	public int getMiddleCFreq() {
+		return freqTableLo[48] | freqTableHi[48] << 8;
 	}
 
 	@Override
@@ -160,7 +176,7 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 		filter.read(registers);
 
 		// Frame display if first frame to be recorded is reached
-		if (isWithinTimeWindow()) {
+		if (frames >= firstframe && !isAborted()) {
 			SidDumpOutput output = new SidDumpOutput();
 			final long time = frames - firstframe;
 
@@ -189,7 +205,7 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 					if (channel[c].getWave() >= 0x10) {
 						// Get new note number
 						for (d = 0; d < 96; d++) {
-							final int cmpfreq = FREQ_TBL_LO_USE[d] | FREQ_TBL_HI_USE[d] << 8;
+							final int cmpfreq = freqTableLo[d] | freqTableHi[d] << 8;
 							final int freq = channel[c].getFreq();
 
 							if (Math.abs(freq - cmpfreq) < dist) {
@@ -307,12 +323,13 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 						rows++;
 						if (rows >= patternSpacing) {
 							rows = 0;
-							addPatternSpacing();
+							noteNum = 1;
+							addPatternSpacing(patternNum++);
 						} else if (!flowRes) {
-							addNoteSpacing();
+							addNoteSpacing(noteNum++);
 						}
 					} else if (!flowRes) {
-						addNoteSpacing();
+						addNoteSpacing(noteNum++);
 					}
 				}
 			}
@@ -332,9 +349,9 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	/**
 	 * Put a note spacing row into the table
 	 */
-	private void addNoteSpacing() {
+	private void addNoteSpacing(int noteNum) {
 		final SidDumpOutput noteSep = new SidDumpOutput();
-		noteSep.setTime(String.format("-N%03X", noteNum++));
+		noteSep.setTime(String.format("-N%03X", noteNum));
 		for (int c = 0; c < 3; c++) {
 			noteSep.setFreq("----", c);
 			noteSep.setNote("--------", c);
@@ -352,10 +369,9 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	/**
 	 * Put a pattern spacing row into the table
 	 */
-	private void addPatternSpacing() {
-		noteNum = 1;
+	private void addPatternSpacing(int patternNum) {
 		final SidDumpOutput patternSep = new SidDumpOutput();
-		patternSep.setTime(String.format("=P%03X", patternNum++));
+		patternSep.setTime(String.format("=P%03X", patternNum));
 		for (int c = 0; c < 3; c++) {
 			patternSep.setFreq("====", c);
 			patternSep.setNote("========", c);
@@ -390,8 +406,8 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 	}
 
 	private void recalibrateFreqTable() {
-		System.arraycopy(FREQ_TBL_LO, 0, FREQ_TBL_LO_USE, 0, FREQ_TBL_LO.length);
-		System.arraycopy(FREQ_TBL_HI, 0, FREQ_TBL_HI_USE, 0, FREQ_TBL_HI.length);
+		System.arraycopy(FREQ_TBL_LO, 0, freqTableLo, 0, FREQ_TBL_LO.length);
+		System.arraycopy(FREQ_TBL_HI, 0, freqTableHi, 0, FREQ_TBL_HI.length);
 		// Re-calibrate frequency table
 		if (baseFreq != 0) {
 			baseNote &= 0x7f;
@@ -405,14 +421,14 @@ public abstract class SIDDumpExtension implements SIDListener, IMOS6510Extension
 					if (freq > 0xffff) {
 						freq = 0xffff;
 					}
-					FREQ_TBL_LO_USE[c] = (char) (f & 0xff);
-					FREQ_TBL_HI_USE[c] = (char) (f >> 8);
+					freqTableLo[c] = (char) (f & 0xff);
+					freqTableHi[c] = (char) (f >> 8);
 				}
 			}
 		}
 	}
 
-	public abstract boolean isWithinTimeWindow();
+	public abstract boolean isAborted();
 
 	public abstract void add(final SidDumpOutput output);
 

@@ -33,7 +33,7 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 
 		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(recordingFilename)));
 
-		out.println(String.format("Middle C frequency is $%04X", FREQ_TBL_LO_USE[48] | FREQ_TBL_HI_USE[48] << 8));
+		out.println(String.format("Middle C frequency is $%04X", getMiddleCFreq()));
 		out.println();
 		out.println(
 				"| Frame | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | FCut RC Typ V |");
@@ -45,8 +45,8 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 	}
 
 	@Override
-	public boolean isWithinTimeWindow() {
-		return getFrames() >= getFirstFrame();
+	public boolean isAborted() {
+		return false;
 	}
 
 	@Override

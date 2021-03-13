@@ -77,11 +77,7 @@ public class SidDump extends C64VBox implements UIPart {
 	/**
 	 * Total record duration
 	 */
-	private double fSeconds;
-
-	public void setRecordLength(final double seconds) {
-		fSeconds = seconds;
-	}
+	private double recordLength;
 
 	private Thread fPlayerThread;
 
@@ -122,14 +118,12 @@ public class SidDump extends C64VBox implements UIPart {
 
 			@Override
 			public void add(final SidDumpOutput output) {
-				Platform.runLater(() -> sidDumpOutputs.add(output));
+				SidDump.this.add(output);
 			}
 
 			@Override
-			public boolean isWithinTimeWindow() {
-				return sidDumpExtension.getFrames() >= sidDumpExtension.getFirstFrame()
-						&& sidDumpExtension.getFrames() <= (long) (sidDumpExtension.getFirstFrame()
-								+ fSeconds * util.getPlayer().getC64().getClock().getScreenRefresh());
+			public boolean isAborted() {
+				return SidDump.this.isAborted();
 			}
 
 		};
@@ -138,7 +132,7 @@ public class SidDump extends C64VBox implements UIPart {
 		maxRecordLength.textProperty().addListener((obj, o, n) -> util.checkTextField(maxRecordLength, () -> {
 			seconds = new TimeToStringConverter().fromString(maxRecordLength.getText()).doubleValue();
 			return seconds != -1;
-		}, () -> setRecordLength(seconds), "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
+		}, () -> recordLength = (seconds), "MAX_RECORD_LENGTH_TIP", "MAX_RECORD_LENGTH_FORMAT"));
 
 		sidDumpOutputs = FXCollections.<SidDumpOutput>observableArrayList();
 		SortedList<SidDumpOutput> sortedList = new SortedList<>(sidDumpOutputs);
@@ -329,9 +323,9 @@ public class SidDump extends C64VBox implements UIPart {
 				}
 			}
 			maxRecordLength.setText(new TimeToStringConverter().toString(length));
-			setRecordLength(length);
+			recordLength = (length);
 		} else {
-			setRecordLength(seconds);
+			recordLength = (seconds);
 		}
 		sidDumpExtension.setTimeInSeconds(timeInSeconds.isSelected());
 		sidDumpExtension.setOldNoteFactor(Float.parseFloat(oldNoteFactor.getText()));
@@ -637,8 +631,7 @@ public class SidDump extends C64VBox implements UIPart {
 			out.println("Calling playroutine for "
 					+ (int) (seconds * util.getPlayer().getC64().getClock().getScreenRefresh())
 					+ " frames, starting from frame " + sidDumpExtension.getFirstFrame());
-			out.println(String.format("Middle C frequency is $%04X",
-					SIDDumpExtension.FREQ_TBL_LO_USE[48] | SIDDumpExtension.FREQ_TBL_HI_USE[48] << 8));
+			out.println(String.format("Middle C frequency is $%04X", sidDumpExtension.getMiddleCFreq()));
 			out.println();
 			out.println(
 					"| Frame | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | Freq Note/Abs WF ADSR Pul | FCut RC Typ V |");
@@ -704,6 +697,11 @@ public class SidDump extends C64VBox implements UIPart {
 
 	public void add(final SidDumpOutput output) {
 		Platform.runLater(() -> sidDumpOutputs.add(output));
+	}
+
+	public boolean isAborted() {
+		return sidDumpExtension.getFrames() > (long) (sidDumpExtension.getFirstFrame()
+				+ recordLength * util.getPlayer().getC64().getClock().getScreenRefresh());
 	}
 
 	/**
