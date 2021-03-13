@@ -1,8 +1,11 @@
 package ui.assembly64;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContentEntry {
 
 	private StringProperty idProperty = new SimpleStringProperty();

@@ -42,7 +42,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -560,7 +559,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 	private ObjectMapper createObjectMapper() {
 		JavaTimeModule module = new JavaTimeModule();
 		module.addDeserializer(Category.class, new CategoryDeserializer(categoryItems));
-		return new ObjectMapper().registerModule(module).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		return new ObjectMapper().registerModule(module);
 	}
 
 	private List<Category> requestCategories() {

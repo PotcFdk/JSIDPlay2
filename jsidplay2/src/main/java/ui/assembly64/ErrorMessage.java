@@ -1,5 +1,8 @@
 package ui.assembly64;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorMessage {
 
 	private String timestamp;

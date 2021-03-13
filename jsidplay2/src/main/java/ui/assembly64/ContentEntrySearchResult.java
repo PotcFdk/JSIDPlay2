@@ -3,6 +3,9 @@ package ui.assembly64;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContentEntrySearchResult {
 
 	private List<ContentEntry> contentEntry = new ArrayList<>();

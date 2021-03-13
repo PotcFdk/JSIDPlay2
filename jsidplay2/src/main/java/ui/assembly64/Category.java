@@ -1,10 +1,13 @@
 package ui.assembly64;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Category {
 
 	public static final Category ALL = new Category() {
