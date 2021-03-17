@@ -12,4 +12,5 @@ Cartridge support added for OCEAN_TYPE_1
 DnD repaired
 SIDBlaster auto-detection: sidblastertool executable added to store SID chip type on USB device permanently
 SIDBlaster auto-detection: Read SID chip type from device
+SIDBlaster Linux support added
 SIDDump audio driver added: Now it is possible to use SIDDump in the console player version
