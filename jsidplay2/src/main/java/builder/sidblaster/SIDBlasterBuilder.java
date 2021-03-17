@@ -22,6 +22,7 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
+import libsidplay.common.OS;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
@@ -91,6 +92,9 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				init();
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows or Linux is required to use " + SIDBLASTER + " soundcard!");
+				if (OS.get() == OS.LINUX) {
+					printLinuxHint();
+				}
 				throw e;
 			}
 		}
@@ -114,6 +118,19 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		for (byte deviceId = 0; deviceId < deviceCount; deviceId++) {
 			serialNumbers[deviceId] = hardSID.GetSerial(deviceId);
 		}
+	}
+
+	private void printLinuxHint() {
+		System.err
+				.println("Please install FTDI drivers explained in chapter '2 Installing the D2XX driver' from here:");
+		System.err.println(
+				"https://www.ftdichip.com/Support/Documents/AppNotes/AN_220_FTDI_Drivers_Installation_Guide_for_Linux.pdf");
+		System.err.println(
+				"If device still cannot be used, please install that workaround explained in chapter '1.1 Overview' :");
+		System.err.println("$ sudo vi /etc/udev/rules.d/91-sidblaster.rules");
+		System.err.println(
+				"ACTION==\"add\", ATTRS{idVendor}==\"0403\", ATTRS{idProduct}==\"6001\", MODE=\"0666\",  RUN+=\"/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'\"");
+		System.err.println("$ sudo devadm control --reload-rules && udevadm trigger");
 	}
 
 	@Override
