@@ -523,6 +523,31 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>jar-sidblaster-tool</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addClasspath>false</addClasspath>
+									<mainClass>ui.tools.SIDBlasterTool</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>${project.artifactId}-${project.version}.jar</Class-Path>
+								</manifestEntries>
+							</archive>
+							<outputDirectory>${project.build.directory}/standalone</outputDirectory>
+							<finalName>${project.artifactId}_sidblastertool-${project.version}</finalName>
+							<excludes>
+								<exclude>**/*</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>netsiddev-jar</id>
 						<phase>package</phase>
 						<goals>
