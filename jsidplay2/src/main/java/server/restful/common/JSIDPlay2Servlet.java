@@ -87,7 +87,6 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 					new ObjectMapper().writeValue(out, result);
 					break;
 				} else if (MIME_TYPE_XML.isCompatible(contentType)) {
-					// MIME_XML
 					response.setContentType(MIME_TYPE_XML.toString());
 					JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
 					break;
