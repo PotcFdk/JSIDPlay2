@@ -239,6 +239,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 			Image image = imageQueue.poll();
 			if (image != null) {
 				currentImage = image;
+				// memory leak prevention!?
+				// https://github.com/kasemir/org.csstudio.display.builder/issues/174
+				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 				screen.getGraphicsContext2D().drawImage(image, 0, 0);
 			}
 		});

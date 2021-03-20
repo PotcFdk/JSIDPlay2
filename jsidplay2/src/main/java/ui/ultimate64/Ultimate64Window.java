@@ -300,6 +300,9 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		pauseTransition.setOnFinished(evt -> {
 			Image image = imageQueue.poll();
 			if (image != null) {
+				// memory leak prevention!?
+				// https://github.com/kasemir/org.csstudio.display.builder/issues/174
+				screen.getGraphicsContext2D().clearRect(0, 0, screen.getWidth(), screen.getHeight());
 				screen.getGraphicsContext2D().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), 0, 0,
 						screen.getWidth(), screen.getHeight());
 			}

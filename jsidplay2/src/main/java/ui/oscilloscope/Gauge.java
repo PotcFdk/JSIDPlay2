@@ -115,6 +115,8 @@ public class Gauge extends C64VBox implements UIPart {
 		GaugeImage gaugeImage = imageQueue.poll();
 		if (gaugeImage != null) {
 			getTitledPane().setText(gaugeImage.getText());
+			// https://github.com/kasemir/org.csstudio.display.builder/issues/174
+			getArea().getGraphicsContext2D().clearRect(0, 0, width, height);
 			getArea().getGraphicsContext2D().getPixelWriter().setPixels(0, 0, width, height, format,
 					gaugeImage.getPixels(), 0, width);
 		}
