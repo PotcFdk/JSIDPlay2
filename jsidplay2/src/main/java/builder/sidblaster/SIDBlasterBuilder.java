@@ -91,7 +91,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
 			} catch (UnsatisfiedLinkError e) {
-				System.err.println("Error: Windows or Linux is required to use " + SIDBLASTER + " soundcard!");
+				System.err.println("Error: Windows, Linux or OSX is required to use " + SIDBLASTER + " soundcard!");
 				if (OS.get() == OS.LINUX) {
 					printLinuxHint();
 				}
