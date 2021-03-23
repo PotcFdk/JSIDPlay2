@@ -1,0 +1,7 @@
+If using a device with standard FTDI vendor
+and product identifiers, install
+D2xxHelper
+to prevent mac OS from
+claiming the device as a serial port (locking out D2XX programs).
+This will prevent the device being used
+with the VCP driver as a standard COM port.

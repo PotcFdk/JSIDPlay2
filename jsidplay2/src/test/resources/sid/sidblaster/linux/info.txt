@@ -1,0 +1,8 @@
+Please install FTDI drivers explained in chapter '2 Installing the D2XX driver' from here:
+https://www.ftdichip.com/Support/Documents/AppNotes/AN_220_FTDI_Drivers_Installation_Guide_for_Linux.pdf
+If device still cannot be used, please install that workaround explained in chapter '1.1 Overview' :
+$ sudo vi /etc/udev/rules.d/91-sidblaster.rules
+ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666",  RUN+="/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'"
+$ sudo devadm control --reload-rules && udevadm trigger
+
+
