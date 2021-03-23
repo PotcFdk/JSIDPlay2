@@ -3,6 +3,11 @@ package builder.sidblaster;
 import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,14 +93,23 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
+				if (OS.get() == OS.MAC) {
+					// OSX at least versions 10.14, 10.15
+					// Dependent library must be pre-loaded
+					// and it does only accept the dependent library to be in the CWD
+					File sourceFile = new File("/usr/local/lib/libftd2xx.dylib");
+					File targetFile = new File(System.getProperty("user.cwd"), "libftd2xx.dylib");
+					Files.copy(Paths.get(sourceFile.getAbsolutePath()), Paths.get(targetFile.getAbsolutePath()),
+							StandardCopyOption.REPLACE_EXISTING);
+					System.loadLibrary("ftd2xx");
+				}
 				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
-			} catch (UnsatisfiedLinkError e) {
+			} catch (UnsatisfiedLinkError | IOException e) {
 				System.err.println("Error: Windows, Linux or OSX is required to use " + SIDBLASTER + " soundcard!");
 				if (OS.get() == OS.LINUX) {
 					printLinuxHint();
 				}
-				throw e;
 			}
 		}
 	}
