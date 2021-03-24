@@ -95,7 +95,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		if (hardSID == null) {
 			try {
 				if (OS.get() == OS.MAC) {
-					preloadDependentLibrary();
+					preloadDependentMacLibrary();
 				}
 				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
@@ -117,7 +117,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	 * Dependent library must be pre-loaded and it does only accept it to be located
 	 * in the current working directory.
 	 */
-	private void preloadDependentLibrary() {
+	private void preloadDependentMacLibrary() {
 		try {
 			String sourceFile = "/usr/local/lib/libftd2xx.dylib";
 			if (!new File(sourceFile).exists()) {
