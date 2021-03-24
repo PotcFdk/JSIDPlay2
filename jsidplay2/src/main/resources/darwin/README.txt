@@ -1,0 +1,1 @@
+libhardsid.dylib     - SIDBlaster USB driver library (https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition/blob/master/win_hardsid_dll/hardsid_dll.zip)
