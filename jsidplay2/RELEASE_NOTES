@@ -3,14 +3,14 @@ Release Notes:
 Oscilloscope view refresh rate fixed for smoother output
 Better AVI/MP4 recordings: More exact CPU refresh rates, therefore audio and video stays in sync 
 MP4 Recording: better quality
-MP4 Recording: now supported on all platforms: Windows, Linux and Apple OSX
+MP4 Recording: now supported on all platforms: Windows, Linux and macOSX
 FLAC recordings added
 AAC recordings added
 Faster startup time due to the use of parallelization
 Server side tune recognition fixed, only half of the sound data was used for recognition
 Cartridge support added for OCEAN_TYPE_1
 DnD repaired
-SIDBlaster auto-detection: sidblastertool executable added to store SID chip type on USB device permanently
-SIDBlaster auto-detection: Read SID chip type from device
-SIDBlaster Linux support added
+SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently
+SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
+SIDBlaster Linux and macOSX support added
 SIDDump audio driver added: Now it is possible to use SIDDump in the console player version
