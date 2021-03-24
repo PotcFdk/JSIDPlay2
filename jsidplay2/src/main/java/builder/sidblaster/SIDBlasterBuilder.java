@@ -4,6 +4,7 @@ import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -94,23 +95,38 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		if (hardSID == null) {
 			try {
 				if (OS.get() == OS.MAC) {
-					// OSX at least versions 10.14, 10.15
-					// Dependent library must be pre-loaded
-					// and it does only accept the dependent library to be in the CWD
-					File sourceFile = new File("/usr/local/lib/libftd2xx.dylib");
-					File targetFile = new File(System.getProperty("user.cwd"), "libftd2xx.dylib");
-					Files.copy(Paths.get(sourceFile.getAbsolutePath()), Paths.get(targetFile.getAbsolutePath()),
-							StandardCopyOption.REPLACE_EXISTING);
-					System.loadLibrary("ftd2xx");
+					preloadDependentLibrary();
 				}
 				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
-			} catch (UnsatisfiedLinkError | IOException e) {
+			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows, Linux or OSX is required to use " + SIDBLASTER + " soundcard!");
 				if (OS.get() == OS.LINUX) {
 					printLinuxHint();
+				} else if (OS.get() == OS.MAC) {
+					printMacHint();
 				}
+				throw e;
 			}
+		}
+	}
+
+	/**
+	 * Requirement of macOSX > 10.13:
+	 * 
+	 * Dependent library must be pre-loaded and it does only accept it to be located
+	 * in the current working directory.
+	 */
+	private void preloadDependentLibrary() {
+		try {
+			String sourceFile = "/usr/local/lib/libftd2xx.dylib";
+			if (!new File(sourceFile).exists()) {
+				throw new FileNotFoundException(sourceFile);
+			}
+			Files.copy(Paths.get(sourceFile), Paths.get("libftd2xx.dylib"), StandardCopyOption.REPLACE_EXISTING);
+			System.loadLibrary("ftd2xx");
+		} catch (IOException e) {
+			throw new UnsatisfiedLinkError(e.getMessage());
 		}
 	}
 
@@ -140,11 +156,19 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		System.err.println(
 				"https://www.ftdichip.com/Support/Documents/AppNotes/AN_220_FTDI_Drivers_Installation_Guide_for_Linux.pdf");
 		System.err.println(
-				"If device still cannot be used, please install that workaround explained in chapter '1.1 Overview' :");
+				"If device still cannot be used, please install a workaround mentioned in chapter '1.1 Overview' :");
 		System.err.println("$ sudo vi /etc/udev/rules.d/91-sidblaster.rules");
 		System.err.println(
 				"ACTION==\"add\", ATTRS{idVendor}==\"0403\", ATTRS{idProduct}==\"6001\", MODE=\"0666\",  RUN+=\"/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'\"");
-		System.err.println("$ sudo devadm control --reload-rules && udevadm trigger");
+		System.err.println("$ sudo udevadm control --reload-rules && udevadm trigger");
+	}
+
+	private void printMacHint() {
+		System.err.println("Please install FTDI drivers explained in chapter '3.3 Installing D2xx Drivers' from here:");
+		System.err.println(
+				"https://ftdichip.com/wp-content/uploads/2020/08/AN_134_FTDI_Drivers_Installation_Guide_for_MAC_OSX-1.pdf");
+		System.err.println(
+				"If device still cannot be used, please D2XXHelper explained in chapter '5.2 The device does not appear in the /dev directory' and reboot.");
 	}
 
 	@Override
