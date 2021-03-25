@@ -168,7 +168,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		System.err.println(
 				"https://ftdichip.com/wp-content/uploads/2020/08/AN_134_FTDI_Drivers_Installation_Guide_for_MAC_OSX-1.pdf");
 		System.err.println(
-				"If device still cannot be used, please D2XXHelper explained in chapter '5.2 The device does not appear in the /dev directory' and reboot.");
+				"If device still cannot be used, please install D2XXHelper explained in chapter '5.2 The device does not appear in the /dev directory' and reboot.");
 	}
 
 	@Override
