@@ -58,23 +58,30 @@ public class JavaSound implements AudioDriver {
 	}
 
 	public void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
-		// first close previous dataLine when it is already present
-		close();
-		dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
-		dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
+		try {
+			// first close previous dataLine when it is already present
+			close();
+			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+			dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
 
-		dataLine.start();
+			dataLine.start();
 
-		// The actual buffer size for the open line may differ from the
-		// requested buffer size, therefore
-		cfg.setBufferFrames(dataLine.getBufferSize() / Short.BYTES / cfg.getChannels());
-
+			// The actual buffer size for the open line may differ from the
+			// requested buffer size, therefore
+			cfg.setBufferFrames(dataLine.getBufferSize() / Short.BYTES / cfg.getChannels());
+		} catch (IllegalArgumentException e) {
+			// mixer not supported? No sound! Hardware based SIDBuilders can still be used.
+			System.err.println(e.getMessage());
+		}
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
+		if (dataLine == null) {
+			return;
+		}
 		// in pause mode next call of write continues
 		if (!dataLine.isActive()) {
 			dataLine.start();
