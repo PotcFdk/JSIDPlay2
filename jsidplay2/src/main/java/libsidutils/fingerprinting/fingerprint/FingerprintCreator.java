@@ -52,7 +52,7 @@ public class FingerprintCreator {
 					monoSamples.put((short) ((stereoSamples.get() + stereoSamples.get()) / 2));
 				}
 				bytes = monoBuffer.array();
-			} else {
+			} else if (stream.getFormat().getChannels() != 1) {
 				throw new IOException("Number of channels must be one or two");
 			}
 
