@@ -60,7 +60,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 				MusicInfoWithConfidenceBean result = new MusicInfoWithConfidenceBean();
 				result.setMusicInfo(musicInfoBean);
 				result.setConfidence(songMatch.getCount());
-				result.setRelativeConfidence(songMatch.getCount() / (double) fingerprint.getLinkList().size() * 100);
+				result.setRelativeConfidence(songMatch.getCount() * 100. / fingerprint.getLinkList().size());
 				result.setOffset(songMatch.getTime());
 				result.setOffsetSeconds(songMatch.getTime() * 0.03225806451612903);
 

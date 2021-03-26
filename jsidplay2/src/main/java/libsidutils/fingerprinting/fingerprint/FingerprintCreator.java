@@ -40,12 +40,11 @@ public class FingerprintCreator {
 			if (stream.getFormat().isBigEndian()) {
 				throw new IOException("LittleEndian expected");
 			}
+			byte[] bytes = new byte[(int) (stream.getFrameLength() * stream.getFormat().getChannels() * Short.BYTES)];
+			stream.read(bytes);
 
 			// 1. stereo to mono conversion
-			byte[] bytes;
 			if (stream.getFormat().getChannels() == 2) {
-				bytes = new byte[(int) stream.getFrameLength() * stream.getFormat().getChannels() * Short.BYTES];
-				stream.read(bytes);
 				ShortBuffer stereoSamples = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
 				ByteBuffer monoBuffer = ByteBuffer.allocate(bytes.length >> 1).order(ByteOrder.LITTLE_ENDIAN);
 				ShortBuffer monoSamples = monoBuffer.asShortBuffer();
@@ -53,9 +52,6 @@ public class FingerprintCreator {
 					monoSamples.put((short) ((stereoSamples.get() + stereoSamples.get()) / 2));
 				}
 				bytes = monoBuffer.array();
-			} else if (stream.getFormat().getChannels() == 1) {
-				bytes = new byte[(int) stream.getFrameLength() * Short.BYTES];
-				stream.read(bytes);
 			} else {
 				throw new IOException("Number of channels must be one or two");
 			}
