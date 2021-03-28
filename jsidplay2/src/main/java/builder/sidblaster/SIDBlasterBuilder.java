@@ -3,12 +3,6 @@ package builder.sidblaster;
 import static libsidplay.common.Engine.SIDBLASTER;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,9 +88,6 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		this.cpuClock = cpuClock;
 		if (hardSID == null) {
 			try {
-				if (OS.get() == OS.MAC) {
-					preloadDependentMacLibrary();
-				}
 				hardSID = Native.load("hardsid", HardSID.class, createOptions());
 				init();
 			} catch (UnsatisfiedLinkError e) {
@@ -108,25 +99,6 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				}
 				throw e;
 			}
-		}
-	}
-
-	/**
-	 * Requirement of macOSX > 10.13:
-	 * 
-	 * Dependent library must be pre-loaded and it does only accept it to be located
-	 * in the current working directory.
-	 */
-	private void preloadDependentMacLibrary() {
-		try {
-			String sourceFile = "/usr/local/lib/libftd2xx.dylib";
-			if (!new File(sourceFile).exists()) {
-				throw new FileNotFoundException(sourceFile);
-			}
-			Files.copy(Paths.get(sourceFile), Paths.get("libftd2xx.dylib"), StandardCopyOption.REPLACE_EXISTING);
-			System.loadLibrary("ftd2xx");
-		} catch (IOException e) {
-			throw new UnsatisfiedLinkError(e.getMessage());
 		}
 	}
 
