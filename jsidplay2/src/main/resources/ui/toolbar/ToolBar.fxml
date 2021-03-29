@@ -150,7 +150,7 @@
 						</ScrollPane>
 						<VBox>
 							<HBox>
-								<Button onAction="#addSidBlaster">
+								<Button fx:id="addSidBlaster" onAction="#addSidBlaster">
 									<tooltip>
 										<Tooltip text="%ADD_SIDBLASTER_TIP" />
 									</tooltip>
@@ -163,7 +163,7 @@
 									</graphic>
 								</Button>
 								<Region HBox.hgrow="ALWAYS" />
-								<Button onAction="#autodetect">
+								<Button fx:id="autodetect" onAction="#autodetect">
 									<tooltip>
 										<Tooltip text="%AUTODETECT_TIP" />
 									</tooltip>
@@ -178,7 +178,8 @@
 							</HBox>
 						</VBox>
 						<VBox>
-							<Label text="%SIDBLASTER_WRITE_BUFFER_SIZE" alignment="CENTER_RIGHT" />
+							<Label fx:id="sidBlasterWriteBufferSizeLbl" text="%SIDBLASTER_WRITE_BUFFER_SIZE"
+								alignment="CENTER_RIGHT" />
 							<ComboBox fx:id="sidBlasterWriteBufferSize">
 								<items>
 									<FXCollections fx:factory="observableArrayList">
@@ -253,11 +254,11 @@
 					<HBox spacing="5">
 						<VBox>
 							<RadioButton text="%EMU" fx:id="playEmulation"
-								toggleGroup="$playSourceGroup" >
+								toggleGroup="$playSourceGroup">
 								<userData>false</userData>
 							</RadioButton>
 							<RadioButton text="%RECORDING" fx:id="playMP3"
-								toggleGroup="$playSourceGroup" >
+								toggleGroup="$playSourceGroup">
 								<userData>true</userData>
 							</RadioButton>
 						</VBox>

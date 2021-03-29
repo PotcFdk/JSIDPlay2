@@ -41,6 +41,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -127,7 +128,7 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
-	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize, sidBlasterWriteBufferSize;
+	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize;
 	@FXML
 	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
@@ -153,6 +154,12 @@ public class ToolBar extends C64VBox implements UIPart {
 	private ScrollPane sidBlasterScrollPane;
 	@FXML
 	private VBox sidBlasterDeviceParent;
+	@FXML
+	private Button addSidBlaster, autodetect;
+	@FXML
+	private Label sidBlasterWriteBufferSizeLbl;
+	@FXML
+	private ComboBox<Integer> sidBlasterWriteBufferSize;
 	@FXML
 	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
@@ -238,10 +245,23 @@ public class ToolBar extends C64VBox implements UIPart {
 			hardsid8580Box.setDisable(!Engine.HARDSID.equals(n));
 			hardsid6581Label.setDisable(!Engine.HARDSID.equals(n));
 			hardsid8580Label.setDisable(!Engine.HARDSID.equals(n));
+
 			hostnameLabel.setDisable(!Engine.NETSID.equals(n));
 			hostname.setDisable(!Engine.NETSID.equals(n));
 			portLabel.setDisable(!Engine.NETSID.equals(n));
 			port.setDisable(!Engine.NETSID.equals(n));
+
+			audioBox.setDisable(!Engine.EMULATION.equals(n));
+			devicesBox.setDisable(!Engine.EMULATION.equals(n));
+			samplingBox.setDisable(!Engine.EMULATION.equals(n));
+			samplingRateBox.setDisable(!Engine.EMULATION.equals(n));
+			volumeButton.setDisable(!Engine.EMULATION.equals(n));
+
+			disable(sidBlasterDeviceParent, !Engine.SIDBLASTER.equals(n));
+			addSidBlaster.setDisable(!Engine.SIDBLASTER.equals(n));
+			autodetect.setDisable(!Engine.SIDBLASTER.equals(n));
+			sidBlasterWriteBufferSizeLbl.setDisable(!Engine.SIDBLASTER.equals(n));
+			sidBlasterWriteBufferSize.setDisable(!Engine.SIDBLASTER.equals(n));
 		});
 		engineBox.valueProperty().bindBidirectional(emulationSection.engineProperty());
 
@@ -632,6 +652,15 @@ public class ToolBar extends C64VBox implements UIPart {
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
 		stopAppServer();
+	}
+
+	private void disable(Node n, boolean disable) {
+		n.setDisable(disable);
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				disable(c, disable);
+			}
+		}
 	}
 
 	private void addSidBlasterDeviceMapping(DeviceMapping deviceMapping) {
