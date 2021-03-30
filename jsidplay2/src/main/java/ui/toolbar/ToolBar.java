@@ -122,19 +122,15 @@ public class ToolBar extends C64VBox implements UIPart {
 	private static final String SIDBLASTER_TEST_SID = "/builder/sidblaster/sidblaster_test.sid";
 
 	@FXML
-	private ToggleGroup testButtonGroup;
-	@FXML
 	private ComboBox<SamplingMethod> samplingBox;
 	@FXML
 	private ComboBox<CPUClock> videoStandardBox;
 	@FXML
-	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize;
+	private ComboBox<Integer> hardsid6581Box, hardsid8580Box, audioBufferSize, sidBlasterWriteBufferSize;
 	@FXML
 	private ComboBox<SamplingRate> samplingRateBox;
 	@FXML
 	private ComboBox<Audio> audioBox;
-	@FXML
-	private Label saveRecordingLabel;
 	@FXML
 	private ComboBox<Info> devicesBox;
 	@FXML
@@ -155,26 +151,19 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private VBox sidBlasterDeviceParent;
 	@FXML
-	private Button addSidBlaster, autodetect;
+	private Button addSidBlaster, autodetect, volumeButton, mp3Browse, keystoreBrowse;
 	@FXML
-	private Label sidBlasterWriteBufferSizeLbl;
+	private RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
 	@FXML
-	private ComboBox<Integer> sidBlasterWriteBufferSize;
-	@FXML
-	protected RadioButton playMP3, playEmulation, startAppServer, stopAppServer;
-	@FXML
-	protected ToggleGroup playSourceGroup, appServerGroup;
-	@FXML
-	protected Button volumeButton, mp3Browse, keystoreBrowse;
+	private ToggleGroup playSourceGroup, appServerGroup, testButtonGroup;
 	@FXML
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname,
 			appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl, appServerKeyAliasLbl,
-			appServerKeyPasswordLbl;
+			appServerKeyPasswordLbl, saveRecordingLabel, sidBlasterWriteBufferSizeLbl;
 	@FXML
 	private Hyperlink appServerUsage, onlinePlayer, downloadApp;
-
 	@FXML
-	protected ProgressBar progress;
+	private ProgressBar progress;
 
 	private ObservableList<Ultimate64Mode> ultimate64Modes;
 
