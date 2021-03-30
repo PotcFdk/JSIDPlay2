@@ -199,7 +199,8 @@ public class MusicCollection extends C64VBox implements UIPart {
 	@Override
 	protected void initialize() {
 		tuneMatcherListener = event -> {
-			Platform.runLater(() -> showCurrentTune());
+			Platform.runLater(
+					() -> showCurrentTune(fileBrowser.getRoot() != null ? fileBrowser.getRoot().getValue() : null));
 		};
 		tuneInfoListener = (observable, oldValue, newValue) -> {
 			if (newValue != null && newValue.getValue().isFile()) {
@@ -296,18 +297,17 @@ public class MusicCollection extends C64VBox implements UIPart {
 				}
 				if (initialRoot != null) {
 					setRoot(initialRoot);
-					showCurrentTune();
 				}
 			});
 		});
 	}
 
-	private void showCurrentTune() {
-		if (util.getPlayer().getTune() != SidTune.RESET && fileBrowser.getRoot() != null) {
+	private void showCurrentTune(File initialRoot) {
+		if (util.getPlayer().getTune() != SidTune.RESET && initialRoot != null) {
 			// auto-expand current selected tune
 			SidTune tune = util.getPlayer().getTune();
 			String collectionName = util.getPlayer().getSidDatabaseInfo(db -> db.getPath(tune), "");
-			showNextHit(new TFile(fileBrowser.getRoot().getValue(), collectionName));
+			showNextHit(new TFile(initialRoot, collectionName));
 		}
 	}
 
@@ -559,6 +559,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 							pp);
 					em = emFactory.createEntityManager();
 					versionService = new VersionService(em);
+					Platform.runLater(() -> showCurrentTune(theRootFile));
 				} catch (FileNotFoundException e) {
 					openErrorDialog(String.format(util.getBundle().getString("ERR_FILE_NOT_FOUND"), e.getMessage()),
 							getType());

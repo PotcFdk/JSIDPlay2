@@ -203,53 +203,6 @@
 						</VBox>
 					</VBox>
 				</TitledPane>
-				<TitledPane text="%ULTIMATE64" expanded="false" maxWidth="150">
-					<VBox>
-						<ComboBox fx:id="ultimate64Box" onAction="#setUltimate64" />
-						<Label text="%ULTIMATE64_HOSTNAME" />
-						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname"
-							prefWidth="80">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_HOSTNAME_TIP" />
-							</tooltip>
-						</TextField>
-						<Label text="%ULTIMATE64_PORT" fx:id="portLabel" />
-						<TypeTextField type="Integer" fx:id="ultimate64Port"
-							onAction="#setUltimate64Port" prefWidth="60">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_PORT_TIP" />
-							</tooltip>
-						</TypeTextField>
-						<Label text="%ULTIMATE64_SYNC_DELAY" fx:id="syncDelayLabel" />
-						<TypeTextField type="Integer" fx:id="ultimate64SyncDelay"
-							onAction="#setUltimate64SyncDelay" prefWidth="60">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_SYNC_DELAY_TIP" />
-							</tooltip>
-						</TypeTextField>
-						<Label text="%ULTIMATE64_STREAMING_TARGET" />
-						<TextField fx:id="ultimate64StreamingTarget" onAction="#setUltimate64StreamingTarget"
-							prefWidth="80">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_STREAMING_TARGET_TIP" />
-							</tooltip>
-						</TextField>
-						<Label text="%ULTIMATE64_STREAMING_AUDIO_PORT" />
-						<TypeTextField type="Integer" fx:id="ultimate64StreamingAudioPort"
-							onAction="#setUtimate64StreamingAudioPort" prefWidth="60">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_STREAMING_AUDIO_PORT_TIP" />
-							</tooltip>
-						</TypeTextField>
-						<Label text="%ULTIMATE64_STREAMING_VIDEO_PORT" />
-						<TypeTextField type="Integer" fx:id="ultimate64StreamingVideoPort"
-							onAction="#setUtimate64StreamingVideoPort" prefWidth="60">
-							<tooltip>
-								<Tooltip text="%ULTIMATE64_STREAMING_VIDEO_PORT_TIP" />
-							</tooltip>
-						</TypeTextField>
-					</VBox>
-				</TitledPane>
 				<TitledPane text="%COMPARE_MP3" expanded="false">
 					<HBox spacing="5">
 						<VBox>
@@ -273,7 +226,47 @@
 						</Button>
 					</HBox>
 				</TitledPane>
-				<TitledPane text="%APP_SERVER" expanded="false">
+				<TitledPane text="%ULTIMATE64" expanded="false" maxWidth="150">
+					<VBox>
+						<ComboBox fx:id="ultimate64Box" onAction="#setUltimate64" />
+						<Label text="%ULTIMATE64_HOSTNAME" />
+						<TextField fx:id="ultimate64Hostname" onAction="#setUltimate64Hostname" prefWidth="80">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_HOSTNAME_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%ULTIMATE64_PORT" fx:id="portLabel" />
+						<TypeTextField type="Integer" fx:id="ultimate64Port" onAction="#setUltimate64Port" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_SYNC_DELAY" fx:id="syncDelayLabel" />
+						<TypeTextField type="Integer" fx:id="ultimate64SyncDelay" onAction="#setUltimate64SyncDelay" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_SYNC_DELAY_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_STREAMING_TARGET" />
+						<TextField fx:id="ultimate64StreamingTarget" onAction="#setUltimate64StreamingTarget" prefWidth="80">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_TARGET_TIP" />
+							</tooltip>
+						</TextField>
+						<Label text="%ULTIMATE64_STREAMING_AUDIO_PORT" />
+						<TypeTextField type="Integer" fx:id="ultimate64StreamingAudioPort" onAction="#setUtimate64StreamingAudioPort" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_AUDIO_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+						<Label text="%ULTIMATE64_STREAMING_VIDEO_PORT" />
+						<TypeTextField type="Integer" fx:id="ultimate64StreamingVideoPort" onAction="#setUtimate64StreamingVideoPort" prefWidth="60">
+							<tooltip>
+								<Tooltip text="%ULTIMATE64_STREAMING_VIDEO_PORT_TIP" />
+							</tooltip>
+						</TypeTextField>
+					</VBox>
+				</TitledPane><TitledPane text="%APP_SERVER" expanded="false">
 					<HBox spacing="5">
 						<VBox>
 							<HBox>
