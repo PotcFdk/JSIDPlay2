@@ -32,7 +32,9 @@ public class BindingUtils {
 
 		configProperty.addListener((obj, o, n) -> {
 			runnable.run();
-			Platform.runLater(() -> objectProperty.setValue(n));
+			if (!objectProperty.getValue().equals(n)) {
+				Platform.runLater(() -> objectProperty.setValue(n));
+			}
 		});
 
 		objectProperty.setValue(configProperty.get());
