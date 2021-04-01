@@ -705,7 +705,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				System.err.println(e.getMessage());
 				stateProperty.set(RESTART);
 				e.getConfigRepairer().run();
-			} catch (InterruptedException | IOException | LineUnavailableException | UnsatisfiedLinkError e) {
+			} catch (InterruptedException | IOException | LineUnavailableException | RuntimeException
+					| UnsatisfiedLinkError e) {
 				stateProperty.set(QUIT);
 				throw new RuntimeException(e.getMessage(), e);
 			} finally {
