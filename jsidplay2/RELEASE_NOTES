@@ -10,7 +10,8 @@ Faster startup time due to the use of parallelization
 Server side tune recognition fixed, only half of the sound data was used for recognition
 Cartridge support added for OCEAN_TYPE_1
 DnD repaired
+SIDBlaster Linux and macOSX support added
 SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently
 SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
-SIDBlaster Linux and macOSX support added
+SIDBlaster: Now full oscilloscope support and SID read support by parallel emulated SID.
 SIDDump audio driver added: Now it is possible to use SIDDump in the console player version
