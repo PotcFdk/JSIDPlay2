@@ -2,6 +2,7 @@ package ui.tools;
 
 import static builder.sidblaster.SIDBlasterBuilder.getSerialNumbers;
 import static builder.sidblaster.SIDBlasterBuilder.getSidType;
+import static builder.sidblaster.SIDBlasterBuilder.setSerial;
 import static builder.sidblaster.SIDBlasterBuilder.setSidType;
 import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 import static ui.common.util.VersionUtil.VERSION;
@@ -36,6 +37,9 @@ public class SIDBlasterTool {
 
 	@Parameter(names = { "--sidType", "-t" }, descriptionKey = "SID_TYPE", order = 3)
 	private SIDType sidType = SIDTYPE_NONE;
+
+	@Parameter(names = { "--serial", "-s" }, descriptionKey = "SERIAL", order = 4)
+	private String serialNo;
 
 	private IniConfig config = new IniConfig();
 
@@ -94,6 +98,33 @@ public class SIDBlasterTool {
 			System.out.println("Detected SIDBlaster devices:");
 			for (int i = 0; i < serialNumbers.length; i++) {
 				printCommand("\t", i, getSidType(i));
+			}
+			break;
+
+		case SET_SERIAL:
+			if (serialNo == null) {
+				System.out.println("Serial number not specified!");
+				break;
+			}
+			if (serialNo.length() != 8) {
+				System.out.println("Serial number must consist of exactly 8 characters!");
+				break;
+			}
+			final String serialNumber = serialNumbers[deviceId];
+			System.out.printf("%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", "command=", deviceId, serialNumber,
+					serialNo);
+
+			switch (proceed()) {
+			case 'y':
+			case 'Y':
+				System.out.printf("RC=%d\n", setSerial(deviceId, serialNo));
+				System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+				break;
+
+			default:
+				System.out.println("Aborted by user!");
+				break;
+
 			}
 			break;
 

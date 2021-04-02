@@ -168,4 +168,6 @@ public interface HardSID extends Library {
 		return mem.getString(0L, "US_ASCII");
 	}
 
+	int HardSID_SetSerial(byte DeviceID, String serialNo);
+
 }

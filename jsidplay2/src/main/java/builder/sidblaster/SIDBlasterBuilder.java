@@ -207,6 +207,10 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return hardSID.HardSID_SetSIDType((byte) deviceId, sidType);
 	}
 
+	public static int setSerial(int deviceId, String serialNo) {
+		return hardSID.HardSID_SetSerial((byte) deviceId, serialNo);
+	}
+
 	@Override
 	public Integer getDeviceId(int sidNum) {
 		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getDeviceId()) : null;
