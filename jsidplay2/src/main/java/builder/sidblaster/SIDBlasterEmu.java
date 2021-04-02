@@ -3,10 +3,11 @@ package builder.sidblaster;
 import java.util.List;
 
 import builder.hardsid.WState;
+import builder.resid.residfp.ReSIDfp;
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
@@ -15,7 +16,7 @@ import libsidplay.config.IEmulationSection;
  * @author Ken Händel
  *
  */
-public class SIDBlasterEmu extends SIDEmu {
+public class SIDBlasterEmu extends ReSIDfp {
 
 	/**
 	 * FakeStereo mode uses two chips using the same base address. Write commands
@@ -32,8 +33,8 @@ public class SIDBlasterEmu extends SIDEmu {
 
 		public FakeStereo(final EventScheduler context, final IConfig config, SIDBlasterBuilder hardSIDBuilder,
 				final HardSID hardSID, final byte deviceId, final int sidNum, final ChipModel model,
-				final List<SIDBlasterEmu> sids) {
-			super(context, hardSIDBuilder, hardSID, deviceId, sidNum, model);
+				final List<SIDBlasterEmu> sids, CPUClock cpuClock) {
+			super(context, cpuClock, hardSIDBuilder, hardSID, deviceId, sidNum, model);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -83,31 +84,23 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	private final ChipModel chipModel;
 
-	public SIDBlasterEmu(EventScheduler context, SIDBlasterBuilder hardSIDBuilder, final HardSID hardSID,
-			final byte deviceId, int sidNum, ChipModel model) {
+	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
+			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model) {
+		super(context);
 		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
 		this.hardSID = hardSID;
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
-	}
-
-	@Override
-	public void reset(final byte volume) {
-		hardSID.HardSID_Reset(deviceID);
-	}
-
-	@Override
-	public byte read(int addr) {
-		clock();
-		// not supported
-		return (byte) 0xff;
+		super.setChipModel(chipModel);
+		super.setClockFrequency(cpuClock.getCpuFrequency());
+		super.setSampler(sample -> {
+		});
 	}
 
 	@Override
 	public void write(int addr, final byte data) {
-		clock();
 		super.write(addr, data);
 
 		doWriteDelayed(() -> {
@@ -123,6 +116,7 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	@Override
 	public void clock() {
+		super.clock();
 		final short clocksSinceLastAccess = (short) hardSIDBuilder.clocksSinceLastAccess();
 
 		doWriteDelayed(() -> hardSID.HardSID_Delay(deviceID, clocksSinceLastAccess));
@@ -144,6 +138,7 @@ public class SIDBlasterEmu extends SIDEmu {
 	protected boolean lock() {
 		boolean locked = hardSID.HardSID_Lock(deviceID);
 		if (locked) {
+			hardSID.HardSID_Reset(deviceID);
 			reset((byte) 0xf);
 			context.schedule(event, 0, Event.Phase.PHI2);
 		}
@@ -151,21 +146,10 @@ public class SIDBlasterEmu extends SIDEmu {
 	}
 
 	protected void unlock() {
+		hardSID.HardSID_Reset(deviceID);
 		reset((byte) 0x0);
 		context.cancel(event);
 		hardSID.HardSID_Unlock(deviceID);
-	}
-
-	@Override
-	public void setFilter(IConfig config, int sidNum) {
-	}
-
-	@Override
-	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
-	}
-
-	@Override
-	public void setVoiceMute(final int num, final boolean mute) {
 	}
 
 	public byte getDeviceId() {
@@ -182,23 +166,6 @@ public class SIDBlasterEmu extends SIDEmu {
 
 	protected ChipModel getChipModel() {
 		return chipModel;
-	}
-
-	@Override
-	public void setChipModel(final ChipModel model) {
-	}
-
-	@Override
-	public void setClockFrequency(double cpuFrequency) {
-	}
-
-	@Override
-	public void input(int input) {
-	}
-
-	@Override
-	public int getInputDigiBoost() {
-		return 0;
 	}
 
 	public static final String credits() {

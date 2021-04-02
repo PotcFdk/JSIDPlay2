@@ -153,7 +153,7 @@ public class ReSID extends ReSIDBase {
 	 *
 	 * @return String of credits.
 	 */
-	public static final String credits() {
+	public static String credits() {
 		String credit = "MOS6581/8580 (SID) - Dag Lem's resid 1.0 beta:\n";
 		credit += "\tCopyright (©) 1999-2012 Dag Lem <resid@nimrod.no>\n";
 		credit += "\tCopyright (©) 2012 Java version by Antti S. Lankila <alankila@bel.fi>\n";

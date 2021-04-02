@@ -159,7 +159,7 @@ public class ReSIDfp extends ReSIDBase {
 	 *
 	 * @return String of credits.
 	 */
-	public static final String credits() {
+	public static String credits() {
 		String credit = "MOS6581/8580 (SID) - Antti S. Lankila's resid-fp (distortion simulation):\n";
 		credit += "\tCopyright (©) 1999-2004 Dag Lem <resid@nimrod.no>\n";
 		credit += "\tCopyright (©) 2005-2011 Antti S. Lankila <alankila@bel.fi>\n";

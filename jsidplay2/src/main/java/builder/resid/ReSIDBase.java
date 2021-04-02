@@ -38,7 +38,7 @@ public abstract class ReSIDBase extends SIDEmu {
 		reset((byte) 0xf);
 	}
 
-	void setSampler(IntConsumer sampler) {
+	protected void setSampler(IntConsumer sampler) {
 		this.sampler = sampler;
 	}
 

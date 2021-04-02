@@ -176,9 +176,10 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel) {
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new SIDBlasterEmu.FakeStereo(context, config, this, hardSID, deviceId, sidNum, chipModel, sids);
+			return new SIDBlasterEmu.FakeStereo(context, config, this, hardSID, deviceId, sidNum, chipModel, sids,
+					cpuClock);
 		} else {
-			return new SIDBlasterEmu(context, this, hardSID, deviceId, sidNum, chipModel);
+			return new SIDBlasterEmu(context, cpuClock, this, hardSID, deviceId, sidNum, chipModel);
 		}
 	}
 
