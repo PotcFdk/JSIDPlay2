@@ -8,6 +8,7 @@ import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 import static ui.common.util.VersionUtil.VERSION;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -25,6 +26,8 @@ public class SIDBlasterTool {
 	static {
 		DebugUtil.init();
 	}
+
+	private static final String PATTERN_SERIAL_NO = "[A-Z0-9]{8}";
 
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
@@ -102,12 +105,8 @@ public class SIDBlasterTool {
 			break;
 
 		case SET_SERIAL:
-			if (serialNo == null) {
-				System.out.println("Serial number not specified!");
-				break;
-			}
-			if (serialNo.length() != 8) {
-				System.out.println("Serial number must consist of exactly 8 characters!");
+			if (!Pattern.matches(PATTERN_SERIAL_NO, serialNo)) {
+				System.out.println("Serial number length must be 8 and only capital letters and numbers allowed!");
 				break;
 			}
 			final String serialNumber = serialNumbers[deviceId];
