@@ -212,7 +212,9 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	public static void uninitialize() {
-		hardSID.HardSID_Uninitialize();
+		if (hardSID != null) {
+			hardSID.HardSID_Uninitialize();
+		}
 	}
 
 	@Override
