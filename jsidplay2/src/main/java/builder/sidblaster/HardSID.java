@@ -168,6 +168,17 @@ public interface HardSID extends Library {
 		return mem.getString(0L, "US_ASCII");
 	}
 
+	/**
+	 * Note: this function is "death end", host program must terminate after call
+	 * and the sidblaster must reconnect
+	 * 
+	 * @param serialNo exactly eight characters, upper case letters and digits,
+	 *                 only!
+	 */
 	int HardSID_SetSerial(byte DeviceID, String serialNo);
 
+	/**
+	 * Free resources for dead-end functions
+	 */
+	void HardSID_Uninitialize();
 }

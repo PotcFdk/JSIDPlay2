@@ -4,6 +4,7 @@ import static builder.sidblaster.SIDBlasterBuilder.getSerialNumbers;
 import static builder.sidblaster.SIDBlasterBuilder.getSidType;
 import static builder.sidblaster.SIDBlasterBuilder.setSerial;
 import static builder.sidblaster.SIDBlasterBuilder.setSidType;
+import static builder.sidblaster.SIDBlasterBuilder.uninitialize;
 import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 import static ui.common.util.VersionUtil.VERSION;
 
@@ -49,84 +50,87 @@ public class SIDBlasterTool {
 	private String[] serialNumbers;
 
 	private void create(String[] args) throws Exception {
-		JCommander commander = JCommander.newBuilder().addObject(this).programName("sidblastertool-" + VERSION + ".exe")
-				.build();
-		commander.parse(args);
+		try {
+			JCommander commander = JCommander.newBuilder().addObject(this).programName("sidblastertool-" + VERSION)
+					.build();
+			commander.parse(args);
 
-		System.out.println(credits());
+			System.out.println(credits());
 
-		if (command == null || help) {
-			commander.usage();
-			exit(0);
-		}
+			if (command == null || help) {
+				commander.usage();
+				exit(0);
+			}
 
-		// trigger read library
-		new SIDBlasterBuilder(null, config, null);
+			// trigger read library
+			new SIDBlasterBuilder(null, config, null);
 
-		serialNumbers = getSerialNumbers();
+			serialNumbers = getSerialNumbers();
 
-		if (serialNumbers.length == 0) {
-			System.out.println("No SIDBlaster devices detected!");
-			exit(1);
-		}
-		if (deviceId >= serialNumbers.length) {
-			System.out.printf("Illegal parameter value: deviceId=%d!\n", deviceId);
-			System.out.printf("Possible value range: 0..%d\n", serialNumbers.length - 1);
-			exit(1);
-		}
+			if (serialNumbers.length == 0) {
+				System.out.println("No SIDBlaster devices detected!");
+				exit(1);
+			}
+			if (deviceId >= serialNumbers.length) {
+				System.out.printf("Illegal parameter value: deviceId=%d!\n", deviceId);
+				System.out.printf("Possible value range: 0..%d\n", serialNumbers.length - 1);
+				exit(1);
+			}
 
-		switch (command) {
-		case GET_SID_TYPE:
-			printCommand("command=" + command, deviceId, getSidType(deviceId));
-			break;
-
-		case SET_SID_TYPE:
-			printCommand("command=" + command, deviceId, sidType);
-			switch (proceed()) {
-			case 'y':
-			case 'Y':
-				System.out.printf("RC=%d\n", setSidType(deviceId, sidType));
-				System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+			switch (command) {
+			case GET_SID_TYPE:
+				printCommand("command=" + command, deviceId, getSidType(deviceId));
 				break;
 
+			case SET_SID_TYPE:
+				printCommand("command=" + command, deviceId, sidType);
+				switch (proceed()) {
+				case 'y':
+				case 'Y':
+					System.out.printf("RC=%d\n", setSidType(deviceId, sidType));
+					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+					break;
+
+				default:
+					System.out.println("Aborted by user!");
+					break;
+
+				}
+				break;
+
+			case INFO:
 			default:
-				System.out.println("Aborted by user!");
+				System.out.println("Detected SIDBlaster devices:");
+				for (int i = 0; i < serialNumbers.length; i++) {
+					printCommand("\t", i, getSidType(i));
+				}
 				break;
 
-			}
-			break;
+			case SET_SERIAL:
+				if (!Pattern.matches(PATTERN_SERIAL_NO, serialNo)) {
+					System.out.println("Serial number length must be 8 and only capital letters and numbers allowed!");
+					break;
+				}
+				final String serialNumber = serialNumbers[deviceId];
+				System.out.printf("%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", "command=", deviceId, serialNumber,
+						serialNo);
 
-		case INFO:
-		default:
-			System.out.println("Detected SIDBlaster devices:");
-			for (int i = 0; i < serialNumbers.length; i++) {
-				printCommand("\t", i, getSidType(i));
-			}
-			break;
+				switch (proceed()) {
+				case 'y':
+				case 'Y':
+					System.out.printf("RC=%d\n", setSerial(deviceId, serialNo));
+					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+					break;
 
-		case SET_SERIAL:
-			if (!Pattern.matches(PATTERN_SERIAL_NO, serialNo)) {
-				System.out.println("Serial number length must be 8 and only capital letters and numbers allowed!");
+				default:
+					System.out.println("Aborted by user!");
+					break;
+
+				}
 				break;
 			}
-			final String serialNumber = serialNumbers[deviceId];
-			System.out.printf("%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", "command=", deviceId, serialNumber,
-					serialNo);
-
-			switch (proceed()) {
-			case 'y':
-			case 'Y':
-				System.out.printf("RC=%d\n", setSerial(deviceId, serialNo));
-				System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
-				break;
-
-			default:
-				System.out.println("Aborted by user!");
-				break;
-
-			}
-			break;
-
+		} finally {
+			uninitialize();
 		}
 	}
 
