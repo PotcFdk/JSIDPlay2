@@ -61,13 +61,13 @@ public class SIDBlasterTool {
 				exit(0);
 			}
 
-			// trigger read library
-			new SIDBlasterBuilder(null, config, null);
+			triggerFetchSerialNumbers();
 
 			serialNumbers = getSerialNumbers();
 
 			if (serialNumbers.length == 0) {
 				System.out.println("No SIDBlaster devices detected!");
+				SIDBlasterBuilder.printInstallationHint();
 				exit(1);
 			}
 			if (deviceId >= serialNumbers.length) {
@@ -131,6 +131,10 @@ public class SIDBlasterTool {
 		} finally {
 			uninitialize();
 		}
+	}
+
+	private void triggerFetchSerialNumbers() {
+		new SIDBlasterBuilder(null, config, null);
 	}
 
 	private String credits() {
