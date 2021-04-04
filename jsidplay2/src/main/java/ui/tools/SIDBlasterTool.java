@@ -15,7 +15,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import builder.sidblaster.Command;
 import builder.sidblaster.SIDBlasterBuilder;
 import builder.sidblaster.SIDType;
 import sidplay.ini.IniConfig;
@@ -112,8 +111,8 @@ public class SIDBlasterTool {
 					break;
 				}
 				final String serialNumber = serialNumbers[deviceId];
-				System.out.printf("%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", "command=", deviceId, serialNumber,
-						serialNo);
+				System.out.printf("command=%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", command, deviceId,
+						serialNumber, serialNo);
 
 				switch (proceed()) {
 				case 'y':
