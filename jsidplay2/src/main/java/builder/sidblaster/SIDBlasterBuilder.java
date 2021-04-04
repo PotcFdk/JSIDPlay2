@@ -92,11 +92,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				init();
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Error: Windows, Linux or OSX is required to use " + SIDBLASTER + " soundcard!");
-				if (OS.get() == OS.LINUX) {
-					printLinuxHint();
-				} else if (OS.get() == OS.MAC) {
-					printMacHint();
-				}
+				printInstallationHint();
 				throw e;
 			}
 		}
@@ -122,7 +118,15 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		}
 	}
 
-	private void printLinuxHint() {
+	private void printInstallationHint() {
+		if (OS.get() == OS.LINUX) {
+			printLinuxInstallationHint();
+		} else if (OS.get() == OS.MAC) {
+			printMacInstallationHint();
+		}
+	}
+
+	private void printLinuxInstallationHint() {
 		System.err
 				.println("Please install FTDI drivers explained in chapter '2 Installing the D2XX driver' from here:");
 		System.err.println(
@@ -135,7 +139,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		System.err.println("$ sudo udevadm control --reload-rules && udevadm trigger");
 	}
 
-	private void printMacHint() {
+	private void printMacInstallationHint() {
 		System.err.println("Please install FTDI drivers explained in chapter '3.3 Installing D2xx Drivers' from here:");
 		System.err.println(
 				"https://ftdichip.com/wp-content/uploads/2020/08/AN_134_FTDI_Drivers_Installation_Guide_for_MAC_OSX-1.pdf");
@@ -171,6 +175,9 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 			}
 		}
 		System.err.printf("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)\n", sidNum);
+		if (deviceCount == 0) {
+			printInstallationHint();
+		}
 		return SIDEmu.NONE;
 	}
 
