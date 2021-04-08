@@ -9,6 +9,7 @@ import static builder.sidblaster.SIDType.SIDTYPE_NONE;
 import static ui.common.util.VersionUtil.VERSION;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import com.beust.jcommander.JCommander;
@@ -17,6 +18,7 @@ import com.beust.jcommander.Parameters;
 
 import builder.sidblaster.SIDBlasterBuilder;
 import builder.sidblaster.SIDType;
+import libsidplay.common.OS;
 import sidplay.ini.IniConfig;
 import ui.common.util.DebugUtil;
 
@@ -26,6 +28,8 @@ public class SIDBlasterTool {
 	static {
 		DebugUtil.init();
 	}
+
+	private final static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("builder.sidblaster.SidBuilderTool");
 
 	private static final String PATTERN_SERIAL_NO = "[A-Z0-9]{8}";
 
@@ -66,13 +70,13 @@ public class SIDBlasterTool {
 			serialNumbers = getSerialNumbers();
 
 			if (serialNumbers.length == 0) {
-				System.out.println("No SIDBlaster devices detected!");
+				System.out.println(RESOURCE_BUNDLE.getString("NO_SIDBLASTER_DEVICES_DETECTED"));
 				SIDBlasterBuilder.printInstallationHint();
 				exit(1);
 			}
 			if (deviceId >= serialNumbers.length) {
-				System.out.printf("Illegal parameter value: deviceId=%d!\n", deviceId);
-				System.out.printf("Possible value range: 0..%d\n", serialNumbers.length - 1);
+				System.out.printf(RESOURCE_BUNDLE.getString("ILLEGAL_DEVICE_NUMBER"), deviceId);
+				System.out.printf(RESOURCE_BUNDLE.getString("POSSIBLE_VALUE_RANGE"), serialNumbers.length - 1);
 				exit(1);
 			}
 
@@ -87,11 +91,11 @@ public class SIDBlasterTool {
 				case 'y':
 				case 'Y':
 					System.out.printf("RC=%d\n", setSidType(deviceId, sidType));
-					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+					System.out.println(RESOURCE_BUNDLE.getString("DONE"));
 					break;
 
 				default:
-					System.out.println("Aborted by user!");
+					System.out.println(RESOURCE_BUNDLE.getString("ABORTED"));
 					break;
 
 				}
@@ -99,7 +103,7 @@ public class SIDBlasterTool {
 
 			case INFO:
 			default:
-				System.out.println("Detected SIDBlaster devices:");
+				System.out.println(RESOURCE_BUNDLE.getString("DETECTED_SIDBLASTER_DEVICES"));
 				for (int i = 0; i < serialNumbers.length; i++) {
 					printCommand("\t", i, getSidType(i));
 				}
@@ -107,7 +111,7 @@ public class SIDBlasterTool {
 
 			case SET_SERIAL:
 				if (!Pattern.matches(PATTERN_SERIAL_NO, serialNo)) {
-					System.out.println("Serial number length must be 8 and only capital letters and numbers allowed!");
+					System.out.println(RESOURCE_BUNDLE.getString("ILLEGAL_SERIAL_NUMBER"));
 					break;
 				}
 				final String serialNumber = serialNumbers[deviceId];
@@ -118,11 +122,31 @@ public class SIDBlasterTool {
 				case 'y':
 				case 'Y':
 					System.out.printf("RC=%d\n", setSerial(deviceId, serialNo));
-					System.out.println("Done! Please exit tool, re-connect SIDBlaster and restart JSIDPlay2!!!");
+					System.out.println(RESOURCE_BUNDLE.getString("DONE"));
 					break;
 
 				default:
-					System.out.println("Aborted by user!");
+					System.out.println(RESOURCE_BUNDLE.getString("ABORTED"));
+					break;
+
+				}
+				break;
+
+			case RUN_ON_WINDOWS:
+				if (OS.get() != OS.WINDOWS) {
+					System.out.println(RESOURCE_BUNDLE.getString("MUST_BE_RUN_ON_WINDOWS"));
+					exit(1);
+				}
+				System.out.printf(RESOURCE_BUNDLE.getString("RUN_ON_WINDOWS"), deviceId);
+				switch (proceed()) {
+				case 'y':
+				case 'Y':
+					System.out.printf("RC=%d\n", setSidType(deviceId, getSidType(deviceId)));
+					System.out.println(RESOURCE_BUNDLE.getString("DONE"));
+					break;
+
+				default:
+					System.out.println(RESOURCE_BUNDLE.getString("ABORTED"));
 					break;
 
 				}
@@ -139,12 +163,12 @@ public class SIDBlasterTool {
 
 	private String credits() {
 		StringBuilder result = new StringBuilder();
-		result.append("=========================================================================================\n");
-		result.append("SIDBlaster tool is a tool to read or write settings of your SIDBlaster USB device\n");
-		result.append("Original tool by Andreas Schumm(https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition)\n");
-		result.append("Java Version by Ken Händel\n");
-		result.append("DLL created by Stein Pedersen\n");
-		result.append("=========================================================================================\n");
+		result.append(RESOURCE_BUNDLE.getString("CREDITS_PROLOG"));
+		result.append(RESOURCE_BUNDLE.getString("CREDITS1"));
+		result.append(RESOURCE_BUNDLE.getString("CREDITS2"));
+		result.append(RESOURCE_BUNDLE.getString("CREDITS3"));
+		result.append(RESOURCE_BUNDLE.getString("CREDITS4"));
+		result.append(RESOURCE_BUNDLE.getString("CREDITS_EPILOG"));
 		return result.toString();
 	}
 
@@ -154,12 +178,12 @@ public class SIDBlasterTool {
 	}
 
 	private int proceed() throws IOException {
-		System.out.println("You are about to write settings to SIDBlaster USB device. Are you sure to proceed? (y/N)");
+		System.out.println(RESOURCE_BUNDLE.getString("ARE_YOU_SURE"));
 		return System.in.read();
 	}
 
 	private void exit(int rc) throws IOException {
-		System.out.println("Press <enter> to exit!");
+		System.out.println(RESOURCE_BUNDLE.getString("EXIT"));
 		System.in.read();
 		System.exit(rc);
 	}
