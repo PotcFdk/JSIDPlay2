@@ -171,6 +171,10 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				sids.add(hsid);
 				setDeviceName(sidNum, serialNumbers[deviceId]);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
+				hsid.setFilterEnable(emulationSection, sidNum);
+				for (int voice = 0; voice < 3; voice++) {
+					hsid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+				}
 				return hsid;
 			}
 		}

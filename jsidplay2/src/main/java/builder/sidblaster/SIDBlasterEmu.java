@@ -1,5 +1,7 @@
 package builder.sidblaster;
 
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
 import java.util.List;
 
 import builder.hardsid.WState;
@@ -84,6 +86,10 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 	private final ChipModel chipModel;
 
+	private boolean[] voiceMute;
+
+	private boolean[] filterDisable;
+
 	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
 			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model) {
 		super(context);
@@ -97,12 +103,31 @@ public class SIDBlasterEmu extends ReSIDfp {
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
 		});
+		this.voiceMute = new boolean[MAX_SIDS];
+		this.filterDisable = new boolean[MAX_SIDS];
 	}
 
 	@Override
-	public void write(int addr, final byte data) {
-		super.write(addr, data);
+	public void write(int addr, byte dataByte) {
+		switch (addr & 0x1f) {
+		case 4:
+		case 11:
+		case 18:
+			if (voiceMute[(addr - 4) / 7]) {
+				dataByte &= 0xfe;
+			}
+			break;
+		case 23:
+			if (filterDisable[sidNum]) {
+				dataByte &= 0xf0;
+			}
+			break;
+		default:
+			break;
+		}
+		super.write(addr, dataByte);
 
+		final byte data = dataByte;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, data) == WState.WSTATE_BUSY) {
 				try {
@@ -150,6 +175,18 @@ public class SIDBlasterEmu extends ReSIDfp {
 		reset((byte) 0x0);
 		context.cancel(event);
 		hardSID.HardSID_Unlock(deviceID);
+	}
+
+	@Override
+	public void setVoiceMute(int num, boolean mute) {
+		super.setVoiceMute(num, mute);
+		voiceMute[num] = mute;
+	}
+
+	@Override
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		super.setFilterEnable(emulation, sidNum);
+		filterDisable[sidNum] = !emulation.isFilterEnable(sidNum);
 	}
 
 	public byte getDeviceId() {
