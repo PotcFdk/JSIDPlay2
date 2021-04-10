@@ -180,6 +180,7 @@
 								<HBox spacing="5">
 									<Label text="%FILTER_DEFINITION" />
 									<ComboBox fx:id="mainFilter" onAction="#setMainFilter" />
+									<CheckBox text="%FILTER_ENABLE" fx:id="filter" />
 								</HBox>
 							</VBox>
 						</top>
@@ -214,10 +215,11 @@
 									<Label text="%SECOND_MODEL" />
 									<ComboBox fx:id="sid2Model" onAction="#setSid2Model" />
 								</HBox>
-								<FlowPane>
+								<HBox spacing="5">
 									<Label text="%FILTER_DEFINITION" />
 									<ComboBox fx:id="secondFilter" onAction="#setSecondFilter" />
-								</FlowPane>
+									<CheckBox text="%FILTER_ENABLE" fx:id="stereoFilter" />
+								</HBox>
 							</VBox>
 						</top>
 						<center>
@@ -256,6 +258,7 @@
 								<HBox>
 									<Label text="%FILTER_DEFINITION" />
 									<ComboBox fx:id="thirdFilter" onAction="#setThirdFilter" />
+									<CheckBox text="%FILTER_ENABLE" fx:id="thirdSidFilter" />
 								</HBox>
 							</VBox>
 						</top>

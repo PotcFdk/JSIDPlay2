@@ -134,7 +134,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private TextField baseAddress, thirdAddress;
 	@FXML
-	private CheckBox boosted8580, fakeStereo, detectPSID64ChipModel;
+	private CheckBox boosted8580, fakeStereo, filter, stereoFilter, thirdSidFilter, detectPSID64ChipModel;
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance, mainDelay,
 			secondDelay, thirdDelay;
@@ -332,6 +332,17 @@ public class EmulationSettings extends C64Window {
 
 		fakeStereo.selectedProperty().bindBidirectional(emulationSection.fakeStereoProperty());
 		fakeStereo.selectedProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
+
+		filter.selectedProperty().bindBidirectional(emulationSection.filterProperty());
+		filter.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(0, sid -> sid.setFilterEnable(emulationSection, 0)));
+		stereoFilter.selectedProperty().bindBidirectional(emulationSection.stereoFilterProperty());
+		stereoFilter.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(1, sid -> sid.setFilterEnable(emulationSection, 1)));
+		thirdSidFilter.selectedProperty().bindBidirectional(emulationSection.thirdSIDFilterProperty());
+		thirdSidFilter.selectedProperty().addListener(
+				(obj, o, n) -> util.getPlayer().configureSID(2, sid -> sid.setFilterEnable(emulationSection, 2)));
+
 		detectPSID64ChipModel.selectedProperty().bindBidirectional(emulationSection.detectPSID64ChipModelProperty());
 
 		emulationChange = new EmulationChange();
@@ -378,6 +389,7 @@ public class EmulationSettings extends C64Window {
 		sid2Model.setDisable(!second || hardwareBasedSid);
 		secondFilter.setDisable(!second || hardwareBasedSid);
 		secondFilterCurve.setDisable(!second || hardwareBasedSid);
+		stereoFilter.setDisable(!second);
 		// 3-SID, only:
 		thirdBalance.setDisable(!third || hardwareBasedSid);
 		thirdDelay.setDisable(!third);
@@ -385,6 +397,7 @@ public class EmulationSettings extends C64Window {
 		sid3Model.setDisable(!third || hardwareBasedSid);
 		thirdFilter.setDisable(!third || hardwareBasedSid);
 		thirdFilterCurve.setDisable(!third || hardwareBasedSid);
+		thirdSidFilter.setDisable(!third);
 		// fake stereo, only:
 		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:
