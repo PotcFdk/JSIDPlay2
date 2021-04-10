@@ -142,11 +142,7 @@ public class SIDBlasterEmu extends ReSIDfp {
 		final byte dataByte = data;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, dataByte) == WState.WSTATE_BUSY) {
-				try {
-					Thread.sleep(0);
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+				Thread.yield();
 			}
 		});
 	}
