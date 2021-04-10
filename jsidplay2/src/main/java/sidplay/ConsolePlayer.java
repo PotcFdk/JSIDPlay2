@@ -130,16 +130,21 @@ final public class ConsolePlayer {
 	}
 
 	private void printSidBlasterDevices() {
-		triggerFetchSerialNumbers();
-		String[] serialNumbers = SIDBlasterBuilder.getSerialNumbers();
-		if (serialNumbers.length > 0) {
-			System.out.println("\nDetected SIDBlaster device serial numbers: (configure INI file accordingly)");
-			System.out.printf("    SIDBlasterMapping_N=%d\n", serialNumbers.length);
-			int deviceIdx = 0;
-			for (String serialNumber : serialNumbers) {
-				SIDType sidType = SIDBlasterBuilder.getSidType(deviceIdx);
-				System.out.printf("    SIDBlasterMapping_%d=%s=%s\n", deviceIdx++, serialNumber, sidType.asChipModel());
+		try {
+			triggerFetchSerialNumbers();
+			String[] serialNumbers = SIDBlasterBuilder.getSerialNumbers();
+			if (serialNumbers.length > 0) {
+				System.out.println("\nDetected SIDBlaster device serial numbers: (configure INI file accordingly)");
+				System.out.printf("    SIDBlasterMapping_N=%d\n", serialNumbers.length);
+				int deviceIdx = 0;
+				for (String serialNumber : serialNumbers) {
+					SIDType sidType = SIDBlasterBuilder.getSidType(deviceIdx);
+					System.out.printf("    SIDBlasterMapping_%d=%s=%s\n", deviceIdx++, serialNumber,
+							sidType.asChipModel());
+				}
 			}
+		} catch (UnsatisfiedLinkError e) {
+			// ignore to not bother non SIDBlaster users
 		}
 	}
 
