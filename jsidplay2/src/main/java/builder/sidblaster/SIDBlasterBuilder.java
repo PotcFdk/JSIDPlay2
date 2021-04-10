@@ -124,9 +124,11 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		} else if (OS.get() == OS.MAC) {
 			printMacInstallationHint();
 		}
+		System.err.println("Or maybe you just forgot to plugin in your USB devices?");
+		System.err.println();
 	}
 
-	public static void printLinuxInstallationHint() {
+	private static void printLinuxInstallationHint() {
 		System.err
 				.println("Please install FTDI drivers explained in chapter '2 Installing the D2XX driver' from here:");
 		System.err.println(
@@ -139,7 +141,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		System.err.println("$ sudo udevadm control --reload-rules && udevadm trigger");
 	}
 
-	public static void printMacInstallationHint() {
+	private static void printMacInstallationHint() {
 		System.err.println("Please install FTDI drivers explained in chapter '3.3 Installing D2xx Drivers' from here:");
 		System.err.println(
 				"https://ftdichip.com/wp-content/uploads/2020/08/AN_134_FTDI_Drivers_Installation_Guide_for_MAC_OSX-1.pdf");
