@@ -346,11 +346,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				String serialNo = serialNumbers[deviceId];
 
 				if (!isSerialNumAlreadyUsed(serialNo) && deviceMap.get(serialNo) != null) {
-					ChipModel configuredModel = deviceMap.get(serialNo);
-					if (configuredModel == ChipModel.AUTO) {
-						configuredModel = chipModel; // RESID does not accept AUTO in super.setChipModel()
-					}
-					return new SimpleEntry<>(deviceId, configuredModel);
+					return new SimpleEntry<>(deviceId, deviceMap.get(serialNo));
 				}
 			}
 		} else {

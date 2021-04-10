@@ -99,7 +99,7 @@ public class SIDBlasterEmu extends ReSIDfp {
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
-		super.setChipModel(chipModel);
+		super.setChipModel(model == ChipModel.AUTO ? ChipModel.MOS6581 : model);
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
 		});
@@ -108,28 +108,28 @@ public class SIDBlasterEmu extends ReSIDfp {
 	}
 
 	@Override
-	public void write(int addr, byte dataByte) {
+	public void write(int addr, byte data) {
 		switch (addr & 0x1f) {
 		case 4:
 		case 11:
 		case 18:
 			if (voiceMute[(addr - 4) / 7]) {
-				dataByte &= 0xfe;
+				data &= 0xfe;
 			}
 			break;
 		case 23:
 			if (filterDisable[sidNum]) {
-				dataByte &= 0xf0;
+				data &= 0xf0;
 			}
 			break;
 		default:
 			break;
 		}
-		super.write(addr, dataByte);
+		super.write(addr, data);
 
-		final byte data = dataByte;
+		final byte dataByte = data;
 		doWriteDelayed(() -> {
-			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, data) == WState.WSTATE_BUSY) {
+			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, dataByte) == WState.WSTATE_BUSY) {
 				try {
 					Thread.sleep(0);
 				} catch (InterruptedException e) {
