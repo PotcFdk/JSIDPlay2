@@ -88,6 +88,8 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 	private boolean[] voiceMute;
 
+	private boolean samplesMuted;
+
 	private boolean[] filterDisable;
 
 	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
@@ -104,29 +106,39 @@ public class SIDBlasterEmu extends ReSIDfp {
 		super.setSampler(sample -> {
 		});
 		this.voiceMute = new boolean[MAX_SIDS];
+		this.samplesMuted = false;
 		this.filterDisable = new boolean[MAX_SIDS];
 	}
 
 	@Override
 	public void write(int addr, byte data) {
 		switch (addr & 0x1f) {
-		case 4:
-		case 11:
-		case 18:
+		case 0x04:
+		case 0x0b:
+		case 0x12:
 			if (voiceMute[(addr - 4) / 7]) {
 				data &= 0xfe;
 			}
+			super.write(addr, data);
 			break;
-		case 23:
+		case 0x17:
 			if (filterDisable[sidNum]) {
 				data &= 0xf0;
 			}
+			super.write(addr, data);
 			break;
+		case 0x18:
+			// samples muted? Fade-in is allowed anyway
+			if (samplesMuted && (data & 0xf) < (readInternalRegister(addr) & 0xf)) {
+				return;
+			}
+			super.write(addr, data);
+			break;
+
 		default:
+			super.write(addr, data);
 			break;
 		}
-		super.write(addr, data);
-
 		final byte dataByte = data;
 		doWriteDelayed(() -> {
 			while (hardSID.HardSID_Try_Write(deviceID, (short) 0, (byte) addr, dataByte) == WState.WSTATE_BUSY) {
@@ -180,7 +192,11 @@ public class SIDBlasterEmu extends ReSIDfp {
 	@Override
 	public void setVoiceMute(int num, boolean mute) {
 		super.setVoiceMute(num, mute);
-		voiceMute[num] = mute;
+		if (num < 3) {
+			voiceMute[num] = mute;
+		} else {
+			samplesMuted = mute;
+		}
 	}
 
 	@Override
