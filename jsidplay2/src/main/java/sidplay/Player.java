@@ -295,7 +295,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addMOS6510Extension((IMOS6510Extension) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					scheduleWhatsSidEvent((SIDMixer) sidBuilder);
+					scheduleWhatsSidEvent(((SIDMixer) sidBuilder).getWhatsSidSupport());
 				}
 			}
 
@@ -349,7 +349,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				}
 			}
 
-			private void scheduleWhatsSidEvent(final SIDMixer sidMixer) {
+			private void scheduleWhatsSidEvent(final WhatsSidSupport whatsSidSupport) {
 				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 				int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
 				int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
@@ -360,7 +360,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
 					}
 				}
-				WhatsSidSupport whatsSidSupport = sidMixer.getWhatsSidSupport();
 				whatsSidSupport.reset();
 				final SidTune tuneToCheck = tune;
 				c64.getEventScheduler().schedule(new Event("WhatsSID") {

@@ -134,7 +134,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private TextField baseAddress, thirdAddress;
 	@FXML
-	private CheckBox boosted8580, fakeStereo, filter, stereoFilter, thirdSidFilter, detectPSID64ChipModel;
+	private CheckBox boosted8580, fakeStereo, detectPSID64ChipModel, filter, stereoFilter, thirdSidFilter;
 	@FXML
 	private Slider mainVolume, secondVolume, thirdVolume, mainBalance, secondBalance, thirdBalance, mainDelay,
 			secondDelay, thirdDelay;
@@ -221,44 +221,44 @@ public class EmulationSettings extends C64Window {
 
 		mainBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		mainBalance.valueProperty().bindBidirectional(audioSection.mainBalanceProperty());
-		mainBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setBalance(0, newValue.floatValue())));
+		mainBalance.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setBalance(0, n.floatValue())));
 		secondBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		secondBalance.valueProperty().bindBidirectional(audioSection.secondBalanceProperty());
-		secondBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setBalance(1, newValue.floatValue())));
+		secondBalance.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setBalance(1, n.floatValue())));
 		thirdBalance.setLabelFormatter(new NumberToStringConverter<Double>(1));
 		thirdBalance.valueProperty().bindBidirectional(audioSection.thirdBalanceProperty());
-		thirdBalance.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setBalance(2, newValue.floatValue())));
+		thirdBalance.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setBalance(2, n.floatValue())));
 
 		mainDelay.valueProperty().bindBidirectional(audioSection.mainDelayProperty());
-		mainDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setDelay(0, newValue.intValue())));
+		mainDelay.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setDelay(0, n.intValue())));
 		secondDelay.valueProperty().bindBidirectional(audioSection.secondDelayProperty());
-		secondDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setDelay(1, newValue.intValue())));
+		secondDelay.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setDelay(1, n.intValue())));
 		thirdDelay.valueProperty().bindBidirectional(audioSection.thirdDelayProperty());
-		thirdDelay.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setDelay(2, newValue.intValue())));
+		thirdDelay.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setDelay(2, n.intValue())));
 
 		mainVolume.valueProperty().bindBidirectional(audioSection.mainVolumeProperty());
 		mainVolumeValue.textProperty().bindBidirectional(audioSection.mainVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		mainVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(m -> m.setVolume(0, newValue.floatValue())));
+		mainVolume.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(m -> m.setVolume(0, n.floatValue())));
 
 		secondVolume.valueProperty().bindBidirectional(audioSection.secondVolumeProperty());
 		secondVolumeValue.textProperty().bindBidirectional(audioSection.secondVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		secondVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(b -> b.setVolume(1, newValue.floatValue())));
+		secondVolume.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(b -> b.setVolume(1, n.floatValue())));
 
 		thirdVolume.valueProperty().bindBidirectional(audioSection.thirdVolumeProperty());
 		thirdVolumeValue.textProperty().bindBidirectional(audioSection.thirdVolumeProperty(),
 				new NumberToStringConverter<>(2));
-		thirdVolume.valueProperty().addListener((observable, oldValue, newValue) -> util.getPlayer()
-				.configureMixer(b -> b.setVolume(2, newValue.floatValue())));
+		thirdVolume.valueProperty()
+				.addListener((obj, o, n) -> util.getPlayer().configureMixer(b -> b.setVolume(2, n.floatValue())));
 
 		stereoModes = FXCollections.<StereoMode>observableArrayList(StereoMode.values());
 		stereoMode.setConverter(new EnumToStringConverter<StereoMode>(bundle));
