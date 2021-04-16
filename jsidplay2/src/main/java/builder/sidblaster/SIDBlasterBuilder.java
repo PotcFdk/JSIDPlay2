@@ -154,6 +154,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
 
 		SimpleEntry<Integer, ChipModel> deviceIdAndChipModel = getModelDependantDeviceId(chipModel, sidNum,
 				emulationSection.getSidBlasterSerialNumber());
@@ -167,14 +168,14 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, model);
+			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, model, defaultSidModel);
 
 			if (hsid.lock()) {
 				sids.add(hsid);
 				setDeviceName(sidNum, serialNumbers[deviceId]);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
 				hsid.setFilterEnable(emulationSection, sidNum);
-				for (int voice = 0; voice < 3; voice++) {
+				for (int voice = 0; voice < 4; voice++) {
 					hsid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 				}
 				return hsid;
@@ -187,12 +188,13 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return SIDEmu.NONE;
 	}
 
-	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel) {
+	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel,
+			ChipModel defaultChipModel) {
 		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new SIDBlasterEmu.FakeStereo(context, config, this, hardSID, deviceId, sidNum, chipModel, sids,
-					cpuClock);
+			return new SIDBlasterEmu.FakeStereo(context, config, this, hardSID, deviceId, sidNum, chipModel, defaultChipModel,
+					sids, cpuClock);
 		} else {
-			return new SIDBlasterEmu(context, cpuClock, this, hardSID, deviceId, sidNum, chipModel);
+			return new SIDBlasterEmu(context, cpuClock, this, hardSID, deviceId, sidNum, chipModel, defaultChipModel);
 		}
 	}
 
