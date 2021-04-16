@@ -146,7 +146,7 @@ public interface HardSID extends Library {
 	void HardSID_GetSerial(Memory mem, int bufferSize, byte DeviceID);
 
 	/**
-	 * @since SIDBlasterUSB 5.15beta
+	 * @since SIDBlasterUSB v.515beta2
 	 * @since 2.03
 	 */
 	void HardSID_SetWriteBufferSize(byte bufferSize);
@@ -158,6 +158,9 @@ public interface HardSID extends Library {
 	 * and the sidblaster must reconnect
 	 * 
 	 * @param sidType 0 (none), 1 (6581), 2 (8580)
+	 * 
+	 * @since SIDBlasterUSB v.515beta2
+	 * @since 2.03
 	 */
 	int HardSID_SetSIDType(byte DeviceID, SIDType sidType);
 
@@ -174,11 +177,17 @@ public interface HardSID extends Library {
 	 * 
 	 * @param serialNo exactly eight characters, upper case letters and digits,
 	 *                 only!
+	 * 
+	 * @since SIDBlasterUSB v.515beta2
+	 * @since 2.03
 	 */
 	int HardSID_SetSerial(byte DeviceID, String serialNo);
 
 	/**
 	 * Free resources for dead-end functions
+	 * 
+	 * @since SIDBlasterUSB v.515beta2
+	 * @since 2.03
 	 */
 	void HardSID_Uninitialize();
 }
