@@ -35,8 +35,8 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 		public FakeStereo(final EventScheduler context, final IConfig config, SIDBlasterBuilder hardSIDBuilder,
 				final HardSID hardSID, final byte deviceId, final int sidNum, final ChipModel model,
-				final List<SIDBlasterEmu> sids, CPUClock cpuClock) {
-			super(context, cpuClock, hardSIDBuilder, hardSID, deviceId, sidNum, model);
+				ChipModel defaultChipModel, final List<SIDBlasterEmu> sids, CPUClock cpuClock) {
+			super(context, cpuClock, hardSIDBuilder, hardSID, deviceId, sidNum, model, defaultChipModel);
 			this.emulationSection = config.getEmulationSection();
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
@@ -86,14 +86,12 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 	private final ChipModel chipModel;
 
-	private boolean[] voiceMute;
+	private boolean[] voiceMute, filterDisable;
 
 	private boolean samplesMuted;
 
-	private boolean[] filterDisable;
-
 	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
-			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model) {
+			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model, ChipModel defaultSidModel) {
 		super(context);
 		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
@@ -101,7 +99,7 @@ public class SIDBlasterEmu extends ReSIDfp {
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
-		super.setChipModel(model == ChipModel.AUTO ? ChipModel.MOS6581 : model);
+		super.setChipModel(model == ChipModel.AUTO ? defaultSidModel : model);
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
 		});
