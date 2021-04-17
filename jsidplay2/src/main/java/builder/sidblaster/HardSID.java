@@ -155,7 +155,7 @@ public interface HardSID extends Library {
 
 	/**
 	 * Note: this function is "dead end", host program must terminate after call and
-	 * the sidblaster must reconnect
+	 * the SIDBlaster must reconnect
 	 * 
 	 * @param sidType 0 (none), 1 (6581), 2 (8580)
 	 * 
