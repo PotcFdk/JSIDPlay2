@@ -99,13 +99,12 @@ public class SIDBlasterEmu extends ReSIDfp {
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
+		this.voiceMute = new boolean[MAX_SIDS];
+		this.filterDisable = new boolean[MAX_SIDS];
 		super.setChipModel(model == ChipModel.AUTO ? defaultSidModel : model);
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
 		});
-		this.voiceMute = new boolean[MAX_SIDS];
-		this.samplesMuted = false;
-		this.filterDisable = new boolean[MAX_SIDS];
 	}
 
 	@Override
