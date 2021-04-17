@@ -154,8 +154,8 @@ public interface HardSID extends Library {
 	SIDType HardSID_GetSIDType(byte DeviceID);
 
 	/**
-	 * Note: this function is "death end", host program must terminate after call
-	 * and the sidblaster must reconnect
+	 * Note: this function is "dead end", host program must terminate after call and
+	 * the sidblaster must reconnect
 	 * 
 	 * @param sidType 0 (none), 1 (6581), 2 (8580)
 	 * 
@@ -172,8 +172,8 @@ public interface HardSID extends Library {
 	}
 
 	/**
-	 * Note: this function is "death end", host program must terminate after call
-	 * and the sidblaster must reconnect
+	 * Note: this function is "dead end", host program must terminate after call and
+	 * the SIDBlaster must reconnect
 	 * 
 	 * @param serialNo exactly eight characters, upper case letters and digits,
 	 *                 only!
