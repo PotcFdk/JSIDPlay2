@@ -85,9 +85,7 @@ public final class SID implements SIDChip {
 	 */
 	private int nextVoiceSync;
 
-	private final boolean[] muted = new boolean[3];
-
-	private boolean samplesMuted;
+	private final boolean[] muted = new boolean[4];
 
 	/**
 	 * Estimate DAC nonlinearity. The SID contains R-2R ladder, and some likely
@@ -234,7 +232,6 @@ public final class SID implements SIDChip {
 		busValueTtl = 0;
 		write_address = 0;
 		voiceSync(false);
-		samplesMuted = false;
 	}
 
 	/**
@@ -385,7 +382,7 @@ public final class SID implements SIDChip {
 			break;
 		case 0x18:
 			// samples muted? Fade-in is allowed anyway
-			if (!samplesMuted || (value & 0xf) >= filter6581.vol) {
+			if (!muted[3] || (value & 0xf) >= filter6581.vol) {
 				filter6581.writeMODE_VOL(busValue);
 				filter8580.writeMODE_VOL(busValue);
 			}
@@ -406,10 +403,8 @@ public final class SID implements SIDChip {
 	 */
 	@Override
 	public void mute(final int channel, final boolean mute) {
-		if (channel < 3) {
+		if (channel < 4) {
 			muted[channel] = mute;
-		} else {
-			samplesMuted = mute;
 		}
 	}
 

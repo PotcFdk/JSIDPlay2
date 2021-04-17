@@ -86,9 +86,9 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 	private final ChipModel chipModel;
 
-	private boolean[] voiceMute, filterDisable;
+	private boolean[] voiceMute = new boolean[4];
 
-	private boolean samplesMuted;
+	private boolean[] filterDisable = new boolean[MAX_SIDS];
 
 	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
 			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model, ChipModel defaultSidModel) {
@@ -99,8 +99,6 @@ public class SIDBlasterEmu extends ReSIDfp {
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
-		this.voiceMute = new boolean[MAX_SIDS];
-		this.filterDisable = new boolean[MAX_SIDS];
 		super.setChipModel(model == ChipModel.AUTO ? defaultSidModel : model);
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
@@ -126,7 +124,7 @@ public class SIDBlasterEmu extends ReSIDfp {
 			break;
 		case 0x18:
 			// samples muted? Fade-in is allowed anyway
-			if (samplesMuted && (data & 0xf) < (readInternalRegister(addr) & 0xf)) {
+			if (voiceMute[3] && (data & 0xf) < (readInternalRegister(addr) & 0xf)) {
 				return;
 			}
 			super.write(addr, data);
@@ -185,10 +183,8 @@ public class SIDBlasterEmu extends ReSIDfp {
 	@Override
 	public void setVoiceMute(int num, boolean mute) {
 		super.setVoiceMute(num, mute);
-		if (num < 3) {
+		if (num < 4) {
 			voiceMute[num] = mute;
-		} else {
-			samplesMuted = mute;
 		}
 	}
 
