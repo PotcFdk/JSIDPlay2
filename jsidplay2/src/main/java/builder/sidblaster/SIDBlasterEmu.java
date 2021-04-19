@@ -10,7 +10,6 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
-import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 
 /**
@@ -33,11 +32,11 @@ public class SIDBlasterEmu extends ReSIDfp {
 		private final int prevNum;
 		private final List<SIDBlasterEmu> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config, SIDBlasterBuilder hardSIDBuilder,
-				final HardSID hardSID, final byte deviceId, final int sidNum, final ChipModel model,
-				ChipModel defaultChipModel, final List<SIDBlasterEmu> sids, CPUClock cpuClock) {
-			super(context, cpuClock, hardSIDBuilder, hardSID, deviceId, sidNum, model, defaultChipModel);
-			this.emulationSection = config.getEmulationSection();
+		public FakeStereo(SIDBlasterBuilder hardSIDBuilder, EventScheduler context, CPUClock cpuClock, HardSID hardSID,
+				byte deviceId, int sidNum, ChipModel model, ChipModel defaultChipModel, List<SIDBlasterEmu> sids,
+				IEmulationSection emulationSection) {
+			super(hardSIDBuilder, context, cpuClock, hardSID, deviceId, sidNum, model, defaultChipModel);
+			this.emulationSection = emulationSection;
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
 		}
@@ -90,11 +89,11 @@ public class SIDBlasterEmu extends ReSIDfp {
 
 	private boolean[] filterDisable = new boolean[MAX_SIDS];
 
-	public SIDBlasterEmu(EventScheduler context, CPUClock cpuClock, SIDBlasterBuilder hardSIDBuilder,
-			final HardSID hardSID, final byte deviceId, int sidNum, ChipModel model, ChipModel defaultSidModel) {
+	public SIDBlasterEmu(SIDBlasterBuilder hardSIDBuilder, EventScheduler context, CPUClock cpuClock, HardSID hardSID,
+			byte deviceId, int sidNum, ChipModel model, ChipModel defaultSidModel) {
 		super(context);
-		this.context = context;
 		this.hardSIDBuilder = hardSIDBuilder;
+		this.context = context;
 		this.hardSID = hardSID;
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
