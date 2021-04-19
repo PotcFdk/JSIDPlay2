@@ -21,6 +21,7 @@ import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
 import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AudioDriver;
 
@@ -134,11 +135,13 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	private HardSIDEmu createSID(byte deviceId, int chipNum, int sidNum, SidTune tune, ChipModel chipModel) {
-		if (SidTune.isFakeStereoSid(config.getEmulationSection(), tune, sidNum)) {
-			return new HardSIDEmu.FakeStereo(context, config, this, hardSID, deviceId, chipNum, sidNum, chipModel,
-					sids);
+		final IEmulationSection emulationSection = config.getEmulationSection();
+
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
+			return new HardSIDEmu.FakeStereo(this, context, hardSID, deviceId, chipNum, sidNum, chipModel, sids,
+					emulationSection);
 		} else {
-			return new HardSIDEmu(context, this, hardSID, deviceId, chipNum, sidNum, chipModel);
+			return new HardSIDEmu(this, context, hardSID, deviceId, chipNum, sidNum, chipModel);
 		}
 	}
 

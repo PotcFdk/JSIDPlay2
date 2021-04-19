@@ -36,9 +36,9 @@ public class SIDBlasterEmu extends ReSIDfp {
 				byte deviceId, int sidNum, ChipModel model, ChipModel defaultChipModel, List<SIDBlasterEmu> sids,
 				IEmulationSection emulationSection) {
 			super(hardSIDBuilder, context, cpuClock, hardSID, deviceId, sidNum, model, defaultChipModel);
-			this.emulationSection = emulationSection;
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
+			this.emulationSection = emulationSection;
 		}
 
 		@Override

@@ -31,13 +31,13 @@ public class HardSIDEmu extends SIDEmu {
 		private final int prevNum;
 		private final List<HardSIDEmu> sids;
 
-		public FakeStereo(final EventScheduler context, final IConfig config, HardSIDBuilder hardSIDBuilder,
-				final HardSID hardSID, final byte deviceId, final int chipNum, final int sidNum, ChipModel chipModel,
-				final List<HardSIDEmu> sids) {
-			super(context, hardSIDBuilder, hardSID, deviceId, chipNum, sidNum, chipModel);
-			this.emulationSection = config.getEmulationSection();
+		public FakeStereo(HardSIDBuilder hardSIDBuilder, EventScheduler context, HardSID hardSID, byte deviceId,
+				int chipNum, int sidNum, ChipModel chipModel, List<HardSIDEmu> sids,
+				IEmulationSection emulationSection) {
+			super(hardSIDBuilder, context, hardSID, deviceId, chipNum, sidNum, chipModel);
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
+			this.emulationSection = emulationSection;
 		}
 
 		@Override
@@ -88,10 +88,10 @@ public class HardSIDEmu extends SIDEmu {
 
 	private boolean doReadWriteDelayed;
 
-	public HardSIDEmu(EventScheduler context, HardSIDBuilder hardSIDBuilder, final HardSID hardSID, final byte deviceID,
-			final int chipNum, final int sidNum, final ChipModel model) {
-		this.context = context;
+	public HardSIDEmu(HardSIDBuilder hardSIDBuilder, EventScheduler context, HardSID hardSID, byte deviceID,
+			int chipNum, int sidNum, ChipModel model) {
 		this.hardSIDBuilder = hardSIDBuilder;
+		this.context = context;
 		this.hardSID = hardSID;
 		this.deviceID = deviceID;
 		this.chipNum = (byte) chipNum;
