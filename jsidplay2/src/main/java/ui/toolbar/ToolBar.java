@@ -119,7 +119,7 @@ public class ToolBar extends C64VBox implements UIPart {
 
 	}
 
-	private static final String SIDBLASTER_TEST_SID = "/builder/sidblaster/sidblaster_test.sid";
+	private static final String SIDBLASTER_TEST_SID = "/ui/toolbar/sidblaster_test.sid";
 
 	@FXML
 	private ComboBox<SamplingMethod> samplingBox;
