@@ -22,7 +22,7 @@ import libsidplay.common.OS;
 import sidplay.ini.IniConfig;
 import ui.common.util.DebugUtil;
 
-@Parameters(resourceBundle = "builder.sidblaster.SidBuilderTool")
+@Parameters(resourceBundle = "builder.sidblaster.SIDBuilderTool")
 public class SIDBlasterTool {
 
 	static {
