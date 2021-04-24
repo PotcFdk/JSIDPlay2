@@ -125,6 +125,7 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 			printMacInstallationHint();
 		}
 		System.err.println("Or maybe you just forgot to plugin in your USB devices?");
+		System.err.println("Use the magic wand of the SIDBlaster combobox to configure your SIDBlaster devices!");
 		System.err.println();
 	}
 
