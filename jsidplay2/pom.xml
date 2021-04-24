@@ -416,6 +416,7 @@
 							<quiet>true</quiet>
 							<failOnError>true</failOnError>
 							<failOnWarnings>true</failOnWarnings>
+							<show>private</show>
 						</configuration>
 					</execution>
 				</executions>

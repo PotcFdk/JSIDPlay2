@@ -179,7 +179,7 @@ public abstract class Timer {
 	/**
 	 * Cancel event.
 	 *
-	 * @param timer event to cancel
+	 * @param event event to cancel
 	 */
 	private void cancel(final Event event) {
 		player.getC64().getEventScheduler().cancel(event);

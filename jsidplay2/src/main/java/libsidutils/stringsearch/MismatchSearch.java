@@ -104,7 +104,7 @@ abstract class MismatchSearch extends StringSearch {
 	/**
 	 * Pre-processes a String, allowing k errors. This method should not be used
 	 * directly because it is implicitly called in the
-	 * {@link #searchString(String, String)} methods.
+	 * {@link #searchChars(char[], char[])} methods.
 	 *
 	 * @param pattern the String containing the pattern, may not be
 	 *                <code>null</code>

@@ -50,9 +50,10 @@ public interface Resampler {
 	 * slightly below 20kHz. This constraint ensures that the FIR table is not
 	 * overfilled.
 	 *
-	 * @param clockFrequency    System clock frequency at Hz
-	 * @param method            sampling method to use
-	 * @param samplingFrequency Desired output sampling rate
+	 * @param clockFrequency           System clock frequency at Hz
+	 * @param method                   sampling method to use
+	 * @param samplingFrequency        Desired output sampling rate
+	 * @param highestAccurateFrequency end of passband frequency
 	 */
 	static Resampler createResampler(final double clockFrequency, final SamplingMethod method,
 			final double samplingFrequency, double highestAccurateFrequency) {

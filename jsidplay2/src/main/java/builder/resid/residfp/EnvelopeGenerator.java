@@ -213,7 +213,7 @@ public final class EnvelopeGenerator {
 	/**
 	 * Emulated nonlinearity of the envelope DAC.
 	 *
-	 * @See SID.kinked_dac
+	 * @see SID#kinkedDac(int, float, int)
 	 */
 	private final float[] dac = new float[256];
 

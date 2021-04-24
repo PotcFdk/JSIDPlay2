@@ -256,7 +256,6 @@ class OctreeQuantization {
 	 * Returns the optimized palette of constructor-time specified length. Pads with
 	 * 0 if more colors were requested than existed in source material.
 	 *
-	 * @return
 	 */
 	protected int[] getPalette() {
 		quantize();

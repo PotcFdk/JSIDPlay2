@@ -271,10 +271,6 @@ public final class WaveformGenerator {
 
 	/**
 	 * Calculate OSC3 bitstate from the analog values.
-	 *
-	 * @param ringAccumulator
-	 * @param accumulator
-	 * @return
 	 */
 	private byte readOSC(int ringAccumulator, int myAccumulator) {
 		if (waveform == 0 || waveform >= 8) {
