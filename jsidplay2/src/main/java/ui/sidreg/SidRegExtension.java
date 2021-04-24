@@ -3,7 +3,7 @@ package ui.sidreg;
 import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.SIDListener;
-import sidplay.audio.SIDRegDriver.SidRegWrite;
+import sidplay.audio.sidreg.SidRegWrite;
 
 public abstract class SidRegExtension implements SIDListener {
 

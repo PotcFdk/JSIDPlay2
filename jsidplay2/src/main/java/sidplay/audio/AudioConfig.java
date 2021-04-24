@@ -48,7 +48,7 @@ public class AudioConfig {
 	 *
 	 * @param frameRate       The desired audio frame rate.
 	 * @param channels        The number of audio channels to use.
-	 * @param audioBufferSize The audio buffer size (null for reasonable default).
+	 * @param audioBufferSize The audio buffer size.
 	 */
 	public AudioConfig(final int frameRate, final int channels, Integer audioBufferSize) {
 		this.frameRate = frameRate;

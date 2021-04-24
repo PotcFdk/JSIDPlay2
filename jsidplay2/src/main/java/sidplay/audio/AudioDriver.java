@@ -29,9 +29,7 @@ public interface AudioDriver {
 	/**
 	 * Open audio interface.
 	 *
-	 * The audio parameters may be manipulated by open().
-	 *
-	 * @param audioSection       audio configuration
+	 * @param audioSection      audio configuration
 	 * @param recordingFilename name for a recording
 	 * @param cpuClock          CPU clock
 	 * @param context           event context

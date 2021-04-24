@@ -49,6 +49,13 @@ public class JavaSound implements AudioDriver {
 		return devices;
 	}
 
+	/**
+	 * The audio parameters may be manipulated by open().
+	 *
+	 * @param cfg  audio configuration
+	 * @param info mixer info
+	 * @throws LineUnavailableException
+	 */
 	public void open(final AudioConfig cfg, final Mixer.Info info) throws LineUnavailableException {
 		this.cfg = cfg;
 		boolean signed = true;

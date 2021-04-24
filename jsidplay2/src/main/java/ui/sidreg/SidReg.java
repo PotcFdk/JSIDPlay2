@@ -21,7 +21,7 @@ import javafx.stage.FileChooser;
 import libsidutils.PathUtils;
 import sidplay.Player;
 import sidplay.audio.SIDRegDriver;
-import sidplay.audio.SIDRegDriver.SidRegWrite;
+import sidplay.audio.sidreg.SidRegWrite;
 import sidplay.player.State;
 import ui.common.C64VBox;
 import ui.common.C64Window;
