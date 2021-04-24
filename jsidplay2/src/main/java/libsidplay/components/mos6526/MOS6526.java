@@ -200,7 +200,7 @@ public abstract class MOS6526 extends Bank {
 	 * @author Antti Lankila
 	 */
 	protected final class InterruptSource6526 extends InterruptSource {
-		/** Have we already scheduled CIA->CPU interrupt transition? */
+		/** Have we already scheduled CIA-&gt;CPU interrupt transition? */
 		private boolean scheduled;
 
 		/**

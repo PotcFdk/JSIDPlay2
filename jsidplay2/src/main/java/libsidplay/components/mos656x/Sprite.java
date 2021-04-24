@@ -323,7 +323,7 @@ public final class Sprite extends Event {
 	/**
 	 * Read the color number of the next pixel of the current sprite line.
 	 *
-	 * Colors 0, 1 are background colors, color 2 sprite color #2, colors 3->
+	 * Colors 0, 1 are background colors, color 2 sprite color #2, colors 3-&gt;
 	 * sprite-specific colors.
 	 */
 	private boolean multiColorLatched;

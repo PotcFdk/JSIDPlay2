@@ -35,7 +35,7 @@ public class PathUtils {
 
 	/**
 	 * Reverse function of {@link #getFiles(String, File, FileFilter)}.<BR>
-	 * e.g. [File(D), File(Daglish_Ben), File(Bombo.sid)] ->
+	 * e.g. [File(D), File(Daglish_Ben), File(Bombo.sid)] -&gt;
 	 * "/MUSICIANS/D/Daglish_Ben/Bombo.sid"
 	 *
 	 * @param files file list to create a filename for

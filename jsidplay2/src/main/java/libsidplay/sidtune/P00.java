@@ -31,7 +31,7 @@ import libsidutils.Petscii;
  * index to try to avoid repeats. Name conversion works by creating an initial
  * filename from alphanumeric and ' ', '-' characters only with the later two
  * being converted to '_'. Then it parses the filename from end to start
- * removing characters stopping as soon as the filename becomes <= 8. The
+ * removing characters stopping as soon as the filename becomes &lt;= 8. The
  * removal of characters occurs in three passes, the first removes all '_', then
  * vowels and finally numerics. If the filename is still greater than 8 it is
  * truncated.

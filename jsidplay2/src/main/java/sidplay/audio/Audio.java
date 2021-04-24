@@ -63,7 +63,8 @@ public enum Audio {
 	/**
 	 * Create audio output using the audio driver
 	 *
-	 * @param audioDriver audio driver
+	 * @param audioDriverClass audio driver class
+	 * @param parameters       parameters of audio driver class
 	 */
 	@SafeVarargs
 	Audio(Class<? extends AudioDriver> audioDriverClass, Class<? extends AudioDriver>... parameters) {

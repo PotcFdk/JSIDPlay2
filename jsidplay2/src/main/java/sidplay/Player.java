@@ -118,7 +118,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private static final int QUIT_MAX_WAIT_TIME = 1000;
 
 	/**
-	 * Previous song select timeout (< 4 secs).
+	 * Previous song select timeout (&lt; 4 secs).
 	 */
 	private static final int PREV_SONG_TIMEOUT = 4;
 	/**

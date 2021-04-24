@@ -72,7 +72,7 @@ public abstract class Flash040Core {
 
 	/** Timeout after sector erase command (datasheet states 50us) */
 	private static int ERASE_SECTOR_TIMEOUT_CYCLES = 50;
-	/** Time taken by sector & chip erase (FIXME: numbers pulled from a hat) */
+	/** Time taken by sector &amp; chip erase (FIXME: numbers pulled from a hat) */
 	private static int ERASE_SECTOR_CYCLES = 1012;
 	private static int ERASE_CHIP_CYCLES = 8192;
 

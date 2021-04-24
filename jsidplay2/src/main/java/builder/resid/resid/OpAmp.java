@@ -21,9 +21,9 @@ final class OpAmp {
 	final double[] out = new double[2];
 
 	/**
-	 * Opamp input -> output voltage conversion
+	 * Opamp input -&gt; output voltage conversion
 	 *
-	 * @param opamp opamp mapping table as pairs of points (in -> out)
+	 * @param opamp opamp mapping table as pairs of points (in -&gt; out)
 	 * @param Vddt  transistor dt parameter (in volts)
 	 */
 	protected OpAmp(double[][] opamp, double Vddt) {

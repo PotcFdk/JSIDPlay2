@@ -42,8 +42,8 @@ public class MOS6510 {
 	protected static final byte SP_PAGE = 0x01;
 
 	/**
-	 * IRQ/NMI magic limit values. Need to be larger than about 0x103 << 3, but
-	 * can't be min/max for Integer type.
+	 * IRQ/NMI magic limit values. Need to be larger than about 0x103 &lt;&lt; 3,
+	 * but can't be min/max for Integer type.
 	 */
 	private static final int MAX = 65536;
 
@@ -53,8 +53,8 @@ public class MOS6510 {
 	private boolean EOD;
 
 	/**
-	 * The result of the ANE opcode is A = ((A | CONST) & X & IMM), with CONST
-	 * apparently being both chip- and temperature dependent.
+	 * The result of the ANE opcode is A = ((A | CONST) &amp; X &amp; IMM), with
+	 * CONST apparently being both chip- and temperature dependent.
 	 *
 	 * The commonly used value for CONST in various documents is 0xee, which is
 	 * however not to be taken for granted (as it is unstable). see here:
@@ -63,8 +63,8 @@ public class MOS6510 {
 	 * as seen in the list, there are several possible values, and its origin is
 	 * still kinda unknown. instead of the commonly used 0xee we use 0xff here,
 	 * since this will make the only known occurance of this opcode in actual code
-	 * work. see here: https://sourceforge .net/tracker/?func=detail&aid=2110948
-	 * &group_id=223021&atid=1057617
+	 * work. see here: https://sourceforge .net/tracker/?func=detail&amp;aid=2110948
+	 * &amp;group_id=223021&amp;atid=1057617
 	 *
 	 * FIXME: in the unlikely event that other code surfaces that depends on another
 	 * CONST value, it probably has to be made configurable somehow if no value can

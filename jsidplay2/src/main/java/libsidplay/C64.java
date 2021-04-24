@@ -130,7 +130,7 @@ public abstract class C64 implements DatasetteEnvironment, C1541Environment, Use
 		private byte dataOut;
 
 		/**
-		 * $01 bits 6 and 7 fall-off cycles (1->0), average is about 350 msec
+		 * $01 bits 6 and 7 fall-off cycles (1-&gt;0), average is about 350 msec
 		 */
 		private static final long C64_CPU_DATA_PORT_FALL_OFF_CYCLES = 350000;
 

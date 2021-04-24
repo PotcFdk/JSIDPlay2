@@ -61,7 +61,7 @@ public class SIDMixer implements Mixer {
 
 		/**
 		 * Fast forward factor:<BR>
-		 * fastForwardShift=1<<(VOLUME_SCALER+fastForwardFactor)
+		 * fastForwardShift=1&lt;&lt;(VOLUME_SCALER+fastForwardFactor)
 		 */
 		private int fastForwardShift, fastForwardBitMask;
 
