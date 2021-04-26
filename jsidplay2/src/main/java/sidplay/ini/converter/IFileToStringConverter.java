@@ -1,8 +1,8 @@
 package sidplay.ini.converter;
 
-import java.io.File;
+import static libsidutils.ZipFileUtils.newFile;
 
-import libsidutils.ZipFileUtils;
+import java.io.File;
 
 public interface IFileToStringConverter {
 
@@ -11,6 +11,8 @@ public interface IFileToStringConverter {
 	}
 
 	default File fromString(String fileString) {
-		return fileString != null && !"".equals(fileString) ? ZipFileUtils.newFile(null, fileString) : null;
+		return fileString != null && !"".equals(fileString) && newFile(null, fileString).exists()
+				? newFile(null, fileString)
+				: null;
 	}
 }
