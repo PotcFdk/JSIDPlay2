@@ -169,17 +169,18 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			SIDBlasterEmu hsid = createSID(deviceId.byteValue(), sidNum, tune, model, defaultSidModel);
+			SIDBlasterEmu sid = createSID(deviceId.byteValue(), sidNum, tune, model, defaultSidModel);
 
-			if (hsid.lock()) {
-				sids.add(hsid);
+			if (sid.lock()) {
+				sid.setFilterEnable(emulationSection, sidNum);
+				sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+				for (int voice = 0; voice < 4; voice++) {
+					sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+				}
+				sids.add(sid);
 				setDeviceName(sidNum, serialNumbers[deviceId]);
 				setDelay(sidNum, audioSection.getDelay(sidNum));
-				hsid.setFilterEnable(emulationSection, sidNum);
-				for (int voice = 0; voice < 4; voice++) {
-					hsid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
-				}
-				return hsid;
+				return sid;
 			}
 		}
 		System.err.printf("SIDBLASTER ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)\n", sidNum);
@@ -189,23 +190,11 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		return SIDEmu.NONE;
 	}
 
-	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel,
-			ChipModel defaultChipModel) {
-		final IEmulationSection emulationSection = config.getEmulationSection();
-
-		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			return new SIDBlasterEmu.FakeStereo(this, context, cpuClock, hardSID, deviceId, sidNum, chipModel,
-					defaultChipModel, sids, emulationSection);
-		} else {
-			return new SIDBlasterEmu(this, context, cpuClock, hardSID, deviceId, sidNum, chipModel, defaultChipModel);
-		}
-	}
-
 	@Override
 	public void unlock(final SIDEmu sidEmu) {
-		SIDBlasterEmu hardSid = (SIDBlasterEmu) sidEmu;
-		hardSid.unlock();
-		sids.remove(sidEmu);
+		SIDBlasterEmu sid = (SIDBlasterEmu) sidEmu;
+		sids.remove(sid);
+		sid.unlock();
 	}
 
 	@Override
@@ -319,8 +308,20 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public void pause() {
-		for (SIDBlasterEmu hSid : sids) {
-			hardSID.HardSID_Flush(hSid.getDeviceId());
+		for (SIDBlasterEmu sid : sids) {
+			hardSID.HardSID_Flush(sid.getDeviceId());
+		}
+	}
+
+	private SIDBlasterEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel,
+			ChipModel defaultChipModel) {
+		final IEmulationSection emulationSection = config.getEmulationSection();
+
+		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
+			return new SIDBlasterEmu.FakeStereo(this, context, cpuClock, hardSID, deviceId, sidNum, chipModel,
+					defaultChipModel, sids, emulationSection);
+		} else {
+			return new SIDBlasterEmu(this, context, cpuClock, hardSID, deviceId, sidNum, chipModel, defaultChipModel);
 		}
 	}
 
