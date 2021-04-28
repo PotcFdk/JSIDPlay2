@@ -27,7 +27,7 @@ import sidplay.audio.exceptions.SongEndException;
  * @author Ken Händel
  *
  */
-public class CmpToMP3Driver extends JavaSound {
+public class CmpToMP3FileDriver extends JavaSound {
 
 	/**
 	 * Jump3r decoder.

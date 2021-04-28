@@ -36,12 +36,12 @@ import server.restful.common.AdditionalServletParameters;
 import server.restful.common.JSIDPlay2Servlet;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
-import sidplay.audio.AVIDriver;
+import sidplay.audio.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
-import sidplay.audio.MP4Driver;
+import sidplay.audio.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
 import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
@@ -180,10 +180,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private AudioDriver getAudioDriverOfVideoFormat(IConfig config) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4)) {
 		case AVI:
-			return new AVIDriver();
+			return new AVIFileDriver();
 		case MP4:
 		default:
-			return new MP4Driver();
+			return new MP4FileDriver();
 		}
 	}
 

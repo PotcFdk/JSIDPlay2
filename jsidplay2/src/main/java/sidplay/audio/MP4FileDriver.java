@@ -42,7 +42,7 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidutils.PathUtils;
 
-public class MP4Driver implements AudioDriver, VideoDriver {
+public class MP4FileDriver implements AudioDriver, VideoDriver {
 
 	private String recordingFilename;
 

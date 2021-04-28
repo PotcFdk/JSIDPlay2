@@ -44,7 +44,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 
-public class AVIDriver implements AudioDriver, VideoDriver {
+public class AVIFileDriver implements AudioDriver, VideoDriver {
 
 	private AVIWriter aviWriter;
 	private BufferedImage videoImage;

@@ -33,9 +33,9 @@ public enum Audio {
 	/** MP3 file write. */
 	MP3(MP3FileDriver.class),
 	/** AVI file write. */
-	AVI(AVIDriver.class),
+	AVI(AVIFileDriver.class),
 	/** MP4 file write. */
-	MP4(MP4Driver.class),
+	MP4(MP4FileDriver.class),
 	/** SID register writes file write. */
 	SID_REG(SIDRegFileDriver.class),
 	/** SID DUMP file write. */
@@ -49,15 +49,15 @@ public enum Audio {
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3FileDriver.class),
 	/** Java Sound API plus AVI file write. */
-	LIVE_AVI(ProxyDriver.class, JavaSound.class, AVIDriver.class),
+	LIVE_AVI(ProxyDriver.class, JavaSound.class, AVIFileDriver.class),
 	/** MP4 file write. */
-	LIVE_MP4(ProxyDriver.class, JavaSound.class, MP4Driver.class),
+	LIVE_MP4(ProxyDriver.class, JavaSound.class, MP4FileDriver.class),
 	/** SID register writes file write. */
 	LIVE_SID_REG(ProxyDriver.class, JavaSound.class, SIDRegFileDriver.class),
 	/** SID DUMP file write. */
 	LIVE_SID_DUMP(ProxyDriver.class, JavaSound.class, SIDDumpFileDriver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CmpToMP3Driver.class);
+	COMPARE_MP3(CmpToMP3FileDriver.class);
 
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver;
