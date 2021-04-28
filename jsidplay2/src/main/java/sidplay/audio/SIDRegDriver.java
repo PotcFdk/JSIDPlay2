@@ -1,7 +1,8 @@
 package sidplay.audio;
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,13 +17,69 @@ import libsidplay.common.SIDListener;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.sidreg.SidRegWrite;
 
-public class SIDRegDriver implements SIDListener, AudioDriver {
+public abstract class SIDRegDriver implements SIDListener, AudioDriver {
+
+	/**
+	 * File based driver to create a SID reg file.
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class SIDRegFileDriver extends SIDRegDriver {
+		@Override
+		protected OutputStream getOut(String recordingFilename) throws IOException {
+			System.out.println("Recording, file=" + recordingFilename);
+			return new FileOutputStream(recordingFilename);
+		}
+
+		@Override
+		public void close() {
+			super.close();
+			if (out != null) {
+				try {
+					out.close();
+				} finally {
+					out = null;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Driver to write into an SID reg stream.<BR>
+	 *
+	 * <B>Note:</B> The caller is responsible of closing the output stream
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class SIDRegStreamDriver extends SIDRegDriver {
+
+		/**
+		 * Use several instances for parallel emulator instances, where applicable.
+		 *
+		 * @param out Output stream to write the SID reg to
+		 */
+		public SIDRegStreamDriver(OutputStream out) {
+			this.out = new PrintStream(out);
+		}
+
+		@Override
+		protected OutputStream getOut(String recordingFilename) {
+			return out;
+		}
+
+	}
 
 	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("sidplay.audio.SIDRegDriver");
 
+	/**
+	 * Print stream to write the encoded MP3 to.
+	 */
+	protected PrintStream out;
+
 	private EventScheduler context;
 
-	private PrintStream printStream;
 	private long fTime;
 	private ByteBuffer sampleBuffer;
 
@@ -32,10 +89,11 @@ public class SIDRegDriver implements SIDListener, AudioDriver {
 		System.out.println("Recording, file=" + recordingFilename);
 		AudioConfig cfg = new AudioConfig(audioSection);
 		this.context = context;
-		printStream = new PrintStream(new File(recordingFilename));
+
+		out = new PrintStream(getOut(recordingFilename));
 
 		fTime = 0;
-		writeHeader(printStream);
+		writeHeader(out);
 
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
@@ -49,7 +107,7 @@ public class SIDRegDriver implements SIDListener, AudioDriver {
 		}
 		final long relTime = time - fTime;
 
-		new SidRegWrite(time, relTime, addr, data).writeSidRegister(printStream);
+		new SidRegWrite(time, relTime, addr, data).writeSidRegister(out);
 
 		fTime = time;
 	}
@@ -60,7 +118,6 @@ public class SIDRegDriver implements SIDListener, AudioDriver {
 
 	@Override
 	public void close() {
-		printStream.close();
 	}
 
 	@Override
@@ -84,4 +141,5 @@ public class SIDRegDriver implements SIDListener, AudioDriver {
 				BUNDLE.getString("DESCRIPTION"));
 	}
 
+	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

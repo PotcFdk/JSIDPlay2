@@ -1,8 +1,8 @@
 package sidplay.audio;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,9 +16,64 @@ import libsidplay.config.IAudioSection;
 import sidplay.audio.siddump.SIDDumpExtension;
 import sidplay.audio.siddump.SidDumpOutput;
 
-public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDListener {
+public abstract class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDListener {
 
-	private PrintStream out;
+	/**
+	 * File based driver to create a SID dump file.
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class SIDDumpFileDriver extends SIDDumpDriver {
+		@Override
+		protected OutputStream getOut(String recordingFilename) throws IOException {
+			System.out.println("Recording, file=" + recordingFilename);
+			return new FileOutputStream(recordingFilename);
+		}
+
+		@Override
+		public void close() {
+			super.close();
+			if (out != null) {
+				try {
+					out.close();
+				} finally {
+					out = null;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Driver to write into an SID dump stream.<BR>
+	 *
+	 * <B>Note:</B> The caller is responsible of closing the output stream
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class SIDDumpStreamDriver extends SIDDumpDriver {
+
+		/**
+		 * Use several instances for parallel emulator instances, where applicable.
+		 *
+		 * @param out Output stream to write the SID dump to
+		 */
+		public SIDDumpStreamDriver(OutputStream out) {
+			this.out = new PrintStream(out);
+		}
+
+		@Override
+		protected OutputStream getOut(String recordingFilename) {
+			return out;
+		}
+
+	}
+
+	/**
+	 * Print stream to write the encoded MP3 to.
+	 */
+	protected PrintStream out;
 
 	private ByteBuffer sampleBuffer;
 
@@ -31,7 +86,7 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 		init(cpuClock);
 		setTimeInSeconds(false);
 
-		out = new PrintStream(new BufferedOutputStream(new FileOutputStream(recordingFilename)));
+		out = new PrintStream(getOut(recordingFilename));
 
 		out.println(String.format("Middle C frequency is $%04X", getMiddleCFreq()));
 		out.println();
@@ -55,7 +110,6 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 
 	@Override
 	public void close() {
-		out.close();
 	}
 
 	@Override
@@ -119,4 +173,5 @@ public class SIDDumpDriver extends SIDDumpExtension implements AudioDriver, SIDL
 
 	}
 
+	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
 }

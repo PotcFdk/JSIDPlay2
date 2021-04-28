@@ -11,6 +11,8 @@ import libsidplay.sidtune.SidTune;
 import sidplay.audio.AACDriver.AACFileDriver;
 import sidplay.audio.FLACDriver.FLACFileDriver;
 import sidplay.audio.MP3Driver.MP3FileDriver;
+import sidplay.audio.SIDDumpDriver.SIDDumpFileDriver;
+import sidplay.audio.SIDRegDriver.SIDRegFileDriver;
 import sidplay.audio.WAVDriver.WavFileDriver;
 
 /**
@@ -35,9 +37,9 @@ public enum Audio {
 	/** MP4 file write. */
 	MP4(MP4Driver.class),
 	/** SID register writes file write. */
-	SID_REG(SIDRegDriver.class),
+	SID_REG(SIDRegFileDriver.class),
 	/** SID DUMP file write. */
-	SID_DUMP(SIDDumpDriver.class),
+	SID_DUMP(SIDDumpFileDriver.class),
 	/** Java Sound API plus WAV file write. */
 	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFileDriver.class),
 	/** Java Sound API plus FLAC file write. */
@@ -51,9 +53,9 @@ public enum Audio {
 	/** MP4 file write. */
 	LIVE_MP4(ProxyDriver.class, JavaSound.class, MP4Driver.class),
 	/** SID register writes file write. */
-	LIVE_SID_REG(ProxyDriver.class, JavaSound.class, SIDRegDriver.class),
+	LIVE_SID_REG(ProxyDriver.class, JavaSound.class, SIDRegFileDriver.class),
 	/** SID DUMP file write. */
-	LIVE_SID_DUMP(ProxyDriver.class, JavaSound.class, SIDDumpDriver.class),
+	LIVE_SID_DUMP(ProxyDriver.class, JavaSound.class, SIDDumpFileDriver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
 	COMPARE_MP3(CmpToMP3Driver.class);
 

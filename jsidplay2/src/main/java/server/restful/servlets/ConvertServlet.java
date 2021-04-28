@@ -42,6 +42,8 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4Driver;
+import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
+import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
@@ -157,6 +159,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case MP3:
 		default:
 			return new MP3StreamDriver(outputstream);
+		case SID_DUMP:
+			return new SIDDumpStreamDriver(outputstream);
+		case SID_REG:
+			return new SIDRegStreamDriver(outputstream);
 		}
 	}
 
