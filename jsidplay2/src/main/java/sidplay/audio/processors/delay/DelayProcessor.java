@@ -1,11 +1,11 @@
-package sidplay.audio.processor.delay;
+package sidplay.audio.processors.delay;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
-import sidplay.audio.processor.AudioProcessor;
+import sidplay.audio.processors.AudioProcessor;
 
 public class DelayProcessor implements AudioProcessor {
 

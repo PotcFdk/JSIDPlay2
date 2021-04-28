@@ -22,9 +22,9 @@ import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.processor.AudioProcessor;
-import sidplay.audio.processor.delay.DelayProcessor;
-import sidplay.audio.processor.reverb.ReverbProcessor;
+import sidplay.audio.processors.AudioProcessor;
+import sidplay.audio.processors.delay.DelayProcessor;
+import sidplay.audio.processors.reverb.ReverbProcessor;
 import sidplay.fingerprinting.WhatsSidSupport;
 
 /**

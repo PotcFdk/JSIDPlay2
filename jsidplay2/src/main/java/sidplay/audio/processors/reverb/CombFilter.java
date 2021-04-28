@@ -2,7 +2,7 @@
 // Written by: Craig A. Lindley
 // Last Update: 09/09/98
 
-package sidplay.audio.processor.reverb;
+package sidplay.audio.processors.reverb;
 
 public class CombFilter {
 

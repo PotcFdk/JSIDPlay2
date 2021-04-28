@@ -2,7 +2,7 @@
    Written by: Craig A. Lindley
    Last Update: 09/11/98
 */
-package sidplay.audio.processor.reverb;
+package sidplay.audio.processors.reverb;
 
 /**
  * This reverb module is called a Schroeder reverb because the organization of

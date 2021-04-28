@@ -1,4 +1,4 @@
-package sidplay.audio.processor;
+package sidplay.audio.processors;
 
 import java.nio.ByteBuffer;
 
