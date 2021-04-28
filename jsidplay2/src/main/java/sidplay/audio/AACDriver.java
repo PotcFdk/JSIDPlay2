@@ -67,7 +67,7 @@ public abstract class AACDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class AACFile extends AACDriver {
+	public static class AACFileDriver extends AACDriver {
 
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
@@ -98,14 +98,14 @@ public abstract class AACDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class AACStream extends AACDriver {
+	public static class AACStreamDriver extends AACDriver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 *
 		 * @param out Output stream to write the encoded AAC to
 		 */
-		public AACStream(OutputStream out) {
+		public AACStreamDriver(OutputStream out) {
 			this.out = out;
 		}
 

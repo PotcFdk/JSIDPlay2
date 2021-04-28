@@ -578,7 +578,7 @@
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
 								<include>sidplay/audio/JavaSound.class</include>
-								<include>sidplay/audio/WAVHeader.class</include>
+								<include>sidplay/audio/wav/WAVHeader.class</include>
 								<include>sidplay/ini/IniSection.class</include>
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>

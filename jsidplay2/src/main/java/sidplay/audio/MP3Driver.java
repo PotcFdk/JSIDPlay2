@@ -29,7 +29,7 @@ public abstract class MP3Driver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class MP3File extends MP3Driver {
+	public static class MP3FileDriver extends MP3Driver {
 		@Override
 		protected OutputStream getOut(String recordingFilename) throws IOException {
 			System.out.println("Recording, file=" + recordingFilename);
@@ -59,14 +59,14 @@ public abstract class MP3Driver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class MP3Stream extends MP3Driver {
+	public static class MP3StreamDriver extends MP3Driver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 *
 		 * @param out Output stream to write the encoded MP3 to
 		 */
-		public MP3Stream(OutputStream out) {
+		public MP3StreamDriver(OutputStream out) {
 			this.out = out;
 		}
 

@@ -12,7 +12,7 @@ import libsidplay.common.SamplingRate;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
-import sidplay.audio.WAVHeader;
+import sidplay.audio.wav.WAVHeader;
 
 /**
  * 

@@ -21,12 +21,13 @@ import sidplay.audio.exceptions.IniConfigException;
 import sidplay.audio.exceptions.SongEndException;
 
 /**
- * Sound driver to listen to emulation and MP3 recording in parallel.
+ * Sound driver to compare emulation with MP3 recording (listen to emulation and
+ * MP3 recording in parallel).
  *
  * @author Ken Händel
  *
  */
-public class CmpMP3File extends JavaSound {
+public class CmpToMP3Driver extends JavaSound {
 
 	/**
 	 * Jump3r decoder.

@@ -12,6 +12,7 @@ import javax.sound.sampled.LineUnavailableException;
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IAudioSection;
+import sidplay.audio.wav.WAVHeader;
 
 /**
  * Abstract base class to output a WAV to an output stream.
@@ -27,7 +28,7 @@ public abstract class WAVDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class WavFile extends WAVDriver {
+	public static class WavFileDriver extends WAVDriver {
 
 		private RandomAccessFile file;
 
@@ -66,14 +67,14 @@ public abstract class WAVDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class WAVStream extends WAVDriver {
+	public static class WAVStreamDriver extends WAVDriver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 *
 		 * @param out Output stream to write the encoded WAV to
 		 */
-		public WAVStream(OutputStream out) {
+		public WAVStreamDriver(OutputStream out) {
 			this.out = out;
 		}
 

@@ -35,14 +35,14 @@ import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.AdditionalServletParameters;
 import server.restful.common.JSIDPlay2Servlet;
 import sidplay.Player;
-import sidplay.audio.AACDriver.AACStream;
+import sidplay.audio.AACDriver.AACStreamDriver;
 import sidplay.audio.AVIDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.FLACDriver.FLACStream;
-import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.FLACDriver.FLACStreamDriver;
+import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4Driver;
-import sidplay.audio.WAVDriver.WAVStream;
+import sidplay.audio.WAVDriver.WAVStreamDriver;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
 import ui.common.filefilter.CartFileFilter;
@@ -149,14 +149,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
 		case WAV:
-			return new WAVStream(outputstream);
+			return new WAVStreamDriver(outputstream);
 		case FLAC:
-			return new FLACStream(outputstream);
+			return new FLACStreamDriver(outputstream);
 		case AAC:
-			return new AACStream(outputstream);
+			return new AACStreamDriver(outputstream);
 		case MP3:
 		default:
-			return new MP3Stream(outputstream);
+			return new MP3StreamDriver(outputstream);
 		}
 	}
 

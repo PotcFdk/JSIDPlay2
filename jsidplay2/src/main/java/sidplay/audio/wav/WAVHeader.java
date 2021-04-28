@@ -1,4 +1,4 @@
-package sidplay.audio;
+package sidplay.audio.wav;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 

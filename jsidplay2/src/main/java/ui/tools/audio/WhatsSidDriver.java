@@ -23,8 +23,8 @@ import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.WAVHeader;
 import sidplay.audio.exceptions.SongEndException;
+import sidplay.audio.wav.WAVHeader;
 import ui.tools.FingerPrintingCreator;
 
 /**

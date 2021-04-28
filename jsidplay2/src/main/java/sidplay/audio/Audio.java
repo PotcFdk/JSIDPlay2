@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
-import sidplay.audio.AACDriver.AACFile;
-import sidplay.audio.FLACDriver.FLACFile;
-import sidplay.audio.MP3Driver.MP3File;
-import sidplay.audio.WAVDriver.WavFile;
+import sidplay.audio.AACDriver.AACFileDriver;
+import sidplay.audio.FLACDriver.FLACFileDriver;
+import sidplay.audio.MP3Driver.MP3FileDriver;
+import sidplay.audio.WAVDriver.WavFileDriver;
 
 /**
  * Audio output.
@@ -23,13 +23,13 @@ public enum Audio {
 	/** Java Sound API. */
 	SOUNDCARD(JavaSound.class),
 	/** WAV file write. */
-	WAV(WavFile.class),
+	WAV(WavFileDriver.class),
 	/** FLAC file write. */
-	FLAC(FLACFile.class),
+	FLAC(FLACFileDriver.class),
 	/** AAC file write. */
-	AAC(AACFile.class),
+	AAC(AACFileDriver.class),
 	/** MP3 file write. */
-	MP3(MP3File.class),
+	MP3(MP3FileDriver.class),
 	/** AVI file write. */
 	AVI(AVIDriver.class),
 	/** MP4 file write. */
@@ -39,13 +39,13 @@ public enum Audio {
 	/** SID DUMP file write. */
 	SID_DUMP(SIDDumpDriver.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFile.class),
+	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFileDriver.class),
 	/** Java Sound API plus FLAC file write. */
-	LIVE_FLAC(ProxyDriver.class, JavaSound.class, FLACFile.class),
+	LIVE_FLAC(ProxyDriver.class, JavaSound.class, FLACFileDriver.class),
 	/** Java Sound API plus AAC file write. */
-	LIVE_AAC(ProxyDriver.class, JavaSound.class, AACFile.class),
+	LIVE_AAC(ProxyDriver.class, JavaSound.class, AACFileDriver.class),
 	/** Java Sound API plus MP3 file write. */
-	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3File.class),
+	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3FileDriver.class),
 	/** Java Sound API plus AVI file write. */
 	LIVE_AVI(ProxyDriver.class, JavaSound.class, AVIDriver.class),
 	/** MP4 file write. */
@@ -55,7 +55,7 @@ public enum Audio {
 	/** SID DUMP file write. */
 	LIVE_SID_DUMP(ProxyDriver.class, JavaSound.class, SIDDumpDriver.class),
 	/** Java Sound API plus play-back of MP3 recording. */
-	COMPARE_MP3(CmpMP3File.class);
+	COMPARE_MP3(CmpToMP3Driver.class);
 
 	private final Class<? extends AudioDriver> audioDriverClass, parameterClasses[];
 	private AudioDriver audioDriver;

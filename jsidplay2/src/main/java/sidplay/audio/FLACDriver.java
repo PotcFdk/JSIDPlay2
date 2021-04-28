@@ -26,7 +26,7 @@ public abstract class FLACDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class FLACFile extends FLACDriver {
+	public static class FLACFileDriver extends FLACDriver {
 
 		@Override
 		protected FLACOutputStream getOut(String recordingFilename) throws IOException {
@@ -57,14 +57,14 @@ public abstract class FLACDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class FLACStream extends FLACDriver {
+	public static class FLACStreamDriver extends FLACDriver {
 
 		/**
 		 * Use several instances for parallel emulator instances, where applicable.
 		 *
 		 * @param out Output stream to write the encoded FLAC to
 		 */
-		public FLACStream(OutputStream out) {
+		public FLACStreamDriver(OutputStream out) {
 			try {
 				this.out = new FLACStreamOutputStream(out);
 			} catch (IOException e) {

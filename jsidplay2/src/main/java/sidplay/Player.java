@@ -76,7 +76,7 @@ import libsidutils.stil.STIL;
 import libsidutils.stil.STIL.STILEntry;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.MP3Driver.MP3Stream;
+import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 import sidplay.audio.exceptions.SongEndException;
@@ -817,9 +817,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	/**
 	 * Set alternative audio driver (not contained in {@link Audio}).<BR>
 	 * For example, If it is required to use a new instance of audio driver each
-	 * time the player plays a tune (e.g. {@link MP3Stream})
+	 * time the player plays a tune (e.g. {@link MP3StreamDriver})
 	 *
-	 * @param audioDriver for example {@link MP3Stream}
+	 * @param audioDriver for example {@link MP3StreamDriver}
 	 * @throws IOException configuration error
 	 */
 	public final void setAudioDriver(final AudioDriver audioDriver) throws IOException {
