@@ -610,10 +610,7 @@
 						</goals>
 						<configuration>
 							<includes>
-								<include>builder/netsiddev/**/*.class</include>
-								<include>builder/resid/**/*.class</include>
-								<include>builder/hardsid/**/*.class</include>
-								<include>builder/sidblaster/**/*.class</include>
+								<include>builder/**/*.class</include>
 								<include>libsidplay/**/*.class</include>
 								<include>libsidplay/**/*.bin</include>
 								<include>libsidutils/*.class</include>
