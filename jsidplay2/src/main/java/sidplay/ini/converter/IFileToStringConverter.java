@@ -11,8 +11,11 @@ public interface IFileToStringConverter {
 	}
 
 	default File fromString(String fileString) {
-		return fileString != null && !"".equals(fileString) && newFile(null, fileString).exists()
-				? newFile(null, fileString)
-				: null;
+		if (fileString == null && "".equals(fileString)) {
+			return null;
+		}
+		File file = newFile(null, fileString);
+		return file.exists() ? file : null;
 	}
+
 }
