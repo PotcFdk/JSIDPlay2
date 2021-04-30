@@ -13,6 +13,8 @@ import sidplay.ini.converter.BeanToStringConverter;
  */
 public class IniPrinterSection extends IniSection implements IPrinterSection {
 
+	private static final String SECTION_ID = "Printer";
+
 	protected IniPrinterSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -24,7 +26,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 	 */
 	@Override
 	public final boolean isPrinterOn() {
-		return iniReader.getPropertyBool("Printer", "PrinterOn", DEFAULT_PRINTER_ON);
+		return iniReader.getPropertyBool(SECTION_ID, "PrinterOn", DEFAULT_PRINTER_ON);
 	}
 
 	/**
@@ -34,7 +36,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 	 */
 	@Override
 	public final void setPrinterOn(final boolean on) {
-		iniReader.setProperty("Printer", "PrinterOn", on);
+		iniReader.setProperty(SECTION_ID, "PrinterOn", on);
 	}
 
 	@Override
