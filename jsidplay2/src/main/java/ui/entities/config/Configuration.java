@@ -1,7 +1,68 @@
 package ui.entities.config;
 
 import static java.util.stream.Collectors.toList;
+import static libsidplay.components.keyboard.KeyTableEntry.A;
+import static libsidplay.components.keyboard.KeyTableEntry.ARROW_LEFT;
+import static libsidplay.components.keyboard.KeyTableEntry.ARROW_UP;
+import static libsidplay.components.keyboard.KeyTableEntry.AT;
+import static libsidplay.components.keyboard.KeyTableEntry.B;
+import static libsidplay.components.keyboard.KeyTableEntry.C;
+import static libsidplay.components.keyboard.KeyTableEntry.CLEAR_HOME;
+import static libsidplay.components.keyboard.KeyTableEntry.COLON;
+import static libsidplay.components.keyboard.KeyTableEntry.COMMA;
+import static libsidplay.components.keyboard.KeyTableEntry.CURSOR_LEFT_RIGHT;
+import static libsidplay.components.keyboard.KeyTableEntry.CURSOR_UP_DOWN;
+import static libsidplay.components.keyboard.KeyTableEntry.D;
+import static libsidplay.components.keyboard.KeyTableEntry.E;
+import static libsidplay.components.keyboard.KeyTableEntry.EIGHT;
+import static libsidplay.components.keyboard.KeyTableEntry.EQUALS;
+import static libsidplay.components.keyboard.KeyTableEntry.F;
+import static libsidplay.components.keyboard.KeyTableEntry.F1;
+import static libsidplay.components.keyboard.KeyTableEntry.F3;
+import static libsidplay.components.keyboard.KeyTableEntry.F5;
+import static libsidplay.components.keyboard.KeyTableEntry.F7;
+import static libsidplay.components.keyboard.KeyTableEntry.FIVE;
+import static libsidplay.components.keyboard.KeyTableEntry.FOUR;
+import static libsidplay.components.keyboard.KeyTableEntry.G;
+import static libsidplay.components.keyboard.KeyTableEntry.H;
+import static libsidplay.components.keyboard.KeyTableEntry.I;
+import static libsidplay.components.keyboard.KeyTableEntry.INS_DEL;
+import static libsidplay.components.keyboard.KeyTableEntry.J;
+import static libsidplay.components.keyboard.KeyTableEntry.K;
+import static libsidplay.components.keyboard.KeyTableEntry.L;
+import static libsidplay.components.keyboard.KeyTableEntry.M;
+import static libsidplay.components.keyboard.KeyTableEntry.MINUS;
+import static libsidplay.components.keyboard.KeyTableEntry.N;
+import static libsidplay.components.keyboard.KeyTableEntry.NINE;
+import static libsidplay.components.keyboard.KeyTableEntry.O;
+import static libsidplay.components.keyboard.KeyTableEntry.ONE;
+import static libsidplay.components.keyboard.KeyTableEntry.P;
+import static libsidplay.components.keyboard.KeyTableEntry.PERIOD;
+import static libsidplay.components.keyboard.KeyTableEntry.PLUS;
+import static libsidplay.components.keyboard.KeyTableEntry.POUND;
+import static libsidplay.components.keyboard.KeyTableEntry.Q;
+import static libsidplay.components.keyboard.KeyTableEntry.R;
+import static libsidplay.components.keyboard.KeyTableEntry.RETURN;
+import static libsidplay.components.keyboard.KeyTableEntry.RUN_STOP;
+import static libsidplay.components.keyboard.KeyTableEntry.S;
+import static libsidplay.components.keyboard.KeyTableEntry.SEMICOLON;
+import static libsidplay.components.keyboard.KeyTableEntry.SEVEN;
+import static libsidplay.components.keyboard.KeyTableEntry.SIX;
+import static libsidplay.components.keyboard.KeyTableEntry.SLASH;
+import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
+import static libsidplay.components.keyboard.KeyTableEntry.STAR;
+import static libsidplay.components.keyboard.KeyTableEntry.T;
+import static libsidplay.components.keyboard.KeyTableEntry.THREE;
+import static libsidplay.components.keyboard.KeyTableEntry.TWO;
+import static libsidplay.components.keyboard.KeyTableEntry.U;
+import static libsidplay.components.keyboard.KeyTableEntry.V;
+import static libsidplay.components.keyboard.KeyTableEntry.W;
+import static libsidplay.components.keyboard.KeyTableEntry.X;
+import static libsidplay.components.keyboard.KeyTableEntry.Y;
+import static libsidplay.components.keyboard.KeyTableEntry.Z;
+import static libsidplay.components.keyboard.KeyTableEntry.ZERO;
 import static sidplay.ini.IniDefaults.DEFAULTS;
+import static ui.entities.config.KeyTableEntity.of;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +89,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
-import libsidplay.components.keyboard.KeyTableEntry;
 import libsidplay.config.IConfig;
 import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.LazyListField;
@@ -58,75 +118,38 @@ public class Configuration implements IConfig {
 
 	public static final List<FavoritesSection> DEFAULT_FAVORITES = Arrays.asList(new FavoritesSection());
 
-	public static final List<KeyTableEntity> DEFAULT_KEYCODES = Arrays.asList(
-			new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
-			new KeyTableEntity(KeyCode.BACK_SLASH.getName(), KeyTableEntry.ARROW_LEFT),
-			new KeyTableEntity(KeyCode.DIGIT1.getName(), KeyTableEntry.ONE),
-			new KeyTableEntity(KeyCode.DIGIT2.getName(), KeyTableEntry.TWO),
-			new KeyTableEntity(KeyCode.DIGIT3.getName(), KeyTableEntry.THREE),
-			new KeyTableEntity(KeyCode.DIGIT4.getName(), KeyTableEntry.FOUR),
-			new KeyTableEntity(KeyCode.DIGIT5.getName(), KeyTableEntry.FIVE),
-			new KeyTableEntity(KeyCode.DIGIT6.getName(), KeyTableEntry.SIX),
-			new KeyTableEntity(KeyCode.DIGIT7.getName(), KeyTableEntry.SEVEN),
-			new KeyTableEntity(KeyCode.DIGIT8.getName(), KeyTableEntry.EIGHT),
-			new KeyTableEntity(KeyCode.DIGIT9.getName(), KeyTableEntry.NINE),
-			new KeyTableEntity(KeyCode.DIGIT0.getName(), KeyTableEntry.ZERO),
-			new KeyTableEntity(KeyCode.OPEN_BRACKET.getName(), KeyTableEntry.PLUS),
-			new KeyTableEntity(KeyCode.CLOSE_BRACKET.getName(), KeyTableEntry.MINUS),
-			new KeyTableEntity(KeyCode.POUND.getName(), KeyTableEntry.POUND),
-			new KeyTableEntity(KeyCode.HOME.getName(), KeyTableEntry.CLEAR_HOME),
-			new KeyTableEntity(KeyCode.BACK_SPACE.getName(), KeyTableEntry.INS_DEL),
+	public static final List<KeyTableEntity> DEFAULT_KEYCODES = Arrays.asList(of(KeyCode.A.getName(), A),
+			of(KeyCode.BACK_SLASH.getName(), ARROW_LEFT), of(KeyCode.DIGIT1.getName(), ONE),
+			of(KeyCode.DIGIT2.getName(), TWO), of(KeyCode.DIGIT3.getName(), THREE), of(KeyCode.DIGIT4.getName(), FOUR),
+			of(KeyCode.DIGIT5.getName(), FIVE), of(KeyCode.DIGIT6.getName(), SIX), of(KeyCode.DIGIT7.getName(), SEVEN),
+			of(KeyCode.DIGIT8.getName(), EIGHT), of(KeyCode.DIGIT9.getName(), NINE), of(KeyCode.DIGIT0.getName(), ZERO),
+			of(KeyCode.OPEN_BRACKET.getName(), PLUS), of(KeyCode.CLOSE_BRACKET.getName(), MINUS),
+			of(KeyCode.POUND.getName(), POUND), of(KeyCode.HOME.getName(), CLEAR_HOME),
+			of(KeyCode.BACK_SPACE.getName(), INS_DEL),
 
-			new KeyTableEntity(KeyCode.Q.getName(), KeyTableEntry.Q),
-			new KeyTableEntity(KeyCode.W.getName(), KeyTableEntry.W),
-			new KeyTableEntity(KeyCode.E.getName(), KeyTableEntry.E),
-			new KeyTableEntity(KeyCode.R.getName(), KeyTableEntry.R),
-			new KeyTableEntity(KeyCode.T.getName(), KeyTableEntry.T),
-			new KeyTableEntity(KeyCode.Y.getName(), KeyTableEntry.Y),
-			new KeyTableEntity(KeyCode.U.getName(), KeyTableEntry.U),
-			new KeyTableEntity(KeyCode.I.getName(), KeyTableEntry.I),
-			new KeyTableEntity(KeyCode.O.getName(), KeyTableEntry.O),
-			new KeyTableEntity(KeyCode.P.getName(), KeyTableEntry.P),
-			new KeyTableEntity(KeyCode.SEMICOLON.getName(), KeyTableEntry.AT),
-			new KeyTableEntity(KeyCode.PLUS.getName(), KeyTableEntry.STAR),
-			new KeyTableEntity(KeyCode.LESS.getName(), KeyTableEntry.ARROW_UP),
+			of(KeyCode.Q.getName(), Q), of(KeyCode.W.getName(), W), of(KeyCode.E.getName(), E),
+			of(KeyCode.R.getName(), R), of(KeyCode.T.getName(), T), of(KeyCode.Y.getName(), Y),
+			of(KeyCode.U.getName(), U), of(KeyCode.I.getName(), I), of(KeyCode.O.getName(), O),
+			of(KeyCode.P.getName(), P), of(KeyCode.SEMICOLON.getName(), AT), of(KeyCode.PLUS.getName(), STAR),
+			of(KeyCode.LESS.getName(), ARROW_UP),
 
-			new KeyTableEntity(KeyCode.ESCAPE.getName(), KeyTableEntry.RUN_STOP),
-			new KeyTableEntity(KeyCode.A.getName(), KeyTableEntry.A),
-			new KeyTableEntity(KeyCode.S.getName(), KeyTableEntry.S),
-			new KeyTableEntity(KeyCode.D.getName(), KeyTableEntry.D),
-			new KeyTableEntity(KeyCode.F.getName(), KeyTableEntry.F),
-			new KeyTableEntity(KeyCode.G.getName(), KeyTableEntry.G),
-			new KeyTableEntity(KeyCode.H.getName(), KeyTableEntry.H),
-			new KeyTableEntity(KeyCode.J.getName(), KeyTableEntry.J),
-			new KeyTableEntity(KeyCode.K.getName(), KeyTableEntry.K),
-			new KeyTableEntity(KeyCode.L.getName(), KeyTableEntry.L),
-			new KeyTableEntity(KeyCode.BACK_QUOTE.getName(), KeyTableEntry.COLON),
-			new KeyTableEntity(KeyCode.QUOTE.getName(), KeyTableEntry.SEMICOLON),
-			new KeyTableEntity(KeyCode.SLASH.getName(), KeyTableEntry.EQUALS),
-			new KeyTableEntity(KeyCode.ENTER.getName(), KeyTableEntry.RETURN),
+			of(KeyCode.ESCAPE.getName(), RUN_STOP), of(KeyCode.A.getName(), A), of(KeyCode.S.getName(), S),
+			of(KeyCode.D.getName(), D), of(KeyCode.F.getName(), F), of(KeyCode.G.getName(), G),
+			of(KeyCode.H.getName(), H), of(KeyCode.J.getName(), J), of(KeyCode.K.getName(), K),
+			of(KeyCode.L.getName(), L), of(KeyCode.BACK_QUOTE.getName(), COLON), of(KeyCode.QUOTE.getName(), SEMICOLON),
+			of(KeyCode.SLASH.getName(), EQUALS), of(KeyCode.ENTER.getName(), RETURN),
 
-			new KeyTableEntity(KeyCode.Z.getName(), KeyTableEntry.Z),
-			new KeyTableEntity(KeyCode.X.getName(), KeyTableEntry.X),
-			new KeyTableEntity(KeyCode.C.getName(), KeyTableEntry.C),
-			new KeyTableEntity(KeyCode.V.getName(), KeyTableEntry.V),
-			new KeyTableEntity(KeyCode.B.getName(), KeyTableEntry.B),
-			new KeyTableEntity(KeyCode.N.getName(), KeyTableEntry.N),
-			new KeyTableEntity(KeyCode.M.getName(), KeyTableEntry.M),
-			new KeyTableEntity(KeyCode.COMMA.getName(), KeyTableEntry.COMMA),
-			new KeyTableEntity(KeyCode.PERIOD.getName(), KeyTableEntry.PERIOD),
-			new KeyTableEntity(KeyCode.MINUS.getName(), KeyTableEntry.SLASH),
-			new KeyTableEntity(KeyCode.DOWN.getName(), KeyTableEntry.CURSOR_UP_DOWN),
-			new KeyTableEntity(KeyCode.UP.getName(), KeyTableEntry.CURSOR_UP_DOWN),
-			new KeyTableEntity(KeyCode.RIGHT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
-			new KeyTableEntity(KeyCode.LEFT.getName(), KeyTableEntry.CURSOR_LEFT_RIGHT),
+			of(KeyCode.Z.getName(), Z), of(KeyCode.X.getName(), X), of(KeyCode.C.getName(), C),
+			of(KeyCode.V.getName(), V), of(KeyCode.B.getName(), B), of(KeyCode.N.getName(), N),
+			of(KeyCode.M.getName(), M), of(KeyCode.COMMA.getName(), COMMA), of(KeyCode.PERIOD.getName(), PERIOD),
+			of(KeyCode.MINUS.getName(), SLASH), of(KeyCode.DOWN.getName(), CURSOR_UP_DOWN),
+			of(KeyCode.UP.getName(), CURSOR_UP_DOWN), of(KeyCode.RIGHT.getName(), CURSOR_LEFT_RIGHT),
+			of(KeyCode.LEFT.getName(), CURSOR_LEFT_RIGHT),
 
-			new KeyTableEntity(KeyCode.SPACE.getName(), KeyTableEntry.SPACE),
+			of(KeyCode.SPACE.getName(), SPACE),
 
-			new KeyTableEntity(KeyCode.F1.getName(), KeyTableEntry.F1),
-			new KeyTableEntity(KeyCode.F3.getName(), KeyTableEntry.F3),
-			new KeyTableEntity(KeyCode.F5.getName(), KeyTableEntry.F5),
-			new KeyTableEntity(KeyCode.F7.getName(), KeyTableEntry.F7));
+			of(KeyCode.F1.getName(), F1), of(KeyCode.F3.getName(), F3), of(KeyCode.F5.getName(), F5),
+			of(KeyCode.F7.getName(), F7));
 
 	private Integer id;
 

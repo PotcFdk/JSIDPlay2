@@ -25,14 +25,18 @@ public class KeyTableEntity {
 	public KeyTableEntity() {
 	}
 
+	/** Copy constructor */
 	public KeyTableEntity(KeyTableEntity keyTableEntity) {
-		setKeyCodeName(keyTableEntity.getKeyCodeName());
-		setEntry(keyTableEntity.getEntry());
+		this(keyTableEntity.getKeyCodeName(), keyTableEntity.getEntry());
 	}
 
-	public KeyTableEntity(String keyCode, KeyTableEntry entry) {
-		setKeyCodeName(keyCode);
-		setEntry(entry);
+	private KeyTableEntity(String keyCodeName, KeyTableEntry keyTableEntry) {
+		setKeyCodeName(keyCodeName);
+		setEntry(keyTableEntry);
+	}
+
+	public static KeyTableEntity of(String keyCode, KeyTableEntry entry) {
+		return new KeyTableEntity(keyCode, entry);
 	}
 
 	private Integer id;
