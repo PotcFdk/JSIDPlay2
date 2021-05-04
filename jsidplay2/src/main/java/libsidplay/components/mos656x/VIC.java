@@ -575,7 +575,7 @@ public abstract class VIC extends Bank {
 		}
 
 		/* Pixels arrive in 0x12345678 order. */
-		palEmulation.drawPixels(graphicsDataBuffer, color -> pixels.put(color));
+		palEmulation.drawPixels(graphicsDataBuffer, pixels::put);
 	}
 
 	/**

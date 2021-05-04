@@ -111,7 +111,7 @@ public class MOS6510 {
 	protected boolean flagU;
 	protected boolean flagB;
 
-	protected Function<Boolean, Boolean> v = flagV -> flagV;
+	protected Function<Boolean, Boolean> v = Function.identity();
 	protected Consumer<Integer> jmpJsr = Register_ProgramCounter -> {
 	};
 	protected Function<Integer, Byte> cpuRead;
