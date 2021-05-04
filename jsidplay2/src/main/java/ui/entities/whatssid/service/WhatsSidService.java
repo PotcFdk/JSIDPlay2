@@ -29,8 +29,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
-		// INSERT INTO `MusicInfo` (`Title`, `Artist`, `Album`, `FileDir`, `InfoDir`,
-		// audio_length) VALUES
+		// INSERT INTO `MusicInfo` ('songNo', `Title`, `Artist`, `Album`, `FileDir`,
+		// `InfoDir`, audio_length) VALUES
 
 		MusicInfo musicInfo = new MusicInfo();
 		musicInfo.setSongNo(musicInfoBean.getSongNo());
@@ -83,7 +83,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	@Override
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
-		// SELECT Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
+		// SELECT songNo, Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
 		// idMusicInfo=songNoBean.getSongNo()
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -115,8 +115,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	@Override
 	public boolean tuneExists(MusicInfoBean musicInfoBean) {
-		// SELECT count(*) FROM MusicInfo WHERE Title=title AND Artist=artist AND
-		// Album=album AND FileDir=fileDir AND InfoDir=infoDir
+		// SELECT count(*) FROM MusicInfo WHERE songNo=songNo, Title=title AND
+		// Artist=artist AND Album=album AND FileDir=fileDir AND InfoDir=infoDir
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> query = cb.createQuery(Long.class);
