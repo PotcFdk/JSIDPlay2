@@ -45,7 +45,7 @@ import ui.tools.audio.WhatsSidDriver;
  * @author ken
  *
  */
-@Parameters(resourceBundle = "libsidutils.fingerprinting.FingerPrintingCreator")
+@Parameters(resourceBundle = "ui.tools.FingerPrintingCreator")
 public class FingerPrintingCreator {
 
 	static {
