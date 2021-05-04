@@ -1,12 +1,7 @@
 package ui.tools.audio;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -21,10 +16,8 @@ import libsidutils.PathUtils;
 import libsidutils.fingerprinting.IFingerprintInserter;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
-import sidplay.audio.AudioConfig;
-import sidplay.audio.AudioDriver;
+import sidplay.audio.WAVDriver.WavFileDriver;
 import sidplay.audio.exceptions.SongEndException;
-import sidplay.audio.wav.WAVHeader;
 import ui.tools.FingerPrintingCreator;
 
 /**
@@ -39,84 +32,29 @@ import ui.tools.FingerPrintingCreator;
  * @author ken
  *
  */
-public class WhatsSidDriver implements AudioDriver {
+public class WhatsSidDriver extends WavFileDriver {
 
-	private ByteBuffer sampleBuffer;
-
-	private WAVHeader wavHeader;
-
-	private OutputStream wav;
-
-	private RandomAccessFile file;
-
-	private String recordingFilename;
+	private String collectionName, recordingFilename;
 
 	private SidTune tune;
 
-	private String collectionName;
-
 	private IFingerprintInserter fingerprintInserter;
-
-	public void setTune(SidTune tune) {
-		this.tune = tune;
-	}
-
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
-
-	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
-		this.fingerprintInserter = fingerprintInserter;
-	}
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		AudioConfig cfg = new AudioConfig(audioSection);
 		this.recordingFilename = recordingFilename;
-
+		
 		if (new File(recordingFilename).exists()) {
 			throw new SongEndException();
 		}
-		System.out.println("Create: " + recordingFilename);
-
-		file = new RandomAccessFile(recordingFilename, "rw");
-
-		wavHeader = new WAVHeader(cfg.getChannels(), cfg.getFrameRate());
-		wav = new FileOutputStream(file.getFD());
-		wav.write(wavHeader.getBytes());
-
-		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
-				.order(ByteOrder.LITTLE_ENDIAN);
-	}
-
-	@Override
-	public void write() throws InterruptedException {
-		try {
-			wav.write(sampleBuffer.array(), 0, sampleBuffer.position());
-			wavHeader.advance(sampleBuffer.position());
-		} catch (final IOException e) {
-			throw new RuntimeException("Error writing WAV audio stream", e);
-		}
+		super.open(audioSection, recordingFilename, cpuClock, context);
 	}
 
 	@Override
 	public void close() {
-		if (wav != null && file != null) {
-			try {
-				file.seek(0);
-				wav.write(wavHeader.getBytes());
-				wav.close();
-
-				file.close();
-			} catch (IOException e) {
-				throw new RuntimeException("Error closing WAV audio stream", e);
-			} finally {
-				wav = null;
-				file = null;
-			}
-		}
-		if (recordingFilename != null && new File(recordingFilename).exists() && fingerprintInserter != null) {
+		super.close();
+		if (new File(recordingFilename).exists() && fingerprintInserter != null) {
 			try {
 				System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName,
 						tune != SidTune.RESET ? tune.getInfo().getCurrentSong() : 1);
@@ -131,19 +69,16 @@ public class WhatsSidDriver implements AudioDriver {
 		}
 	}
 
-	@Override
-	public ByteBuffer buffer() {
-		return sampleBuffer;
+	public void setTune(SidTune tune) {
+		this.tune = tune;
 	}
 
-	@Override
-	public boolean isRecording() {
-		return true;
+	public void setCollectionName(String collectionName) {
+		this.collectionName = collectionName;
 	}
 
-	@Override
-	public String getExtension() {
-		return ".wav";
+	public void setFingerprintInserter(IFingerprintInserter fingerprintInserter) {
+		this.fingerprintInserter = fingerprintInserter;
 	}
 
 	private MusicInfoBean createMusicInfoBean(SidTune tune, String fileDir, String infoDir) {
