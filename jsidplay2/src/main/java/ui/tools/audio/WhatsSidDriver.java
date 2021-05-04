@@ -1,5 +1,7 @@
 package ui.tools.audio;
 
+import static libsidutils.PathUtils.getFilenameWithoutSuffix;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +14,6 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
-import libsidutils.PathUtils;
 import libsidutils.fingerprinting.IFingerprintInserter;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
@@ -34,7 +35,9 @@ import ui.tools.FingerPrintingCreator;
  */
 public class WhatsSidDriver extends WavFileDriver {
 
-	private String collectionName, recordingFilename;
+	private static final String TAG_UNKNOWN = "<???>";
+
+	private String recordingFilename, collectionName;
 
 	private SidTune tune;
 
@@ -44,7 +47,7 @@ public class WhatsSidDriver extends WavFileDriver {
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
 		this.recordingFilename = recordingFilename;
-		
+
 		if (new File(recordingFilename).exists()) {
 			throw new SongEndException();
 		}
@@ -54,18 +57,18 @@ public class WhatsSidDriver extends WavFileDriver {
 	@Override
 	public void close() {
 		super.close();
-		if (new File(recordingFilename).exists() && fingerprintInserter != null) {
-			try {
-				System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName,
-						tune != SidTune.RESET ? tune.getInfo().getCurrentSong() : 1);
+		try {
+			if (new File(recordingFilename).exists()) {
+				int songNo = tune != SidTune.RESET ? tune.getInfo().getCurrentSong() : 1;
+				System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName, songNo);
 
-				MusicInfoBean musicInfoBean = createMusicInfoBean(tune, recordingFilename, collectionName);
+				MusicInfoBean musicInfoBean = createMusicInfoBean(songNo);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 
 				fingerprintInserter.insert(musicInfoBean, wavBean);
-			} catch (IOException e) {
-				throw new RuntimeException("Error reading WAV audio stream", e);
 			}
+		} catch (IOException e) {
+			throw new RuntimeException("Error reading WAV audio stream", e);
 		}
 	}
 
@@ -81,31 +84,30 @@ public class WhatsSidDriver extends WavFileDriver {
 		this.fingerprintInserter = fingerprintInserter;
 	}
 
-	private MusicInfoBean createMusicInfoBean(SidTune tune, String fileDir, String infoDir) {
+	private MusicInfoBean createMusicInfoBean(int songNo) {
+		String title, author, released;
+
 		if (tune != SidTune.RESET) {
-			Iterator<String> descriptionIterator = tune.getInfo().getInfoString().iterator();
-
-			return toMusicInfoBean(tune.getInfo().getCurrentSong(), getNextDescription(descriptionIterator),
-					getNextDescription(descriptionIterator), getNextDescription(descriptionIterator), fileDir, infoDir);
+			Iterator<String> descriptionIt = tune.getInfo().getInfoString().iterator();
+			title = descriptionIt.hasNext() ? descriptionIt.next() : TAG_UNKNOWN;
+			author = descriptionIt.hasNext() ? descriptionIt.next() : TAG_UNKNOWN;
+			released = descriptionIt.hasNext() ? descriptionIt.next() : TAG_UNKNOWN;
 		} else {
-			return toMusicInfoBean(1, new File(PathUtils.getFilenameWithoutSuffix(infoDir)).getName(), "<???>", "<???>",
-					fileDir, infoDir);
+			title = new File(getFilenameWithoutSuffix(collectionName)).getName();
+			author = TAG_UNKNOWN;
+			released = TAG_UNKNOWN;
 		}
+		return toMusicInfoBean(songNo, title, author, released);
 	}
 
-	private String getNextDescription(Iterator<String> descriptionIterator) {
-		return descriptionIterator.hasNext() ? descriptionIterator.next() : "<???>";
-	}
-
-	private MusicInfoBean toMusicInfoBean(int songNo, String title, String artist, String album, String fileDir,
-			String infoDir) {
+	private MusicInfoBean toMusicInfoBean(int songNo, String title, String author, String released) {
 		MusicInfoBean musicInfoBean = new MusicInfoBean();
 		musicInfoBean.setSongNo(songNo);
 		musicInfoBean.setTitle(title);
-		musicInfoBean.setArtist(artist);
-		musicInfoBean.setAlbum(album);
-		musicInfoBean.setFileDir(fileDir);
-		musicInfoBean.setInfoDir(infoDir);
+		musicInfoBean.setArtist(author);
+		musicInfoBean.setAlbum(released);
+		musicInfoBean.setFileDir(recordingFilename);
+		musicInfoBean.setInfoDir(collectionName);
 		return musicInfoBean;
 	}
 
