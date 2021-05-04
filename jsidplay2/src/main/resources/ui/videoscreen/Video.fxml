@@ -39,7 +39,7 @@
 						<TitledPane id="background" fx:id="monitor" text="%MONITOR"
 							collapsible="false" GridPane.columnIndex="0" GridPane.rowIndex="0">
 							<StackPane translateY="-20">
-								<Canvas fx:id="screen" />
+								<Canvas fx:id="screen" cache="false" cacheHint="QUALITY" />
 								<ImageView fx:id="monitorBorder">
 									<image>
 										<Image url="@/ui/icons/monitor.png" />

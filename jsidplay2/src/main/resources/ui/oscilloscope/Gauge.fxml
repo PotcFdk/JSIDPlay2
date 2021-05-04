@@ -17,7 +17,7 @@
 			<padding>
 				<Insets left="0" right="0" top="0" bottom="0" />
 			</padding>
-			<Canvas fx:id="area" width="150" height="100" cache="true"
+			<Canvas fx:id="area" width="150" height="150" cache="true"
 				cacheHint="SPEED" />
 		</StackPane>
 	</TitledPane>
