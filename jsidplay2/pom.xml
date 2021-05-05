@@ -348,7 +348,6 @@
 								<protocol>${protocol}</protocol>
 								<hostname>${hostname}</hostname>
 								<port>${port}</port>
-
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->
@@ -569,7 +568,7 @@
 								<include>libsidplay/common/SamplingRate.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
 								<include>libsidutils/fingerprinting/IFingerprintMatcher.class</include>
-								<include>libsidutils/fingerprinting/rest/beans/WavBean.class</include>
+								<include>libsidutils/fingerprinting/rest/beans/WAVBean.class</include>
 								<include>libsidutils/fingerprinting/rest/beans/MusicInfoBean.class</include>
 								<include>libsidutils/fingerprinting/rest/beans/MusicInfoWithConfidenceBean.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>

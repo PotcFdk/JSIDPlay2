@@ -4,14 +4,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "wav")
-public class WavBean {
+public class WAVBean {
 
 	private byte[] wav;
 
-	public WavBean() {
+	public WAVBean() {
 	}
 
-	public WavBean(byte[] wav) {
+	public WAVBean(byte[] wav) {
 		this.wav = wav;
 	}
 

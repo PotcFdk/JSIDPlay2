@@ -16,7 +16,7 @@ import libsidplay.config.IAudioSection;
 import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.IFingerprintInserter;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 import sidplay.audio.WAVDriver.WAVFileDriver;
 import sidplay.audio.exceptions.SongEndException;
 import ui.tools.FingerPrintingCreator;
@@ -62,7 +62,7 @@ public class WhatsSidDriver extends WAVFileDriver {
 				int songNo = tune != SidTune.RESET ? tune.getInfo().getCurrentSong() : 1;
 				System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName, songNo);
 
-				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
+				WAVBean wavBean = new WAVBean(Files.readAllBytes(Paths.get(recordingFilename)));
 
 				fingerprintInserter.insert(createMusicInfoBean(songNo), wavBean);
 			}

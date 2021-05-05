@@ -17,7 +17,7 @@ import builder.resid.resample.Resampler;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.fingerprinting.ini.IFingerprintConfig;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 
 /**
  * Created by hsyecheng on 2015/6/13. Generate Fingerprints. The sampling rate
@@ -28,7 +28,7 @@ public class FingerprintCreator {
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
 
-	public Fingerprint createFingerprint(IFingerprintConfig config, WavBean wavBean) throws IOException {
+	public Fingerprint createFingerprint(IFingerprintConfig config, WAVBean wavBean) throws IOException {
 		try {
 			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {

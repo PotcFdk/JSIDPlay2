@@ -11,7 +11,7 @@ import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 import sidplay.audio.wav.WAVHeader;
 
 /**
@@ -104,7 +104,7 @@ public final class WhatsSidSupport {
 	public MusicInfoWithConfidenceBean match(IFingerprintMatcher matcher) throws IOException {
 		byte[] wav = createWAV();
 		if (wav.length > 0) {
-			MusicInfoWithConfidenceBean result = matcher.match(new WavBean(wav));
+			MusicInfoWithConfidenceBean result = matcher.match(new WAVBean(wav));
 			if (result != null && !result.equals(lastWhatsSidMatch)
 					&& result.getRelativeConfidence() > minimumRelativeConfidence) {
 				lastWhatsSidMatch = result;

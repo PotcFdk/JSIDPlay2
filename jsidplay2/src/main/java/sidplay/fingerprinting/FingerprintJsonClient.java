@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 
 /**
  * Send WAV to a server to identify a tune by WhatsSID.
@@ -36,7 +36,7 @@ public class FingerprintJsonClient implements IFingerprintMatcher {
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
+	public MusicInfoWithConfidenceBean match(WAVBean wavBean) throws IOException {
 		HttpURLConnection connection = sendJson(wavBean);
 		if (connection != null && connection.getResponseCode() == 200 && connection.getContentLength() > 0) {
 			return receiveJson(connection);
@@ -44,7 +44,7 @@ public class FingerprintJsonClient implements IFingerprintMatcher {
 		return null;
 	}
 
-	private HttpURLConnection sendJson(WavBean wavBean) throws IOException {
+	private HttpURLConnection sendJson(WAVBean wavBean) throws IOException {
 		String header = getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		String wavBytes = getEncoder().encodeToString(wavBean.getWav());
 

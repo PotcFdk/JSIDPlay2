@@ -11,7 +11,7 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 
 public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 
@@ -29,7 +29,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	}
 
 	@Override
-	public void insert(MusicInfoBean musicInfoBean, WavBean wavBean) throws IOException {
+	public void insert(MusicInfoBean musicInfoBean, WAVBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
 
 			if (!fingerPrintingDataSource.tuneExists(musicInfoBean)) {
@@ -43,7 +43,7 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	}
 
 	@Override
-	public MusicInfoWithConfidenceBean match(WavBean wavBean) throws IOException {
+	public MusicInfoWithConfidenceBean match(WAVBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
 
 			Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean);

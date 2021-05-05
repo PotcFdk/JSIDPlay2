@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WavBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 import server.restful.common.JSIDPlay2Servlet;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
@@ -41,7 +41,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			WavBean wavBean = getInput(request, WavBean.class);
+			WAVBean wavBean = getInput(request, WAVBean.class);
 
 			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 			MusicInfoWithConfidenceBean musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(),
