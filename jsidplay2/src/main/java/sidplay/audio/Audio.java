@@ -13,7 +13,7 @@ import sidplay.audio.FLACDriver.FLACFileDriver;
 import sidplay.audio.MP3Driver.MP3FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpFileDriver;
 import sidplay.audio.SIDRegDriver.SIDRegFileDriver;
-import sidplay.audio.WAVDriver.WavFileDriver;
+import sidplay.audio.WAVDriver.WAVFileDriver;
 
 /**
  * Audio output.
@@ -25,7 +25,7 @@ public enum Audio {
 	/** Java Sound API. */
 	SOUNDCARD(JavaSound.class),
 	/** WAV file write. */
-	WAV(WavFileDriver.class),
+	WAV(WAVFileDriver.class),
 	/** FLAC file write. */
 	FLAC(FLACFileDriver.class),
 	/** AAC file write. */
@@ -41,7 +41,7 @@ public enum Audio {
 	/** SID DUMP file write. */
 	SID_DUMP(SIDDumpFileDriver.class),
 	/** Java Sound API plus WAV file write. */
-	LIVE_WAV(ProxyDriver.class, JavaSound.class, WavFileDriver.class),
+	LIVE_WAV(ProxyDriver.class, JavaSound.class, WAVFileDriver.class),
 	/** Java Sound API plus FLAC file write. */
 	LIVE_FLAC(ProxyDriver.class, JavaSound.class, FLACFileDriver.class),
 	/** Java Sound API plus AAC file write. */

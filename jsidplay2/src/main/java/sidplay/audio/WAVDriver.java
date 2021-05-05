@@ -28,7 +28,7 @@ public abstract class WAVDriver implements AudioDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class WavFileDriver extends WAVDriver {
+	public static class WAVFileDriver extends WAVDriver {
 
 		private RandomAccessFile file;
 

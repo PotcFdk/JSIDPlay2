@@ -17,7 +17,7 @@ import libsidplay.sidtune.SidTune;
 import libsidutils.fingerprinting.IFingerprintInserter;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.WavBean;
-import sidplay.audio.WAVDriver.WavFileDriver;
+import sidplay.audio.WAVDriver.WAVFileDriver;
 import sidplay.audio.exceptions.SongEndException;
 import ui.tools.FingerPrintingCreator;
 
@@ -33,7 +33,7 @@ import ui.tools.FingerPrintingCreator;
  * @author ken
  *
  */
-public class WhatsSidDriver extends WavFileDriver {
+public class WhatsSidDriver extends WAVFileDriver {
 
 	private static final String TAG_UNKNOWN = "<???>";
 
