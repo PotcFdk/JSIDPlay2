@@ -25,7 +25,7 @@ import javax.swing.Timer;
  * @author Wilfred Bos
  */
 public class NetworkSIDDeviceMain {
-	private static final String TRAY_ICON = "jsidplay2.png";
+	private static final String TRAY_ICON = "jsiddevice.png";
 	private static final String TRAY_TOOLTIP = "SID Network Device\nClients connected: %d";
 	private static final String MENU_ABOUT = "About";
 	private static final String MENU_SETTINGS = "Settings...";
