@@ -57,29 +57,34 @@ public class FingerPrintingCreator {
 	@Parameter(names = { "--help", "-h" }, descriptionKey = "USAGE", help = true)
 	private Boolean help = Boolean.FALSE;
 
-	@Parameter(names = { "--whatsSIDDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true)
+	@Parameter(names = {
+			"--whatsSIDDatabaseDriver" }, descriptionKey = "WHATSSID_DATABASE_DRIVER", required = true, order = 10001)
 	private String whatsSidDatabaseDriver;
 
-	@Parameter(names = { "--whatsSIDDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true)
+	@Parameter(names = {
+			"--whatsSIDDatabaseUrl" }, descriptionKey = "WHATSSID_DATABASE_URL", required = true, order = 10002)
 	private String whatsSidDatabaseUrl;
 
-	@Parameter(names = { "--whatsSIDDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true)
+	@Parameter(names = {
+			"--whatsSIDDatabaseUsername" }, descriptionKey = "WHATSSID_DATABASE_USERNAME", required = true, order = 10003)
 	private String whatsSidDatabaseUsername;
 
-	@Parameter(names = { "--whatsSIDDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true)
+	@Parameter(names = {
+			"--whatsSIDDatabasePassword" }, descriptionKey = "WHATSSID_DATABASE_PASSWORD", required = true, order = 10004)
 	private String whatsSidDatabasePassword;
 
-	@Parameter(names = { "--whatsSIDDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true)
+	@Parameter(names = {
+			"--whatsSIDDatabaseDialect" }, descriptionKey = "WHATSSID_DATABASE_DIALECT", required = true, order = 10005)
 	private String whatsSidDatabaseDialect;
 
-	@Parameter(names = { "--createIni" }, descriptionKey = "CREATE_INI", arity = 1)
+	@Parameter(names = { "--createIni" }, descriptionKey = "CREATE_INI", arity = 1, order = 10006)
 	private Boolean createIni = Boolean.FALSE;
 
-	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1)
+	@Parameter(names = { "--deleteAll" }, descriptionKey = "DELETE_ALL", arity = 1, order = 10007)
 	private Boolean deleteAll = Boolean.FALSE;
 
 	@Parameter(names = {
-			"--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY", converter = FileToStringConverter.class)
+			"--previousDirectory" }, descriptionKey = "PREVIOUS_DIRECTORY", converter = FileToStringConverter.class, order = 10008)
 	private File previousDirectory;
 
 	@Parameter(description = "directory", converter = FileToStringConverter.class)

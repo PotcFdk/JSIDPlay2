@@ -62,10 +62,9 @@ public class WhatsSidDriver extends WavFileDriver {
 				int songNo = tune != SidTune.RESET ? tune.getInfo().getCurrentSong() : 1;
 				System.out.printf("Insert Fingerprint for %s (%d)\n", collectionName, songNo);
 
-				MusicInfoBean musicInfoBean = createMusicInfoBean(songNo);
 				WavBean wavBean = new WavBean(Files.readAllBytes(Paths.get(recordingFilename)));
 
-				fingerprintInserter.insert(musicInfoBean, wavBean);
+				fingerprintInserter.insert(createMusicInfoBean(songNo), wavBean);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Error reading WAV audio stream", e);
