@@ -3,6 +3,7 @@ package ui.directory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,11 +16,19 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
+import libsidplay.sidtune.SidTuneError;
+import libsidutils.directory.CartridgeDirectory;
 import libsidutils.directory.DirEntry;
+import libsidutils.directory.DiskDirectory;
+import libsidutils.directory.T64Directory;
+import libsidutils.directory.TuneDirectory;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
+import ui.common.filefilter.DiskFileFilter;
+import ui.common.filefilter.TuneFileFilter;
+import ui.entities.config.SidPlay2Section;
 
 public class Directory extends C64VBox implements UIPart {
 
@@ -39,6 +48,10 @@ public class Directory extends C64VBox implements UIPart {
 	 * Inverse Lower case letters.
 	 */
 	private static final int TRUE_TYPE_FONT_INVERSE_SMALL = 0xe300;
+
+	private static TuneFileFilter tuneFilter = new TuneFileFilter();
+
+	private static DiskFileFilter diskFilter = new DiskFileFilter();
 
 	@FXML
 	protected TableView<DirectoryItem> directory;
@@ -106,10 +119,6 @@ public class Directory extends C64VBox implements UIPart {
 		loadPreview(previewFile);
 	}
 
-	public ObjectProperty<File> getAutoStartFileProperty() {
-		return autoStartFileProperty;
-	}
-
 	@FXML
 	private void autoStartProgram() {
 		try {
@@ -130,15 +139,19 @@ public class Directory extends C64VBox implements UIPart {
 		}
 	}
 
+	public ObjectProperty<File> getAutoStartFileProperty() {
+		return autoStartFileProperty;
+	}
+
 	public void loadPreview(File previewFile) {
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		if (previewFile == null) {
 			return;
 		}
 		this.previewFile = previewFile;
 		directoryEntries.clear();
 		try {
-			libsidutils.directory.Directory dir = PseudoDirectory.getDirectory(util.getPlayer(), previewFile,
-					util.getConfig());
+			libsidutils.directory.Directory dir = createDirectory(sidplay2Section.getHvsc(), previewFile);
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();
@@ -161,7 +174,7 @@ public class Directory extends C64VBox implements UIPart {
 			} else {
 				throw new IOException();
 			}
-		} catch (IOException ioE) {
+		} catch (IOException | SidTuneError ioE) {
 			DirectoryItem dirItem = new DirectoryItem();
 			dirItem.setText(print("SORRY, NO PREVIEW AVAILABLE!", TRUE_TYPE_FONT_BIG));
 			directoryEntries.add(dirItem);
@@ -169,6 +182,11 @@ public class Directory extends C64VBox implements UIPart {
 		DirectoryItem dirItem = new DirectoryItem();
 		dirItem.setText(print("READY.", TRUE_TYPE_FONT_BIG));
 		directoryEntries.add(dirItem);
+	}
+
+	public void clear() {
+		directoryEntries.clear();
+
 	}
 
 	private String print(final String s, int fontSet) {
@@ -187,9 +205,18 @@ public class Directory extends C64VBox implements UIPart {
 		}
 	}
 
-	public void clear() {
-		directoryEntries.clear();
-
+	private libsidutils.directory.Directory createDirectory(File hvscRoot, final File file)
+			throws IOException, SidTuneError {
+		if (diskFilter.accept(file)) {
+			return DiskDirectory.getDirectory(file);
+		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
+			return T64Directory.getDirectory(file);
+		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
+			return CartridgeDirectory.getDirectory(file);
+		} else if (tuneFilter.accept(file)) {
+			return TuneDirectory.getDirectory(hvscRoot, file);
+		}
+		return null;
 	}
 
 }
