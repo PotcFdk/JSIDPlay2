@@ -339,6 +339,7 @@ public abstract class MPS803 extends SerialIECDevice implements UserportPrinterE
 	 * @param c byte code to print or printer command
 	 */
 	public void putc(final byte c) {
+//		System.out.print(Petscii.petsciiToIso88591(c));
 		if (lineBufferPos >= MAX_WIDTH) {
 			/*
 			 * When the printer uses up more than 480 dots, then it prints out the line and
