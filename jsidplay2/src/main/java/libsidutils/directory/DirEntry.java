@@ -76,7 +76,7 @@ public class DirEntry {
 	 * @param fileType file type
 	 * @return quoted file name and type string
 	 */
-	public final static String convertFilename(final byte[] fileName, final int fileType) {
+	public final static String convertFilename(final byte[] fileName, final byte fileType) {
 		StringBuffer fn = new StringBuffer();
 		// BEGIN include filename in quotes
 		fn.append("\"");
@@ -116,7 +116,7 @@ public class DirEntry {
 	 * @return a valid filename to save this directory entry
 	 */
 	public final String getValidFilename() {
-		final String convertFilename = convertFilename(filename, -1);
+		final String convertFilename = convertFilename(filename, FILETYPE_NONE);
 		return convertFilename.substring(1, convertFilename.length() - 1).replace('/', '_');
 	}
 

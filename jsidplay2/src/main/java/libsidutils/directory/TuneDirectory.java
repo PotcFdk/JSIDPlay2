@@ -14,6 +14,7 @@ import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.siddatabase.SidDatabase;
@@ -21,7 +22,6 @@ import libsidutils.siddatabase.SidDatabase;
 public class TuneDirectory extends Directory {
 
 	private static final int MAXLEN_FILENAME = 20;
-	private static final String TAG_UNKNOWN = "<???>";
 
 	public TuneDirectory(File hvscRoot, File tuneFile) throws IOException, SidTuneError {
 		SidTune tune = SidTune.load(tuneFile);
@@ -33,8 +33,8 @@ public class TuneDirectory extends Directory {
 		SidTuneInfo info = tune.getInfo();
 		Iterator<String> descriptionIt = info.getInfoString().iterator();
 		String title = tuneFile.getName();
-		String author = TAG_UNKNOWN;
-		String released = TAG_UNKNOWN;
+		String author = null;
+		String released = null;
 		if (descriptionIt.hasNext()) {
 			title = descriptionIt.next();
 		}
@@ -44,27 +44,28 @@ public class TuneDirectory extends Directory {
 		if (descriptionIt.hasNext()) {
 			released = descriptionIt.next();
 		}
-		super.title = stringToPetscii(title, 16);
+		super.title = stringToPetscii(title.toUpperCase(Locale.US), 16);
 		// Directory id: start song '/' song count
 		id = (String.valueOf(info.getStartSong()) + "/" + String.valueOf(Math.max(1, info.getSongs())))
 				.getBytes(ISO_8859_1);
 
-		dirEntries.add(new DirEntry(0, stringToPetscii(title.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0, stringToPetscii(author.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
-		dirEntries
-				.add(new DirEntry(0, stringToPetscii(released.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
+		if (author != null) {
+			dirEntries.add(
+					new DirEntry(0, stringToPetscii(author.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
+		}
+		if (released != null) {
+			dirEntries.add(
+					new DirEntry(0, stringToPetscii(released.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
+		}
 		dirEntries.add(
 				new DirEntry(0, stringToPetscii("FORMAT" + "=" + tune.getClass().getSimpleName().toUpperCase(Locale.US),
 						MAXLEN_FILENAME), FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("PLAYERID" + "=" + tune.identify().stream().collect(Collectors.joining(",")),
-						MAXLEN_FILENAME),
-				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("NO_SONGS" + "=" + String.valueOf(info.getSongs()), MAXLEN_FILENAME), FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("STARTSONG" + "=" + String.valueOf(info.getStartSong()), MAXLEN_FILENAME),
-				FILETYPE_NONE));
+		dirEntries
+				.add(new DirEntry(0,
+						stringToPetscii("PLAYERID" + "="
+								+ tune.identify().stream().collect(Collectors.joining(",")).toUpperCase(Locale.US),
+								MAXLEN_FILENAME),
+						FILETYPE_NONE));
 		dirEntries.add(new DirEntry(0,
 				stringToPetscii("CLOCKFREQ" + "=" + String.valueOf(info.getClockSpeed()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
@@ -73,12 +74,16 @@ public class TuneDirectory extends Directory {
 		dirEntries.add(new DirEntry(0,
 				stringToPetscii("SIDMODEL1" + "=" + String.valueOf(info.getSIDModel(0)), MAXLEN_FILENAME),
 				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("SIDMODEL2" + "=" + String.valueOf(info.getSIDModel(1)), MAXLEN_FILENAME),
-				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("SIDMODEL3" + "=" + String.valueOf(info.getSIDModel(2)), MAXLEN_FILENAME),
-				FILETYPE_NONE));
+		if (info.getSIDModel(1) != Model.UNKNOWN) {
+			dirEntries.add(new DirEntry(0,
+					stringToPetscii("SIDMODEL2" + "=" + String.valueOf(info.getSIDModel(1)), MAXLEN_FILENAME),
+					FILETYPE_NONE));
+		}
+		if (info.getSIDModel(2) != Model.UNKNOWN) {
+			dirEntries.add(new DirEntry(0,
+					stringToPetscii("SIDMODEL3" + "=" + String.valueOf(info.getSIDModel(2)), MAXLEN_FILENAME),
+					FILETYPE_NONE));
+		}
 		dirEntries.add(new DirEntry(0,
 				stringToPetscii("COMPAT" + "=" + String.valueOf(info.getCompatibility()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
@@ -93,12 +98,16 @@ public class TuneDirectory extends Directory {
 		dirEntries.add(new DirEntry(0,
 				stringToPetscii("CHIP_BASE1" + "=" + String.valueOf(info.getSIDChipBase(0)), MAXLEN_FILENAME),
 				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("CHIP_BASE2" + "=" + String.valueOf(info.getSIDChipBase(1)), MAXLEN_FILENAME),
-				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				stringToPetscii("CHIP_BASE3" + "=" + String.valueOf(info.getSIDChipBase(2)), MAXLEN_FILENAME),
-				FILETYPE_NONE));
+		if (info.getSIDChipBase(1) != 0) {
+			dirEntries.add(new DirEntry(0,
+					stringToPetscii("CHIP_BASE2" + "=" + String.valueOf(info.getSIDChipBase(1)), MAXLEN_FILENAME),
+					FILETYPE_NONE));
+		}
+		if (info.getSIDChipBase(2) != 0) {
+			dirEntries.add(new DirEntry(0,
+					stringToPetscii("CHIP_BASE3" + "=" + String.valueOf(info.getSIDChipBase(2)), MAXLEN_FILENAME),
+					FILETYPE_NONE));
+		}
 		dirEntries.add(new DirEntry(0,
 				stringToPetscii("DRV_ADDR" + "=" + String.valueOf(info.getDeterminedDriverAddr()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
