@@ -13,12 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
-import javax.sound.sampled.SourceDataLine;
 
 import builder.resid.resample.Resampler;
 import libsidplay.common.CPUClock;
@@ -146,29 +143,7 @@ public class AudioGeneratorThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			Vector<AudioDevice> audioDevices = new Vector<>();
-			AudioDeviceCompare cmp = new AudioDeviceCompare();
-			mixerInfo = null;
-			int theDeviceIndex = 0;
-			for (Info info : AudioSystem.getMixerInfo()) {
-				Mixer mixer = AudioSystem.getMixer(info);
-				Line.Info lineInfo = new Line.Info(SourceDataLine.class);
-				if (mixer.isLineSupported(lineInfo)) {
-					AudioDevice audioDeviceItem = new AudioDevice(theDeviceIndex, info);
-					audioDevices.add(audioDeviceItem);
-					if (theDeviceIndex == 0) {
-						// first device name is the primary device driver which can
-						// be translated on some systems
-						cmp.setPrimaryDeviceName(info.getName());
-					}
-					if (audioDeviceItem.getIndex() == deviceIndex) {
-						this.mixerInfo = audioDeviceItem.getInfo();
-					}
-				}
-				theDeviceIndex++;
-			}
-			Collections.sort(audioDevices, cmp);
-			driver.open(audioConfig, mixerInfo);
+			initDriver();
 
 			/* Do sound 10 ms at a time. */
 			final int audioLength = 10000;
@@ -205,7 +180,10 @@ public class AudioGeneratorThread extends Thread {
 							audioWait.set(true);
 							audioWait.notify();
 						}
+
+						driver.flush();
 						driver.pause();
+
 						synchronized (sidCommandQueue) {
 							sidCommandQueue.wait();
 							audioWait.set(false);
@@ -322,7 +300,7 @@ public class AudioGeneratorThread extends Thread {
 				}
 
 				if (deviceChanged) {
-					driver.setAudioDevice(mixerInfo);
+					initDriver();
 					deviceChanged = false;
 				}
 			}
@@ -352,7 +330,40 @@ public class AudioGeneratorThread extends Thread {
 		if (whatsSidEnabled) {
 			whatsSidSupport.reset();
 		}
-
+	}
+	
+	private void initDriver() throws LineUnavailableException {
+		if (driver != null) {
+			driver.close();
+		}
+		driver = new JavaSound();
+		
+		final Vector<AudioDevice> audioDevices = new Vector<>();
+		final AudioDeviceCompare cmp = new AudioDeviceCompare();
+		int theDeviceIndex = 0;
+		
+		for (Info deviceInfo : JavaSound.getDevices()) {
+			final AudioDevice audioDeviceItem = new AudioDevice(theDeviceIndex, deviceInfo);
+			audioDevices.add(audioDeviceItem);
+			if (theDeviceIndex == 0) {
+				// first device name is the primary device driver which can
+				// be translated on some systems
+				cmp.setPrimaryDeviceName(deviceInfo.getName());
+			}
+			
+			if (mixerInfo == null) {
+				if (audioDeviceItem.getIndex() == deviceIndex) {
+					mixerInfo = deviceInfo;
+				}
+			} else if (mixerInfo.getName() == deviceInfo.getName()) {
+				mixerInfo = deviceInfo;
+			}
+			
+			theDeviceIndex++;
+		}
+		
+		Collections.sort(audioDevices, cmp);
+		driver.open(audioConfig, mixerInfo);
 	}
 
 	/**

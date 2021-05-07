@@ -1,23 +1,25 @@
 package server.netsiddev;
 
 import java.awt.Component;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
-import javax.sound.sampled.SourceDataLine;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -29,8 +31,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
+import sidplay.audio.JavaSound;
 
 public class Settings extends SIDDeviceStage {
 	private static final long serialVersionUID = 1L;
@@ -109,6 +114,7 @@ public class Settings extends SIDDeviceStage {
 		allowExternalConnections = new JCheckBox();
 		allowExternalConnections.addActionListener(event -> setAllowExternalConnections());
 		connectionPane.add(allowExternalConnections);
+		scaleCheckBoxIcon(allowExternalConnections);
 
 		getContentPane().add(connectionPane, gridBagConstants);
 
@@ -125,6 +131,7 @@ public class Settings extends SIDDeviceStage {
 		digiBoost = new JCheckBox();
 		digiBoost.addActionListener(event -> setDigiBoost());
 		emulationPane.add(digiBoost);
+		scaleCheckBoxIcon(digiBoost);
 
 		getContentPane().add(emulationPane, gridBagConstants);
 
@@ -139,7 +146,8 @@ public class Settings extends SIDDeviceStage {
 		whatsSidEnable.setText(util.getBundle().getString("WHATSSID_ENABLE"));
 		whatsSidEnable.addActionListener(event -> setWhatsSidEnable());
 		whatsSidPane.add(whatsSidEnable);
-
+		scaleCheckBoxIcon(whatsSidEnable);
+		
 		JLabel urlLabel = new JLabel(util.getBundle().getString("WHATSSID_URL"));
 		urlLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		whatsSidPane.add(urlLabel);
@@ -252,29 +260,61 @@ public class Settings extends SIDDeviceStage {
 
 		initialize();
 	}
+	
+	private ImageIcon getScaledCheckBoxImageIcon(final JCheckBox checkbox, final boolean checkState) {
+	    final boolean previousState = checkbox.isSelected();
+		checkbox.setSelected(checkState);
+		
+		final Icon checkBoxIcon = UIManager.getIcon("CheckBox.icon");
+	    final BufferedImage checkBoxImage = new BufferedImage(
+	    	checkBoxIcon.getIconWidth(), checkBoxIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB
+	    );
+	    
+	    final Graphics graphics = checkBoxImage.createGraphics();
+	    try {
+	    	checkBoxIcon.paintIcon(checkbox, graphics, 0, 0);
+	    } finally {
+	        graphics.dispose();
+	    }
+	    
+	    final FontMetrics fontMetrics =  checkbox.getFontMetrics(checkbox.getFont());
+	    final Image scaledCheckBoxImage = checkBoxImage.getScaledInstance(
+	    	fontMetrics.getHeight(), fontMetrics.getHeight(), Image.SCALE_SMOOTH
+	    );
+	    
+	    checkbox.setSelected(previousState);
+	    return new ImageIcon(scaledCheckBoxImage);
+	}
+	
+	private void scaleCheckBoxIcon(final JCheckBox checkbox) {
+	    checkbox.setIcon(getScaledCheckBoxImageIcon(checkbox, false));
+	    checkbox.setSelectedIcon(getScaledCheckBoxImageIcon(checkbox, true));
+	}
 
 	private void initialize() {
 		settings = SIDDeviceSettings.getInstance();
-		AudioDeviceCompare cmp = new AudioDeviceCompare();
+		final AudioDeviceCompare cmp = new AudioDeviceCompare();
 		AudioDevice selectedAudioDeviceItem = null;
+		audioDevices.clear();
+		
 		int deviceIndex = 0;
-		for (Info info : AudioSystem.getMixerInfo()) {
-			Mixer mixer = AudioSystem.getMixer(info);
-			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
-			if (mixer.isLineSupported(lineInfo)) {
-				AudioDevice audioDeviceItem = new AudioDevice(deviceIndex, info);
-				audioDevices.add(audioDeviceItem);
-				if (deviceIndex == 0) {
-					// first device name is the primary device driver which can
-					// be translated on some systems
-					cmp.setPrimaryDeviceName(info.getName());
-				}
-				if (audioDeviceItem.getIndex() == settings.getDeviceIndex()) {
-					selectedAudioDeviceItem = audioDeviceItem;
-				}
+		
+		for (Info deviceInfo : JavaSound.getDevices()) {
+			final AudioDevice audioDeviceItem = new AudioDevice(deviceIndex, deviceInfo);
+			audioDevices.add(audioDeviceItem);
+			if (deviceIndex == 0) {
+				// first device name is the primary device driver which can
+				// be translated on some systems
+				cmp.setPrimaryDeviceName(deviceInfo.getName());
 			}
+			
+			if (audioDeviceItem.getIndex() == settings.getDeviceIndex()) {
+				selectedAudioDeviceItem = audioDeviceItem;
+			}
+			
 			deviceIndex++;
 		}
+		
 		Collections.sort(audioDevices, cmp);
 		audioDevice.setSelectedItem(selectedAudioDeviceItem);
 		allowExternalConnections.setSelected(settings.getAllowExternalConnections());
@@ -294,6 +334,7 @@ public class Settings extends SIDDeviceStage {
 	public void open() {
 		SwingUtilities.invokeLater(() -> okButton.requestFocusInWindow());
 
+		initialize();
 		super.open();
 	}
 

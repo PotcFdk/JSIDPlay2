@@ -542,12 +542,13 @@ class ClientContext {
 	}
 
 	protected void dispose() {
+		eventConsumerThread.getSidCommandQueue().add(SIDWrite.makeEnd());
+		
 		if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {
 			eventConsumerThread.interrupt();
 			return;
 		}
 
-		eventConsumerThread.getSidCommandQueue().add(SIDWrite.makeEnd());
 		eventConsumerThread.ensureDraining();
 	}
 
