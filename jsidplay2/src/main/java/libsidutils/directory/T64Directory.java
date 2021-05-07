@@ -9,6 +9,12 @@ import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
 import libsidplay.sidtune.T64.T64Entry;
 
+/**
+ * Pseudo directory to display tape contents.
+ * 
+ * @author ken
+ *
+ */
 public class T64Directory extends Directory {
 
 	public T64Directory(File file) throws IOException {

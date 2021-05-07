@@ -83,6 +83,21 @@ public class Petscii {
 	}
 
 	/**
+	 * Converts ISO-8859-1 to PETSCII characters.
+	 *
+	 * @param iso8859 ISO-8859-1 bytes
+	 *
+	 * @return PETSCII characters.
+	 */
+	public static byte[] iso88591ToPetscii(String iso8859, int maxLen) {
+		byte[] result = new byte[Math.min(iso8859.length(), maxLen)];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = iso88591ToPetscii(iso8859.charAt(i));
+		}
+		return result;
+	}
+
+	/**
 	 * Converts PETSCII to ISO-8859-1 characters.
 	 *
 	 * @param petscii PETSCII bytes. (zero byte terminates the string)
@@ -98,21 +113,6 @@ public class Petscii {
 			result.append(petsciiToIso88591(element));
 		}
 		return result.toString();
-	}
-
-	/**
-	 * Converts ISO-8859-1 to PETSCII characters.
-	 *
-	 * @param iso8859 ISO-8859-1 bytes
-	 *
-	 * @return PETSCII characters.
-	 */
-	public static byte[] stringToPetscii(String iso8859, int maxLen) {
-		byte[] result = new byte[Math.min(iso8859.length(), maxLen)];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = iso88591ToPetscii(iso8859.charAt(i));
-		}
-		return result;
 	}
 
 }

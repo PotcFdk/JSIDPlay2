@@ -8,6 +8,8 @@ import java.util.Collection;
 
 /**
  *
+ * Real directory of a floppy disk.
+ * 
  * This class represents a Floppy 1541/1571 disk directory.
  *
  * @author Ken Händel

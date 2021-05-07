@@ -9,6 +9,12 @@ import java.io.IOException;
 
 import libsidplay.components.cart.Cartridge.CRTType;
 
+/**
+ * Pseudo directory to display cartridge contents.
+ * 
+ * @author ken
+ *
+ */
 public class CartridgeDirectory extends Directory {
 
 	public CartridgeDirectory(File file) throws IOException {
