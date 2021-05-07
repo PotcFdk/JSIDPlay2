@@ -1,55 +1,53 @@
 package libsidutils.directory;
 
+import static libsidutils.directory.DirEntry.FILETYPE_NONE;
+import static libsidutils.directory.DirEntry.convertFilename;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  *
- * This class represents a disk directory. However it is used to show tape file
- * entries or other formats as a pseudo directory as well.
+ * This class represents a Floppy 1541/1571 disk directory.
  *
  * @author Ken Händel
  *
  */
-public class Directory {
+public abstract class Directory {
 
 	/**
 	 * Should be true (C-1541) else false (C-1571).
 	 */
-	private boolean singleSided;
+	protected boolean singleSided = true;
 	/**
 	 * Disk/Tape title.
 	 */
-	private byte[] title;
+	protected byte[] title;
 	/**
 	 * Disk ID or null (tape).
 	 */
-	private byte[] id;
+	protected byte[] id;
 	/**
 	 * Directory entries.
 	 */
-	private Collection<DirEntry> dirEntries;
+	protected Collection<DirEntry> dirEntries = new ArrayList<>();
 
 	/**
-	 * Status line to be displayed as an alternative to the freeBlocks.
+	 * Status line to displayed free blocks.
 	 */
-	private String statusLine;
+	protected String statusLine;
 
-	public Directory() {
-		dirEntries = new ArrayList<>();
-		singleSided = true;
-	}
-
-	public void setTitle(byte[] diskName) {
-		title = diskName;
-	}
-
-	public void setId(byte[] diskID) {
-		id = diskID;
-	}
-
-	public void setSingleSided(boolean single) {
-		singleSided = single;
+	public String getTitle() {
+		StringBuilder header = new StringBuilder();
+		header.append(singleSided ? "0 " : "1 ");
+		header.append(convertFilename(title, FILETYPE_NONE));
+		if (id != null) {
+			header.append(" ");
+			for (byte element : id) {
+				header.append((char) (element & 0xff));
+			}
+		}
+		return header.toString();
 	}
 
 	public Collection<DirEntry> getDirEntries() {
@@ -58,28 +56,6 @@ public class Directory {
 
 	public String getStatusLine() {
 		return statusLine;
-	}
-
-	public void setFreeBlocks(int blocks) {
-		statusLine = String.format("%-3d BLOCKS FREE.", blocks);
-	}
-
-	public void setStatusLine(final String line) {
-		statusLine = line;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder header = new StringBuilder();
-		header.append(singleSided ? "0 " : "1 ");
-		header.append(DirEntry.convertFilename(title, -1));
-		if (id != null) {
-			header.append(" ");
-			for (byte element : id) {
-				header.append((char) (element & 0xff));
-			}
-		}
-		return header.toString();
 	}
 
 }

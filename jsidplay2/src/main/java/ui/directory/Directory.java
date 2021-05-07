@@ -155,13 +155,13 @@ public class Directory extends C64VBox implements UIPart {
 			if (dir != null) {
 				// Print directory title/id
 				DirectoryItem headerItem = new DirectoryItem();
-				headerItem.setText(print(dir.toString(), fontSetHeader));
+				headerItem.setText(print(dir.getTitle(), fontSetHeader));
 				directoryEntries.add(headerItem);
 				Collection<DirEntry> dirEntries = dir.getDirEntries();
 				// Print directory entries
 				for (DirEntry dirEntry : dirEntries) {
 					DirectoryItem dirItem = new DirectoryItem();
-					dirItem.setText(print(dirEntry.toString(), fontSet));
+					dirItem.setText(print(dirEntry.getDirectoryLine(), fontSet));
 					dirItem.setDirEntry(dirEntry);
 					directoryEntries.add(dirItem);
 				}
@@ -208,13 +208,13 @@ public class Directory extends C64VBox implements UIPart {
 	private libsidutils.directory.Directory createDirectory(File hvscRoot, final File file)
 			throws IOException, SidTuneError {
 		if (diskFilter.accept(file)) {
-			return DiskDirectory.getDirectory(file);
+			return new DiskDirectory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".t64")) {
-			return T64Directory.getDirectory(file);
+			return new T64Directory(file);
 		} else if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(".crt")) {
-			return CartridgeDirectory.getDirectory(file);
+			return new CartridgeDirectory(file);
 		} else if (tuneFilter.accept(file)) {
-			return TuneDirectory.getDirectory(hvscRoot, file);
+			return new TuneDirectory(hvscRoot, file);
 		}
 		return null;
 	}

@@ -4,16 +4,14 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
 
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.T64;
 import libsidplay.sidtune.T64.T64Entry;
 
-public class T64Directory {
+public class T64Directory extends Directory {
 
-	public static Directory getDirectory(File file) throws IOException {
-		Directory dir = new Directory();
+	public T64Directory(File file) throws IOException {
 		final T64 t64 = new T64();
 
 		// Load T64
@@ -23,10 +21,9 @@ public class T64Directory {
 			// Get title
 			byte[] diskName = new byte[32];
 			System.arraycopy(data, 0, diskName, 0, diskName.length);
-			dir.setTitle(diskName);
+			title = diskName;
 
 			int totalEntries = (data[35] & 0xff) << 8 | data[34] & 0xff;
-			final Collection<DirEntry> dirEntries = dir.getDirEntries();
 			for (int entryNum = 1; entryNum <= totalEntries; entryNum++) {
 				try {
 					final T64Entry entry = t64.getEntry(data, entryNum);
@@ -39,7 +36,6 @@ public class T64Directory {
 				} catch (SidTuneError e) {
 				}
 			}
-			return dir;
 		}
 	}
 

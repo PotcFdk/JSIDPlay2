@@ -6,7 +6,7 @@ import java.io.IOException;
 import libsidplay.components.c1541.DiskImage;
 import libsidplay.components.c1541.GCR;
 
-public class DiskDirectory {
+public class DiskDirectory extends Directory {
 
 	/**
 	 * Number of directory entries per block.
@@ -17,8 +17,7 @@ public class DiskDirectory {
 	 */
 	private static final int DIR_ENTRY_SIZE = 32;
 
-	public static final Directory getDirectory(final File file) throws IOException {
-		final Directory dir = new Directory();
+	public DiskDirectory(final File file) throws IOException {
 		final DiskImage img = DiskImage.attach(new GCR(), file);
 
 		int[] arrCyclicAccessInfo = new int[DiskImage.MAX_OVERALL_SECTORS];
@@ -38,10 +37,10 @@ public class DiskDirectory {
 		byte[] diskID = new byte[5];
 		System.arraycopy(sectorBytes, afterBamInfos, diskName, 0, diskName.length);
 		System.arraycopy(sectorBytes, afterBamInfos + 18, diskID, 0, diskID.length);
-		dir.setSingleSided((sectorBytes[4] & 0x80) == 0);
-		dir.setTitle(diskName);
-		dir.setId(diskID);
-		dir.setFreeBlocks(freeBlocks);
+		singleSided = (sectorBytes[4] & 0x80) == 0;
+		title = diskName;
+		id = diskID;
+		statusLine = String.format("%-3d BLOCKS FREE.", freeBlocks);
 
 		// disk images
 		byte[] currSector = new byte[GCR.SECTOR_SIZE];
@@ -92,7 +91,7 @@ public class DiskDirectory {
 				final byte lowByte = entryBytes[30];
 				final byte highByte = entryBytes[31];
 				final int nrSectors = (lowByte & 0xff) + ((highByte & 0xff) << 8);
-				dir.getDirEntries().add(new DirEntry(nrSectors, fn, fileType) {
+				dirEntries.add(new DirEntry(nrSectors, fn, fileType) {
 					/**
 					 * Save the program of this directory entry to the specified file.
 					 *
@@ -107,6 +106,5 @@ public class DiskDirectory {
 			}
 		}
 		img.detach();
-		return dir;
 	}
 }

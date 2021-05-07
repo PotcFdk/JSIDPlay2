@@ -2,18 +2,17 @@ package libsidutils.directory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-public abstract class DirEntry {
-	/**
-	 * Char-set for string to byte conversions.
-	 */
-	private static final Charset ISO88591 = Charset.forName("ISO-8859-1");
+public class DirEntry {
 
 	/**
 	 * BITMASK_FILETYPE.
 	 */
 	public static final byte BITMASK_FILETYPE = (byte) 0x7;
+	/**
+	 * no file type.
+	 */
+	public static final byte FILETYPE_NONE = (byte) -1;
 	/**
 	 * FILETYPE_DEL.
 	 */
@@ -91,7 +90,7 @@ public abstract class DirEntry {
 		}
 		fn.append("\"");
 		// END include filename in quotes
-		if (fileType != -1) {
+		if (fileType != FILETYPE_NONE) {
 			// append extension if applicable
 			int ft = fileType & BITMASK_FILETYPE;
 			// " DEL" | "PRG" ...
@@ -105,21 +104,9 @@ public abstract class DirEntry {
 	}
 
 	/**
-	 * Convert ASCII string to PETSCII bytes.
-	 *
-	 * @param str    string to convert
-	 * @param maxLen maximum string length to take into account
-	 * @return PETSCII bytes
-	 */
-	public final static byte[] asciiTopetscii(final String str, int maxLen) {
-		return str.substring(0, Math.min(maxLen, str.length())).toUpperCase().replace('_', '-').getBytes(ISO88591);
-	}
-
-	/**
 	 * Get string representation of this directory entry.
 	 */
-	@Override
-	public String toString() {
+	public String getDirectoryLine() {
 		return String.format("%-3d  %s", blocks, convertFilename(filename, fileType));
 	}
 
@@ -139,5 +126,7 @@ public abstract class DirEntry {
 	 * @param autostartFile file to save
 	 * @throws IOException File write error
 	 */
-	public abstract void save(File autostartFile) throws IOException;
+	public void save(File autostartFile) throws IOException {
+	}
+
 }
