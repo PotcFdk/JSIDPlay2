@@ -779,7 +779,6 @@ class ClientContext {
 									clientContext.whatsSidResult = result;
 								}
 							} catch (Throwable e) {
-								e.printStackTrace();
 								// server not available? silently ignore!
 							}
 						}
