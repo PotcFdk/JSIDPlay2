@@ -145,7 +145,7 @@ public class FavoritesSection {
 
 	@Transient
 	public ObservableList<HVSCEntry> getObservableFavorites() {
-		return favorites.getObservableList();
+		return (ObservableList<HVSCEntry>) getFavorites();
 	}
 
 	@Override

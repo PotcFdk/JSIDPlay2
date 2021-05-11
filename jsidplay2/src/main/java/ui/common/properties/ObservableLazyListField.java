@@ -17,24 +17,13 @@ import javafx.collections.ObservableList;
  *
  * @param <O> list element class
  */
-public class ObservableLazyListField<O> {
-
-	protected List<O> list;
+public class ObservableLazyListField<O> extends LazyListField<O> {
 
 	private ObservableList<O> observableList;
 
-	public final void set(List<O> list) {
-		this.list = list;
-	}
-
+	@Override
 	public final List<O> get(Supplier<List<O>> initialvalueSupplier) {
-		if (list == null) {
-			list = initialvalueSupplier.get();
-		}
-		return getObservableList();
-	}
-
-	public ObservableList<O> getObservableList() {
+		super.get(initialvalueSupplier);
 		if (observableList == null) {
 			observableList = FXCollections.<O>observableArrayList(list);
 			bindContent(list, observableList);

@@ -12,13 +12,13 @@ import java.util.function.Supplier;
  */
 public class LazyListField<O> {
 
-	private List<O> list;
+	protected List<O> list;
 
 	public final void set(List<O> list) {
 		this.list = list;
 	}
 
-	public final List<O> get(Supplier<List<O>> initialvalueSupplier) {
+	public List<O> get(Supplier<List<O>> initialvalueSupplier) {
 		if (list == null) {
 			list = initialvalueSupplier.get();
 		}

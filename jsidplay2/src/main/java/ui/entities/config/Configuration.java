@@ -287,7 +287,7 @@ public class Configuration implements IConfig {
 
 	@Transient
 	public ObservableList<FavoritesSection> getObservableFavorites() {
-		return favorites.getObservableList();
+		return (ObservableList<FavoritesSection>) getFavorites();
 	}
 
 	private Assembly64Section assembly64Section = new Assembly64Section();
@@ -314,7 +314,7 @@ public class Configuration implements IConfig {
 
 	@Transient
 	public ObservableList<ViewEntity> getObservableViews() {
-		return views.getObservableList();
+		return (ObservableList<ViewEntity>) getViews();
 	}
 
 	private LazyListField<FilterSection> filter = new LazyListField<>();
