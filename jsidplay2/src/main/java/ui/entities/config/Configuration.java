@@ -77,7 +77,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -87,7 +86,6 @@ import com.beust.jcommander.ParametersDelegate;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import libsidplay.config.IConfig;
 import sidplay.ini.converter.BeanToStringConverter;
@@ -285,11 +283,6 @@ public class Configuration implements IConfig {
 		this.favorites.set(favorites);
 	}
 
-	@Transient
-	public ObservableList<FavoritesSection> getObservableFavorites() {
-		return (ObservableList<FavoritesSection>) getFavorites();
-	}
-
 	private Assembly64Section assembly64Section = new Assembly64Section();
 
 	@Embedded
@@ -310,11 +303,6 @@ public class Configuration implements IConfig {
 
 	public void setViews(List<ViewEntity> views) {
 		this.views.set(views);
-	}
-
-	@Transient
-	public ObservableList<ViewEntity> getObservableViews() {
-		return (ObservableList<ViewEntity>) getViews();
 	}
 
 	private LazyListField<FilterSection> filter = new LazyListField<>();

@@ -354,7 +354,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 				column.setPrefWidth(width);
 			}
 		}
-		favoritesSection.getObservableFavorites()
+		((ObservableList<HVSCEntry>) favoritesSection.getFavorites())
 				.addListener((ListChangeListener.Change<? extends HVSCEntry> change) -> {
 					while (change.next()) {
 						if (change.wasPermutated() || change.wasUpdated()) {

@@ -109,7 +109,8 @@ public class Favorites extends C64VBox implements UIPart {
 
 		util.getPlayer().stateProperty().addListener(nextTuneListener);
 		List<? extends FavoritesSection> favorites = util.getConfig().getFavorites();
-		util.getConfig().getObservableFavorites()
+
+		((ObservableList<FavoritesSection>) util.getConfig().getFavorites())
 				.addListener((ListChangeListener.Change<? extends FavoritesSection> change) -> {
 					while (change.next()) {
 						if (change.wasPermutated() || change.wasUpdated()) {

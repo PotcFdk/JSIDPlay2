@@ -18,7 +18,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -28,7 +27,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ObservableLazyListField;
@@ -141,11 +139,6 @@ public class FavoritesSection {
 
 	public void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites.set(favorites);
-	}
-
-	@Transient
-	public ObservableList<HVSCEntry> getObservableFavorites() {
-		return (ObservableList<HVSCEntry>) getFavorites();
 	}
 
 	@Override
