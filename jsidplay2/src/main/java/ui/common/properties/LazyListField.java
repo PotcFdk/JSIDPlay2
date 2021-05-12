@@ -18,9 +18,9 @@ public class LazyListField<O> {
 		this.list = list;
 	}
 
-	public List<O> get(Supplier<List<O>> initialvalueSupplier) {
+	public List<O> get(Supplier<List<O>> initialValueSupplier) {
 		if (list == null) {
-			list = initialvalueSupplier.get();
+			list = initialValueSupplier.get();
 		}
 		return list;
 	}

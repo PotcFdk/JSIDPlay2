@@ -22,8 +22,8 @@ public class ObservableLazyListField<O> extends LazyListField<O> {
 	private ObservableList<O> observableList;
 
 	@Override
-	public final List<O> get(Supplier<List<O>> initialvalueSupplier) {
-		super.get(initialvalueSupplier);
+	public final ObservableList<O> get(Supplier<List<O>> initialValueSupplier) {
+		super.get(initialValueSupplier);
 		if (observableList == null) {
 			observableList = FXCollections.<O>observableArrayList(list);
 			bindContent(list, observableList);
