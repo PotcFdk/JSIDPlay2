@@ -272,14 +272,7 @@ public class ConfigService {
 			// migration XML to JSON
 			File fileAsXml = new File(PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath()) + ".xml");
 			if (fileAsXml.exists()) {
-				Configuration detachedConfig = importXml(fileAsXml);
-
-				// configuration version check
-				if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
-					Configuration mergedConfig = em.merge(detachedConfig);
-					persist(mergedConfig);
-					return mergedConfig;
-				}
+				return importXml(fileAsXml);
 			}
 		}
 		return create();
