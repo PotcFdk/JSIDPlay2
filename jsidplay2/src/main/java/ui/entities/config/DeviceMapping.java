@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -48,6 +50,7 @@ public class DeviceMapping implements IDeviceMapping {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}

@@ -79,6 +79,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -98,6 +101,8 @@ import server.restful.common.Connectors;
 import sidplay.ini.converter.BeanToStringConverter;
 import sidplay.ini.converter.FileToStringConverter;
 import ui.common.converter.FileAttributeConverter;
+import ui.common.converter.FileToStringDeserializer;
+import ui.common.converter.FileToStringSerializer;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.LazyListField;
 import ui.common.properties.ShadowField;
@@ -644,6 +649,8 @@ public class EmulationSection implements IEmulationSection {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getAppServerKeystoreFile() {
 		return this.appServerKeystore.get();
 	}
@@ -666,6 +673,7 @@ public class EmulationSection implements IEmulationSection {
 	 */
 	@Transient
 	@XmlTransient
+	@JsonIgnore
 	public String getAppServerKeystorePassword() {
 		return appServerKeystorePassword.get();
 	}
@@ -702,6 +710,7 @@ public class EmulationSection implements IEmulationSection {
 	 */
 	@Transient
 	@XmlTransient
+	@JsonIgnore
 	public String getAppServerKeyPassword() {
 		return appServerKeyPassword.get();
 	}

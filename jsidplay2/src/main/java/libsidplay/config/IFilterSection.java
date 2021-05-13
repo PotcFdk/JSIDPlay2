@@ -1,5 +1,7 @@
 package libsidplay.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface IFilterSection {
 
 	String getName();
@@ -54,18 +56,22 @@ public interface IFilterSection {
 
 	void setResonanceFactor(float resonanceFactor);
 
+	@JsonIgnore
 	default boolean isReSIDFilter6581() {
 		return getFilter6581CurvePosition() != 0;
 	}
 
+	@JsonIgnore
 	default boolean isReSIDFilter8580() {
 		return getFilter8580CurvePosition() != 0;
 	}
 
+	@JsonIgnore
 	default boolean isReSIDfpFilter6581() {
 		return getBaseresistance() != 0;
 	}
 
+	@JsonIgnore
 	default boolean isReSIDfpFilter8580() {
 		return getK() != 0;
 	}

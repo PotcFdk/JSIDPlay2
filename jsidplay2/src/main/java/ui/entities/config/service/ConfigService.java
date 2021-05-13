@@ -16,6 +16,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import libsidplay.config.IConfig;
 import libsidutils.PathUtils;
 import ui.entities.DatabaseType;
@@ -37,13 +40,23 @@ public class ConfigService {
 	 */
 	public enum ConfigurationType {
 		/**
+		 * Use JSON configuration files
+		 */
+		JSON(".json"),
+		/**
 		 * Use XML configuration files
 		 */
-		XML,
+		XML(".xml"),
 		/**
 		 * Use binary database files
 		 */
-		DATABASE
+		DATABASE("");
+
+		private String fileExt;
+
+		private ConfigurationType(String fileExt) {
+			this.fileExt = fileExt;
+		}
 	}
 
 	/**
@@ -53,7 +66,7 @@ public class ConfigService {
 
 	private EntityManager em;
 
-	private ConfigurationType configurationType;
+	private final ConfigurationType configurationType;
 
 	public ConfigService(ConfigurationType configurationType) {
 		this.configurationType = configurationType;
@@ -71,13 +84,20 @@ public class ConfigService {
 					.createEntityManager();
 			return get(configPath);
 
+		case JSON:
+			em = Persistence
+					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
+							new PersistenceProperties(DatabaseType.HSQL_MEM, "", "", CONFIG_FILE))
+					.createEntityManager();
+			return importJson(configPath);
+
 		case XML:
 		default:
 			em = Persistence
 					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
 							new PersistenceProperties(DatabaseType.HSQL_MEM, "", "", CONFIG_FILE))
 					.createEntityManager();
-			return importCfg(configPath);
+			return importXml(configPath);
 		}
 	}
 
@@ -89,9 +109,13 @@ public class ConfigService {
 			persist(configuration);
 			break;
 
+		case JSON:
+			exportJson(configuration, configPath);
+			break;
+
 		case XML:
 		default:
-			exportCfg(configuration, configPath);
+			exportXml(configuration, configPath);
 			break;
 		}
 	}
@@ -192,7 +216,7 @@ public class ConfigService {
 	 * @param file XML file to import
 	 * @return imported configuration
 	 */
-	private Configuration importCfg(File file) {
+	private Configuration importXml(File file) {
 		if (file.exists()) {
 			try {
 				JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
@@ -218,12 +242,56 @@ public class ConfigService {
 	}
 
 	/**
+	 * Import configuration database from an JSON file.
+	 *
+	 * If absent or invalid, create a new one.
+	 *
+	 * @param file JSON file to import
+	 * @return imported configuration
+	 */
+	private Configuration importJson(final File file) {
+		if (file.exists()) {
+			try {
+				final ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				Configuration detachedConfig = objectMapper.readValue(file, Configuration.class);
+
+				// configuration version check
+				if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
+					Configuration mergedConfig = em.merge(detachedConfig);
+					persist(mergedConfig);
+					return mergedConfig;
+				}
+				createBackup(detachedConfig, file);
+				return detachedConfig;
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+				createBackup(file);
+			}
+		} else {
+			// migration XML to JSON
+			File fileAsXml = new File(PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath()) + ".xml");
+			if (fileAsXml.exists()) {
+				Configuration detachedConfig = importXml(fileAsXml);
+
+				// configuration version check
+				if (detachedConfig.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
+					Configuration mergedConfig = em.merge(detachedConfig);
+					persist(mergedConfig);
+					return mergedConfig;
+				}
+			}
+		}
+		return create();
+	}
+
+	/**
 	 * Export configuration database into an XML file.
 	 *
 	 * @param configuration configuration to export
 	 * @param file          target file of the export
 	 */
-	private void exportCfg(Configuration configuration, File file) {
+	private void exportXml(Configuration configuration, File file) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
@@ -235,19 +303,34 @@ public class ConfigService {
 	}
 
 	/**
+	 * Export configuration database into an JSON file.
+	 *
+	 * @param configuration configuration to export
+	 * @param file          target file of the export
+	 */
+	private void exportJson(Configuration configuration, File file) {
+		try {
+			final ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, configuration);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Search for the configuration. Search in CWD and in the HOME folder.
 	 *
 	 * @return XML configuration file
 	 */
 	private File getConfigPath() {
 		for (final String s : new String[] { System.getProperty("user.dir"), System.getProperty("user.home"), }) {
-			File configPlace = new File(s, CONFIG_FILE + ".xml");
+			File configPlace = new File(s, CONFIG_FILE + configurationType.fileExt);
 			if (configPlace.exists()) {
 				return configPlace;
 			}
 		}
 		// default directory
-		return new File(System.getProperty("user.home"), CONFIG_FILE + ".xml");
+		return new File(System.getProperty("user.home"), CONFIG_FILE + configurationType.fileExt);
 	}
 
 	/**
@@ -258,7 +341,7 @@ public class ConfigService {
 	 */
 	private void createBackup(Configuration configuration, File configPath) {
 		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
-		exportCfg(configuration, file);
+		exportXml(configuration, file);
 	}
 
 	private void createBackup(File configPath) {

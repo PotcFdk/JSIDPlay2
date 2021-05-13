@@ -43,6 +43,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -57,6 +60,8 @@ import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.FileAttributeConverter;
+import ui.common.converter.FileToStringSerializer;
+import ui.common.converter.FileToStringDeserializer;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 
@@ -343,6 +348,8 @@ public class AudioSection implements IAudioSection {
 	@Override
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getMp3() {
 		return this.mp3.get();
 	}

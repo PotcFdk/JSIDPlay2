@@ -21,6 +21,8 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -46,6 +48,7 @@ public class FavoritesSection {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}

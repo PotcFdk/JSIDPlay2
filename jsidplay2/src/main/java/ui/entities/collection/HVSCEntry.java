@@ -27,6 +27,10 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
 import libsidplay.sidtune.SidTune.Compatibility;
@@ -34,6 +38,8 @@ import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTune.Speed;
 import libsidplay.sidtune.SidTuneInfo;
 import sidplay.ini.converter.BeanToStringConverter;
+import ui.common.converter.LocalDateTimeToStringDeserializer;
+import ui.common.converter.LocalDateTimeToStringSerializer;
 import ui.common.converter.LocalDateTimeXmlAdapter;
 import ui.common.properties.LazyListField;
 
@@ -96,6 +102,7 @@ public class HVSCEntry {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}
@@ -364,6 +371,8 @@ public class HVSCEntry {
 	private LocalDateTime fileDate;
 
 	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
+	@JsonSerialize(using = LocalDateTimeToStringSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeToStringDeserializer.class)
 	public LocalDateTime getFileDate() {
 		return fileDate;
 	}

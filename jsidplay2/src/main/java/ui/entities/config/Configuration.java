@@ -83,6 +83,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.beust.jcommander.ParametersDelegate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -154,6 +155,7 @@ public class Configuration implements IConfig {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}

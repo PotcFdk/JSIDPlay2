@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -39,6 +41,7 @@ public class Assembly64Column {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}

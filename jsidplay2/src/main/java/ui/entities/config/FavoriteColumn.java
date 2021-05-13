@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -36,6 +38,7 @@ public class FavoriteColumn {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
+	@JsonIgnore
 	public Integer getId() {
 		return id;
 	}

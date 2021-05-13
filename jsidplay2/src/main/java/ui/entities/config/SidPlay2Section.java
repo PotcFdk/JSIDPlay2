@@ -28,6 +28,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -41,6 +44,8 @@ import javafx.beans.property.StringProperty;
 import libsidplay.config.ISidPlay2Section;
 import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.FileAttributeConverter;
+import ui.common.converter.FileToStringDeserializer;
+import ui.common.converter.FileToStringSerializer;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 import ui.favorites.PlaybackType;
@@ -209,6 +214,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getHVMEC() {
 		return hvmec.get();
 	}
@@ -225,6 +232,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getDemos() {
 		return demos.get();
 	}
@@ -241,6 +250,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getMags() {
 		return mags.get();
 	}
@@ -257,6 +268,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getCgsc() {
 		return cgsc.get();
 	}
@@ -274,6 +287,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@Override
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getHvsc() {
 		return hvsc.get();
 	}
@@ -291,6 +306,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getGameBase64() {
 		return gameBase64.get();
 	}
@@ -352,6 +369,8 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	@Convert(converter = FileAttributeConverter.class)
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getLastDirectory() {
 		return lastDirectory.get();
 	}
@@ -369,6 +388,10 @@ public class SidPlay2Section implements ISidPlay2Section {
 			DEFAULT_TMP_DIR);
 
 	@Override
+	@Convert(converter = FileAttributeConverter.class)
+	@XmlJavaTypeAdapter(FileXmlAdapter.class)
+	@JsonSerialize(using = FileToStringSerializer.class)
+	@JsonDeserialize(using = FileToStringDeserializer.class)
 	public File getTmpDir() {
 		return tmpDir.get();
 	}
