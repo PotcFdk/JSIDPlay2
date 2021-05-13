@@ -57,7 +57,9 @@ import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.OS;
+import libsidplay.common.SamplingRate;
 import libsidplay.config.IAudioSection;
+import sidplay.audio.exceptions.IniConfigException;
 
 public abstract class AACDriver implements AudioDriver {
 
@@ -132,6 +134,11 @@ public abstract class AACDriver implements AudioDriver {
 		AudioConfig cfg = new AudioConfig(audioSection);
 		out = getOut(recordingFilename);
 		try {
+			if (audioSection.getSamplingRate().getFrequency() == 8000
+					|| audioSection.getSamplingRate().getFrequency() == 96000) {
+				throw new IniConfigException("Sampling rate is not supported by AACEncoder",
+						() -> audioSection.setSamplingRate(SamplingRate.MEDIUM));
+			}
 			aacEncoder = AACAudioEncoder.builder().channels(cfg.getChannels()).sampleRate(cfg.getFrameRate())
 					.profile(AACEncodingProfile.AAC_LC).build();
 
