@@ -29,7 +29,7 @@ public class SIDBlasterTool {
 		DebugUtil.init();
 	}
 
-	private final static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("builder.sidblaster.SidBuilderTool");
+	private final static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("ui.tools.SIDBlasterTool");
 
 	private static final String PATTERN_SERIAL_NO = "[A-Z0-9]{8}";
 
