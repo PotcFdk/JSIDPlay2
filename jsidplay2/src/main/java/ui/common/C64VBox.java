@@ -6,23 +6,13 @@ import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.VBox;
 import sidplay.Player;
-import ui.entities.config.Configuration;
-import ui.entities.config.service.ConfigService;
-import ui.entities.config.service.ConfigService.ConfigurationType;
 
 public abstract class C64VBox extends VBox implements UIPart, Initializable {
 
 	protected UIUtil util;
 
-	/**
-	 * Default Constructor for JavaFX Preview in Eclipse, only (Player with default
-	 * configuration for the controller)
-	 */
 	public C64VBox() {
-		ConfigService configService = new ConfigService(ConfigurationType.XML);
-		Configuration configuration = configService.load();
-		util = new UIUtil(null, new Player(configuration), this);
-		configService.close();
+		util = onlyForEclipseJavaFXPreviewView();
 		// TODO Uncomment line ONLY for JavaFX Preview in Eclipse of JSidPlay2.fxml
 		// and Oscilloscope.fxml, if you get problems in preview view
 //		util.parse(this);
