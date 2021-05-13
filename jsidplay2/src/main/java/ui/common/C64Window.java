@@ -12,6 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import sidplay.Player;
+import ui.entities.config.Configuration;
+import ui.entities.config.service.ConfigService;
+import ui.entities.config.service.ConfigService.ConfigurationType;
 
 public abstract class C64Window implements UIPart, Initializable {
 
@@ -23,8 +26,15 @@ public abstract class C64Window implements UIPart, Initializable {
 
 	private Supplier<Boolean> closeActionEnabler = () -> true;
 
+	/**
+	 * Default Constructor for JavaFX Preview in Eclipse, only (Player with default
+	 * configuration for the controller)
+	 */
 	public C64Window() {
-		util = onlyForEclipseJavaFXPreviewView();
+		ConfigService configService = new ConfigService(ConfigurationType.XML);
+		Configuration configuration = configService.load();
+		util = new UIUtil(null, new Player(configuration), this);
+		configService.close();
 	}
 
 	/**
