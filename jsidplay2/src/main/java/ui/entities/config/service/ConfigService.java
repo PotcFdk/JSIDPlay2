@@ -143,7 +143,6 @@ public class ConfigService {
 			}
 			remove(configuration);
 		}
-		// create new configuration
 		return create();
 	}
 
