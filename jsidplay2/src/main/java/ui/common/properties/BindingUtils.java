@@ -24,6 +24,7 @@ public class BindingUtils {
 	 * 
 	 * @param objectProperty property to bind and change thread-safe
 	 * @param configProperty property to bind
+	 * @param runnable       runnable to change value on each config property change
 	 */
 	public static <T> void bindBidirectionalThreadSafe(final ObjectProperty<T> objectProperty,
 			final ObjectProperty<T> configProperty, Runnable runnable) {
