@@ -79,8 +79,7 @@ public class ConfigService {
 		case DATABASE:
 			em = Persistence
 					.createEntityManagerFactory(PersistenceProperties.CONFIG_DS,
-							new PersistenceProperties(DatabaseType.HSQL_FILE, "", "",
-									PathUtils.getFilenameWithoutSuffix(configPath.getAbsolutePath())))
+							new PersistenceProperties(DatabaseType.HSQL_FILE, "", "", configPath.getAbsolutePath()))
 					.createEntityManager();
 			return get(configPath);
 
@@ -102,8 +101,10 @@ public class ConfigService {
 	}
 
 	public void save(Configuration configuration) {
-		final File configPath = getConfigPath();
+		save(configuration, getConfigPath());
+	}
 
+	private void save(Configuration configuration, final File configPath) {
 		switch (configurationType) {
 		case DATABASE:
 			persist(configuration);
@@ -128,23 +129,18 @@ public class ConfigService {
 	 * @return configuration
 	 */
 	private Configuration get(File configPath) {
-		Configuration configuration = null;
-		// read configuration from database
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Configuration> q = cb.createQuery(Configuration.class);
 		Root<Configuration> h = q.from(Configuration.class);
 		q.select(h);
 		Optional<Configuration> first = em.createQuery(q).getResultList().stream().findFirst();
+
 		if (first.isPresent()) {
-			configuration = first.get();
+			Configuration configuration = first.get();
 			// configuration version check
 			if (configuration.getSidplay2Section().getVersion() == IConfig.REQUIRED_CONFIG_VERSION) {
 				return configuration;
 			}
-			createBackup(configuration, configPath);
-		}
-		// remove old configuration
-		if (configuration != null) {
 			remove(configuration);
 		}
 		// create new configuration
@@ -303,8 +299,7 @@ public class ConfigService {
 	 */
 	private void exportJson(Configuration configuration, File file) {
 		try {
-			final ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, configuration);
+			new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file, configuration);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -330,21 +325,28 @@ public class ConfigService {
 	 * Create a backup of the current configuration.
 	 *
 	 * @param configuration configuration to backup
-	 * @param configPath    path to save the backup
+	 * @param configPath    backup filename without .bak
 	 */
 	private void createBackup(Configuration configuration, File configPath) {
-		File file = new File(configPath.getParentFile(), configPath.getName() + ".bak");
-		exportXml(configuration, file);
+		File bakFile = new File(configPath.getParentFile(), configPath.getName() + ".bak");
+		if (!bakFile.exists()) {
+			save(configuration, bakFile);
+		}
 	}
 
+	/**
+	 * Create a backup of the current file.
+	 *
+	 * @param configPath filename to create a backup of (.bak is added)
+	 */
 	private void createBackup(File configPath) {
 		File bakFile = new File(configPath.getParentFile(), configPath.getName() + ".bak");
-		try {
-			if (!bakFile.exists()) {
+		if (!bakFile.exists()) {
+			try {
 				Files.copy(configPath.toPath(), bakFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e1) {
+				// ignore
 			}
-		} catch (IOException e1) {
-			// ignore
 		}
 	}
 
