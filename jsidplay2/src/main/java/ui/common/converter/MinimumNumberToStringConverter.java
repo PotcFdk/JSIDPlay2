@@ -18,8 +18,8 @@ public final class MinimumNumberToStringConverter extends NumberStringConverter 
 	}
 
 	@Override
-	public Number fromString(String value) {
-		final Number result = super.fromString(value);
+	public Number fromString(String string) {
+		final Number result = super.fromString(string);
 		if (result.doubleValue() < minimumNumber.doubleValue()) {
 			throw new RuntimeException("number must be greater or equal than " + minimumNumber);
 		}

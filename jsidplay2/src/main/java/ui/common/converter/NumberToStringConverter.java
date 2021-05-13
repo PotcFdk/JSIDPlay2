@@ -21,8 +21,8 @@ public final class NumberToStringConverter<T extends Number> extends StringConve
 	}
 
 	@Override
-	public String toString(T d) {
-		double rounded = (double) Math.round(d.doubleValue() * factor) / factor;
+	public String toString(T object) {
+		double rounded = (double) Math.round(object.doubleValue() * factor) / factor;
 		return String.format("%." + decimalPlaces + "f", rounded);
 	}
 

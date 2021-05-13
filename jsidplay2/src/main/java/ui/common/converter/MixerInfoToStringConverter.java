@@ -6,7 +6,7 @@ import javax.sound.sampled.Mixer.Info;
 
 import javafx.util.StringConverter;
 
-public class MixerInfoToStringConverter extends StringConverter<Info> {
+public final class MixerInfoToStringConverter extends StringConverter<Info> {
 
 	private final ResourceBundle bundle;
 	private final String nullBundleKey;

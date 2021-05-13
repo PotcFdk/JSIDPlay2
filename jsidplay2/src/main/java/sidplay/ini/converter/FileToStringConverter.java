@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.beust.jcommander.IStringConverter;
 
-public class FileToStringConverter implements IStringConverter<File>, IFileToStringConverter {
+public final class FileToStringConverter implements IStringConverter<File>, IFileToStringConverter {
 
 	@Override
 	public File convert(String fileString) {

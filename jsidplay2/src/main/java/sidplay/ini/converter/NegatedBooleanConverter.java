@@ -6,7 +6,7 @@ import com.beust.jcommander.converters.BaseConverter;
 /**
  * Converts a string to a negated boolean.
  */
-public class NegatedBooleanConverter extends BaseConverter<Boolean> {
+public final class NegatedBooleanConverter extends BaseConverter<Boolean> {
 
 	public NegatedBooleanConverter(String optionName) {
 		super(optionName);

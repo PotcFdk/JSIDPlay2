@@ -8,7 +8,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BeanToStringConverter {
+public final class BeanToStringConverter {
 
 	private BeanToStringConverter() {
 	}

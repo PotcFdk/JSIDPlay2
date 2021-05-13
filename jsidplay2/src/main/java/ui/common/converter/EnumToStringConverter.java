@@ -4,7 +4,7 @@ import java.util.ResourceBundle;
 
 import javafx.util.StringConverter;
 
-public class EnumToStringConverter<T extends Enum<?>> extends StringConverter<T> {
+public final class EnumToStringConverter<T extends Enum<?>> extends StringConverter<T> {
 
 	private final ResourceBundle bundle;
 

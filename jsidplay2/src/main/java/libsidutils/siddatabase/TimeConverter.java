@@ -2,7 +2,9 @@ package libsidutils.siddatabase;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -46,4 +48,18 @@ public class TimeConverter {
 			return -1.;
 		}
 	}
+
+	/**
+	 * Convert time in seconds to time string (mm:ss.SSS)
+	 *
+	 * @param seconds seconds or -1 (invalid format)
+	 * @return time string
+	 */
+	public String toString(Double seconds) {
+		if (seconds == null || seconds.doubleValue() == -1) {
+			return "00:00";
+		}
+		return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (seconds.doubleValue() * 1000)));
+	}
+
 }

@@ -59,6 +59,8 @@ public class IniReader {
 	 */
 	private static final Pattern KEY_VALUE = Pattern.compile("(\\w+(?:\\s+\\w+)*)\\s*=\\s*(.*)");
 
+	private final TimeConverter timeConverter = new TimeConverter();
+
 	private final Map<String, Map<String, String>> sections = new LinkedHashMap<>();
 
 	private boolean dirty;
@@ -304,7 +306,7 @@ public class IniReader {
 	}
 
 	private double parseTime(final String time) {
-		double seconds = new TimeConverter().fromString(time).doubleValue();
+		double seconds = timeConverter.fromString(time).doubleValue();
 		if (seconds == -1) {
 			System.err.println("Invalid time, expected mm:ss.SSS (found " + time + ")");
 		}

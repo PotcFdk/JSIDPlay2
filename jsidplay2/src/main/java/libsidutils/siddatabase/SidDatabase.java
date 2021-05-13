@@ -32,6 +32,7 @@ public class SidDatabase {
 
 	private MD5Method version;
 	private final IniReader database;
+	private final TimeConverter timeConverter = new TimeConverter();
 
 	public SidDatabase(final File hvscRoot) throws IOException {
 		try (InputStream is = getInputStreamAndSetVersion(hvscRoot)) {
@@ -118,7 +119,7 @@ public class SidDatabase {
 	 */
 	private double getLength(final String md5, final int songNum) {
 		final String times = database.getPropertyString("Database", md5, null);
-		return times != null ? new TimeConverter().fromString(times.split(" ")[songNum - 1]) : 0;
+		return times != null ? timeConverter.fromString(times.split(" ")[songNum - 1]) : 0;
 	}
 
 }

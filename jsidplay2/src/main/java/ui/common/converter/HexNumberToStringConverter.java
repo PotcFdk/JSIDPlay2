@@ -5,13 +5,13 @@ import javafx.util.StringConverter;
 public final class HexNumberToStringConverter extends StringConverter<Number> {
 
 	@Override
-	public String toString(Number d) {
-		return String.format("0x%4x", d);
+	public Number fromString(String string) {
+		return Integer.decode(string);
 	}
 
 	@Override
-	public Number fromString(String string) {
-		return Integer.decode(string);
+	public String toString(Number number) {
+		return String.format("0x%4x", number);
 	}
 
 }
