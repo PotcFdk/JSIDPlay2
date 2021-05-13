@@ -84,8 +84,8 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
-import ui.common.converter.MixerInfoToStringConverter;
 import ui.common.converter.MinimumNumberToStringConverter;
+import ui.common.converter.MixerInfoToStringConverter;
 import ui.common.converter.TimeToStringConverter;
 import ui.common.util.DesktopUtil;
 import ui.entities.config.AudioSection;
@@ -205,7 +205,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		});
 		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
-		devicesBox.setConverter(new MixerInfoToStringConverter());
+		devicesBox.setConverter(new MixerInfoToStringConverter(util.getBundle(), "NO_AUDIO"));
 		devicesBox.setItems(FXCollections.<Info>observableArrayList(JavaSound.getDevices()));
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 

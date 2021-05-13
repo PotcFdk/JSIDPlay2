@@ -1,10 +1,20 @@
 package ui.common.converter;
 
+import java.util.ResourceBundle;
+
 import javax.sound.sampled.Mixer.Info;
 
 import javafx.util.StringConverter;
 
 public class MixerInfoToStringConverter extends StringConverter<Info> {
+
+	private final ResourceBundle bundle;
+	private final String nullBundleKey;
+
+	public MixerInfoToStringConverter(ResourceBundle bundle, String nullBundleKey) {
+		this.bundle = bundle;
+		this.nullBundleKey = nullBundleKey;
+	}
 
 	@Override
 	public Info fromString(String string) {
@@ -13,6 +23,6 @@ public class MixerInfoToStringConverter extends StringConverter<Info> {
 
 	@Override
 	public String toString(Info info) {
-		return info != null ? info.getName() : "<no audio device>";
+		return info != null ? info.getName() : bundle.getString(nullBundleKey);
 	}
 }

@@ -2,9 +2,9 @@ package ui.common.converter;
 
 import java.util.ResourceBundle;
 
-import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
-public class IntegerToStringConverter extends StringConverter<Integer> {
+public class IntegerToStringConverter extends IntegerStringConverter {
 
 	private final ResourceBundle bundle;
 	private final String zeroBundleKey;
@@ -12,11 +12,6 @@ public class IntegerToStringConverter extends StringConverter<Integer> {
 	public IntegerToStringConverter(ResourceBundle bundle, String zeroBundleKey) {
 		this.bundle = bundle;
 		this.zeroBundleKey = zeroBundleKey;
-	}
-
-	@Override
-	public Integer fromString(String rating) {
-		throw new RuntimeException("This function is not supported!");
 	}
 
 	@Override
