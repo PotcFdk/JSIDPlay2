@@ -22,15 +22,8 @@ public final class NumberToStringConverter<T extends Number> extends StringConve
 
 	@Override
 	public String toString(T d) {
-		if (d.doubleValue() == -1) {
-			return "";
-		}
 		double rounded = (double) Math.round(d.doubleValue() * factor) / factor;
-		if (factor == 0) {
-			return String.format("%f", rounded);
-		} else {
-			return String.format("%." + decimalPlaces + "f", rounded);
-		}
+		return String.format("%." + decimalPlaces + "f", rounded);
 	}
 
 }
