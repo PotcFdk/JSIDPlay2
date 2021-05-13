@@ -85,7 +85,7 @@ import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
 import ui.common.converter.MixerInfoToStringConverter;
-import ui.common.converter.PositiveNumberToStringConverter;
+import ui.common.converter.MinimumNumberToStringConverter;
 import ui.common.converter.TimeToStringConverter;
 import ui.common.util.DesktopUtil;
 import ui.entities.config.AudioSection;
@@ -260,7 +260,7 @@ public class ToolBar extends C64VBox implements UIPart {
 				.addListener((obj, o, n) -> util.checkTextField(defaultPlayLength, () -> n.intValue() != -1,
 						() -> util.getPlayer().getTimer().updateEnd(), "DEFAULT_LENGTH_TIP", "DEFAULT_LENGTH_FORMAT"));
 		bindBidirectional(bufferSize.textProperty(), audioSection.bufferSizeProperty(),
-				new PositiveNumberToStringConverter<>(2048));
+				new MinimumNumberToStringConverter("#", 2048));
 		audioSection.bufferSizeProperty()
 				.addListener((obj, o, n) -> util.checkTextField(bufferSize, () -> n.intValue() >= 2048, () -> {
 				}, "BUFFER_SIZE_TIP", "BUFFER_SIZE_FORMAT"));

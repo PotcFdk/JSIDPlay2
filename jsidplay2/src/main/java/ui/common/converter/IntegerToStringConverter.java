@@ -16,7 +16,7 @@ public class IntegerToStringConverter extends StringConverter<Integer> {
 
 	@Override
 	public Integer fromString(String rating) {
-		throw new RuntimeException("Not implemented!");
+		throw new RuntimeException("This function is not supported!");
 	}
 
 	@Override

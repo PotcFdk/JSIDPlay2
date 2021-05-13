@@ -16,6 +16,11 @@ public final class NumberToStringConverter<T extends Number> extends StringConve
 	}
 
 	@Override
+	public T fromString(String string) {
+		throw new RuntimeException("This function is not supported!");
+	}
+
+	@Override
 	public String toString(T d) {
 		if (d.doubleValue() == -1) {
 			return "";
@@ -26,11 +31,6 @@ public final class NumberToStringConverter<T extends Number> extends StringConve
 		} else {
 			return String.format("%." + decimalPlaces + "f", rounded);
 		}
-	}
-
-	@Override
-	public T fromString(String string) {
-		throw new RuntimeException("This function is not supported!");
 	}
 
 }
