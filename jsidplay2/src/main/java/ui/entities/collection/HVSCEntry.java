@@ -1,6 +1,7 @@
 package ui.entities.collection;
 
 import static java.util.stream.Collectors.toList;
+import static libsidplay.sidtune.SidTune.RESET;
 
 import java.io.File;
 import java.time.Instant;
@@ -48,7 +49,7 @@ public class HVSCEntry {
 	public HVSCEntry(final DoubleSupplier lengthFnct, final String path, final File tuneFile, SidTune tune) {
 		this.name = tuneFile.getName();
 		this.path = path.length() > 0 ? path : tuneFile.getPath();
-		if (tune != null) {
+		if (tune != RESET) {
 			SidTuneInfo info = tune.getInfo();
 			info.setSelectedSong(1);
 			Iterator<String> descriptionIt = info.getInfoString().iterator();
