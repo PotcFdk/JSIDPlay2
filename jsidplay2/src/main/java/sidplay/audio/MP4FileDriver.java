@@ -1,5 +1,8 @@
 package sidplay.audio;
 
+import static libsidplay.common.SamplingRate.HIGH;
+import static libsidplay.common.SamplingRate.MEDIUM;
+import static libsidplay.common.SamplingRate.VERY_LOW;
 import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 import static sidplay.audio.Audio.MP4;
@@ -38,7 +41,6 @@ import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
 import libsidplay.common.CPUClock;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.OS;
-import libsidplay.common.SamplingRate;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import libsidutils.PathUtils;
@@ -64,10 +66,9 @@ public class MP4FileDriver implements AudioDriver, VideoDriver {
 		AudioConfig cfg = new AudioConfig(audioSection);
 		this.recordingFilename = recordingFilename;
 		try {
-			if (audioSection.getSamplingRate().getFrequency() == 8000
-					|| audioSection.getSamplingRate().getFrequency() == 96000) {
+			if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == HIGH) {
 				throw new IniConfigException("Sampling rate is not supported by AACEncoder",
-						() -> audioSection.setSamplingRate(SamplingRate.MEDIUM));
+						() -> audioSection.setSamplingRate(MEDIUM));
 			}
 			System.out.println("Recording, file=" + recordingFilename);
 			new File(recordingFilename).delete();
