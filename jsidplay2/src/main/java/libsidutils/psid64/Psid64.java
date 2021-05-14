@@ -342,17 +342,11 @@ public class Psid64 {
 			result.append(stilEntry.filename);
 			result.append(" - ");
 		}
-		if (stilEntry.globalComment != null) {
-			result.append(stilEntry.globalComment);
-		}
 		for (Info info : stilEntry.infos) {
 			writeSTILEntry(result, info);
 		}
 		int subTuneNo = 1;
 		for (TuneEntry entry : stilEntry.subtunes) {
-			if (entry.globalComment != null) {
-				result.append(entry.globalComment);
-			}
 			for (Info info : entry.infos) {
 				result.append(" SubTune #" + subTuneNo + ": ");
 				writeSTILEntry(result, info);

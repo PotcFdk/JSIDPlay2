@@ -36,9 +36,8 @@ public class SearchCriteria<DECLARING_CLASS, JAVA_TYPE> {
 				HVSCEntry_.tuneLength, HVSCEntry_.audio, HVSCEntry_.sidChipBase1, HVSCEntry_.sidChipBase2,
 				HVSCEntry_.sidChipBase3, HVSCEntry_.driverAddress, HVSCEntry_.loadAddress, HVSCEntry_.loadLength,
 				HVSCEntry_.initAddress, HVSCEntry_.playerAddress, HVSCEntry_.fileDate, HVSCEntry_.fileSizeKb,
-				HVSCEntry_.tuneSizeB, HVSCEntry_.relocStartPage, HVSCEntry_.relocNoPages, HVSCEntry_.stilGlbComment,
-				StilEntry_.stilName, StilEntry_.stilAuthor, StilEntry_.stilTitle, StilEntry_.stilArtist,
-				StilEntry_.stilComment)) {
+				HVSCEntry_.tuneSizeB, HVSCEntry_.relocStartPage, HVSCEntry_.relocNoPages, StilEntry_.stilName,
+				StilEntry_.stilAuthor, StilEntry_.stilTitle, StilEntry_.stilArtist, StilEntry_.stilComment)) {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			SearchCriteria<?, ?> criteria = new SearchCriteria(singularAttribute);
 			result.add(criteria);

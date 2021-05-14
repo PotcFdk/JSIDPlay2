@@ -421,17 +421,6 @@ public class HVSCEntry {
 		this.relocNoPages = relocNoPages;
 	}
 
-	private String stilGlbComment;
-
-	@Column(length = 4096)
-	public String getStilGlbComment() {
-		return stilGlbComment;
-	}
-
-	public void setStilGlbComment(String stilComment) {
-		this.stilGlbComment = stilComment;
-	}
-
 	private LazyListField<StilEntry> stil = new LazyListField<StilEntry>();
 
 	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)

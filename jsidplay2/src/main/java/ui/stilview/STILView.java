@@ -15,7 +15,6 @@ import ui.common.C64Window;
 public class STILView extends C64Window {
 	private static final String STYLE_NORMAL = "styleNormal";
 	private static final String STYLE_FILENAME = "styleFilename";
-	private static final String STYLE_COMMENT = "styleComment";
 	private static final String STYLE_SUBTUNE = "styleSubtune";
 	private static final String STYLE_NAME = "styleName";
 	private static final String STYLE_TITLE = "styleTitle";
@@ -83,17 +82,11 @@ public class STILView extends C64Window {
 
 	private void writeEntry(final STILEntry entry) {
 		addText(util.getBundle().getString("FILENAME"), entry.filename, STYLE_FILENAME);
-		if (entry.globalComment != null) {
-			addText("", entry.globalComment.trim(), STYLE_NORMAL);
-		}
 	}
 
 	private void writeSubTune(final TuneEntry tuneEntry) {
 		addNewLine();
 		addText(util.getBundle().getString("SUBTUNE"), String.valueOf(tuneEntry.tuneNo) + " ", STYLE_SUBTUNE);
-		if (tuneEntry.globalComment != null) {
-			addText("", tuneEntry.globalComment.trim(), STYLE_COMMENT);
-		}
 	}
 
 	private void writeInfo(final Info info) {

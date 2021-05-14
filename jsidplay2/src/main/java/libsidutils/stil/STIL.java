@@ -28,7 +28,6 @@ public class STIL {
 	}
 
 	public static class TuneEntry {
-		public String globalComment;
 		public int tuneNo = -1;
 		public ArrayList<Info> infos = new ArrayList<>();
 
@@ -41,7 +40,6 @@ public class STIL {
 	public static class STILEntry {
 		public String comment;
 		public String filename;
-		public String globalComment;
 		public ArrayList<TuneEntry> subtunes = new ArrayList<>();
 		public ArrayList<Info> infos = new ArrayList<>();
 

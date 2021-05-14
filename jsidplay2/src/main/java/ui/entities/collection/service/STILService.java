@@ -22,8 +22,6 @@ public class STILService {
 	public void add(Function<String, STILEntry> stilFnct, final HVSCEntry hvscEntry) {
 		STILEntry stilEntry = stilFnct.apply(hvscEntry.getPath());
 		if (stilEntry != null) {
-			// get STIL Global Comment
-			hvscEntry.setStilGlbComment(stilEntry.globalComment);
 			// add tune infos
 			addSTILInfo(hvscEntry, stilEntry.infos);
 			// go through subsongs & add them as well
