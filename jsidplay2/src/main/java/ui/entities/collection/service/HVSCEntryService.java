@@ -1,5 +1,9 @@
 package ui.entities.collection.service;
 
+import static ui.entities.HSQLBuiltInFunctions.DAY_OF_MONTH;
+import static ui.entities.HSQLBuiltInFunctions.MONTH;
+import static ui.entities.HSQLBuiltInFunctions.YEAR;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -104,9 +108,9 @@ public class HVSCEntryService {
 					// YEAR(h.<fieldName>) = <value> and MONTH(h.<fieldName>) = <value> and
 					// DAY(h.<fieldName>) = <value>
 					LocalDate localDate = (LocalDate) fieldValue;
-					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
-					Expression<Integer> monthFunction = cb.function("MONTH", Integer.class, fieldName);
-					Expression<Integer> dayFunction = cb.function("DAY", Integer.class, fieldName);
+					Expression<Integer> yearFunction = cb.function(YEAR, Integer.class, fieldName);
+					Expression<Integer> monthFunction = cb.function(MONTH, Integer.class, fieldName);
+					Expression<Integer> dayFunction = cb.function(DAY_OF_MONTH, Integer.class, fieldName);
 					predicate = cb.and(cb.equal(yearFunction, localDate.getYear()),
 							cb.equal(monthFunction, localDate.getMonthValue()),
 							cb.equal(dayFunction, localDate.getDayOfMonth()));
@@ -114,14 +118,14 @@ public class HVSCEntryService {
 					// SELECT distinct h.path FROM HVSCEntry h WHERE
 					// YEAR(h.<fieldName>) = <value> and MONTH(h.<fieldName>) = <value>
 					YearMonth yearMonth = (YearMonth) fieldValue;
-					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
-					Expression<Integer> monthFunction = cb.function("MONTH", Integer.class, fieldName);
+					Expression<Integer> yearFunction = cb.function(YEAR, Integer.class, fieldName);
+					Expression<Integer> monthFunction = cb.function(MONTH, Integer.class, fieldName);
 					predicate = cb.and(cb.equal(yearFunction, yearMonth.getYear()),
 							cb.equal(monthFunction, yearMonth.getMonthValue()));
 				} else if (fieldValue instanceof Year) {
 					// SELECT distinct h.path FROM HVSCEntry h WHERE
 					// YEAR(h.<fieldName>) = <value>
-					Expression<Integer> yearFunction = cb.function("YEAR", Integer.class, fieldName);
+					Expression<Integer> yearFunction = cb.function(YEAR, Integer.class, fieldName);
 					Year year = (Year) fieldValue;
 					predicate = cb.equal(yearFunction, year.getValue());
 				} else {

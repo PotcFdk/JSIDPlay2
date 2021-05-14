@@ -29,8 +29,7 @@ public class GamesService {
 			predicate = cb.like(cb.lower(name), Character.toLowerCase(firstLetter) + "%");
 		} else {
 			// first character matches everything EXCEPT letters
-			predicate = cb.and(cb.not(cb.between(cb.lower(name), "a%", "z%")), cb.notLike(cb.lower(name), "a%"),
-					cb.notLike(cb.lower(name), "z%"));
+			predicate = cb.or(cb.lessThan(cb.lower(name), "a%"), cb.greaterThan(cb.lower(name), "z%"));
 		}
 		query.where(predicate).orderBy(cb.asc(name)).select(games);
 		return em.createQuery(query).getResultList();
