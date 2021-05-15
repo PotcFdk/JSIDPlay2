@@ -291,6 +291,7 @@ public abstract class SidTune {
 	 * <LI>fake stereo - a second SID at the same address (0xd400)
 	 * <LI>forced SID base - configured value for forced stereo or 3-SID output
 	 * <LI>tune SID base - SID base detected by tune information
+	 * <LI>tune SID base can be overridden by auto-detection algorithms
 	 * <LI>0 - SID is not used
 	 * </OL>
 	 * Note: this function is static, even if no tune is loaded stereo mode can be
@@ -299,6 +300,7 @@ public abstract class SidTune {
 	public static int getSIDAddress(IEmulationSection emulation, SidTune tune, int sidNum) {
 		boolean forcedStereoTune;
 		int forcedSidBase, tuneChipBase;
+		int overrideSidBase = emulation.getOverrideSection().getSidBase()[sidNum];
 		switch (sidNum) {
 		case 0:
 			return DEF_BASE_ADDRESS;
@@ -320,7 +322,7 @@ public abstract class SidTune {
 		default:
 			throw new RuntimeException("Maximum supported SIDS exceeded!");
 		}
-		return forcedStereoTune ? forcedSidBase : tuneChipBase;
+		return forcedStereoTune ? forcedSidBase : overrideSidBase != 0 ? overrideSidBase : tuneChipBase;
 	}
 
 	/**

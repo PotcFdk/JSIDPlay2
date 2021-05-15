@@ -97,6 +97,7 @@ public abstract class ReSIDBase extends SIDEmu {
 	 */
 	@Override
 	public void setChipModel(final ChipModel model) {
+		System.out.println(model);
 		sid.setChipModel(model);
 	}
 

@@ -2,6 +2,7 @@ package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CONNECTION_TIMEOUT;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_DETECT_CHIP_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
@@ -130,6 +131,17 @@ public class IniWhatsSidSection extends IniSection implements IWhatsSidSection {
 			"--whatsSIDMinimumRelativeConfidence" }, descriptionKey = "WHATSSID_MINIMUM_RELATIVE_CONFIDENCE", order = 1053)
 	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
 		iniReader.setProperty(SECTION_ID, "Minimum Relative Confidence", minimumRelativeConfidence);
+	}
+
+	@Override
+	public boolean isDetectChipModel() {
+		return iniReader.getPropertyBool(SECTION_ID, "Detect ChipModel", DEFAULT_WHATSSID_DETECT_CHIP_MODEL);
+	}
+
+	@Override
+	@Parameter(names = { "--whatsSIDDetectChipModel" }, descriptionKey = "WHATSSID_DETECT_CHIP_MODEL", order = 1054)
+	public void setDetectChipModel(boolean detectChipModel) {
+		iniReader.setProperty(SECTION_ID, "Detect ChipModel", detectChipModel);
 	}
 
 	@Override

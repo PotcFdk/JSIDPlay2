@@ -3,6 +3,7 @@ package ui.whatssidsettings;
 import static javafx.beans.binding.Bindings.bindBidirectional;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CONNECTION_TIMEOUT;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_DETECT_CHIP_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
@@ -28,6 +29,9 @@ public class WhatsSidSettings extends C64Window {
 	@FXML
 	private TextField url, username, password, connectionTimeout, captureTime, matchStartTime, matchRetryTime,
 			minimumRelativeConfidence;
+
+	@FXML
+	private CheckBox detectWhatsSidChipModel;
 
 	public WhatsSidSettings() {
 		super();
@@ -56,7 +60,7 @@ public class WhatsSidSettings extends C64Window {
 				new IntegerStringConverter());
 		bindBidirectional(minimumRelativeConfidence.textProperty(), whatsSidSection.minimumRelativeConfidenceProperty(),
 				new NumberStringConverter());
-
+		detectWhatsSidChipModel.selectedProperty().bindBidirectional(whatsSidSection.detectChipModelProperty());
 	}
 
 	@FXML
@@ -72,6 +76,7 @@ public class WhatsSidSettings extends C64Window {
 		whatsSidSection.setMatchStartTime(DEFAULT_WHATSSID_MATCH_START_TIME);
 		whatsSidSection.setMatchRetryTime(DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 		whatsSidSection.setMinimumRelativeConfidence(DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
+		whatsSidSection.setDetectChipModel(DEFAULT_WHATSSID_DETECT_CHIP_MODEL);
 	}
 
 }

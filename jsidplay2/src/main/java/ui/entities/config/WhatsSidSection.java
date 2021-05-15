@@ -2,6 +2,7 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CAPTURE_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_CONNECTION_TIMEOUT;
+import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_DETECT_CHIP_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_ENABLE;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_RETRY_TIME;
 import static sidplay.ini.IniDefaults.DEFAULT_WHATSSID_MATCH_START_TIME;
@@ -181,6 +182,23 @@ public class WhatsSidSection implements IWhatsSidSection {
 
 	public FloatProperty minimumRelativeConfidenceProperty() {
 		return minimumRelativeConfidence.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> detectChipModel = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_WHATSSID_DETECT_CHIP_MODEL);
+
+	@Override
+	public boolean isDetectChipModel() {
+		return detectChipModel.get();
+	}
+
+	@Override
+	public void setDetectChipModel(boolean detectChipModel) {
+		this.detectChipModel.set(detectChipModel);
+	}
+
+	public BooleanProperty detectChipModelProperty() {
+		return detectChipModel.property();
 	}
 
 	@Override

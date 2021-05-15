@@ -772,6 +772,13 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 		iniReader.setProperty(SECTION_ID, "ReSIDfp_3rdSID_Filter8580", filterName);
 	}
 
+	private OverrideSection overrideSection = new OverrideSection();
+
+	@Override
+	public OverrideSection getOverrideSection() {
+		return overrideSection;
+	}
+
 	@Override
 	public String toString() {
 		return BeanToStringConverter.toString(this);

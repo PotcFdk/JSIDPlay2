@@ -1404,6 +1404,16 @@ public class EmulationSection implements IEmulationSection {
 		return reSIDfp3rdSIDFilter8580.property();
 	}
 
+	private OverrideSection overrideSection = new OverrideSection();
+
+	@Transient
+	@XmlTransient
+	@JsonIgnore
+	@Override
+	public OverrideSection getOverrideSection() {
+		return overrideSection;
+	}
+
 	@Override
 	public String toString() {
 		return BeanToStringConverter.toString(this);

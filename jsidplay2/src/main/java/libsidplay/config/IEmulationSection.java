@@ -3,6 +3,7 @@ package libsidplay.config;
 import static libsidplay.common.StereoMode.AUTO;
 import static libsidplay.common.StereoMode.STEREO;
 import static libsidplay.common.StereoMode.THREE_SID;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,34 @@ import libsidplay.common.StereoMode;
 import libsidplay.common.Ultimate64Mode;
 
 public interface IEmulationSection {
+
+	/**
+	 * Used by auto detection algorithms to override several emulation settings
+	 * 
+	 * @author ken
+	 *
+	 */
+	class OverrideSection {
+
+		private ChipModel sidModel[] = new ChipModel[MAX_SIDS];
+
+		private int sidBase[] = new int[MAX_SIDS];
+
+		public ChipModel[] getSidModel() {
+			return sidModel;
+		}
+
+		public int[] getSidBase() {
+			return sidBase;
+		}
+
+		public void reset() {
+			for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+				sidModel[sidNum] = null;
+				sidBase[sidNum] = 0;
+			}
+		}
+	}
 
 	/**
 	 * Getter of the SID engine to be used.
@@ -866,6 +895,13 @@ public interface IEmulationSection {
 	 * @param model the the 3-SID model
 	 */
 	void setThirdSIDModel(ChipModel model);
+
+	/**
+	 * Getter of the overridden settings.
+	 * 
+	 * @return overridden settings
+	 */
+	OverrideSection getOverrideSection();
 
 	/**
 	 * Get stereo mode.

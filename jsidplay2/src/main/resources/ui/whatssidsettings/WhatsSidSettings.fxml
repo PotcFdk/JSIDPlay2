@@ -74,6 +74,11 @@
 							<Tooltip text="%MINIMUM_RELATIVE_CONFIDENCE_TIP" />
 						</tooltip>
 					</TypeTextField>
+					<CheckBox text="%DETECT_WHATSSID_CHIP_MODEL" fx:id="detectWhatsSidChipModel" >
+						<tooltip>
+							<Tooltip text="%DETECT_WHATSSID_CHIP_MODEL_TIP" />
+						</tooltip>
+					</CheckBox>
 				</VBox>
 			</TitledPane>
 			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults" />

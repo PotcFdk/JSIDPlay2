@@ -80,10 +80,6 @@ public class StatusBar extends C64VBox implements UIPart {
 	private Timeline timer;
 	private int oldHalfTrack;
 	private boolean oldMotorOn;
-	private CPUClock rememberCPUClock;
-	private ChipModel rememberUserSidModel, rememberStereoSidModel;
-	private Boolean rememberForceStereoTune;
-	private Integer rememberDualSidBase;
 	private StateChangeListener propertyChangeListener;
 
 	private class StateChangeListener implements PropertyChangeListener {
@@ -299,89 +295,28 @@ public class StatusBar extends C64VBox implements UIPart {
 				PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
 						util.getPlayer().getC64().getVicMemBase()
 								+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
-				if (psid64TuneInfo.hasDifferentCPUClock(util.getPlayer().getC64().getClock())) {
-					if (rememberCPUClock == null) {
-						rememberCPUClock = emulationSection.getDefaultClockSpeed();
-					}
-					emulationSection.setDefaultClockSpeed(psid64TuneInfo.getCpuClock());
-					return "";
-				}
-				// remember saved state
 				boolean update = false;
-				if (psid64TuneInfo.hasDifferentUserChipModel(emulationSection.getUserSidModel())) {
-					if (rememberUserSidModel == null) {
-						rememberUserSidModel = emulationSection.getUserSidModel();
-					}
-					emulationSection.setUserSidModel(psid64TuneInfo.getUserChipModel());
+				if (psid64TuneInfo.hasDifferentUserChipModel(
+						ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 0))) {
+					emulationSection.getOverrideSection().getSidModel()[0] = psid64TuneInfo.getUserChipModel();
 					update = true;
 				}
-				if (psid64TuneInfo.hasDifferentStereoChipModel(emulationSection.getStereoSidModel())) {
-					if (rememberStereoSidModel == null) {
-						rememberStereoSidModel = emulationSection.getStereoSidModel();
-					}
-					emulationSection.setStereoSidModel(psid64TuneInfo.getStereoChipModel());
+				if (psid64TuneInfo.hasDifferentStereoChipModel(
+						ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 1))) {
+					emulationSection.getOverrideSection().getSidModel()[1] = psid64TuneInfo.getStereoChipModel();
 					update = true;
 				}
-				if (psid64TuneInfo.isMonoTune() && emulationSection.isForceStereoTune()) {
-					// mono tune detected
-					if (rememberForceStereoTune == null) {
-						rememberForceStereoTune = emulationSection.isForceStereoTune();
-					}
-					emulationSection.setForceStereoTune(false);
+				if (psid64TuneInfo.hasDifferentStereoAddress(
+						SidTune.getSIDAddress(emulationSection, util.getPlayer().getTune(), 1))) {
+					emulationSection.getOverrideSection().getSidBase()[1] = psid64TuneInfo.getStereoAddress();
 					update = true;
-				} else if (psid64TuneInfo.isStereoTune() && !emulationSection.isForceStereoTune()) {
-					// stereo tune detected
-					if (rememberForceStereoTune == null) {
-						rememberForceStereoTune = emulationSection.isForceStereoTune();
-					}
-					emulationSection.setForceStereoTune(true);
-					update = true;
-				}
-				if (psid64TuneInfo.hasDifferentStereoAddress(emulationSection.getDualSidBase())) {
-					update = true;
-					if (rememberDualSidBase == null) {
-						rememberDualSidBase = emulationSection.getDualSidBase();
-					}
-					emulationSection.setDualSidBase(psid64TuneInfo.getStereoAddress());
 				}
 				if (update) {
-					emulationSection.setForce3SIDTune(false);
 					util.getPlayer().updateSIDChipConfiguration();
 				}
 				if (psid64TuneInfo.isDetected()) {
 					return ", PSID64";
 				}
-			}
-		} else {
-			// restore saved state
-			boolean update = false;
-			if (rememberCPUClock != null && emulationSection.getDefaultClockSpeed() != rememberCPUClock) {
-				emulationSection.setDefaultClockSpeed(rememberCPUClock);
-				rememberCPUClock = null;
-				return "";
-			}
-			if (rememberUserSidModel != null && emulationSection.getUserSidModel() != rememberUserSidModel) {
-				emulationSection.setUserSidModel(rememberUserSidModel);
-				rememberUserSidModel = null;
-				update = true;
-			}
-			if (rememberStereoSidModel != null && emulationSection.getStereoSidModel() != rememberStereoSidModel) {
-				emulationSection.setStereoSidModel(rememberStereoSidModel);
-				rememberStereoSidModel = null;
-				update = true;
-			}
-			if (rememberForceStereoTune != null && emulationSection.isForceStereoTune() != rememberForceStereoTune) {
-				emulationSection.setForceStereoTune(rememberForceStereoTune);
-				rememberForceStereoTune = null;
-				update = true;
-			}
-			if (rememberDualSidBase != null && emulationSection.getDualSidBase() != rememberDualSidBase) {
-				emulationSection.setDualSidBase(rememberDualSidBase);
-				rememberDualSidBase = null;
-				update = true;
-			}
-			if (update) {
-				util.getPlayer().updateSIDChipConfiguration();
 			}
 		}
 		return "";
@@ -421,13 +356,13 @@ public class StatusBar extends C64VBox implements UIPart {
 		line.append(", ");
 		switch (emulation.getEngine()) {
 		case EMULATION:
-			line.append(Emulation.getEmulation(emulation, util.getPlayer().getTune(), 0).name());
+			line.append(Emulation.getEmulation(emulation, 0).name());
 			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-				String stereoEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 1).name();
+				String stereoEmulation = Emulation.getEmulation(emulation, 1).name();
 				line.append("+");
 				line.append(stereoEmulation);
 				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-					String thirdEmulation = Emulation.getEmulation(emulation, util.getPlayer().getTune(), 2).name();
+					String thirdEmulation = Emulation.getEmulation(emulation, 2).name();
 					line.append("+");
 					line.append(thirdEmulation);
 				}

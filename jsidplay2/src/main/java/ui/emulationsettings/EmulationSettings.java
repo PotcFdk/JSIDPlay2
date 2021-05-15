@@ -650,7 +650,7 @@ public class EmulationSettings extends C64Window {
 		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
 		Engine engine = emulationSection.getEngine();
-		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
+		Emulation emulation = Emulation.getEmulation(emulationSection, sidNum);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		String filterName = emulationSection.getFilterName(sidNum, engine, emulation, model);
 		boolean filterEnable = emulationSection.isFilterEnable(sidNum);
@@ -700,7 +700,7 @@ public class EmulationSettings extends C64Window {
 		List<FilterSection> filterSections = util.getConfig().getFilterSection();
 
 		Engine engine = emulationSection.getEngine();
-		Emulation emulation = Emulation.getEmulation(emulationSection, tune, sidNum);
+		Emulation emulation = Emulation.getEmulation(emulationSection, sidNum);
 		ChipModel model = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 		boolean third = SidTune.isSIDUsed(emulationSection, tune, 2);

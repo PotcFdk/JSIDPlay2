@@ -1,7 +1,6 @@
 package libsidplay.common;
 
 import libsidplay.config.IEmulationSection;
-import libsidplay.sidtune.SidTune;
 
 public enum Emulation {
 	/** Use default emulation */
@@ -20,7 +19,7 @@ public enum Emulation {
 	 *
 	 * @return SID emulation to be used for SID number 0..MAX_SIDS-1
 	 */
-	public static Emulation getEmulation(IEmulationSection emulationSection, SidTune tune, int sidNum) {
+	public static Emulation getEmulation(IEmulationSection emulationSection, int sidNum) {
 		Emulation forcedEmulation;
 		Emulation defaultEmulation = emulationSection.getDefaultEmulation();
 		switch (sidNum) {

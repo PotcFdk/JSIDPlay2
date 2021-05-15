@@ -25,6 +25,7 @@ public enum ChipModel {
 	 * <LI>SID model forced by user configuration
 	 * <LI>chip model provided by tune information (auto detected) and if unknown,
 	 * then
+	 * <LI>tune chip model can be overridden by auto-detection algorithms
 	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the same
 	 * chip model as for the 1st SID
 	 * </OL>
@@ -33,6 +34,7 @@ public enum ChipModel {
 	 */
 	public static ChipModel getChipModel(IEmulationSection emulation, SidTune tune, int sidNum) {
 		ChipModel forcedChipModel;
+		ChipModel overrideSidModel = emulation.getOverrideSection().getSidModel()[sidNum];
 		Model tuneSidModel;
 		ChipModel defaultSidModel;
 		switch (sidNum) {
@@ -56,6 +58,9 @@ public enum ChipModel {
 		}
 		if (forcedChipModel != AUTO) {
 			return forcedChipModel;
+		}
+		if (overrideSidModel != null) {
+			return overrideSidModel;
 		}
 		switch (tuneSidModel) {
 		case MOS6581:

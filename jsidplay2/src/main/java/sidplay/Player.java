@@ -11,6 +11,7 @@ package sidplay;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static libsidplay.common.SIDEmu.NONE;
+import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static libsidplay.sidtune.SidTune.RESET;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.player.State.END;
@@ -47,6 +48,7 @@ import builder.resid.SIDMixer;
 import builder.sidblaster.SIDBlasterBuilder;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -69,6 +71,7 @@ import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.siddatabase.SidDatabase;
@@ -375,6 +378,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 										// do not show results not playing anymore
 										if (result != null && Objects.equals(tuneToCheck, tune)) {
 											whatsSidHook.accept(result);
+											if (whatsSidSection.isDetectChipModel()) {
+												setWhatsSidDetectedChipModel(result);
+											}
 										}
 									}
 								} catch (Exception e) {
@@ -417,6 +423,28 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	public void setFingerPrintMatcher(IFingerprintMatcher fingerPrintMatcher) {
 		this.fingerPrintMatcher = fingerPrintMatcher;
+	}
+
+	private void setWhatsSidDetectedChipModel(MusicInfoWithConfidenceBean result) throws IOException, SidTuneError {
+		ISidPlay2Section sidPlay2Section = config.getSidplay2Section();
+		IEmulationSection emulationSection = config.getEmulationSection();
+
+		final String infoDir = result.getMusicInfo().getInfoDir();
+		SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
+
+		boolean update = false;
+		for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+			ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
+
+			if (detectedChipModel != null
+					&& detectedChipModel != ChipModel.getChipModel(emulationSection, tune, sidNum)) {
+				emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
+				update = true;
+			}
+		}
+		if (update) {
+			updateSIDChipConfiguration();
+		}
 	}
 
 	/**
@@ -728,6 +756,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final IEmulationSection emulationSection = config.getEmulationSection();
 		final IAudioSection audioSection = config.getAudioSection();
+
+		emulationSection.getOverrideSection().reset();
 
 		playList = PlayList.getInstance(config, tune);
 		timer.setStart(sidplay2Section.getStartTime());

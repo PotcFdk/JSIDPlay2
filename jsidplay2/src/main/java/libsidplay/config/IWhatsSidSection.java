@@ -127,4 +127,19 @@ public interface IWhatsSidSection {
 	 * @param minimumRelativeConfidence the minimum relative confidence
 	 */
 	void setMinimumRelativeConfidence(float minimumRelativeConfidence);
+
+	/**
+	 * Getter of the auto-detect ChipModel
+	 * 
+	 * @return auto-detect ChipModel
+	 */
+	boolean isDetectChipModel();
+
+	/**
+	 * Setter of the auto-detect ChipModel
+	 * 
+	 * @param detectChipModel auto-detect ChipModel
+	 */
+	void setDetectChipModel(boolean detectChipModel);
+
 }
