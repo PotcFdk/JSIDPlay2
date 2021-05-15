@@ -290,33 +290,31 @@ public class StatusBar extends C64VBox implements UIPart {
 
 	private String detectPSID64ChipModel() {
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		if (SidTune.isSolelyPrg(util.getPlayer().getTune())) {
-			if (emulationSection.isDetectPSID64ChipModel()) {
-				PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
-						util.getPlayer().getC64().getVicMemBase()
-								+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
-				boolean update = false;
-				if (psid64TuneInfo.hasDifferentUserChipModel(
-						ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 0))) {
-					emulationSection.getOverrideSection().getSidModel()[0] = psid64TuneInfo.getUserChipModel();
-					update = true;
-				}
-				if (psid64TuneInfo.hasDifferentStereoChipModel(
-						ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 1))) {
-					emulationSection.getOverrideSection().getSidModel()[1] = psid64TuneInfo.getStereoChipModel();
-					update = true;
-				}
-				if (psid64TuneInfo.hasDifferentStereoAddress(
-						SidTune.getSIDAddress(emulationSection, util.getPlayer().getTune(), 1))) {
-					emulationSection.getOverrideSection().getSidBase()[1] = psid64TuneInfo.getStereoAddress();
-					update = true;
-				}
-				if (update) {
-					util.getPlayer().updateSIDChipConfiguration();
-				}
-				if (psid64TuneInfo.isDetected()) {
-					return ", PSID64";
-				}
+		if (SidTune.isSolelyPrg(util.getPlayer().getTune()) && emulationSection.isDetectPSID64ChipModel()) {
+			PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
+					util.getPlayer().getC64().getVicMemBase()
+							+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
+			boolean update = false;
+			if (psid64TuneInfo.hasDifferentUserChipModel(
+					ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 0))) {
+				emulationSection.getOverrideSection().getSidModel()[0] = psid64TuneInfo.getUserChipModel();
+				update = true;
+			}
+			if (psid64TuneInfo.hasDifferentStereoChipModel(
+					ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 1))) {
+				emulationSection.getOverrideSection().getSidModel()[1] = psid64TuneInfo.getStereoChipModel();
+				update = true;
+			}
+			if (psid64TuneInfo.hasDifferentStereoAddress(
+					SidTune.getSIDAddress(emulationSection, util.getPlayer().getTune(), 1))) {
+				emulationSection.getOverrideSection().getSidBase()[1] = psid64TuneInfo.getStereoAddress();
+				update = true;
+			}
+			if (update) {
+				util.getPlayer().updateSIDChipConfiguration();
+			}
+			if (psid64TuneInfo.isDetected()) {
+				return ", PSID64";
 			}
 		}
 		return "";
