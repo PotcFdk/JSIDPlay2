@@ -10,35 +10,38 @@ import sidplay.ini.IniSection;
  *
  */
 public class IniJSIDDeviceSection extends IniSection {
+
+	private static final String SECTION_ID = "JSIDDevice";
+
 	protected IniJSIDDeviceSection(final IniReader ini) {
 		super(ini);
 	}
 
 	public final int getVersion() {
-		return iniReader.getPropertyInt("JSIDDevice", "Version", JSIDDeviceConfig.REQUIRED_CONFIG_VERSION);
+		return iniReader.getPropertyInt(SECTION_ID, "Version", JSIDDeviceConfig.REQUIRED_CONFIG_VERSION);
 	}
 
 	public final void setVersion(final int version) {
-		iniReader.setProperty("JSIDDevice", "Version", version);
+		iniReader.setProperty(SECTION_ID, "Version", version);
 	}
 
 	public final String getHostname() {
-		return iniReader.getPropertyString("JSIDDevice", "Hostname", null);
+		return iniReader.getPropertyString(SECTION_ID, "Hostname", null);
 	}
 
 	public final void setHostname(final String hostname) {
-		iniReader.setProperty("JSIDDevice", "Hostname", hostname);
+		iniReader.setProperty(SECTION_ID, "Hostname", hostname);
 	}
 
 	public final int getPort() {
-		return iniReader.getPropertyInt("JSIDDevice", "Port", 0);
+		return iniReader.getPropertyInt(SECTION_ID, "Port", 0);
 	}
 
 	public final void setProxyPort(final int port) {
-		iniReader.setProperty("JSIDDevice", "Port", port);
+		iniReader.setProperty(SECTION_ID, "Port", port);
 	}
 
 	public int getLatency() {
-		return iniReader.getPropertyInt("JSIDDevice", "Latency", 0);
+		return iniReader.getPropertyInt(SECTION_ID, "Latency", 0);
 	}
 }

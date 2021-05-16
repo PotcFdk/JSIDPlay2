@@ -18,128 +18,130 @@ import sidplay.ini.IniSection;
 
 public class IniFingerprintSection extends IniSection implements IFingerprintSection {
 
+	private static final String SECTION_ID = "FingerPrint";
+
 	protected IniFingerprintSection(final IniReader ini) {
 		super(ini);
 	}
 
 	@Override
 	public final int getVersion() {
-		return iniReader.getPropertyInt("FingerPrint", "Version", IConfig.REQUIRED_CONFIG_VERSION);
+		return iniReader.getPropertyInt(SECTION_ID, "Version", IConfig.REQUIRED_CONFIG_VERSION);
 	}
 
 	@Override
 	public void setVersion(int version) {
-		iniReader.setProperty("FingerPrint", "Version", version);
+		iniReader.setProperty(SECTION_ID, "Version", version);
 	}
 
 	@Override
 	public int getNPeaks() {
-		return iniReader.getPropertyInt("FingerPrint", "NPeaks", DEFAULT_NPEAKS);
+		return iniReader.getPropertyInt(SECTION_ID, "NPeaks", DEFAULT_NPEAKS);
 	}
 
 	@Override
 	public void setNPeaks(int nPeaks) {
-		iniReader.setProperty("FingerPrint", "NPeaks", nPeaks);
+		iniReader.setProperty(SECTION_ID, "NPeaks", nPeaks);
 	}
 
 	@Override
 	public int getFftSize() {
-		return iniReader.getPropertyInt("FingerPrint", "fftSize", DEFAULT_FFTSIZE);
+		return iniReader.getPropertyInt(SECTION_ID, "fftSize", DEFAULT_FFTSIZE);
 	}
 
 	@Override
 	public void setFftSize(int fftSize) {
-		iniReader.setProperty("FingerPrint", "fftSize", fftSize);
+		iniReader.setProperty(SECTION_ID, "fftSize", fftSize);
 	}
 
 	@Override
 	public int getOverlap() {
-		return iniReader.getPropertyInt("FingerPrint", "overlap", DEFAULT_OVERLAP);
+		return iniReader.getPropertyInt(SECTION_ID, "overlap", DEFAULT_OVERLAP);
 	}
 
 	@Override
 	public void setOverlap(int overlap) {
-		iniReader.setProperty("FingerPrint", "overlap", overlap);
+		iniReader.setProperty(SECTION_ID, "overlap", overlap);
 	}
 
 	@Override
 	public int getC() {
-		return iniReader.getPropertyInt("FingerPrint", "C", DEFAULT_C);
+		return iniReader.getPropertyInt(SECTION_ID, "C", DEFAULT_C);
 	}
 
 	@Override
 	public void setC(int c) {
-		iniReader.setProperty("FingerPrint", "C", c);
+		iniReader.setProperty(SECTION_ID, "C", c);
 	}
 
 	@Override
 	public int getPeakRange() {
-		return iniReader.getPropertyInt("FingerPrint", "peakRange", DEFAULT_PEAK_RANGE);
+		return iniReader.getPropertyInt(SECTION_ID, "peakRange", DEFAULT_PEAK_RANGE);
 	}
 
 	@Override
 	public void setPeakRange(int peakRange) {
-		iniReader.setProperty("FingerPrint", "peakRange", peakRange);
+		iniReader.setProperty(SECTION_ID, "peakRange", peakRange);
 	}
 
 	@Override
 	public float[] getRangeTime() {
-		return iniReader.getPropertyFloats("FingerPrint", "range_time", DEFAULT_RANGE_TIME);
+		return iniReader.getPropertyFloats(SECTION_ID, "range_time", DEFAULT_RANGE_TIME);
 	}
 
 	@Override
 	public void setRangeTime(float[] rangeTime) {
-		iniReader.setPropertyArray("FingerPrint", "range_time", rangeTime);
+		iniReader.setPropertyArray(SECTION_ID, "range_time", rangeTime);
 	}
 
 	@Override
 	public float[] getRangeFreq() {
-		return iniReader.getPropertyFloats("FingerPrint", "range_freq", DEFAULT_RANGE_FREQ);
+		return iniReader.getPropertyFloats(SECTION_ID, "range_freq", DEFAULT_RANGE_FREQ);
 	}
 
 	@Override
 	public void setRangeFreq(float[] rangeFreq) {
-		iniReader.setPropertyArray("FingerPrint", "range_freq", rangeFreq);
+		iniReader.setPropertyArray(SECTION_ID, "range_freq", rangeFreq);
 	}
 
 	@Override
 	public int[] getBand() {
-		return iniReader.getPropertyInts("FingerPrint", "Band", DEFAULT_BAND);
+		return iniReader.getPropertyInts(SECTION_ID, "Band", DEFAULT_BAND);
 	}
 
 	@Override
 	public void setBand(int[] band) {
-		iniReader.setPropertyArray("FingerPrint", "Band", band);
+		iniReader.setPropertyArray(SECTION_ID, "Band", band);
 	}
 
 	@Override
 	public int getMinFreq() {
-		return iniReader.getPropertyInt("FingerPrint", "minFreq", DEFAULT_MIN_FREQ);
+		return iniReader.getPropertyInt(SECTION_ID, "minFreq", DEFAULT_MIN_FREQ);
 	}
 
 	@Override
 	public void setMinFreq(int minFreq) {
-		iniReader.setProperty("FingerPrint", "minFreq", minFreq);
+		iniReader.setProperty(SECTION_ID, "minFreq", minFreq);
 	}
 
 	@Override
 	public int getMaxFreq() {
-		return iniReader.getPropertyInt("FingerPrint", "maxFreq", DEFAULT_MAX_FREQ);
+		return iniReader.getPropertyInt(SECTION_ID, "maxFreq", DEFAULT_MAX_FREQ);
 	}
 
 	@Override
 	public void setMaxFreq(int maxFreq) {
-		iniReader.setProperty("FingerPrint", "maxFreq", maxFreq);
+		iniReader.setProperty(SECTION_ID, "maxFreq", maxFreq);
 	}
 
 	@Override
 	public int getMinPower() {
-		return iniReader.getPropertyInt("FingerPrint", "minPower", DEFAULT_MIN_POWER);
+		return iniReader.getPropertyInt(SECTION_ID, "minPower", DEFAULT_MIN_POWER);
 	}
 
 	@Override
 	public void setMinPower(int minPower) {
-		iniReader.setProperty("FingerPrint", "minPower", minPower);
+		iniReader.setProperty(SECTION_ID, "minPower", minPower);
 	}
 
 }

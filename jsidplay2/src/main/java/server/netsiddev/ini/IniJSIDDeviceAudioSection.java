@@ -12,6 +12,9 @@ import sidplay.ini.IniSection;
  *
  */
 public class IniJSIDDeviceAudioSection extends IniSection {
+
+	private static final String SECTION_ID = "Audio";
+
 	public IniJSIDDeviceAudioSection(IniReader iniReader) {
 		super(iniReader);
 	}
@@ -22,7 +25,7 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 	 * @return Playback/Recording frequency
 	 */
 	public final SamplingRate getSamplingRate() {
-		return iniReader.getPropertyEnum("Audio", "Sampling Rate", SamplingRate.MEDIUM, SamplingRate.class);
+		return iniReader.getPropertyEnum(SECTION_ID, "Sampling Rate", SamplingRate.MEDIUM, SamplingRate.class);
 	}
 
 	/**
@@ -31,11 +34,11 @@ public class IniJSIDDeviceAudioSection extends IniSection {
 	 * @param samplingRate Playback/Recording frequency
 	 */
 	public final void setSamplingRate(final SamplingRate samplingRate) {
-		iniReader.setProperty("Audio", "Sampling Rate", samplingRate);
+		iniReader.setProperty(SECTION_ID, "Sampling Rate", samplingRate);
 	}
 
 	public int getAudioBufferSize() {
-		return iniReader.getPropertyInt("Audio", "Audio Buffer Size", AudioConfig.getDefaultBufferSize());
+		return iniReader.getPropertyInt(SECTION_ID, "Audio Buffer Size", AudioConfig.getDefaultBufferSize());
 	}
 
 }
