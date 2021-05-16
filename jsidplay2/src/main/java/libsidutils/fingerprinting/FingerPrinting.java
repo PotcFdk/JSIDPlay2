@@ -15,9 +15,7 @@ import libsidutils.fingerprinting.rest.beans.WAVBean;
 
 public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter {
 
-	// private static final int MIN_HIT = 15;
-	// KEN:
-	private static final int MIN_HIT = 10;
+	private static final int MIN_HIT = 15;
 
 	private IFingerprintConfig config;
 
