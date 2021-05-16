@@ -386,11 +386,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 								} catch (Exception e) {
 									// server not available? silently ignore!
 								} finally {
-									c64.getEventScheduler().schedule(this,
-											(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
+									// we cannot reschedule here, since we could have been reset meanwhile
 								}
 							}
 						});
+						c64.getEventScheduler().schedule(this,
+								(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
 						whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
 						whatsSidMatcherThread.start();
 					}
