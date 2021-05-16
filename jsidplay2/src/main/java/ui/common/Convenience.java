@@ -2,6 +2,9 @@ package ui.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -11,6 +14,7 @@ import de.schlichtherle.truezip.file.TFile;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
@@ -25,6 +29,24 @@ import ui.common.util.Extract7ZipUtil;
  *
  */
 public class Convenience {
+
+	private static final Comparator<? super File> TOP_LEVEL_FIRST_COMPARATOR = (f1, f2) -> {
+		if (f1.isDirectory()) {
+			return 1;
+		}
+		if (f2.isDirectory()) {
+			return -1;
+		}
+		String ext1 = PathUtils.getFilenameSuffix(f1.getAbsolutePath());
+		String ext2 = PathUtils.getFilenameSuffix(f2.getAbsolutePath());
+		if (ext1.endsWith(".sid")) {
+			return 1;
+		}
+		if (ext2.endsWith(".sid")) {
+			return -1;
+		}
+		return f1.compareTo(f2);
+	};
 
 	/**
 	 * Useless Apple directory.
@@ -163,7 +185,9 @@ public class Convenience {
 		if (listFiles == null) {
 			return toAttach;
 		}
-		for (File member : listFiles) {
+		final List<File> asList = Arrays.asList(listFiles);
+		asList.sort(TOP_LEVEL_FIRST_COMPARATOR);
+		for (File member : asList) {
 			File memberFile = new File(dir, member.getName());
 			memberFile.deleteOnExit();
 			if (memberFile.isFile() && isSupportedMedia(memberFile)) {
