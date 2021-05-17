@@ -46,7 +46,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public abstract String getServletPath();
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInput(HttpServletRequest request, Class<T> tClass) {
+	public <T> T getInput(HttpServletRequest request, Class<T> tClass) throws IOException {
 		try (ServletInputStream inputStream = request.getInputStream()) {
 			String contentType = request.getContentType();
 			if (contentType == null || MIME_TYPE_JSON.isCompatible(contentType)) {
@@ -70,7 +70,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 				throw new IOException("Unsupported content type: " + contentType);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new IOException(e);
 		}
 	}
 
