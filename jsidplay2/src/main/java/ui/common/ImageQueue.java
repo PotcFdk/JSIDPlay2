@@ -1,8 +1,5 @@
 package ui.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * ImageQueue implements a queue like data structure. Frame images are queued
  * for every video frame the emulation produces. Frames are then polled with the
@@ -17,41 +14,82 @@ import java.util.List;
  * @author ken
  *
  */
-public class ImageQueue<T> {
+public final class ImageQueue<T> {
 
-	private static final int MAX_SIZE = 100;
+	private static class QueueItem<T> {
+		private T image;
+		private QueueItem<T> next;
+	}
 
-	private final List<T> imageQueue = new ArrayList<>(MAX_SIZE);
+	private static final int MAX_SIZE = 60;
 
+	private QueueItem<T> head, tail;
+	private int size;
 	private boolean disposed;
 
-	public synchronized void add(T image) {
+	public final synchronized void add(T image) {
 		if (disposed) {
 			return;
 		}
-		if (imageQueue.size() == MAX_SIZE) {
-			// prevent OutOfMemoryError, just in case!
-			imageQueue.remove(0);
+		// prevent overflow
+		if (size == MAX_SIZE) {
+			head = head.next;
+			size--;
 		}
-		imageQueue.add(image);
+		QueueItem<T> item = new QueueItem<>();
+		item.image = image;
+
+		if (tail == null) {
+			head = item;
+			tail = head;
+		} else {
+			tail.next = item;
+			tail = item;
+		}
+		size++;
 	}
 
-	public synchronized T poll() {
-		// if we run out of sync, prevent overflow by dropping in-between frames
-		for (int i = 0; imageQueue.size() > 20 && i < imageQueue.size(); i += 10) {
-			imageQueue.remove(i);
+	public final synchronized T poll() {
+		// prevent overflow by dropping in-between frames
+		if (size > 20) {
+			QueueItem<T> prev = head;
+			QueueItem<T> scan = head;
+			int i = 0;
+			while (i < size) {
+				int j = 0;
+				while (j < 10 && i + j < size) {
+					prev = scan;
+					scan = scan.next;
+					j++;
+				}
+				i += j;
+				if (i < size) {
+					prev.next = scan.next;
+					if (prev.next == null) {
+						tail = prev;
+					}
+					size--;
+				}
+			}
 		}
-		if (imageQueue.isEmpty()) {
+		if (head == null) {
 			return null;
 		}
-		return imageQueue.remove(0);
+		if (head == tail) {
+			tail = null;
+		}
+		T result = head.image;
+		head = head.next;
+		size--;
+		return result;
 	}
 
-	public synchronized void clear() {
-		imageQueue.clear();
+	public final synchronized void clear() {
+		head = tail = null;
+		size = 0;
 	}
 
-	public synchronized void dispose() {
+	public final synchronized void dispose() {
 		clear();
 		disposed = true;
 	}
