@@ -46,8 +46,9 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public abstract String getServletPath();
 
 	protected void doGet(HttpServletRequest request) {
-		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr()
-				+ (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
+		log(request.getMethod() + " " + request.getRequestURI()
+				+ (request.getQueryString() != null ? "?" + request.getQueryString() : "") + " from "
+				+ request.getRemoteAddr());
 	}
 
 	protected void doPost(HttpServletRequest request) {
