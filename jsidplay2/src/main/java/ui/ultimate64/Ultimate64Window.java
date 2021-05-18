@@ -230,7 +230,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {
-					imageQueue.add(image);
+					imageQueue.push(image);
 				}
 			}
 			if (isLastPacketOfFrame) {
@@ -298,7 +298,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		pauseTransition.setOnFinished(evt -> {
-			Image image = imageQueue.poll();
+			Image image = imageQueue.pull();
 			if (image != null) {
 				// memory leak prevention!?
 				// https://github.com/kasemir/org.csstudio.display.builder/issues/174

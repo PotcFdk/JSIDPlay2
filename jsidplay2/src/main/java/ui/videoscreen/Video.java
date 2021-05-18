@@ -236,7 +236,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		pauseTransition = new PauseTransition();
 		sequentialTransition = new SequentialTransition(pauseTransition);
 		pauseTransition.setOnFinished(evt -> {
-			Image image = imageQueue.poll();
+			Image image = imageQueue.pull();
 			if (image != null) {
 				currentImage = image;
 				// memory leak prevention!?
@@ -556,7 +556,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 		WritableImage image = new WritableImage(vic.getBorderWidth(), vic.getBorderHeight());
 		image.getPixelWriter().setPixels(0, 0, vic.getBorderWidth(), vic.getBorderHeight(),
 				PixelFormat.getIntArgbInstance(), vic.getPixels().array(), 0, vic.getBorderWidth());
-		imageQueue.add(image);
+		imageQueue.push(image);
 	}
 
 	/**

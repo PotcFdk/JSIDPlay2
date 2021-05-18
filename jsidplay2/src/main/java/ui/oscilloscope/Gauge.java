@@ -112,7 +112,7 @@ public class Gauge extends C64VBox implements UIPart {
 	}
 
 	public void updateGauge() {
-		GaugeImage gaugeImage = imageQueue.poll();
+		GaugeImage gaugeImage = imageQueue.pull();
 		if (gaugeImage != null) {
 			getTitledPane().setText(gaugeImage.getText());
 			// https://github.com/kasemir/org.csstudio.display.builder/issues/174
@@ -179,7 +179,7 @@ public class Gauge extends C64VBox implements UIPart {
 				drawLine(pixels, x, intStartPos, x, intEndPos, gaugeColors[shade]);
 			}
 		}
-		imageQueue.add(new GaugeImage(pixels, text));
+		imageQueue.push(new GaugeImage(pixels, text));
 	}
 
 	private void drawPoint(int[] pixels, int x, int y, int c) {

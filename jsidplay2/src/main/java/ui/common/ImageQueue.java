@@ -19,15 +19,20 @@ public final class ImageQueue<T> {
 	private static class QueueItem<T> {
 		private T image;
 		private QueueItem<T> next;
+
+		private QueueItem(T image) {
+			this.image = image;
+		}
 	}
 
 	private static final int MAX_SIZE = 60;
+	private static final int DROP_NTH_FRAME = 10;
 
 	private QueueItem<T> head, tail;
 	private int size;
 	private boolean disposed;
 
-	public final synchronized void add(T image) {
+	public final synchronized void push(T image) {
 		if (disposed) {
 			return;
 		}
@@ -36,9 +41,7 @@ public final class ImageQueue<T> {
 			head = head.next;
 			size--;
 		}
-		QueueItem<T> item = new QueueItem<>();
-		item.image = image;
-
+		QueueItem<T> item = new QueueItem<>(image);
 		if (tail == null) {
 			head = item;
 			tail = head;
@@ -49,27 +52,21 @@ public final class ImageQueue<T> {
 		size++;
 	}
 
-	public final synchronized T poll() {
+	public final synchronized T pull() {
 		// prevent overflow by dropping in-between frames
-		if (size > 20) {
-			QueueItem<T> prev = head;
-			QueueItem<T> scan = head;
-			int i = 0;
-			while (i < size) {
-				int j = 0;
-				while (j < 10 && i + j < size) {
+		int count = size / DROP_NTH_FRAME;
+		if (count > 1) {
+			QueueItem<T> prev = head, scan = head;
+			while (count-- > 0) {
+				for (int i = 0; i < DROP_NTH_FRAME && scan != tail; i++) {
 					prev = scan;
 					scan = scan.next;
-					j++;
 				}
-				i += j;
-				if (i < size) {
-					prev.next = scan.next;
-					if (prev.next == null) {
-						tail = prev;
-					}
-					size--;
+				if (scan == tail) {
+					tail = prev;
 				}
+				prev.next = scan.next;
+				size--;
 			}
 		}
 		if (head == null) {
@@ -93,5 +90,4 @@ public final class ImageQueue<T> {
 		clear();
 		disposed = true;
 	}
-
 }
