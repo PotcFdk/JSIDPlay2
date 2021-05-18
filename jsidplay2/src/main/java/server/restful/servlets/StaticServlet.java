@@ -41,6 +41,7 @@ public class StaticServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doGet(request);
 		String filePath = request.getPathInfo();
 		try (InputStream source = getResourceAsStream(filePath)) {
 			response.setContentType(getMimeType(PathUtils.getFilenameSuffix(filePath)).toString());

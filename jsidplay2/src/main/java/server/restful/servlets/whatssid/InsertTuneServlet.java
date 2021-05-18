@@ -33,6 +33,7 @@ public class InsertTuneServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doPut(request);
 		try {
 			MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 

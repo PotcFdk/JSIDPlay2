@@ -41,8 +41,9 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = request.getPathInfo();
+		super.doGet(request);
 		try {
+			String filePath = request.getPathInfo();
 			response.setContentType(MIME_TYPE_JPG.toString());
 			File absoluteFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			byte[] photo = getPhoto(SidTune.load(absoluteFile));

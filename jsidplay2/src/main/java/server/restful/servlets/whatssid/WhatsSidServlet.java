@@ -40,6 +40,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doPost(request);
 		try {
 			WAVBean wavBean = getInput(request, WAVBean.class);
 

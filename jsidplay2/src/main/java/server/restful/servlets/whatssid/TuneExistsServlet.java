@@ -32,6 +32,7 @@ public class TuneExistsServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doPost(request);
 		try {
 			MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 

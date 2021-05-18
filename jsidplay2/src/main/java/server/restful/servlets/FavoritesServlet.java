@@ -40,6 +40,7 @@ public class FavoritesServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doGet(request);
 		List<String> filters = getFirstFavorites();
 
 		response.setContentType(MIME_TYPE_JSON.toString());

@@ -38,15 +38,28 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 
 	protected Properties directoryProperties;
 
-	public JSIDPlay2Servlet(Configuration configuration, Properties directoryProperties) {
+	protected JSIDPlay2Servlet(Configuration configuration, Properties directoryProperties) {
 		this.configuration = configuration;
 		this.directoryProperties = directoryProperties;
 	}
 
 	public abstract String getServletPath();
 
+	protected void doGet(HttpServletRequest request) {
+		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr() + "?"
+				+ request.getQueryString() != null ? request.getQueryString() : "");
+	}
+
+	protected void doPost(HttpServletRequest request) {
+		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr());
+	}
+
+	protected void doPut(HttpServletRequest request) {
+		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr());
+	}
+
 	@SuppressWarnings("unchecked")
-	public <T> T getInput(HttpServletRequest request, Class<T> tClass) throws IOException {
+	protected <T> T getInput(HttpServletRequest request, Class<T> tClass) throws IOException {
 		try (ServletInputStream inputStream = request.getInputStream()) {
 			String contentType = request.getContentType();
 			if (contentType == null || MIME_TYPE_JSON.isCompatible(contentType)) {
@@ -74,7 +87,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		}
 	}
 
-	public <T> void setOutput(HttpServletRequest request, HttpServletResponse response, T result, Class<T> tClass) {
+	protected <T> void setOutput(HttpServletRequest request, HttpServletResponse response, T result, Class<T> tClass) {
 		try (ServletOutputStream out = response.getOutputStream()) {
 			if (result == null) {
 				return;
@@ -97,7 +110,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		}
 	}
 
-	public File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
+	protected File getAbsoluteFile(String path, boolean adminRole) throws FileNotFoundException {
 		if (path.startsWith(C64_MUSIC)) {
 			File rootFile = configuration.getSidplay2Section().getHvsc();
 			return PathUtils.getFile(path.substring(C64_MUSIC.length()), rootFile, null);

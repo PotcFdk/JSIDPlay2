@@ -41,8 +41,9 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = request.getPathInfo();
+		super.doGet(request);
 		try {
+			String filePath = request.getPathInfo();
 			response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 			response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 			copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());

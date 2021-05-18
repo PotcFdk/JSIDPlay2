@@ -329,6 +329,8 @@ public class JSIDPlay2Server {
 	private Context addWebApp(Tomcat tomcat, SidPlay2Section sidplay2Section) {
 		Context context = tomcat.addWebapp(tomcat.getHost(), CONTEXT_ROOT,
 				sidplay2Section.getTmpDir().getAbsolutePath());
+		context.addSecurityRole(ROLE_ADMIN);
+		context.addSecurityRole(ROLE_USER);
 		context.setJarScanner(new NoOpJarScanner());
 
 		return context;

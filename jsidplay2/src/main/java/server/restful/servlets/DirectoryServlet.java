@@ -46,6 +46,7 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doGet(request);
 		String filePath = request.getPathInfo();
 		String filter = request.getParameter("filter");
 

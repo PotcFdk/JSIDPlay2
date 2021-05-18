@@ -38,6 +38,7 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doGet(request);
 		EmulationSection emulationSection = configuration.getEmulationSection();
 
 		Connectors appServerConnectors = emulationSection.getAppServerConnectors();

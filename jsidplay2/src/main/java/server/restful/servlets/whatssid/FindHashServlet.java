@@ -33,6 +33,7 @@ public class FindHashServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doPost(request);
 		try {
 			IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
 

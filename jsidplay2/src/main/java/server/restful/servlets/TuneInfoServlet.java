@@ -47,8 +47,9 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String filePath = request.getPathInfo();
 		try {
+			super.doGet(request);
+			String filePath = request.getPathInfo();
 			response.setContentType(MIME_TYPE_JSON.toString());
 			File tuneFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
 			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
