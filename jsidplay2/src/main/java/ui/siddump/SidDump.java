@@ -53,7 +53,7 @@ public class SidDump extends C64VBox implements UIPart {
 	@FXML
 	private Button loadDump, saveDump, stop;
 	@FXML
-	protected ToggleButton replayAll, startStopRecording;
+	private ToggleButton replayAll, startStopRecording;
 	@FXML
 	private CheckBox startStopPlayer, timeInSeconds, lowResolutionMode;
 	@FXML
@@ -64,11 +64,11 @@ public class SidDump extends C64VBox implements UIPart {
 	@FXML
 	private TableView<SidDumpOutput> dumpTable;
 
-	protected ObservableList<SidDumpOutput> sidDumpOutputs;
+	private ObservableList<SidDumpOutput> sidDumpOutputs;
 
 	private ObservableList<SIDDumpPlayer> sidDumpPlayers;
 
-	protected SIDDumpExtension sidDumpExtension;
+	private SIDDumpExtension sidDumpExtension;
 
 	private int loadAddress, initAddress, playerAddress, subTune;
 
@@ -302,8 +302,9 @@ public class SidDump extends C64VBox implements UIPart {
 	}
 
 	private void setTune(SidTune tune) {
-		if (tune == null) {
+		if (tune == SidTune.RESET) {
 			startStopRecording.setDisable(true);
+			startStopRecording.setTooltip(new Tooltip(util.getBundle().getString("NOT_AVAILABLE")));
 			return;
 		}
 		startStopRecording.setDisable(tune.getInfo().getPlayAddr() == 0);

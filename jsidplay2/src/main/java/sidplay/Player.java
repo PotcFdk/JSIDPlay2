@@ -825,6 +825,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			sidplaySection.setLoop(false);
 			System.out.println("Warning: Loop has been disabled during recording!");
 		}
+		if (getAudio() == Audio.LIVE_SID_DUMP && (tune == RESET || tune.getInfo().getPlayAddr() == 0)) {
+			throw new RuntimeException("SIDDump audio driver requires a well-known player address of the tune");
+		}
 	}
 
 	/**
