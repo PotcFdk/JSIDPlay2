@@ -41,6 +41,7 @@ import java.util.function.IntFunction;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import builder.exsid.ExSIDBuilder;
 import builder.hardsid.HardSIDBuilder;
 import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
@@ -805,6 +806,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case SIDBLASTER:
 			return new SIDBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
+		case EXSID:
+			return new ExSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
 			throw new RuntimeException("Unknown engine type: " + engine);
 		}

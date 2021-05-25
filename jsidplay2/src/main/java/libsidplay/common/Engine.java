@@ -8,5 +8,7 @@ public enum Engine {
 	/** Hardware (HardSID4U USB device) */
 	HARDSID,
 	/** Hardware (SidBlaster USB device) */
-	SIDBLASTER
+	SIDBLASTER,
+	/** Hardware (ExSID USB device) */
+	EXSID
 }

@@ -1,0 +1,182 @@
+package builder.exsid;
+
+import static libsidplay.components.pla.PLA.MAX_SIDS;
+
+import java.util.List;
+
+import builder.resid.residfp.ReSIDfp;
+import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
+import libsidplay.common.Event;
+import libsidplay.common.EventScheduler;
+import libsidplay.config.IEmulationSection;
+
+public class ExSIDEmu extends ReSIDfp {
+
+	/**
+	 * FakeStereo mode uses two chips using the same base address. Write commands
+	 * are routed two both SIDs, while read command can be configured to be
+	 * processed by a specific SID chip.
+	 *
+	 * @author ken
+	 *
+	 */
+	public static class FakeStereo extends ExSIDEmu {
+		private final IEmulationSection emulationSection;
+		private final int prevNum;
+		private final List<ExSIDEmu> sids;
+
+		public FakeStereo(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID hardSID,
+				byte deviceId, int sidNum, ChipModel model, ChipModel defaultChipModel, List<ExSIDEmu> sids,
+				IEmulationSection emulationSection) {
+			super(exSIDBuilder, context, cpuClock, hardSID, deviceId, sidNum, model, defaultChipModel);
+			this.prevNum = sidNum - 1;
+			this.sids = sids;
+			this.emulationSection = emulationSection;
+		}
+
+		@Override
+		public byte read(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).read(addr);
+			}
+			return super.read(addr);
+		}
+
+		@Override
+		public byte readInternalRegister(int addr) {
+			if (emulationSection.getSidNumToRead() <= prevNum) {
+				return sids.get(prevNum).readInternalRegister(addr);
+			}
+			return super.readInternalRegister(addr);
+		}
+
+		@Override
+		public void write(int addr, byte data) {
+			super.write(addr, data);
+			sids.get(prevNum).write(addr, data);
+		}
+	}
+
+	private final Event event = new Event("ExSID Delay") {
+		@Override
+		public void event() {
+			context.schedule(event, exSIDBuilder.eventuallyDelay(), Event.Phase.PHI2);
+		}
+	};
+
+	private final EventScheduler context;
+
+	private final ExSIDBuilder exSIDBuilder;
+
+	private final ExSID exSID;
+
+	private int sidNum;
+
+	private final ChipModel chipModel;
+
+	private boolean[] voiceMute = new boolean[4];
+
+	private boolean[] filterDisable = new boolean[MAX_SIDS];
+
+	public ExSIDEmu(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID exSID, byte deviceId,
+			int sidNum, ChipModel model, ChipModel defaultSidModel) {
+		super(context);
+		this.exSIDBuilder = exSIDBuilder;
+		this.context = context;
+		this.exSID = exSID;
+		this.sidNum = sidNum;
+		this.chipModel = model;
+		super.setChipModel(model == ChipModel.AUTO ? defaultSidModel : model);
+		super.setClockFrequency(cpuClock.getCpuFrequency());
+		super.setSampler(sample -> {
+		});
+
+		exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
+		exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
+		// exSID_audio_op(XS_AU_UNMUTE); // sampling is set after model, no need to
+		// unmute here and cause pops
+		exSID.exSID_chipselect(model == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0);
+		// currently no support for stereo mode: output the selected SID to both L and R
+		// channels mutes output
+		exSID.exSID_audio_op(model == ChipModel.MOS8580 ? AudioOp.XS_AU_8580_8580 : AudioOp.XS_AU_6581_6581);
+		exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
+	}
+
+	@Override
+	public void write(int addr, byte data) {
+		switch (addr & 0x1f) {
+		case 0x04:
+		case 0x0b:
+		case 0x12:
+			if (voiceMute[(addr - 4) / 7]) {
+				data &= 0xfe;
+			}
+			super.write(addr, data);
+			break;
+		case 0x17:
+			if (filterDisable[sidNum]) {
+				data &= 0xf0;
+			}
+			super.write(addr, data);
+			break;
+		case 0x18:
+			// samples muted? Fade-in is allowed anyway
+			if (voiceMute[3] && (data & 0xf) < (readInternalRegister(addr) & 0xf)) {
+				return;
+			}
+			super.write(addr, data);
+			break;
+
+		default:
+			super.write(addr, data);
+			break;
+		}
+		final byte dataByte = data;
+		if (addr > 0x18) {
+			return;
+		}
+		doWriteDelayed(() -> {
+			exSID.exSID_clkdwrite(0, (byte) addr, dataByte);
+		});
+	}
+
+	@Override
+	public void clock() {
+		super.clock();
+		final int clocksSinceLastAccess = exSIDBuilder.clocksSinceLastAccess();
+
+		doWriteDelayed(() -> exSID.exSID_delay(clocksSinceLastAccess));
+	}
+
+	private void doWriteDelayed(Runnable runnable) {
+		if (exSIDBuilder.getDelay(sidNum) > 0) {
+			context.schedule(new Event("Delayed SID output") {
+				@Override
+				public void event() throws InterruptedException {
+					runnable.run();
+				}
+			}, exSIDBuilder.getDelay(sidNum));
+		} else {
+			runnable.run();
+		}
+	}
+
+	protected boolean lock() {
+		exSID.exSID_reset((byte) 0x0f);
+		reset((byte) 0xf);
+		context.schedule(event, 0, Event.Phase.PHI2);
+		return true;
+	}
+
+	protected void unlock() {
+		exSID.exSID_reset((byte) 0);
+		reset((byte) 0x0);
+		context.cancel(event);
+	}
+
+	protected ChipModel getChipModel() {
+		return chipModel;
+	}
+
+}
