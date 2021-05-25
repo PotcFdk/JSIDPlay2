@@ -1279,6 +1279,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(VIC.credits());
 		credits.append(builder.resid.resid.ReSID.credits());
 		credits.append(builder.resid.residfp.ReSIDfp.credits());
+		credits.append(builder.exsid.ExSIDEmu.credits());
 		credits.append(builder.sidblaster.SIDBlasterEmu.credits());
 		credits.append(builder.hardsid.HardSIDEmu.credits());
 		return credits.toString();
