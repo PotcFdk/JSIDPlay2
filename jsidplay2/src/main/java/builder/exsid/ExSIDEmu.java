@@ -12,10 +12,10 @@ import libsidplay.common.EventScheduler;
 import libsidplay.config.IEmulationSection;
 
 /**
-*
-* @author Ken Händel
-*
-*/
+ *
+ * @author Ken Händel
+ *
+ */
 public class ExSIDEmu extends ReSIDfp {
 
 	/**
@@ -104,11 +104,7 @@ public class ExSIDEmu extends ReSIDfp {
 
 		exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
 		exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
-		// exSID_audio_op(XS_AU_UNMUTE); // sampling is set after model, no need to
-		// unmute here and cause pops
 		exSID.exSID_chipselect(model == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0);
-		// currently no support for stereo mode: output the selected SID to both L and R
-		// channels mutes output
 		exSID.exSID_audio_op(model == ChipModel.MOS8580 ? AudioOp.XS_AU_8580_8580 : AudioOp.XS_AU_6581_6581);
 		exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
 	}

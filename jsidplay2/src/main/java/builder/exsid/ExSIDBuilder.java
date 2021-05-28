@@ -113,7 +113,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 			throw new RuntimeException(exSID.exSID_error_str());
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exSID.exSID_exit()));
-		final String hardwareRevision = exSID.exSID_hwmodel() != null ? exSID.exSID_hwmodel().getModel() : "";
+		final String hardwareRevision = exSID.exSID_hwmodel() != null ? exSID.exSID_hwmodel().getModel() : "???";
 		final String firmwareVersion = String.format(" fw%c%d", (exSID.exSID_hwversion() >> 8) & 0xff,
 				exSID.exSID_hwversion() & 0xff);
 		deviceCount = 1;
