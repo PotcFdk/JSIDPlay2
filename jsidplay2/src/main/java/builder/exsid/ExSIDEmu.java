@@ -11,6 +11,11 @@ import libsidplay.common.Event;
 import libsidplay.common.EventScheduler;
 import libsidplay.config.IEmulationSection;
 
+/**
+*
+* @author Ken Händel
+*
+*/
 public class ExSIDEmu extends ReSIDfp {
 
 	/**
@@ -71,6 +76,10 @@ public class ExSIDEmu extends ReSIDfp {
 
 	private final ExSID exSID;
 
+	private final byte deviceID;
+
+	private String deviceName;
+
 	private int sidNum;
 
 	private final ChipModel chipModel;
@@ -85,6 +94,7 @@ public class ExSIDEmu extends ReSIDfp {
 		this.exSIDBuilder = exSIDBuilder;
 		this.context = context;
 		this.exSID = exSID;
+		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
 		super.setChipModel(model == ChipModel.AUTO ? defaultSidModel : model);
@@ -144,7 +154,7 @@ public class ExSIDEmu extends ReSIDfp {
 	@Override
 	public void clock() {
 		super.clock();
-		final int clocksSinceLastAccess = exSIDBuilder.clocksSinceLastAccess();
+		final short clocksSinceLastAccess = (short) exSIDBuilder.clocksSinceLastAccess();
 
 		doWriteDelayed(() -> exSID.exSID_delay(clocksSinceLastAccess));
 	}
@@ -173,6 +183,32 @@ public class ExSIDEmu extends ReSIDfp {
 		exSID.exSID_reset((byte) 0);
 		reset((byte) 0x0);
 		context.cancel(event);
+	}
+
+	@Override
+	public void setVoiceMute(int num, boolean mute) {
+		super.setVoiceMute(num, mute);
+		if (num < 4) {
+			voiceMute[num] = mute;
+		}
+	}
+
+	@Override
+	public void setFilterEnable(IEmulationSection emulation, int sidNum) {
+		super.setFilterEnable(emulation, sidNum);
+		filterDisable[sidNum] = !emulation.isFilterEnable(sidNum);
+	}
+
+	public byte getDeviceId() {
+		return deviceID;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
 	}
 
 	protected ChipModel getChipModel() {

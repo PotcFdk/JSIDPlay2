@@ -61,7 +61,12 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 	/**
 	 * Number of ExSID devices.
 	 */
-	private static int deviceCount = 1;
+	private static int deviceCount;
+
+	/**
+	 * Device names of ExSID devices.
+	 */
+	private static String[] deviceNames;
 
 	/**
 	 * Already used ExSID SIDs.
@@ -108,6 +113,12 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 			throw new RuntimeException(exSID.exSID_error_str());
 		}
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exSID.exSID_exit()));
+		final String hardwareRevision = exSID.exSID_hwmodel() != null ? exSID.exSID_hwmodel().getModel() : "";
+		final String firmwareVersion = String.format(" fw%c%d", (exSID.exSID_hwversion() >> 8) & 0xff,
+				exSID.exSID_hwversion() & 0xff);
+		deviceCount = 1;
+		deviceNames = new String[deviceCount];
+		deviceNames[0] = hardwareRevision + " " + firmwareVersion;
 	}
 
 	public static void printInstallationHint() {
@@ -147,24 +158,32 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
-		if (oldExSID != null) {
-			// always re-use hardware SID chips, if configuration changes
-			// the purpose is to ignore chip model changes!
-			return oldExSID;
-		}
-		ExSIDEmu sid = createSID((byte) 0, sidNum, tune, chipModel, defaultSidModel);
 
-		if (sidNum == 0 && sid.lock()) {
-			sid.setFilterEnable(emulationSection, sidNum);
-			sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
-			for (int voice = 0; voice < 4; voice++) {
-				sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+		Integer deviceId = sidNum;
+		if (deviceId < deviceCount) {
+			if (oldExSID != null) {
+				// always re-use hardware SID chips, if configuration changes
+				// the purpose is to ignore chip model changes!
+				return oldExSID;
 			}
-			sids.add(sid);
-			setDelay(sidNum, audioSection.getDelay(sidNum));
-			return sid;
+			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel);
+
+			if (sid.lock()) {
+				sid.setFilterEnable(emulationSection, sidNum);
+				sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+				for (int voice = 0; voice < 4; voice++) {
+					sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+				}
+				sids.add(sid);
+				setDeviceName(sidNum, deviceNames[deviceId]);
+				setDelay(sidNum, audioSection.getDelay(sidNum));
+				return sid;
+			}
 		}
 		System.err.printf("EXSID ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)\n", sidNum);
+		if (deviceCount == 0) {
+			printInstallationHint();
+		}
 		return SIDEmu.NONE;
 	}
 
@@ -183,17 +202,23 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public Integer getDeviceId(int sidNum) {
-		return 0;
+		return sidNum < sids.size() ? Integer.valueOf(sids.get(sidNum).getDeviceId()) : null;
 	}
 
 	@Override
 	public String getDeviceName(int sidNum) {
-		return "ExSID";
+		return sidNum < sids.size() ? sids.get(sidNum).getDeviceName() : null;
+	}
+
+	public void setDeviceName(int sidNum, String serialNo) {
+		if (sidNum < sids.size()) {
+			sids.get(sidNum).setDeviceName(serialNo);
+		}
 	}
 
 	@Override
 	public ChipModel getDeviceChipModel(int sidNum) {
-		return ChipModel.MOS6581;
+		return sidNum < sids.size() ? sids.get(sidNum).getChipModel() : null;
 	}
 
 	@Override
