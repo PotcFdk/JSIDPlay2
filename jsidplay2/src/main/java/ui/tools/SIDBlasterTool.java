@@ -114,9 +114,8 @@ public class SIDBlasterTool {
 					System.out.println(RESOURCE_BUNDLE.getString("ILLEGAL_SERIAL_NUMBER"));
 					break;
 				}
-				final String serialNumber = serialNumbers[deviceId];
-				System.out.printf("command=%s - deviceId=%d, oldSerial=%s, newSerial=%s\n", command, deviceId,
-						serialNumber, serialNo);
+				printCommand("command=" + command, deviceId, getSidType(deviceId));
+				System.out.printf("newSerial=%s\n", serialNo);
 
 				switch (proceed()) {
 				case 'y':

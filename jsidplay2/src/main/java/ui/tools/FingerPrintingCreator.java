@@ -37,7 +37,7 @@ import ui.tools.audio.WhatsSidDriver;
  * WhatsSID? is a Shazam like feature. It analyzes tunes to recognize a
  * currently played tune.
  *
- * This is the main class to create or Update a WHATSSID database.
+ * This is the main class to create or Update a WhatsSID database.
  *
  * This is the program to create the fingerprintings for all tunes of a
  * collection.
@@ -147,8 +147,6 @@ public class FingerPrintingCreator {
 
 				processDirectory(directory, em);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} finally {
 			whatsSidService.close();
 			System.exit(0);
@@ -221,10 +219,10 @@ public class FingerPrintingCreator {
 					previousTune.getMD5Digest(MD5Method.MD5_CONTENTS))
 					&& player.getSidDatabaseInfo(db -> db.getTuneLength(tune), 0.) == previousSidDatabase
 							.getTuneLength(previousTune)) {
-				for (int i = 1; i <= tune.getInfo().getSongs(); i++) {
-					File wavFile = new File(getRecordingFilename(file, tune, i) + whatsSidDriver.getExtension());
+				for (int songNo = 1; songNo <= tune.getInfo().getSongs(); songNo++) {
+					File wavFile = new File(getRecordingFilename(file, tune, songNo) + whatsSidDriver.getExtension());
 					File previousWavFile = new File(
-							getRecordingFilename(previousFile, previousTune, i) + whatsSidDriver.getExtension());
+							getRecordingFilename(previousFile, previousTune, songNo) + whatsSidDriver.getExtension());
 					if (!wavFile.exists() && previousWavFile.exists()) {
 						System.out.println(String.format("Tune is unchanged, copy %s to %s", previousWavFile, wavFile));
 						Files.copy(previousWavFile.toPath(), wavFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
