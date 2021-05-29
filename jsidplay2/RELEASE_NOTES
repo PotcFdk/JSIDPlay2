@@ -14,6 +14,6 @@ SIDBlaster Linux and macOSX support added
 SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently and to set serial no.
 SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
 SIDBlaster: Now full oscilloscope support and SID read support by parallel emulated SID.
-ExSID support added for Linux, first
+ExSID support added for Linux and MacOSX
 SIDDump audio driver added: Now it is possible to use SIDDump in the console player version
-WhatsSID: Use detected chip model, automatically
+WhatsSID: switch to detected chip model, automatically
