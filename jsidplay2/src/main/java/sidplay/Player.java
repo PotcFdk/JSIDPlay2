@@ -376,7 +376,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 								try {
 									if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
 										MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
-										// do not show results not playing anymore
+										// do not show results of tunes not played anymore
 										if (result != null && Objects.equals(tuneToCheck, tune)) {
 											whatsSidHook.accept(result);
 											if (whatsSidSection.isDetectChipModel()) {

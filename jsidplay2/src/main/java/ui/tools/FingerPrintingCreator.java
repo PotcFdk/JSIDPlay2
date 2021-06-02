@@ -232,9 +232,9 @@ public class FingerPrintingCreator {
 		}
 	}
 
-	private String getRecordingFilename(File file, SidTune theTune, int song) {
+	private String getRecordingFilename(File file, SidTune tune, int song) {
 		String filename = PathUtils.getFilenameWithoutSuffix(file.getAbsolutePath());
-		if (theTune.getInfo().getSongs() > 1) {
+		if (tune.getInfo().getSongs() > 1) {
 			filename += String.format("-%02d", song);
 		}
 		return filename;
