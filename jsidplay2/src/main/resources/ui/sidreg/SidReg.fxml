@@ -14,7 +14,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<?import sidplay.audio.SidRegDriver$SidRegWrite?>
+<?import sidplay.audio.sidreg.SidRegWrite?>
 <?scenebuilder-preview-i18n-resource SidReg.properties?>
 
 <!-- Use Scene tag for JavaFX Preview in Eclipse e(fx)clipse -->
