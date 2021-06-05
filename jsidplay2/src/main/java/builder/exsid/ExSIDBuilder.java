@@ -88,7 +88,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 				exSID = Native.load("exsid", ExSID.class, createOptions());
 				init();
 			} catch (UnsatisfiedLinkError e) {
-				System.err.println("Error: Linux or OSX is required to use " + EXSID + " soundcard!");
+				System.err.println("Error: Windows, Linux or OSX is required to use " + EXSID + " soundcard!");
 				printInstallationHint();
 				throw e;
 			}
