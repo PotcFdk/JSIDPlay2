@@ -18,6 +18,7 @@ public class OnlineSection {
 	public static final String DEPLOYMENT_URL = "https://haendel.ddns.net/~ken/";
 
 	public static final String JSIDPLAY2_APP_URL = DEPLOYMENT_URL + "jsidplay2app.apk";
+	public static final String JSIDPLAY2_SIDBLASTER_DOC_URL = DEPLOYMENT_URL + "sidblaster.html";
 	public static final String JSIDPLAY2_C64MUSIC_URL = DEPLOYMENT_URL + "online/hvsc/C64Music.zip";
 	public static final String JSIDPLAY2_HVSC_SCRIPT_URL = DEPLOYMENT_URL + "online/hvsc/HVSC.script";
 	public static final String JSIDPLAY2_HVSC_PROPERTIES_URL = DEPLOYMENT_URL + "online/hvsc/HVSC.properties";
@@ -374,6 +375,21 @@ public class OnlineSection {
 
 	public StringProperty onlinePlayerUrlProperty() {
 		return onlinePlayerUrl.property();
+	}
+
+	private ShadowField<StringProperty, String> sidBlasterDocUrl = new ShadowField<>(SimpleStringProperty::new,
+			JSIDPLAY2_SIDBLASTER_DOC_URL);
+
+	public String getSidBlasterDocUrl() {
+		return sidBlasterDocUrl.get();
+	}
+
+	public void setSidBlasterDocUrl(String sidBlasterDocUrl) {
+		this.sidBlasterDocUrl.set(sidBlasterDocUrl);
+	}
+
+	public StringProperty sidBlasterDocUrlProperty() {
+		return sidBlasterDocUrl.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> zoom = new ShadowField<>(

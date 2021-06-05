@@ -161,7 +161,7 @@ public class ToolBar extends C64VBox implements UIPart {
 			appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl, appServerKeyAliasLbl,
 			appServerKeyPasswordLbl, saveRecordingLabel, sidBlasterWriteBufferSizeLbl;
 	@FXML
-	private Hyperlink appServerUsage, onlinePlayer, downloadApp;
+	private Hyperlink appServerUsage, onlinePlayer, downloadApp, sidBlasterDoc;
 	@FXML
 	private ProgressBar progress;
 
@@ -565,6 +565,11 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private void downloadApp() {
 		DesktopUtil.browse(util.getConfig().getOnlineSection().getAppUrl());
+	}
+
+	@FXML
+	private void gotoSidBlasterDoc() {
+		DesktopUtil.browse(util.getConfig().getOnlineSection().getSidBlasterDocUrl());
 	}
 
 	@FXML
