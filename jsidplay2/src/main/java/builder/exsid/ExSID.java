@@ -104,7 +104,7 @@ public interface ExSID extends Library {
 	/**
 	 * Timed write routine, attempts cycle-accurate writes. This function will be
 	 * cycle-accurate provided that no two consecutive reads or writes are less than
-	 * write_cycles apart and the leftover delay is <= max_adj SID clock cycles.
+	 * write_cycles apart and the leftover delay is &lt;= max_adj SID clock cycles.
 	 * 
 	 * @param cycles how many SID clocks to wait before the actual data write.
 	 * @param addr   target address.
@@ -116,22 +116,23 @@ public interface ExSID extends Library {
 	 * BLOCKING Timed read routine, attempts cycle-accurate reads. The following
 	 * description is based on exSID (standard). This function will be
 	 * cycle-accurate provided that no two consecutive reads or writes are less than
-	 * XS_CYCIO apart and leftover delay is <= max_adj SID clock cycles. Read result
-	 * will only be available after a full XS_CYCIO, giving clkdread() the same run
-	 * time as clkdwrite(). There's a 2-cycle negative adjustment in the code
-	 * because that's the actual offset from the write calls ('/' denotes falling
-	 * clock edge latch), which the following ASCII tries to illustrate: <br />
+	 * XS_CYCIO apart and leftover delay is &lt;= max_adj SID clock cycles. Read
+	 * result will only be available after a full XS_CYCIO, giving clkdread() the
+	 * same run time as clkdwrite(). There's a 2-cycle negative adjustment in the
+	 * code because that's the actual offset from the write calls ('/' denotes
+	 * falling clock edge latch), which the following ASCII tries to illustrate:
+	 * <br />
 	 * Write looks like this in firmware:
 	 * 
 	 * <pre>
-	 * > ...|_/_|...
+	 * &gt; ...|_/_|...
 	 * ...end of data byte read | cycle during which write is enacted / next cycle | etc... <br />
 	 * </pre>
 	 * 
 	 * Read looks like this in firmware:
 	 * 
 	 * <pre>
-	 * > ...|_|_|_/_|_|...
+	 * &gt; ...|_|_|_/_|_|...
 	 * ...end of address byte read | 2 cycles for address processing | cycle during which SID is read /
 	 *	then half a cycle later the CYCCHR-long data TX starts, cycle completes | another cycle | etc...
 	 * </pre>
