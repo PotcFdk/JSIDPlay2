@@ -20,6 +20,7 @@ import libsidplay.common.EventScheduler;
 import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
 import libsidplay.common.SIDEmu;
+import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
@@ -116,7 +117,11 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public SIDEmu lock(SIDEmu oldHardSID, int sidNum, SidTune tune) {
-		ChipModel chipModel = ChipModel.getChipModel(config.getEmulationSection(), tune, sidNum);
+		IAudioSection audioSection = config.getAudioSection();
+		IEmulationSection emulationSection = config.getEmulationSection();
+		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
+		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
+
 		Integer chipNum = getModelDependantChipNum(chipModel, sidNum);
 		if (deviceID < deviceCount && chipNum != null && chipNum < chipCount) {
 			if (oldHardSID != null) {
@@ -124,24 +129,33 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldHardSID;
 			}
-			HardSIDEmu hsid = createSID(deviceID, chipNum, sidNum, tune, chipModel);
-			hsid.lock();
-			sids.add(hsid);
-			setDelay(sidNum, config.getAudioSection().getDelay(sidNum));
-			return hsid;
+			HardSIDEmu sid = createSID(deviceID, chipNum, sidNum, tune, chipModel, defaultSidModel);
+			sid.lock();
+
+			sid.setFilterEnable(emulationSection, sidNum);
+			sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+			for (int voice = 0; voice < 4; voice++) {
+				sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
+			}
+			sids.add(sid);
+			setDeviceName(sidNum, "HardSID");
+			setDelay(sidNum, audioSection.getDelay(sidNum));
+			return sid;
 		}
 		System.err.printf("HARDSID ERROR: System doesn't have enough SID chips. Requested: (sidNum=%d)\n", sidNum);
 		return SIDEmu.NONE;
 	}
 
-	private HardSIDEmu createSID(byte deviceId, int chipNum, int sidNum, SidTune tune, ChipModel chipModel) {
+	private HardSIDEmu createSID(byte deviceId, int chipNum, int sidNum, SidTune tune, ChipModel chipModel,
+			ChipModel defaultChipModel) {
 		final IEmulationSection emulationSection = config.getEmulationSection();
 
 		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
-			return new HardSIDEmu.FakeStereo(this, context, hardSID, deviceId, chipNum, sidNum, chipModel, sids,
-					emulationSection);
+			return new HardSIDEmu.FakeStereo(this, context, cpuClock, hardSID, deviceId, chipNum, sidNum, chipModel,
+					defaultChipModel, sids, emulationSection);
 		} else {
-			return new HardSIDEmu(this, context, hardSID, deviceId, chipNum, sidNum, chipModel);
+			return new HardSIDEmu(this, context, cpuClock, hardSID, deviceId, chipNum, sidNum, chipModel,
+					defaultChipModel);
 		}
 	}
 
@@ -164,7 +178,13 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	@Override
 	public String getDeviceName(int sidNum) {
-		return null;
+		return sidNum < sids.size() ? sids.get(sidNum).getDeviceName() : null;
+	}
+
+	public void setDeviceName(int sidNum, String serialNo) {
+		if (sidNum < sids.size()) {
+			sids.get(sidNum).setDeviceName(serialNo);
+		}
 	}
 
 	@Override
