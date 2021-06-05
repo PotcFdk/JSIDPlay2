@@ -97,6 +97,7 @@ public class ExSIDEmu extends ReSIDfp {
 		this.deviceID = deviceId;
 		this.sidNum = sidNum;
 		this.chipModel = model;
+
 		super.setChipModel(model);
 		super.setClockFrequency(cpuClock.getCpuFrequency());
 		super.setSampler(sample -> {
