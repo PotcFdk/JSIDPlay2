@@ -36,7 +36,7 @@ public interface ExSID extends Library {
 	 * 
 	 * @param volume volume to set the SIDs to after reset.
 	 */
-	void exSID_reset(byte level);
+	void exSID_reset(byte volume);
 
 	/**
 	 * exSID+ clock selection routine. Selects between PAL, NTSC and 1MHz clocks.
@@ -49,7 +49,7 @@ public interface ExSID extends Library {
 	 * @param clock clock selector value.
 	 * @return execution status
 	 */
-	int exSID_clockselect(ClockSelect clockSelect);
+	int exSID_clockselect(ClockSelect clock);
 
 	/**
 	 * exSID+ audio operations routine. Selects the audio mixing / muting option.
@@ -63,7 +63,7 @@ public interface ExSID extends Library {
 	 * @param operation audio operation value.
 	 * @return execution status
 	 */
-	int exSID_audio_op(AudioOp audioOp);
+	int exSID_audio_op(AudioOp operation);
 
 	/**
 	 * SID chipselect routine. Selects which SID will play the tunes. If neither
@@ -72,7 +72,7 @@ public interface ExSID extends Library {
 	 * 
 	 * @param chip SID selector value.
 	 */
-	void exSID_chipselect(ChipSelect chipSelect);
+	void exSID_chipselect(ChipSelect chip);
 
 	/**
 	 * Device hardware model. Queries the driver for the hardware model currently
@@ -99,7 +99,7 @@ public interface ExSID extends Library {
 	 * 
 	 * @param cycles how many SID clocks to loop for.
 	 */
-	void exSID_delay(int delay);
+	void exSID_delay(int cycles);
 
 	/**
 	 * Timed write routine, attempts cycle-accurate writes. This function will be
@@ -110,7 +110,7 @@ public interface ExSID extends Library {
 	 * @param addr   target address.
 	 * @param data   data to write at that address.
 	 */
-	void exSID_clkdwrite(int delay, byte addr, byte data);
+	void exSID_clkdwrite(int cycles, byte addr, byte data);
 
 	/**
 	 * BLOCKING Timed read routine, attempts cycle-accurate reads. The following
@@ -147,6 +147,6 @@ public interface ExSID extends Library {
 	 * @param addr   target address.
 	 * @return data read from address.
 	 */
-	byte exSID_clkdread(int delay, byte addr);
+	byte exSID_clkdread(int cycles, byte addr);
 
 }
