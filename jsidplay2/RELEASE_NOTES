@@ -1,20 +1,31 @@
 Release Notes:
 ==============
-Oscilloscope view refresh rate fixed for smoother output
+
+Hardware support:
+-----------------
+SIDBlaster Linux and macOSX support added
+SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently and to set serial no.
+SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
+ExSID support added for Windows, Linux and MacOSX for mono and stereo SIDs
+SIDBlaster, ExSID and HardSID4U: Full oscilloscope support and SID read support by parallel emulated SID.
+
+Recording formats:
+------------------
 Better AVI/MP4 recordings: More exact CPU refresh rates, therefore audio and video stays in sync 
 MP4 Recording: better quality
 MP4 Recording: now supported on all platforms: Windows, Linux and macOSX
 FLAC recordings added
 AAC recordings added
-Faster startup time due to the use of parallelization
-Server side tune recognition fixed, only half of the sound data was used for recognition
-Cartridge support added for OCEAN_TYPE_1
-DnD repaired
-HardSID4U: Now full oscilloscope support and SID read support by parallel emulated SID.
-SIDBlaster Linux and macOSX support added
-SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently and to set serial no.
-SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
-SIDBlaster: Now full oscilloscope support and SID read support by parallel emulated SID.
-ExSID support added for Windows, Linux and MacOSX
 SIDDump audio driver added: Now it is possible to use SIDDump in the console player version
+
+Miscellaneous:
+--------------
+Cartridge support added for OCEAN_TYPE_1
+Faster startup time due to the use of parallelization
 WhatsSID: switch to detected chip model, automatically
+
+Bugfixes:
+---------
+Server side tune recognition fixed, only half of the sound data was used for recognition
+Oscilloscope view refresh rate fixed for smoother output
+DnD repaired
