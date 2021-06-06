@@ -79,6 +79,8 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 	private int[] delayInCycles = new int[MAX_SIDS];
 
+	protected int lastSidNum = -1;
+
 	public ExSIDBuilder(EventScheduler context, IConfig config, CPUClock cpuClock) {
 		this.context = context;
 		this.config = config;
@@ -116,9 +118,10 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		final String hardwareRevision = exSID.exSID_hwmodel() != null ? exSID.exSID_hwmodel().getModel() : "???";
 		final String firmwareVersion = String.format(" fw%c%d", (exSID.exSID_hwversion() >> 8) & 0xff,
 				exSID.exSID_hwversion() & 0xff);
-		deviceCount = 1;
+		deviceCount = 2;
 		deviceNames = new String[deviceCount];
 		deviceNames[0] = hardwareRevision + " " + firmwareVersion;
+		deviceNames[1] = deviceNames[0];
 	}
 
 	public static void printInstallationHint() {
@@ -190,7 +193,6 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 	@Override
 	public void unlock(SIDEmu sidEmu) {
 		ExSIDEmu sid = (ExSIDEmu) sidEmu;
-		exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
 		sids.remove(sid);
 		sid.unlock();
 	}

@@ -3,6 +3,7 @@ package builder.exsid;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.List;
+import java.util.Objects;
 
 import builder.resid.residfp.ReSIDfp;
 import libsidplay.common.CPUClock;
@@ -88,6 +89,8 @@ public class ExSIDEmu extends ReSIDfp {
 
 	private boolean[] filterDisable = new boolean[MAX_SIDS];
 
+	private ChipSelect correctChipModel, otherChipModel;
+
 	public ExSIDEmu(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID exSID, byte deviceId,
 			int sidNum, ChipModel model, ChipModel defaultSidModel) {
 		super(context);
@@ -103,11 +106,14 @@ public class ExSIDEmu extends ReSIDfp {
 		super.setSampler(sample -> {
 		});
 
-		exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
-		exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
-		exSID.exSID_chipselect(model == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0);
-		exSID.exSID_audio_op(model == ChipModel.MOS8580 ? AudioOp.XS_AU_8580_8580 : AudioOp.XS_AU_6581_6581);
-		exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
+		if (sidNum == 0) {
+			exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
+			exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
+			exSID.exSID_audio_op(AudioOp.XS_AU_8580_6581);
+			exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
+		}
+		correctChipModel = chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0;
+		otherChipModel = chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP0 : ChipSelect.XS_CS_CHIP1;
 	}
 
 	@Override
@@ -144,6 +150,10 @@ public class ExSIDEmu extends ReSIDfp {
 			return;
 		}
 		doWriteDelayed(() -> {
+			if (!Objects.equals(exSIDBuilder.lastSidNum, sidNum)) {
+				exSID.exSID_chipselect(sidNum == 0 ? correctChipModel : otherChipModel);
+				exSIDBuilder.lastSidNum = sidNum;
+			}
 			exSID.exSID_clkdwrite(0, (byte) addr, dataByte);
 		});
 	}
@@ -171,6 +181,12 @@ public class ExSIDEmu extends ReSIDfp {
 
 	protected boolean lock() {
 		exSID.exSID_reset((byte) 0x0f);
+		try {
+			// Reset needs some time to complete, without this stereo tunes hung up the cart
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reset((byte) 0xf);
 		context.schedule(event, 0, Event.Phase.PHI2);
 		return true;
@@ -178,6 +194,12 @@ public class ExSIDEmu extends ReSIDfp {
 
 	protected void unlock() {
 		exSID.exSID_reset((byte) 0);
+		try {
+			// Reset needs some time to complete, without this stereo tunes hung up the cart
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reset((byte) 0x0);
 		context.cancel(event);
 	}
