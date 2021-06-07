@@ -33,9 +33,9 @@ public class ExSIDEmu extends ReSIDfp {
 		private final List<ExSIDEmu> sids;
 
 		public FakeStereo(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID hardSID,
-				byte deviceId, int sidNum, ChipModel model, ChipModel defaultChipModel, List<ExSIDEmu> sids,
-				IEmulationSection emulationSection) {
-			super(exSIDBuilder, context, cpuClock, hardSID, deviceId, sidNum, model, defaultChipModel);
+				byte deviceId, int sidNum, ChipModel model, ChipModel defaultChipModel, boolean stereo,
+				List<ExSIDEmu> sids, IEmulationSection emulationSection) {
+			super(exSIDBuilder, context, cpuClock, hardSID, deviceId, sidNum, model, defaultChipModel, stereo);
 			this.prevNum = sidNum - 1;
 			this.sids = sids;
 			this.emulationSection = emulationSection;
@@ -92,7 +92,7 @@ public class ExSIDEmu extends ReSIDfp {
 	private ChipSelect correctChipModel, otherChipModel;
 
 	public ExSIDEmu(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID exSID, byte deviceId,
-			int sidNum, ChipModel model, ChipModel defaultSidModel) {
+			int sidNum, ChipModel model, ChipModel defaultSidModel, boolean stereo) {
 		super(context);
 		this.exSIDBuilder = exSIDBuilder;
 		this.context = context;
@@ -109,7 +109,11 @@ public class ExSIDEmu extends ReSIDfp {
 		if (sidNum == 0) {
 			exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
 			exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
-			exSID.exSID_audio_op(AudioOp.XS_AU_8580_6581);
+			if (stereo) {
+				exSID.exSID_audio_op(AudioOp.XS_AU_8580_6581);
+			} else {
+				exSID.exSID_audio_op(model == ChipModel.MOS6581 ? AudioOp.XS_AU_6581_6581 : AudioOp.XS_AU_8580_8580);
+			}
 			exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
 		}
 		correctChipModel = chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0;

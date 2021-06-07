@@ -161,6 +161,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
+		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
 
 		Integer deviceId = sidNum;
 		if (deviceId < deviceCount) {
@@ -169,7 +170,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldExSID;
 			}
-			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel);
+			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, second);
 
 			if (sid.lock()) {
 				sid.setFilterEnable(emulationSection, sidNum);
@@ -288,15 +289,15 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 	public void pause() {
 	}
 
-	private ExSIDEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel,
-			ChipModel defaultChipModel) {
+	private ExSIDEmu createSID(byte deviceId, int sidNum, SidTune tune, ChipModel chipModel, ChipModel defaultChipModel,
+			boolean stereo) {
 		final IEmulationSection emulationSection = config.getEmulationSection();
 
 		if (SidTune.isFakeStereoSid(emulationSection, tune, sidNum)) {
 			return new ExSIDEmu.FakeStereo(this, context, cpuClock, exSID, deviceId, sidNum, chipModel,
-					defaultChipModel, sids, emulationSection);
+					defaultChipModel, stereo, sids, emulationSection);
 		} else {
-			return new ExSIDEmu(this, context, cpuClock, exSID, deviceId, sidNum, chipModel, defaultChipModel);
+			return new ExSIDEmu(this, context, cpuClock, exSID, deviceId, sidNum, chipModel, defaultChipModel, stereo);
 		}
 	}
 
