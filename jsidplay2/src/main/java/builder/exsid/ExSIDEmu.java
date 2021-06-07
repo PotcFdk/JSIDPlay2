@@ -110,7 +110,7 @@ public class ExSIDEmu extends ReSIDfp {
 			exSID.exSID_audio_op(AudioOp.XS_AU_MUTE);
 			exSID.exSID_clockselect(cpuClock == CPUClock.PAL ? ClockSelect.XS_CL_PAL : ClockSelect.XS_CL_NTSC);
 			if (stereo) {
-				exSID.exSID_audio_op(AudioOp.XS_AU_8580_6581);
+				exSID.exSID_audio_op(model == ChipModel.MOS6581 ? AudioOp.XS_AU_6581_8580 : AudioOp.XS_AU_8580_6581);
 			} else {
 				exSID.exSID_audio_op(model == ChipModel.MOS6581 ? AudioOp.XS_AU_6581_6581 : AudioOp.XS_AU_8580_8580);
 			}
