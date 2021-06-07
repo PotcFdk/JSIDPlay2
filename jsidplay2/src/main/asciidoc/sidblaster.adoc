@@ -3,7 +3,111 @@
 === Developer Instructions
 
 ...TODO...
+MacOSX Catalina:
+
+1.
+Install brew (for compiler and make tools and /usr/local/lib, /usr/local/include)
+https://treehouse.github.io/installation-guides/mac/homebrew
+
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+The xcode-select command requires the command line developer tools. Would you like to install the tools now?
+Click Install
+Click Agree
+
+-> Can't install because it is not available in store.
+
+Goto apple developer for manual download
+https://developer.apple.com/download/all/?q=xcode select
+Click Details of
+Command Line Tools for Xcode 11.5 GM seed
+Install
+
+Then repeat installation command of brew (ruby ...)
+
+2.
+Install ftd2xx drivers
+https://ftdichip.com
+Drivers/D2XX Drivers
+Mac OSX 10.4 or later
+Click 1.4.24
+D2XX1.4.24.dmg
+Choose open
+Copy folder release to Downloads
+cd /Users/<name>/Downloads/release/build
+cp libftd2xx.1.4.24.dylib /usr/local/lib
+cd ..
+cp ftd2xx.h /usr/local/include
+cd /usr/local/lib
+ln -s libftd2xx.1.4.24.dylib libftd2xx.dylib
+chmod 755 libftd2xx.1.4.24.dylib
+chmod 755 libftd2xx.dylib
+cd ../include
+chmod 755 ftd2xx.h
+
+Download D2XXHelper
+-> System Extension blocked
+Open Security Settings
+Unlock Settings with password
+Click Allow
+Restart D2XXHelper installation and end with success
+
+3. Install sidblaster sources
+https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
+!!! Click on branch master and change to "apple" branch
+Click on Code combobox
+Click on download ZIP
+
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-master
+mkdir build
+cd build
+
+"brew install cmake"
+
+cmake ..
+make
+
+ls libhardsid.dylib
+
+Put it into JSIDPlay2:
+cp libhardsid.dylib to src/main/resources/darwin/libhardsid.dylib
 
 === User Instructions
 
 ...TODO...
+
+1.
+Install Java
+https://adoptopenjdk.net
+Choose OpenJDT11 Hotspot
+Type "java -version"
+
+2.
+Download JSIDPlay2
+cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
+chmod +x "JSIDPlay2 (Java11).sh"
+SIDBlaster Geräte verbinden
+"./JSIDPlay2 (Java11).sh"
+In ToolBar: Change Emulation to SIDBlaster
+
+-> cant be opened because it is from an unidentified developer
+System/preferences
+
+Open Security and Privacy
+Unlock Settings with password
+Click Allow
+Restart JSIDPlay2
+ToolBar: Click on SIDBlaster to expand devices list (still empty)
+Click the magic wand
+You should see a device list. The chip type could not be detected? see next section
+Click on "Test" to test each detected device
+
+3. use sidblastertool to set SID model
+cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
+chmod +x "SIDBlasterTool.sh"
+Usage:
+"./SIDBlasterTool.sh"
+List devices:
+"./SIDBlasterTool.sh" -c INFO
+Example set SID type
+"./SIDBlasterTool.sh" -c SET_SID_TYPE -d 0 -t SIDTYPE_6581
