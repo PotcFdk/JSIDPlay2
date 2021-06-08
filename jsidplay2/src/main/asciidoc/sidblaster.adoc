@@ -58,7 +58,7 @@ https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
 Click on Code combobox
 Click on download ZIP
 
-cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-master
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
 mkdir build
 cd build
 
@@ -111,3 +111,66 @@ List devices:
 "./SIDBlasterTool.sh" -c INFO
 Example set SID type
 "./SIDBlasterTool.sh" -c SET_SID_TYPE -d 0 -t SIDTYPE_6581
+
+
+
+
+
+=== Developer Instructions
+
+...TODO...
+Windows:
+1. Install sidblaster sources
+https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
+!!! Click on branch master and change to "apple" branch
+Click on Code combobox
+Click on download ZIP
+
+2. https://cmake.org/download
+cmake-3.20.3-windows-x86_64.msi
+
+Eingabeaufforderung
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
+mkdir build
+cd build
+
+cmake ..
+
+3. Visual Studio Community Edition installieren
+https://visualstudio.microsoft.com/de/vs/community/
+
+Explorer: 
+/Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/hardsid.sln öffnen
+
+Toolbar: Release x64
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/Release
+hardsid.dll
+
+dir hardsid.dll
+
+Put it into JSIDPlay2:
+copy hardsid.dll to src/main/resources/win32-x86-64/hardsid.dll
+
+=== User Instructions
+
+...TODO...
+
+1.
+Install Java
+https://adoptopenjdk.net
+Choose OpenJDT11 Hotspot
+Neue Eingabeaufforderung
+Type "java -version"
+
+2.
+Download JSIDPlay2, extract
+Explorer: /Users/<name>/Downloads/jsidplay2-4.3-java11-win/jsidplay2-4.3-java11-win
+SIDBlaster Geräte verbinden
+Das Gerät ist einsatzbereit...
+jsidplay2-4.3.exe
+In ToolBar: Change Emulation to SIDBlaster
+
+ToolBar: Click on SIDBlaster to expand devices list (still empty)
+Click the magic wand
+You should see a device list. The chip type could not be detected? see next section
+Click on "Test" to test each detected device
