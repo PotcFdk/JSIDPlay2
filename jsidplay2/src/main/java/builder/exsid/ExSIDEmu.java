@@ -146,6 +146,10 @@ public class ExSIDEmu extends ReSIDfp {
 			break;
 		}
 		final byte dataByte = data;
+		if (addr > 0x18) {
+			// "Ragga Run.sid" denies to work!
+			return;
+		}
 		doWriteDelayed(() -> {
 			if (!Objects.equals(exSIDBuilder.lastSidNum, sidNum)) {
 				exSID.exSID_chipselect(
