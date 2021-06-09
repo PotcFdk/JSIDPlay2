@@ -89,8 +89,6 @@ public class ExSIDEmu extends ReSIDfp {
 
 	private boolean[] filterDisable = new boolean[MAX_SIDS];
 
-	private ChipSelect correctChipModel, otherChipModel;
-
 	public ExSIDEmu(ExSIDBuilder exSIDBuilder, EventScheduler context, CPUClock cpuClock, ExSID exSID, byte deviceId,
 			int sidNum, ChipModel model, ChipModel defaultSidModel, boolean stereo) {
 		super(context);
@@ -116,8 +114,6 @@ public class ExSIDEmu extends ReSIDfp {
 			}
 			exSID.exSID_audio_op(AudioOp.XS_AU_UNMUTE);
 		}
-		correctChipModel = chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0;
-		otherChipModel = chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP0 : ChipSelect.XS_CS_CHIP1;
 	}
 
 	@Override
@@ -150,12 +146,10 @@ public class ExSIDEmu extends ReSIDfp {
 			break;
 		}
 		final byte dataByte = data;
-		if (addr > 0x18) {
-			return;
-		}
 		doWriteDelayed(() -> {
 			if (!Objects.equals(exSIDBuilder.lastSidNum, sidNum)) {
-				exSID.exSID_chipselect(sidNum == 0 ? correctChipModel : otherChipModel);
+				exSID.exSID_chipselect(
+						chipModel == ChipModel.MOS8580 ? ChipSelect.XS_CS_CHIP1 : ChipSelect.XS_CS_CHIP0);
 				exSIDBuilder.lastSidNum = sidNum;
 			}
 			exSID.exSID_clkdwrite(0, (byte) addr, dataByte);

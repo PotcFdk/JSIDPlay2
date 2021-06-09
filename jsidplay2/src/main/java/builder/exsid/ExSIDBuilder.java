@@ -161,8 +161,12 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
-		boolean second = SidTune.isSIDUsed(emulationSection, tune, 1);
+		boolean stereo = SidTune.isSIDUsed(emulationSection, tune, 1);
 
+		// stereo SIDs with same chipmodel must be forced to use a different device, therefore:
+		if (sidNum == 1 && sids.get(0).getChipModel() == chipModel) {
+			chipModel = chipModel == ChipModel.MOS6581 ? ChipModel.MOS8580 : ChipModel.MOS6581;
+		}
 		Integer deviceId = sidNum;
 		if (deviceId < deviceCount) {
 			if (oldExSID != null) {
@@ -170,7 +174,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 				// the purpose is to ignore chip model changes!
 				return oldExSID;
 			}
-			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, second);
+			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, stereo);
 
 			if (sid.lock()) {
 				sid.setFilterEnable(emulationSection, sidNum);

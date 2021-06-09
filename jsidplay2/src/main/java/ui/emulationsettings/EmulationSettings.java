@@ -377,7 +377,6 @@ public class EmulationSettings extends C64Window {
 		secondVolume.setDisable(hardwareBasedSid);
 		thirdVolume.setDisable(hardwareBasedSid);
 		sid1Emulation.setDisable(hardwareBasedSid);
-		sid1Model.setDisable(hardwareBasedSid);
 		mainFilter.setDisable(hardwareBasedSid);
 		mainFilterCurve.setDisable(hardwareBasedSid);
 		copy.setDisable(hardwareBasedSid);
@@ -387,7 +386,7 @@ public class EmulationSettings extends C64Window {
 		secondBalance.setDisable(!second || hardwareBasedSid);
 		secondDelay.setDisable(!second);
 		sid2Emulation.setDisable(!second || hardwareBasedSid);
-		sid2Model.setDisable(!second || hardwareBasedSid);
+		sid2Model.setDisable(!second);
 		secondFilter.setDisable(!second || hardwareBasedSid);
 		secondFilterCurve.setDisable(!second || hardwareBasedSid);
 		stereoFilter.setDisable(!second);
@@ -395,7 +394,7 @@ public class EmulationSettings extends C64Window {
 		thirdBalance.setDisable(!third || hardwareBasedSid);
 		thirdDelay.setDisable(!third);
 		sid3Emulation.setDisable(!third || hardwareBasedSid);
-		sid3Model.setDisable(!third || hardwareBasedSid);
+		sid3Model.setDisable(!third);
 		thirdFilter.setDisable(!third || hardwareBasedSid);
 		thirdFilterCurve.setDisable(!third || hardwareBasedSid);
 		thirdSidFilter.setDisable(!third);
