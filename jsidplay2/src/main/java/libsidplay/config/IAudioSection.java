@@ -500,6 +500,20 @@ public interface IAudioSection {
 	 */
 	void setReverbDryWetMix(float reverbDryWetMix);
 
+	/**
+	 * ExSID engine: Use ExSID fake stereo mode. Send SID writes to both chips.
+	 *
+	 * @return send SID writes to both chips
+	 */
+	boolean isExsidFakeStereo();
+
+	/**
+	 * ExSID engine: Use ExSID fake stereo mode. Send SID writes to both chips.
+	 *
+	 * @param exsidFakeStereo send SID writes to both chips
+	 */
+	void setExsidFakeStereo(boolean exsidFakeStereo);
+
 	default float getVolume(int sidNum) {
 		switch (sidNum) {
 		case 0:

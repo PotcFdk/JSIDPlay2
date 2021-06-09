@@ -148,6 +148,11 @@
 					</TypeTextField>
 				</VBox>
 			</TitledPane>
+			<TitledPane text="%EXSID">
+				<VBox>
+					<CheckBox text="%EXSID_FAKE_STEREO" fx:id="exsidFakeStereo" />
+				</VBox>
+			</TitledPane>
 			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults" />
 		</VBox>
 	</ScrollPane>

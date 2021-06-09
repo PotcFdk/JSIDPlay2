@@ -163,6 +163,26 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
 		boolean stereo = SidTune.isSIDUsed(emulationSection, tune, 1);
 
+		if (oldSIDEmu != null) {
+			// always re-use hardware SID chips, if configuration changes
+			// the purpose is to ignore chip model changes!
+			return oldSIDEmu;
+		}
+
+		// Use exSID fake stereo (simultaneous write to both chips -> no delay possible)
+		// or
+		// JSIDPlay2 fake stereo (address both chips separately -> shared bandwidth)!
+		if (audioSection.isExsidFakeStereo()) {
+			if (sidNum == 0 && SidTune.isFakeStereoSid(emulationSection, tune, 1)) {
+				lastSidNum = sidNum;
+				exSID.exSID_chipselect(ChipSelect.XS_CS_BOTH);
+
+			}
+			if (sidNum == 1 && SidTune.isFakeStereoSid(emulationSection, tune, 1)) {
+				return SIDEmu.NONE;
+			}
+		}
+
 		// stereo SIDs with same chipmodel must be forced to use a different device,
 		// therefore:
 		if (sidNum == 1 && sids.get(0).getChipModel() == chipModel) {
@@ -170,13 +190,9 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		}
 		Integer deviceId = sidNum;
 
-		if (oldSIDEmu != null) {
-			// always re-use hardware SID chips, if configuration changes
-			// the purpose is to ignore chip model changes!
-			return oldSIDEmu;
-		}
 		if (deviceId < deviceCount) {
-			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, stereo);
+			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel,
+					stereo && !audioSection.isExsidFakeStereo());
 
 			if (sid.lock()) {
 				sid.setFilterEnable(emulationSection, sidNum);

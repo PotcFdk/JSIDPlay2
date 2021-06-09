@@ -108,6 +108,7 @@ public interface IniDefaults {
 	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
 	File DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3();
 	float DEFAULT_AVI_COMPRESSION_QUALITY = AUDIO_SECTION.getAviCompressionQuality();
+	boolean DEFAULT_EXSID_FAKE_STEREO = AUDIO_SECTION.isExsidFakeStereo();
 
 	boolean DEFAULT_DELAY_BYPASS = AUDIO_SECTION.getDelayBypass();
 	int DEFAULT_DELAY = AUDIO_SECTION.getDelay();

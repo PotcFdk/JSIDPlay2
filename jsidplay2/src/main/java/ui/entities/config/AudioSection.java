@@ -11,6 +11,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DEVICE;
+import static sidplay.ini.IniDefaults.DEFAULT_EXSID_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_BALANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_MAIN_VOLUME;
@@ -60,8 +61,8 @@ import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 import sidplay.ini.converter.BeanToStringConverter;
 import ui.common.converter.FileAttributeConverter;
-import ui.common.converter.FileToStringSerializer;
 import ui.common.converter.FileToStringDeserializer;
+import ui.common.converter.FileToStringSerializer;
 import ui.common.converter.FileXmlAdapter;
 import ui.common.properties.ShadowField;
 
@@ -666,6 +667,23 @@ public class AudioSection implements IAudioSection {
 
 	public FloatProperty reverbDryWetMixProperty() {
 		return reverbDryWetMix.property();
+	}
+
+	private ShadowField<BooleanProperty, Boolean> exsidFakeStereo = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_EXSID_FAKE_STEREO);
+
+	@Override
+	public boolean isExsidFakeStereo() {
+		return exsidFakeStereo.get();
+	}
+
+	@Override
+	public void setExsidFakeStereo(boolean exsidFakeStereo) {
+		this.exsidFakeStereo.set(exsidFakeStereo);
+	}
+
+	public BooleanProperty exsidFakeStereoProperty() {
+		return exsidFakeStereo.property();
 	}
 
 	@Override

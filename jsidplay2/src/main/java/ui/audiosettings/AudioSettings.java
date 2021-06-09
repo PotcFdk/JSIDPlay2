@@ -67,7 +67,7 @@ public class AudioSettings extends C64Window {
 	private TextField cbr, vbrQuality, aviVideoQuality;
 
 	@FXML
-	private CheckBox vbr;
+	private CheckBox vbr, exsidFakeStereo;
 
 	public AudioSettings() {
 		super();
@@ -151,6 +151,8 @@ public class AudioSettings extends C64Window {
 
 		aviVideoQuality.textProperty().bindBidirectional(audioSection.aviCompressionQualityProperty(),
 				new NumberStringConverter());
+
+		exsidFakeStereo.selectedProperty().bindBidirectional(audioSection.exsidFakeStereoProperty());
 	}
 
 	@FXML
