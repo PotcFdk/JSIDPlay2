@@ -156,24 +156,26 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 	}
 
 	@Override
-	public SIDEmu lock(SIDEmu oldExSID, int sidNum, SidTune tune) {
+	public SIDEmu lock(SIDEmu oldSIDEmu, int sidNum, SidTune tune) {
 		IAudioSection audioSection = config.getAudioSection();
 		IEmulationSection emulationSection = config.getEmulationSection();
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, tune, sidNum);
 		ChipModel defaultSidModel = emulationSection.getDefaultSidModel();
 		boolean stereo = SidTune.isSIDUsed(emulationSection, tune, 1);
 
-		// stereo SIDs with same chipmodel must be forced to use a different device, therefore:
+		// stereo SIDs with same chipmodel must be forced to use a different device,
+		// therefore:
 		if (sidNum == 1 && sids.get(0).getChipModel() == chipModel) {
 			chipModel = chipModel == ChipModel.MOS6581 ? ChipModel.MOS8580 : ChipModel.MOS6581;
 		}
 		Integer deviceId = sidNum;
+
+		if (oldSIDEmu != null) {
+			// always re-use hardware SID chips, if configuration changes
+			// the purpose is to ignore chip model changes!
+			return oldSIDEmu;
+		}
 		if (deviceId < deviceCount) {
-			if (oldExSID != null) {
-				// always re-use hardware SID chips, if configuration changes
-				// the purpose is to ignore chip model changes!
-				return oldExSID;
-			}
 			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, stereo);
 
 			if (sid.lock()) {

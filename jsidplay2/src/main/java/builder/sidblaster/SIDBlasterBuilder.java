@@ -163,12 +163,12 @@ public class SIDBlasterBuilder implements HardwareSIDBuilder, Mixer {
 		Integer deviceId = deviceIdAndChipModel.getKey();
 		ChipModel model = deviceIdAndChipModel.getValue();
 
+		if (oldHardSID != null) {
+			// always re-use hardware SID chips, if configuration changes
+			// the purpose is to ignore chip model changes!
+			return oldHardSID;
+		}
 		if (deviceId != null && deviceId < deviceCount) {
-			if (oldHardSID != null) {
-				// always re-use hardware SID chips, if configuration changes
-				// the purpose is to ignore chip model changes!
-				return oldHardSID;
-			}
 			SIDBlasterEmu sid = createSID(deviceId.byteValue(), sidNum, tune, model, defaultSidModel);
 
 			if (sid.lock()) {

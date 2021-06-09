@@ -124,12 +124,12 @@ public class HardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
 		Integer chipNum = getModelDependantChipNum(chipModel, sidNum);
 
+		if (oldHardSID != null) {
+			// always re-use hardware SID chips, if configuration changes
+			// the purpose is to ignore chip model changes!
+			return oldHardSID;
+		}
 		if (deviceID < deviceCount && chipNum != null && chipNum < chipCount) {
-			if (oldHardSID != null) {
-				// always re-use hardware SID chips, if configuration changes
-				// the purpose is to ignore chip model changes!
-				return oldHardSID;
-			}
 			HardSIDEmu sid = createSID(deviceID, chipNum, sidNum, tune, chipModel, defaultSidModel);
 
 			sid.lock();
