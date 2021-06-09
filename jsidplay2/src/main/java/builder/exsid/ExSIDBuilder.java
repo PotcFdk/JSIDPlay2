@@ -176,7 +176,6 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 			if (sidNum == 0 && SidTune.isFakeStereoSid(emulationSection, tune, 1)) {
 				lastSidNum = sidNum;
 				exSID.exSID_chipselect(ChipSelect.XS_CS_BOTH);
-
 			}
 			if (sidNum == 1 && SidTune.isFakeStereoSid(emulationSection, tune, 1)) {
 				return SIDEmu.NONE;
@@ -191,8 +190,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		Integer deviceId = sidNum;
 
 		if (deviceId < deviceCount) {
-			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel,
-					stereo && !audioSection.isExsidFakeStereo());
+			ExSIDEmu sid = createSID(deviceId.byteValue(), sidNum, tune, chipModel, defaultSidModel, stereo);
 
 			if (sid.lock()) {
 				sid.setFilterEnable(emulationSection, sidNum);
