@@ -500,6 +500,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	@Parameter(names = { "--exsidFakeStereo" }, descriptionKey = "EXSID_FAKE_STEREO", arity = 1, order = 133)
 	public void setExsidFakeStereo(boolean exsidFakeStereo) {
 		iniReader.setProperty(SECTION_ID, "ExSID Fake Stereo", exsidFakeStereo);
 	}
