@@ -174,3 +174,84 @@ ToolBar: Click on SIDBlaster to expand devices list (still empty)
 Click the magic wand
 You should see a device list. The chip type could not be detected? see next section
 Click on "Test" to test each detected device
+
+
+
+=== Developer Instructions
+
+...TODO...
+Linux:
+1.
+Install ftd2xx drivers
+https://ftdichip.com
+Drivers/D2XX Drivers
+Linux 1.4.24
+tar xfvz libftd2xx-x86_64-1.4.24.gz
+cd /home/<name>/Downloads/release/build
+cp libftd2xx.1.4.24.so /usr/local/lib
+cd ..
+cp ftd2xx.h /usr/local/include
+cd /usr/local/lib
+ln -s libftd2xx.1.4.24.so libftd2xx.so
+chmod 755 libftd2xx.1.4.24.so
+chmod 755 libftd2xx.so
+cd ../include
+chmod 755 ftd2xx.h
+
+2. Install sidblaster sources
+https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
+!!! Click on branch master and change to "apple" branch
+Click on Code combobox
+Click on download ZIP
+
+Ubuntu Software
+cmake Cross-platform build system
+
+cd /home/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
+mkdir build
+cd build
+cmake ..
+
+NO_CMAKE_CXX_COMPILER found
+-> sudo apt-get install g++
+
+make
+ls libhardsid.so
+
+Put it into JSIDPlay2:
+cp libhardsid.so to src/main/resources/linux-x64-64/libhardsid.so
+
+
+=== User Instructions
+
+...TODO...
+
+1.
+Install Java
+https://adoptopenjdk.net
+Choose OpenJDT11 Hotspot
+
+tar xzvf OpenJDK11U-jdk_64_linux_hotspot_11.0.11_9.tar.gz
+cd jdk-11.0.11+9/bin
+Type "./java -version"
+
+
+2.
+Download JSIDPlay2
+unzip /home/<name>/Downloads/jsidplay2-4.3-java11-linux.zip
+cd /home/<name>/Downloads/jsidplay2-4.3-java11-linux
+chmod +x "JSIDPlay2 (Java11).sh"
+
+sudo vi /etc/udev/rules.d/91-sidblaster.rules
+ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666",  RUN+="/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'"
+sudo udevadm control --reload-rules && udevadm trigger
+
+SIDBlaster Geräte verbinden
+"./JSIDPlay2 (Java11).sh"
+In ToolBar: Change Emulation to SIDBlaster
+
+ToolBar: Click on SIDBlaster to expand devices list (still empty)
+Click the magic wand
+You should see a device list. The chip type could not be detected? see next section
+Click on "Test" to test each detected device
+
