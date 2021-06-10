@@ -7,6 +7,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
+import static sidplay.ini.IniDefaults.DEFAULT_EXSID_FAKE_STEREO;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS1_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS2_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_BYPASS;
@@ -180,6 +181,8 @@ public class AudioSettings extends C64Window {
 		audioSection.setVbrQuality(DEFAULT_VBR_QUALITY);
 
 		audioSection.setAviCompressionQuality(DEFAULT_AVI_COMPRESSION_QUALITY);
+
+		audioSection.setExsidFakeStereo(DEFAULT_EXSID_FAKE_STEREO);
 	}
 
 }

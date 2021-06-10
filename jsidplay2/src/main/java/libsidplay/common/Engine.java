@@ -1,5 +1,9 @@
 package libsidplay.common;
 
+import libsidplay.config.IEmulationSection;
+import libsidplay.sidtune.MP3Tune;
+import libsidplay.sidtune.SidTune;
+
 public enum Engine {
 	/** Software (emulation using RESID or RESIDfp) */
 	EMULATION,
@@ -10,5 +14,17 @@ public enum Engine {
 	/** Hardware (SidBlaster USB device) */
 	SIDBLASTER,
 	/** Hardware (ExSID USB device) */
-	EXSID
+	EXSID;
+
+	/**
+	 * Choose engine to be used (MP3 requires EMULATION).
+	 * 
+	 * @return engine to be used
+	 */
+	public static Engine getEngine(IEmulationSection emulationSection, SidTune tune) {
+		if (tune instanceof MP3Tune) {
+			return EMULATION;
+		}
+		return emulationSection.getEngine();
+	}
 }

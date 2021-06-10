@@ -796,8 +796,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * @return SID builder
 	 */
 	private SIDBuilder createSIDBuilder(final CPUClock cpuClock) {
-		final Engine engine = config.getEmulationSection().getEngine();
-		switch (engine) {
+		switch (Engine.getEngine(config.getEmulationSection(), tune)) {
 		case EMULATION:
 			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case NETSID:
@@ -809,7 +808,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		case EXSID:
 			return new ExSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		default:
-			throw new RuntimeException("Unknown engine type: " + engine);
+			throw new RuntimeException("Unknown engine type: " + config.getEmulationSection().getEngine());
 		}
 	}
 
