@@ -974,7 +974,7 @@
 								<addDependencies>true</addDependencies>
 							</classPath>
 							<jre>
-								<minVersion>9</minVersion>
+								<minVersion>1.9.0</minVersion>
 								<opts>
 									<opt>--module-path</opt>
 									<opt>.</opt>

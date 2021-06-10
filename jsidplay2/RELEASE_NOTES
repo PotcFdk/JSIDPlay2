@@ -6,7 +6,7 @@ Hardware support:
 SIDBlaster Linux and macOSX support added
 SIDBlaster: sidblastertool executable added to store SID chip type on USB device permanently and to set serial no.
 SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
-ExSID support added for Windows, Linux and MacOSX for mono and stereo SIDs
+ExSID support added for Windows, Linux and MacOSX for mono, stereo SIDs and fake stereo mode
 SIDBlaster, ExSID and HardSID4U: Full oscilloscope support and SID read support by parallel emulated SID.
 
 Recording formats:
