@@ -141,47 +141,76 @@ in the sub-folder "src/main/resources/darwin"
 
 === User Instructions
 
-...TODO...
+*Use JSIDPlay2 with SIDBlaster on MacOSX*
 
-1.
-Install Java
+JSIDPlay2 requires Java, therefore install java first.
+I recommend to install it from the folowing site:
 https://adoptopenjdk.net
-Choose OpenJDT11 Hotspot
-Type "java -version"
 
-2.
-Download JSIDPlay2
+Choose "OpenJDT11" and "Hotspot"
+
+Then download and install it on your machine.
+
+You can verify this ba opening the command line and type
+"java -version"
+
+Now you can install JSIDPlay2 from my web-site and extract it to the Downloads folder.
+
+[source,subs="attributes+"]
+----
 cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
 chmod +x "JSIDPlay2 (Java11).sh"
-SIDBlaster Geräte verbinden
-"./JSIDPlay2 (Java11).sh"
-In ToolBar: Change Emulation to SIDBlaster
+"./JSIDPlay2 (Java11).sh"			 # <1>
+----
+<1> Before you launch JSIDPlay2 you must be sure, that you connected your SIDBlaster device with your machine.
 
--> cant be opened because it is from an unidentified developer
-System/preferences
+*Note:* hot-plugging SIDBlaster devices is not supported. Therefore everytime you connect a device, you must restart JSIDPlay2, unfortunately.
 
-Open Security and Privacy
-Unlock Settings with password
-Click Allow
-Restart JSIDPlay2
-ToolBar: Click on SIDBlaster to expand devices list (still empty)
-Click the magic wand
-You should see a device list. The chip type could not be detected? see next section
-Click on "Test" to test each detected device
+Inside JSIDPlay2 on your tool bar you can now change from Emulation to SIDBlaster
 
-3. use sidblastertool to set SID model
+This will again most likely raise a security alert.
+Therefore, open "Security and Privacy Settings" from the system settings dialog.
+Unlock Settings with your password to be able to change one of these settings.
+Now, click allow for the SIDBlaster library, that was blocked before.
+Please restart JSIDPlay2, now.
+
+In your tool bar the tool bar should display SIDBlaster instead of emulation now.
+Please check, that your console view and terminal does not show any error messages regarding the SIDBlaster library.
+Then we are fine until here.
+
+Then we can let JSIDPlay2 auto-detect all connected SIDBlaster devices,
+therefore click on the SIDBlaster settings in the tool bar to expand all available SIDBlaster settings.
+There is a magic wand to click. At the end it adds all detected SIDBlaster devices to your configuration.
+
+All SIDBlaster devices will display a serial number and a chip type, which is still unknown (it is not stored on the hardware device, yet).
+Therefore select the suitable SID chip model installed on your SIDBlaster device.
+Now we are ready to test is using the Play button near the serial number to test each detected device.
+Does it play? Then we are fine.
+
+=== SIDBlaster tool
+
+The purpose of that tool is to communicate with the device for administrative reasons
+or to prepare the permanent usage inside JSIDPlay2 or other projects.
+
+JSIDPlay2 ships with a sidblaster tool to change device settings,
+that is namely the serial number and the SID chip type.
+You can permanently store the SID chip type to be auto-detected by JSIDPlay2.
+
+[source,subs="attributes+"]
+----
 cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
 chmod +x "SIDBlasterTool.sh"
-Usage:
-"./SIDBlasterTool.sh"
-List devices:
-"./SIDBlasterTool.sh" -c INFO
-Example set SID type
-"./SIDBlasterTool.sh" -c SET_SID_TYPE -d 0 -t SIDTYPE_6581
-
-
-
-
+"./SIDBlasterTool.sh"										 # <1>
+"./SIDBlasterTool.sh" -c INFO								 # <2>
+"./SIDBlasterTool.sh" -c SET_SID_TYPE -d 0 -t SIDTYPE_6581	 # <3>
+"./SIDBlasterTool.sh" -c SET_SERIAL -d 0 -s A12B34C56D		 # <4>
+"./SIDBlasterTool.sh" -c RUN_ON_WINDOWS -d 0				 # <5>
+----
+<1> Display usage
+<2> List detected devices
+<3> Example to set SID chip type
+<4> Example to set serial number
+<5> Example to use SIDBlaster only on Windows
 
 === Developer Instructions
 
