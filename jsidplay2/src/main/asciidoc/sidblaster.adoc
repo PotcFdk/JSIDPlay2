@@ -162,7 +162,7 @@ ls libhardsid.dylib	 # <3>
 <3> This last command verifies you have the SIDBlaster library created.
 
 As a last step you can use that library inside of your project.
-For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+For JSIDPlay2 for instance you have to put it inside the main JAR ({artifactId}-{version}.jar)
 in the sub-folder "src/main/resources/darwin"
 
 ==== Creating the SIDBlaster library on Windows
@@ -222,7 +222,7 @@ dir hardsid.dll # <1>
 <1> Verify, that the library has been created.
 
 As a last step you can use that library inside of your project.
-For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+For JSIDPlay2 for instance you have to put it inside the main JAR ({artifactId}-{version}.jar)
 in the sub-folder "src/main/resources/win32-x86-64"
 
 ==== Creating the SIDBlaster library on Linux
@@ -303,7 +303,7 @@ ls libhardsid.so	 # <3>
 <3> This last command verifies you have the SIDBlaster library created.
 
 As a last step you can use that library inside of your project.
-For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+For JSIDPlay2 for instance you have to put it inside the main JAR ({artifactId}-{version}.jar)
 in the sub-folder "src/main/resources/linux-x86-64"
 
 === User Instructions
@@ -331,7 +331,7 @@ Now you can install JSIDPlay2 from my web-site and extract it to the Downloads f
 
 [source,subs="attributes+"]
 ----
-cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
+cd /Users/<name>/Downloads/{artifactId}-{version}-java11-mac
 chmod +x "JSIDPlay2 (Java11).sh"
 "./JSIDPlay2 (Java11).sh"			 # <1>
 ----
@@ -382,9 +382,9 @@ Now you can install JSIDPlay2 from my web-site and extract it to the Downloads f
 
 In the Windows Explorer please go to the following location:
 
-"/Users/<name>/Downloads/jsidplay2-4.3-java11-win/jsidplay2-4.3-java11-win"
+"/Users/<name>/Downloads/{artifactId}-{version}-java11-win/{artifactId}-{version}-java11-win"
 
-Now plug-in your SIDBlaster devices and start the executable "jsidplay2-4.3.exe" from the Explorer.
+Now plug-in your SIDBlaster devices and start the executable "{artifactId}-{version}.exe" from the Explorer.
 
 Inside JSIDPlay2 on your tool bar you can now change from Emulation to SIDBlaster
 
@@ -436,8 +436,8 @@ sudo udevadm control --reload-rules && udevadm trigger
 
 [source,subs="attributes+"]
 ----
-unzip /home/<name>/Downloads/jsidplay2-4.3-java11-linux.zip
-cd /home/<name>/Downloads/jsidplay2-4.3-java11-linux
+unzip /home/<name>/Downloads/{artifactId}-{version}-java11-linux.zip
+cd /home/<name>/Downloads/{artifactId}-{version}-java11-linux
 chmod +x "JSIDPlay2 (Java11).sh"
 "./JSIDPlay2 (Java11).sh"	 # <1>
 ----
@@ -472,7 +472,7 @@ You can permanently store the SID chip type to be auto-detected by JSIDPlay2.
 
 [source,subs="attributes+"]
 ----
-cd /Users/<name>/Downloads/jsidplay2-4.3-java11-*
+cd /Users/<name>/Downloads/{artifactId}-{version}-java11-*
 chmod +x "SIDBlasterTool.sh"
 "./SIDBlasterTool.sh"										 # <1>
 "./SIDBlasterTool.sh" -c INFO								 # <2>
@@ -485,3 +485,5 @@ chmod +x "SIDBlasterTool.sh"
 <3> Example to set SID chip type
 <4> Example to set serial number
 <5> Example to use SIDBlaster only on Windows
+
+*Note:* Windows users execute sidblastertool-{version}.exe, instead
