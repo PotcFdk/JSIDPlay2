@@ -109,15 +109,17 @@ Beside these software emulation types we support some decent Hardware as well, w
 link:https://en.wikipedia.org/wiki/HardSID[HardSID 4U (USB Version)] can be used with up to 4 SID chips, but are hard to find on ebay these days and they are not produced anymore.
 
 3.
-Additionally we support SIDBlaster USB devices, e.g. link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition]. It contains exactly one chip either MOS6581 or MOS8580 per device.
+Additionally we support SIDBlaster USB devices, e.g. link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition].
+It contains exactly one chip either MOS6581 or MOS8580 per device.
 
-If you need information to use that device, have a look here:
+Information to use that device in software like JSIDPlay2 is available here:
 https://haendel.ddns.net/~ken/sidblaster.html
 
 4.
 Additionally we support exactly one ExSID USB device, e.g. link:http://hacks.slashdirt.org/hw/exsid/[exSID USB]. It contains exactly two chips one MOS6581 and one MOS8580 per device.
 
-It requires ftd2xx library on the target machine, therefore do the same documented in section "Installing the required ftd2xx library" for SIDBlaster to install it:
+It requires ftd2xx library on the target machine, therefore do the same documented in section "Creating the SIDBlaster library on XXX"
+just search for "Installing the required ftd2xx library" in the documentation here:
 https://haendel.ddns.net/~ken/sidblaster.html
 
 5.

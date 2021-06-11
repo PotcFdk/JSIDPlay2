@@ -1,6 +1,19 @@
 == SIDBlaster
 
-The purpose of the SIDBlaster library is to access your SIDBlaster device using your own software.
+*Credits*
+
+SIDBlaster is an USB device to use the famous soundchip of the Commodore 64 home computer of the 1980's,
+the MOS6581 and its successor CSG8085.
+
+SIDBlaster is available as a Tic-Tac edition created by Andreas Schumm
+and based on SIDBlaster-USB by Davey (Das Phantom).
+
+It is available at the following web-site: http://crazy-midi.de
+
+The SIDBlaster library has been created by Stein Pedersen and ported to Linux and MacOSX by Ken Händel.
+
+The purpose of the SIDBlaster library is to access your SIDBlaster device using your software like JSIDPlay2.
+
 This guide is for you to create and/or use that library.
 
 === Developer Instructions
