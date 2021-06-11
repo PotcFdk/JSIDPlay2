@@ -238,7 +238,7 @@ public class ExSIDEmu extends ReSIDfp {
 
 	public static final String credits() {
 		final StringBuffer credits = new StringBuffer();
-		credits.append("ExSID Java version by Ken Händel <kschwiersch@yahoo.de> Copyright (©) 2020\n");
+		credits.append("ExSID Java version by Ken Händel <kschwiersch@yahoo.de> Copyright (©) 2021\n");
 		credits.append("\tHardware and driver code by Thibaut Thezan\n");
 		credits.append("\thttp://hacks.slashdirt.org/hw/exsid/\n");
 		return credits.toString();
