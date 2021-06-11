@@ -1,76 +1,143 @@
 == SIDBlaster
 
+The purpose of the SIDBlaster library is to access your SIDBlaster device using your own software.
+This guide is for you to create and/or use that library.
+
 === Developer Instructions
 
-...TODO...
-MacOSX Catalina:
+This section is for developers in the need of creating the SIDBlaster library.
+Reason can be, that you want to create your own project using the driver or you want to make changes.
 
-1.
-Install brew (for compiler and make tools and /usr/local/lib, /usr/local/include)
+The sources of the project are platform independent and compiles at least on Windows, Linux and MacOSX.
+
+==== Creating the SIDBlaster library on MacOSX
+
+*Pre-conditions*
+
+Please choose a MacOSX machine which should use the library as a minimum requirement.
+The library itself uses GLIBC on the machine which is downward compatible but not upward compatible.
+I used MacOSX El Capitan as the build platform, but you can use any other MacOSX.
+I expect the library cannot be used on older platforms than the build platform.
+
+Mac OSX required a software called brew to install some tools required to compile the library.
+This is namely the make tool itself and the compilers to build the lib.
+It also created the required directories where the library will be installed to.
+
+Please get installation instructions for brew from here:
 https://treehouse.github.io/installation-guides/mac/homebrew
 
+It seems the installer is called from the command line.
+Therefore open a terminal and type-in the following instruction:
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-The xcode-select command requires the command line developer tools. Would you like to install the tools now?
-Click Install
-Click Agree
+The installer points out, that it wants to install the Xcode developer tools as well.
+In fact it says: "The xcode-select command requires the command line developer tools. Would you like to install the tools now?"
 
--> Can't install because it is not available in store.
+It will install it automatically from the Apple store, unless it fails, because it can't actually find it for your computer.
+Apple decides which updates you get on your MacOSX and there is a good chance, that
+you cannot install it at that point,
+so what do we do now?
+We must install Xcode developer tools manually from the Apple developer portal and repeat the installation of brew.
 
-Goto apple developer for manual download
-https://developer.apple.com/download/all/?q=xcode select
-Click Details of
-Command Line Tools for Xcode 11.5 GM seed
-Install
+Therefore go to the apple developer portal for manual download, but keep in mind you will need an account to enter it.
+The direct download site to download Xcode developer tools is:
+https://developer.apple.com/download/all/?q=xcode
 
-Then repeat installation command of brew (ruby ...)
+Please select the following or a similar version suitable for your platform. On MacOSX Catalina, the following is compatible:
+"Command Line Tools for Xcode 11.5 GM seed"
 
-2.
-Install ftd2xx drivers
+Click on Details and then click install.
+
+After installation repeat installation command of brew (ruby ...)
+
+at the end we need the cmake tool and we can install it using the freshly installed brew at the command line:
+"brew install cmake"
+
+To verify, that all requirements of this section are fullfilled,
+you can call "make" and "cmake" on the command line (it must be found) and the directories: "/usr/local/lib" and "/usr/local/include" must exist.
+
+*Installing the required ftd2xx library*
+
+SIDBlaster library requires the ftd2xx library as a pre-condition. It must be there at compile time and
+it will be loaded at runtime during the load process of the SIDBlaster library as well.
+Therefore it must be installed on the machine where you want to use the SIDBlaster library, first.
+
+Install ftd2xx drivers from here:
 https://ftdichip.com
-Drivers/D2XX Drivers
-Mac OSX 10.4 or later
-Click 1.4.24
-D2XX1.4.24.dmg
-Choose open
-Copy folder release to Downloads
+
+Please click on "Drivers"/"D2XX Drivers"
+and in the section "Mac OSX 10.4 or later" click "1.4.24"
+to install "D2XX1.4.24.dmg".
+The installer is just a virtual file system which opens in the MacOSXs finder.
+
+Now you must copy folder "release" to "Downloads" directory.
+
+For the next steps you will need a terminal, please replace <name> by your username.
+
+[source,subs="attributes+"]
+----
 cd /Users/<name>/Downloads/release/build
-cp libftd2xx.1.4.24.dylib /usr/local/lib
+cp libftd2xx.1.4.24.dylib /usr/local/lib	 # <1>
 cd ..
-cp ftd2xx.h /usr/local/include
+cp ftd2xx.h /usr/local/include				 # <2>
 cd /usr/local/lib
-ln -s libftd2xx.1.4.24.dylib libftd2xx.dylib
+ln -s libftd2xx.1.4.24.dylib libftd2xx.dylib # <3>
 chmod 755 libftd2xx.1.4.24.dylib
 chmod 755 libftd2xx.dylib
 cd ../include
 chmod 755 ftd2xx.h
+----
+<1> Copies the library to the runtime library search paths.
+<2> Optional: Copies the header in case you want to compile your own project with ftd2xx library.
+<3> Create a link to point the f2d2xx library to that exact version you installed.
 
-Download D2XXHelper
--> System Extension blocked
-Open Security Settings
-Unlock Settings with password
-Click Allow
-Restart D2XXHelper installation and end with success
+The docs on the web-site points out, that a helper might be needed to use the library on your MacOSX,
+therefore you should install D2XXHelper just in case.
+Therefore, download D2XXHelper and call this installer.
 
-3. Install sidblaster sources
+For the sake of security reasons MacOSX blocks unknown libraries by reporting "System Extension blocked",
+therefore we must give proper permission.
+Therefore, open "Security and Privacy Settings" from the system settings dialog.
+Unlock Settings with your password to be able to change one of these settings.
+Now, click allow for the library mentioned here, that was blocked before.
+Please restart D2XXHelper installation to end with success, now.
+
+If you have trouble to complete the installation you can turn off security control completely, but i do not recommend that.
+
+After typing
+"spctl --master-disable"
+you can choose to "Install apps downloaded from anywhere" right in the "Security and Privacy Settings".
+
+*Creating/Installing the SIDlaster library*
+
+Finally we are ready to download/compile/install the SIDBlaster library.
+
+Please go to the following site to download SIDBlaster sources:
 https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
-!!! Click on branch master and change to "apple" branch
-Click on Code combobox
-Click on download ZIP
 
+You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
+
+Click on "Code" combobox
+Click on "download ZIP"
+
+After download extract it to the Downloads folder and open a terminal.
+
+[source,subs="attributes+"]
+----
 cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
 mkdir build
 cd build
+cmake ..			 # <1>
+make				 # <2>
+ls libhardsid.dylib	 # <3>
+----
+<1> Creates the makefiles in the build directory
+<2> Compiles all the sources
+<3> This last command verifies you have the SIDBlaster library created.
 
-"brew install cmake"
-
-cmake ..
-make
-
-ls libhardsid.dylib
-
-Put it into JSIDPlay2:
-cp libhardsid.dylib to src/main/resources/darwin/libhardsid.dylib
+As a last step you can use that library inside of your project.
+For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+in the sub-folder "src/main/resources/darwin"
 
 === User Instructions
 
