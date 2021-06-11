@@ -19,16 +19,20 @@ The library itself uses GLIBC on the machine which is downward compatible but no
 I used MacOSX El Capitan as the build platform, but you can use any other MacOSX.
 I expect the library cannot be used on older platforms than the build platform.
 
-Mac OSX required a software called brew to install some tools required to compile the library.
+Mac OSX required a software called brew to install some tools to compile the library.
 This is namely the make tool itself and the compilers to build the lib.
 It also created the required directories where the library will be installed to.
 
-Please get installation instructions for brew from here:
+I have read the installation instructions for brew from here:
 https://treehouse.github.io/installation-guides/mac/homebrew
 
-It seems the installer is called from the command line.
+But, to make it short, it seems the installer is simply installed from the command line.
 Therefore open a terminal and type-in the following instruction:
+
+[source,subs="attributes+"]
+----
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+----
 
 The installer points out, that it wants to install the Xcode developer tools as well.
 In fact it says: "The xcode-select command requires the command line developer tools. Would you like to install the tools now?"
@@ -48,10 +52,14 @@ Please select the following or a similar version suitable for your platform. On 
 
 Click on Details and then click install.
 
-After installation repeat installation command of brew (ruby ...)
+After installation repeat installation command of brew using the ruby command above.
 
-at the end we need the cmake tool and we can install it using the freshly installed brew at the command line:
-"brew install cmake"
+At the end we need the cmake tool and we can install it using the freshly installed brew at the command line:
+
+[source,subs="attributes+"]
+----
+brew install cmake
+----
 
 To verify, that all requirements of this section are fullfilled,
 you can call "make" and "cmake" on the command line (it must be found) and the directories: "/usr/local/lib" and "/usr/local/include" must exist.
@@ -97,16 +105,21 @@ Therefore, download D2XXHelper and call this installer.
 
 For the sake of security reasons MacOSX blocks unknown libraries by reporting "System Extension blocked",
 therefore we must give proper permission.
-Therefore, open "Security and Privacy Settings" from the system settings dialog.
+Just open "Security and Privacy Settings" from the system settings dialog.
 Unlock Settings with your password to be able to change one of these settings.
 Now, click allow for the library mentioned here, that was blocked before.
-Please restart D2XXHelper installation to end with success, now.
+
+Please restart D2XXHelper installation, because it should end with success this time.
 
 If you have trouble to complete the installation you can turn off security control completely, but i do not recommend that.
 
-After typing
-"spctl --master-disable"
-you can choose to "Install apps downloaded from anywhere" right in the "Security and Privacy Settings".
+However, If you really want that, type:
+[source,subs="attributes+"]
+----
+spctl --master-disable
+----
+Now go back to the "Security and Privacy Settings" from the system settings dialog
+and now you can choose to "Install apps downloaded from anywhere".
 
 *Creating/Installing the SIDlaster library*
 
@@ -117,8 +130,8 @@ https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
 
 You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
 
-Click on "Code" combobox
-Click on "download ZIP"
+Click on "Code" combobox, then
+click on "download ZIP"
 
 After download extract it to the Downloads folder and open a terminal.
 
@@ -139,9 +152,145 @@ As a last step you can use that library inside of your project.
 For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
 in the sub-folder "src/main/resources/darwin"
 
+==== Creating the SIDBlaster library on Windows
+
+*Pre-conditions*
+
+On Windows we need cmake to be installed and Microsoft Visual Studio Community Edition at least, which is free,
+but requires a registration to be used.
+
+Go to the following web-site and download cmake:
+
+https://cmake.org/download
+
+Now dowload and install cmake:
+cmake-3.20.3-windows-x86_64.msi
+
+Then, got to the Visual Studio Web-Site:
+
+https://visualstudio.microsoft.com/de/vs/community/
+
+Now download and install Visual Studio Community edition.
+
+Now we are prepared to compile SIDBlaster library.
+
+Please go to the following site to download SIDBlaster sources:
+https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
+
+You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
+
+Click on "Code" combobox, then
+click on "download ZIP"
+
+After download extract it to the Downloads folder and open a terminal.
+
+[source,subs="attributes+"]
+----
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
+mkdir build
+cd build
+cmake ..			 # <1>
+----
+<1> Creates the Visual Studio solution project required to compile the library
+
+In the Windows Explorer double click the following file: 
+/Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/hardsid.sln
+
+Inside Visual Studio Community Edition's tool bar choose Target "Release" instead of Debug and architecture "x64".
+and from the menu click "Build solution" to start the build process.
+
+The build process should succeed and we can check the result using a command line.
+
+[source,subs="attributes+"]
+----
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/Release
+dir hardsid.dll # <1>
+----
+<1> Verify, that the library has been created.
+
+As a last step you can use that library inside of your project.
+For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+in the sub-folder "src/main/resources/win32-x86-64"
+
+==== Creating the SIDBlaster library on Linux
+
+*Pre-conditions*
+
+On Linux we need cmake to be installed and g++.
+
+Therefore open "Ubuntu Software Center" using the linux command key.
+
+Then choose: "cmake Cross-platform build system" and install it.
+
+To install g++ you can enter the following command in the command-line:
+
+[source,subs="attributes+"]
+----
+sudo apt-get install g++
+----
+
+*Installing the required ftd2xx library*
+
+SIDBlaster library requires the ftd2xx library as a pre-condition. It must be there at compile time and
+it will be loaded at runtime during the load process of the SIDBlaster library as well.
+Therefore it must be installed on the machine where you want to use the SIDBlaster library, first.
+
+Install ftd2xx drivers from here:
+https://ftdichip.com
+
+Please click on "Drivers"/"D2XX Drivers"
+and in the section "Linux" click "1.4.24"
+to download "libftd2xx-x86_64-1.4.24.gz".
+
+[source,subs="attributes+"]
+----
+cd /home/<name>/Downloads/release/build
+cp libftd2xx.1.4.24.so /usr/local/lib	 # <1>
+cd ..
+cp ftd2xx.h /usr/local/include			 # <2>
+cd /usr/local/lib
+ln -s libftd2xx.1.4.24.so libftd2xx.so	 # <3>
+chmod 755 libftd2xx.1.4.24.so
+chmod 755 libftd2xx.so
+cd ../include
+chmod 755 ftd2xx.h
+----
+<1> Copies the library to the runtime library search paths.
+<2> Optional: Copies the header in case you want to compile your own project with ftd2xx library.
+<3> Create a link to point the f2d2xx library to that exact version you installed.
+
+Now we are prepared to compile SIDBlaster library.
+
+Please go to the following site to download SIDBlaster sources:
+https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
+
+You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
+
+Click on "Code" combobox, then
+click on "download ZIP"
+
+After download extract it to the Downloads folder and open a terminal.
+
+[source,subs="attributes+"]
+----
+cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
+mkdir build
+cd build
+cmake ..			 # <1>
+make				 # <2>
+ls libhardsid.so	 # <3>
+----
+<1> Creates the makefiles in the build directory
+<2> Compiles all the sources
+<3> This last command verifies you have the SIDBlaster library created.
+
+As a last step you can use that library inside of your project.
+For JSIDPlay2 for instance you have to put it inside the main JAR (jsidplay2-4.3.jar)
+in the sub-folder "src/main/resources/linux-x86-64"
+
 === User Instructions
 
-*Use JSIDPlay2 with SIDBlaster on MacOSX*
+==== Use JSIDPlay2 with SIDBlaster on MacOSX
 
 JSIDPlay2 requires Java, therefore install java first.
 I recommend to install it from the folowing site:
@@ -151,8 +300,11 @@ Choose "OpenJDT11" and "Hotspot"
 
 Then download and install it on your machine.
 
-You can verify this ba opening the command line and type
-"java -version"
+You can verify this by opening the command line and type
+[source,subs="attributes+"]
+----
+java -version
+----
 
 Now you can install JSIDPlay2 from my web-site and extract it to the Downloads folder.
 
@@ -174,7 +326,104 @@ Unlock Settings with your password to be able to change one of these settings.
 Now, click allow for the SIDBlaster library, that was blocked before.
 Please restart JSIDPlay2, now.
 
-In your tool bar the tool bar should display SIDBlaster instead of emulation now.
+In JSIDPlay2 the tool bar should display SIDBlaster instead of emulation now.
+Please check, that your console view and terminal does not show any error messages regarding the SIDBlaster library.
+Then we are fine until here.
+
+Then we can let JSIDPlay2 auto-detect all connected SIDBlaster devices,
+therefore click on the SIDBlaster settings in the tool bar to expand all available SIDBlaster settings.
+There is a magic wand to click. At the end it adds all detected SIDBlaster devices to your configuration.
+
+All SIDBlaster devices will display a serial number and a chip type, which is still unknown (it is not stored on the hardware device, yet).
+Therefore select the suitable SID chip model installed on your SIDBlaster device.
+Now we are ready to test is using the Play button near the serial number to test each detected device.
+Does it play? Then we are fine.
+
+==== Use JSIDPlay2 with SIDBlaster on Windows
+
+JSIDPlay2 requires Java, therefore install java first.
+I recommend to install it from the folowing site:
+https://adoptopenjdk.net
+
+Choose "OpenJDT11" and "Hotspot"
+
+Then download and install it on your machine.
+
+You can verify this by opening the command line and type
+[source,subs="attributes+"]
+----
+java -version
+----
+
+Now you can install JSIDPlay2 from my web-site and extract it to the Downloads folder.
+
+In the Windows Explorer please go to the following location:
+
+"/Users/<name>/Downloads/jsidplay2-4.3-java11-win/jsidplay2-4.3-java11-win"
+
+Now plug-in your SIDBlaster devices and start the executable "jsidplay2-4.3.exe" from the Explorer.
+
+Inside JSIDPlay2 on your tool bar you can now change from Emulation to SIDBlaster
+
+*Note:* hot-plugging SIDBlaster devices is not supported. Therefore everytime you connect a device, you must restart JSIDPlay2, unfortunately.
+
+Inside JSIDPlay2 on your tool bar you can now change from Emulation to SIDBlaster
+
+Please check, that your console view and terminal does not show any error messages regarding the SIDBlaster library.
+Then we are fine until here.
+
+Then we can let JSIDPlay2 auto-detect all connected SIDBlaster devices,
+therefore click on the SIDBlaster settings in the tool bar to expand all available SIDBlaster settings.
+There is a magic wand to click. At the end it adds all detected SIDBlaster devices to your configuration.
+
+All SIDBlaster devices will display a serial number and a chip type, which is still unknown (it is not stored on the hardware device, yet).
+Therefore select the suitable SID chip model installed on your SIDBlaster device.
+Now we are ready to test is using the Play button near the serial number to test each detected device.
+Does it play? Then we are fine.
+
+==== Use JSIDPlay2 with SIDBlaster on Linux
+
+JSIDPlay2 requires Java, therefore install java first.
+I recommend to install it from the folowing site:
+https://adoptopenjdk.net
+
+Choose "OpenJDT11" and "Hotspot"
+
+Then download and install it on your machine.
+
+[source,subs="attributes+"]
+----
+cd /home/<name>/Downloads
+tar xzvf OpenJDK11U-jdk_64_linux_hotspot_11.0.11_9.tar.gz
+cd jdk-11.0.11+9/bin
+./java -version
+----
+
+Now you can install JSIDPlay2 from my web-site and extract it to the Downloads folder.
+
+*Note:* Because the ftd2xx library interferes with a built-in linux libary we have to install a script to unload the driver
+whenever a SIDBlaster card is plugged-in, therefore:
+
+[source,subs="attributes+"]
+----
+sudo vi /etc/udev/rules.d/91-sidblaster.rules
+ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666",  RUN+="/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'"
+sudo udevadm control --reload-rules && udevadm trigger
+----
+
+[source,subs="attributes+"]
+----
+unzip /home/<name>/Downloads/jsidplay2-4.3-java11-linux.zip
+cd /home/<name>/Downloads/jsidplay2-4.3-java11-linux
+chmod +x "JSIDPlay2 (Java11).sh"
+"./JSIDPlay2 (Java11).sh"	 # <1>
+----
+<1> Before you launch JSIDPlay2 you must be sure, that you connected your SIDBlaster device with your machine.
+
+*Note:* hot-plugging SIDBlaster devices is not supported. Therefore everytime you connect a device, you must restart JSIDPlay2, unfortunately.
+
+Inside JSIDPlay2 on your tool bar you can now change from Emulation to SIDBlaster
+
 Please check, that your console view and terminal does not show any error messages regarding the SIDBlaster library.
 Then we are fine until here.
 
@@ -198,7 +447,7 @@ You can permanently store the SID chip type to be auto-detected by JSIDPlay2.
 
 [source,subs="attributes+"]
 ----
-cd /Users/<name>/Downloads/jsidplay2-4.3-java11-mac
+cd /Users/<name>/Downloads/jsidplay2-4.3-java11-*
 chmod +x "SIDBlasterTool.sh"
 "./SIDBlasterTool.sh"										 # <1>
 "./SIDBlasterTool.sh" -c INFO								 # <2>
@@ -211,143 +460,3 @@ chmod +x "SIDBlasterTool.sh"
 <3> Example to set SID chip type
 <4> Example to set serial number
 <5> Example to use SIDBlaster only on Windows
-
-=== Developer Instructions
-
-...TODO...
-Windows:
-1. Install sidblaster sources
-https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
-!!! Click on branch master and change to "apple" branch
-Click on Code combobox
-Click on download ZIP
-
-2. https://cmake.org/download
-cmake-3.20.3-windows-x86_64.msi
-
-Eingabeaufforderung
-cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
-mkdir build
-cd build
-
-cmake ..
-
-3. Visual Studio Community Edition installieren
-https://visualstudio.microsoft.com/de/vs/community/
-
-Explorer: 
-/Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/hardsid.sln öffnen
-
-Toolbar: Release x64
-cd /Users/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple/build/Release
-hardsid.dll
-
-dir hardsid.dll
-
-Put it into JSIDPlay2:
-copy hardsid.dll to src/main/resources/win32-x86-64/hardsid.dll
-
-=== User Instructions
-
-...TODO...
-
-1.
-Install Java
-https://adoptopenjdk.net
-Choose OpenJDT11 Hotspot
-Neue Eingabeaufforderung
-Type "java -version"
-
-2.
-Download JSIDPlay2, extract
-Explorer: /Users/<name>/Downloads/jsidplay2-4.3-java11-win/jsidplay2-4.3-java11-win
-SIDBlaster Geräte verbinden
-Das Gerät ist einsatzbereit...
-jsidplay2-4.3.exe
-In ToolBar: Change Emulation to SIDBlaster
-
-ToolBar: Click on SIDBlaster to expand devices list (still empty)
-Click the magic wand
-You should see a device list. The chip type could not be detected? see next section
-Click on "Test" to test each detected device
-
-
-
-=== Developer Instructions
-
-...TODO...
-Linux:
-1.
-Install ftd2xx drivers
-https://ftdichip.com
-Drivers/D2XX Drivers
-Linux 1.4.24
-tar xfvz libftd2xx-x86_64-1.4.24.gz
-cd /home/<name>/Downloads/release/build
-cp libftd2xx.1.4.24.so /usr/local/lib
-cd ..
-cp ftd2xx.h /usr/local/include
-cd /usr/local/lib
-ln -s libftd2xx.1.4.24.so libftd2xx.so
-chmod 755 libftd2xx.1.4.24.so
-chmod 755 libftd2xx.so
-cd ../include
-chmod 755 ftd2xx.h
-
-2. Install sidblaster sources
-https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
-!!! Click on branch master and change to "apple" branch
-Click on Code combobox
-Click on download ZIP
-
-Ubuntu Software
-cmake Cross-platform build system
-
-cd /home/<name>/Downloads/SIDBlasterUSB_HardSID-emulation-driver-apple
-mkdir build
-cd build
-cmake ..
-
-NO_CMAKE_CXX_COMPILER found
--> sudo apt-get install g++
-
-make
-ls libhardsid.so
-
-Put it into JSIDPlay2:
-cp libhardsid.so to src/main/resources/linux-x64-64/libhardsid.so
-
-
-=== User Instructions
-
-...TODO...
-
-1.
-Install Java
-https://adoptopenjdk.net
-Choose OpenJDT11 Hotspot
-
-tar xzvf OpenJDK11U-jdk_64_linux_hotspot_11.0.11_9.tar.gz
-cd jdk-11.0.11+9/bin
-Type "./java -version"
-
-
-2.
-Download JSIDPlay2
-unzip /home/<name>/Downloads/jsidplay2-4.3-java11-linux.zip
-cd /home/<name>/Downloads/jsidplay2-4.3-java11-linux
-chmod +x "JSIDPlay2 (Java11).sh"
-
-sudo vi /etc/udev/rules.d/91-sidblaster.rules
-ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666",  RUN+="/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'"
-sudo udevadm control --reload-rules && udevadm trigger
-
-SIDBlaster Geräte verbinden
-"./JSIDPlay2 (Java11).sh"
-In ToolBar: Change Emulation to SIDBlaster
-
-ToolBar: Click on SIDBlaster to expand devices list (still empty)
-Click the magic wand
-You should see a device list. The chip type could not be detected? see next section
-Click on "Test" to test each detected device
-
