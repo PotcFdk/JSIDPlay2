@@ -216,6 +216,11 @@ in the sub-folder "src/main/resources/win32-x86-64"
 
 *Pre-conditions*
 
+Please choose a MacOSX machine which should use the library as a minimum requirement.
+The library itself uses GLIBC on the machine which is downward compatible but not upward compatible.
+I used Ubuntu 16.04LTS as the build platform, but you can use any other Linux version.
+I expect the library cannot be used on older platforms than the build platform.
+
 On Linux we need cmake to be installed and g++.
 
 Therefore open "Ubuntu Software Center" using the linux command key.
@@ -292,6 +297,9 @@ in the sub-folder "src/main/resources/linux-x86-64"
 
 ==== Use JSIDPlay2 with SIDBlaster on MacOSX
 
+*Note:* Do not forget to install ftd2xx library before you can use JSIDPlay2 with the SIDBlaster library.
+Please follow the steps in section "Installing the required ftd2xx library" of the developer instructions, first.
+
 JSIDPlay2 requires Java, therefore install java first.
 I recommend to install it from the folowing site:
 https://adoptopenjdk.net
@@ -315,6 +323,8 @@ chmod +x "JSIDPlay2 (Java11).sh"
 "./JSIDPlay2 (Java11).sh"			 # <1>
 ----
 <1> Before you launch JSIDPlay2 you must be sure, that you connected your SIDBlaster device with your machine.
+*Note:* It can be necessary to change the path to java inside that script to that of your installation.
+
 
 *Note:* hot-plugging SIDBlaster devices is not supported. Therefore everytime you connect a device, you must restart JSIDPlay2, unfortunately.
 
@@ -401,7 +411,7 @@ cd jdk-11.0.11+9/bin
 
 Now you can install JSIDPlay2 from my web-site and extract it to the Downloads folder.
 
-*Note:* Because the ftd2xx library interferes with a built-in linux libary we have to install a script to unload the driver
+*Note:* Because the ftd2xx library interferes with a built-in linux kernel module we have to install a script to unload the kernel module
 whenever a SIDBlaster card is plugged-in, therefore:
 
 [source,subs="attributes+"]
@@ -419,6 +429,8 @@ chmod +x "JSIDPlay2 (Java11).sh"
 "./JSIDPlay2 (Java11).sh"	 # <1>
 ----
 <1> Before you launch JSIDPlay2 you must be sure, that you connected your SIDBlaster device with your machine.
+
+*Note:* It can be necessary to change the path to java inside that script to that of your installation.
 
 *Note:* hot-plugging SIDBlaster devices is not supported. Therefore everytime you connect a device, you must restart JSIDPlay2, unfortunately.
 
