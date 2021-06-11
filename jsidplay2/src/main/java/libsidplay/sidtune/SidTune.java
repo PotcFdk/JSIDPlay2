@@ -373,6 +373,12 @@ public abstract class SidTune {
 		return tune != RESET && tune.getClass().equals(Prg.class);
 	}
 
+	protected abstract boolean canStoreSidModel();
+
+	public static boolean canStoreSidModel(SidTune tune) {
+		return tune != RESET && tune.canStoreSidModel();
+	}
+
 	public void prepare() {
 	}
 }

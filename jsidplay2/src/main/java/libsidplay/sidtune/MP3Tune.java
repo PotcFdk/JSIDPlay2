@@ -117,6 +117,11 @@ public class MP3Tune extends SidTune {
 		return 0;
 	}
 
+	@Override
+	protected boolean canStoreSidModel() {
+		return false;
+	}
+
 	private static String replaceNonPrintable(String str) {
 		return str.replaceAll("\\p{Cntrl}", "");
 	}

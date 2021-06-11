@@ -132,4 +132,9 @@ class Prg extends SidTune {
 		return RESET_INIT_DELAY;
 	}
 
+	@Override
+	protected boolean canStoreSidModel() {
+		return false;
+	}
+
 }
