@@ -64,7 +64,7 @@ brew install cmake
 To verify, that all requirements of this section are fullfilled,
 you can call "make" and "cmake" on the command line (it must be found) and the directories: "/usr/local/lib" and "/usr/local/include" must exist.
 
-===== Installing the required ftd2xx library
+*Installing the required ftd2xx library*
 
 SIDBlaster library requires the ftd2xx library as a pre-condition. It must be there at compile time and
 it will be loaded at runtime during the load process of the SIDBlaster library as well.
@@ -234,7 +234,7 @@ To install g++ you can enter the following command in the command-line:
 sudo apt-get install g++
 ----
 
-===== Installing the required ftd2xx library
+*Installing the required ftd2xx library*
 
 SIDBlaster library requires the ftd2xx library as a pre-condition. It must be there at compile time and
 it will be loaded at runtime during the load process of the SIDBlaster library as well.
