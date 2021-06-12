@@ -109,7 +109,7 @@ Beside these software emulation types we support some decent Hardware as well, w
 link:https://en.wikipedia.org/wiki/HardSID[HardSID 4U (USB Version)] can be used with up to 4 SID chips, but are hard to find on ebay these days and they are not produced anymore.
 
 3.
-Additionally we support SIDBlaster USB devices, e.g. link:http://crazy-midi.de/joomla/index.php/home/myprojects/elctronicp/58-sidblaster[SIDBlaster device TicTac Edition].
+Additionally we support SIDBlaster USB devices, e.g. link:http://crazy-midi.de[SIDBlaster device TicTac Edition].
 It contains exactly one chip either MOS6581 or MOS8580 per device.
 
 Information to use that device in software like JSIDPlay2 is available here:
