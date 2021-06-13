@@ -96,11 +96,10 @@
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.show_sql" value="false" />
 
-			<property name="hibernate.c3p0.min_size" value="5" />
-			<property name="hibernate.c3p0.max_size" value="100" />
-			<property name="hibernate.c3p0.timeout" value="300" />
-			<property name="hibernate.c3p0.max_statements" value="50" />
-			<property name="hibernate.c3p0.idle_test_period" value="3000" />
+			<!--property name="hibernate.c3p0.min_size" value="5" /> <property name="hibernate.c3p0.max_size" 
+				value="100" /> <property name="hibernate.c3p0.timeout" value="300" /> <property 
+				name="hibernate.c3p0.max_statements" value="50" /> <property name="hibernate.c3p0.idle_test_period" 
+				value="3000" / -->
 		</properties>
 	</persistence-unit>
 </persistence>
