@@ -39,6 +39,8 @@ public class InsertHashesServlet extends JSIDPlay2Servlet {
 			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 			whatsSidService.insertHashes(hashes);
 
+		} catch (Throwable t) {
+			error(t);
 		} finally {
 			closeEntityManager();
 		}

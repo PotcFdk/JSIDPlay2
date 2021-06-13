@@ -40,6 +40,8 @@ public class TuneExistsServlet extends JSIDPlay2Servlet {
 			Boolean exists = whatsSidService.tuneExists(musicInfoBean);
 
 			setOutput(request, response, exists, Boolean.class);
+		} catch (Throwable t) {
+			error(t);
 		} finally {
 			closeEntityManager();
 		}

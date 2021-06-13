@@ -41,6 +41,8 @@ public class InsertTuneServlet extends JSIDPlay2Servlet {
 			IdBean idBean = whatsSidService.insertTune(musicInfoBean);
 
 			setOutput(request, response, idBean, IdBean.class);
+		} catch (Throwable t) {
+			error(t);
 		} finally {
 			closeEntityManager();
 		}

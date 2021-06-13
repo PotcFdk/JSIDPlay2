@@ -49,6 +49,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 					whatsSidService).match(wavBean);
 
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
+		} catch (Throwable t) {
+			error(t);
 		} finally {
 			closeEntityManager();
 		}

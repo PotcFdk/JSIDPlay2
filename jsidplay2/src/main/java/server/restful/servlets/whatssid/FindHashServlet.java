@@ -41,6 +41,8 @@ public class FindHashServlet extends JSIDPlay2Servlet {
 			HashBeans result = whatsSidService.findHashes(intArrayBean);
 
 			setOutput(request, response, result, HashBeans.class);
+		} catch (Throwable t) {
+			error(t);
 		} finally {
 			closeEntityManager();
 		}

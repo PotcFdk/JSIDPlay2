@@ -46,17 +46,19 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public abstract String getServletPath();
 
 	protected void doGet(HttpServletRequest request) {
-		log(request.getMethod() + " " + request.getRequestURI()
-				+ (request.getQueryString() != null ? "?" + request.getQueryString() : "") + " from "
-				+ request.getRemoteAddr());
+		log(requestURI(request) + queryString(request) + remoteAddr(request) + memory());
 	}
 
 	protected void doPost(HttpServletRequest request) {
-		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr());
+		log(requestURI(request) + remoteAddr(request) + memory());
 	}
 
 	protected void doPut(HttpServletRequest request) {
-		log(request.getMethod() + " " + request.getRequestURI() + " from " + request.getRemoteAddr());
+		log(requestURI(request) + remoteAddr(request) + memory());
+	}
+
+	protected void error(Throwable t) {
+		log(getClass().getName() + ":" + t.getMessage(), t);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -129,6 +131,38 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			}
 		}
 		throw new FileNotFoundException(path);
+	}
+
+	private String requestURI(HttpServletRequest request) {
+		StringBuilder result = new StringBuilder();
+		result.append(request.getMethod());
+		result.append(" ");
+		result.append(request.getRequestURI());
+		return result.toString();
+	}
+
+	private String queryString(HttpServletRequest request) {
+		StringBuilder result = new StringBuilder();
+		if (request.getQueryString() != null) {
+			result.append("?");
+			result.append(request.getQueryString());
+		}
+		return result.toString();
+	}
+
+	private String remoteAddr(HttpServletRequest request) {
+		StringBuilder result = new StringBuilder();
+		result.append(", from ");
+		result.append(request.getRemoteAddr());
+		return result.toString();
+	}
+
+	private String memory() {
+		StringBuilder result = new StringBuilder();
+		Runtime runtime = Runtime.getRuntime();
+		result.append(String.format(", %sMb/%sMb", runtime.totalMemory() - runtime.freeMemory() >> 20,
+				runtime.maxMemory() >> 20));
+		return result.toString();
 	}
 
 }
