@@ -17,6 +17,7 @@
 <?import java.lang.Integer?>
 <?scenebuilder-preview-i18n-resource Ultimate64Window.properties?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Slider?>
 
 <!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
 <!-- Ctrl+Shift+C to toggle comment -->
@@ -74,8 +75,18 @@
 						<TitledPane text="%VIDEO_SCREEN" collapsible="false"
 							GridPane.columnIndex="0" GridPane.rowIndex="0" minWidth="1024"
 							minHeight="768">
-							<Canvas fx:id="screen" scaleX="2" scaleY="2" />
+							<Canvas fx:id="screen" cache="false" cacheHint="QUALITY" />
 						</TitledPane>
+
+						<VBox GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="TOP_CENTER">
+							<Label fx:id="scalingValue" text="1.00" />
+							<Slider fx:id="scaling" min="0" max="4" value="2.00"
+								minorTickCount="1" snapToTicks="true" blockIncrement="0.1"
+								majorTickUnit="0.01" showTickMarks="true">
+							</Slider>
+							<Label text="%SCALING" />
+						</VBox>
+
 					</children>
 				</GridPane>
 			</center>

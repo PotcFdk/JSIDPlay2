@@ -27,9 +27,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.util.Duration;
 import libsidplay.Ultimate64;
@@ -49,6 +52,7 @@ import sidplay.fingerprinting.WhatsSidSupport;
 import ui.common.C64Window;
 import ui.common.ImageQueue;
 import ui.common.Toast;
+import ui.common.converter.NumberToStringConverter;
 import ui.entities.config.AudioSection;
 import ui.entities.config.EmulationSection;
 import ui.entities.config.SidPlay2Section;
@@ -230,12 +234,28 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 				image.getPixelWriter().setPixels(0, lineNo, pixelsPerLine, linesPerPacket,
 						PixelFormat.getIntArgbInstance(), pixels.array(), 0, pixelsPerLine);
 				if (isLastPacketOfFrame) {
-					imageQueue.push(image);
+					imageQueue.push(copyImage());
 				}
 			}
 			if (isLastPacketOfFrame) {
 				frameStart = true;
 			}
+		}
+
+		private WritableImage copyImage() {
+			PixelReader pixelReader = image.getPixelReader();
+			int width = (int) image.getWidth();
+			int height = (int) image.getHeight();
+
+			WritableImage writableImage = new WritableImage(width, height);
+			PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					pixelWriter.setColor(x, y, pixelReader.getColor(x, y));
+				}
+			}
+			return writableImage;
 		}
 
 		@Override
@@ -267,6 +287,12 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	@FXML
 	protected Label whatsSidPositioner;
 
+	@FXML
+	private Slider scaling;
+
+	@FXML
+	private Label scalingValue;
+
 	private boolean whatsSidEnabled;
 	private WhatsSidSupport whatsSidSupport;
 	private IFingerprintMatcher fingerPrintMatcher;
@@ -289,7 +315,16 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 	@FXML
 	@Override
 	protected void initialize() {
+		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 		EmulationSection emulationSection = util.getConfig().getEmulationSection();
+
+		scaling.setLabelFormatter(new NumberToStringConverter<>(2));
+		scaling.valueProperty().bindBidirectional(sidplay2Section.videoScalingProperty());
+		scalingValue.textProperty().bindBidirectional(sidplay2Section.videoScalingProperty(),
+				new NumberToStringConverter<>(2));
+		scaling.valueProperty()
+				.addListener((observable, oldValue, newValue) -> updateScaling(sidplay2Section.getVideoScaling()));
+		updateScaling(sidplay2Section.getVideoScaling());
 
 		// TODO configure values
 		audioBufferSize.setValue(getDefaultBufferSize());
@@ -315,6 +350,11 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 		setupVideoScreen(CPUClock.getCPUClock(emulationSection, tune));
 
 		sequentialTransition.playFromStart();
+	}
+
+	private void updateScaling(double scale) {
+		screen.setScaleX(scale);
+		screen.setScaleY(scale);
 	}
 
 	@FXML
