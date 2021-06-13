@@ -8,6 +8,7 @@ SIDBlaster: sidblastertool executable added to store SID chip type on USB device
 SIDBlaster: Better auto-detection reads permanently stored SID chip type from device
 ExSID support added for Windows, Linux and MacOSX for mono, stereo SIDs and fake stereo mode
 SIDBlaster, ExSID and HardSID4U: Full oscilloscope support and SID read support by parallel emulated SID.
+Ultimate64 streaming: Ultimate64 window scaling is now configurable
 
 Recording formats:
 ------------------
