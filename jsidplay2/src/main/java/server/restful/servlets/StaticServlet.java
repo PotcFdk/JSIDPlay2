@@ -42,13 +42,17 @@ public class StaticServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doGet(request);
-		String filePath = request.getPathInfo();
-		try (InputStream source = getResourceAsStream(filePath)) {
-			response.setContentType(getMimeType(PathUtils.getFilenameSuffix(filePath)).toString());
-			response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
-		} catch (IOException e) {
-			response.setContentType(MIME_TYPE_TEXT.toString());
-			e.printStackTrace(new PrintStream(response.getOutputStream()));
+		try {
+			String filePath = request.getPathInfo();
+			try (InputStream source = getResourceAsStream(filePath)) {
+				response.setContentType(getMimeType(PathUtils.getFilenameSuffix(filePath)).toString());
+				response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
+			} catch (IOException e) {
+				response.setContentType(MIME_TYPE_TEXT.toString());
+				e.printStackTrace(new PrintStream(response.getOutputStream()));
+			}
+		} catch (Throwable t) {
+			error(t);
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

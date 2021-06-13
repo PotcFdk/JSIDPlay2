@@ -39,23 +39,28 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doGet(request);
-		EmulationSection emulationSection = configuration.getEmulationSection();
+		try {
+			EmulationSection emulationSection = configuration.getEmulationSection();
 
-		Connectors appServerConnectors = emulationSection.getAppServerConnectors();
-		String preferredProtocol = appServerConnectors.getPreferredProtocol();
-		String hostname = InetAddress.getLocalHost().getHostAddress();
-		String portNum = String.valueOf(appServerConnectors.getPreferredPortNum());
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
+			Connectors appServerConnectors = emulationSection.getAppServerConnectors();
+			String preferredProtocol = appServerConnectors.getPreferredProtocol();
+			String hostname = InetAddress.getLocalHost().getHostAddress();
+			String portNum = String.valueOf(appServerConnectors.getPreferredPortNum());
+			Map<String, String> replacements = new HashMap<>();
+			replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
 
-		try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
-			if (is != null) {
-				response.setContentType(MIME_TYPE_HTML.toString());
-				response.getWriter().println(is != null ? convertStreamToString(is, UTF_8.name(), replacements) : "");
-			} else {
-				response.setContentType(MIME_TYPE_TEXT.toString());
-				new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
+			try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
+				if (is != null) {
+					response.setContentType(MIME_TYPE_HTML.toString());
+					response.getWriter()
+							.println(is != null ? convertStreamToString(is, UTF_8.name(), replacements) : "");
+				} else {
+					response.setContentType(MIME_TYPE_TEXT.toString());
+					new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
+				}
 			}
+		} catch (Throwable t) {
+			error(t);
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

@@ -47,8 +47,8 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		super.doGet(request);
 		try {
-			super.doGet(request);
 			String filePath = request.getPathInfo();
 			response.setContentType(MIME_TYPE_JSON.toString());
 			File tuneFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
@@ -59,9 +59,10 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 									+ field.getAttribute().getName())
 					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			e.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

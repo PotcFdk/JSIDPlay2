@@ -52,9 +52,10 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 			}
 			response.getOutputStream().write(photo);
 			response.setContentLength(photo.length);
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			e.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

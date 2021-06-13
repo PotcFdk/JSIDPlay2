@@ -47,13 +47,17 @@ public class DirectoryServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doGet(request);
-		String filePath = request.getPathInfo();
-		String filter = request.getParameter("filter");
+		try {
+			String filePath = request.getPathInfo();
+			String filter = request.getParameter("filter");
 
-		List<String> files = getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
+			List<String> files = getDirectory(filePath, filter, request.isUserInRole(ROLE_ADMIN));
 
-		response.setContentType(MIME_TYPE_JSON.toString());
-		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
+			response.setContentType(MIME_TYPE_JSON.toString());
+			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(files));
+		} catch (Throwable t) {
+			error(t);
+		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 

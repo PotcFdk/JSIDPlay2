@@ -135,9 +135,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
 			}
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			e.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

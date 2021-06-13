@@ -38,10 +38,14 @@ public class FiltersServlet extends JSIDPlay2Servlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doGet(request);
-		List<String> filters = getFilters();
+		try {
+			List<String> filters = getFilters();
 
-		response.setContentType(MIME_TYPE_JSON.toString());
-		response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
+			response.setContentType(MIME_TYPE_JSON.toString());
+			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
+		} catch (Throwable t) {
+			error(t);
+		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
