@@ -420,8 +420,9 @@ public class JSIDPlay2Server {
 		EntityManager em = threadLocalEntityManager.get();
 
 		if (em != null) {
+			em.clear();
 			em.close();
-			threadLocalEntityManager.set(null);
 		}
+		threadLocalEntityManager.remove();
 	}
 }
