@@ -418,11 +418,11 @@ public class JSIDPlay2Server {
 
 	public static void closeEntityManager() {
 		EntityManager em = threadLocalEntityManager.get();
+		threadLocalEntityManager.remove();
 
 		if (em != null) {
 			em.clear();
 			em.close();
 		}
-		threadLocalEntityManager.remove();
 	}
 }
