@@ -93,6 +93,11 @@ Open a terminal and type:
 parec --latency-msec=1 | pacat --latency-msec=1
 Lower your microphone volume level to prevent overdrive noise
 
+as an alternative use:
+pactl load-module module-loopback latency_msec=1
+and disable with
+pactl unload-module module-loopback
+
 Wenn der Lautstärkeregler unter Ubuntu nicht angezeigt wird:
 gsettings set com.canonical.indicator.sound visible true
 Wenn das Mikrofone ausgegraut ist:
