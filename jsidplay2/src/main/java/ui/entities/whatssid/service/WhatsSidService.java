@@ -31,19 +31,19 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		// INSERT INTO `MusicInfo` ('songNo', `Title`, `Artist`, `Album`, `FileDir`,
 		// `InfoDir`, audio_length) VALUES
-
-		MusicInfo musicInfo = new MusicInfo();
-		musicInfo.setSongNo(musicInfoBean.getSongNo());
-		musicInfo.setTitle(musicInfoBean.getTitle());
-		musicInfo.setArtist(musicInfoBean.getArtist());
-		musicInfo.setAlbum(musicInfoBean.getAlbum());
-		musicInfo.setFileDir(musicInfoBean.getFileDir());
-		musicInfo.setInfoDir(musicInfoBean.getInfoDir());
-		musicInfo.setAudioLength(musicInfoBean.getAudioLength());
-
 		try {
 			em.getTransaction().begin();
+
+			MusicInfo musicInfo = new MusicInfo();
+			musicInfo.setSongNo(musicInfoBean.getSongNo());
+			musicInfo.setTitle(musicInfoBean.getTitle());
+			musicInfo.setArtist(musicInfoBean.getArtist());
+			musicInfo.setAlbum(musicInfoBean.getAlbum());
+			musicInfo.setFileDir(musicInfoBean.getFileDir());
+			musicInfo.setInfoDir(musicInfoBean.getInfoDir());
+			musicInfo.setAudioLength(musicInfoBean.getAudioLength());
 			em.persist(musicInfo);
+
 			em.getTransaction().commit();
 			return new IdBean(musicInfo.getIdMusicInfo());
 		} catch (Exception e) {
@@ -64,6 +64,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		}
 		try {
 			em.getTransaction().begin();
+
 			for (HashBean hashBean : hashes.getHashes()) {
 				HashTable hashTable = new HashTable();
 				hashTable.setHash(hashBean.getHash());
@@ -85,14 +86,26 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
 		// SELECT songNo, Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
 		// idMusicInfo=songNoBean.getSongNo()
+		try {
+			em.getTransaction().begin();
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
-		Root<MusicInfo> root = query.from(MusicInfo.class);
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
+			Root<MusicInfo> root = query.from(MusicInfo.class);
 
-		query.select(root).where(cb.equal(root.get(MusicInfo_.idMusicInfo), songNoBean.getSongNo()));
+			query.select(root).where(cb.equal(root.get(MusicInfo_.idMusicInfo), songNoBean.getSongNo()));
 
-		return em.createQuery(query).getSingleResult().toBean();
+			MusicInfoBean result = em.createQuery(query).getSingleResult().toBean();
+
+			em.getTransaction().commit();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -103,41 +116,65 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		if (intArrayBean.getHash() == null || intArrayBean.getHash().length == 0) {
 			return result;
 		}
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
-		Root<HashTable> root = query.from(HashTable.class);
+		try {
+			em.getTransaction().begin();
 
-		query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
+			Root<HashTable> root = query.from(HashTable.class);
 
-		em.createQuery(query).getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
-		return result;
+			query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
+
+			em.createQuery(query).getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
+
+			em.getTransaction().commit();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean tuneExists(MusicInfoBean musicInfoBean) {
 		// SELECT count(*) FROM MusicInfo WHERE songNo=songNo, Title=title AND
 		// Artist=artist AND Album=album AND FileDir=fileDir AND InfoDir=infoDir
+		try {
+			em.getTransaction().begin();
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
-		Root<MusicInfo> root = query.from(MusicInfo.class);
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query = cb.createQuery(Long.class);
+			Root<MusicInfo> root = query.from(MusicInfo.class);
 
-		Predicate songNoPredicate = cb.equal(root.get(MusicInfo_.songNo), musicInfoBean.getSongNo());
+			Predicate songNoPredicate = cb.equal(root.get(MusicInfo_.songNo), musicInfoBean.getSongNo());
 
-		Predicate titlePredicate = cb.equal(root.get(MusicInfo_.title), musicInfoBean.getTitle());
+			Predicate titlePredicate = cb.equal(root.get(MusicInfo_.title), musicInfoBean.getTitle());
 
-		Predicate artistPredicate = cb.equal(root.get(MusicInfo_.artist), musicInfoBean.getArtist());
+			Predicate artistPredicate = cb.equal(root.get(MusicInfo_.artist), musicInfoBean.getArtist());
 
-		Predicate albumPredicate = cb.equal(root.get(MusicInfo_.album), musicInfoBean.getAlbum());
+			Predicate albumPredicate = cb.equal(root.get(MusicInfo_.album), musicInfoBean.getAlbum());
 
-		Predicate fileDirPredicate = cb.equal(root.get(MusicInfo_.fileDir), musicInfoBean.getFileDir());
+			Predicate fileDirPredicate = cb.equal(root.get(MusicInfo_.fileDir), musicInfoBean.getFileDir());
 
-		Predicate infoDirPredicate = cb.equal(root.get(MusicInfo_.infoDir), musicInfoBean.getInfoDir());
+			Predicate infoDirPredicate = cb.equal(root.get(MusicInfo_.infoDir), musicInfoBean.getInfoDir());
 
-		query.select(cb.count(root)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
-				fileDirPredicate, infoDirPredicate));
+			query.select(cb.count(root)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
+					fileDirPredicate, infoDirPredicate));
 
-		return em.createQuery(query).getSingleResult() > 0;
+			boolean result = em.createQuery(query).getSingleResult() > 0;
+
+			em.getTransaction().commit();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+		return false;
 	}
 
 	public void deleteAll() {
