@@ -1,2 +1,2 @@
-libhardsid.dylib     - SIDBlaster USB driver library (https://github.com/gh0stless/SIDBlaster-USB-Tic-Tac-Edition)
-libexsid.so          - ExSID USB driver library (http://hacks.slashdirt.org/hw/exsid/)
+libhardsid.dylib     - SIDBlaster USB driver library (https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver/tree/apple)
+libexsid.dylib       - ExSID USB driver library (https://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/src/test/resources/sid/exsid/)
