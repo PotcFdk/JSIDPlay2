@@ -56,20 +56,21 @@ public class Index {
 
 		IntArrayBean intArray = new IntArrayBean(linkHash);
 		HashBeans res = fingerPrintingDataSource.findHashes(intArray);
-		for (HashBean hashBean : res.getHashes()) {
-			int hash = hashBean.getHash();
-			int id = hashBean.getId();
-			int time = hashBean.getTime();
+		if (res != null) {
+			for (HashBean hashBean : res.getHashes()) {
+				int hash = hashBean.getHash();
+				int id = hashBean.getId();
+				int time = hashBean.getTime();
 
-			Long idHash = idHash(id, linkHashMap.get(hash) - time);
-			Match count = hashMap.get(idHash);
-			if (count == null) {
-				count = new Match(0, linkHashMap.get(hash) - time);
+				Long idHash = idHash(id, linkHashMap.get(hash) - time);
+				Match count = hashMap.get(idHash);
+				if (count == null) {
+					count = new Match(0, linkHashMap.get(hash) - time);
+				}
+				count.updateCount();
+				hashMap.put(idHash, count);
 			}
-			count.updateCount();
-			hashMap.put(idHash, count);
 		}
-
 		hashMap.forEach((hash, countTime) -> {
 			if (countTime.getCount() > minHit && countTime.getCount() > maxCount) {
 				maxId = hash;
