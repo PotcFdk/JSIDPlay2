@@ -145,6 +145,20 @@ wait_timeout = 180
 interactive_timeout = 180
 max_execution_time = 30000
 
+Check innodb or mysam:
+mysql -u newuser -p"password"
+SHOW DATABASES;
+USE hvsc74;
+SHOW TABLE STATUS WHERE `Name` = 'HashTable';
+
+Check memory usage of a databasse:
+mysql -u newuser -p"password"
+SELECT table_schema, sum( data_length + index_length ) / 1024 / 1024 "Speicherbedarf (MB)" FROM information_schema.TABLES GROUP BY table_schema;
+
+Show current database connections:
+mysql -u newuser -p"password"
+SHOW PROCESSLIST ;
+
 Heap Memory Analyzer - To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
 Install Eclipse MAT (Heap Memory Analyzer) (https://www.eclipse.org/mat/)
