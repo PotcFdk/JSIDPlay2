@@ -40,8 +40,7 @@ public enum CPUClock {
 	 * Detect CPU clock of a specific tune in the following order:
 	 * <OL>
 	 * <LI>CPU clock forced by user configuration
-	 * <LI>CPU clock provided by tune information (auto detected) and if unknown,
-	 * then
+	 * <LI>CPU clock provided by tune information and if unknown, then
 	 * <LI>default CPU clock
 	 * </OL>
 	 *

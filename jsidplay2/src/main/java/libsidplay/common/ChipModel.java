@@ -22,10 +22,9 @@ public enum ChipModel {
 	/**
 	 * Detect chip model of specified SID number in the following order:
 	 * <OL>
-	 * <LI>SID model forced by user configuration
-	 * <LI>chip model provided by tune information (auto detected) and if unknown,
-	 * then
-	 * <LI>tune chip model can be overridden by auto-detection algorithms
+	 * <LI>chip model forced by user configuration
+	 * <LI>chip model detected by tune recognition WhatsSID
+	 * <LI>chip model provided by tune information and if unknown, then
 	 * <LI>default chip model for the 1st SID and for 2nd or 3rd chip use the same
 	 * chip model as for the 1st SID
 	 * </OL>
