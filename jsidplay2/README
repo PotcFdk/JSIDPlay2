@@ -138,6 +138,13 @@ mysql -u newuser -p"password"
 use hvsc74
 OPTIMIZE TABLE HashTable
 
+Recommended MySQL Database settings for WhatsSID:
+max_allowed_packet      = 64M
+innodb_buffer_pool_size = 48G
+wait_timeout = 180
+interactive_timeout = 180
+max_execution_time = 30000
+
 Heap Memory Analyzer - To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
 Install Eclipse MAT (Heap Memory Analyzer) (https://www.eclipse.org/mat/)

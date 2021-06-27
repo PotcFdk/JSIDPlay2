@@ -44,7 +44,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		try {
 			WAVBean wavBean = getInput(request, WAVBean.class);
 
-			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager(request));
 			MusicInfoWithConfidenceBean musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(),
 					whatsSidService).match(wavBean);
 
@@ -52,7 +52,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		} catch (Throwable t) {
 			error(t);
 		} finally {
-			closeEntityManager();
+			closeEntityManager(request);
 		}
 	}
 }

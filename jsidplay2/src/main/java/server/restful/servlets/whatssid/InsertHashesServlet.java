@@ -36,13 +36,13 @@ public class InsertHashesServlet extends JSIDPlay2Servlet {
 		try {
 			HashBeans hashes = getInput(request, HashBeans.class);
 
-			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager(request));
 			whatsSidService.insertHashes(hashes);
 
 		} catch (Throwable t) {
 			error(t);
 		} finally {
-			closeEntityManager();
+			closeEntityManager(request);
 		}
 	}
 }
