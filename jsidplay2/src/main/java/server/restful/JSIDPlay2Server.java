@@ -40,7 +40,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.NoOpJarScanner;
@@ -404,7 +404,7 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	public static EntityManager getEntityManager(HttpServletRequest request) throws IOException {
+	public static EntityManager getEntityManager(ServletContext servletContext) throws IOException {
 		if (entityManagerFactory == null) {
 			throw new IOException("WhatsSID? database unknown, please specify command line parameters!");
 		}
@@ -414,22 +414,19 @@ public class JSIDPlay2Server {
 			em = entityManagerFactory.createEntityManager();
 			threadLocalEntityManager.set(em);
 
-			request.getServletContext().log("CREATE thread=" + Thread.currentThread() + ", em=" + em);
+			servletContext.log("CREATE thread=" + Thread.currentThread() + ", em=" + em);
 		}
 		return em;
 	}
 
-	public static void closeEntityManager(HttpServletRequest request) {
+	public static void closeEntityManager(ServletContext servletContext) {
 		EntityManager em = threadLocalEntityManager.get();
 		threadLocalEntityManager.remove();
 
 		if (em != null) {
-			try {
-				em.close();
-			} catch (IllegalStateException e) {
-				request.getServletContext().log("EM is container-managed?", e);
-			}
-			request.getServletContext().log("RELEAS thread=" + Thread.currentThread() + ", em=" + em);
+			em.close();
+
+			servletContext.log("RELEAS thread=" + Thread.currentThread() + ", em=" + em);
 		}
 	}
 }
