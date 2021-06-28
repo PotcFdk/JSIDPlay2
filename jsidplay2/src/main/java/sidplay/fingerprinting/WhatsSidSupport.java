@@ -58,7 +58,7 @@ public final class WhatsSidSupport {
 	/**
 	 * Last match
 	 */
-	private static MusicInfoWithConfidenceBean lastWhatsSidMatch;
+	private static volatile MusicInfoWithConfidenceBean lastWhatsSidMatch;
 
 	/**
 	 * Minimum confidence to detect a match
