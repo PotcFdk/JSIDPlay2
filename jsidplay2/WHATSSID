@@ -1,0 +1,59 @@
+WHATSSID tune recognition:
+==========================
+
+Start/Stop/Restart Database:
+----------------------------
+sudo /etc/init.d/mysql start
+sudo /etc/init.d/mysql stop
+sudo /etc/init.d/mysql restart
+
+Start command-line database tool:
+---------------------------------
+mysql -u newuser -p"password"
+Password: ***
+
+Check database engine is innodb or mysam:
+-----------------------------------------
+SHOW DATABASES;
+USE hvsc74;
+SHOW TABLE STATUS WHERE `Name` = 'HashTable';
+
+Estimate innodb_buffer_pool_size (check database size):
+-------------------------------------------------------
+SELECT table_schema, sum( data_length + index_length ) / 1024 / 1024 "Speicherbedarf (MB)" FROM information_schema.TABLES GROUP BY table_schema;
+
+Set recommended MySQL Database settings for WhatsSID:
+-----------------------------------------------------
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+
+max_allowed_packet      = 64M
+innodb_buffer_pool_size = 16G
+wait_timeout = 180
+interactive_timeout = 180
+max_execution_time = 300000
+
+fast restart of database (dump/reload innodb_buffer_pool):
+----------------------------------------------------------
+SET GLOBAL innodb_buffer_pool_dump_at_shutdown = ON
+SET GLOBAL innodb_buffer_pool_load_at_startup = ON
+show variables like 'innodb_buffer%';
+
+fast queries for database table (Pre-loading the indexes of the table into innodb_buffer_pool):
+-----------------------------------------------------------------------------------------------
+SELECT count(*) FROM "HashTable"
+
+Show current database connections:
+----------------------------------
+SHOW PROCESSLIST ;
+
+Get estimate row count of database:
+-----------------------------------
+select  table_rows
+from    information_schema.tables
+where   table_schema = 'hvsc74'
+  and   table_name = 'HashTable' ;
+
+Optimize table:
+---------------
+use hvsc74
+OPTIMIZE TABLE HashTable
