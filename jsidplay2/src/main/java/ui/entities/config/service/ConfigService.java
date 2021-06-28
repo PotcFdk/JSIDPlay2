@@ -60,7 +60,7 @@ public class ConfigService {
 	}
 
 	/**
-	 * Filename of the jsidplay2 configuration XML file.
+	 * Filename of the jsidplay2 configuration file.
 	 */
 	public static final String CONFIG_FILE = "jsidplay2";
 
