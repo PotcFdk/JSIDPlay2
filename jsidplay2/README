@@ -159,6 +159,12 @@ Show current database connections:
 mysql -u newuser -p"password"
 SHOW PROCESSLIST ;
 
+Speed up mysql warmup at startup by Pre-loading the InnoDB buffer pool:
+mysql -u newuser -p"password"
+SET GLOBAL innodb_buffer_pool_dump_at_shutdown = ON
+SET GLOBAL innodb_buffer_pool_load_at_startup = ON
+show variables like 'innodb_buffer%';
+
 Heap Memory Analyzer - To find memory leaks you can use:
 jmap -dump:format=b,file=heap.bin <JavaProcessId>
 Install Eclipse MAT (Heap Memory Analyzer) (https://www.eclipse.org/mat/)
