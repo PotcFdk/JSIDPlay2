@@ -30,7 +30,7 @@ max_allowed_packet      = 64M
 innodb_buffer_pool_size = 16G
 wait_timeout = 180
 interactive_timeout = 180
-max_execution_time = 300000
+max_execution_time = 30000
 
 fast restart of database (dump/reload innodb_buffer_pool):
 ----------------------------------------------------------
@@ -40,6 +40,7 @@ show variables like 'innodb_buffer%';
 
 fast queries for database table (Pre-loading the indexes of the table into innodb_buffer_pool):
 -----------------------------------------------------------------------------------------------
+- first, temporarily increase max_execution_time = 180000
 SELECT count(*) FROM "HashTable"
 
 Show current database connections:
