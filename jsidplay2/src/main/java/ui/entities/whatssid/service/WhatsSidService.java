@@ -25,7 +25,7 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	private static final int QUERY_TIMEOUT_VALUE = System.getProperty("jsidplay2.whatssid.query.timeout") != null
 			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.query.timeout"))
-			: 30;
+			: 30000;
 
 	private EntityManager em;
 
