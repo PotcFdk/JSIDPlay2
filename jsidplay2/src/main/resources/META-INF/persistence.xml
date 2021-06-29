@@ -95,16 +95,22 @@
 		<properties>
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.show_sql" value="false" />
-			<!-- From DriverManagerConnectionProviderImpl: -->
-			<!-- <property name="hibernate.connection.initial_pool_size" value="1" 
-				/> <property name="hibernate.connection.min_pool_size" value="1" /> <property 
-				name="hibernate.connection.pool_size" value="10" /> <property name="hibernate.connection.pool_validation_interval" 
-				value="10" /> <property name="hibernate.connection.autocommit" value="false" 
-				/> -->
-			<!--property name="hibernate.c3p0.min_size" value="5" /> <property name="hibernate.c3p0.max_size" 
-				value="100" /> <property name="hibernate.c3p0.timeout" value="300" /> <property 
-				name="hibernate.c3p0.max_statements" value="50" /> <property name="hibernate.c3p0.idle_test_period" 
-				value="3000" / -->
+
+			<!-- minimum number of connections it should maintain at any given time. 
+				Initial size -->
+			<property name="hibernate.c3p0.min_size" value="5" />
+			<!-- maximum number of connections it can maintain at any given time -->
+			<property name="hibernate.c3p0.max_size" value="20" />
+			<!-- turn on statement pooling -->
+			<property name="hibernate.c3p0.max_statements" value="200" />
+			<!-- specifies how many connections it should try to acquire if the pool 
+				runs out of available connections. -->
+			<property name="hibernate.c3p0.acquire_increment" value="5" />
+			<!-- idle connections test period -->
+			<property name="hibernate.c3p0.idle_test_period" value="300" />
+			<!-- specifies the number of seconds an unused connection will be kept 
+				before being discarded -->
+			<property name="hibernate.c3p0.timeout" value="1800" />
 		</properties>
 	</persistence-unit>
 </persistence>

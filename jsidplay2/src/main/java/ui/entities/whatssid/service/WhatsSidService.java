@@ -21,6 +21,12 @@ import ui.entities.whatssid.MusicInfo_;
 
 public class WhatsSidService implements FingerPrintingDataSource {
 
+	private static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
+
+	private static final int QUERY_TIMEOUT_VALUE = System.getProperty("jsidplay2.whatssid.query.timeout") != null
+			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.query.timeout"))
+			: 30;
+
 	private EntityManager em;
 
 	public WhatsSidService(EntityManager em) {
@@ -125,7 +131,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 			query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
 
-			em.createQuery(query).getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
+			em.createQuery(query).setHint(QUERY_TIMEOUT, QUERY_TIMEOUT_VALUE).getResultList().stream()
+					.map(HashTable::toBean).forEach(result.getHashes()::add);
 
 			em.getTransaction().commit();
 			return result;
