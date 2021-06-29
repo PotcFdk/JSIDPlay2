@@ -47,6 +47,9 @@ public class FingerprintCreator {
 			byte[] bytes = new byte[(int) (Math.min(stream.getFrameLength(), FRAME_MAX_LENGTH)
 					* stream.getFormat().getChannels() * Short.BYTES)];
 			stream.read(bytes);
+			if (stream.getFrameLength() > FRAME_MAX_LENGTH) {
+				stream.read(new byte[(int) (stream.getFrameLength() - FRAME_MAX_LENGTH)]);
+			}
 
 			// 1. stereo to mono conversion
 			if (stream.getFormat().getChannels() == 2) {

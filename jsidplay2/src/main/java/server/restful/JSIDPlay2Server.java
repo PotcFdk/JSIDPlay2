@@ -128,6 +128,10 @@ public class JSIDPlay2Server {
 	 */
 	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG);
 
+	private static final int CONNECTION_TIMEOUT = System.getProperty("jsidplay2.whatssid.connection.timeout") != null
+			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.connection.timeout"))
+			: 120000;
+
 	/**
 	 * Our servlets to serve
 	 */
@@ -295,6 +299,7 @@ public class JSIDPlay2Server {
 
 		Http11NioProtocol protocol = (Http11NioProtocol) httpConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerPort());
+		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
 
 		return httpConnector;
 	}
@@ -306,6 +311,7 @@ public class JSIDPlay2Server {
 
 		Http11NioProtocol protocol = (Http11NioProtocol) httpsConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerSecurePort());
+		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
 		protocol.setSecure(true);
 		protocol.setSSLEnabled(true);
 
