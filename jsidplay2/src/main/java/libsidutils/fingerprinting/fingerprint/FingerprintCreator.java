@@ -25,6 +25,10 @@ import libsidutils.fingerprinting.rest.beans.WAVBean;
  */
 public class FingerprintCreator {
 
+	private static final long FRAME_MAX_LENGTH = System.getProperty("jsidplay2.whatssid.frame.maxlength") != null
+			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.frame.maxlength"))
+			: 56000;
+
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
 
@@ -40,7 +44,8 @@ public class FingerprintCreator {
 			if (stream.getFormat().isBigEndian()) {
 				throw new IOException("LittleEndian expected");
 			}
-			byte[] bytes = new byte[(int) (stream.getFrameLength() * stream.getFormat().getChannels() * Short.BYTES)];
+			byte[] bytes = new byte[(int) (Math.min(stream.getFrameLength(), FRAME_MAX_LENGTH)
+					* stream.getFormat().getChannels() * Short.BYTES)];
 			stream.read(bytes);
 
 			// 1. stereo to mono conversion
