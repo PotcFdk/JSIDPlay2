@@ -25,9 +25,8 @@ import libsidutils.fingerprinting.rest.beans.WAVBean;
  */
 public class FingerprintCreator {
 
-	private static final long FRAME_MAX_LENGTH = System.getProperty("jsidplay2.whatssid.frame.maxlength") != null
-			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.frame.maxlength"))
-			: 56000;
+	private static final long FRAME_MAX_LENGTH = Long
+			.valueOf(System.getProperty("jsidplay2.whatssid.frame.max.length", "56000"));
 
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;

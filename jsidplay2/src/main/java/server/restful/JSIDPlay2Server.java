@@ -128,9 +128,8 @@ public class JSIDPlay2Server {
 	 */
 	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG);
 
-	private static final int CONNECTION_TIMEOUT = System.getProperty("jsidplay2.whatssid.connection.timeout") != null
-			? Integer.valueOf(System.getProperty("jsidplay2.whatssid.connection.timeout"))
-			: 120000;
+	private static final int CONNECTION_TIMEOUT = Integer
+			.valueOf(System.getProperty("jsidplay2.whatssid.connection.timeout", "120000"));
 
 	/**
 	 * Our servlets to serve
