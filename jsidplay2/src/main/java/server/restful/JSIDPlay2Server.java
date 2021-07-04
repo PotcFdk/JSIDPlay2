@@ -3,6 +3,7 @@ package server.restful;
 import static jakarta.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static libsidplay.config.IWhatsSidSystemProperties.CONNECTION_TIMEOUT;
 import static org.apache.catalina.startup.Tomcat.addServlet;
 
 import java.io.File;
@@ -70,9 +71,11 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
 
 /**
  * 
- * Server part of JSIDPlay2 to answer server requests like: 1st) get a stream
- * with SID music as MP3 for the mobile version of JSIDPlay2 or 2nd) WhatsSID? -
- * Which tune is currently played?
+ * Server part of JSIDPlay2 to answer server requests like:
+ * 
+ * 1st) get a stream with SID music as MP3 for the mobile version or
+ * 
+ * 2nd) WhatsSID? Which tune is currently played?
  * 
  * @author ken
  *
@@ -127,9 +130,6 @@ public class JSIDPlay2Server {
 	 * Configuration of usernames, passwords and roles
 	 */
 	private static final URL INTERNAL_REALM_CONFIG = JSIDPlay2Server.class.getResource("/" + REALM_CONFIG);
-
-	private static final int CONNECTION_TIMEOUT = Integer
-			.valueOf(System.getProperty("jsidplay2.whatssid.connection.timeout", "120000"));
 
 	/**
 	 * Our servlets to serve
@@ -411,7 +411,7 @@ public class JSIDPlay2Server {
 
 	public static EntityManager getEntityManager(ServletContext servletContext) throws IOException {
 		if (entityManagerFactory == null) {
-			throw new IOException("WhatsSID? database unknown, please specify command line parameters!");
+			throw new IOException("Database required, please specify command line parameters!");
 		}
 		EntityManager em = threadLocalEntityManager.get();
 
@@ -431,7 +431,7 @@ public class JSIDPlay2Server {
 		if (em != null) {
 			em.close();
 
-			servletContext.log("RELEAS thread=" + Thread.currentThread() + ", em=" + em);
+			servletContext.log("RELEASE thread=" + Thread.currentThread() + ", em=" + em);
 		}
 	}
 }

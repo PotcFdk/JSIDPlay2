@@ -71,7 +71,7 @@ public class WhatsSidSettings extends C64Window {
 		whatsSidSection.setUrl(DEFAULT_WHATSSID_URL);
 		whatsSidSection.setUsername(DEFAULT_WHATSSID_USERNAME);
 		whatsSidSection.setPassword(DEFAULT_WHATSSID_PASSWORD);
-		whatsSidSection.setCaptureTime(DEFAULT_WHATSSID_CONNECTION_TIMEOUT);
+		whatsSidSection.setConnectionTimeout(DEFAULT_WHATSSID_CONNECTION_TIMEOUT);
 		whatsSidSection.setCaptureTime(DEFAULT_WHATSSID_CAPTURE_TIME);
 		whatsSidSection.setMatchStartTime(DEFAULT_WHATSSID_MATCH_START_TIME);
 		whatsSidSection.setMatchRetryTime(DEFAULT_WHATSSID_MATCH_RETRY_TIME);

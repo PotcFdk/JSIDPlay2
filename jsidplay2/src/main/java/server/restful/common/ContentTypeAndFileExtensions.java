@@ -22,6 +22,7 @@ public enum ContentTypeAndFileExtensions {
 	MIME_TYPE_WAV(create("audio/wav", (Charset) null), ".wav"),
 	MIME_TYPE_FLAC(create("audio/flac", (Charset) null), ".flac"),
 	MIME_TYPE_AAC(create("audio/aac", (Charset) null), ".aac"),
+	MIME_TYPE_CSV(create("text/csv", (Charset) null), ".csv"),
 	/**
 	 * Video formats
 	 */
@@ -34,15 +35,15 @@ public enum ContentTypeAndFileExtensions {
 	/**
 	 * Binary formats
 	 */
-	MIME_TYPE_OCTET_STREAM(create("application/octet-stream", (Charset) null)),
+	MIME_TYPE_OCTET_STREAM(create("application/octet-stream", (Charset) null), ".bin"),
 	/**
 	 * Text
 	 */
-	MIME_TYPE_TEXT(create("text/plain", StandardCharsets.UTF_8)),
+	MIME_TYPE_TEXT(create("text/plain", StandardCharsets.UTF_8), ".txt"),
 	/**
 	 * Json
 	 */
-	MIME_TYPE_JSON(create("application/json", StandardCharsets.UTF_8)),
+	MIME_TYPE_JSON(create("application/json", StandardCharsets.UTF_8), ".json"),
 	/**
 	 * Xml
 	 */

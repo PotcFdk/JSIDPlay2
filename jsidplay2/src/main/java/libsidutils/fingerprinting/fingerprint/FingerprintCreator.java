@@ -1,5 +1,7 @@
 package libsidutils.fingerprinting.fingerprint;
 
+import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.Buffer;
@@ -25,9 +27,6 @@ import libsidutils.fingerprinting.rest.beans.WAVBean;
  */
 public class FingerprintCreator {
 
-	private static final long FRAME_MAX_LENGTH = Long
-			.valueOf(System.getProperty("jsidplay2.whatssid.frame.max.length", "56000"));
-
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
 
@@ -45,7 +44,13 @@ public class FingerprintCreator {
 			}
 			byte[] bytes = new byte[(int) (Math.min(stream.getFrameLength(), FRAME_MAX_LENGTH)
 					* stream.getFormat().getChannels() * Short.BYTES)];
-			stream.read(bytes);
+
+			int read = stream.read(bytes);
+			if (read == -1 || read < bytes.length) {
+				throw new IOException("Unexpected end of audio stream");
+			}
+
+			// remove wasted audio, not used for recognition
 			if (stream.getFrameLength() > FRAME_MAX_LENGTH) {
 				stream.read(new byte[(int) (stream.getFrameLength() - FRAME_MAX_LENGTH)]);
 			}

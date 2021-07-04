@@ -12,7 +12,7 @@ public class CollectionFileComparator implements Comparator<File> {
 		} else if (file1.isFile() && file2.isDirectory()) {
 			return 1;
 		} else {
-			return file1.getName().toLowerCase().compareToIgnoreCase(file2.getName().toLowerCase());
+			return file1.getName().compareToIgnoreCase(file2.getName());
 		}
 	}
 }

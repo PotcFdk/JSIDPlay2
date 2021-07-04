@@ -2,8 +2,10 @@ package server.restful.servlets;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -45,6 +47,8 @@ public class FiltersServlet extends JSIDPlay2Servlet {
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(filters));
 		} catch (Throwable t) {
 			error(t);
+			response.setContentType(MIME_TYPE_TEXT.toString());
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

@@ -1,5 +1,6 @@
 package ui.entities.whatssid.service;
 
+import static libsidplay.config.IWhatsSidSystemProperties.QUERY_TIMEOUT;
 import static ui.entities.PersistenceProperties.QUERY_TIMEOUT_HINT;
 
 import javax.persistence.EntityManager;
@@ -22,9 +23,6 @@ import ui.entities.whatssid.MusicInfo;
 import ui.entities.whatssid.MusicInfo_;
 
 public class WhatsSidService implements FingerPrintingDataSource {
-
-	private static final int QUERY_TIMEOUT = Integer
-			.valueOf(System.getProperty("jsidplay2.whatssid.query.timeout", "30000"));
 
 	private EntityManager em;
 

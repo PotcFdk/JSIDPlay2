@@ -61,6 +61,8 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 			}
 		} catch (Throwable t) {
 			error(t);
+			response.setContentType(MIME_TYPE_TEXT.toString());
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

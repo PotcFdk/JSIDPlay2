@@ -31,10 +31,10 @@ import ui.common.util.Extract7ZipUtil;
 public class Convenience {
 
 	private static final Comparator<? super File> TOP_LEVEL_FIRST_COMPARATOR = (f1, f2) -> {
-		if (f1.isDirectory()) {
+		if (f1.isDirectory() && !f2.isDirectory()) {
 			return 1;
 		}
-		if (f2.isDirectory()) {
+		if (!f1.isDirectory() && f2.isDirectory()) {
 			return -1;
 		}
 		String ext1 = PathUtils.getFilenameSuffix(f1.getAbsolutePath());

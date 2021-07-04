@@ -58,7 +58,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	protected void error(Throwable t) {
-		log(getClass().getName() + ":" + t.getMessage(), t);
+		log(t.getMessage(), t);
 	}
 
 	@SuppressWarnings("unchecked")
