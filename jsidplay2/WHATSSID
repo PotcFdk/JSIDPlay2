@@ -28,9 +28,8 @@ sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
 
 max_allowed_packet      = 64M
 innodb_buffer_pool_size = 16G
-wait_timeout = 180
-interactive_timeout = 180
-max_execution_time = 30000
+wait_timeout = 500
+interactive_timeout = 500
 
 fast restart of database (dump/reload innodb_buffer_pool):
 ----------------------------------------------------------
@@ -58,3 +57,13 @@ Optimize table:
 ---------------
 use hvsc74
 OPTIMIZE TABLE HashTable
+
+
+Faster database warm-up phase:
+------------------------------
+SET GLOBAL innodb_buffer_pool_dump_at_shutdown = ON
+SET GLOBAL innodb_buffer_pool_load_at_startup = ON;
+
+Show current status of innodb_buffer_pool_load_at_startup:
+----------------------------------------------------------
+SHOW STATUS LIKE 'Innodb_buffer_pool_load_status';

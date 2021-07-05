@@ -135,12 +135,6 @@ Increase max memory, if required to load huge heap dumps in file MemoryAnalyzer.
 -Xmx=5g
 In MAT - Load heap dump: File/Open heap.bin
 
-Tip:
-MP4 and AAC Recording:
-If error occurs: "libfdk.so cannot be loaded, GLIBC_29 version is required" or similar
-Please install library yourself:
-sudo apt-get install libfdk-aac-dev
-
 TODO:
 =====
 - App: download sid register writes and siddump
