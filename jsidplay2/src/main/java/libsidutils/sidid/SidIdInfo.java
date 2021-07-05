@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -127,8 +128,8 @@ public class SidIdInfo extends SidIdBase {
 		this.playerInfoList = new ArrayList<>();
 		PlayerInfoSection playerInfoSection = null;
 		String line;
-		try (final BufferedReader br = new BufferedReader(
-				new InputStreamReader(new ByteArrayInputStream(readConfiguration(FNAME, SID_ID_PKG))))) {
+		try (final BufferedReader br = new BufferedReader(new InputStreamReader(
+				new ByteArrayInputStream(readConfiguration(FNAME, SID_ID_PKG)), StandardCharsets.ISO_8859_1))) {
 			while ((line = br.readLine()) != null) {
 				final StringTokenizer stok = new StringTokenizer(line, "\n");
 				while (stok.hasMoreTokens()) {
