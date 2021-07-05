@@ -524,7 +524,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 				breadbox.setVisible(true);
 				pc64.setVisible(false);
 			} else {
-				// New SID chip model? Show PC 64
+				// New SID chip model? Show PC64
 				pc64.setVisible(true);
 				breadbox.setVisible(false);
 			}
