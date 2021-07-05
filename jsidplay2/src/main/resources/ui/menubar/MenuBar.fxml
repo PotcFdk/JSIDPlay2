@@ -95,11 +95,11 @@
 							<MenuItem text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
 							<MenuItem text="%LEMON64_COM" onAction="#lemon64" />
 							<MenuItem text="%FORUM64_DE" onAction="#forum64" />
-							<MenuItem text="%C64_SK" onAction="#c64" />
+							<MenuItem text="%C64_SK" onAction="#c64Sk" />
 							<MenuItem text="%SOASC" onAction="#soasc" />
 							<MenuItem text="%CODEBASE64" onAction="#codebase64" />
 							<MenuItem text="%GAMEBASE" onAction="#gamebase" />
-							<MenuItem text="%JSIDPLAY2_SRC" onAction="#jsidplay2" />
+							<MenuItem text="%JSIDPLAY2_SRC" onAction="#jsidplay2Src" />
 						</Menu>
 						<MenuItem text="%PRINTER" onAction="#printer" />
 						<MenuItem text="%CONSOLE" onAction="#console" />

@@ -953,7 +953,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void c64() {
+	private void c64Sk() {
 		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
 			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.C64_SK);
@@ -997,7 +997,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private void jsidplay2() {
+	private void jsidplay2Src() {
 		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_SRC.name())) {
 			WebView collection = new WebView(util.getWindow(), util.getPlayer());
 			collection.setType(WebViewType.JSIDPLAY2_SRC);
@@ -1079,7 +1079,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
 			remixKweqOrg();
 		} else if (WebViewType.C64_SK.name().equals(id)) {
-			c64();
+			c64Sk();
 		} else if (WebViewType.FORUM64_DE.name().equals(id)) {
 			forum64();
 		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
@@ -1087,7 +1087,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		} else if (WebViewType.SOASC.name().equals(id)) {
 			soasc();
 		} else if (WebViewType.JSIDPLAY2_SRC.name().equals(id)) {
-			jsidplay2();
+			jsidplay2Src();
 		} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(id)) {
 			jsidplay2Javadoc();
 		} else if (WebViewType.USERGUIDE.name().equals(id)) {
