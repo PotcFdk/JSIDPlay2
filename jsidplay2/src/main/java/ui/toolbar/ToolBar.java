@@ -159,7 +159,8 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private Label hostnameLabel, portLabel, hardsid6581Label, hardsid8580Label, appIpAddress, appHostname,
 			appServerPortLbl, appServerSecurePortLbl, appServerKeyStorePasswordLbl, appServerKeyAliasLbl,
-			appServerKeyPasswordLbl, saveRecordingLabel, sidBlasterWriteBufferSizeLbl;
+			appServerKeyPasswordLbl, saveRecordingLabel, sidBlasterWriteBufferSizeLbl, streamingIpAddress,
+			streamingHostname;
 	@FXML
 	private Hyperlink appServerUsage, onlinePlayer, downloadApp, sidBlasterDoc;
 	@FXML
@@ -343,8 +344,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		bindBidirectional(playSourceGroup, audioSection.playOriginalProperty());
 
-		appHostname.setText(util.getBundle().getString("APP_SERVER_HOSTNAME") + " " + getHostname());
-		appIpAddress.setText(util.getBundle().getString("APP_SERVER_IP") + " " + getIpAddresses());
+		appHostname.setText(util.getBundle().getString("HOSTNAME") + " " + getHostname());
+		appIpAddress.setText(util.getBundle().getString("IP") + " " + getIpAddresses());
 		startAppServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			appServerUsage.setDisable(!newValue);
 			onlinePlayer.setDisable(!newValue);
@@ -357,6 +358,8 @@ public class ToolBar extends C64VBox implements UIPart {
 				emulationSection.ultimate64StreamingAudioPortProperty(), new IntegerStringConverter());
 		ultimate64StreamingVideoPort.textProperty().bindBidirectional(
 				emulationSection.ultimate64StreamingVideoPortProperty(), new IntegerStringConverter());
+		streamingHostname.setText(util.getBundle().getString("HOSTNAME") + " " + getHostname());
+		streamingIpAddress.setText(util.getBundle().getString("IP") + " " + getIpAddresses());
 
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);

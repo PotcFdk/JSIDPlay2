@@ -273,6 +273,8 @@
 								<Tooltip text="%ULTIMATE64_STREAMING_VIDEO_PORT_TIP" />
 							</tooltip>
 						</TypeTextField>
+						<Label text="%HOSTNAME" fx:id="streamingHostname" />
+						<Label text="%IP" fx:id="streamingIpAddress" />
 					</VBox>
 				</TitledPane>
 				<TitledPane text="%APP_SERVER" expanded="false">
@@ -336,8 +338,8 @@
 									<Tooltip text="%APP_SERVER_KEY_PASSWORD_TIP" />
 								</tooltip>
 							</PasswordField>
-							<Label text="%APP_SERVER_HOSTNAME" fx:id="appHostname" />
-							<Label text="%APP_SERVER_IP" fx:id="appIpAddress" />
+							<Label text="%HOSTNAME" fx:id="appHostname" />
+							<Label text="%IP" fx:id="appIpAddress" />
 							<Hyperlink text="%APP_SERVER_USAGE" textFill="BLUE"
 								underline="true" onAction="#gotoRestApiUsage" fx:id="appServerUsage"
 								disable="true" />
