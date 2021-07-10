@@ -42,4 +42,5 @@ public class SidAuthors {
 	public static final byte[] getImageData(String author) {
 		return author2imageData.get(author);
 	}
+
 }
