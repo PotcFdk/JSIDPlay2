@@ -9,7 +9,7 @@
 <listEntry value="file=/home/ken/workspace/jcodec/target/jcodec-0.2.4-SNAPSHOT.jar"/>
 <listEntry value="groupId=org.jcodec"/>
 <listEntry value="artifactId=jcodec"/>
-<listEntry value="version=0.2.4-SNAPSHOT.jar"/>
+<listEntry value="version=0.2.4-SNAPSHOT"/>
 <listEntry value="packaging=jar"/>
 <listEntry value="localRepositoryPath=lib"/>
 </listAttribute>

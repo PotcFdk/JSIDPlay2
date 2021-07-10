@@ -65,6 +65,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
+import jsidplay2.dirs.SidDirs;
 import jsidplay2.photos.SidAuthors;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -209,7 +210,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 					SidTune sidTune = SidTune.load(tuneFile);
 					if (getType() == MusicCollectionType.HVSC) {
 						enableSOASC(sidTune.getInfo(), tuneFile);
-						showPhoto(sidTune.getInfo());
+						showPhoto(sidTune.getInfo(), tuneFile);
 					}
 					showTuneInfos(tuneFile, sidTune);
 				} catch (IOException | SidTuneError e) {
@@ -817,7 +818,16 @@ public class MusicCollection extends C64VBox implements UIPart {
 		}
 	}
 
-	private void showPhoto(SidTuneInfo info) {
+	private void showPhoto(SidTuneInfo info, File tuneFile) {
+		if (tuneFile.getParentFile() != null) {
+			byte[] imageData = SidDirs.getDirectoryImageData(
+					PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile.getParentFile()));
+			if (imageData != null) {
+				photograph.setImage(new Image(new ByteArrayInputStream(imageData)));
+				return;
+			}
+
+		}
 		if (info.getInfoString().size() > 1) {
 			Iterator<String> it = info.getInfoString().iterator();
 			/* String name = */it.next();

@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>jsidplay2</groupId>
 			<artifactId>photos</artifactId>
-			<version>1.0</version>
+			<version>2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>kickassembler</groupId>
