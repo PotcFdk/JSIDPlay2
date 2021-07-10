@@ -18,6 +18,8 @@ public class SidDirs {
 	 */
 	private static final Properties SID_DIRS = new Properties();
 
+	private static final String UNKNOWN = "UNKNOWN";
+
 	static {
 		try (InputStream is = SidDirs.class.getResourceAsStream("photodirs.properties")) {
 			SID_DIRS.load(is);
@@ -26,9 +28,6 @@ public class SidDirs {
 				String photoResource = SID_DIRS.getProperty(author);
 				if (photoResource != null) {
 					URL us = SidDirs.class.getResource(photoResource);
-					if (us == null) {
-						System.err.println(photoResource);
-					}
 					byte[] photo = new byte[us.openConnection().getContentLength()];
 					try (DataInputStream is2 = new DataInputStream(SidDirs.class.getResourceAsStream(photoResource))) {
 						is2.readFully(photo);
@@ -43,6 +42,10 @@ public class SidDirs {
 
 	public static final byte[] getDirectoryImageData(String hvscName) {
 		return dirs2imageData.get(hvscName);
+	}
+
+	public static final byte[] getUnknownImageData() {
+		return dirs2imageData.get(UNKNOWN);
 	}
 
 }
