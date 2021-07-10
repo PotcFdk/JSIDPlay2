@@ -65,8 +65,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
-import jsidplay2.dirs.SidDirs;
-import jsidplay2.photos.SidAuthors;
+import jsidplay2.Photos;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -819,22 +818,18 @@ public class MusicCollection extends C64VBox implements UIPart {
 	}
 
 	private void showPhoto(SidTuneInfo info, File tuneFile) {
-		if (tuneFile.getParentFile() != null) {
-			byte[] imageData = SidDirs.getDirectoryImageData(
-					PathUtils.getCollectionName(fileBrowser.getRoot().getValue(), tuneFile.getParentFile()));
-			if (imageData != null) {
-				photograph.setImage(new Image(new ByteArrayInputStream(imageData)));
-				return;
-			}
-
+		File hvscRoot = fileBrowser.getRoot().getValue();
+		String collectionName = null;
+		if (tuneFile.getParentFile() != null && hvscRoot != null) {
+			collectionName = PathUtils.getCollectionName(hvscRoot, tuneFile.getParentFile());
 		}
+		String author = null;
 		if (info.getInfoString().size() > 1) {
-			Iterator<String> it = info.getInfoString().iterator();
-			/* String name = */it.next();
-			String author = it.next();
-			byte[] imageData = SidAuthors.getImageData(author);
-			photograph.setImage(imageData != null ? new Image(new ByteArrayInputStream(imageData)) : null);
+			Iterator<String> iterator = info.getInfoString().iterator();
+			/* title = */iterator.next();
+			author = iterator.next();
 		}
+		photograph.setImage(new Image(new ByteArrayInputStream(Photos.getPhoto(collectionName, author))));
 	}
 
 	private void showTuneInfos(File tuneFile, SidTune tune) {

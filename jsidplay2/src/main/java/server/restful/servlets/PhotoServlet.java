@@ -15,10 +15,10 @@ import java.util.Properties;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jsidplay2.dirs.SidDirs;
-import jsidplay2.photos.SidAuthors;
+import jsidplay2.Photos;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
+import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.PathUtils;
 import server.restful.common.JSIDPlay2Servlet;
 import ui.entities.config.Configuration;
@@ -49,7 +49,7 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 			String filePath = request.getPathInfo();
 			response.setContentType(MIME_TYPE_JPG.toString());
 			File absoluteFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
-			byte[] photo = getPhoto(absoluteFile);
+			byte[] photo = getPhoto(configuration.getSidplay2Section().getHvsc(), absoluteFile);
 			if (photo == null) {
 				throw new FileNotFoundException(filePath + " (No such file or directory)");
 			}
@@ -63,23 +63,20 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private byte[] getPhoto(File tuneFile) throws IOException, SidTuneError {
-		if (tuneFile.getParentFile() != null && configuration.getSidplay2Section().getHvsc() != null) {
-			byte[] imageData = SidDirs.getDirectoryImageData(PathUtils
-					.getCollectionName(configuration.getSidplay2Section().getHvsc(), tuneFile.getParentFile()));
-			if (imageData != null) {
-				return imageData;
-			}
-
+	private byte[] getPhoto(File hvscRoot, File tuneFile) throws IOException, SidTuneError {
+		String collectionName = null;
+		if (tuneFile.getParentFile() != null && hvscRoot != null) {
+			collectionName = PathUtils.getCollectionName(hvscRoot, tuneFile.getParentFile());
 		}
 		SidTune tune = SidTune.load(tuneFile);
-		if (tune.getInfo().getInfoString().size() > 1) {
-			Iterator<String> iterator = tune.getInfo().getInfoString().iterator();
+		SidTuneInfo info = tune.getInfo();
+		String author = null;
+		if (info.getInfoString().size() > 1) {
+			Iterator<String> iterator = info.getInfoString().iterator();
 			/* title = */iterator.next();
-			String author = iterator.next();
-			return SidAuthors.getImageData(author);
+			author = iterator.next();
 		}
-		return null;
+		return Photos.getPhoto(collectionName, author);
 	}
 
 }
