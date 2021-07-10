@@ -65,11 +65,10 @@ public class PhotoServlet extends JSIDPlay2Servlet {
 
 	private byte[] getPhoto(File hvscRoot, File tuneFile) throws IOException, SidTuneError {
 		String collectionName = null;
-		if (tuneFile.getParentFile() != null && hvscRoot != null) {
+		if (hvscRoot != null && tuneFile.getParentFile() != null) {
 			collectionName = PathUtils.getCollectionName(hvscRoot, tuneFile.getParentFile());
 		}
-		SidTune tune = SidTune.load(tuneFile);
-		SidTuneInfo info = tune.getInfo();
+		SidTuneInfo info = SidTune.load(tuneFile).getInfo();
 		String author = null;
 		if (info.getInfoString().size() > 1) {
 			Iterator<String> iterator = info.getInfoString().iterator();

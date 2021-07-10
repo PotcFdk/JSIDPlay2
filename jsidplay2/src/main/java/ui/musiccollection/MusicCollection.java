@@ -820,7 +820,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 	private void showPhoto(SidTuneInfo info, File tuneFile) {
 		File hvscRoot = fileBrowser.getRoot().getValue();
 		String collectionName = null;
-		if (tuneFile.getParentFile() != null && hvscRoot != null) {
+		if (tuneFile.getParentFile() != null) {
 			collectionName = PathUtils.getCollectionName(hvscRoot, tuneFile.getParentFile());
 		}
 		String author = null;
