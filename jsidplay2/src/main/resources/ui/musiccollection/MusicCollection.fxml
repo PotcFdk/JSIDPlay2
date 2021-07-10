@@ -91,7 +91,7 @@
 				</TreeView>
 				<TitledPane fx:id="photographPane" text="%COMPOSERS_PHOTO"
 					collapsible="false" GridPane.rowIndex="1" GridPane.columnIndex="2">
-					<ImageView fx:id="photograph" preserveRatio="true" />
+					<ImageView fx:id="photograph" preserveRatio="true" fitWidth="400" />
 				</TitledPane>
 				<TitledPane text="%SEARCH" collapsible="true" expanded="false"
 					GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3">
