@@ -1,3 +1,11 @@
+
+++++
+<a href="https://sourceforge.net/p/jsidplay2/"><img alt="Download Java SID Player Music Library V2" src="https://sourceforge.net/sflogo.php?type=17&group_id=210597" width=200></a>
+
+<a href="https://sourceforge.net/projects/jsidplay2/files/latest/download"><img alt="Download Java SID Player Music Library V2" src="https://img.shields.io/sourceforge/dm/jsidplay2.svg" ></a>
+++++
+
+
 = link:https://sourceforge.net/projects/jsidplay2/[JSIDPlay2] - Homepage
 
 == Introduction
