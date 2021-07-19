@@ -32,8 +32,8 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
-import server.restful.common.AdditionalServletParameters;
 import server.restful.common.JSIDPlay2Servlet;
+import server.restful.common.ServletParameters;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
 import sidplay.audio.AVIFileDriver;
@@ -93,13 +93,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			if (Stream.of(".sid", ".dat", ".mus", ".str")
 					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
 
-				final IConfig config = new IniConfig();
-				final AdditionalServletParameters servletParameters = new AdditionalServletParameters();
+				final ServletParameters servletParameters = new ServletParameters();
+				final IniConfig config = servletParameters.getConfig();
 
 				String[] args = getRequestParameters(request);
 
-				JCommander.newBuilder().addObject(config).addObject(servletParameters).programName(getClass().getName())
-						.build().parse(args);
+				JCommander.newBuilder().addObject(servletParameters).programName(getClass().getName()).build()
+						.parse(args);
 
 				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
 
@@ -108,17 +108,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
-				convertAudio(config, file, driver);
+				convertAudio(config, file, driver, servletParameters.getSong());
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 
-				final IConfig config = new IniConfig();
-				final AdditionalServletParameters servletParameters = new AdditionalServletParameters();
+				final ServletParameters servletParameters = new ServletParameters();
+				final IniConfig config = servletParameters.getConfig();
 
 				String[] args = getRequestParameters(request);
 
-				JCommander.newBuilder().addObject(config).addObject(servletParameters).programName(getClass().getName())
-						.build().parse(args);
+				JCommander.newBuilder().addObject(servletParameters).programName(getClass().getName()).build()
+						.parse(args);
 
 				AudioDriver driver = getAudioDriverOfVideoFormat(config);
 
@@ -168,14 +168,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convertAudio(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
+	private void convertAudio(IConfig config, File file, AudioDriver driver, Integer song)
+			throws IOException, SidTuneError {
 		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
-		player.play(SidTune.load(file));
+		SidTune tune = SidTune.load(file);
+		tune.getInfo().setSelectedSong(song);
+		player.play(tune);
 		player.stopC64(false);
 	}
 
