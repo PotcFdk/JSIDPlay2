@@ -1,7 +1,5 @@
 package libsidutils.fingerprinting.fingerprint;
 
-import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.Buffer;
@@ -30,7 +28,8 @@ public class FingerprintCreator {
 	private final Random RANDOM = new Random();
 	private int oldRandomValue;
 
-	public Fingerprint createFingerprint(IFingerprintConfig config, WAVBean wavBean) throws IOException {
+	public Fingerprint createFingerprint(IFingerprintConfig config, WAVBean wavBean, long frameMaxLength)
+			throws IOException {
 		try {
 			AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(wavBean.getWav()));
 			if (stream.getFormat().getSampleSizeInBits() != Short.SIZE) {
@@ -42,7 +41,7 @@ public class FingerprintCreator {
 			if (stream.getFormat().isBigEndian()) {
 				throw new IOException("LittleEndian expected");
 			}
-			byte[] bytes = new byte[(int) (Math.min(stream.getFrameLength(), FRAME_MAX_LENGTH)
+			byte[] bytes = new byte[(int) (Math.min(stream.getFrameLength(), frameMaxLength)
 					* stream.getFormat().getChannels() * Short.BYTES)];
 
 			int read = stream.read(bytes);
@@ -51,8 +50,8 @@ public class FingerprintCreator {
 			}
 
 			// remove wasted audio, not used for recognition
-			if (stream.getFrameLength() > FRAME_MAX_LENGTH) {
-				stream.read(new byte[(int) (stream.getFrameLength() - FRAME_MAX_LENGTH)]);
+			if (stream.getFrameLength() > frameMaxLength) {
+				stream.read(new byte[(int) (stream.getFrameLength() - frameMaxLength)]);
 			}
 
 			// 1. stereo to mono conversion
