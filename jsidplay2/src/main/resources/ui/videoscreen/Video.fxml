@@ -47,12 +47,12 @@
 								</ImageView>
 								<ImageView fx:id="breadbox" visible="false">
 									<image>
-										<Image url="@/ui/icons/c64.png" />
+										<Image url="@/ui/icons/Commodore-64.png" />
 									</image>
 								</ImageView>
 								<ImageView fx:id="pc64" visible="false">
 									<image>
-										<Image url="@/ui/icons/c64c.png" />
+										<Image url="@/ui/icons/Commodore-64c.png" />
 									</image>
 								</ImageView>
 							</StackPane>
