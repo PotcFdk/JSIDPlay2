@@ -9,13 +9,13 @@ sudo /etc/init.d/mysql restart
 
 Start command-line database tool:
 ---------------------------------
-mysql -u newuser -p"password"
+mysql -u newuser -p
 Password: ***
 
 Check database engine is innodb or mysam:
 -----------------------------------------
 SHOW DATABASES;
-USE hvsc74;
+USE hvsc75;
 SHOW TABLE STATUS WHERE `Name` = 'HashTable';
 
 Estimate innodb_buffer_pool_size (check database size):
@@ -50,12 +50,12 @@ Get estimate row count of database:
 -----------------------------------
 select  table_rows
 from    information_schema.tables
-where   table_schema = 'hvsc74'
+where   table_schema = 'hvsc75'
   and   table_name = 'HashTable' ;
 
 Optimize table:
 ---------------
-use hvsc74
+use hvsc75
 OPTIMIZE TABLE HashTable
 
 
@@ -67,3 +67,7 @@ SET GLOBAL innodb_buffer_pool_load_at_startup = ON;
 Show current status of innodb_buffer_pool_load_at_startup:
 ----------------------------------------------------------
 SHOW STATUS LIKE 'Innodb_buffer_pool_load_status';
+
+Remove old database:
+--------------------
+DROP DATABASE hvsc74;
