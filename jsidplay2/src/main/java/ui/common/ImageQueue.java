@@ -17,7 +17,7 @@ package ui.common;
 public final class ImageQueue<T> {
 
 	private static class QueueItem<T> {
-		private T image;
+		private final T image;
 		private QueueItem<T> next;
 
 		private QueueItem(T image) {
@@ -25,7 +25,7 @@ public final class ImageQueue<T> {
 		}
 	}
 
-	private static final int MAX_SIZE = 60;
+	private static final int MAX_QUEUE_SIZE = 60;
 	private static final int DROP_NTH_FRAME = 10;
 
 	private QueueItem<T> head, tail;
@@ -36,13 +36,14 @@ public final class ImageQueue<T> {
 		if (disposed) {
 			return;
 		}
-		// prevent overflow
-		if (size == MAX_SIZE) {
+		// prevent overflow, replace first frame
+		if (size == MAX_QUEUE_SIZE) {
 			head = head.next;
 			size--;
 		}
 		QueueItem<T> item = new QueueItem<>(image);
 		if (tail == null) {
+			// empty list? image is the first
 			head = item;
 			tail = head;
 		} else {
@@ -58,23 +59,29 @@ public final class ImageQueue<T> {
 		if (count > 1) {
 			QueueItem<T> prev = head, scan = head;
 			while (count-- > 0) {
+				// skip frames
 				for (int i = 0; i < DROP_NTH_FRAME && scan != tail; i++) {
 					prev = scan;
 					scan = scan.next;
 				}
 				if (scan == tail) {
+					// end of list? We remove the last frame
 					tail = prev;
 				}
+				// remove in-between frame
 				prev.next = scan.next;
 				size--;
 			}
 		}
-		if (head == null) {
+		if (tail == null) {
+			// empty list? Nothing to poll
 			return null;
 		}
 		if (head == tail) {
+			// One sized list? Mark list as empty
 			tail = null;
 		}
+		// poll image from queue
 		T result = head.image;
 		head = head.next;
 		size--;

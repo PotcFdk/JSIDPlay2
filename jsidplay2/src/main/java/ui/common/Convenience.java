@@ -39,10 +39,11 @@ public class Convenience {
 		}
 		String ext1 = PathUtils.getFilenameSuffix(f1.getAbsolutePath());
 		String ext2 = PathUtils.getFilenameSuffix(f2.getAbsolutePath());
-		if (ext1.endsWith(".sid")) {
+
+		if (ext1.endsWith(".sid") && !ext2.endsWith(".sid")) {
 			return 1;
 		}
-		if (ext2.endsWith(".sid")) {
+		if (!ext1.endsWith(".sid") && ext2.endsWith(".sid")) {
 			return -1;
 		}
 		return f1.compareTo(f2);

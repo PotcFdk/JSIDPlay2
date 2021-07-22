@@ -19,12 +19,12 @@ public class BindingUtils {
 	}
 
 	/**
-	 * Thread-save version of Bindings.bindBidirectional(). Config property is
+	 * Thread-save version of Bindings.bindBidirectional(). Object property is
 	 * altered in the JavaFx UI-thread using Platform.runLater().
 	 * 
 	 * @param objectProperty property to bind and change thread-safe
 	 * @param configProperty property to bind
-	 * @param runnable       runnable to change value on each config property change
+	 * @param runnable       runnable to hook each config property change
 	 */
 	public static <T> void bindBidirectionalThreadSafe(final ObjectProperty<T> objectProperty,
 			final ObjectProperty<T> configProperty, Runnable runnable) {
