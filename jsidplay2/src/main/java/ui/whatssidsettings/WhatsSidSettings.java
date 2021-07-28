@@ -17,7 +17,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
+import libsidplay.config.IWhatsSidSection;
 import sidplay.Player;
+import sidplay.fingerprinting.FingerprintJsonClient;
 import ui.common.C64Window;
 import ui.entities.config.WhatsSidSection;
 
@@ -48,10 +50,14 @@ public class WhatsSidSettings extends C64Window {
 
 		enable.selectedProperty().bindBidirectional(whatsSidSection.enableProperty());
 		url.textProperty().bindBidirectional(whatsSidSection.urlProperty());
+		url.textProperty().addListener((s, o, n) -> updateWhatsSid());
 		username.textProperty().bindBidirectional(whatsSidSection.usernameProperty());
+		username.textProperty().addListener((s, o, n) -> updateWhatsSid());
 		password.textProperty().bindBidirectional(whatsSidSection.passwordProperty());
+		password.textProperty().addListener((s, o, n) -> updateWhatsSid());
 		bindBidirectional(connectionTimeout.textProperty(), whatsSidSection.connectionTimeoutProperty(),
 				new IntegerStringConverter());
+		connectionTimeout.textProperty().addListener((s, o, n) -> updateWhatsSid());
 		bindBidirectional(captureTime.textProperty(), whatsSidSection.captureTimeProperty(),
 				new IntegerStringConverter());
 		bindBidirectional(matchStartTime.textProperty(), whatsSidSection.matchStartTimeProperty(),
@@ -77,6 +83,16 @@ public class WhatsSidSettings extends C64Window {
 		whatsSidSection.setMatchRetryTime(DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 		whatsSidSection.setMinimumRelativeConfidence(DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 		whatsSidSection.setDetectChipModel(DEFAULT_WHATSSID_DETECT_CHIP_MODEL);
+	}
+
+	private void updateWhatsSid() {
+		IWhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
+
+		String url = whatsSidSection.getUrl();
+		String username = whatsSidSection.getUsername();
+		String password = whatsSidSection.getPassword();
+		int connectionTimeout = whatsSidSection.getConnectionTimeout();
+		util.getPlayer().setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 	}
 
 }
