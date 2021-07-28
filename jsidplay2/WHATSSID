@@ -22,6 +22,10 @@ Estimate innodb_buffer_pool_size (check database size):
 -------------------------------------------------------
 SELECT table_schema, sum( data_length + index_length ) / 1024 / 1024 "Speicherbedarf (MB)" FROM information_schema.TABLES GROUP BY table_schema;
 
+Check innodb buffer variables:
+------------------------------
+show variables like 'innodb_buffer%';
+
 Set recommended MySQL Database settings for WhatsSID:
 -----------------------------------------------------
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -31,20 +35,13 @@ innodb_buffer_pool_size = 16G
 wait_timeout = 500
 interactive_timeout = 500
 
-fast restart of database (dump/reload innodb_buffer_pool):
-----------------------------------------------------------
-SET GLOBAL innodb_buffer_pool_dump_at_shutdown = ON
-SET GLOBAL innodb_buffer_pool_load_at_startup = ON
-show variables like 'innodb_buffer%';
-
 fast queries for database table (Pre-loading the indexes of the table into innodb_buffer_pool):
 -----------------------------------------------------------------------------------------------
-- first, temporarily increase max_execution_time = 180000
 SELECT count(*) FROM "HashTable"
 
 Show current database connections:
 ----------------------------------
-SHOW PROCESSLIST ;
+SHOW PROCESSLIST;
 
 Get estimate row count of database:
 -----------------------------------
@@ -57,7 +54,6 @@ Optimize table:
 ---------------
 use hvsc75
 OPTIMIZE TABLE HashTable
-
 
 Faster database warm-up phase:
 ------------------------------
