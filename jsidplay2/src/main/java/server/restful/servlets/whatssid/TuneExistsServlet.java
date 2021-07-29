@@ -36,14 +36,14 @@ public class TuneExistsServlet extends JSIDPlay2Servlet {
 		try {
 			MusicInfoBean musicInfoBean = getInput(request, MusicInfoBean.class);
 
-			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager(request.getServletContext()));
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 			Boolean exists = whatsSidService.tuneExists(musicInfoBean);
 
 			setOutput(request, response, exists, Boolean.class);
 		} catch (Throwable t) {
 			error(t);
 		} finally {
-			closeEntityManager(request.getServletContext());
+			closeEntityManager();
 		}
 	}
 }

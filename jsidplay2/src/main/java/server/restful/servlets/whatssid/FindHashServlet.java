@@ -37,14 +37,14 @@ public class FindHashServlet extends JSIDPlay2Servlet {
 		try {
 			IntArrayBean intArrayBean = getInput(request, IntArrayBean.class);
 
-			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager(request.getServletContext()));
+			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 			HashBeans result = whatsSidService.findHashes(intArrayBean);
 
 			setOutput(request, response, result, HashBeans.class);
 		} catch (Throwable t) {
 			error(t);
 		} finally {
-			closeEntityManager(request.getServletContext());
+			closeEntityManager();
 		}
 	}
 }

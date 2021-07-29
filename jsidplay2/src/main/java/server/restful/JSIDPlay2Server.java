@@ -41,7 +41,6 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
-import jakarta.servlet.ServletContext;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.NoOpJarScanner;
@@ -409,7 +408,7 @@ public class JSIDPlay2Server {
 		}
 	}
 
-	public static EntityManager getEntityManager(ServletContext servletContext) throws IOException {
+	public static EntityManager getEntityManager() throws IOException {
 		if (entityManagerFactory == null) {
 			throw new IOException("Database required, please specify command line parameters!");
 		}
@@ -418,20 +417,16 @@ public class JSIDPlay2Server {
 		if (em == null) {
 			em = entityManagerFactory.createEntityManager();
 			threadLocalEntityManager.set(em);
-
-			servletContext.log("CREATE thread=" + Thread.currentThread() + ", em=" + em);
 		}
 		return em;
 	}
 
-	public static void closeEntityManager(ServletContext servletContext) {
+	public static void closeEntityManager() {
 		EntityManager em = threadLocalEntityManager.get();
 		threadLocalEntityManager.remove();
 
 		if (em != null) {
 			em.close();
-
-			servletContext.log("RELEASE thread=" + Thread.currentThread() + ", em=" + em);
 		}
 	}
 }
