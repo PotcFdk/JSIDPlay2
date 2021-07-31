@@ -47,7 +47,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 			MusicInfoWithConfidenceBean musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(),
 					whatsSidService).match(wavBean);
-			request.getServletContext().log(String.valueOf(musicInfoWithConfidence));
+			info(String.valueOf(musicInfoWithConfidence));
 
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 		} catch (Throwable t) {

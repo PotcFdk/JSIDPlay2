@@ -57,6 +57,10 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		log(requestURI(request) + remoteAddr(request) + memory());
 	}
 
+	protected void info(String msg) {
+		log(msg);
+	}
+
 	protected void error(Throwable t) {
 		log(t.getMessage(), t);
 	}

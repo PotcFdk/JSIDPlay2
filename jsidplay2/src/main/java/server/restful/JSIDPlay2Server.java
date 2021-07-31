@@ -27,7 +27,7 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
@@ -291,11 +291,11 @@ public class JSIDPlay2Server {
 	}
 
 	private Connector createHttpConnector(EmulationSection emulationSection) {
-		Connector httpConnector = new Connector(Http11NioProtocol.class.getName());
+		Connector httpConnector = new Connector(Http11Nio2Protocol.class.getName());
 		httpConnector.setURIEncoding(UTF_8.name());
 		httpConnector.setScheme(Connectors.HTTP.getPreferredProtocol());
 
-		Http11NioProtocol protocol = (Http11NioProtocol) httpConnector.getProtocolHandler();
+		Http11Nio2Protocol protocol = (Http11Nio2Protocol) httpConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerPort());
 		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
 
@@ -303,11 +303,11 @@ public class JSIDPlay2Server {
 	}
 
 	private Connector createHttpsConnector(EmulationSection emulationSection) {
-		Connector httpsConnector = new Connector(Http11NioProtocol.class.getName());
+		Connector httpsConnector = new Connector(Http11Nio2Protocol.class.getName());
 		httpsConnector.setURIEncoding(UTF_8.name());
 		httpsConnector.setScheme(Connectors.HTTPS.getPreferredProtocol());
 
-		Http11NioProtocol protocol = (Http11NioProtocol) httpsConnector.getProtocolHandler();
+		Http11Nio2Protocol protocol = (Http11Nio2Protocol) httpsConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerSecurePort());
 		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
 		protocol.setSecure(true);
