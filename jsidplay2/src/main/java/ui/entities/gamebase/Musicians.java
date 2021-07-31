@@ -43,7 +43,16 @@ public class Musicians {
 		this.games = games;
 	}
 
-	// private Blob? photo;
+	private String photoFilename;
+
+	@Column(name = "PHOTO")
+	public String getPhotoFilename() {
+		return photoFilename;
+	}
+
+	public void setPhotoFilename(String photo) {
+		this.photoFilename = photo;
+	}
 
 	private String musician;
 

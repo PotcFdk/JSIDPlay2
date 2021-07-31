@@ -31,6 +31,7 @@ public class OnlineSection {
 	public static final String JSIDPLAY2_GAMEBASE64_URL = DEPLOYMENT_URL + "online/gamebase/GameBase64.zip";
 	public static final String JSIDPLAY2_GAMEBASE64_MUSIC_URL = DEPLOYMENT_URL + "music/";
 	public static final String JSIDPLAY2_GAMEBASE64_SCREENSHOTS_URL = DEPLOYMENT_URL + "screenshots/";
+	public static final String JSIDPLAY2_GAMEBASE64_PHOTOS_URL = DEPLOYMENT_URL + "photos/";
 	public static final String JSIDPLAY2_GAMEBASE64_GAMES_URL = DEPLOYMENT_URL + "games/";
 	public static final String JSIDPLAY2_FAVORITES_URL = DEPLOYMENT_URL + "jsidplay2.js2";
 
@@ -300,6 +301,21 @@ public class OnlineSection {
 
 	public StringProperty gb64ScreenshotUrlProperty() {
 		return gb64ScreenshotUrl.property();
+	}
+
+	private ShadowField<StringProperty, String> gb64PhotosUrl = new ShadowField<>(SimpleStringProperty::new,
+			JSIDPLAY2_GAMEBASE64_PHOTOS_URL);
+
+	public String getGb64PhotosUrl() {
+		return gb64PhotosUrl.get();
+	}
+
+	public void setGb64PhotosUrl(String gb64PhotosUrl) {
+		this.gb64PhotosUrl.set(gb64PhotosUrl);
+	}
+
+	public StringProperty gb64PhotosUrlProperty() {
+		return gb64PhotosUrl.property();
 	}
 
 	private ShadowField<StringProperty, String> gb64GamesUrl = new ShadowField<>(SimpleStringProperty::new,

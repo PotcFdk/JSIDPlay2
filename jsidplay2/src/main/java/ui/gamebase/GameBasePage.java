@@ -1,5 +1,6 @@
 package ui.gamebase;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,6 +18,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import jsidplay2.Photos;
 import libsidplay.sidtune.SidTuneError;
 import sidplay.Player;
 import ui.common.C64VBox;
@@ -33,7 +35,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 	private TableView<Games> gamebaseTable;
 
 	private Convenience convenience;
-	private ImageView screenshot;
+	private ImageView screenshot, photo;
 	private String fileToRun;
 	private final BiPredicate<File, File> FILE_TO_RUN_DETECTOR = (file,
 			toAttach) -> fileToRun.length() == 0 && Convenience.LEXICALLY_FIRST_MEDIA.test(file, toAttach)
@@ -71,24 +73,45 @@ public class GameBasePage extends C64VBox implements UIPart {
 		});
 		gamebaseTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				if (newValue.getScreenshotFilename().isEmpty()) {
-					System.out.println("Screenshot is not available on GameBase64: " + newValue.getName());
-				} else {
+				if (!newValue.getScreenshotFilename().isEmpty()) {
 					try {
 						URL url = new URL(util.getConfig().getOnlineSection().getGb64ScreenshotUrl()
 								+ newValue.getScreenshotFilename().replace('\\', '/'));
-						if (screenshot == null) {
-							screenshot = (ImageView) gamebaseTable.getScene().lookup("#gamebase_screenshot");
-						}
-						if (screenshot != null) {
-							Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
-						}
+						setScreenshot(url);
 					} catch (MalformedURLException e) {
 						System.err.println(e.getMessage());
 					}
 				}
+				Image image = new Image(new ByteArrayInputStream(Photos.getPhoto("???", "???")));
+				if (!newValue.getMusicians().getPhotoFilename().isEmpty()) {
+					try {
+						image = new Image(new URL(util.getConfig().getOnlineSection().getGb64PhotosUrl()
+								+ newValue.getMusicians().getPhotoFilename().replace('\\', '/')).toExternalForm());
+					} catch (MalformedURLException e) {
+						System.err.println(e.getMessage());
+					}
+				}
+				setPhoto(image);
 			}
 		});
+	}
+
+	private void setScreenshot(URL url) {
+		if (screenshot == null) {
+			screenshot = (ImageView) gamebaseTable.getScene().lookup("#gamebase_screenshot");
+		}
+		if (screenshot != null) {
+			Platform.runLater(() -> screenshot.setImage(new Image(url.toExternalForm())));
+		}
+	}
+
+	private void setPhoto(Image image) {
+		if (photo == null) {
+			photo = (ImageView) gamebaseTable.getScene().lookup("#gamebase_musician_photo");
+		}
+		if (photo != null) {
+			Platform.runLater(() -> photo.setImage(image));
+		}
 	}
 
 	protected void startGame(Games game) {

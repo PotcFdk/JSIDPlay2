@@ -1,7 +1,6 @@
 package ui.entities.whatssid.service;
 
 import static libsidplay.config.IWhatsSidSystemProperties.QUERY_TIMEOUT;
-import static ui.entities.PersistenceProperties.QUERY_TIMEOUT_HINT;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -9,6 +8,8 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.hibernate.annotations.QueryHints;
 
 import libsidutils.fingerprinting.rest.FingerPrintingDataSource;
 import libsidutils.fingerprinting.rest.beans.HashBean;
@@ -128,8 +129,8 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 			query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
 
-			em.createQuery(query).setHint(QUERY_TIMEOUT_HINT, QUERY_TIMEOUT).getResultList().stream()
-					.map(HashTable::toBean).forEach(result.getHashes()::add);
+			em.createQuery(query).setHint(QueryHints.READ_ONLY, true).setHint(QueryHints.TIMEOUT_JPA, QUERY_TIMEOUT)
+					.getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
 
 			em.getTransaction().commit();
 			return result;
