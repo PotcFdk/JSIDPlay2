@@ -233,8 +233,9 @@ please type 'vi ~/server.sh'.
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
-	--appServerKeystore /etc/jsidplay2.ks \
+java -Dhibernate.dialect.storage_engine=innodb \
+	-classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
+	--appServerKeystore /home/ken/jsidplay2.ks \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
@@ -298,8 +299,8 @@ Prepare database configuration:
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
 
 max_allowed_packet      = 64M # <1>
-innodb_buffer_pool_size = 8G # <2>
-sql-mode="ANSI_QUOTES" # <3>
+innodb_buffer_pool_size = 16G # <2>
+sql-mode                = "ANSI_QUOTES" # <3>
 ----
 <1> increase packet size (because adding a song requires sending
 a larger package)
@@ -333,12 +334,13 @@ and if database already contains the song.
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
+java -Dhibernate.dialect.storage_engine=innodb \
+	-classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc75?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
-	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL55Dialect \
 	--hvsc <pathToHVSC># <1>
 	<pathToMusicCollection> & # <2>
 ----
@@ -370,14 +372,15 @@ Keep in mind in the end the update requires another 250GB of disk space for the 
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
+java -Dhibernate.dialect.storage_engine=innodb \
+	-classpath {artifactId}-{version}.jar ui.tools.FingerPrintingCreator \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc75?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
-	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect \
-	--hvsc <pathToHVSC># <1>
-	--previousDirectory <previousPathToHVSC> <2>
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL55Dialect \
+	--hvsc <pathToHVSC> # <1>
+	--previousDirectory <previousPathToHVSC> # <2>
 	<pathToMusicCollection> & # <3>
 ----
 <1> pathToHVSC is used to read song length file database contained in HVSC
@@ -400,17 +403,18 @@ You only have to add additional WhatsSID database parameters.
 #!/bin/bash -x
 cd /home/ken/Downloads/{artifactId}-{version}
 pkill -f server.restful.JSIDPlay2Server
-java -server -classpath {artifactId}-{version}.jar server.restful.JSIDPlay2Server \
-	--appServerKeystore /etc/jsidplay2.ks \
+java -Dhibernate.dialect.storage_engine=innodb \
+	-classpath {artifactId}-{version} server.restful.JSIDPlay2Server \
+	--appServerKeystore /home/ken/jsidplay2.ks \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
 	--appServerConnectors HTTPS \
 	--whatsSIDDatabaseDriver com.mysql.cj.jdbc.Driver \
-	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc74?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" \
+	--whatsSIDDatabaseUrl "jdbc:mysql://127.0.0.1:3306/hvsc75?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true" \
 	--whatsSIDDatabaseUsername <username> \
 	--whatsSIDDatabasePassword <password> \
-	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL5InnoDBDialect & # <1>
+	--whatsSIDDatabaseDialect org.hibernate.dialect.MySQL55Dialect & # <1>
 ----
 <1> Launch the JSIDPlay2 AppServer using WhatsSID? tune recognition
 
@@ -427,10 +431,10 @@ After=network.target network-online.target
 
 [Service]
 ExecStart=java \
-	-server \
+	-Dhibernate.dialect.storage_engine=innodb \
 	-classpath /home/ken/Downloads/{artifactId}-{version}/jsidplay2-{version}.jar \
 	server.restful.JSIDPlay2Server \
-	--appServerKeystore /etc/jsidplay2.ks \
+	--appServerKeystore /home/ken/jsidplay2.ks \
 	--appServerKeystorePassword jsidplay2 \
 	--appServerKeyAlias jsidplay2 \
 	--appServerKeyPassword jsidplay2 \
