@@ -41,6 +41,7 @@ import sidplay.audio.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
+import sidplay.audio.FLVDriver;
 import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4FileDriver;
@@ -133,7 +134,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
-				if (getVideoFormat(config) == Audio.FLV) {
+				if (driver instanceof FLVDriver) {
 					new Thread(() -> {
 						try {
 							File videoFile = convertVideo(config, file, driver);
