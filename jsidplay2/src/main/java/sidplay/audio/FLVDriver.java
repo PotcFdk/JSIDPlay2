@@ -1,5 +1,12 @@
 package sidplay.audio;
 
+import static com.xuggle.xuggler.IAudioSamples.Format.FMT_S16;
+import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_H264;
+import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_MP3;
+import static com.xuggle.xuggler.IContainer.Type.WRITE;
+import static com.xuggle.xuggler.IPixelFormat.Type.YUV420P;
+import static com.xuggle.xuggler.IStreamCoder.Flags.FLAG_QSCALE;
+import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;
 import static java.lang.Short.BYTES;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static libsidplay.common.SamplingRate.HIGH;
@@ -24,17 +31,14 @@ import javax.sound.sampled.LineUnavailableException;
 
 import com.xuggle.xuggler.Configuration;
 import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
 import com.xuggle.xuggler.IPacket;
-import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.ConverterFactory;
-import com.xuggle.xuggler.video.IConverter;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event.Phase;
@@ -109,7 +113,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	private IRational videoFrameRate, audioFrameRate;
 
 	private int frameNo;
-	private long firstTimeStamp, firstTimeStamp2;
+	private long firstVideoTimeStamp, firstAudioTimeStamp;
 	private ByteBuffer sampleBuffer;
 
 	@Override
@@ -119,83 +123,78 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		this.context = context;
 
 		recordingFilename = getRecordingFilename(recordingFilename);
-
+		File recordingFile = new File(recordingFilename);
+		if (recordingFile.isFile() && recordingFile.exists()) {
+			recordingFile.delete();
+		}
 		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
 				|| audioSection.getSamplingRate() == HIGH) {
 			throw new IniConfigException("Sampling rate is not supported by FLV encoder, use default",
 					() -> audioSection.setSamplingRate(LOW));
 		}
-
-		if (new File(recordingFilename).exists()) {
-			new File(recordingFilename).delete();
-		}
-
 		container = IContainer.make();
-		IContainerFormat containerFormat_live = IContainerFormat.make();
-		containerFormat_live.setOutputFormat("flv", recordingFilename, null);
+		IContainerFormat containerFormat = IContainerFormat.make();
+		containerFormat.setOutputFormat("flv", recordingFilename, null);
 		container.setInputBufferLength(0);
-		int retVal = container.open(recordingFilename, IContainer.Type.WRITE, containerFormat_live);
-		if (retVal < 0) {
+		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
 			throw new IOException("Could not open output container for live stream");
 		}
 		videoFrameRate = IRational.make((int) cpuClock.getScreenRefresh(), 1);
 		audioFrameRate = IRational.make(cfg.getFrameRate(), 1);
 
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
+		IStream stream = container.addNewStream(CODEC_ID_H264);
 		videoCoder = stream.getStreamCoder();
 		videoCoder.setNumPicturesInGroupOfPictures(12);
 		videoCoder.setBitRate(250000);
 		videoCoder.setBitRateTolerance(10000);
-		videoCoder.setPixelType(IPixelFormat.Type.YUV420P);
-		videoCoder.setHeight(VIC.MAX_HEIGHT);
-		videoCoder.setWidth(VIC.MAX_WIDTH);
-		videoCoder.setFlag(IStreamCoder.Flags.FLAG_QSCALE, true);
+		videoCoder.setPixelType(YUV420P);
+		videoCoder.setHeight(MAX_HEIGHT);
+		videoCoder.setWidth(MAX_WIDTH);
+		videoCoder.setFlag(FLAG_QSCALE, true);
 		videoCoder.setGlobalQuality(0);
 		videoCoder.setFrameRate(videoFrameRate);
 		videoCoder.setTimeBase(IRational.make(videoFrameRate.getDenominator(), videoFrameRate.getNumerator()));
 		presets("libx264-normal.ffpreset");
 //		presets("libx264-hq.ffpreset");
-		videoCoder.setAutomaticallyStampPacketsForStream(true);
 		videoCoder.open(null, null);
 
-		IStream audioStream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		IStream audioStream = container.addNewStream(CODEC_ID_MP3);
 		audioCoder = audioStream.getStreamCoder();
 		audioCoder.setChannels(cfg.getChannels());
-		audioCoder.setSampleFormat(IAudioSamples.Format.FMT_S16);
+		audioCoder.setSampleFormat(FMT_S16);
 		audioCoder.setSampleRate(cfg.getFrameRate());
 		audioCoder.open(null, null);
 
 		container.writeHeader();
 
 		frameNo = 0;
-		firstTimeStamp = 0;
-		firstTimeStamp2 = 0;
+		firstVideoTimeStamp = 0;
+		firstAudioTimeStamp = 0;
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * BYTES * cfg.getChannels()).order(LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		int numSamples = sampleBuffer.position() / 4;
-
 		long now = context.getTime(Phase.PHI2);
-		if (firstTimeStamp2 == 0) {
-			firstTimeStamp2 = context.getTime(Phase.PHI2);
+		if (firstAudioTimeStamp == 0) {
+			firstAudioTimeStamp = now;
 		}
-		long timeStamp = (now - firstTimeStamp2); // convert to microseconds
+		long timeStamp = now - firstAudioTimeStamp;
 
 		IPacket packet = IPacket.make();
-		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), IAudioSamples.Format.FMT_S16);
+		int numSamples = sampleBuffer.position() / 4;
+		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
 		((Buffer) sampleBuffer).flip();
 		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.remaining());
 		samples.setTimeBase(audioFrameRate);
 		samples.setTimeStamp(timeStamp);
-		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), IAudioSamples.Format.FMT_S16, 0);
+		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, 0);
 
 		int samplesConsumed = 0;
 		while (samplesConsumed < samples.getNumSamples()) {
 			int retval = audioCoder.encodeAudio(packet, samples, samplesConsumed);
 			if (retval < 0) {
-				throw new InterruptedException("変換失敗");
+				throw new RuntimeException("Error writing audio stream");
 			}
 			samplesConsumed += retval;
 			if (packet.isComplete()) {
@@ -206,31 +205,28 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 
 	@Override
 	public void accept(VIC vic) {
-
 		long now = context.getTime(Phase.PHI2);
-		if (firstTimeStamp == 0) {
-			firstTimeStamp = context.getTime(Phase.PHI2);
+		if (firstVideoTimeStamp == 0) {
+			firstVideoTimeStamp = now;
 		}
-		long timeStamp = (now - firstTimeStamp); // convert to microseconds
-
-		BufferedImage image = new BufferedImage(VIC.MAX_WIDTH, VIC.MAX_HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
-		to3ByteGBR(vic.getPixels(), image.getRaster());
+		long timeStamp = now - firstVideoTimeStamp;
 
 		IPacket packet = IPacket.make();
-		IConverter converter = ConverterFactory.createConverter(image, IPixelFormat.Type.YUV420P);
-
-		IVideoPicture outFrame = converter.toPicture(image, timeStamp);
-		if (frameNo == 0) {
-			// make first frame keyframe
-			outFrame.setKeyFrame(true);
-		}
+		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
+		to3ByteGBR(vic.getPixels(), image.getRaster());
+		IVideoPicture outFrame = ConverterFactory.createConverter(image, YUV420P).toPicture(image, timeStamp);
+		outFrame.setKeyFrame(frameNo++ == 0);
 		outFrame.setQuality(0);
-		videoCoder.encodeVideo(packet, outFrame, 0);
-		outFrame.delete();
-		if (packet.isComplete()) {
-			container.writePacket(packet);
+
+		if (videoCoder.encodeVideo(packet, outFrame, 0) < 0) {
+			throw new RuntimeException("Error writing video stream");
 		}
-		container.flushPackets();
+		if (packet.isComplete()) {
+			if (container.writePacket(packet) < 0) {
+				throw new RuntimeException("Could not write packet!");
+			}
+		}
+		outFrame.delete();
 	}
 
 	@Override
@@ -268,9 +264,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		try {
 			props.load(is);
 		} catch (IOException e) {
-			System.err.println(
-					"You need the libx264-normal.ffpreset file from the Xuggle distribution in your classpath.");
-			System.exit(1);
+			throw new RuntimeException("You need the libx264-normal.ffpreset file in your classpath.");
 		}
 		Configuration.configure(props, videoCoder);
 	}
