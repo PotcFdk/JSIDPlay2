@@ -99,7 +99,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 
 		@Override
 		protected String getRecordingFilename(String recordingFilename) {
-			// Note: a local recording file name is overriden
+			// Note: a local recording file name is overridden by RTMP URL
 			return this.recordingFilename;
 		}
 
@@ -139,7 +139,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
 			throw new IOException("Could not open output container for live stream");
 		}
-		videoFrameRate = IRational.make((int) cpuClock.getScreenRefresh(), 1);
+		videoFrameRate = IRational.make(cpuClock.getCyclesPerFrame() / 72, (int) cpuClock.getCpuFrequency() / 72);
 		audioFrameRate = IRational.make(cfg.getFrameRate(), 1);
 
 		IStream stream = container.addNewStream(CODEC_ID_H264);
@@ -153,9 +153,9 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		videoCoder.setFlag(FLAG_QSCALE, true);
 		videoCoder.setGlobalQuality(0);
 		videoCoder.setFrameRate(videoFrameRate);
-		videoCoder.setTimeBase(IRational.make(videoFrameRate.getDenominator(), videoFrameRate.getNumerator()));
-		presets("libx264-normal.ffpreset");
-//		presets("libx264-hq.ffpreset");
+		videoCoder.setTimeBase(videoFrameRate);
+//		configurePresets("libx264-normal.ffpreset");
+		configurePresets("libx264-hq.ffpreset");
 		videoCoder.open(null, null);
 
 		IStream audioStream = container.addNewStream(CODEC_ID_MP3);
@@ -258,22 +258,19 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		return ".flv";
 	}
 
-	private void presets(String presetName) {
+	private void configurePresets(String presetName) {
 		Properties props = new Properties();
-		InputStream is = FLVDriver.class.getResourceAsStream(presetName);
-		try {
+		try (InputStream is = FLVDriver.class.getResourceAsStream(presetName)) {
 			props.load(is);
-		} catch (IOException e) {
-			throw new RuntimeException("You need the libx264-normal.ffpreset file in your classpath.");
+		} catch (IOException | NullPointerException e) {
+			throw new RuntimeException("You need the " + presetName + " in your classpath.");
 		}
 		Configuration.configure(props, videoCoder);
 	}
 
 	private void to3ByteGBR(IntBuffer pixels, WritableRaster writableRaster) {
-		byte[] src = new byte[MAX_WIDTH * MAX_HEIGHT * 3];
-
 		((Buffer) pixels).clear();
-		ByteBuffer pictureBuffer = ByteBuffer.wrap(src);
+		ByteBuffer pictureBuffer = ByteBuffer.wrap(((DataBufferByte) writableRaster.getDataBuffer()).getData());
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
 			// ignore ALPHA channel (ARGB channel order)
@@ -281,7 +278,6 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 			pictureBuffer.put((byte) ((pixel >> 8 & 0xff)));
 			pictureBuffer.put((byte) ((pixel >> 16 & 0xff)));
 		}
-		System.arraycopy(src, 0, ((DataBufferByte) writableRaster.getDataBuffer()).getData(), 0, src.length);
 	}
 
 	protected abstract String getRecordingFilename(String recordingFilename);
