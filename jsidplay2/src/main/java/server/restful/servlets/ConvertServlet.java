@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import com.beust.jcommander.JCommander;
@@ -57,7 +58,7 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
-	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://haendel.ddns.net/live/test";
+	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://haendel.ddns.net/live/";
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -124,7 +125,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				JCommander.newBuilder().addObject(servletParameters).programName(getClass().getName()).build()
 						.parse(args);
 
-				AudioDriver driver = getAudioDriverOfVideoFormat(config);
+				UUID uuid = UUID.randomUUID();
+				AudioDriver driver = getAudioDriverOfVideoFormat(config, uuid);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
@@ -142,7 +144,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}).start();
 
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-					response.setHeader("Location", RTMP_SERVER_LIVE_TEST);
+					response.setHeader("Location", RTMP_SERVER_LIVE_TEST + uuid);
 				} else {
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
@@ -206,20 +208,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private AudioDriver getAudioDriverOfVideoFormat(IConfig config) {
+	private AudioDriver getAudioDriverOfVideoFormat(IConfig config, UUID uuid) {
 		switch (getVideoFormat(config)) {
 		case FLV:
-			return new FLVStreamDriver("rtmp://localhost/live/test");
+		default:
+			return new FLVStreamDriver("rtmp://localhost/live/" + uuid);
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
-		default:
 			return new MP4FileDriver();
 		}
 	}
 
 	private Audio getVideoFormat(final IConfig config) {
-		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4);
+		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV);
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
