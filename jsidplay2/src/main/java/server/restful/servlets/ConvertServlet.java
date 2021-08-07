@@ -209,7 +209,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private AudioDriver getAudioDriverOfVideoFormat(IConfig config) {
 		switch (getVideoFormat(config)) {
 		case FLV:
-			return new FLVStreamDriver(RTMP_SERVER_LIVE_TEST);
+			return new FLVStreamDriver("rtmp://localhost/live/test");
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
