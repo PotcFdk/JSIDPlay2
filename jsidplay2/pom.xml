@@ -18,7 +18,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<debug>false</debug>
+		<debug>true</debug>
 		<debuglevel>lines,vars,source</debuglevel>
 		<doclint>none</doclint>
 		<codebase>https://haendel.ddns.net/~ken/</codebase>

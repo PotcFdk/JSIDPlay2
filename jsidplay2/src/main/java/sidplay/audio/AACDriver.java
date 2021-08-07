@@ -137,7 +137,7 @@ public abstract class AACDriver implements AudioDriver {
 		out = getOut(recordingFilename);
 		try {
 			if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == HIGH) {
-				throw new IniConfigException("Sampling rate is not supported by AACEncoder",
+				throw new IniConfigException("Sampling rate is not supported by AACEncoder, use default",
 						() -> audioSection.setSamplingRate(MEDIUM));
 			}
 			aacEncoder = AACAudioEncoder.builder().channels(cfg.getChannels()).sampleRate(cfg.getFrameRate())

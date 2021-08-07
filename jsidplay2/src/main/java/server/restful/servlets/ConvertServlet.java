@@ -40,6 +40,7 @@ import sidplay.audio.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
+import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
@@ -55,6 +56,8 @@ import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
+
+	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://localhost/live/test";
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -109,6 +112,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
 				convertAudio(config, file, driver, servletParameters.getSong());
+				response.setStatus(HttpServletResponse.SC_OK);
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
 
@@ -127,20 +131,36 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
-				File videoFile = convertVideo(config, file, driver);
-				copy(videoFile, response.getOutputStream());
-				videoFile.delete();
+				if (getVideoFormat(config) == Audio.FLV) {
+					new Thread(() -> {
+						try {
+							File videoFile = convertVideo(config, file, driver);
+							videoFile.delete();
+						} catch (IOException | SidTuneError e) {
+							e.printStackTrace();
+						}
+					}).start();
+
+					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+					response.setHeader("Location", RTMP_SERVER_LIVE_TEST);
+				} else {
+					File videoFile = convertVideo(config, file, driver);
+					copy(videoFile, response.getOutputStream());
+					videoFile.delete();
+
+					response.setStatus(HttpServletResponse.SC_OK);
+				}
 			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
+				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
 			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
-		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	private String[] getRequestParameters(HttpServletRequest request) {
@@ -151,7 +171,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {
-		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
+		switch (getAudioFormat(config)) {
 		case WAV:
 			return new WAVStreamDriver(outputstream);
 		case FLAC:
@@ -166,6 +186,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case SID_REG:
 			return new SIDRegStreamDriver(outputstream);
 		}
+	}
+
+	private Audio getAudioFormat(IConfig config) {
+		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3);
 	}
 
 	private void convertAudio(IConfig config, File file, AudioDriver driver, Integer song)
@@ -183,13 +207,19 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private AudioDriver getAudioDriverOfVideoFormat(IConfig config) {
-		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4)) {
+		switch (getVideoFormat(config)) {
+		case FLV:
+			return new FLVStreamDriver(RTMP_SERVER_LIVE_TEST);
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
 		default:
 			return new MP4FileDriver();
 		}
+	}
+
+	private Audio getVideoFormat(final IConfig config) {
+		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP4);
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {

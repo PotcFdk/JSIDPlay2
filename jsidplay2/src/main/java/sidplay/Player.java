@@ -772,8 +772,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
 		if (getAudio() != null) {
 			setAudioAndDriver(audioSection.getAudio(), audioSection.getAudio().getAudioDriver(audioSection, tune));
-			verifyConfiguration(sidplay2Section);
+			if (getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
+				sidplay2Section.setLoop(false);
+				System.out.println("Warning: Loop has been disabled during recording!");
+			}
 		}
+		verifyConfiguration(sidplay2Section);
 		// open audio driver
 		getAudioDriver().open(audioSection, getRecordingFilename(), c64.getClock(), c64.getEventScheduler());
 
@@ -822,12 +826,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
 		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
-			throw new IniConfigException("Unknown song length in record mode",
+			throw new IniConfigException("Unknown song length in record mode, use default",
 					() -> sidplaySection.setDefaultPlayLength(180));
-		}
-		if (getAudioDriver().isRecording() && sidplaySection.isLoop()) {
-			sidplaySection.setLoop(false);
-			System.out.println("Warning: Loop has been disabled during recording!");
 		}
 		if (getAudio() == Audio.LIVE_SID_DUMP && (tune == RESET || tune.getInfo().getPlayAddr() == 0)) {
 			throw new RuntimeException("SIDDump audio driver requires a well-known player address of the tune");

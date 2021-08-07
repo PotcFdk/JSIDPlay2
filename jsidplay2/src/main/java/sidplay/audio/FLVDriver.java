@@ -122,7 +122,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 
 		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
 				|| audioSection.getSamplingRate() == HIGH) {
-			throw new IniConfigException("Sampling rate is not supported by FLV encoder",
+			throw new IniConfigException("Sampling rate is not supported by FLV encoder, use default",
 					() -> audioSection.setSamplingRate(LOW));
 		}
 
@@ -237,8 +237,12 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	public void close() {
 		if (container != null) {
 			container.writeTrailer();
-			audioCoder.close();
-			videoCoder.close();
+			if (audioCoder != null) {
+				audioCoder.close();
+			}
+			if (videoCoder != null) {
+				videoCoder.close();
+			}
 			container.close();
 		}
 	}

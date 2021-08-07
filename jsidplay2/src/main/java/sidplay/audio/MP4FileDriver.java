@@ -67,7 +67,7 @@ public class MP4FileDriver implements AudioDriver, VideoDriver {
 		this.recordingFilename = recordingFilename;
 		try {
 			if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == HIGH) {
-				throw new IniConfigException("Sampling rate is not supported by AACEncoder",
+				throw new IniConfigException("Sampling rate is not supported by AACEncoder, use default",
 						() -> audioSection.setSamplingRate(MEDIUM));
 			}
 			System.out.println("Recording, file=" + recordingFilename);
