@@ -57,7 +57,7 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
-	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://localhost/live/test";
+	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://haendel.ddns.net/live/test";
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
