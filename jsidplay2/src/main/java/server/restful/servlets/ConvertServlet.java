@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static java.lang.String.format;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
 import static libsidutils.ZipFileUtils.copy;
@@ -22,6 +23,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import org.apache.http.HttpHeaders;
 
 import com.beust.jcommander.JCommander;
 
@@ -59,7 +62,8 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
-	private static final String RTMP_SERVER_LIVE_TEST = "rtmp://haendel.ddns.net/live/";
+	private static final String RTMP_UPLOAD_URL = "rtmp://localhost/live/%s";
+	private static final String RTMP_DOWNLOAD_URL = "rtmp://haendel.ddns.net/live/%s";
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -127,6 +131,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						.parse(args);
 
 				UUID uuid = UUID.randomUUID();
+
 				AudioDriver driver = getAudioDriverOfVideoFormat(config, uuid);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
@@ -145,7 +150,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}).start();
 
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-					response.setHeader("Location", RTMP_SERVER_LIVE_TEST + uuid);
+					response.setHeader(HttpHeaders.LOCATION, format(RTMP_DOWNLOAD_URL, uuid));
 				} else {
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
@@ -213,7 +218,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (getVideoFormat(config)) {
 		case FLV:
 		default:
-			return new FLVStreamDriver("rtmp://localhost/live/" + uuid);
+			return new FLVStreamDriver(format(RTMP_UPLOAD_URL, uuid));
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
