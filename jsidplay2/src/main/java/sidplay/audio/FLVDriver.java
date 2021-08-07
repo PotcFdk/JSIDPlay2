@@ -147,13 +147,13 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		videoCoder.setNumPicturesInGroupOfPictures(12);
 		videoCoder.setBitRate(250000);
 		videoCoder.setBitRateTolerance(10000);
+		videoCoder.setFrameRate(videoFrameRate);
+		videoCoder.setTimeBase(videoFrameRate);
 		videoCoder.setPixelType(YUV420P);
 		videoCoder.setHeight(MAX_HEIGHT);
 		videoCoder.setWidth(MAX_WIDTH);
 		videoCoder.setFlag(FLAG_QSCALE, true);
 		videoCoder.setGlobalQuality(0);
-		videoCoder.setFrameRate(videoFrameRate);
-		videoCoder.setTimeBase(videoFrameRate);
 //		configurePresets("libx264-normal.ffpreset");
 		configurePresets("libx264-hq.ffpreset");
 		videoCoder.open(null, null);
