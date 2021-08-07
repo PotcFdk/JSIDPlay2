@@ -44,23 +44,62 @@ import libsidplay.config.IAudioSection;
 import sidplay.audio.exceptions.IniConfigException;
 
 /**
- * Allows FLD file write and as an alternative creating a real-time video stream
+ * Allows FLV file write and as an alternative creating a real-time video stream
  * via RTMP protocol e.g. "rtmp://localhost/live/test" in conjunction with nginx
  * server with installed RTMP module.
  * 
  * Follow instructions here to setup a RTMP enabled web-server:
  * https://programmer.ink/think/5e368f92922ac.html
  * 
- * <pre>
- * Uncomment // recordingFilename = "rtmp://localhost/live/test"
- * and start:
- * sudo /usr/local/nginx/sbin/nginx
- * </pre>
- * 
  * @author ken
  *
  */
-public class FLVFileDriver implements AudioDriver, VideoDriver {
+public abstract class FLVDriver implements AudioDriver, VideoDriver {
+
+	/**
+	 * File based driver to create a FLV file.
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class FLVFileDriver extends FLVDriver {
+
+		@Override
+		protected String getRecordingFilename(String recordingFilename) {
+			System.out.println("Recording, file=" + recordingFilename);
+			return recordingFilename;
+		}
+
+	}
+
+	/**
+	 * Driver to write into an FLV output stream.<BR>
+	 *
+	 * E.g "rtmp://localhost/live/test" <B>Note:</B> RTMP enabled web-server must be
+	 * running (e.g. nging + rtmp module)
+	 *
+	 *
+	 * <B>Note:</B> RTMP enabled web-server must be started beforehand (e.g. sudo
+	 * /usr/local/nginx/sbin/nginx)
+	 *
+	 * @author Ken Händel
+	 *
+	 */
+	public static class FLVStreamDriver extends FLVDriver {
+
+		private String recordingFilename;
+
+		public FLVStreamDriver(String rtmpUrl) {
+			this.recordingFilename = rtmpUrl;
+		}
+
+		@Override
+		protected String getRecordingFilename(String recordingFilename) {
+			// Note: a local recording file name is overriden
+			return this.recordingFilename;
+		}
+
+	}
 
 	private EventScheduler context;
 	private AudioConfig cfg;
@@ -79,17 +118,17 @@ public class FLVFileDriver implements AudioDriver, VideoDriver {
 		this.cfg = new AudioConfig(audioSection);
 		this.context = context;
 
+		recordingFilename = getRecordingFilename(recordingFilename);
+
 		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
 				|| audioSection.getSamplingRate() == HIGH) {
 			throw new IniConfigException("Sampling rate is not supported by FLV encoder",
 					() -> audioSection.setSamplingRate(LOW));
 		}
 
-		// Produce live video stream
-//		recordingFilename = "rtmp://localhost/live/test";
-		// or Produce file
-		new File(recordingFilename).delete();
-		System.out.println("Recording, file=" + recordingFilename);
+		if (new File(recordingFilename).exists()) {
+			new File(recordingFilename).delete();
+		}
 
 		container = IContainer.make();
 		IContainerFormat containerFormat_live = IContainerFormat.make();
@@ -221,7 +260,7 @@ public class FLVFileDriver implements AudioDriver, VideoDriver {
 
 	private void presets(String presetName) {
 		Properties props = new Properties();
-		InputStream is = FLVFileDriver.class.getResourceAsStream(presetName);
+		InputStream is = FLVDriver.class.getResourceAsStream(presetName);
 		try {
 			props.load(is);
 		} catch (IOException e) {
@@ -247,4 +286,5 @@ public class FLVFileDriver implements AudioDriver, VideoDriver {
 		System.arraycopy(src, 0, ((DataBufferByte) writableRaster.getDataBuffer()).getData(), 0, src.length);
 	}
 
+	protected abstract String getRecordingFilename(String recordingFilename);
 }

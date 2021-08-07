@@ -10,6 +10,7 @@ import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import sidplay.audio.AACDriver.AACFileDriver;
 import sidplay.audio.FLACDriver.FLACFileDriver;
+import sidplay.audio.FLVDriver.FLVFileDriver;
 import sidplay.audio.MP3Driver.MP3FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpFileDriver;
 import sidplay.audio.SIDRegDriver.SIDRegFileDriver;
