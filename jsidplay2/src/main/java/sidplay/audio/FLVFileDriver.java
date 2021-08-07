@@ -2,6 +2,10 @@ package sidplay.audio;
 
 import static java.lang.Short.BYTES;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static libsidplay.common.SamplingRate.HIGH;
+import static libsidplay.common.SamplingRate.LOW;
+import static libsidplay.common.SamplingRate.MEDIUM;
+import static libsidplay.common.SamplingRate.VERY_LOW;
 import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
@@ -37,6 +41,7 @@ import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
+import sidplay.audio.exceptions.IniConfigException;
 
 /**
  * Allows FLD file write and as an alternative creating a real-time video stream
@@ -73,6 +78,12 @@ public class FLVFileDriver implements AudioDriver, VideoDriver {
 			throws IOException, LineUnavailableException, InterruptedException {
 		this.cfg = new AudioConfig(audioSection);
 		this.context = context;
+
+		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
+				|| audioSection.getSamplingRate() == HIGH) {
+			throw new IniConfigException("Sampling rate is not supported by FLV encoder",
+					() -> audioSection.setSamplingRate(LOW));
+		}
 
 		// Produce live video stream
 //		recordingFilename = "rtmp://localhost/live/test";
@@ -185,10 +196,12 @@ public class FLVFileDriver implements AudioDriver, VideoDriver {
 
 	@Override
 	public void close() {
-		container.writeTrailer();
-		audioCoder.close();
-		videoCoder.close();
-		container.close();
+		if (container != null) {
+			container.writeTrailer();
+			audioCoder.close();
+			videoCoder.close();
+			container.close();
+		}
 	}
 
 	@Override
