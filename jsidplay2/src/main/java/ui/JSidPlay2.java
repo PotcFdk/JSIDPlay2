@@ -2,11 +2,8 @@ package ui;
 
 import static sidplay.Player.LAST_MODIFIED;
 
-import java.io.File;
 import java.text.DateFormat;
-import java.util.Iterator;
 import java.util.Optional;
-import java.util.function.Function;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,13 +14,10 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.IExtendImageListener;
-import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneInfo;
-import libsidutils.PathUtils;
 import sidplay.Player;
 import ui.common.C64Window;
 
-public class JSidPlay2 extends C64Window implements IExtendImageListener, Function<SidTune, String> {
+public class JSidPlay2 extends C64Window implements IExtendImageListener {
 
 	@FXML
 	protected TabPane tabbedPane;
@@ -46,7 +40,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
 		});
 
-		util.getPlayer().setRecordingFilenameProvider(this);
 		util.getPlayer().setExtendImagePolicy(this);
 	}
 
@@ -77,28 +70,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener, Functi
 			// EXTEND_NEVER
 			return false;
 		}
-	}
-
-	/**
-	 * Provide a filename for the tune containing some tune infos.
-	 *
-	 * @see java.util.function.Function#apply(java.lang.Object)
-	 */
-	@Override
-	public String apply(SidTune tune) {
-		String defaultName = "jsidplay2";
-		if (tune == SidTune.RESET) {
-			return new File(util.getConfig().getSidplay2Section().getTmpDir(), defaultName).getAbsolutePath();
-		}
-		SidTuneInfo info = tune.getInfo();
-		Iterator<String> infos = info.getInfoString().iterator();
-		String name = infos.hasNext() ? infos.next().replaceAll("[:\\\\/*?|<>]", "_") : defaultName;
-		String filename = new File(util.getConfig().getSidplay2Section().getTmpDir(),
-				PathUtils.getFilenameWithoutSuffix(name)).getAbsolutePath();
-		if (info.getSongs() > 1) {
-			filename += String.format("-%02d", info.getCurrentSong());
-		}
-		return filename;
 	}
 
 }

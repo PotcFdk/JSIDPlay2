@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -21,6 +22,7 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
+import libsidutils.PathUtils;
 import sidplay.Player;
 import sidplay.fingerprinting.FingerprintJsonClient;
 import ui.common.Convenience;
@@ -41,7 +43,7 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
  *         SID Player main class
  */
 @Parameters(resourceBundle = "ui.JSidPlay2Main")
-public class JSidPlay2Main extends Application {
+public class JSidPlay2Main extends Application implements Function<SidTune, String> {
 
 	static {
 		DebugUtil.init();
@@ -109,6 +111,7 @@ public class JSidPlay2Main extends Application {
 
 			player = new Player(configuration);
 			player.setMenuHook(menuHook);
+			player.setRecordingFilenameProvider(this);
 			player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 
 			autostartFilenames();
@@ -158,6 +161,28 @@ public class JSidPlay2Main extends Application {
 		configService.save((Configuration) player.getConfig());
 		configService.close();
 		System.exit(0);
+	}
+
+	/**
+	 * Provide a filename for the tune containing some tune infos.
+	 *
+	 * @see java.util.function.Function#apply(java.lang.Object)
+	 */
+	@Override
+	public String apply(SidTune tune) {
+		String defaultName = "jsidplay2";
+		if (tune == SidTune.RESET) {
+			return new File(player.getConfig().getSidplay2Section().getTmpDir(), defaultName).getAbsolutePath();
+		}
+		SidTuneInfo info = tune.getInfo();
+		Iterator<String> infos = info.getInfoString().iterator();
+		String name = infos.hasNext() ? infos.next().replaceAll("[:\\\\/*?|<>]", "_") : defaultName;
+		String filename = new File(player.getConfig().getSidplay2Section().getTmpDir(),
+				PathUtils.getFilenameWithoutSuffix(name)).getAbsolutePath();
+		if (info.getSongs() > 1) {
+			filename += String.format("-%02d", info.getCurrentSong());
+		}
+		return filename;
 	}
 
 	//

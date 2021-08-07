@@ -32,6 +32,8 @@ public enum Audio {
 	AAC(AACFileDriver.class),
 	/** MP3 file write. */
 	MP3(MP3FileDriver.class),
+	/** FLV file write */
+	FLV(FLVFileDriver.class),
 	/** AVI file write. */
 	AVI(AVIFileDriver.class),
 	/** MP4 file write. */
@@ -48,6 +50,8 @@ public enum Audio {
 	LIVE_AAC(ProxyDriver.class, JavaSound.class, AACFileDriver.class),
 	/** Java Sound API plus MP3 file write. */
 	LIVE_MP3(ProxyDriver.class, JavaSound.class, MP3FileDriver.class),
+	/** Java Sound API plus FLV file write. */
+	LIVE_FLV(ProxyDriver.class, JavaSound.class, FLVFileDriver.class),
 	/** Java Sound API plus AVI file write. */
 	LIVE_AVI(ProxyDriver.class, JavaSound.class, AVIFileDriver.class),
 	/** MP4 file write. */

@@ -50,6 +50,10 @@
 			<id>lib</id>
 			<url>file://${basedir}/lib</url>
 		</repository>
+		  <repository>
+		    <id>xuggle repo</id>
+		    <url>https://files.liferay.com/mirrors/xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+		  </repository>
 	</repositories>
 
 	<profiles>
@@ -177,6 +181,11 @@
 		    <groupId>net.sourceforge.javaflacencoder</groupId>
 		    <artifactId>java-flac-encoder</artifactId>
 		    <version>0.3.7</version>
+		</dependency>
+		<dependency>
+		  <groupId>xuggle</groupId>
+		  <artifactId>xuggle-xuggler</artifactId>
+		  <version>5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
