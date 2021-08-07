@@ -6,6 +6,10 @@ Features:
 Better C64 breadbox/PC64 images and Composer pictures
 GameBase64: show musicians photo
 
+Recording formats:
+------------------
+FLV recordings added
+
 JSIDPlay2Server:
 ----------------
 startSong parameter added
