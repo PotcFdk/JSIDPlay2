@@ -105,12 +105,12 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 
 	}
 
+	private CPUClock cpuClock;
 	private EventScheduler context;
 	private AudioConfig cfg;
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
-	private IRational videoFrameRate, audioFrameRate;
 
 	private int frameNo;
 	private long firstVideoTimeStamp, firstAudioTimeStamp;
@@ -119,8 +119,9 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		this.cfg = new AudioConfig(audioSection);
+		this.cpuClock = cpuClock;
 		this.context = context;
+		this.cfg = new AudioConfig(audioSection);
 
 		recordingFilename = getRecordingFilename(recordingFilename);
 		File recordingFile = new File(recordingFilename);
@@ -139,8 +140,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
 			throw new IOException("Could not open output container for live stream");
 		}
-		videoFrameRate = IRational.make(cpuClock.getCyclesPerFrame() / 72, (int) cpuClock.getCpuFrequency() / 72);
-		audioFrameRate = IRational.make(cfg.getFrameRate(), 1);
+		IRational videoFrameRate = IRational.make((int) cpuClock.getCpuFrequency(), cpuClock.getCyclesPerFrame());
 
 		IStream stream = container.addNewStream(CODEC_ID_H264);
 		videoCoder = stream.getStreamCoder();
@@ -148,7 +148,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		videoCoder.setBitRate(250000);
 		videoCoder.setBitRateTolerance(10000);
 		videoCoder.setFrameRate(videoFrameRate);
-		videoCoder.setTimeBase(videoFrameRate);
+		videoCoder.setTimeBase(IRational.make(videoFrameRate.getDenominator(), videoFrameRate.getNumerator()));
 		videoCoder.setPixelType(YUV420P);
 		videoCoder.setHeight(MAX_HEIGHT);
 		videoCoder.setWidth(MAX_WIDTH);
@@ -162,7 +162,11 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		audioCoder = audioStream.getStreamCoder();
 		audioCoder.setChannels(cfg.getChannels());
 		audioCoder.setSampleFormat(FMT_S16);
+		audioCoder.setBitRate(128000);
+		audioCoder.setBitRateTolerance(audioCoder.getBitRate() / 2);
 		audioCoder.setSampleRate(cfg.getFrameRate());
+		audioCoder.setTimeBase(IRational.make(1, cfg.getFrameRate()));
+		audioCoder.setGlobalQuality(0);
 		audioCoder.open(null, null);
 
 		container.writeHeader();
@@ -186,7 +190,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
 		((Buffer) sampleBuffer).flip();
 		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.remaining());
-		samples.setTimeBase(audioFrameRate);
+		samples.setTimeBase(IRational.make(1, (int) cpuClock.getCpuFrequency()));
 		samples.setTimeStamp(timeStamp);
 		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, 0);
 
@@ -215,6 +219,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
 		to3ByteGBR(vic.getPixels(), image.getRaster());
 		IVideoPicture outFrame = ConverterFactory.createConverter(image, YUV420P).toPicture(image, timeStamp);
+		outFrame.setTimeBase(IRational.make(1, (int) cpuClock.getCpuFrequency()));
 		outFrame.setKeyFrame(frameNo++ == 0);
 		outFrame.setQuality(0);
 
@@ -232,6 +237,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void close() {
 		if (container != null) {
+			container.flushPackets();
 			container.writeTrailer();
 			if (audioCoder != null) {
 				audioCoder.close();
