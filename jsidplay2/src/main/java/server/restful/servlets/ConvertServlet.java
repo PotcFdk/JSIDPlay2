@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.lang.String.format;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
 import static libsidutils.ZipFileUtils.copy;
@@ -62,8 +61,14 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
-	private static final String RTMP_UPLOAD_URL = "rtmp://localhost/live/%s";
-	private static final String RTMP_DOWNLOAD_URL = "rtmp://haendel.ddns.net/live/%s";
+	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
+			"rtmp://localhost/live");
+
+	private static final String RTMP_INTERNAL_DOWNLOAD_URL = System.getProperty("rtmp.internal.download.url",
+			"rtmp://haendel.ddns.net/live");
+
+	private static final String RTMP_EXTERNAL_DOWNLOAD_URL = System.getProperty("rtmp.external.download.url",
+			"rtmp://haendel.ddns.net/live");
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -150,7 +155,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}).start();
 
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-					response.setHeader(HttpHeaders.LOCATION, format(RTMP_DOWNLOAD_URL, uuid));
+					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr()) + "/" + uuid);
 				} else {
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
@@ -218,7 +223,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (getVideoFormat(config)) {
 		case FLV:
 		default:
-			return new FLVStreamDriver(format(RTMP_UPLOAD_URL, uuid));
+			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid);
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
@@ -241,4 +246,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 		return videoFile;
 	}
+
+	private String getRTMPUrl(String remoteAddress) {
+		boolean isLocal = remoteAddress.startsWith("192.168.");
+		return isLocal ? RTMP_INTERNAL_DOWNLOAD_URL : RTMP_EXTERNAL_DOWNLOAD_URL;
+	}
+
 }
