@@ -55,6 +55,9 @@ import sidplay.audio.exceptions.IniConfigException;
  * Follow instructions here to setup a RTMP enabled web-server:
  * https://programmer.ink/think/5e368f92922ac.html
  * 
+ * Supported formats:
+ * https://stackoverflow.com/questions/9727590/what-codecs-does-xuggler-support
+ * 
  * @author ken
  *
  */

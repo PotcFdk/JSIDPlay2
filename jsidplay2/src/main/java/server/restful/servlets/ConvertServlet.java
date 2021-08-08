@@ -147,8 +147,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				if (driver instanceof FLVDriver) {
 					new Thread(() -> {
 						try {
-							File videoFile = convertVideo(config, file, driver);
-							videoFile.delete();
+							convertVideo(config, file, driver).delete();
 						} catch (IOException | SidTuneError e) {
 							e.printStackTrace();
 						}
@@ -184,7 +183,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {
-		switch (getAudioFormat(config)) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
 		case WAV:
 			return new WAVStreamDriver(outputstream);
 		case FLAC:
@@ -199,10 +198,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case SID_REG:
 			return new SIDRegStreamDriver(outputstream);
 		}
-	}
-
-	private Audio getAudioFormat(IConfig config) {
-		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3);
 	}
 
 	private void convertAudio(IConfig config, File file, AudioDriver driver, Integer song)
@@ -220,7 +215,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private AudioDriver getAudioDriverOfVideoFormat(IConfig config, UUID uuid) {
-		switch (getVideoFormat(config)) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV)) {
 		case FLV:
 		default:
 			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid);
@@ -229,10 +224,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case MP4:
 			return new MP4FileDriver();
 		}
-	}
-
-	private Audio getVideoFormat(final IConfig config) {
-		return Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV);
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
