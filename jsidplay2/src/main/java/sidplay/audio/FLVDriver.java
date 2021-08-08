@@ -111,9 +111,9 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
-
 	private int frameNo;
-	private long firstVideoTimeStamp, firstAudioTimeStamp;
+	private long firstTimeStamp;
+
 	private ByteBuffer sampleBuffer;
 
 	@Override
@@ -172,24 +172,22 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		container.writeHeader();
 
 		frameNo = 0;
-		firstVideoTimeStamp = 0;
-		firstAudioTimeStamp = 0;
+		firstTimeStamp = 0;
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * BYTES * cfg.getChannels()).order(LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
 		long now = context.getTime(Phase.PHI2);
-		if (firstAudioTimeStamp == 0) {
-			firstAudioTimeStamp = now;
+		if (firstTimeStamp == 0) {
+			firstTimeStamp = now;
 		}
-		long timeStamp = now - firstAudioTimeStamp;
+		long timeStamp = now - firstTimeStamp;
 
 		IPacket packet = IPacket.make();
-		int numSamples = sampleBuffer.position() / 4;
+		int numSamples = sampleBuffer.position() >> 2;
 		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
-		((Buffer) sampleBuffer).flip();
-		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.remaining());
+		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
 		samples.setTimeBase(IRational.make(1, (int) cpuClock.getCpuFrequency()));
 		samples.setTimeStamp(timeStamp);
 		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, 0);
@@ -210,10 +208,10 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void accept(VIC vic) {
 		long now = context.getTime(Phase.PHI2);
-		if (firstVideoTimeStamp == 0) {
-			firstVideoTimeStamp = now;
+		if (firstTimeStamp == 0) {
+			firstTimeStamp = now;
 		}
-		long timeStamp = now - firstVideoTimeStamp;
+		long timeStamp = now - firstTimeStamp;
 
 		IPacket packet = IPacket.make();
 		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
