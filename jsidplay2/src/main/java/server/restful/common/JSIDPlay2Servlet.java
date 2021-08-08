@@ -46,15 +46,15 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public abstract String getServletPath();
 
 	protected void doGet(HttpServletRequest request) {
-		log(requestURI(request) + queryString(request) + remoteAddr(request) + memory());
+		log(requestURI(request) + queryString(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void doPost(HttpServletRequest request) {
-		log(requestURI(request) + remoteAddr(request) + memory());
+		log(requestURI(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void doPut(HttpServletRequest request) {
-		log(requestURI(request) + remoteAddr(request) + memory());
+		log(requestURI(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void info(String msg) {
@@ -158,6 +158,19 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		StringBuilder result = new StringBuilder();
 		result.append(", from ");
 		result.append(request.getRemoteAddr());
+		result.append(" (");
+		result.append(request.getRemotePort());
+		result.append(")");
+		return result.toString();
+	}
+
+	private String localAddr(HttpServletRequest request) {
+		StringBuilder result = new StringBuilder();
+		result.append(", to ");
+		result.append(request.getLocalAddr());
+		result.append(" (");
+		result.append(request.getLocalPort());
+		result.append(")");
 		return result.toString();
 	}
 
