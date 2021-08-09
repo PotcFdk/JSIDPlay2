@@ -80,10 +80,11 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	}
 
 	/**
-	 * Driver to write into an FLV output stream.<BR>
+	 * Driver to upload real-time video stream via RTMP protocol to a web
+	 * server.<BR>
 	 *
 	 * E.g "rtmp://localhost/live/test" <B>Note:</B> RTMP enabled web-server must be
-	 * running (e.g. nging + rtmp module)
+	 * running (e.g. nginx + rtmp module)
 	 *
 	 *
 	 * <B>Note:</B> RTMP enabled web-server must be started beforehand (e.g. sudo
@@ -94,16 +95,16 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	 */
 	public static class FLVStreamDriver extends FLVDriver {
 
-		private String recordingFilename;
+		private String rtmpUrl;
 
 		public FLVStreamDriver(String rtmpUrl) {
-			this.recordingFilename = rtmpUrl;
+			this.rtmpUrl = rtmpUrl;
 		}
 
 		@Override
 		protected String getRecordingFilename(String recordingFilename) {
 			// Note: a local recording file name is overridden by RTMP URL
-			return this.recordingFilename;
+			return this.rtmpUrl;
 		}
 
 	}
@@ -166,7 +167,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		audioCoder.setChannels(cfg.getChannels());
 		audioCoder.setSampleFormat(FMT_S16);
 		audioCoder.setBitRate(128000);
-		audioCoder.setBitRateTolerance(audioCoder.getBitRate() / 2);
+		audioCoder.setBitRateTolerance(audioCoder.getBitRate() >> 1);
 		audioCoder.setSampleRate(cfg.getFrameRate());
 		audioCoder.setTimeBase(IRational.make(1, cfg.getFrameRate()));
 		audioCoder.setGlobalQuality(0);

@@ -50,6 +50,7 @@ import sidplay.audio.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
 import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
+import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.ini.IniConfig;
 import ui.common.Convenience;
 import ui.common.filefilter.CartFileFilter;
@@ -57,6 +58,7 @@ import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.config.Configuration;
+import ui.entities.config.WhatsSidSection;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -227,12 +229,22 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
+		final WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+		String url = whatsSidSection.getUrl();
+		String username = whatsSidSection.getUsername();
+		String password = whatsSidSection.getPassword();
+		int connectionTimeout = whatsSidSection.getConnectionTimeout();
+
 		Player player = new Player(config);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				config.getSidplay2Section().getTmpDir());
 		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
+		player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
+		player.setWhatsSidHook(musicInfoWithConfidence -> {
+		});
+
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
 		return videoFile;
