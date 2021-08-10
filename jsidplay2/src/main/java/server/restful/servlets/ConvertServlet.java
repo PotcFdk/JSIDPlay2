@@ -183,7 +183,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						try {
 							convertVideo(config, file, driver).delete();
 						} catch (IOException | SidTuneError e) {
-							e.printStackTrace();
+							log("Error converting video!", e);
 						}
 					}).start();
 
