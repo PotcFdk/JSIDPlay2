@@ -144,8 +144,6 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
 			throw new IOException("Could not open output container for live stream");
 		}
-		IRational videoFrameRate = IRational.make((int) cpuClock.getCpuFrequency(), cpuClock.getCyclesPerFrame());
-
 		IStream stream = container.addNewStream(CODEC_ID_H264);
 		videoCoder = stream.getStreamCoder();
 		videoCoder.setNumPicturesInGroupOfPictures(12);
@@ -154,8 +152,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		videoCoder.setBitRateTolerance(10000);
 //		videoCoder.setBitRate(512000);
 //		videoCoder.setBitRateTolerance(50000);
-		videoCoder.setFrameRate(videoFrameRate);
-		videoCoder.setTimeBase(IRational.make(videoFrameRate.getDenominator(), videoFrameRate.getNumerator()));
+		videoCoder.setTimeBase(IRational.make(1 / cpuClock.getScreenRefresh()));
 		videoCoder.setPixelType(YUV420P);
 		videoCoder.setHeight(MAX_HEIGHT);
 		videoCoder.setWidth(MAX_WIDTH);
@@ -173,7 +170,6 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		audioCoder.setBitRate(128000);
 		audioCoder.setBitRateTolerance(audioCoder.getBitRate() >> 1);
 		audioCoder.setSampleRate(cfg.getFrameRate());
-		audioCoder.setTimeBase(IRational.make(1, cfg.getFrameRate()));
 		audioCoder.setGlobalQuality(0);
 		audioCoder.open(null, null);
 
@@ -190,15 +186,13 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		if (firstTimeStamp == 0) {
 			firstTimeStamp = now;
 		}
-		long timeStamp = now - firstTimeStamp;
+		long timeStamp = (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
 
 		IPacket packet = IPacket.make();
 		int numSamples = sampleBuffer.position() >> 2;
 		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
 		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
-		samples.setTimeBase(IRational.make(1, (int) cpuClock.getCpuFrequency()));
-		samples.setTimeStamp(timeStamp);
-		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, 0);
+		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, timeStamp);
 
 		int samplesConsumed = 0;
 		while (samplesConsumed < samples.getNumSamples()) {
@@ -219,13 +213,12 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		if (firstTimeStamp == 0) {
 			firstTimeStamp = now;
 		}
-		long timeStamp = now - firstTimeStamp;
+		long timeStamp = (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
 
 		IPacket packet = IPacket.make();
 		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
 		to3ByteGBR(vic.getPixels(), image.getRaster());
 		IVideoPicture outFrame = ConverterFactory.createConverter(image, YUV420P).toPicture(image, timeStamp);
-		outFrame.setTimeBase(IRational.make(1, (int) cpuClock.getCpuFrequency()));
 		outFrame.setKeyFrame(frameNo++ == 0);
 		outFrame.setQuality(0);
 
