@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
 import static libsidutils.ZipFileUtils.copy;
@@ -30,6 +31,8 @@ import com.beust.jcommander.JCommander;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import libsidplay.common.Event;
+import libsidplay.common.Event.Phase;
 import libsidplay.config.IConfig;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -62,6 +65,8 @@ import ui.entities.config.WhatsSidSection;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
+
+	private static final int PRESS_SPACE_INTERVALL = 30;
 
 	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
 			"rtmp://localhost/live");
@@ -244,7 +249,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 		player.setWhatsSidHook(musicInfoWithConfidence -> {
 		});
-
+		player.setInteractivityHook(pl -> {
+			// press space every N seconds
+			long time = pl.getC64().getEventScheduler().getTime(Phase.PHI2);
+			long seconds = time / (int) pl.getC64().getClock().getCpuFrequency();
+			if (seconds % PRESS_SPACE_INTERVALL == 0) {
+				pl.getC64().getKeyboard().keyPressed(SPACE);
+				pl.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Key Released: " + SPACE.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						pl.getC64().getKeyboard().keyReleased(SPACE);
+					}
+				});
+			}
+		});
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
 		return videoFile;

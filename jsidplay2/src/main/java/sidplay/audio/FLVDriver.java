@@ -149,8 +149,11 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		IStream stream = container.addNewStream(CODEC_ID_H264);
 		videoCoder = stream.getStreamCoder();
 		videoCoder.setNumPicturesInGroupOfPictures(12);
+		// TODO add audio configuration
 		videoCoder.setBitRate(250000);
 		videoCoder.setBitRateTolerance(10000);
+//		videoCoder.setBitRate(512000);
+//		videoCoder.setBitRateTolerance(50000);
 		videoCoder.setFrameRate(videoFrameRate);
 		videoCoder.setTimeBase(IRational.make(videoFrameRate.getDenominator(), videoFrameRate.getNumerator()));
 		videoCoder.setPixelType(YUV420P);
@@ -166,6 +169,7 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 		audioCoder = audioStream.getStreamCoder();
 		audioCoder.setChannels(cfg.getChannels());
 		audioCoder.setSampleFormat(FMT_S16);
+//		audioCoder.setBitRate(320000);
 		audioCoder.setBitRate(128000);
 		audioCoder.setBitRateTolerance(audioCoder.getBitRate() >> 1);
 		audioCoder.setSampleRate(cfg.getFrameRate());
