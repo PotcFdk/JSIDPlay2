@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.apache.http.HttpHeaders;
@@ -31,9 +32,12 @@ import com.beust.jcommander.JCommander;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import libsidplay.C64;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.config.IConfig;
+import libsidplay.config.IEmulationSection;
+import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -81,6 +85,29 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
 	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
 	private static final CartFileFilter cartFileFilter = new CartFileFilter();
+
+	private Consumer<Player> interactivityHook = player -> {
+		final IEmulationSection emulationSection = player.getConfig().getEmulationSection();
+		final IWhatsSidSection whatsSidSection = player.getConfig().getWhatsSidSection();
+
+		final C64 c64 = player.getC64();
+		long time = c64.getEventScheduler().getTime(Phase.PHI2);
+		long seconds = time / (int) c64.getClock().getCpuFrequency();
+		if ((seconds % PRESS_SPACE_INTERVALL == 0) && !c64.getKeyboard().getKeysDown().contains(SPACE)) {
+			// press space every N seconds
+			c64.getKeyboard().keyPressed(SPACE);
+			c64.getEventScheduler().schedule(new Event("Key Released: " + SPACE.name()) {
+				@Override
+				public void event() throws InterruptedException {
+					c64.getKeyboard().keyReleased(SPACE);
+				}
+			}, (long) (c64.getClock().getCpuFrequency() + 1));
+			// after chip model has been detected: disable WhatsSID
+			if (emulationSection.getOverrideSection().getSidModel()[0] != null) {
+				whatsSidSection.setEnable(false);
+			}
+		}
+	};
 
 	public ConvertServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -247,22 +274,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
 		player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
-		player.setWhatsSidHook(musicInfoWithConfidence -> {
-		});
-		player.setInteractivityHook(pl -> {
-			// press space every N seconds
-			long time = pl.getC64().getEventScheduler().getTime(Phase.PHI2);
-			long seconds = time / (int) pl.getC64().getClock().getCpuFrequency();
-			if (seconds % PRESS_SPACE_INTERVALL == 0) {
-				pl.getC64().getKeyboard().keyPressed(SPACE);
-				pl.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Key Released: " + SPACE.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						pl.getC64().getKeyboard().keyReleased(SPACE);
-					}
-				});
-			}
-		});
+		player.setInteractivityHook(interactivityHook);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
 		return videoFile;
