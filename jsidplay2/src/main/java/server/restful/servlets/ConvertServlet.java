@@ -90,6 +90,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		final IEmulationSection emulationSection = player.getConfig().getEmulationSection();
 		final IWhatsSidSection whatsSidSection = player.getConfig().getWhatsSidSection();
 
+		// after chip model has been detected: disable WhatsSID
+		if (emulationSection.getOverrideSection().getSidModel()[0] != null && whatsSidSection.isEnable()) {
+			whatsSidSection.setEnable(false);
+		}
 		final C64 c64 = player.getC64();
 		long time = c64.getEventScheduler().getTime(Phase.PHI2);
 		long seconds = time / (int) c64.getClock().getCpuFrequency();
@@ -102,10 +106,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					c64.getKeyboard().keyReleased(SPACE);
 				}
 			}, (long) (c64.getClock().getCpuFrequency() + 1));
-			// after chip model has been detected: disable WhatsSID
-			if (emulationSection.getOverrideSection().getSidModel()[0] != null && whatsSidSection.isEnable()) {
-				whatsSidSection.setEnable(false);
-			}
 		}
 	};
 
