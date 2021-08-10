@@ -236,7 +236,6 @@ public abstract class FLVDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void close() {
 		if (container != null) {
-			container.flushPackets();
 			container.writeTrailer();
 			if (audioCoder != null) {
 				audioCoder.close();

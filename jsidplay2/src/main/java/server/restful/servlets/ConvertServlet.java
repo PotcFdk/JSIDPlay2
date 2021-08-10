@@ -103,7 +103,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				}
 			}, (long) (c64.getClock().getCpuFrequency() + 1));
 			// after chip model has been detected: disable WhatsSID
-			if (emulationSection.getOverrideSection().getSidModel()[0] != null) {
+			if (emulationSection.getOverrideSection().getSidModel()[0] != null && whatsSidSection.isEnable()) {
 				whatsSidSection.setEnable(false);
 			}
 		}
@@ -268,6 +268,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 		Player player = new Player(config);
+		File root = configuration.getSidplay2Section().getHvsc();
+		if (root != null) {
+			player.getConfig().getSidplay2Section().setHvsc(root);
+		}
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				config.getSidplay2Section().getTmpDir());
 		videoFile.deleteOnExit();
@@ -281,7 +285,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private String getRTMPUrl(String remoteAddress) {
-		boolean isLocal = remoteAddress.startsWith("192.168.");
+		boolean isLocal = remoteAddress.startsWith("192.168.") || remoteAddress.equals("127.0.0.1");
 		return isLocal ? RTMP_INTERNAL_DOWNLOAD_URL : RTMP_EXTERNAL_DOWNLOAD_URL;
 	}
 
