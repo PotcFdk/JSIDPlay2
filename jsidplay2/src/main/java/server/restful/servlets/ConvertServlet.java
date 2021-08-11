@@ -53,7 +53,7 @@ import sidplay.audio.FLACDriver.FLACStreamDriver;
 import sidplay.audio.FLVDriver;
 import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
-import sidplay.audio.MP4FileDriver;
+import sidplay.audio.MP4Driver.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
 import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
