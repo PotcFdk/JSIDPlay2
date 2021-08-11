@@ -15,7 +15,7 @@ public abstract class MP4Driver extends XuggleDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class MP4FileDriver extends XuggleDriver {
+	public static class MP4FileDriver extends MP4Driver {
 
 		@Override
 		protected String getRecordingFilename(String recordingFilename) {
@@ -23,26 +23,26 @@ public abstract class MP4Driver extends XuggleDriver {
 			return recordingFilename;
 		}
 
-		@Override
-		protected String getOutputFormatName() {
-			return "mpeg4";
-		}
+	}
 
-		@Override
-		protected ID getVideoCodec() {
-			return CODEC_ID_H264;
-		}
+	@Override
+	protected String getOutputFormatName() {
+		return "mpeg4";
+	}
 
-		@Override
-		protected ID getAudioCodec() {
-			return CODEC_ID_AAC;
-		}
+	@Override
+	protected ID getVideoCodec() {
+		return CODEC_ID_H264;
+	}
 
-		@Override
-		public String getExtension() {
-			return ".mp4";
-		}
+	@Override
+	protected ID getAudioCodec() {
+		return CODEC_ID_AAC;
+	}
 
+	@Override
+	public String getExtension() {
+		return ".mp4";
 	}
 
 }

@@ -21,7 +21,7 @@ import sidplay.audio.xuggle.XuggleDriver;
  * @author ken
  *
  */
-public abstract class FLVDriver {
+public abstract class FLVDriver extends XuggleDriver {
 
 	/**
 	 * File based driver to create a FLV file.
@@ -29,32 +29,12 @@ public abstract class FLVDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class FLVFileDriver extends XuggleDriver {
+	public static class FLVFileDriver extends FLVDriver {
 
 		@Override
 		protected String getRecordingFilename(String recordingFilename) {
 			System.out.println("Recording, file=" + recordingFilename);
 			return recordingFilename;
-		}
-
-		@Override
-		protected String getOutputFormatName() {
-			return "flv";
-		}
-
-		@Override
-		protected ID getVideoCodec() {
-			return CODEC_ID_H264;
-		}
-
-		@Override
-		protected ID getAudioCodec() {
-			return CODEC_ID_MP3;
-		}
-
-		@Override
-		public String getExtension() {
-			return ".flv";
 		}
 
 	}
@@ -73,7 +53,7 @@ public abstract class FLVDriver {
 	 * @author Ken Händel
 	 *
 	 */
-	public static class FLVStreamDriver extends XuggleDriver {
+	public static class FLVStreamDriver extends FLVDriver {
 
 		private String rtmpUrl;
 
@@ -87,26 +67,26 @@ public abstract class FLVDriver {
 			return this.rtmpUrl;
 		}
 
-		@Override
-		protected String getOutputFormatName() {
-			return "flv";
-		}
+	}
 
-		@Override
-		protected ID getVideoCodec() {
-			return CODEC_ID_H264;
-		}
+	@Override
+	protected String getOutputFormatName() {
+		return "flv";
+	}
 
-		@Override
-		protected ID getAudioCodec() {
-			return CODEC_ID_MP3;
-		}
+	@Override
+	protected ID getVideoCodec() {
+		return CODEC_ID_H264;
+	}
 
-		@Override
-		public String getExtension() {
-			return ".flv";
-		}
+	@Override
+	protected ID getAudioCodec() {
+		return CODEC_ID_MP3;
+	}
 
+	@Override
+	public String getExtension() {
+		return ".flv";
 	}
 
 }
