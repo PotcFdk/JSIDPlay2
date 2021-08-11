@@ -910,6 +910,8 @@
 									<opt>javafx.controls,javafx.web,javafx.fxml</opt>
 									<opt>--add-opens</opt>
 									<opt>java.base/java.io=org.apache.tomcat.embed.core</opt>
+									<opt>--add-opens</opt>
+									<opt>java.base/java.util.function=jcommander</opt>
 								</opts>
 							</jre>
 							<splash>

@@ -187,6 +187,7 @@ java -Djava.library.path="." \
 	--module-path ~/Downloads/jsidplay2-{version} \
 	--add-modules javafx.controls,javafx.web,javafx.fxml \
 	--add-opens java.base/java.io=org.apache.tomcat.embed.core \
+	--add-opens java.base/java.util.function=jcommander \
 	-jar jsidplay2-{version}.jar # <1>
 ----
 <1> Launch User interface version
