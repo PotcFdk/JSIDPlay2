@@ -46,7 +46,7 @@ import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletParameters;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
-import sidplay.audio.AVIFileDriver;
+import sidplay.audio.AVIDriver.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
