@@ -17,7 +17,6 @@ import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
@@ -46,7 +45,6 @@ import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.AudioConfig;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.FLVDriver;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 
@@ -69,12 +67,8 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		this.cpuClock = cpuClock;
 		this.context = context;
 		this.cfg = new AudioConfig(audioSection);
-
 		recordingFilename = getRecordingFilename(recordingFilename);
-		File recordingFile = new File(recordingFilename);
-		if (recordingFile.isFile() && recordingFile.exists()) {
-			recordingFile.delete();
-		}
+
 		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
 				|| audioSection.getSamplingRate() == HIGH) {
 			throw new IniConfigException("Sampling rate is not supported by FLV encoder, use default",
@@ -205,7 +199,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	private void configurePresets(String presetName) {
 		Properties props = new Properties();
-		try (InputStream is = FLVDriver.class.getResourceAsStream(presetName)) {
+		try (InputStream is = XuggleVideoDriver.class.getResourceAsStream(presetName)) {
 			props.load(is);
 		} catch (IOException | NullPointerException e) {
 			throw new RuntimeException("You need the " + presetName + " in your classpath.");
