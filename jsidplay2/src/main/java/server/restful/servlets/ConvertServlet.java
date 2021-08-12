@@ -262,6 +262,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		final WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
+		boolean enable = whatsSidSection.isEnable();
 		String url = whatsSidSection.getUrl();
 		String username = whatsSidSection.getUsername();
 		String password = whatsSidSection.getPassword();
@@ -272,6 +273,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		if (root != null) {
 			player.getConfig().getSidplay2Section().setHvsc(root);
 		}
+		config.getWhatsSidSection().setEnable(enable);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
 				config.getSidplay2Section().getTmpDir());
 		videoFile.deleteOnExit();
