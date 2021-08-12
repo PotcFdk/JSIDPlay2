@@ -1,69 +1,20 @@
-/*
- * AAC audio driver
- * 
- * Quelle: https://videoencoding.websmith.de/encoding-theorie/der-audiocodec-aac.html
- * 
- * AAC ist ein von der MPEG Group (Moving Picture Experts Group) entwickeltes, verlustbehaftetes Audio Kompressionsverfahren.
- * Es wurde als Weiterentwicklung von MPEG-2 im MPEG-2-Standard spezifiziert.
- * Bei der Entwicklung wurden die bekannten Schwächen und Probleme des MP3 Kodierungsverfahrens mit einkalkuliert und
- * erheblich verbessert.
- *
- * Nun, die Klangqualität ist hervorragend. Sie hat jedoch Ihren Preis, und
- * nur sehr wenige Vlog und Videoforen Betreiber werden in die Lizenzkosten investieren.
- * Und an diesem Punkt werden Open Source Lösungen wie FAAC (Free Advanced Audio Codec) interessant.
- * Der AAC Audiocodec hat den großen Vorteil, daß er bereits bei Bitraten um die 64 kb (einigermaßen) gute Qualität
- * in Stereo bieten kann.
- *
- * Für den AAC Audiocodec wurden, wie auch für den H.264 Videocodec, verschiedene Profile definiert.
- * In diesem Fall jedoch von der International Organization for Standardization, kurz ISO genannt.
- * Sie erleichtern vor allem den Hardwareherstellern den Umgang mit diesem Kompressionsverfahren.
- * Die gängisten Profile werden wir hier kurz vorstellen.
- * Low Complexity Profil (AAC-LC)
- *
- * Hauptsächlich für mittlere bis hohe Bitraten gedacht. Dieses Profil wird von den meisten AAC-fähigen
- * Hardware Endgeräten unterstützt. Aufgrund seinen Vorteilen hinsichtlich der Encodier- und Decodiereffizienz
- * und der besseren Klangqualität bei höheren Bitraten ist dieses Profil das am meisten verbreitetste Profil bei
- * allen Hardwareherstellern und den Bereitstellern von Musicstores.
- * Main Profil (AAC Main)
- *
- * Dieses Profil ist für niedrigere bis mittlere Bitraten gedacht. Aufgrund seiner, im Vergleich zu AAC-LC,
- * viel höheren Encodier- und Decodierleistung ist dieses Profil verhältnismäßig uneffizient. Die Klangqualität ist
- * bei mittleren Bitraten besser als die des AAC-LC Profils, rechtfertigt aber keinesfalls diese Uneffizienz.
- * High Efficiency Profil (HE-AAC)
- *
- * Dieses Profil ist ebenfalls für niedrigere bis mittlere Bitraten gedacht.
- * Jedoch bietet es durch die technische Implementierung der Spektralband Replikation, kurz SBR genannt,
- * eine wesentlich bessere Qualität bei sehr niedrigen bis mittleren Bitraten als bei den beiden anderen Profilen.
- * Das High Efficiency Profil für den Audiocodec AAC wird hauptsächlich im Streamingbereich eingesetzt.
- * Bei höheren Bitraten jedoch ist die Klangqualität des AAC-LC Profils wiederum besser.
-*/
 package sidplay.audio;
-
-import static libsidplay.common.SamplingRate.HIGH;
-import static libsidplay.common.SamplingRate.MEDIUM;
-import static libsidplay.common.SamplingRate.VERY_LOW;
-import static sidplay.audio.Audio.AAC;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-import javax.sound.sampled.LineUnavailableException;
+import com.xuggle.xuggler.ICodec.ID;
 
-import org.sheinbergon.aac.encoder.AACAudioEncoder;
-import org.sheinbergon.aac.encoder.AACAudioOutput;
-import org.sheinbergon.aac.encoder.AACAudioOutput.Accumulator;
-import org.sheinbergon.aac.encoder.util.AACEncodingProfile;
+import sidplay.audio.xuggle.XuggleAudioDriver;
 
-import libsidplay.common.CPUClock;
-import libsidplay.common.EventScheduler;
-import libsidplay.common.OS;
-import libsidplay.config.IAudioSection;
-import sidplay.audio.exceptions.IniConfigException;
-
-public abstract class AACDriver implements AudioDriver {
+/**
+ * File based driver to create a AAC file.
+ *
+ * @author Ken Händel
+ *
+ */
+public abstract class AACDriver extends XuggleAudioDriver {
 
 	/**
 	 * File based driver to create a AAC file.
@@ -86,7 +37,7 @@ public abstract class AACDriver implements AudioDriver {
 				try {
 					((FileOutputStream) out).close();
 				} catch (IOException e) {
-					throw new RuntimeException("Error closing FLAC audio stream", e);
+					throw new RuntimeException("Error closing AAC audio stream", e);
 				} finally {
 					out = null;
 				}
@@ -120,83 +71,18 @@ public abstract class AACDriver implements AudioDriver {
 
 	}
 
-	/**
-	 * Output stream to write the encoded AAC to.
-	 */
-	protected OutputStream out;
-
-	private AACAudioEncoder aacEncoder;
-	private int factor;
-
-	private ByteBuffer sampleBuffer;
-
 	@Override
-	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
-			throws IOException, LineUnavailableException, InterruptedException {
-		AudioConfig cfg = new AudioConfig(audioSection);
-		out = getOut(recordingFilename);
-		try {
-			if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == HIGH) {
-				throw new IniConfigException("Sampling rate is not supported by AACEncoder, use default",
-						() -> audioSection.setSamplingRate(MEDIUM));
-			}
-			aacEncoder = AACAudioEncoder.builder().channels(cfg.getChannels()).sampleRate(cfg.getFrameRate())
-					.profile(AACEncodingProfile.AAC_LC).build();
-
-			sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
-					.order(ByteOrder.LITTLE_ENDIAN);
-
-			factor = Math.max(1, sampleBuffer.capacity() / aacEncoder.inputBufferSize());
-
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Error: Java for Windows, Linux or OSX is required to use " + AAC + " video driver!");
-			if (OS.get() == OS.LINUX) {
-				System.err.println("Try to install it yourself, use the following command and start JSIDPlay2 again:");
-				System.err.println("sudo apt-get install libfdk-aac-dev");
-			}
-			throw e;
-		}
+	protected String getOutputFormatName() {
+		return "adts";
 	}
 
 	@Override
-	public void write() throws InterruptedException {
-		try {
-			Accumulator aacAccumulator = AACAudioOutput.accumulator();
-			int offset = 0;
-			for (int i = 0; i < factor; i++) {
-
-				byte[] buffer = new byte[Math.min(sampleBuffer.position() - offset, aacEncoder.inputBufferSize())];
-				System.arraycopy(sampleBuffer.array(), offset, buffer, 0, buffer.length);
-
-				aacEncoder.encode(aacAccumulator, buffer);
-
-				offset += aacEncoder.inputBufferSize();
-			}
-			out.write(aacAccumulator.done().data());
-		} catch (ArrayIndexOutOfBoundsException | IOException e) {
-			throw new RuntimeException("Error writing AAC audio stream", e);
-		}
-	}
-
-	@Override
-	public void close() {
-	}
-
-	@Override
-	public ByteBuffer buffer() {
-		return sampleBuffer;
-	}
-
-	@Override
-	public boolean isRecording() {
-		return true;
+	protected ID getAudioCodec() {
+		return ID.CODEC_ID_AAC;
 	}
 
 	@Override
 	public String getExtension() {
 		return ".aac";
 	}
-
-	protected abstract OutputStream getOut(String recordingFilename) throws IOException;
-
 }
