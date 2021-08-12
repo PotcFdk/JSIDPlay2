@@ -5,9 +5,9 @@ import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_H264;
 
 import com.xuggle.xuggler.ICodec.ID;
 
-import sidplay.audio.xuggle.XuggleDriver;
+import sidplay.audio.xuggle.XuggleVideoDriver;
 
-public abstract class MP4Driver extends XuggleDriver {
+public abstract class MP4Driver extends XuggleVideoDriver {
 
 	/**
 	 * File based driver to create a MP4 file.

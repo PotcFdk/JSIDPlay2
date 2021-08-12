@@ -5,7 +5,7 @@ import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_MP3;
 
 import com.xuggle.xuggler.ICodec.ID;
 
-import sidplay.audio.xuggle.XuggleDriver;
+import sidplay.audio.xuggle.XuggleVideoDriver;
 
 /**
  * Allows FLV file write and as an alternative creating a real-time video stream
@@ -21,7 +21,7 @@ import sidplay.audio.xuggle.XuggleDriver;
  * @author ken
  *
  */
-public abstract class FLVDriver extends XuggleDriver {
+public abstract class FLVDriver extends XuggleVideoDriver {
 
 	/**
 	 * File based driver to create a FLV file.

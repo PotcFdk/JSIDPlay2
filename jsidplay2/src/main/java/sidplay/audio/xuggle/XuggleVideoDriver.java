@@ -50,7 +50,7 @@ import sidplay.audio.FLVDriver;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 
-public abstract class XuggleDriver implements AudioDriver, VideoDriver {
+public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	private CPUClock cpuClock;
 	private EventScheduler context;
@@ -182,11 +182,14 @@ public abstract class XuggleDriver implements AudioDriver, VideoDriver {
 			container.writeTrailer();
 			if (audioCoder != null) {
 				audioCoder.close();
+				audioCoder = null;
 			}
 			if (videoCoder != null) {
 				videoCoder.close();
+				videoCoder = null;
 			}
 			container.close();
+			container = null;
 		}
 	}
 

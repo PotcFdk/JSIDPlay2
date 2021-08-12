@@ -163,11 +163,6 @@
 			<version>0.1.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sourceforge.javaflacencoder</groupId>
-			<artifactId>java-flac-encoder</artifactId>
-			<version>0.3.7</version>
-		</dependency>
-		<dependency>
 			<groupId>xuggle</groupId>
 			<artifactId>xuggle-xuggler</artifactId>
 			<version>5.4</version>
