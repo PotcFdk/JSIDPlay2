@@ -48,6 +48,12 @@ import sidplay.audio.AudioDriver;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 
+/**
+ * http://127.0.1.1:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/Instinct+BoozeDesign%20-%20Andropolis/Instinct+BoozeDesign%20-%20Andropolis.d64?defaultLength=06:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60
+ * 
+ * @author ken
+ *
+ */
 public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	private CPUClock cpuClock;
@@ -85,8 +91,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		videoCoder = stream.getStreamCoder();
 		videoCoder.setNumPicturesInGroupOfPictures(12);
 		// TODO add audio configuration
-		videoCoder.setBitRate(250000);
-		videoCoder.setBitRateTolerance(10000);
+		videoCoder.setBitRate(200000);
+//		videoCoder.setBitRate(250000);
+		videoCoder.setBitRateTolerance(videoCoder.getBitRate() >> 1);
 //			videoCoder.setBitRate(512000);
 //			videoCoder.setBitRateTolerance(50000);
 		videoCoder.setTimeBase(IRational.make(1 / cpuClock.getScreenRefresh()));
@@ -95,7 +102,8 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		videoCoder.setWidth(MAX_WIDTH);
 		videoCoder.setFlag(FLAG_QSCALE, true);
 		videoCoder.setGlobalQuality(0);
-//			configurePresets("libx264-normal.ffpreset");
+//		configurePresets("libx264-veryfast.ffpreset");
+//		configurePresets("libx264-normal.ffpreset");
 		configurePresets("libx264-hq.ffpreset");
 		videoCoder.open(null, null);
 
