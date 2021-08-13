@@ -7,10 +7,6 @@ import static com.xuggle.xuggler.IStreamCoder.Flags.FLAG_QSCALE;
 import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;
 import static java.lang.Short.BYTES;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static libsidplay.common.SamplingRate.HIGH;
-import static libsidplay.common.SamplingRate.LOW;
-import static libsidplay.common.SamplingRate.MEDIUM;
-import static libsidplay.common.SamplingRate.VERY_LOW;
 import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
@@ -22,6 +18,7 @@ import java.io.InputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
 import java.util.Properties;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -41,6 +38,7 @@ import com.xuggle.xuggler.video.ConverterFactory;
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
+import libsidplay.common.SamplingRate;
 import libsidplay.components.mos656x.VIC;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.AudioConfig;
@@ -75,10 +73,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		this.cfg = new AudioConfig(audioSection);
 		recordingFilename = getRecordingFilename(recordingFilename);
 
-		if (audioSection.getSamplingRate() == VERY_LOW || audioSection.getSamplingRate() == MEDIUM
-				|| audioSection.getSamplingRate() == HIGH) {
-			throw new IniConfigException("Sampling rate is not supported by FLV encoder, use default",
-					() -> audioSection.setSamplingRate(LOW));
+		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
+			throw new IniConfigException("Sampling rate is not supported by encoder, use default",
+					() -> audioSection.setSamplingRate(getDefaultSamplingRate()));
 		}
 		container = IContainer.make();
 		IContainerFormat containerFormat = IContainerFormat.make();
@@ -228,6 +225,10 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	}
 
 	protected abstract String getOutputFormatName();
+
+	protected abstract List<SamplingRate> getSupportedSamplingRates();
+
+	protected abstract SamplingRate getDefaultSamplingRate();
 
 	protected abstract ID getVideoCodec();
 
