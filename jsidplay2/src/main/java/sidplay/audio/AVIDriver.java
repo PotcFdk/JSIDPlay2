@@ -40,7 +40,7 @@ public abstract class AVIDriver extends XuggleVideoDriver {
 
 	@Override
 	protected ID getAudioCodec() {
-		return ID.CODEC_ID_PCM_S16LE;
+		return ID.CODEC_ID_MP3;
 	}
 
 	@Override
