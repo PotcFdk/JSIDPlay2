@@ -329,7 +329,8 @@ public interface IAudioSection {
 	/**
 	 * Video Driver: Setter of the minimum number of frames between key-frames.
 	 * 
-	 * @param minimum number of frames between key-frames.
+	 * @param numPicturesInGroupOfPictures minimum number of frames between
+	 *                                     key-frames.
 	 */
 	void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures);
 
