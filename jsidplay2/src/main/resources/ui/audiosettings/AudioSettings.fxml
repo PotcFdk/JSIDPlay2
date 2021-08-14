@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
@@ -138,14 +139,46 @@
 					</TypeTextField>
 				</VBox>
 			</TitledPane>
-			<TitledPane text="%AVI_RECORDING">
+			<TitledPane text="%VIDEO_RECORDING">
 				<VBox>
-					<Label text="%AVI_VIDEO_QUALITY" fx:id="aviVideoQualityLabel" />
-					<TypeTextField type="Float" fx:id="aviVideoQuality">
+					<Label text="%AUDIO_CODER_BIT_RATE" fx:id="audioCoderBitRateLabel" />
+					<TypeTextField type="Integer" fx:id="audioCoderBitRate">
 						<tooltip>
-							<Tooltip text="%AVI_VIDEO_QUALITY_TIP" />
+							<Tooltip text="%AUDIO_CODER_BIT_RATE_TIP" />
 						</tooltip>
 					</TypeTextField>
+					<Label text="%AUDIO_CODER_BIT_RATE_TOLERANCE" fx:id="audioCoderBitRateToleranceLabel" />
+					<TypeTextField type="Integer" fx:id="audioCoderBitRateTolerance">
+						<tooltip>
+							<Tooltip text="%AUDIO_CODER_BIT_RATE_TOLERANCE_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%VIDEO_CODER_GOP" fx:id="videoCoderGOPLabel" />
+					<TypeTextField type="Integer" fx:id="videoCoderGOP">
+						<tooltip>
+							<Tooltip text="%VIDEO_CODER_GOP_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%VIDEO_CODER_BIT_RATE" fx:id="videoCoderBitRateLabel" />
+					<TypeTextField type="Integer" fx:id="videoCoderBitRate">
+						<tooltip>
+							<Tooltip text="%VIDEO_CODER_BIT_RATE_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%VIDEO_CODER_BIT_RATE_TOLERANCE" fx:id="videoCoderBitRateToleranceLabel" />
+					<TypeTextField type="Integer" fx:id="videoCoderBitRateTolerance">
+						<tooltip>
+							<Tooltip text="%VIDEO_CODER_BIT_RATE_TOLERANCE_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%VIDEO_CODER_GLOBAL_QUALITY" fx:id="videoCoderGlobalQualityLabel" />
+					<TypeTextField type="Integer" fx:id="videoCoderGlobalQuality">
+						<tooltip>
+							<Tooltip text="%VIDEO_CODER_GLOBAL_QUALITY_TIP" />
+						</tooltip>
+					</TypeTextField>
+					<Label text="%VIDEO_CODER_PRESET" fx:id="videoCoderPresetLabel" />
+					<ComboBox fx:id="videoCoderPreset" />
 				</VBox>
 			</TitledPane>
 			<TitledPane text="%EXSID">

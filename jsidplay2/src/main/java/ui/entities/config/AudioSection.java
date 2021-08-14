@@ -2,7 +2,8 @@ package ui.entities.config;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
-import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
@@ -35,6 +36,11 @@ import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GLOBAL_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GOP;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_PRESET;
 
 import java.io.File;
 
@@ -57,6 +63,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.common.VideoCoderPreset;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 import sidplay.ini.converter.BeanToStringConverter;
@@ -414,23 +421,6 @@ public class AudioSection implements IAudioSection {
 		return vbrQuality.property();
 	}
 
-	private ShadowField<FloatProperty, Number> aviCompressionQuality = new ShadowField<>(
-			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_AVI_COMPRESSION_QUALITY);
-
-	@Override
-	public float getAviCompressionQuality() {
-		return aviCompressionQuality.get().floatValue();
-	}
-
-	@Override
-	public void setAviCompressionQuality(float aviCompressionQuality) {
-		this.aviCompressionQuality.set(aviCompressionQuality);
-	}
-
-	public FloatProperty aviCompressionQualityProperty() {
-		return aviCompressionQuality.property();
-	}
-
 	private ShadowField<BooleanProperty, Boolean> delayBypass = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_DELAY_BYPASS);
 
@@ -446,6 +436,126 @@ public class AudioSection implements IAudioSection {
 
 	public BooleanProperty delayBypassProperty() {
 		return delayBypass.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> audioCoderBitRate = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_AUDIO_CODER_BIT_RATE);
+
+	@Override
+	public int getAudioCoderBitRate() {
+		return audioCoderBitRate.get().intValue();
+	}
+
+	@Override
+	public void setAudioCoderBitRate(int bitRate) {
+		this.audioCoderBitRate.set(bitRate);
+	}
+
+	public IntegerProperty audioCoderBitRateProperty() {
+		return audioCoderBitRate.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> audioCoderBitRateTolerance = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE);
+
+	@Override
+	public int getAudioCoderBitRateTolerance() {
+		return audioCoderBitRateTolerance.get().intValue();
+	}
+
+	@Override
+	public void setAudioCoderBitRateTolerance(int bitRateTolerance) {
+		this.audioCoderBitRateTolerance.set(bitRateTolerance);
+	}
+
+	public IntegerProperty audioCoderBitRateToleranceProperty() {
+		return audioCoderBitRateTolerance.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> videoCoderNumPicturesInGroupOfPictures = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_GOP);
+
+	@Override
+	public int getVideoCoderNumPicturesInGroupOfPictures() {
+		return videoCoderNumPicturesInGroupOfPictures.get().intValue();
+	}
+
+	@Override
+	public void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures) {
+		this.videoCoderNumPicturesInGroupOfPictures.set(numPicturesInGroupOfPictures);
+	}
+
+	public IntegerProperty videoCoderNumPicturesInGroupOfPicturesProperty() {
+		return videoCoderNumPicturesInGroupOfPictures.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> videoCoderBitRate = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_BIT_RATE);
+
+	@Override
+	public int getVideoCoderBitRate() {
+		return videoCoderBitRate.get().intValue();
+	}
+
+	@Override
+	public void setVideoCoderBitRate(int bitRate) {
+		this.videoCoderBitRate.set(bitRate);
+	}
+
+	public IntegerProperty videoCoderBitRateProperty() {
+		return videoCoderBitRate.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> videoCoderBitRateTolerance = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE);
+
+	@Override
+	public int getVideoCoderBitRateTolerance() {
+		return videoCoderBitRateTolerance.get().intValue();
+	}
+
+	@Override
+	public void setVideoCoderBitRateTolerance(int bitRateTolerance) {
+		this.videoCoderBitRateTolerance.set(bitRateTolerance);
+	}
+
+	public IntegerProperty videoCoderBitRateToleranceProperty() {
+		return videoCoderBitRateTolerance.property();
+	}
+
+	private ShadowField<IntegerProperty, Number> videoCoderGlobalQuality = new ShadowField<>(
+			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_GLOBAL_QUALITY);
+
+	@Override
+	public int getVideoCoderGlobalQuality() {
+		return videoCoderGlobalQuality.get().intValue();
+	}
+
+	@Override
+	public void setVideoCoderGlobalQuality(int globalQuality) {
+		this.videoCoderGlobalQuality.set(globalQuality);
+	}
+
+	public IntegerProperty videoCoderGlobalQualityProperty() {
+		return videoCoderGlobalQuality.property();
+	}
+
+	private ShadowField<ObjectProperty<VideoCoderPreset>, VideoCoderPreset> videoCoderPreset = new ShadowField<>(
+			SimpleObjectProperty::new, DEFAULT_VIDEO_CODER_PRESET);
+
+	@Enumerated(EnumType.STRING)
+	@Override
+	public VideoCoderPreset getVideoCoderPreset() {
+		return videoCoderPreset.get();
+	}
+
+	@Override
+	public void setVideoCoderPreset(VideoCoderPreset videoEncoderPreset) {
+		this.videoCoderPreset.set(videoEncoderPreset);
+	}
+
+	public ObjectProperty<VideoCoderPreset> sidVideoEncoderPresetProperty() {
+		return videoCoderPreset.property();
 	}
 
 	private ShadowField<IntegerProperty, Number> delay = new ShadowField<>(

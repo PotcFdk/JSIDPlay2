@@ -10,6 +10,7 @@ import libsidplay.common.Engine;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.common.Ultimate64Mode;
+import libsidplay.common.VideoCoderPreset;
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.config.IAudioSection;
 import libsidplay.config.IC1541Section;
@@ -107,9 +108,14 @@ public interface IniDefaults {
 	int DEFAULT_VBR_QUALITY = AUDIO_SECTION.getVbrQuality();
 	boolean DEFAULT_PLAY_ORIGINAL = AUDIO_SECTION.isPlayOriginal();
 	File DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3();
-	float DEFAULT_AVI_COMPRESSION_QUALITY = AUDIO_SECTION.getAviCompressionQuality();
+	int DEFAULT_AUDIO_CODER_BIT_RATE = AUDIO_SECTION.getAudioCoderBitRate();
+	int DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE = AUDIO_SECTION.getAudioCoderBitRateTolerance();
+	int DEFAULT_VIDEO_CODER_GOP = AUDIO_SECTION.getVideoCoderNumPicturesInGroupOfPictures();
+	int DEFAULT_VIDEO_CODER_BIT_RATE = AUDIO_SECTION.getVideoCoderBitRate();
+	int DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE = AUDIO_SECTION.getVideoCoderBitRateTolerance();
+	int DEFAULT_VIDEO_CODER_GLOBAL_QUALITY = AUDIO_SECTION.getVideoCoderGlobalQuality();
+	VideoCoderPreset DEFAULT_VIDEO_CODER_PRESET = AUDIO_SECTION.getVideoCoderPreset();
 	boolean DEFAULT_EXSID_FAKE_STEREO = AUDIO_SECTION.isExsidFakeStereo();
-
 	boolean DEFAULT_DELAY_BYPASS = AUDIO_SECTION.getDelayBypass();
 	int DEFAULT_DELAY = AUDIO_SECTION.getDelay();
 	int DEFAULT_DELAY_WET_LEVEL = AUDIO_SECTION.getDelayWetLevel();

@@ -4,6 +4,7 @@ import java.io.File;
 
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.common.VideoCoderPreset;
 import sidplay.audio.Audio;
 
 public interface IAudioSection {
@@ -291,18 +292,107 @@ public interface IAudioSection {
 	void setVbrQuality(int vbr);
 
 	/**
-	 * Audio Driver: AVI recording - Getter of the compression quality.
-	 *
-	 * @return compression quality
+	 * Video Driver: Getter of the bit-rate to use.
+	 * 
+	 * @return bit-rate to use
 	 */
-	float getAviCompressionQuality();
+	int getAudioCoderBitRate();
 
 	/**
-	 * Audio Driver: AVI recording - Setter of the compression quality.
-	 *
-	 * @param aviCompressionQuality compression quality
+	 * Video Driver: Setter of the bit-rate to use.
+	 * 
+	 * @param bitRate bit-rate to use.
 	 */
-	void setAviCompressionQuality(float aviCompressionQuality);
+	void setAudioCoderBitRate(int bitRate);
+
+	/**
+	 * Video Driver: Getter of the bit-rate tolerance to use.
+	 * 
+	 * @return bit-rate tolerance to use.
+	 */
+	int getAudioCoderBitRateTolerance();
+
+	/**
+	 * Video Driver: Setter of the bit-rate tolerance to use.
+	 * 
+	 * @param bitRateTolerance bit-rate tolerance to use.
+	 */
+	void setAudioCoderBitRateTolerance(int bitRateTolerance);
+
+	/**
+	 * Video Driver: Getter of the minimum number of frames between key-frames.
+	 * 
+	 * @return minimum number of frames between key-frames.
+	 */
+	int getVideoCoderNumPicturesInGroupOfPictures();
+
+	/**
+	 * Video Driver: Setter of the minimum number of frames between key-frames.
+	 * 
+	 * @param minimum number of frames between key-frames.
+	 */
+	void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures);
+
+	/**
+	 * Video Driver: Getter of the bit-rate to use.
+	 * 
+	 * @return bit-rate to use
+	 */
+	int getVideoCoderBitRate();
+
+	/**
+	 * Video Driver: Setter of the bit-rate to use.
+	 * 
+	 * @param bitRate bit-rate to use
+	 */
+	void setVideoCoderBitRate(int bitRate);
+
+	/**
+	 * Video Driver: Getter of the bit-rate tolerance to use.
+	 * 
+	 * @return bit-rate tolerance to use.
+	 */
+	int getVideoCoderBitRateTolerance();
+
+	/**
+	 * Video Driver: Setter of the bit-rate tolerance to use.
+	 * 
+	 * @param bitRateTolerance bit-rate tolerance to use.
+	 */
+	void setVideoCoderBitRateTolerance(int bitRateTolerance);
+
+	/**
+	 * Video Driver: Getter of the global quality setting this codec uses if a video
+	 * picture doesn't have a quality set.
+	 * 
+	 * @return global quality setting this codec uses if a video picture doesn't
+	 *         have a quality set.
+	 */
+	int getVideoCoderGlobalQuality();
+
+	/**
+	 * Video Driver: Setter of the global quality setting this codec uses if a video
+	 * picture doesn't have a quality set.
+	 * 
+	 * @param bitGlobalQuality global quality setting this codec uses if a video
+	 *                         picture doesn't have a quality set.
+	 */
+	void setVideoCoderGlobalQuality(int bitGlobalQuality);
+
+	/**
+	 * Video Driver: Getter of the preset properties of a FFmpeg preset file
+	 * 
+	 * @return preset properties of a FFmpeg preset file
+	 */
+	VideoCoderPreset getVideoCoderPreset();
+
+	/**
+	 * Video Driver: Setter of the name of the preset properties of a FFmpeg preset
+	 * file.
+	 * 
+	 * @param preset preset properties of a FFmpeg preset file
+	 */
+	void setVideoCoderPreset(VideoCoderPreset preset);
 
 	/**
 	 * Getter of the delay bypass setting

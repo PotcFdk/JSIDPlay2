@@ -47,6 +47,18 @@ import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 
 /**
+ * The Kush Gauge: To find a decent bitrate simply multiply the target pixel
+ * count by the frame rate; then multiply the result by a factor of 1, 2 or 4,
+ * depending on the amount of motion in the video; and then multiply that result
+ * by 0.07 to get the bit rate in bps. <br>
+ * 
+ * <pre>
+ * PAL low motion:		63 * 312 * 50,1246 * 1 * 0,07	=  68.967
+ * PAL high motion:		63 * 312 * 50,1246 * 4 * 0,07	= 275.870
+ * NTSC LOW motion:		65 * 263 * 59,83   * 1 * 0,07	=  71.596
+ * NTSC high motion:	65 * 263 * 59,83   * 4 * 0,07	= 286.382
+ * </pre>
+ * 
  * E.g. stream video<BR>
  * {@code
  * http://127.0.1.1:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/Instinct+BoozeDesign%20-%20Andropolis/Instinct+BoozeDesign%20-%20Andropolis.d64?defaultLength=06:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&startTime=00:60
@@ -85,37 +97,29 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		containerFormat.setOutputFormat(getOutputFormatName(), recordingFilename, null);
 		container.setInputBufferLength(0);
 		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
-			throw new IOException("Could not open output container for live stream");
+			throw new IOException("Could not open output container");
 		}
 		IStream stream = container.addNewStream(getVideoCodec());
 		videoCoder = stream.getStreamCoder();
-		videoCoder.setNumPicturesInGroupOfPictures(12);
-		// TODO add audio configuration
-		videoCoder.setBitRate(200000);
-//		videoCoder.setBitRate(250000);
-		videoCoder.setBitRateTolerance(videoCoder.getBitRate() >> 1);
-//			videoCoder.setBitRate(512000);
-//			videoCoder.setBitRateTolerance(50000);
+		videoCoder.setNumPicturesInGroupOfPictures(audioSection.getVideoCoderNumPicturesInGroupOfPictures());
+		videoCoder.setBitRate(audioSection.getVideoCoderBitRate());
+		videoCoder.setBitRateTolerance(audioSection.getVideoCoderBitRateTolerance());
 		videoCoder.setTimeBase(IRational.make(1 / cpuClock.getScreenRefresh()));
 		videoCoder.setPixelType(YUV420P);
 		videoCoder.setHeight(MAX_HEIGHT);
 		videoCoder.setWidth(MAX_WIDTH);
 		videoCoder.setFlag(FLAG_QSCALE, true);
-		videoCoder.setGlobalQuality(0);
-//		configurePresets("libx264-veryfast.ffpreset");
-//		configurePresets("libx264-normal.ffpreset");
-		configurePresets("libx264-hq.ffpreset");
+		videoCoder.setGlobalQuality(audioSection.getVideoCoderGlobalQuality());
+		configurePresets(audioSection.getVideoCoderPreset().getPresetName());
 		videoCoder.open(null, null);
 
 		IStream audioStream = container.addNewStream(getAudioCodec());
 		audioCoder = audioStream.getStreamCoder();
 		audioCoder.setChannels(cfg.getChannels());
 		audioCoder.setSampleFormat(FMT_S16);
-//			audioCoder.setBitRate(320000);
-		audioCoder.setBitRate(128000);
-		audioCoder.setBitRateTolerance(audioCoder.getBitRate() >> 1);
+		audioCoder.setBitRate(audioSection.getAudioCoderBitRate());
+		audioCoder.setBitRateTolerance(audioSection.getAudioCoderBitRateTolerance());
 		audioCoder.setSampleRate(cfg.getFrameRate());
-		audioCoder.setGlobalQuality(0);
 		audioCoder.open(null, null);
 
 		container.writeHeader();
@@ -164,8 +168,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
 		to3ByteGBR(vic.getPixels(), image.getRaster());
 		IVideoPicture outFrame = ConverterFactory.createConverter(image, YUV420P).toPicture(image, timeStamp);
-		outFrame.setKeyFrame(frameNo++ == 0);
-		outFrame.setQuality(0);
+		if (frameNo++ == 0) {
+			outFrame.setKeyFrame(true);
+		}
 
 		if (videoCoder.encodeVideo(packet, outFrame, 0) < 0) {
 			throw new RuntimeException("Error writing video stream");

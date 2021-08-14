@@ -2,7 +2,8 @@ package sidplay.ini;
 
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_BUFFER_SIZE;
-import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_BUFFER_SIZE;
 import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
@@ -34,6 +35,11 @@ import static sidplay.ini.IniDefaults.DEFAULT_THIRD_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_THIRD_VOLUME;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GLOBAL_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GOP;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_PRESET;
 
 import java.io.File;
 
@@ -42,6 +48,7 @@ import com.beust.jcommander.Parameters;
 
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
+import libsidplay.common.VideoCoderPreset;
 import libsidplay.config.IAudioSection;
 import sidplay.audio.Audio;
 import sidplay.ini.converter.BeanToStringConverter;
@@ -310,6 +317,86 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
+	public int getAudioCoderBitRate() {
+		return iniReader.getPropertyInt(SECTION_ID, "Audio Coder Bit Rate", DEFAULT_AUDIO_CODER_BIT_RATE);
+	}
+
+	@Override
+	@Parameter(names = { "--acBitRate" }, descriptionKey = "AUDIO_CODER_BIT_RATE", order = 118)
+	public void setAudioCoderBitRate(int bitRate) {
+		iniReader.setProperty(SECTION_ID, "Audio Coder Bit Rate", bitRate);
+	}
+
+	@Override
+	public int getAudioCoderBitRateTolerance() {
+		return iniReader.getPropertyInt(SECTION_ID, "Audio Coder Bit Rate Tolerance",
+				DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE);
+	}
+
+	@Override
+	@Parameter(names = { "--acBitRateTolerance" }, descriptionKey = "AUDIO_CODER_BIT_RATE_TOLERANCE", order = 119)
+	public void setAudioCoderBitRateTolerance(int bitRateTolerance) {
+		iniReader.setProperty(SECTION_ID, "Audio Coder Bit Rate Tolerance", bitRateTolerance);
+	}
+
+	@Override
+	public int getVideoCoderNumPicturesInGroupOfPictures() {
+		return iniReader.getPropertyInt(SECTION_ID, "Video Coder GOP", DEFAULT_VIDEO_CODER_GOP);
+	}
+
+	@Override
+	@Parameter(names = { "--vcGOP" }, descriptionKey = "VIDEO_CODER_GOP", order = 120)
+	public void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures) {
+		iniReader.setProperty(SECTION_ID, "Video Coder GOP", numPicturesInGroupOfPictures);
+	}
+
+	@Override
+	public int getVideoCoderBitRate() {
+		return iniReader.getPropertyInt(SECTION_ID, "Video Coder Bit Rate", DEFAULT_VIDEO_CODER_BIT_RATE);
+	}
+
+	@Override
+	@Parameter(names = { "--vcBitRate" }, descriptionKey = "VIDEO_CODER_BIT_RATE", order = 121)
+	public void setVideoCoderBitRate(int bitRate) {
+		iniReader.setProperty(SECTION_ID, "Video Coder Bit Rate", bitRate);
+	}
+
+	@Override
+	public int getVideoCoderBitRateTolerance() {
+		return iniReader.getPropertyInt(SECTION_ID, "Video Coder Bit Rate Tolerance",
+				DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE);
+	}
+
+	@Override
+	@Parameter(names = { "--vcBitRateTolerance" }, descriptionKey = "VIDEO_CODER_BIT_RATE_TOLERANCE", order = 122)
+	public void setVideoCoderBitRateTolerance(int bitRateTolerance) {
+		iniReader.setProperty(SECTION_ID, "Video Coder Bit Rate Tolerance", bitRateTolerance);
+	}
+
+	@Override
+	public int getVideoCoderGlobalQuality() {
+		return iniReader.getPropertyInt(SECTION_ID, "Video Coder Global Quality", DEFAULT_VIDEO_CODER_GLOBAL_QUALITY);
+	}
+
+	@Override
+	@Parameter(names = { "--vcGlobalQuality" }, descriptionKey = "VIDEO_CODER_GLOBAL_QUALITY", order = 123)
+	public void setVideoCoderGlobalQuality(int globalQuality) {
+		iniReader.setProperty(SECTION_ID, "Video Coder Global Quality", globalQuality);
+	}
+
+	@Override
+	public VideoCoderPreset getVideoCoderPreset() {
+		return iniReader.getPropertyEnum(SECTION_ID, "Video Coder Preset", DEFAULT_VIDEO_CODER_PRESET,
+				VideoCoderPreset.class);
+	}
+
+	@Override
+	@Parameter(names = { "--vcPreset" }, descriptionKey = "VIDEO_CODER_PRESET", order = 124)
+	public void setVideoCoderPreset(VideoCoderPreset preset) {
+		iniReader.setProperty(SECTION_ID, "Video Coder Preset", preset);
+	}
+
+	@Override
 	public final boolean isPlayOriginal() {
 		return iniReader.getPropertyBool(SECTION_ID, "Play Original", DEFAULT_PLAY_ORIGINAL);
 	}
@@ -330,23 +417,12 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	public float getAviCompressionQuality() {
-		return iniReader.getPropertyFloat(SECTION_ID, "AVI Compression Quality", DEFAULT_AVI_COMPRESSION_QUALITY);
-	}
-
-	@Override
-	@Parameter(names = { "--aviVideoQuality" }, descriptionKey = "AVI_VIDEO_QUALITY", order = 118)
-	public void setAviCompressionQuality(float aviCompressionQuality) {
-		iniReader.setProperty(SECTION_ID, "AVI Compression Quality", aviCompressionQuality);
-	}
-
-	@Override
 	public boolean getDelayBypass() {
 		return iniReader.getPropertyBool(SECTION_ID, "Delay Bypass", DEFAULT_DELAY_BYPASS);
 	}
 
 	@Override
-	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS", arity = 1, order = 119)
+	@Parameter(names = { "--delayBypass" }, descriptionKey = "DELAY_BYPASS", arity = 1, order = 125)
 	public void setDelayBypass(boolean delayBypass) {
 		iniReader.setProperty(SECTION_ID, "Delay Bypass", delayBypass);
 	}
@@ -357,7 +433,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--delay" }, descriptionKey = "DELAY", order = 120)
+	@Parameter(names = { "--delay" }, descriptionKey = "DELAY", order = 126)
 	public void setDelay(int delay) {
 		iniReader.setProperty(SECTION_ID, "Delay", delay);
 	}
@@ -368,7 +444,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--delayWetLevel" }, descriptionKey = "DELAY_WET_LEVEL", order = 121)
+	@Parameter(names = { "--delayWetLevel" }, descriptionKey = "DELAY_WET_LEVEL", order = 127)
 	public void setDelayWetLevel(int delayWetLevel) {
 		iniReader.setProperty(SECTION_ID, "Delay Wet Level", delayWetLevel);
 	}
@@ -379,7 +455,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--delayDryLevel" }, descriptionKey = "DELAY_DRY_LEVEL", order = 122)
+	@Parameter(names = { "--delayDryLevel" }, descriptionKey = "DELAY_DRY_LEVEL", order = 128)
 	public void setDelayDryLevel(int delayDryLevel) {
 		iniReader.setProperty(SECTION_ID, "Delay Dry Level", delayDryLevel);
 	}
@@ -390,7 +466,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--delayFeedbackLevel" }, descriptionKey = "DELAY_FEEDBACK_LEVEL", order = 123)
+	@Parameter(names = { "--delayFeedbackLevel" }, descriptionKey = "DELAY_FEEDBACK_LEVEL", order = 129)
 	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
 		iniReader.setProperty(SECTION_ID, "Delay Feedback Level", delayFeedbackLevel);
 	}
@@ -401,7 +477,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS", arity = 1, order = 124)
+	@Parameter(names = { "--reverbBypass" }, descriptionKey = "REVERB_BYPASS", arity = 1, order = 130)
 	public void setReverbBypass(boolean reverbBypass) {
 		iniReader.setProperty(SECTION_ID, "Reverb Bypass", reverbBypass);
 	}
@@ -412,7 +488,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbComb1Delay" }, descriptionKey = "REVERB_COMB1_DELAY", order = 125)
+	@Parameter(names = { "--reverbComb1Delay" }, descriptionKey = "REVERB_COMB1_DELAY", order = 131)
 	public void setReverbComb1Delay(float reverbComb1Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb Comb1 Delay", reverbComb1Delay);
 	}
@@ -423,7 +499,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbComb2Delay" }, descriptionKey = "REVERB_COMB2_DELAY", order = 126)
+	@Parameter(names = { "--reverbComb2Delay" }, descriptionKey = "REVERB_COMB2_DELAY", order = 132)
 	public void setReverbComb2Delay(float reverbComb2Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb Comb2 Delay", reverbComb2Delay);
 	}
@@ -434,7 +510,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbComb3Delay" }, descriptionKey = "REVERB_COMB3_DELAY", order = 127)
+	@Parameter(names = { "--reverbComb3Delay" }, descriptionKey = "REVERB_COMB3_DELAY", order = 133)
 	public void setReverbComb3Delay(float reverbComb3Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb Comb3 Delay", reverbComb3Delay);
 	}
@@ -445,7 +521,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbComb4Delay" }, descriptionKey = "REVERB_COMB4_DELAY", order = 128)
+	@Parameter(names = { "--reverbComb4Delay" }, descriptionKey = "REVERB_COMB4_DELAY", order = 134)
 	public void setReverbComb4Delay(float reverbComb4Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb Comb4 Delay", reverbComb4Delay);
 	}
@@ -456,7 +532,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbAllPass1Delay" }, descriptionKey = "REVERB_ALL_PASS1_DELAY", order = 129)
+	@Parameter(names = { "--reverbAllPass1Delay" }, descriptionKey = "REVERB_ALL_PASS1_DELAY", order = 135)
 	public void setReverbAllPass1Delay(float reverbAllPass1Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb All Pass1 Delay", reverbAllPass1Delay);
 	}
@@ -467,7 +543,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbAllPass2Delay" }, descriptionKey = "REVERB_ALL_PASS2_DELAY", order = 130)
+	@Parameter(names = { "--reverbAllPass2Delay" }, descriptionKey = "REVERB_ALL_PASS2_DELAY", order = 136)
 	public void setReverbAllPass2Delay(float reverbAllPass2Delay) {
 		iniReader.setProperty(SECTION_ID, "Reverb All Pass2 Delay", reverbAllPass2Delay);
 	}
@@ -478,7 +554,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbSustainDelay" }, descriptionKey = "REVERB_SUSTAIN_DELAY", order = 131)
+	@Parameter(names = { "--reverbSustainDelay" }, descriptionKey = "REVERB_SUSTAIN_DELAY", order = 137)
 	public void setReverbSustainDelay(float reverbSustainDelay) {
 		iniReader.setProperty(SECTION_ID, "Reverb Sustain Delay", reverbSustainDelay);
 	}
@@ -489,7 +565,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--reverbDryWetMix" }, descriptionKey = "REVERB_DRY_WET_MIX", order = 132)
+	@Parameter(names = { "--reverbDryWetMix" }, descriptionKey = "REVERB_DRY_WET_MIX", order = 138)
 	public void setReverbDryWetMix(float reverbDryWetMix) {
 		iniReader.setProperty(SECTION_ID, "Reverb DryWetMix", reverbDryWetMix);
 	}
@@ -500,7 +576,7 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	}
 
 	@Override
-	@Parameter(names = { "--exsidFakeStereo" }, descriptionKey = "EXSID_FAKE_STEREO", arity = 1, order = 133)
+	@Parameter(names = { "--exsidFakeStereo" }, descriptionKey = "EXSID_FAKE_STEREO", arity = 1, order = 139)
 	public void setExsidFakeStereo(boolean exsidFakeStereo) {
 		iniReader.setProperty(SECTION_ID, "ExSID Fake Stereo", exsidFakeStereo);
 	}

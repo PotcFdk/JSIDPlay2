@@ -1,6 +1,7 @@
 package ui.audiosettings;
 
-import static sidplay.ini.IniDefaults.DEFAULT_AVI_COMPRESSION_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_CBR;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_BYPASS;
@@ -8,6 +9,8 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_EXSID_FAKE_STEREO;
+import static sidplay.ini.IniDefaults.DEFAULT_MP3_FILE;
+import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS1_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS2_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_BYPASS;
@@ -19,16 +22,28 @@ import static sidplay.ini.IniDefaults.DEFAULT_REVERB_DRY_WET_MIX;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_SUSTAIN_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR;
 import static sidplay.ini.IniDefaults.DEFAULT_VBR_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GLOBAL_QUALITY;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GOP;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_PRESET;
 
+import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
+import libsidplay.common.VideoCoderPreset;
 import sidplay.Player;
 import ui.common.C64Window;
+import ui.common.converter.EnumToStringConverter;
 import ui.common.converter.NumberToStringConverter;
 import ui.entities.config.AudioSection;
 
@@ -62,13 +77,21 @@ public class AudioSettings extends C64Window {
 	private Label reverbSustainDelayValue, reverbDryWetMixValue;
 
 	@FXML
-	private Label cbrLabel, vbrQualityLabel, aviVideoQualityLabel;
+	private Label cbrLabel, vbrQualityLabel, audioCoderBitRateLabel, audioCoderBitRateToleranceLabel,
+			videoCoderGOPLabel, videoCoderBitRateLabel, videoCoderBitRateToleranceLabel, videoCoderGlobalQualityLabel,
+			videoCoderPresetNameLabel;
 
 	@FXML
-	private TextField cbr, vbrQuality, aviVideoQuality;
+	private TextField cbr, vbrQuality, audioCoderBitRate, audioCoderBitRateTolerance, videoCoderGOP, videoCoderBitRate,
+			videoCoderBitRateTolerance, videoCoderGlobalQuality;
+
+	@FXML
+	private ComboBox<VideoCoderPreset> videoCoderPreset;
 
 	@FXML
 	private CheckBox vbr, exsidFakeStereo;
+
+	private ObservableList<VideoCoderPreset> videoCoderPresets;
 
 	public AudioSettings() {
 		super();
@@ -81,6 +104,7 @@ public class AudioSettings extends C64Window {
 	@FXML
 	@Override
 	protected void initialize() {
+		ResourceBundle bundle = util.getBundle();
 		AudioSection audioSection = util.getConfig().getAudioSection();
 
 		bypassDelay.selectedProperty().bindBidirectional(audioSection.delayBypassProperty());
@@ -150,8 +174,23 @@ public class AudioSettings extends C64Window {
 		vbr.selectedProperty().bindBidirectional(audioSection.vbrProperty());
 		vbrQuality.textProperty().bindBidirectional(audioSection.vbrQualityProperty(), new IntegerStringConverter());
 
-		aviVideoQuality.textProperty().bindBidirectional(audioSection.aviCompressionQualityProperty(),
+		audioCoderBitRate.textProperty().bindBidirectional(audioSection.audioCoderBitRateProperty(),
 				new NumberStringConverter());
+		audioCoderBitRateTolerance.textProperty().bindBidirectional(audioSection.audioCoderBitRateToleranceProperty(),
+				new NumberStringConverter());
+		videoCoderGOP.textProperty().bindBidirectional(audioSection.videoCoderNumPicturesInGroupOfPicturesProperty(),
+				new NumberStringConverter());
+		videoCoderBitRate.textProperty().bindBidirectional(audioSection.videoCoderBitRateProperty(),
+				new NumberStringConverter());
+		videoCoderBitRateTolerance.textProperty().bindBidirectional(audioSection.videoCoderBitRateToleranceProperty(),
+				new NumberStringConverter());
+		videoCoderGlobalQuality.textProperty().bindBidirectional(audioSection.videoCoderGlobalQualityProperty(),
+				new NumberStringConverter());
+
+		videoCoderPresets = FXCollections.<VideoCoderPreset>observableArrayList(VideoCoderPreset.values());
+		videoCoderPreset.setConverter(new EnumToStringConverter<VideoCoderPreset>(bundle));
+		videoCoderPreset.valueProperty().bindBidirectional(audioSection.sidVideoEncoderPresetProperty());
+		videoCoderPreset.setItems(videoCoderPresets);
 
 		exsidFakeStereo.selectedProperty().bindBidirectional(audioSection.exsidFakeStereoProperty());
 	}
@@ -179,8 +218,16 @@ public class AudioSettings extends C64Window {
 		audioSection.setCbr(DEFAULT_CBR);
 		audioSection.setVbr(DEFAULT_VBR);
 		audioSection.setVbrQuality(DEFAULT_VBR_QUALITY);
+		audioSection.setMp3(DEFAULT_MP3_FILE);
+		audioSection.setPlayOriginal(DEFAULT_PLAY_ORIGINAL);
 
-		audioSection.setAviCompressionQuality(DEFAULT_AVI_COMPRESSION_QUALITY);
+		audioSection.setAudioCoderBitRate(DEFAULT_AUDIO_CODER_BIT_RATE);
+		audioSection.setAudioCoderBitRateTolerance(DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE);
+		audioSection.setVideoCoderNumPicturesInGroupOfPictures(DEFAULT_VIDEO_CODER_GOP);
+		audioSection.setVideoCoderBitRate(DEFAULT_VIDEO_CODER_BIT_RATE);
+		audioSection.setVideoCoderBitRateTolerance(DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE);
+		audioSection.setVideoCoderGlobalQuality(DEFAULT_VIDEO_CODER_GLOBAL_QUALITY);
+		audioSection.setVideoCoderPreset(DEFAULT_VIDEO_CODER_PRESET);
 
 		audioSection.setExsidFakeStereo(DEFAULT_EXSID_FAKE_STEREO);
 	}
