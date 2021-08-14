@@ -9,8 +9,6 @@ import static sidplay.ini.IniDefaults.DEFAULT_DELAY_DRY_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_FEEDBACK_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DELAY_WET_LEVEL;
 import static sidplay.ini.IniDefaults.DEFAULT_EXSID_FAKE_STEREO;
-import static sidplay.ini.IniDefaults.DEFAULT_MP3_FILE;
-import static sidplay.ini.IniDefaults.DEFAULT_PLAY_ORIGINAL;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS1_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_ALL_PASS2_DELAY;
 import static sidplay.ini.IniDefaults.DEFAULT_REVERB_BYPASS;
@@ -218,8 +216,6 @@ public class AudioSettings extends C64Window {
 		audioSection.setCbr(DEFAULT_CBR);
 		audioSection.setVbr(DEFAULT_VBR);
 		audioSection.setVbrQuality(DEFAULT_VBR_QUALITY);
-		audioSection.setMp3(DEFAULT_MP3_FILE);
-		audioSection.setPlayOriginal(DEFAULT_PLAY_ORIGINAL);
 
 		audioSection.setAudioCoderBitRate(DEFAULT_AUDIO_CODER_BIT_RATE);
 		audioSection.setAudioCoderBitRateTolerance(DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE);
