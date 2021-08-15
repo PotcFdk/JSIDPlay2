@@ -44,11 +44,13 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		try {
 			WAVBean wavBean = getInput(request, WAVBean.class);
 
-			final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
-			MusicInfoWithConfidenceBean musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(),
-					whatsSidService).match(wavBean);
-			info(String.valueOf(musicInfoWithConfidence));
-
+			MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
+			if (getThreadByName("RTMP") == null) {
+				final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+				musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(), whatsSidService)
+						.match(wavBean);
+				info(String.valueOf(musicInfoWithConfidence));
+			}
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 		} catch (Throwable t) {
 			error(t);
@@ -56,4 +58,13 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			closeEntityManager();
 		}
 	}
+
+	public Thread getThreadByName(String threadName) {
+		for (Thread thread : Thread.getAllStackTraces().keySet()) {
+			if (thread.getName().equals(threadName))
+				return thread;
+		}
+		return null;
+	}
+
 }

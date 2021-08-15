@@ -37,6 +37,7 @@ import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
+import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -179,13 +180,15 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
 				if (driver instanceof FLVDriver) {
-					new Thread(() -> {
+					Thread thread = new Thread(() -> {
 						try {
 							convertVideo(config, file, driver).delete();
 						} catch (IOException | SidTuneError e) {
 							log("Error converting video!", e);
 						}
-					}).start();
+					});
+					thread.setName("RTMP");
+					thread.start();
 
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr()) + "/" + uuid);
@@ -261,6 +264,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
+		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
 		boolean enable = whatsSidSection.isEnable();
 		String url = whatsSidSection.getUrl();
@@ -268,14 +272,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		String password = whatsSidSection.getPassword();
 		int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
+		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), 600));
 		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
 			player.getConfig().getSidplay2Section().setHvsc(root);
 		}
 		config.getWhatsSidSection().setEnable(enable);
-		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(),
-				config.getSidplay2Section().getTmpDir());
+		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(), sidplay2Section.getTmpDir());
 		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
