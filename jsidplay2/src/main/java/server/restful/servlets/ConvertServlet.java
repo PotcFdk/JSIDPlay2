@@ -69,6 +69,8 @@ import ui.entities.config.WhatsSidSection;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
+	public static final String RTMP_THREAD = "RTMP";
+
 	private static final int PRESS_SPACE_INTERVALL = 30;
 
 	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
@@ -162,7 +164,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							log("Error converting video!", e);
 						}
 					});
-					thread.setName("RTMP");
+					thread.setName(RTMP_THREAD);
 					thread.start();
 
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
@@ -259,6 +261,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
 		player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
+		addPressSpaceListener(player);
+		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
+		player.stopC64(false);
+		return videoFile;
+	}
+
+	private void addPressSpaceListener(Player player) {
 		player.stateProperty().addListener(event -> {
 			if (event.getNewValue() == State.START) {
 				player.getC64().getEventScheduler().schedule(new Event("Press Space") {
@@ -289,9 +298,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				}, PRESS_SPACE_INTERVALL * player.getC64().getClock().getCyclesPerFrame());
 			}
 		});
-		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
-		player.stopC64(false);
-		return videoFile;
 	}
 
 	private String getRTMPUrl(String remoteAddress) {
