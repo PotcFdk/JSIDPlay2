@@ -71,7 +71,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String RTMP_THREAD = "RTMP";
 
-	private static final int PRESS_SPACE_INTERVALL = 30;
+	private static final int PRESS_SPACE_INTERVALL = 45;
 
 	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
 			"rtmp://localhost/live");
@@ -292,10 +292,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						}, (long) (player.getC64().getClock().getCpuFrequency() + 1));
 
 						player.getC64().getEventScheduler().schedule(this,
-								PRESS_SPACE_INTERVALL * player.getC64().getClock().getCyclesPerFrame());
+								PRESS_SPACE_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
 					}
 
-				}, PRESS_SPACE_INTERVALL * player.getC64().getClock().getCyclesPerFrame());
+				}, PRESS_SPACE_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
 			}
 		});
 	}
