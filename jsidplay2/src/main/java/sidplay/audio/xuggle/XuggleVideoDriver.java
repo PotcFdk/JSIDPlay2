@@ -34,6 +34,7 @@ import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.ConverterFactory;
+import com.xuggle.xuggler.video.IConverter;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.Event.Phase;
@@ -75,6 +76,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
+	private IConverter converter;
 	private int frameNo;
 	private long firstTimeStamp;
 
@@ -126,24 +128,21 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 		frameNo = 0;
 		firstTimeStamp = 0;
+		converter = null;
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * BYTES * cfg.getChannels()).order(LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		long now = context.getTime(Phase.PHI2);
-		if (firstTimeStamp == 0) {
-			firstTimeStamp = now;
-		}
-		long timeStamp = (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
+		long timeStamp = getTimeStamp();
 
-		IPacket packet = IPacket.make();
 		int numSamples = sampleBuffer.position() >> 2;
 		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
 		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
 		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, timeStamp);
 
 		int samplesConsumed = 0;
+		IPacket packet = IPacket.make();
 		while (samplesConsumed < samples.getNumSamples()) {
 			int retval = audioCoder.encodeAudio(packet, samples, samplesConsumed);
 			if (retval < 0) {
@@ -158,20 +157,18 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	@Override
 	public void accept(VIC vic) {
-		long now = context.getTime(Phase.PHI2);
-		if (firstTimeStamp == 0) {
-			firstTimeStamp = now;
-		}
-		long timeStamp = (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
+		long timeStamp = getTimeStamp();
 
-		IPacket packet = IPacket.make();
 		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
 		to3ByteGBR(vic.getPixels(), image.getRaster());
-		IVideoPicture outFrame = ConverterFactory.createConverter(image, YUV420P).toPicture(image, timeStamp);
+		if (converter == null) {
+			converter = ConverterFactory.createConverter(image, YUV420P);
+		}
+		IVideoPicture outFrame = converter.toPicture(image, timeStamp);
 		if (frameNo++ == 0) {
 			outFrame.setKeyFrame(true);
 		}
-
+		IPacket packet = IPacket.make();
 		if (videoCoder.encodeVideo(packet, outFrame, 0) < 0) {
 			throw new RuntimeException("Error writing video stream");
 		}
@@ -220,9 +217,17 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		Configuration.configure(props, videoCoder);
 	}
 
+	private long getTimeStamp() {
+		long now = context.getTime(Phase.PHI2);
+		if (firstTimeStamp == 0) {
+			firstTimeStamp = now;
+		}
+		return (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
+	}
+
 	private void to3ByteGBR(IntBuffer pixels, WritableRaster writableRaster) {
-		((Buffer) pixels).clear();
 		ByteBuffer pictureBuffer = ByteBuffer.wrap(((DataBufferByte) writableRaster.getDataBuffer()).getData());
+		((Buffer) pixels).clear();
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
 			// ignore ALPHA channel (ARGB channel order)
