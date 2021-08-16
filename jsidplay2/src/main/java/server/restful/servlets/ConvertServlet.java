@@ -33,9 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidplay.common.Event;
 import libsidplay.config.IConfig;
-import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
-import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
@@ -55,7 +53,6 @@ import sidplay.audio.MP4Driver.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
 import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
-import sidplay.fingerprinting.FingerprintJsonClient;
 import sidplay.ini.IniConfig;
 import sidplay.player.State;
 import ui.common.Convenience;
@@ -64,7 +61,6 @@ import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.config.Configuration;
-import ui.entities.config.WhatsSidSection;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -239,25 +235,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-		final WhatsSidSection whatsSidSection = configuration.getWhatsSidSection();
-		boolean enable = whatsSidSection.isEnable();
-		String url = whatsSidSection.getUrl();
-		String username = whatsSidSection.getUsername();
-		String password = whatsSidSection.getPassword();
-		int connectionTimeout = whatsSidSection.getConnectionTimeout();
-
 		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), 600));
+
 		Player player = new Player(config);
-		File root = configuration.getSidplay2Section().getHvsc();
-		if (root != null) {
-			player.getConfig().getSidplay2Section().setHvsc(root);
-		}
-		config.getWhatsSidSection().setEnable(enable);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(), sidplay2Section.getTmpDir());
 		videoFile.deleteOnExit();
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
-		player.setFingerPrintMatcher(new FingerprintJsonClient(url, username, password, connectionTimeout));
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
@@ -271,14 +255,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 					@Override
 					public void event() throws InterruptedException {
-						final IEmulationSection emulationSection = player.getConfig().getEmulationSection();
-						final IWhatsSidSection whatsSidSection = player.getConfig().getWhatsSidSection();
-
-						// after chip model has been detected: disable WhatsSID
-						if (emulationSection.getOverrideSection().getSidModel()[0] != null
-								&& whatsSidSection.isEnable()) {
-							whatsSidSection.setEnable(false);
-						}
 						// press space every 30 seconds
 						player.getC64().getKeyboard().keyPressed(SPACE);
 						player.getC64().getEventScheduler().schedule(new Event("Key Released: " + SPACE.name()) {
@@ -286,7 +262,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							public void event() throws InterruptedException {
 								player.getC64().getKeyboard().keyReleased(SPACE);
 							}
-						}, (long) (player.getC64().getClock().getCpuFrequency() + 1));
+						}, (long) (player.getC64().getClock().getCpuFrequency()));
 
 						player.getC64().getEventScheduler().schedule(this,
 								PRESS_SPACE_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
