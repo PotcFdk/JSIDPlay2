@@ -1,5 +1,6 @@
 package server.restful.servlets.whatssid;
 
+import static java.lang.Thread.getAllStackTraces;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
@@ -46,8 +47,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			WAVBean wavBean = getInput(request, WAVBean.class);
 
 			MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
-			if (!Thread.getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
-					.findFirst().isPresent()) {
+			if (!getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals).findFirst()
+					.isPresent()) {
 				final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
 				musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(), whatsSidService)
 						.match(wavBean);
