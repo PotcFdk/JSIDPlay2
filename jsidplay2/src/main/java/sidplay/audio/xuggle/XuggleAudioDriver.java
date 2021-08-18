@@ -46,8 +46,8 @@ public abstract class XuggleAudioDriver implements AudioDriver {
 
 		IContainerFormat containerFormat = IContainerFormat.make();
 		containerFormat.setOutputFormat(getOutputFormatName(), null, null);
-		writer.getContainer().setFormat(containerFormat);
 
+		writer.getContainer().setFormat(containerFormat);
 		if (writer.addAudioStream(0, 0, getAudioCodec(), cfg.getChannels(), cfg.getFrameRate()) < 0) {
 			throw new IOException("Could not add audio stream");
 		}
@@ -73,7 +73,7 @@ public abstract class XuggleAudioDriver implements AudioDriver {
 
 	@Override
 	public void close() {
-		if (writer != null) {
+		if (writer != null && writer.isOpen()) {
 			writer.close();
 			writer = null;
 		}
