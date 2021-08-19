@@ -27,7 +27,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsidplay2"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=&quot;${workspace_loc:jsidplay2}/target/standalone&quot; --module-path &quot;${workspace_loc:jsidplay2}/target/standalone&quot; --add-modules javafx.controls,javafx.web,javafx.fxml --add-opens java.base/java.io=org.apache.tomcat.embed.core --add-opens java.base/java.util.function=jcommander"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=&quot;${workspace_loc:jsidplay2}/target/standalone&quot; --module-path &quot;${workspace_loc:jsidplay2}/target/standalone&quot; --add-modules javafx.controls,javafx.web,javafx.fxml --add-opens java.base/java.util.function=jcommander --add-opens java.base/java.io=org.apache.tomcat.embed.core --add-opens java.base/java.util.function=jcommander"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:/jsidplay2}"/>
 <stringAttribute key="org.eclipse.tptp.platform.instrumentation.ui.SELECTED_INSTRUMENT_COLLECTOR" value="org.eclipse.tptp.platform.instrumentation.ui.instrumentCollector.jvmti"/>
 </launchConfiguration>
