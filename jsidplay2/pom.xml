@@ -50,10 +50,6 @@
 			<id>lib</id>
 			<url>file://${basedir}/lib</url>
 		</repository>
-		<repository>
-			<id>xuggle repo</id>
-			<url>https://files.liferay.com/mirrors/xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
-		</repository>
 	</repositories>
 
 	<profiles>
