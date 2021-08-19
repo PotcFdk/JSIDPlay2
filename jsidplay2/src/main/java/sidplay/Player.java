@@ -1251,9 +1251,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append("Command Line Parser (JCommander):\n");
 		credits.append("\tCopyright (©) 2010-2014 Cédric Beust\n");
 		credits.append("\thttp://jcommander.org/\n");
-		credits.append("Monte Media Library:\n");
-		credits.append("\tCopyright (©) 2012 Werner Randelshofer werner.randelshofer@bluewin.ch\n");
-		credits.append("\thttp://www.randelshofer.ch/monte/\n");
+		credits.append("Audio/Video Encoder (Xuggler):\n");
+		credits.append("\tCopyright (©) 2011 and All Rights Reserved by ConnectSolutions, LLC.\n");
+		credits.append("\thttp://www.xuggle.com/xuggler/\n");
 		credits.append("MP3 downloads from Stone Oakvalley's Authentic SID MusicCollection (SOASC=):\n");
 		credits.append("\thttp://www.6581-8580.com/\n");
 		credits.append("6510 cross assembler (Kickassembler V5.15):\n");
