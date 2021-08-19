@@ -165,7 +165,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			converter = ConverterFactory.createConverter(image, YUV420P);
 		}
 		IVideoPicture outFrame = converter.toPicture(image, timeStamp);
-		if (frameNo++ == 0) {
+		if ((frameNo++ % (int) cpuClock.getScreenRefresh()) == 0) {
 			outFrame.setKeyFrame(true);
 		}
 		IPacket packet = IPacket.make();
