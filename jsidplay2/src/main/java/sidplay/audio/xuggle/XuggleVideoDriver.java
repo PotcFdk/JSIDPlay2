@@ -12,7 +12,6 @@ import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
@@ -70,24 +69,22 @@ import sidplay.audio.exceptions.IniConfigException;
  */
 public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
-	private CPUClock cpuClock;
 	private EventScheduler context;
-	private AudioConfig cfg;
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
-	private int frameNo;
-	private long firstTimeStamp;
+	private BufferedImage vicImage;
+	private long frameNo, framesPerKeyFrames, firstTimeStamp;
+	private double ticksPerMicrosecond;
 
 	private ByteBuffer sampleBuffer;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		this.cpuClock = cpuClock;
 		this.context = context;
-		this.cfg = new AudioConfig(audioSection);
+		AudioConfig cfg = new AudioConfig(audioSection);
 		recordingFilename = getRecordingFilename(recordingFilename);
 
 		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
@@ -115,6 +112,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		configurePresets(audioSection.getVideoCoderPreset().getPresetName());
 		videoCoder.open(null, null);
 
+		vicImage = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
+		converter = ConverterFactory.createConverter(vicImage, YUV420P);
+
 		IStream audioStream = container.addNewStream(getAudioCodec());
 		audioCoder = audioStream.getStreamCoder();
 		audioCoder.setChannels(cfg.getChannels());
@@ -127,8 +127,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		container.writeHeader();
 
 		frameNo = 0;
+		ticksPerMicrosecond = cpuClock.getCpuFrequency() / 1000000;
+		framesPerKeyFrames = (int) cpuClock.getScreenRefresh();
 		firstTimeStamp = 0;
-		converter = null;
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * BYTES * cfg.getChannels()).order(LITTLE_ENDIAN);
 	}
 
@@ -137,9 +138,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		long timeStamp = getTimeStamp();
 
 		int numSamples = sampleBuffer.position() >> 2;
-		IAudioSamples samples = IAudioSamples.make(numSamples, cfg.getChannels(), FMT_S16);
+		IAudioSamples samples = IAudioSamples.make(numSamples, audioCoder.getChannels(), FMT_S16);
 		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
-		samples.setComplete(true, numSamples, cfg.getFrameRate(), cfg.getChannels(), FMT_S16, timeStamp);
+		samples.setComplete(true, numSamples, audioCoder.getSampleRate(), audioCoder.getChannels(), FMT_S16, timeStamp);
 
 		int samplesConsumed = 0;
 		IPacket packet = IPacket.make();
@@ -150,7 +151,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			}
 			samplesConsumed += retval;
 			if (packet.isComplete()) {
-				container.writePacket(packet);
+				if (container.writePacket(packet) < 0) {
+					throw new RuntimeException("Could not write packet!");
+				}
 			}
 		}
 	}
@@ -159,15 +162,11 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	public void accept(VIC vic) {
 		long timeStamp = getTimeStamp();
 
-		BufferedImage image = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
-		to3ByteGBR(vic.getPixels(), image.getRaster());
-		if (converter == null) {
-			converter = ConverterFactory.createConverter(image, YUV420P);
-		}
-		IVideoPicture outFrame = converter.toPicture(image, timeStamp);
-		if ((frameNo++ % (int) cpuClock.getScreenRefresh()) == 0) {
-			outFrame.setKeyFrame(true);
-		}
+		to3ByteGBR(vic.getPixels());
+
+		IVideoPicture outFrame = converter.toPicture(vicImage, timeStamp);
+		outFrame.setKeyFrame((frameNo++ % framesPerKeyFrames) == 0);
+
 		IPacket packet = IPacket.make();
 		if (videoCoder.encodeVideo(packet, outFrame, 0) < 0) {
 			throw new RuntimeException("Error writing video stream");
@@ -222,11 +221,11 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		if (firstTimeStamp == 0) {
 			firstTimeStamp = now;
 		}
-		return (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
+		return (long) ((now - firstTimeStamp) / ticksPerMicrosecond);
 	}
 
-	private void to3ByteGBR(IntBuffer pixels, WritableRaster writableRaster) {
-		ByteBuffer pictureBuffer = ByteBuffer.wrap(((DataBufferByte) writableRaster.getDataBuffer()).getData());
+	private void to3ByteGBR(IntBuffer pixels) {
+		ByteBuffer pictureBuffer = ByteBuffer.wrap(((DataBufferByte) vicImage.getRaster().getDataBuffer()).getData());
 		((Buffer) pixels).clear();
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
