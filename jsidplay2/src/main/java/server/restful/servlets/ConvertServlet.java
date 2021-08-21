@@ -257,7 +257,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 					@Override
 					public void event() throws InterruptedException {
-						// press space every 30 seconds
+						// press space every N seconds
 						player.getC64().getKeyboard().keyPressed(SPACE);
 						player.getC64().getEventScheduler().schedule(new Event("Key Released: " + SPACE.name()) {
 							@Override
