@@ -153,13 +153,15 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
 				if (driver instanceof FLVDriver) {
-					new Thread(() -> {
+					Thread thread = new Thread(() -> {
 						try {
 							convertVideo(config, file, driver).delete();
 						} catch (IOException | SidTuneError e) {
 							log("Error converting video!", e);
 						}
-					}, RTMP_THREAD).start();
+					}, RTMP_THREAD);
+					thread.setPriority(Thread.MAX_PRIORITY);
+					thread.start();
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr()) + "/" + uuid);
 				} else {
