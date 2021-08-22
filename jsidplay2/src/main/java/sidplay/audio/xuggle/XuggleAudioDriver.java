@@ -26,18 +26,17 @@ public abstract class XuggleAudioDriver implements AudioDriver {
 
 	protected OutputStream out;
 
-	private CPUClock cpuClock;
 	private EventScheduler context;
 
 	private IMediaWriter writer;
 	private long firstTimeStamp;
+	private double ticksPerMicrosecond;
 
 	private ByteBuffer sampleBuffer;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		this.cpuClock = cpuClock;
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
 		out = getOut(recordingFilename);
@@ -52,17 +51,14 @@ public abstract class XuggleAudioDriver implements AudioDriver {
 			throw new IOException("Could not add audio stream");
 		}
 		firstTimeStamp = 0;
+		ticksPerMicrosecond = cpuClock.getCpuFrequency() / 1000000;
 		sampleBuffer = ByteBuffer.allocate(cfg.getChunkFrames() * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
 	public void write() throws InterruptedException {
-		long now = context.getTime(Phase.PHI2);
-		if (firstTimeStamp == 0) {
-			firstTimeStamp = now;
-		}
-		long timeStamp = (long) ((now - firstTimeStamp) / cpuClock.getCpuFrequency() * 1000000);
+		long timeStamp = getTimeStamp();
 
 		short[] shortArray = new short[sampleBuffer.position() >> 1];
 		((Buffer) sampleBuffer).flip();
@@ -87,6 +83,14 @@ public abstract class XuggleAudioDriver implements AudioDriver {
 	@Override
 	public boolean isRecording() {
 		return true;
+	}
+
+	private long getTimeStamp() {
+		long now = context.getTime(Phase.PHI2);
+		if (firstTimeStamp == 0) {
+			firstTimeStamp = now;
+		}
+		return (long) ((now - firstTimeStamp) / ticksPerMicrosecond);
 	}
 
 	protected abstract String getOutputFormatName();
