@@ -138,24 +138,27 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		long timeStamp = getTimeStamp();
 
 		int numSamples = sampleBuffer.position() >> 2;
-		IAudioSamples samples = IAudioSamples.make(numSamples, audioCoder.getChannels(), FMT_S16);
-		samples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
-		samples.setComplete(true, numSamples, audioCoder.getSampleRate(), audioCoder.getChannels(), FMT_S16, timeStamp);
+		IAudioSamples audioSamples = IAudioSamples.make(numSamples, audioCoder.getChannels(), FMT_S16);
+		audioSamples.getData().put(sampleBuffer.array(), 0, 0, sampleBuffer.position());
+		audioSamples.setComplete(true, numSamples, audioCoder.getSampleRate(), audioCoder.getChannels(), FMT_S16,
+				timeStamp);
 
 		int samplesConsumed = 0;
 		IPacket packet = IPacket.make();
-		while (samplesConsumed < samples.getNumSamples()) {
-			int retval = audioCoder.encodeAudio(packet, samples, samplesConsumed);
+		while (samplesConsumed < audioSamples.getNumSamples()) {
+			int retval = audioCoder.encodeAudio(packet, audioSamples, samplesConsumed);
 			if (retval < 0) {
 				throw new RuntimeException("Error writing audio stream");
 			}
 			samplesConsumed += retval;
 			if (packet.isComplete()) {
 				if (container.writePacket(packet) < 0) {
-					throw new RuntimeException("Could not write packet!");
+					throw new RuntimeException("Could not write audio packet!");
 				}
 			}
 		}
+		audioSamples.delete();
+		packet.delete();
 	}
 
 	@Override
@@ -164,24 +167,42 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 		to3ByteGBR(vic.getPixels());
 
-		IVideoPicture outFrame = converter.toPicture(vicImage, timeStamp);
-		outFrame.setKeyFrame((frameNo++ % framesPerKeyFrames) == 0);
+		IVideoPicture videoPicture = converter.toPicture(vicImage, timeStamp);
+		videoPicture.setKeyFrame((frameNo++ % framesPerKeyFrames) == 0);
 
 		IPacket packet = IPacket.make();
-		if (videoCoder.encodeVideo(packet, outFrame, 0) < 0) {
+		if (videoCoder.encodeVideo(packet, videoPicture, 0) < 0) {
 			throw new RuntimeException("Error writing video stream");
 		}
 		if (packet.isComplete()) {
 			if (container.writePacket(packet) < 0) {
-				throw new RuntimeException("Could not write packet!");
+				throw new RuntimeException("Could not write video packet!");
 			}
 		}
-		outFrame.delete();
+		videoPicture.delete();
+		packet.delete();
 	}
 
 	@Override
 	public void close() {
+		if (audioCoder != null) {
+			IPacket audioPacket = IPacket.make();
+			// flush any data it was keeping a hold of
+			if (audioCoder.encodeAudio(audioPacket, null, 0) < 0) {
+				throw new RuntimeException("Error writing audio stream");
+			}
+			audioPacket.delete();
+		}
+		if (videoCoder != null) {
+			IPacket videoPacket = IPacket.make();
+			// flush any data it was keeping a hold of
+			if (videoCoder.encodeVideo(videoPacket, null, 0) < 0) {
+				throw new RuntimeException("Error writing video stream");
+			}
+			videoPacket.delete();
+		}
 		if (container != null) {
+			container.flushPackets();
 			container.writeTrailer();
 			if (audioCoder != null) {
 				audioCoder.close();
