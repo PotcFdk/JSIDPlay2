@@ -231,7 +231,23 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV)) {
 		case FLV:
 		default:
-			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid);
+			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid) {
+				private long count;
+
+				@Override
+				public void write() throws InterruptedException {
+					if (count++ % 10 == 0) {
+						try {
+							// sleep to not end video too fast before watched (prevent hickups)
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					super.write();
+				}
+
+			};
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
