@@ -163,7 +163,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					thread.setPriority(Thread.MAX_PRIORITY);
 					thread.start();
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr()) + "/" + uuid);
+					String url = getRTMPUrl(request.getRemoteAddr()) + "/" + uuid;
+					if (url.startsWith("http")) {
+						url += ".m3u8";
+					}
+					response.setHeader(HttpHeaders.LOCATION, url);
 				} else {
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());

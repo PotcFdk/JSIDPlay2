@@ -1,7 +1,7 @@
 package sidplay.audio;
 
+import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_AAC;
 import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_H264;
-import static com.xuggle.xuggler.ICodec.ID.CODEC_ID_MP3;
 
 import java.util.Arrays;
 import java.util.List;
@@ -95,7 +95,7 @@ public abstract class FLVDriver extends XuggleVideoDriver {
 
 	@Override
 	protected ID getAudioCodec() {
-		return CODEC_ID_MP3;
+		return CODEC_ID_AAC;
 	}
 
 	@Override
