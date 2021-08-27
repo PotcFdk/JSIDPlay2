@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static java.lang.Thread.getAllStackTraces;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
@@ -67,7 +68,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String RTMP_THREAD = "RTMP";
 
-	private static final int PRESS_SPACE_INTERVALL = 45;
+	private static final int MAX_RTMP_THREADS = 5;
+
+	private static final int PRESS_SPACE_INTERVALL = 40;
 
 	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
 			"rtmp://localhost/live");
@@ -153,21 +156,29 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
 				}
 				if (driver instanceof FLVDriver) {
-					Thread thread = new Thread(() -> {
-						try {
-							convertVideo(config, file, driver).delete();
-						} catch (IOException | SidTuneError e) {
-							log("Error converting video!", e);
+					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
+							.count() < MAX_RTMP_THREADS) {
+						Thread thread = new Thread(() -> {
+							try {
+								convertVideo(config, file, driver).delete();
+							} catch (IOException | SidTuneError e) {
+								log("Error converting video!", e);
+							}
+						}, RTMP_THREAD);
+						thread.setPriority(Thread.MAX_PRIORITY);
+						thread.start();
+						response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+						String url = getRTMPUrl(request.getRemoteAddr()) + "/" + uuid;
+						if (url.startsWith("http")) {
+							url += ".m3u8";
 						}
-					}, RTMP_THREAD);
-					thread.setPriority(Thread.MAX_PRIORITY);
-					thread.start();
-					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-					String url = getRTMPUrl(request.getRemoteAddr()) + "/" + uuid;
-					if (url.startsWith("http")) {
-						url += ".m3u8";
+						response.setHeader(HttpHeaders.LOCATION, url);
+					} else {
+						String message = "Max threads reached: " + MAX_RTMP_THREADS + ", please retry later!";
+						info(message);
+						response.setContentType(MIME_TYPE_TEXT.toString());
+						new PrintStream(response.getOutputStream()).println(message);
 					}
-					response.setHeader(HttpHeaders.LOCATION, url);
 				} else {
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
