@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.getAllStackTraces;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
@@ -151,10 +152,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				AudioDriver driver = getAudioDriverOfVideoFormat(config, uuid);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
-					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
-							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
-				}
 				if (driver instanceof FLVDriver) {
 					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
 							.count() < MAX_RTMP_THREADS) {
@@ -165,21 +162,21 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 								log("Error converting video!", e);
 							}
 						}, RTMP_THREAD);
-						thread.setPriority(Thread.MAX_PRIORITY);
+						thread.setPriority(MAX_PRIORITY);
 						thread.start();
 						response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-						String url = getRTMPUrl(request.getRemoteAddr()) + "/" + uuid;
-						if (url.startsWith("http")) {
-							url += ".m3u8";
-						}
-						response.setHeader(HttpHeaders.LOCATION, url);
+						response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
 					} else {
-						String message = "Max threads reached: " + MAX_RTMP_THREADS + ", please retry later!";
+						String message = "Max threads reached: " + MAX_RTMP_THREADS + ", please retry in some minutes!";
 						info(message);
 						response.setContentType(MIME_TYPE_TEXT.toString());
 						new PrintStream(response.getOutputStream()).println(message);
 					}
 				} else {
+					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
+						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
+								+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
+					}
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
 					videoFile.delete();
@@ -249,7 +246,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				public void write() throws InterruptedException {
 					if (count++ % 10 == 0) {
 						try {
-							// sleep to not end video too fast before watched (prevent hickups)
+							// slow down video production to stay in sync with a possible viewer
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
@@ -306,9 +303,15 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		});
 	}
 
-	private String getRTMPUrl(String remoteAddress) {
+	private String getRTMPUrl(String remoteAddress, UUID uuid) {
 		boolean isLocal = remoteAddress.startsWith("192.168.") || remoteAddress.equals("127.0.0.1");
-		return isLocal ? RTMP_INTERNAL_DOWNLOAD_URL : RTMP_EXTERNAL_DOWNLOAD_URL;
+		String baseUrl = isLocal ? RTMP_INTERNAL_DOWNLOAD_URL : RTMP_EXTERNAL_DOWNLOAD_URL;
+		if (baseUrl.startsWith("http")) {
+			// HLS protocol
+			return baseUrl + "/" + uuid + ".m3u8";
+		}
+		// RTMP protocol
+		return baseUrl + "/" + uuid;
 	}
 
 }
