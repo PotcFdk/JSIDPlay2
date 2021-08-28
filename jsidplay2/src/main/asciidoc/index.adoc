@@ -45,11 +45,13 @@ JSidplay2 is able to
 * being used like a real C64 (watching demos, playing games etc.)
 
 == JSIDPlay2 Server
-link:https://haendel.ddns.net:8443/static/hvsc.vue[JSIDPlay2 HVSC Online Player]
+link:https://haendel.ddns.net:8443/static/hvsc.vue[JSIDPlay2 Online Player]
 
 link:https://haendel.ddns.net:8443/static/favorites.vue[JSIDPlay2 Favorites Online Player]
 
 link:https://haendel.ddns.net:8443/static/whatssid.vue[WhatsSID? tune recognition]
+
+link:rtmp://haendel.ddns.net/live/jsidplay2[JSIDPlay2 Live Stream from my Computer, if running]
 
 == User Guide
 Please read manual here:
