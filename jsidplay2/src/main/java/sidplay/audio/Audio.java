@@ -12,6 +12,7 @@ import sidplay.audio.AACDriver.AACFileDriver;
 import sidplay.audio.AVIDriver.AVIFileDriver;
 import sidplay.audio.FLACDriver.FLACFileDriver;
 import sidplay.audio.FLVDriver.FLVFileDriver;
+import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3FileDriver;
 import sidplay.audio.MP4Driver.MP4FileDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpFileDriver;
@@ -59,6 +60,8 @@ public enum Audio {
 	LIVE_AVI(ProxyDriver.class, JavaSound.class, AVIFileDriver.class),
 	/** MP4 file write. */
 	LIVE_MP4(ProxyDriver.class, JavaSound.class, MP4FileDriver.class),
+	/** Java Sound API plus FLV file write. */
+	LIVE_VIDEO_STREAMING(ProxyDriver.class, JavaSound.class, FLVStreamDriver.class),
 	/** SID register writes file write. */
 	LIVE_SID_REG(ProxyDriver.class, JavaSound.class, SIDRegFileDriver.class),
 	/** SID DUMP file write. */

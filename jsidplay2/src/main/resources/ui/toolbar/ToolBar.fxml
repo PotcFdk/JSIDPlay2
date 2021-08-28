@@ -205,6 +205,18 @@
 							underline="true" onAction="#gotoSidBlasterDoc" fx:id="sidBlasterDoc" />
 					</VBox>
 				</TitledPane>
+				<TitledPane text="%VIDEO_STREAMING" expanded="false">
+					<HBox spacing="5">
+						<VBox>
+							<Label text="%VIDEO_STREAMING_URL"/>
+							<TextField fx:id="videoStreamingUrl" promptText="%VIDEO_STREAMING_URL_PROMPT" prefWidth="150">
+								<tooltip>
+									<Tooltip text="%VIDEO_STREAMING_URL_TIP" />
+								</tooltip>
+							</TextField>
+						</VBox>
+					</HBox>
+				</TitledPane>
 				<TitledPane text="%COMPARE_MP3" expanded="false">
 					<HBox spacing="5">
 						<VBox>
@@ -351,24 +363,6 @@
 								disable="true" />
 						</VBox>
 					</HBox>
-				</TitledPane>
-				<TitledPane text="%PROXY" expanded="false" maxWidth="150">
-					<VBox>
-						<CheckBox text="%PROXY_ENABLE" fx:id="proxyEnable" />
-						<Label text="%PROXY_HOSTNAME" />
-						<TextField fx:id="proxyHostname" prefWidth="80">
-							<tooltip>
-								<Tooltip text="%PROXY_HOSTNAME_TIP" />
-							</tooltip>
-						</TextField>
-						<Label text="%PROXY_PORT" />
-						<TypeTextField type="Integer" fx:id="proxyPort"
-							prefWidth="60">
-							<tooltip>
-								<Tooltip text="%PROXY_PORT_TIP" />
-							</tooltip>
-						</TypeTextField>
-					</VBox>
 				</TitledPane>
 				<VBox>
 					<Label text="%BUFFER_SIZE" alignment="CENTER_RIGHT" />

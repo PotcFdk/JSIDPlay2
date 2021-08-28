@@ -110,6 +110,7 @@ public interface IniDefaults {
 	File DEFAULT_MP3_FILE = AUDIO_SECTION.getMp3();
 	int DEFAULT_AUDIO_CODER_BIT_RATE = AUDIO_SECTION.getAudioCoderBitRate();
 	int DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE = AUDIO_SECTION.getAudioCoderBitRateTolerance();
+	String DEFAULT_VIDEO_STREAMING_URL = AUDIO_SECTION.getVideoStreamingUrl();
 	int DEFAULT_VIDEO_CODER_GOP = AUDIO_SECTION.getVideoCoderNumPicturesInGroupOfPictures();
 	int DEFAULT_VIDEO_CODER_BIT_RATE = AUDIO_SECTION.getVideoCoderBitRate();
 	int DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE = AUDIO_SECTION.getVideoCoderBitRateTolerance();

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.VBox?>
+<?import ui.common.TypeTextField?>
+<?scenebuilder-preview-i18n-resource ProxySettings.properties?>
+
+<!-- Use fx:controller for JavaFX Preview in Eclipse e(fx)clipse -->
+<!-- Ctrl+Shift+C to toggle comment -->
+
+<Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@ProxySettings.css">
+	<!-- <Scene xmlns:fx="http://javafx.com/fxml" stylesheets="@ProxySettings.css" 
+		fx:controller="ui.proxysettings.ProxySettings"> -->
+	<ScrollPane>
+		<VBox>
+			<TitledPane text="%PROXY">
+				<VBox>
+					<CheckBox text="%PROXY_ENABLE" fx:id="proxyEnable" />
+					<Label text="%PROXY_HOSTNAME" />
+					<TextField fx:id="proxyHostname" prefWidth="80">
+						<tooltip>
+							<Tooltip text="%PROXY_HOSTNAME_TIP" />
+						</tooltip>
+					</TextField>
+					<Label text="%PROXY_PORT" />
+					<TypeTextField type="Integer" fx:id="proxyPort"
+						prefWidth="60">
+						<tooltip>
+							<Tooltip text="%PROXY_PORT_TIP" />
+						</tooltip>
+					</TypeTextField>
+				</VBox>
+			</TitledPane>
+			<Button text="%RESTORE_DEFAULTS" onAction="#restoreDefaults" />
+		</VBox>
+	</ScrollPane>
+</Scene>

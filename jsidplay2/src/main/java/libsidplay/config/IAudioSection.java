@@ -301,14 +301,14 @@ public interface IAudioSection {
 	/**
 	 * Video Driver: Setter of the bit-rate to use.
 	 * 
-	 * @param bitRate bit-rate to use.
+	 * @param bitRate bit-rate to use
 	 */
 	void setAudioCoderBitRate(int bitRate);
 
 	/**
 	 * Video Driver: Getter of the bit-rate tolerance to use.
 	 * 
-	 * @return bit-rate tolerance to use.
+	 * @return bit-rate tolerance to use
 	 */
 	int getAudioCoderBitRateTolerance();
 
@@ -320,9 +320,23 @@ public interface IAudioSection {
 	void setAudioCoderBitRateTolerance(int bitRateTolerance);
 
 	/**
+	 * Video Driver: Getter of the URL to receive live video stream.
+	 * 
+	 * @return URL to receive live video stream
+	 */
+	String getVideoStreamingUrl();
+
+	/**
+	 * Video Driver: Setter of the URL to receive live video stream.
+	 * 
+	 * @param videoStreamingUrl URL to receive live video stream
+	 */
+	void setVideoStreamingUrl(String videoStreamingUrl);
+
+	/**
 	 * Video Driver: Getter of the minimum number of frames between key-frames.
 	 * 
-	 * @return minimum number of frames between key-frames.
+	 * @return minimum number of frames between key-frames
 	 */
 	int getVideoCoderNumPicturesInGroupOfPictures();
 
@@ -330,7 +344,7 @@ public interface IAudioSection {
 	 * Video Driver: Setter of the minimum number of frames between key-frames.
 	 * 
 	 * @param numPicturesInGroupOfPictures minimum number of frames between
-	 *                                     key-frames.
+	 *                                     key-frames
 	 */
 	void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures);
 
@@ -351,14 +365,14 @@ public interface IAudioSection {
 	/**
 	 * Video Driver: Getter of the bit-rate tolerance to use.
 	 * 
-	 * @return bit-rate tolerance to use.
+	 * @return bit-rate tolerance to use
 	 */
 	int getVideoCoderBitRateTolerance();
 
 	/**
 	 * Video Driver: Setter of the bit-rate tolerance to use.
 	 * 
-	 * @param bitRateTolerance bit-rate tolerance to use.
+	 * @param bitRateTolerance bit-rate tolerance to use
 	 */
 	void setVideoCoderBitRateTolerance(int bitRateTolerance);
 
@@ -367,7 +381,7 @@ public interface IAudioSection {
 	 * picture doesn't have a quality set.
 	 * 
 	 * @return global quality setting this codec uses if a video picture doesn't
-	 *         have a quality set.
+	 *         have a quality set
 	 */
 	int getVideoCoderGlobalQuality();
 
@@ -376,7 +390,7 @@ public interface IAudioSection {
 	 * picture doesn't have a quality set.
 	 * 
 	 * @param bitGlobalQuality global quality setting this codec uses if a video
-	 *                         picture doesn't have a quality set.
+	 *                         picture doesn't have a quality set
 	 */
 	void setVideoCoderGlobalQuality(int bitGlobalQuality);
 

@@ -61,6 +61,12 @@ public abstract class FLVDriver extends XuggleVideoDriver {
 
 		private String rtmpUrl;
 
+		/**
+		 * Live streaming video URL is set by USER interface setting!
+		 */
+		public FLVStreamDriver() {
+		}
+
 		public FLVStreamDriver(String rtmpUrl) {
 			this.rtmpUrl = rtmpUrl;
 		}

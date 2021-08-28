@@ -90,7 +90,12 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
 		recordingFilename = getRecordingFilename(recordingFilename);
-		// recordingFilename = "rtmp://localhost/live/test";
+		if (recordingFilename == null) {
+			recordingFilename = audioSection.getVideoStreamingUrl();
+			if (recordingFilename == null) {
+				throw new RuntimeException("Video streaming URL setting has not been configured!");
+			}
+		}
 		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
 			throw new IniConfigException("Sampling rate is not supported by encoder, use default",
 					() -> audioSection.setSamplingRate(getDefaultSamplingRate()));
@@ -100,7 +105,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		containerFormat.setOutputFormat(getOutputFormatName(), recordingFilename, null);
 		container.setInputBufferLength(0);
 		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
-			throw new IOException("Could not open output container");
+			throw new IOException("Could not open: " + recordingFilename);
 		}
 		IStream stream = container.addNewStream(getVideoCodec());
 		videoCoder = stream.getStreamCoder();
@@ -206,17 +211,25 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			videoPacket.delete();
 		}
 		if (container != null) {
-			container.flushPackets();
-			container.writeTrailer();
+			if (container.isOpened()) {
+				container.flushPackets();
+				container.writeTrailer();
+			}
 			if (audioCoder != null) {
-				audioCoder.close();
+				if (audioCoder.isOpen()) {
+					audioCoder.close();
+				}
 				audioCoder = null;
 			}
 			if (videoCoder != null) {
-				videoCoder.close();
+				if (videoCoder.isOpen()) {
+					videoCoder.close();
+				}
 				videoCoder = null;
 			}
-			container.close();
+			if (container.isOpened()) {
+				container.close();
+			}
 			container = null;
 		}
 	}

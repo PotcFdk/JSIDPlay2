@@ -40,6 +40,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GLOBAL_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GOP;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_PRESET;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_STREAMING_URL;
 
 import java.io.File;
 
@@ -337,6 +338,16 @@ public class IniAudioSection extends IniSection implements IAudioSection {
 	@Parameter(names = { "--acBitRateTolerance" }, descriptionKey = "AUDIO_CODER_BIT_RATE_TOLERANCE", order = 119)
 	public void setAudioCoderBitRateTolerance(int bitRateTolerance) {
 		iniReader.setProperty(SECTION_ID, "Audio Coder Bit Rate Tolerance", bitRateTolerance);
+	}
+
+	@Override
+	public String getVideoStreamingUrl() {
+		return iniReader.getPropertyString(SECTION_ID, "Video Streaming URL", DEFAULT_VIDEO_STREAMING_URL);
+	}
+
+	@Override
+	public void setVideoStreamingUrl(String videoStreamingUrl) {
+		iniReader.setProperty(SECTION_ID, "Video Streaming URL", videoStreamingUrl);
 	}
 
 	@Override

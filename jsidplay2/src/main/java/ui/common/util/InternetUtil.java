@@ -44,7 +44,7 @@ public class InternetUtil {
 	}
 
 	private static Proxy getProxy(SidPlay2Section sidplay2Section) {
-		if (sidplay2Section.isEnableProxy()) {
+		if (sidplay2Section.isProxyEnable()) {
 			return new Proxy(Proxy.Type.HTTP,
 					new InetSocketAddress(sidplay2Section.getProxyHostname(), sidplay2Section.getProxyPort()));
 		} else {

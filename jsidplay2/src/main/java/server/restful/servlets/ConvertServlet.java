@@ -69,7 +69,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String RTMP_THREAD = "RTMP";
 
-	private static final int MAX_RTMP_THREADS = 5;
+	private static final int MAX_RTMP_THREADS = 3;
 
 	private static final int PRESS_SPACE_INTERVALL = 40;
 

@@ -140,12 +140,12 @@ public class ToolBar extends C64VBox implements UIPart {
 	@FXML
 	private ComboBox<Ultimate64Mode> ultimate64Box;
 	@FXML
-	private CheckBox enableSldb, singleSong, proxyEnable;
+	private CheckBox enableSldb, singleSong;
 	@FXML
-	private TextField bufferSize, defaultPlayLength, proxyHostname, proxyPort, hostname, port, ultimate64Hostname,
-			ultimate64Port, ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword,
-			appServerKeyAlias, appServerKeyPassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort,
-			ultimate64StreamingVideoPort;
+	private TextField bufferSize, defaultPlayLength, hostname, port, ultimate64Hostname, ultimate64Port,
+			ultimate64SyncDelay, appServerPort, appServerSecurePort, appServerKeyStorePassword, appServerKeyAlias,
+			appServerKeyPassword, ultimate64StreamingTarget, ultimate64StreamingAudioPort, ultimate64StreamingVideoPort,
+			videoStreamingUrl;
 	@FXML
 	private ScrollPane sidBlasterScrollPane;
 	@FXML
@@ -197,8 +197,8 @@ public class ToolBar extends C64VBox implements UIPart {
 
 		audioBox.setConverter(new EnumToStringConverter<Audio>(bundle));
 		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_FLAC,
-				Audio.LIVE_AAC, Audio.LIVE_MP3, Audio.LIVE_FLV, Audio.LIVE_AVI, Audio.LIVE_MP4, Audio.LIVE_SID_REG,
-				Audio.LIVE_SID_DUMP, Audio.COMPARE_MP3));
+				Audio.LIVE_AAC, Audio.LIVE_MP3, Audio.LIVE_FLV, Audio.LIVE_AVI, Audio.LIVE_MP4,
+				Audio.LIVE_VIDEO_STREAMING, Audio.LIVE_SID_REG, Audio.LIVE_SID_DUMP, Audio.COMPARE_MP3));
 		audioBox.valueProperty().addListener((obj, o, n) -> {
 			mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(n));
 			playMP3.setDisable(!Audio.COMPARE_MP3.equals(n));
@@ -269,10 +269,6 @@ public class ToolBar extends C64VBox implements UIPart {
 		sidBlasterWriteBufferSize.valueProperty()
 				.bindBidirectional(emulationSection.sidBlasterWriteBufferSizeProperty());
 		emulationSection.getSidBlasterDeviceList().stream().forEach(this::addSidBlasterDeviceMapping);
-
-		proxyEnable.selectedProperty().bindBidirectional(sidplay2Section.enableProxyProperty());
-		proxyHostname.textProperty().bindBidirectional(sidplay2Section.proxyHostnameProperty());
-		bindBidirectional(proxyPort.textProperty(), sidplay2Section.proxyPortProperty(), new IntegerStringConverter());
 
 		hostname.textProperty().bindBidirectional(emulationSection.netSidDevHostProperty());
 		bindBidirectional(port.textProperty(), emulationSection.netSidDevPortProperty(), new IntegerStringConverter());
@@ -360,6 +356,8 @@ public class ToolBar extends C64VBox implements UIPart {
 				emulationSection.ultimate64StreamingVideoPortProperty(), new IntegerStringConverter());
 		streamingHostname.setText(util.getBundle().getString("HOSTNAME") + " " + getHostname());
 		streamingIpAddress.setText(util.getBundle().getString("IP") + " " + getIpAddresses());
+
+		videoStreamingUrl.textProperty().bindBidirectional(audioSection.videoStreamingUrlProperty());
 
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);

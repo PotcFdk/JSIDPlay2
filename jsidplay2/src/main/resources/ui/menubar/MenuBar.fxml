@@ -270,6 +270,7 @@
 						<MenuItem text="%EMULATION_SETTINGS" onAction="#emulationSettings" />
 						<MenuItem text="%WHATSSID_SETTINGS" onAction="#whatsSidSettings" />
 						<MenuItem text="%JOYSTICK_SETTINGS" onAction="#joystickSettings" />
+						<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
 					</Menu>
 					<Menu text="%HELP">
 						<MenuItem text="%USERGUIDE" onAction="#userguide" />

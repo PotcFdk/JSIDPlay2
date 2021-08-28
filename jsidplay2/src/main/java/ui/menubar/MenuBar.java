@@ -95,6 +95,7 @@ import ui.musiccollection.MusicCollection;
 import ui.musiccollection.MusicCollectionType;
 import ui.oscilloscope.Oscilloscope;
 import ui.printer.Printer;
+import ui.proxysettings.ProxySettings;
 import ui.siddump.SidDump;
 import ui.sidreg.SidReg;
 import ui.ultimate64.Ultimate64Window;
@@ -489,6 +490,11 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void joystickSettings() {
 		new JoystickSettings(util.getPlayer()).open();
+	}
+
+	@FXML
+	private void proxySettings() {
+		new ProxySettings(util.getPlayer()).open();
 	}
 
 	@FXML

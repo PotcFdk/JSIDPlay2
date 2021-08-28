@@ -54,7 +54,8 @@ import ui.favorites.PlaybackType;
 public class SidPlay2Section implements ISidPlay2Section {
 
 	public static final PlaybackType DEFAULT_PLAYBACK_TYPE = PlaybackType.PLAYBACK_OFF;
-	public static final boolean DEFAULT_ENABLE_PROXY = false;
+	public static final boolean DEFAULT_PROXY_ENABLE = false;
+	public static final String DEFAULT_PROXY_HOSTNAME = null;
 	public static final int DEFAULT_PROXY_PORT = 80;
 	public static final int DEFAULT_FRAME_X = 0;
 	public static final int DEFAULT_FRAME_Y = 0;
@@ -320,22 +321,23 @@ public class SidPlay2Section implements ISidPlay2Section {
 		return gameBase64.property();
 	}
 
-	private ShadowField<BooleanProperty, Boolean> enableProxy = new ShadowField<>(SimpleBooleanProperty::new,
-			DEFAULT_ENABLE_PROXY);
+	private ShadowField<BooleanProperty, Boolean> proxyEnable = new ShadowField<>(SimpleBooleanProperty::new,
+			DEFAULT_PROXY_ENABLE);
 
-	public boolean isEnableProxy() {
-		return enableProxy.get();
+	public boolean isProxyEnable() {
+		return proxyEnable.get();
 	}
 
-	public void setEnableProxy(boolean isEnableProxy) {
-		single.set(isEnableProxy);
+	public void setProxyEnable(boolean isProxyEnable) {
+		proxyEnable.set(isProxyEnable);
 	}
 
-	public BooleanProperty enableProxyProperty() {
-		return enableProxy.property();
+	public BooleanProperty proxyEnableProperty() {
+		return proxyEnable.property();
 	}
 
-	private ShadowField<StringProperty, String> proxyHostname = new ShadowField<>(SimpleStringProperty::new, null);
+	private ShadowField<StringProperty, String> proxyHostname = new ShadowField<>(SimpleStringProperty::new,
+			DEFAULT_PROXY_HOSTNAME);
 
 	public String getProxyHostname() {
 		return proxyHostname.get();

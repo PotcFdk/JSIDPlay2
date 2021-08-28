@@ -41,6 +41,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GLOBAL_QUALITY;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_GOP;
 import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_CODER_PRESET;
+import static sidplay.ini.IniDefaults.DEFAULT_VIDEO_STREAMING_URL;
 
 import java.io.File;
 
@@ -61,6 +62,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import libsidplay.common.SamplingMethod;
 import libsidplay.common.SamplingRate;
 import libsidplay.common.VideoCoderPreset;
@@ -470,6 +473,23 @@ public class AudioSection implements IAudioSection {
 
 	public IntegerProperty audioCoderBitRateToleranceProperty() {
 		return audioCoderBitRateTolerance.property();
+	}
+
+	private ShadowField<StringProperty, String> videoStreamingUrl = new ShadowField<>(SimpleStringProperty::new,
+			DEFAULT_VIDEO_STREAMING_URL);
+
+	@Override
+	public String getVideoStreamingUrl() {
+		return videoStreamingUrl.get();
+	}
+
+	@Override
+	public void setVideoStreamingUrl(String videoStreamingUrl) {
+		this.videoStreamingUrl.set(videoStreamingUrl);
+	}
+
+	public StringProperty videoStreamingUrlProperty() {
+		return videoStreamingUrl.property();
 	}
 
 	private ShadowField<IntegerProperty, Number> videoCoderNumPicturesInGroupOfPictures = new ShadowField<>(
