@@ -107,7 +107,6 @@ public class DownloadThread extends Thread implements RBCWrapperDelegate {
 				downloadedFile = download(url, true, true);
 			}
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
 			listener.downloadStop(null);
 			return;
 		}
