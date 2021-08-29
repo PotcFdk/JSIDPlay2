@@ -5,13 +5,13 @@ public enum DatabaseType {
 	/**
 	 * File-based Java Database
 	 */
-	HSQL_FILE("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:${name};hsqldb.sqllog=0;hsqldb.applog=0;shutdown=true",
+	HSQL_FILE("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:file:${name};hsqldb.sqllog=0;hsqldb.applog=0;shutdown=true",
 			"org.hibernate.dialect.HSQLDialect"),
 
 	/**
 	 * In-Memory Java Database
 	 */
-	HSQL_MEM("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:${name};hsqldb.sqllog=0;hsqldb.applog=0;shutdown=true",
+	HSQL_MEM("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:${name};hsqldb.sqllog=0;hsqldb.applog=0;shutdown=true",
 			"org.hibernate.dialect.HSQLDialect"),
 
 	/**
