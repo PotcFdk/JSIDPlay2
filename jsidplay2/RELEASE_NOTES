@@ -10,6 +10,7 @@ Recording formats:
 ------------------
 FLV recordings added
 Live Video Streaming added
+Recordings are now created using ffmpeg for better performance and quality control
 
 JSIDPlay2Server:
 ----------------
