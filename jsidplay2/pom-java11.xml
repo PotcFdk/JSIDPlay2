@@ -111,6 +111,7 @@
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>2.3.1</version>
+			<!-- version>3.0.2</version package name change jakarta -->
 			<exclusions>
 				<exclusion>
 					<groupId>javax.activation</groupId>
