@@ -1,4 +1,4 @@
-package libsidutils.fingerprinting.rest.client;
+package ui.tools;
 
 import static jakarta.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
