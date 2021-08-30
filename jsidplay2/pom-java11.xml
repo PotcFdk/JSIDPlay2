@@ -133,20 +133,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>5.5.7.Final</version>
-			<exclusions>
-				<exclusion>
-			      <groupId>org.glassfish.jaxb</groupId>
-			      <artifactId>jaxb-runtime</artifactId>
-				</exclusion>
-				<exclusion>
-				      <groupId>javax.xml.bind</groupId>
-				      <artifactId>jaxb-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.activation</groupId>
-					<artifactId>javax.activation-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -171,6 +157,10 @@
 				<exclusion>
 					<groupId>org.jboss.spec.javax.xml.bind</groupId>
 					<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+				</exclusion>
+				<exclusion>
+		            <groupId>jakarta.activation</groupId>
+		            <artifactId>jakarta.activation-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
