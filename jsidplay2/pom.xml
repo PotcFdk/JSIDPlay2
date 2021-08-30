@@ -181,6 +181,7 @@
 		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>
+			<!-- required for JSIDPlay2Server -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
 			<version>1.7.32</version>
