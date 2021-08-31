@@ -77,7 +77,6 @@ import javafx.util.Duration;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
-import server.restful.common.HttpMethod;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -924,7 +923,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(false);
-		connection.setRequestMethod(HttpMethod.GET);
+		connection.setRequestMethod("GET");
 		int status = connection.getResponseCode();
 
 		if (status != HttpURLConnection.HTTP_OK) {

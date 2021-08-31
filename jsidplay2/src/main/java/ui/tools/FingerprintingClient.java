@@ -31,7 +31,6 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
-import server.restful.common.HttpMethod;
 
 /**
  * This currently unused class makes it possible to create/fill the
@@ -65,7 +64,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@Override
 	public IdBean insertTune(MusicInfoBean musicInfoBean) {
 		try {
-			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, INSERT_TUNE_PATH, HttpMethod.PUT);
+			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, INSERT_TUNE_PATH, "PUT");
 
 			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(IdBean.class, connection);
@@ -79,7 +78,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@Override
 	public void insertHashes(HashBeans hashBeans) {
 		try {
-			HttpURLConnection connection = send(hashBeans, HashBeans.class, INSERT_HASHES_PATH, HttpMethod.PUT);
+			HttpURLConnection connection = send(hashBeans, HashBeans.class, INSERT_HASHES_PATH, "PUT");
 
 			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return;
@@ -93,7 +92,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@Override
 	public HashBeans findHashes(IntArrayBean intArray) {
 		try {
-			HttpURLConnection connection = send(intArray, IntArrayBean.class, FIND_HASH_PATH, HttpMethod.POST);
+			HttpURLConnection connection = send(intArray, IntArrayBean.class, FIND_HASH_PATH, "POST");
 
 			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(HashBeans.class, connection);
@@ -107,7 +106,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@Override
 	public MusicInfoBean findTune(SongNoBean songNoBean) {
 		try {
-			HttpURLConnection connection = send(songNoBean, SongNoBean.class, FIND_TUNE_PATH, HttpMethod.POST);
+			HttpURLConnection connection = send(songNoBean, SongNoBean.class, FIND_TUNE_PATH, "POST");
 
 			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(MusicInfoBean.class, connection);
@@ -121,7 +120,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 	@Override
 	public boolean tuneExists(MusicInfoBean musicInfoBean) {
 		try {
-			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, TUNE_EXISTS_PATH, HttpMethod.POST);
+			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, TUNE_EXISTS_PATH, "POST");
 
 			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(Boolean.class, connection);
