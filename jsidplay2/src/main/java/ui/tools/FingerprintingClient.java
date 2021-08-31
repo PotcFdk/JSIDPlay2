@@ -17,11 +17,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,6 +31,7 @@ import libsidutils.fingerprinting.rest.beans.IdBean;
 import libsidutils.fingerprinting.rest.beans.IntArrayBean;
 import libsidutils.fingerprinting.rest.beans.MusicInfoBean;
 import libsidutils.fingerprinting.rest.beans.SongNoBean;
+import server.restful.common.HttpMethod;
 
 /**
  * This currently unused class makes it possible to create/fill the
@@ -66,7 +67,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, INSERT_TUNE_PATH, HttpMethod.PUT);
 
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(IdBean.class, connection);
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
@@ -80,7 +81,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			HttpURLConnection connection = send(hashBeans, HashBeans.class, INSERT_HASHES_PATH, HttpMethod.PUT);
 
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return;
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
@@ -94,7 +95,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			HttpURLConnection connection = send(intArray, IntArrayBean.class, FIND_HASH_PATH, HttpMethod.POST);
 
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(HashBeans.class, connection);
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
@@ -108,7 +109,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			HttpURLConnection connection = send(songNoBean, SongNoBean.class, FIND_TUNE_PATH, HttpMethod.POST);
 
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(MusicInfoBean.class, connection);
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());
@@ -122,7 +123,7 @@ public class FingerprintingClient implements FingerPrintingDataSource {
 		try {
 			HttpURLConnection connection = send(musicInfoBean, MusicInfoBean.class, TUNE_EXISTS_PATH, HttpMethod.POST);
 
-			if (connection.getResponseCode() == Response.Status.OK.getStatusCode()) {
+			if (connection.getResponseCode() == HttpStatus.SC_OK) {
 				return receive(Boolean.class, connection);
 			}
 			throw new IOException(connection.getURL() + "\nResponseCode: " + connection.getResponseCode());

@@ -9,15 +9,26 @@ import static ui.assembly64.SearchResult.DATE_PATTERN;
 import static ui.assembly64.SearchResult.NO;
 import static ui.assembly64.SearchResult.YES;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -32,14 +43,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +76,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.ZipFileUtils;
+import server.restful.common.HttpMethod;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -88,6 +93,15 @@ import ui.entities.config.Assembly64Column;
 import ui.entities.config.Assembly64ColumnType;
 
 public class Assembly64 extends C64VBox implements UIPart {
+
+	private static final MessageDigest MD5_DIGEST;
+	static {
+		try {
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (final NoSuchAlgorithmException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	public static final String ID = "ASSEMBLY64";
 
@@ -564,18 +578,24 @@ public class Assembly64 extends C64VBox implements UIPart {
 
 	private List<Category> requestCategories() {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/categories").build();
 
-		try (Response response = requestUri(uri)) {
-			String responseString = readString(response);
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(assembly64Url + "/leet/search/v2/categories");
+			connection = requestURL(url);
+			String responseString = readString(connection);
 			List<Category> result = new ObjectMapper().readValue(responseString, new TypeReference<List<Category>>() {
 			});
 			result.sort(Comparator.comparing(Category::getDescription));
 			result.add(0, Category.ALL);
 			return FXCollections.<Category>observableArrayList(result);
-		} catch (ProcessingException | IOException e) {
+		} catch (IOException e) {
 			System.err.println("Unexpected result: " + e.getMessage());
 			return Collections.emptyList();
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 	}
 
@@ -615,110 +635,117 @@ public class Assembly64 extends C64VBox implements UIPart {
 			final Integer days = get(ageComboBox, value -> value.getDays(), Age.ALL::equals, -1);
 			final String dateFrom = get(releasedTextField, true);
 			final String dateTo = get(releasedTextField, false);
-			UriBuilder uriBuilder = UriBuilder.fromPath(assembly64Url + "/leet/search/v2");
-			int matchCount = 0;
-			if (name != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("name", name);
-			}
-			if (group != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("group", group);
-			}
-			if (year != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("year", year);
-			}
-			if (handle != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("handle", handle);
-			}
-			if (event != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("event", event);
-			}
-			if (rating != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("rating", rating);
-			}
-			if (category != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("category", category);
-			}
-			if (searchFromStart != null) {
-				uriBuilder = uriBuilder.queryParam("searchFromStart", searchFromStart);
-			}
-			if (d64 != null) {
-				uriBuilder = uriBuilder.queryParam("d64", d64);
-			}
-			if (t64 != null) {
-				uriBuilder = uriBuilder.queryParam("t64", t64);
-			}
-			if (d71 != null) {
-				uriBuilder = uriBuilder.queryParam("d71", d71);
-			}
-			if (d81 != null) {
-				uriBuilder = uriBuilder.queryParam("d81", d81);
-			}
-			if (prg != null) {
-				uriBuilder = uriBuilder.queryParam("prg", prg);
-			}
-			if (tap != null) {
-				uriBuilder = uriBuilder.queryParam("tap", tap);
-			}
-			if (crt != null) {
-				uriBuilder = uriBuilder.queryParam("crt", crt);
-			}
-			if (sid != null) {
-				uriBuilder = uriBuilder.queryParam("sid", sid);
-			}
-			if (bin != null) {
-				uriBuilder = uriBuilder.queryParam("bin", bin);
-			}
-			if (g64 != null) {
-				uriBuilder = uriBuilder.queryParam("g64", g64);
-			}
-			if (or != null) {
-				uriBuilder = uriBuilder.queryParam("or", or);
-			}
-			if (days != null) {
-				uriBuilder = uriBuilder.queryParam("days", days);
-			}
-			if (dateFrom != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("dateFrom", dateFrom);
-			}
-			if (dateTo != null) {
-				matchCount++;
-				uriBuilder = uriBuilder.queryParam("dateTo", dateTo);
-			}
-			uriBuilder = uriBuilder.queryParam("offset", searchOffset);
-			URI uri = uriBuilder.build();
 
-			if (matchCount == 0) {
-				// avoid to request everything, it would take too much time!
-				return;
-			}
-			String result = "";
-			try (Response response = requestUri(uri)) {
-				result = readString(response);
+			String responseString = null;
 
-				Object start = response.getHeaderString("start");
-				searchOffset = start != null ? Integer.parseInt(String.valueOf(start)) : 0;
+			HttpURLConnection connection = null;
+			try {
+				URI uri = new URI(assembly64Url + "/leet/search/v2");
+				int matchCount = 0;
+				if (name != null) {
+					matchCount++;
+					uri = appendURI(uri, "name", name);
+				}
+				if (group != null) {
+					matchCount++;
+					uri = appendURI(uri, "group", group);
+				}
+				if (year != null) {
+					matchCount++;
+					uri = appendURI(uri, "year", String.valueOf(year));
+				}
+				if (handle != null) {
+					matchCount++;
+					uri = appendURI(uri, "handle", handle);
+				}
+				if (event != null) {
+					matchCount++;
+					uri = appendURI(uri, "event", event);
+				}
+				if (rating != null) {
+					matchCount++;
+					uri = appendURI(uri, "rating", String.valueOf(rating));
+				}
+				if (category != null) {
+					matchCount++;
+					uri = appendURI(uri, "category", String.valueOf(category));
+				}
+				if (searchFromStart != null) {
+					uri = appendURI(uri, "searchFromStart", searchFromStart);
+				}
+				if (d64 != null) {
+					uri = appendURI(uri, "d64", d64);
+				}
+				if (t64 != null) {
+					uri = appendURI(uri, "t64", t64);
+				}
+				if (d71 != null) {
+					uri = appendURI(uri, "d71", d71);
+				}
+				if (d81 != null) {
+					uri = appendURI(uri, "d81", d81);
+				}
+				if (prg != null) {
+					uri = appendURI(uri, "prg", prg);
+				}
+				if (tap != null) {
+					uri = appendURI(uri, "tap", tap);
+				}
+				if (crt != null) {
+					uri = appendURI(uri, "crt", crt);
+				}
+				if (sid != null) {
+					uri = appendURI(uri, "sid", sid);
+				}
+				if (bin != null) {
+					uri = appendURI(uri, "bin", bin);
+				}
+				if (g64 != null) {
+					uri = appendURI(uri, "g64", g64);
+				}
+				if (or != null) {
+					uri = appendURI(uri, "or", or);
+				}
+				if (days != null) {
+					uri = appendURI(uri, "days", String.valueOf(days));
+				}
+				if (dateFrom != null) {
+					matchCount++;
+					uri = appendURI(uri, "dateFrom", dateFrom);
+				}
+				if (dateTo != null) {
+					matchCount++;
+					uri = appendURI(uri, "dateTo", dateTo);
+				}
+				uri = appendURI(uri, "offset", String.valueOf(searchOffset));
+
+				if (matchCount == 0) {
+					// avoid to request everything, it would take too much time!
+					return;
+				}
+
+				connection = requestURL(uri.toURL());
+				responseString = readString(connection);
+				String start = connection.getHeaderField("start");
+				searchOffset = start != null ? Integer.parseInt(start) : 0;
 				prevButton.setDisable(start == null || searchOffset == 0);
 
-				Object stop = response.getHeaderString("stop");
-				searchStop = stop != null ? Integer.parseInt(String.valueOf(stop)) : searchOffset + MAX_ROWS;
+				String stop = connection.getHeaderField("stop");
+				searchStop = stop != null ? Integer.parseInt(stop) : searchOffset + MAX_ROWS;
 				nextButton.setDisable(stop == null);
 
-				searchResultItems.setAll(objectMapper.readValue(result, SearchResult[].class));
-			} catch (ProcessingException | IOException e) {
+				searchResultItems.setAll(objectMapper.readValue(responseString, SearchResult[].class));
+			} catch (IOException | URISyntaxException e) {
 				try {
-					ErrorMessage errorMessage = objectMapper.readValue(result, ErrorMessage.class);
+					ErrorMessage errorMessage = objectMapper.readValue(responseString, ErrorMessage.class);
 					System.err.println(String.join("\n", errorMessage.getStatus() + ": " + errorMessage.getError(),
 							errorMessage.getMessage()));
 				} catch (IOException e1) {
 					System.err.println("Unexpected result: " + e.getMessage());
+				}
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
 				}
 			}
 		} finally {
@@ -745,18 +772,25 @@ public class Assembly64 extends C64VBox implements UIPart {
 			String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 			final String itemId = Base64.getEncoder().encodeToString(searchResult.getId().getBytes());
 			final Integer categoryId = searchResult.getCategory().getId();
-			URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/contententries")
-					.path("/{itemId}/{categoryId}").build(itemId, categoryId);
-			try (Response response = requestUri(uri)) {
-				ContentEntrySearchResult contentEntry = objectMapper.readValue(readString(response),
+
+			HttpURLConnection connection = null;
+			try {
+				URL url = new URL(assembly64Url + "/leet/search/v2/contententries" + "/" + itemId + "/" + categoryId);
+				connection = requestURL(url);
+				String responseString = readString(connection);
+				ContentEntrySearchResult contentEntry = objectMapper.readValue(responseString,
 						ContentEntrySearchResult.class);
 				contentEntryItems.setAll(contentEntry.getContentEntry());
 				contentEntryTable.getSelectionModel().select(contentEntryItems.stream().findFirst().orElse(null));
 				if (autostart.getAndSet(false)) {
 					autostart(null);
 				}
-			} catch (ProcessingException | IOException e) {
+			} catch (IOException e) {
 				System.err.println("Unexpected result: " + e.getMessage());
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
+				}
 			}
 		} finally {
 			Platform.runLater(() -> util.progressProperty(assembly64Table.getScene()).set(0));
@@ -770,7 +804,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 		try {
 			contentEntryFile = requestContentEntry(contentEntry);
-		} catch (ProcessingException | IOException e) {
+		} catch (IOException e) {
 			System.err.println(String.format("Cannot DOWNLOAD file '%s'.", contentEntry.getId()));
 		}
 		directory.loadPreview(contentEntryFile);
@@ -788,7 +822,7 @@ public class Assembly64 extends C64VBox implements UIPart {
 		try {
 			// file already downloaded and checksum ok?
 			if (contentEntryFile.exists() && contentEntryChecksumFile.exists()) {
-				String checksum = DigestUtils.md5Hex(getContents(contentEntryFile));
+				String checksum = getMD5Digest(getContents(contentEntryFile));
 				String checksumToverify = new String(getContents(contentEntryChecksumFile), US_ASCII);
 				if (checksum.equals(checksumToverify)) {
 					return contentEntryFile;
@@ -802,20 +836,30 @@ public class Assembly64 extends C64VBox implements UIPart {
 		String assembly64Url = util.getConfig().getOnlineSection().getAssembly64Url();
 		final String itemId = Base64.getEncoder().encodeToString(searchResult.getId().getBytes());
 		final String fileId = Base64.getEncoder().encodeToString(contentEntry.getId().getBytes());
-		URI uri = UriBuilder.fromPath(assembly64Url + "/leet/search/v2/binary").path("/{itemId}/{categoryId}/{fileId}")
-				.build(itemId, searchResult.getCategory().getId(), fileId);
-		try (Response response = requestUri(uri);
-				OutputStream outputStream = new FileOutputStream(contentEntryFile);
-				PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
-			outputStream.write(response.readEntity(byte[].class));
-			checksumPrintStream.print(response.getHeaderString("checksum"));
-			return contentEntryFile;
+
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(assembly64Url + "/leet/search/v2/binary" + "/" + itemId + "/"
+					+ searchResult.getCategory().getId() + "/" + fileId);
+			connection = requestURL(url);
+			byte[] responseBytes = readBytes(connection.getInputStream());
+
+			try (OutputStream outputStream = new FileOutputStream(contentEntryFile);
+					PrintStream checksumPrintStream = new PrintStream(contentEntryChecksumFile)) {
+				outputStream.write(responseBytes);
+				checksumPrintStream.print(connection.getHeaderField("checksum"));
+				return contentEntryFile;
+			}
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 	}
 
 	private byte[] getContents(File contentEntryChecksumFile) {
 		try (InputStream is = new FileInputStream(contentEntryChecksumFile)) {
-			return IOUtils.toByteArray(is);
+			return readBytes(is);
 		} catch (IOException e) {
 			return new byte[0];
 		}
@@ -876,12 +920,60 @@ public class Assembly64 extends C64VBox implements UIPart {
 		}
 	}
 
-	private Response requestUri(URI uri) {
-		return ClientBuilder.newClient().target(uri).request().get();
+	private HttpURLConnection requestURL(URL url) throws IOException {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setDoOutput(true);
+		connection.setInstanceFollowRedirects(false);
+		connection.setRequestMethod(HttpMethod.GET);
+		int status = connection.getResponseCode();
+
+		if (status != HttpURLConnection.HTTP_OK) {
+			throw new IOException("Failed to create connection : HTTP error code : " + connection.getResponseCode());
+		}
+		return connection;
 	}
 
-	private String readString(Response response) {
-		return response.readEntity(String.class);
+	private String getMD5Digest(byte[] contents) {
+		StringBuilder md5 = new StringBuilder();
+		final byte[] encryptMsg = MD5_DIGEST.digest(contents);
+		for (final byte anEncryptMsg : encryptMsg) {
+			md5.append(String.format("%02x", anEncryptMsg & 0xff));
+		}
+		return md5.toString();
+	}
+
+	public URI appendURI(URI oldUri, String queryParamName, String queryParamValue)
+			throws URISyntaxException, UnsupportedEncodingException {
+		String newQuery = oldUri.getQuery();
+		if (newQuery == null) {
+			newQuery = queryParamName + "=" + encodeValue(queryParamValue);
+		} else {
+			newQuery += "&" + queryParamName + "=" + encodeValue(queryParamValue);
+		}
+
+		return new URI(oldUri.getScheme(), oldUri.getAuthority(), oldUri.getPath(), newQuery, oldUri.getFragment());
+	}
+
+	private String encodeValue(String value) throws UnsupportedEncodingException {
+		return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+	}
+
+	private String readString(HttpURLConnection connection) throws IOException {
+		StringBuffer result = new StringBuffer();
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+			String output;
+			while ((output = br.readLine()) != null) {
+				result.append(output).append("\n");
+			}
+		}
+		return result.toString();
+	}
+
+	private byte[] readBytes(InputStream is) throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ZipFileUtils.copy(is, os);
+		return os.toByteArray();
 	}
 
 }
