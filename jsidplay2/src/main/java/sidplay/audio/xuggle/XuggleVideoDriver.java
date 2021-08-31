@@ -61,7 +61,7 @@ import sidplay.audio.exceptions.IniConfigException;
  * 
  * E.g. stream video<BR>
  * {@code
- * http://127.0.1.1:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/Instinct+BoozeDesign%20-%20Andropolis/Instinct+BoozeDesign%20-%20Andropolis.d64?defaultLength=06:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true
+ * http://127.0.0.1:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/Instinct+BoozeDesign%20-%20Andropolis/Instinct+BoozeDesign%20-%20Andropolis.d64?defaultLength=06:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true
  * 
  * Video streaming possibilities:
  * rtmp://localhost/live/test
@@ -73,7 +73,8 @@ import sidplay.audio.exceptions.IniConfigException;
  */
 public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
-	private EventScheduler context;
+	protected CPUClock cpuClock;
+	protected EventScheduler context;
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
@@ -87,6 +88,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
+		this.cpuClock = cpuClock;
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
 		recordingFilename = getRecordingFilename(recordingFilename);

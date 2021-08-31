@@ -34,6 +34,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidplay.common.Event;
+import libsidplay.common.Event.Phase;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
@@ -240,14 +241,22 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case FLV:
 		default:
 			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid) {
-				private long count;
+				private long startTime, time, startC64Time, c64Time;
 
 				@Override
 				public void write() throws InterruptedException {
-					if (count++ % 10 == 0) {
+					if (startTime == 0) {
+						startTime = System.currentTimeMillis();
+						startC64Time = context.getTime(Phase.PHI2);
+					}
+					time = System.currentTimeMillis() - startTime;
+					c64Time = context.getTime(Phase.PHI2) - startC64Time;
+
+					long sleepTime = (long) (c64Time * 1000 / cpuClock.getCpuFrequency()) - time - 100;
+					if (sleepTime > 0) {
 						try {
 							// slow down video production to stay in sync with a possible viewer
-							Thread.sleep(1000);
+							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
