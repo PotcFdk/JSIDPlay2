@@ -12,6 +12,12 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
+import static server.restful.servlets.IConvertServletSystemProperties.MAX_RTMP_THREADS;
+import static server.restful.servlets.IConvertServletSystemProperties.MAX_TIME_GAP;
+import static server.restful.servlets.IConvertServletSystemProperties.PRESS_SPACE_INTERVALL;
+import static server.restful.servlets.IConvertServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
+import static server.restful.servlets.IConvertServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
+import static server.restful.servlets.IConvertServletSystemProperties.RTMP_UPLOAD_URL;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,19 +75,6 @@ import ui.entities.config.Configuration;
 public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String RTMP_THREAD = "RTMP";
-
-	private static final int MAX_RTMP_THREADS = 3;
-
-	private static final int PRESS_SPACE_INTERVALL = 40;
-
-	private static final String RTMP_UPLOAD_URL = System.getProperty("rtmp.internal.upload.url",
-			"rtmp://localhost/live");
-
-	private static final String RTMP_INTERNAL_DOWNLOAD_URL = System.getProperty("rtmp.internal.download.url",
-			"rtmp://haendel.ddns.net/live");
-
-	private static final String RTMP_EXTERNAL_DOWNLOAD_URL = System.getProperty("rtmp.external.download.url",
-			"rtmp://haendel.ddns.net/live");
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -241,6 +234,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case FLV:
 		default:
 			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid) {
+
 				private long startTime, time, startC64Time, c64Time;
 
 				@Override
@@ -250,13 +244,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						startC64Time = context.getTime(Phase.PHI2);
 					}
 					time = System.currentTimeMillis() - startTime;
-					c64Time = context.getTime(Phase.PHI2) - startC64Time;
+					c64Time = (long) ((context.getTime(Phase.PHI2) - startC64Time) * 1000 / cpuClock.getCpuFrequency());
 
-					long sleepTime = (long) (c64Time * 1000 / cpuClock.getCpuFrequency()) - time - 100;
-					if (sleepTime > 0) {
+					long sleepTime = c64Time - time;
+					if (sleepTime > MAX_TIME_GAP) {
 						try {
 							// slow down video production to stay in sync with a possible viewer
-							Thread.sleep(sleepTime);
+							Thread.sleep(sleepTime - MAX_TIME_GAP);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
