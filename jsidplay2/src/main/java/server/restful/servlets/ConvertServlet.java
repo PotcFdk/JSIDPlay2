@@ -3,6 +3,11 @@ package server.restful.servlets;
 import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.getAllStackTraces;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
+import static libsidplay.config.IAudioSystemProperties.MAX_RTMP_THREADS;
+import static libsidplay.config.IAudioSystemProperties.PRESS_SPACE_INTERVALL;
+import static libsidplay.config.IAudioSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
+import static libsidplay.config.IAudioSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
+import static libsidplay.config.IAudioSystemProperties.RTMP_UPLOAD_URL;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
 import static libsidutils.ZipFileUtils.copy;
@@ -12,12 +17,6 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
-import static server.restful.servlets.IConvertServletSystemProperties.MAX_RTMP_THREADS;
-import static server.restful.servlets.IConvertServletSystemProperties.MAX_TIME_GAP;
-import static server.restful.servlets.IConvertServletSystemProperties.PRESS_SPACE_INTERVALL;
-import static server.restful.servlets.IConvertServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
-import static server.restful.servlets.IConvertServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
-import static server.restful.servlets.IConvertServletSystemProperties.RTMP_UPLOAD_URL;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +39,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidplay.common.Event;
-import libsidplay.common.Event.Phase;
 import libsidplay.config.IConfig;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
@@ -55,12 +53,13 @@ import sidplay.audio.AVIDriver.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
-import sidplay.audio.FLVDriver;
 import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4Driver.MP4FileDriver;
+import sidplay.audio.ProxyDriver;
 import sidplay.audio.SIDDumpDriver.SIDDumpStreamDriver;
 import sidplay.audio.SIDRegDriver.SIDRegStreamDriver;
+import sidplay.audio.SleepDriver;
 import sidplay.audio.WAVDriver.WAVStreamDriver;
 import sidplay.ini.IniConfig;
 import sidplay.player.State;
@@ -121,7 +120,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				JCommander.newBuilder().addObject(servletParameters).programName(getClass().getName()).build()
 						.parse(args);
 
-				AudioDriver driver = getAudioDriverOfAudioFormat(config, response.getOutputStream());
+				Audio audio = getAudioFormat(config);
+				AudioDriver driver = getAudioDriverOfAudioFormat(audio, response.getOutputStream());
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
@@ -143,10 +143,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				UUID uuid = UUID.randomUUID();
 
-				AudioDriver driver = getAudioDriverOfVideoFormat(config, uuid);
+				Audio audio = getVideoFormat(config);
+				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid);
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (driver instanceof FLVDriver) {
+				if (audio == Audio.FLV) {
 					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
 							.count() < MAX_RTMP_THREADS) {
 						Thread thread = new Thread(() -> {
@@ -197,8 +198,26 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				.flatMap(List::stream).toArray(String[]::new);
 	}
 
-	private AudioDriver getAudioDriverOfAudioFormat(IConfig config, OutputStream outputstream) {
+	private Audio getAudioFormat(IConfig config) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
+		case WAV:
+			return Audio.WAV;
+		case FLAC:
+			return Audio.FLAC;
+		case AAC:
+			return Audio.AAC;
+		case MP3:
+		default:
+			return Audio.MP3;
+		case SID_DUMP:
+			return Audio.SID_DUMP;
+		case SID_REG:
+			return Audio.SID_REG;
+		}
+	}
+
+	private AudioDriver getAudioDriverOfAudioFormat(Audio audio, OutputStream outputstream) {
+		switch (audio) {
 		case WAV:
 			return new WAVStreamDriver(outputstream);
 		case FLAC:
@@ -229,36 +248,23 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private AudioDriver getAudioDriverOfVideoFormat(IConfig config, UUID uuid) {
+	private Audio getVideoFormat(IConfig config) {
 		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV)) {
 		case FLV:
 		default:
-			return new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid) {
+			return Audio.FLV;
+		case AVI:
+			return Audio.AVI;
+		case MP4:
+			return Audio.MP4;
+		}
+	}
 
-				private long startTime, time, startC64Time, c64Time;
-
-				@Override
-				public void write() throws InterruptedException {
-					if (startTime == 0) {
-						startTime = System.currentTimeMillis();
-						startC64Time = context.getTime(Phase.PHI2);
-					}
-					time = System.currentTimeMillis() - startTime;
-					c64Time = (long) ((context.getTime(Phase.PHI2) - startC64Time) * 1000 / cpuClock.getCpuFrequency());
-
-					long sleepTime = c64Time - time;
-					if (sleepTime > MAX_TIME_GAP) {
-						try {
-							// slow down video production to stay in sync with a possible viewer
-							Thread.sleep(sleepTime - MAX_TIME_GAP);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					super.write();
-				}
-
-			};
+	private AudioDriver getAudioDriverOfVideoFormat(Audio audio, UUID uuid) {
+		switch (audio) {
+		case FLV:
+		default:
+			return new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:

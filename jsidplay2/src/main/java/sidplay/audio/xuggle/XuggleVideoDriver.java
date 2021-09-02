@@ -73,8 +73,7 @@ import sidplay.audio.exceptions.IniConfigException;
  */
 public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
-	protected CPUClock cpuClock;
-	protected EventScheduler context;
+	private EventScheduler context;
 
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
@@ -88,7 +87,6 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		this.cpuClock = cpuClock;
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
 		recordingFilename = getRecordingFilename(recordingFilename);
