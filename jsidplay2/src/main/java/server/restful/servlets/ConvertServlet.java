@@ -53,6 +53,7 @@ import sidplay.audio.AVIDriver.AVIFileDriver;
 import sidplay.audio.Audio;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLACDriver.FLACStreamDriver;
+import sidplay.audio.FLVDriver.FLVFileDriver;
 import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.MP4Driver.MP4FileDriver;
@@ -144,10 +145,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				UUID uuid = UUID.randomUUID();
 
 				Audio audio = getVideoFormat(config);
-				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid);
+				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (audio == Audio.FLV) {
+				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == Audio.FLV) {
 					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
 							.count() < MAX_RTMP_THREADS) {
 						Thread thread = new Thread(() -> {
@@ -260,11 +261,15 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private AudioDriver getAudioDriverOfVideoFormat(Audio audio, UUID uuid) {
+	private AudioDriver getAudioDriverOfVideoFormat(Audio audio, UUID uuid, Boolean download) {
 		switch (audio) {
 		case FLV:
 		default:
-			return new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
+			if (Boolean.TRUE.equals(download)) {
+				return new FLVFileDriver();
+			} else {
+				return new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
+			}
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
