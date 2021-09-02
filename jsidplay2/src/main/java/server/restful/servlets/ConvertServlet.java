@@ -265,11 +265,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (audio) {
 		case FLV:
 		default:
-			if (Boolean.TRUE.equals(download)) {
-				return new FLVFileDriver();
-			} else {
-				return new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
-			}
+			return Boolean.TRUE.equals(download) ? new FLVFileDriver()
+					: new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
