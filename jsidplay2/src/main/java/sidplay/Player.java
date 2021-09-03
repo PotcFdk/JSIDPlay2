@@ -159,7 +159,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			ISidPlay2Section sidPlay2Section = config.getSidplay2Section();
 			IEmulationSection emulationSection = config.getEmulationSection();
 
-			if (!SidTune.canStoreSidModel(tune) && sidPlay2Section.getHvsc() != null) {
+			if (!SidTune.canStoreSidModel(tune)) {
 				final String infoDir = result.getMusicInfo().getInfoDir();
 				SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
 
