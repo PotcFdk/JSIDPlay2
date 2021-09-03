@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -110,6 +109,51 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			LAST_MODIFIED.setTime(new Date(us.openConnection().getLastModified()));
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
+		}
+	}
+
+	private class WhatsSidEvent extends Event {
+
+		private WhatsSidSupport whatsSidSupport;
+		private volatile boolean abort;
+
+		public WhatsSidEvent(String name, WhatsSidSupport whatsSidSupport) {
+			super(name);
+			this.whatsSidSupport = whatsSidSupport;
+		}
+
+		public void setAbort(boolean abort) {
+			this.abort = abort;
+		}
+
+		@Override
+		public void event() throws InterruptedException {
+
+			final Thread whatsSidMatcherThread = new Thread(() -> {
+				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
+				int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
+				try {
+					if (!abort && whatsSidSection.isEnable() && fingerPrintMatcher != null) {
+						MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
+						if (result != null) {
+							whatsSidHook.accept(result);
+							if (whatsSidSection.isDetectChipModel()) {
+								setWhatsSidDetectedChipModel(result);
+							}
+						}
+					}
+				} catch (Exception e) {
+					// server not available? silently ignore!
+				} finally {
+					// We have to be careful to reschedule here, since tune could have ended
+					if (!abort) {
+						c64.getEventScheduler().schedule(this,
+								(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
+					}
+				}
+			});
+			whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
+			whatsSidMatcherThread.start();
 		}
 	}
 
@@ -266,6 +310,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	private IFingerprintMatcher fingerPrintMatcher;
 
+	private WhatsSidEvent whatsSidEvent;
+
 	/**
 	 * Create a Music Player.
 	 *
@@ -357,7 +403,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			private void scheduleWhatsSidEvent(final WhatsSidSupport whatsSidSupport) {
 				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
 				int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
-				int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
 				if (sidDatabase != null) {
 					double songLength = sidDatabase.getSongLength(tune);
 					if (songLength > 0 && songLength < matchStartTimeInSeconds) {
@@ -366,38 +411,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					}
 				}
 				whatsSidSupport.reset();
-				final SidTune tuneToCheck = tune;
-				c64.getEventScheduler().schedule(new Event("WhatsSID") {
-
-					@Override
-					public void event() throws InterruptedException {
-						final Thread whatsSidMatcherThread = new Thread(() -> {
-							// do not check tunes not played anymore!
-							if (Objects.equals(tuneToCheck, tune)) {
-								try {
-									if (whatsSidSection.isEnable() && fingerPrintMatcher != null) {
-										MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
-										// do not show results of tunes not played anymore
-										if (result != null && Objects.equals(tuneToCheck, tune)) {
-											whatsSidHook.accept(result);
-											if (whatsSidSection.isDetectChipModel()) {
-												setWhatsSidDetectedChipModel(result);
-											}
-										}
-									}
-								} catch (Exception e) {
-									// server not available? silently ignore!
-								} finally {
-									// we cannot reschedule here, since we could have been reset meanwhile
-								}
-							}
-						});
-						c64.getEventScheduler().schedule(this,
-								(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
-						whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
-						whatsSidMatcherThread.start();
-					}
-				}, (long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
+				whatsSidEvent = new WhatsSidEvent("WhatsSID?", whatsSidSupport);
+				c64.getEventScheduler().schedule(whatsSidEvent,
+						(long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
 			}
 
 		};
@@ -921,6 +937,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		} catch (Throwable e) {
 			// ignore exceptions near close
 		} finally {
+			if (whatsSidEvent != null) {
+				whatsSidEvent.setAbort(true);
+			}
 			getAudioDriver().close();
 		}
 	}

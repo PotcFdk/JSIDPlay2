@@ -15,6 +15,8 @@ import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
+import static server.restful.JSIDPlay2Server.closeEntityManager;
+import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 
@@ -31,6 +33,8 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityManager;
+
 import org.apache.http.HttpHeaders;
 
 import com.beust.jcommander.JCommander;
@@ -44,6 +48,8 @@ import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import libsidutils.fingerprinting.FingerPrinting;
+import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletParameters;
@@ -70,6 +76,7 @@ import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.config.Configuration;
+import ui.entities.whatssid.service.WhatsSidService;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -153,9 +160,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							.count() < MAX_RTMP_THREADS) {
 						Thread thread = new Thread(() -> {
 							try {
-								convertVideo(config, file, driver).delete();
+								convertLiveVideo(config, file, driver, getEntityManager());
 							} catch (IOException | SidTuneError e) {
 								log("Error converting video!", e);
+							} finally {
+								closeEntityManager();
 							}
 						}, RTMP_THREAD);
 						thread.setPriority(MAX_PRIORITY);
@@ -272,6 +281,28 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		case MP4:
 			return new MP4FileDriver();
 		}
+	}
+
+	private void convertLiveVideo(IConfig config, File file, AudioDriver driver, EntityManager em)
+			throws IOException, SidTuneError {
+		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
+		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), 600));
+
+		Player player = new Player(config);
+		File root = configuration.getSidplay2Section().getHvsc();
+		if (root != null) {
+			player.setSidDatabase(new SidDatabase(root));
+		}
+		config.getSidplay2Section().setHvsc(root);
+		player.setAudioDriver(driver);
+
+		final WhatsSidService whatsSidService = new WhatsSidService(em);
+		FingerPrinting fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
+		player.setFingerPrintMatcher(fingerPrintMatcher);
+
+		addPressSpaceListener(player);
+		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
+		player.stopC64(false);
 	}
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
