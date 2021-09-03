@@ -261,7 +261,7 @@ public class GameBase extends C64VBox implements UIPart {
 	@Override
 	public void doClose() {
 		if (em != null && em.isOpen()) {
-			em.close();
+			em.getEntityManagerFactory().close();
 		}
 	}
 

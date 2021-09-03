@@ -1,6 +1,7 @@
 package sidplay.ini;
 
 import static java.util.Arrays.asList;
+import static libsidutils.ZipFileUtils.newFile;
 
 /*
  * Copyright (c) 2002 Stefan Matthias Aust.  All Rights Reserved.
@@ -247,7 +248,7 @@ public class IniReader {
 	public File getPropertyFile(final String section, final String key, final File defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
-			return new File(s);
+			return newFile(null, s);
 		}
 		return defaultValue;
 	}

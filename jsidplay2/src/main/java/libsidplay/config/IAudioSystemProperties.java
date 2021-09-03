@@ -20,6 +20,11 @@ public interface IAudioSystemProperties {
 	int MAX_RTMP_THREADS = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_threads", "3"));
 
 	/**
+	 * Maximum length in seconds the video generation process is running.
+	 */
+	int MAX_LENGTH = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_seconds", "600"));
+
+	/**
 	 * Interval between simulated key presses of the space key in s (required to
 	 * watch some demos).
 	 */

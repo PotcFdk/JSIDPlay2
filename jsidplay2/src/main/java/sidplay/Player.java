@@ -72,7 +72,6 @@ import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.ZipFileUtils;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.siddatabase.SidDatabase;
@@ -154,6 +153,30 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			});
 			whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
 			whatsSidMatcherThread.start();
+		}
+
+		private void setWhatsSidDetectedChipModel(MusicInfoWithConfidenceBean result) throws IOException, SidTuneError {
+			ISidPlay2Section sidPlay2Section = config.getSidplay2Section();
+			IEmulationSection emulationSection = config.getEmulationSection();
+
+			if (!SidTune.canStoreSidModel(tune) && sidPlay2Section.getHvsc() != null) {
+				final String infoDir = result.getMusicInfo().getInfoDir();
+				SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
+
+				boolean update = false;
+				for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+					ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
+
+					if (detectedChipModel != null
+							&& detectedChipModel != ChipModel.getChipModel(emulationSection, tune, sidNum)) {
+						emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
+						update = true;
+					}
+				}
+				if (update) {
+					updateSIDChipConfiguration();
+				}
+			}
 		}
 	}
 
@@ -442,31 +465,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	public void setFingerPrintMatcher(IFingerprintMatcher fingerPrintMatcher) {
 		this.fingerPrintMatcher = fingerPrintMatcher;
-	}
-
-	private void setWhatsSidDetectedChipModel(MusicInfoWithConfidenceBean result) throws IOException, SidTuneError {
-		ISidPlay2Section sidPlay2Section = config.getSidplay2Section();
-		IEmulationSection emulationSection = config.getEmulationSection();
-
-		if (!SidTune.canStoreSidModel(tune) && sidPlay2Section.getHvsc() != null) {
-			final String infoDir = result.getMusicInfo().getInfoDir();
-			final File root = ZipFileUtils.newFile(null, sidPlay2Section.getHvsc().getAbsolutePath());
-			SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, root, null));
-
-			boolean update = false;
-			for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-				ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
-
-				if (detectedChipModel != null
-						&& detectedChipModel != ChipModel.getChipModel(emulationSection, tune, sidNum)) {
-					emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
-					update = true;
-				}
-			}
-			if (update) {
-				updateSIDChipConfiguration();
-			}
-		}
 	}
 
 	/**

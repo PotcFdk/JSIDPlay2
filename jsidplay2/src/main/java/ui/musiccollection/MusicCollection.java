@@ -327,7 +327,7 @@ public class MusicCollection extends C64VBox implements UIPart {
 			}
 		}
 		if (em != null && em.isOpen()) {
-			em.close();
+			em.getEntityManagerFactory().close();
 		}
 	}
 

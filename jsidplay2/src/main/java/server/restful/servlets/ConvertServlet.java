@@ -3,6 +3,7 @@ package server.restful.servlets;
 import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.getAllStackTraces;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
+import static libsidplay.config.IAudioSystemProperties.MAX_LENGTH;
 import static libsidplay.config.IAudioSystemProperties.MAX_RTMP_THREADS;
 import static libsidplay.config.IAudioSystemProperties.PRESS_SPACE_INTERVALL;
 import static libsidplay.config.IAudioSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
@@ -252,6 +253,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
+
 		SidTune tune = SidTune.load(file);
 		tune.getInfo().setSelectedSong(song);
 		player.play(tune);
@@ -286,19 +288,16 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private void convertLiveVideo(IConfig config, File file, AudioDriver driver, EntityManager em)
 			throws IOException, SidTuneError {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), 600));
+		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), MAX_LENGTH));
 
 		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
+			config.getSidplay2Section().setHvsc(root);
 			player.setSidDatabase(new SidDatabase(root));
 		}
-		config.getSidplay2Section().setHvsc(root);
+		player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
 		player.setAudioDriver(driver);
-
-		final WhatsSidService whatsSidService = new WhatsSidService(em);
-		FingerPrinting fingerPrintMatcher = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
-		player.setFingerPrintMatcher(fingerPrintMatcher);
 
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
@@ -307,16 +306,19 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), 600));
+		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), MAX_LENGTH));
 
-		Player player = new Player(config);
 		File videoFile = File.createTempFile("jsidplay2video", driver.getExtension(), sidplay2Section.getTmpDir());
 		videoFile.deleteOnExit();
+
+		Player player = new Player(config);
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
+
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
+
 		return videoFile;
 	}
 
