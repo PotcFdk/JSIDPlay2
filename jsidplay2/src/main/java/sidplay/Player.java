@@ -11,7 +11,6 @@ package sidplay;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static libsidplay.common.SIDEmu.NONE;
-import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static libsidplay.sidtune.SidTune.RESET;
 import static sidplay.ini.IniDefaults.DEFAULT_AUDIO;
 import static sidplay.player.State.END;
@@ -48,7 +47,6 @@ import builder.resid.SIDMixer;
 import builder.sidblaster.SIDBlasterBuilder;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -68,10 +66,8 @@ import libsidplay.config.IAudioSection;
 import libsidplay.config.IConfig;
 import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
-import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
-import libsidutils.PathUtils;
 import libsidutils.fingerprinting.IFingerprintMatcher;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.siddatabase.SidDatabase;
@@ -83,12 +79,12 @@ import sidplay.audio.MP3Driver.MP3StreamDriver;
 import sidplay.audio.VideoDriver;
 import sidplay.audio.exceptions.IniConfigException;
 import sidplay.audio.exceptions.SongEndException;
-import sidplay.fingerprinting.WhatsSidSupport;
 import sidplay.ini.IniConfig;
 import sidplay.player.ObjectProperty;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
+import sidplay.player.WhatsSidEvent;
 
 /**
  * The player adds some music player capabilities to the HardwareEnsemble.
@@ -108,75 +104,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			LAST_MODIFIED.setTime(new Date(us.openConnection().getLastModified()));
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
-		}
-	}
-
-	private class WhatsSidEvent extends Event {
-
-		private WhatsSidSupport whatsSidSupport;
-		private volatile boolean abort;
-
-		public WhatsSidEvent(String name, WhatsSidSupport whatsSidSupport) {
-			super(name);
-			this.whatsSidSupport = whatsSidSupport;
-		}
-
-		public void setAbort(boolean abort) {
-			this.abort = abort;
-		}
-
-		@Override
-		public void event() throws InterruptedException {
-
-			final Thread whatsSidMatcherThread = new Thread(() -> {
-				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
-				int matchRetryTimeInSeconds = whatsSidSection.getMatchRetryTime();
-				try {
-					if (!abort && whatsSidSection.isEnable() && fingerPrintMatcher != null) {
-						MusicInfoWithConfidenceBean result = whatsSidSupport.match(fingerPrintMatcher);
-						if (result != null) {
-							whatsSidHook.accept(result);
-							if (whatsSidSection.isDetectChipModel()) {
-								setWhatsSidDetectedChipModel(result);
-							}
-						}
-					}
-				} catch (Exception e) {
-					// server not available? silently ignore!
-				} finally {
-					// We have to be careful to reschedule here, since tune could have ended
-					if (!abort) {
-						c64.getEventScheduler().schedule(this,
-								(long) (matchRetryTimeInSeconds * c64.getClock().getCpuFrequency()));
-					}
-				}
-			});
-			whatsSidMatcherThread.setPriority(Thread.MIN_PRIORITY);
-			whatsSidMatcherThread.start();
-		}
-
-		private void setWhatsSidDetectedChipModel(MusicInfoWithConfidenceBean result) throws IOException, SidTuneError {
-			ISidPlay2Section sidPlay2Section = config.getSidplay2Section();
-			IEmulationSection emulationSection = config.getEmulationSection();
-
-			if (!SidTune.canStoreSidModel(tune)) {
-				final String infoDir = result.getMusicInfo().getInfoDir();
-				SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
-
-				boolean update = false;
-				for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-					ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
-
-					if (detectedChipModel != null
-							&& detectedChipModel != ChipModel.getChipModel(emulationSection, tune, sidNum)) {
-						emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
-						update = true;
-					}
-				}
-				if (update) {
-					updateSIDChipConfiguration();
-				}
-			}
 		}
 	}
 
@@ -333,6 +260,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	private IFingerprintMatcher fingerPrintMatcher;
 
+	/**
+	 * Regularly scheduled event for tune recognition.
+	 */
 	private WhatsSidEvent whatsSidEvent;
 
 	/**
@@ -369,7 +299,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 					addMOS6510Extension((IMOS6510Extension) getAudioDriver());
 				}
 				if (sidBuilder instanceof SIDMixer) {
-					scheduleWhatsSidEvent(((SIDMixer) sidBuilder).getWhatsSidSupport());
+					whatsSidEvent = new WhatsSidEvent(Player.this, ((SIDMixer) sidBuilder).getWhatsSidSupport());
 				}
 			}
 
@@ -423,22 +353,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 				}
 			}
 
-			private void scheduleWhatsSidEvent(final WhatsSidSupport whatsSidSupport) {
-				IWhatsSidSection whatsSidSection = config.getWhatsSidSection();
-				int matchStartTimeInSeconds = whatsSidSection.getMatchStartTime();
-				if (sidDatabase != null) {
-					double songLength = sidDatabase.getSongLength(tune);
-					if (songLength > 0 && songLength < matchStartTimeInSeconds) {
-						// song too short? start at 90%
-						matchStartTimeInSeconds = Math.min((int) (songLength * 0.9), matchStartTimeInSeconds);
-					}
-				}
-				whatsSidSupport.reset();
-				whatsSidEvent = new WhatsSidEvent("WhatsSID?", whatsSidSupport);
-				c64.getEventScheduler().schedule(whatsSidEvent,
-						(long) (matchStartTimeInSeconds * c64.getClock().getCpuFrequency()));
-			}
-
 		};
 		initializeTmpDir(config);
 		stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
@@ -456,6 +370,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
 		}
+	}
+
+	/**
+	 * Get a fingerprint matcher.
+	 *
+	 * @return fingerprint matcher
+	 */
+	public IFingerprintMatcher getFingerPrintMatcher() {
+		return fingerPrintMatcher;
 	}
 
 	/**
@@ -710,6 +633,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	public final void setInteractivityHook(final Consumer<Player> interactivityHook) {
 		this.interactivityHook = interactivityHook;
+	}
+
+	/**
+	 * Get a hook to be called when WhatsSid has detected a tune.
+	 * 
+	 * @return hook to be called when WhatsSid has detected a tune
+	 */
+	public Consumer<MusicInfoWithConfidenceBean> getWhatsSidHook() {
+		return whatsSidHook;
 	}
 
 	/**
