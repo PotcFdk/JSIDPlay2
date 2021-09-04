@@ -285,6 +285,12 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		this.playList = PlayList.getInstance(config, tune);
 		this.timer = new Timer(this) {
 
+			/**
+			 * Start time reached? Insert SID chips, connect audio/video driver and start
+			 * tune recognition.
+			 * 
+			 * @see sidplay.player.Timer#start()
+			 */
 			@Override
 			public void start() {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
