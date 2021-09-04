@@ -63,7 +63,7 @@ import sidplay.audio.exceptions.IniConfigException;
  * {@code
  * http://127.0.0.1:8080/jsidplay2service/JSIDPlay2REST/convert/Demos/Instinct+BoozeDesign%20-%20Andropolis/Instinct+BoozeDesign%20-%20Andropolis.d64?defaultLength=06:00&enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true
  * 
- * Video streaming possibilities:
+ * Video streaming possibilities (RTMP and HLS):
  * rtmp://localhost/live/test
  * http://localhost:90/hls/test.m3u8
  * }
@@ -79,6 +79,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
 	private BufferedImage vicImage;
+	private ByteBuffer pictureBuffer;
 	private long frameNo, framesPerKeyFrames, firstTimeStamp;
 	private double ticksPerMicrosecond;
 
@@ -122,6 +123,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		videoCoder.open(null, null);
 
 		vicImage = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
+		pictureBuffer = ByteBuffer.wrap(((DataBufferByte) vicImage.getRaster().getDataBuffer()).getData());
 		converter = ConverterFactory.createConverter(vicImage, YUV420P);
 
 		IStream audioStream = container.addNewStream(getAudioCodec());
@@ -263,14 +265,14 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	}
 
 	private void to3ByteGBR(IntBuffer pixels) {
-		ByteBuffer pictureBuffer = ByteBuffer.wrap(((DataBufferByte) vicImage.getRaster().getDataBuffer()).getData());
+		((Buffer) pictureBuffer).clear();
 		((Buffer) pixels).clear();
 		while (pixels.hasRemaining()) {
 			int pixel = pixels.get();
 			// ignore ALPHA channel (ARGB channel order)
-			pictureBuffer.put((byte) ((pixel & 0xff)));
-			pictureBuffer.put((byte) ((pixel >> 8 & 0xff)));
-			pictureBuffer.put((byte) ((pixel >> 16 & 0xff)));
+			pictureBuffer.put((byte) (pixel & 0xff));
+			pictureBuffer.put((byte) (pixel >> 8 & 0xff));
+			pictureBuffer.put((byte) (pixel >> 16 & 0xff));
 		}
 	}
 

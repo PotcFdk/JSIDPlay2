@@ -36,20 +36,22 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		// INSERT INTO `MusicInfo` ('songNo', `Title`, `Artist`, `Album`, `FileDir`,
 		// `InfoDir`, audio_length) VALUES
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			MusicInfo musicInfo = new MusicInfo();
-			musicInfo.setSongNo(musicInfoBean.getSongNo());
-			musicInfo.setTitle(musicInfoBean.getTitle());
-			musicInfo.setArtist(musicInfoBean.getArtist());
-			musicInfo.setAlbum(musicInfoBean.getAlbum());
-			musicInfo.setFileDir(musicInfoBean.getFileDir());
-			musicInfo.setInfoDir(musicInfoBean.getInfoDir());
-			musicInfo.setAudioLength(musicInfoBean.getAudioLength());
-			em.persist(musicInfo);
+				MusicInfo musicInfo = new MusicInfo();
+				musicInfo.setSongNo(musicInfoBean.getSongNo());
+				musicInfo.setTitle(musicInfoBean.getTitle());
+				musicInfo.setArtist(musicInfoBean.getArtist());
+				musicInfo.setAlbum(musicInfoBean.getAlbum());
+				musicInfo.setFileDir(musicInfoBean.getFileDir());
+				musicInfo.setInfoDir(musicInfoBean.getInfoDir());
+				musicInfo.setAudioLength(musicInfoBean.getAudioLength());
+				em.persist(musicInfo);
 
-			em.getTransaction().commit();
-			return new IdBean(musicInfo.getIdMusicInfo());
+				em.getTransaction().commit();
+				return new IdBean(musicInfo.getIdMusicInfo());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -67,16 +69,18 @@ public class WhatsSidService implements FingerPrintingDataSource {
 			return;
 		}
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			for (HashBean hashBean : hashes.getHashes()) {
-				HashTable hashTable = new HashTable();
-				hashTable.setHash(hashBean.getHash());
-				hashTable.setId(hashBean.getId());
-				hashTable.setTime(hashBean.getTime());
-				em.persist(hashTable);
+				for (HashBean hashBean : hashes.getHashes()) {
+					HashTable hashTable = new HashTable();
+					hashTable.setHash(hashBean.getHash());
+					hashTable.setId(hashBean.getId());
+					hashTable.setTime(hashBean.getTime());
+					em.persist(hashTable);
+				}
+				em.getTransaction().commit();
 			}
-			em.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -91,18 +95,20 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		// SELECT songNo, Title, Artist, Album, audio_length FROM `MusicInfo` WHERE
 		// idMusicInfo=songNoBean.getSongNo()
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
-			Root<MusicInfo> root = query.from(MusicInfo.class);
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<MusicInfo> query = cb.createQuery(MusicInfo.class);
+				Root<MusicInfo> root = query.from(MusicInfo.class);
 
-			query.select(root).where(cb.equal(root.get(MusicInfo_.idMusicInfo), songNoBean.getSongNo()));
+				query.select(root).where(cb.equal(root.get(MusicInfo_.idMusicInfo), songNoBean.getSongNo()));
 
-			MusicInfoBean result = em.createQuery(query).getSingleResult().toBean();
+				MusicInfoBean result = em.createQuery(query).getSingleResult().toBean();
 
-			em.getTransaction().commit();
-			return result;
+				em.getTransaction().commit();
+				return result;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -121,19 +127,21 @@ public class WhatsSidService implements FingerPrintingDataSource {
 			return result;
 		}
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
-			Root<HashTable> root = query.from(HashTable.class);
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
+				Root<HashTable> root = query.from(HashTable.class);
 
-			query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
+				query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
 
-			em.createQuery(query).setHint(QueryHints.READ_ONLY, true).setHint(QueryHints.TIMEOUT_JPA, QUERY_TIMEOUT)
-					.getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
+				em.createQuery(query).setHint(QueryHints.READ_ONLY, true).setHint(QueryHints.TIMEOUT_JPA, QUERY_TIMEOUT)
+						.getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
 
-			em.getTransaction().commit();
-			return result;
+				em.getTransaction().commit();
+				return result;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -148,31 +156,33 @@ public class WhatsSidService implements FingerPrintingDataSource {
 		// SELECT count(*) FROM MusicInfo WHERE songNo=songNo, Title=title AND
 		// Artist=artist AND Album=album AND FileDir=fileDir AND InfoDir=infoDir
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Long> query = cb.createQuery(Long.class);
-			Root<MusicInfo> root = query.from(MusicInfo.class);
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> query = cb.createQuery(Long.class);
+				Root<MusicInfo> root = query.from(MusicInfo.class);
 
-			Predicate songNoPredicate = cb.equal(root.get(MusicInfo_.songNo), musicInfoBean.getSongNo());
+				Predicate songNoPredicate = cb.equal(root.get(MusicInfo_.songNo), musicInfoBean.getSongNo());
 
-			Predicate titlePredicate = cb.equal(root.get(MusicInfo_.title), musicInfoBean.getTitle());
+				Predicate titlePredicate = cb.equal(root.get(MusicInfo_.title), musicInfoBean.getTitle());
 
-			Predicate artistPredicate = cb.equal(root.get(MusicInfo_.artist), musicInfoBean.getArtist());
+				Predicate artistPredicate = cb.equal(root.get(MusicInfo_.artist), musicInfoBean.getArtist());
 
-			Predicate albumPredicate = cb.equal(root.get(MusicInfo_.album), musicInfoBean.getAlbum());
+				Predicate albumPredicate = cb.equal(root.get(MusicInfo_.album), musicInfoBean.getAlbum());
 
-			Predicate fileDirPredicate = cb.equal(root.get(MusicInfo_.fileDir), musicInfoBean.getFileDir());
+				Predicate fileDirPredicate = cb.equal(root.get(MusicInfo_.fileDir), musicInfoBean.getFileDir());
 
-			Predicate infoDirPredicate = cb.equal(root.get(MusicInfo_.infoDir), musicInfoBean.getInfoDir());
+				Predicate infoDirPredicate = cb.equal(root.get(MusicInfo_.infoDir), musicInfoBean.getInfoDir());
 
-			query.select(cb.count(root)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate, albumPredicate,
-					fileDirPredicate, infoDirPredicate));
+				query.select(cb.count(root)).where(cb.and(songNoPredicate, titlePredicate, artistPredicate,
+						albumPredicate, fileDirPredicate, infoDirPredicate));
 
-			boolean result = em.createQuery(query).getSingleResult() > 0;
+				boolean result = em.createQuery(query).getSingleResult() > 0;
 
-			em.getTransaction().commit();
-			return result;
+				em.getTransaction().commit();
+				return result;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -184,19 +194,21 @@ public class WhatsSidService implements FingerPrintingDataSource {
 
 	public void deleteAll() {
 		try {
-			em.getTransaction().begin();
+			if (em.isOpen()) {
+				em.getTransaction().begin();
 
-			CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
 
-			CriteriaDelete<MusicInfo> criteriaDeleteMusicInfo = cb.createCriteriaDelete(MusicInfo.class);
-			criteriaDeleteMusicInfo.from(MusicInfo.class);
-			em.createQuery(criteriaDeleteMusicInfo).executeUpdate();
+				CriteriaDelete<MusicInfo> criteriaDeleteMusicInfo = cb.createCriteriaDelete(MusicInfo.class);
+				criteriaDeleteMusicInfo.from(MusicInfo.class);
+				em.createQuery(criteriaDeleteMusicInfo).executeUpdate();
 
-			CriteriaDelete<HashTable> criteriaDeleteHashTable = cb.createCriteriaDelete(HashTable.class);
-			criteriaDeleteHashTable.from(HashTable.class);
-			em.createQuery(criteriaDeleteHashTable).executeUpdate();
+				CriteriaDelete<HashTable> criteriaDeleteHashTable = cb.createCriteriaDelete(HashTable.class);
+				criteriaDeleteHashTable.from(HashTable.class);
+				em.createQuery(criteriaDeleteHashTable).executeUpdate();
 
-			em.getTransaction().commit();
+				em.getTransaction().commit();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
@@ -206,7 +218,9 @@ public class WhatsSidService implements FingerPrintingDataSource {
 	}
 
 	public void close() {
-		em.close();
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 
 }
