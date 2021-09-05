@@ -230,7 +230,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private PropertyChangeListener pauseListener = event -> {
 		if (event.getNewValue() == PAUSE) {
 			getAudioDriver().pause();
-			configureMixer(mixer -> mixer.pause());
+			configureMixer(Mixer::pause);
 			// audio driver continues automatically, next call of write!
 		}
 	};
@@ -294,7 +294,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			@Override
 			public void start() {
 				c64.insertSIDChips(requiredSIDs, sidLocator);
-				configureMixer(mixer -> mixer.start());
+				configureMixer(Mixer::start);
 				if (getAudioDriver() instanceof VideoDriver) {
 					addVideoDriver((VideoDriver) getAudioDriver());
 				}
