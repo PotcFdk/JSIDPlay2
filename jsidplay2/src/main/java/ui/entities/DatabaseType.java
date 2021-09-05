@@ -17,8 +17,8 @@ public enum DatabaseType {
 	/**
 	 * MSAccess Database
 	 */
-	MSACCESS("net.ucanaccess.jdbc.UcanaccessDriver", "jdbc:ucanaccess://${name};showschema=true",
-			"org.hibernate.dialect.HSQLDialect");
+	MSACCESS("net.ucanaccess.jdbc.UcanaccessDriver", "jdbc:ucanaccess://${name};",
+			"org.hibernate.dialect.SQLServerDialect");
 
 	private String jdbcDriver;
 	private String jdbcUrl;
