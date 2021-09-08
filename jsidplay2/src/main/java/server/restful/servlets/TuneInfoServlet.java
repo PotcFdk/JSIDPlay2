@@ -29,7 +29,7 @@ import ui.musiccollection.SearchCriteria;
 @SuppressWarnings("serial")
 public class TuneInfoServlet extends JSIDPlay2Servlet {
 
-	public static final String INFO_PATH = "/info";
+	public static final String TUNE_INFO_PATH = "/info";
 
 	public TuneInfoServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -37,7 +37,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + INFO_PATH;
+		return CONTEXT_ROOT_SERVLET + TUNE_INFO_PATH;
 	}
 
 	/**

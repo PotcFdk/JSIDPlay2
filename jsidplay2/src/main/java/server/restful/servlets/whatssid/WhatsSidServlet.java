@@ -22,7 +22,7 @@ import ui.entities.whatssid.service.WhatsSidService;
 @SuppressWarnings("serial")
 public class WhatsSidServlet extends JSIDPlay2Servlet {
 
-	public static final String IDENTIFY_PATH = "/whatssid";
+	public static final String WHATSSID_PATH = "/whatssid";
 
 	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -30,7 +30,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + IDENTIFY_PATH;
+		return CONTEXT_ROOT_SERVLET + WHATSSID_PATH;
 	}
 
 	/**
