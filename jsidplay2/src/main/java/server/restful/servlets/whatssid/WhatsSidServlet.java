@@ -4,7 +4,6 @@ import static java.lang.Thread.getAllStackTraces;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
-import static server.restful.servlets.ConvertServlet.RTMP_THREAD;
 
 import java.io.IOException;
 import java.util.Properties;

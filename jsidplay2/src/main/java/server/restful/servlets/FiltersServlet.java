@@ -22,13 +22,15 @@ import ui.entities.config.FilterSection;
 @SuppressWarnings("serial")
 public class FiltersServlet extends JSIDPlay2Servlet {
 
+	public static final String FILTERS_PATH = "/filters";
+
 	public FiltersServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/filters";
+		return CONTEXT_ROOT_SERVLET + FILTERS_PATH;
 	}
 
 	/**

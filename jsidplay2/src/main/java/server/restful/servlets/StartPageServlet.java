@@ -2,7 +2,7 @@ package server.restful.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidutils.ZipFileUtils.convertStreamToString;
-import static server.restful.JSIDPlay2Server.CONTEXT_ROOT;
+import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_START_PAGE;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
@@ -32,7 +32,7 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT + "/";
+		return CONTEXT_ROOT_START_PAGE;
 	}
 
 	@Override

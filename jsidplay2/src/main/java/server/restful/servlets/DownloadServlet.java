@@ -23,13 +23,15 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class DownloadServlet extends JSIDPlay2Servlet {
 
+	public static final String DOWNLOAD_PATH = "/download";
+
 	public DownloadServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/download";
+		return CONTEXT_ROOT_SERVLET + DOWNLOAD_PATH;
 	}
 
 	/**

@@ -30,13 +30,15 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class DirectoryServlet extends JSIDPlay2Servlet {
 
+	public static final String DIRECTORY_PATH = "/directory";
+
 	public DirectoryServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/directory";
+		return CONTEXT_ROOT_SERVLET + DIRECTORY_PATH;
 	}
 
 	/**

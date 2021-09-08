@@ -74,7 +74,9 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
  * 
  * 1st) get a stream with SID music as MP3 for the mobile version or
  * 
- * 2nd) WhatsSID? Which tune is currently played?
+ * 2nd) get a stream with demo as RTMP for the mobile version or
+ * 
+ * 3rd) WhatsSID? Which tune is currently played?
  * 
  * @author ken
  *
@@ -87,19 +89,24 @@ public class JSIDPlay2Server {
 	}
 
 	/**
-	 * Context root of start page
+	 * Context root of web app
 	 */
 	public static final String CONTEXT_ROOT = "";
 
 	/**
-	 * Context root of all servlets
+	 * Context root of start page
 	 */
-	public static final String CONTEXT_ROOT_SERVLET = "/jsidplay2service/JSIDPlay2REST";
+	public static final String CONTEXT_ROOT_START_PAGE = "/";
 
 	/**
 	 * Context root of static pages
 	 */
 	public static final String CONTEXT_ROOT_STATIC = "/static";
+
+	/**
+	 * Context root of all servlets
+	 */
+	public static final String CONTEXT_ROOT_SERVLET = "/jsidplay2service/JSIDPlay2REST";
 
 	/**
 	 * User role

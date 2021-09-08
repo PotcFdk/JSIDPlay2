@@ -82,7 +82,7 @@ import ui.entities.whatssid.service.WhatsSidService;
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
 
-	public static final String RTMP_THREAD = "RTMP";
+	public static final String CONVERT_PATH = "/convert";
 
 	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -95,7 +95,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/convert";
+		return CONTEXT_ROOT_SERVLET + CONVERT_PATH;
 	}
 
 	/**

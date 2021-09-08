@@ -34,6 +34,8 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected static final String C64_MUSIC = "/C64Music";
 	protected static final String CGSC = "/CGSC";
 
+	protected static final String RTMP_THREAD = "RTMP";
+
 	protected Configuration configuration;
 
 	protected Properties directoryProperties;

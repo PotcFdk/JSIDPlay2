@@ -26,13 +26,15 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class PhotoServlet extends JSIDPlay2Servlet {
 
+	public static final String PHOTO_PATH = "/photo";
+
 	public PhotoServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/photo";
+		return CONTEXT_ROOT_SERVLET + PHOTO_PATH;
 	}
 
 	/**

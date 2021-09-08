@@ -25,13 +25,15 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class FavoritesServlet extends JSIDPlay2Servlet {
 
+	public static final String FAVORITES_PATH = "/favorites";
+
 	public FavoritesServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_SERVLET + "/favorites";
+		return CONTEXT_ROOT_SERVLET + FAVORITES_PATH;
 	}
 
 	/**
