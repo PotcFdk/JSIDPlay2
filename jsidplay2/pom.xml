@@ -173,19 +173,12 @@
 			<artifactId>JTransforms</artifactId>
 			<version>3.1</version>
 		</dependency>
-		<!-- runtime dependencies -->
-		<dependency>
-			<!-- required for JSIDPlay2Server -->
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.32</version>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-file</artifactId>
 			<version>7.7.10</version>
 		</dependency>
+		<!-- runtime dependencies -->
 		<dependency>
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-zip</artifactId>
@@ -196,6 +189,13 @@
 			<groupId>de.schlichtherle.truezip</groupId>
 			<artifactId>truezip-driver-tar</artifactId>
 			<version>7.7.10</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<!-- required for JSIDPlay2Server -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.32</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
