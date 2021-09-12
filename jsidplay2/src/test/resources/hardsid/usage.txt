@@ -72,7 +72,7 @@ If the required delay is too long for a 16-bit value, do it like this:
 while (cycles>65535) {
 	while (hardsid_usb_delay(usb_dev_id, 65535)==HSID_USB_WSTATE_BUSY)
 		Sleep(0);
-	cycles-=65536;
+	cycles-=65535;
 }
 
 if (cycles>0) {
