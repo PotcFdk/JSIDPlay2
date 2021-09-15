@@ -6,6 +6,7 @@ import java.util.List;
 import com.xuggle.xuggler.ICodec.ID;
 
 import libsidplay.common.SamplingRate;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.xuggle.XuggleVideoDriver;
 
 /**
@@ -25,7 +26,7 @@ public abstract class AVIDriver extends XuggleVideoDriver {
 	public static class AVIFileDriver extends AVIDriver {
 
 		@Override
-		protected String getRecordingFilename(String recordingFilename) {
+		protected String getUrl(IAudioSection audioSection, String recordingFilename) {
 			System.out.println("Recording, file=" + recordingFilename);
 			return recordingFilename;
 		}

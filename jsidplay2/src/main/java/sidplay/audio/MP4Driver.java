@@ -9,6 +9,7 @@ import java.util.List;
 import com.xuggle.xuggler.ICodec.ID;
 
 import libsidplay.common.SamplingRate;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.xuggle.XuggleVideoDriver;
 
 public abstract class MP4Driver extends XuggleVideoDriver {
@@ -22,7 +23,7 @@ public abstract class MP4Driver extends XuggleVideoDriver {
 	public static class MP4FileDriver extends MP4Driver {
 
 		@Override
-		protected String getRecordingFilename(String recordingFilename) {
+		protected String getUrl(IAudioSection audioSection, String recordingFilename) {
 			System.out.println("Recording, file=" + recordingFilename);
 			return recordingFilename;
 		}

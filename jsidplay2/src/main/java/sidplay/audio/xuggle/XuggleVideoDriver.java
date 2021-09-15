@@ -90,23 +90,18 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			throws IOException, LineUnavailableException, InterruptedException {
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
-		recordingFilename = getRecordingFilename(recordingFilename);
-		if (recordingFilename == null) {
-			recordingFilename = audioSection.getVideoStreamingUrl();
-			if (recordingFilename == null) {
-				throw new RuntimeException("Video streaming URL setting has not been configured!");
-			}
-		}
+		String url = getUrl(audioSection, recordingFilename);
+
 		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
 			throw new IniConfigException("Sampling rate is not supported by encoder, use default",
 					() -> audioSection.setSamplingRate(getDefaultSamplingRate()));
 		}
 		container = IContainer.make();
 		IContainerFormat containerFormat = IContainerFormat.make();
-		containerFormat.setOutputFormat(getOutputFormatName(), recordingFilename, null);
+		containerFormat.setOutputFormat(getOutputFormatName(), url, null);
 		container.setInputBufferLength(0);
-		if (container.open(recordingFilename, WRITE, containerFormat) < 0) {
-			throw new IOException("Could not open: " + recordingFilename);
+		if (container.open(url, WRITE, containerFormat) < 0) {
+			throw new IOException("Could not open: '" + url + "'");
 		}
 		IStream stream = container.addNewStream(getVideoCodec());
 		videoCoder = stream.getStreamCoder();
@@ -286,5 +281,5 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	protected abstract ID getAudioCodec();
 
-	protected abstract String getRecordingFilename(String recordingFilename);
+	protected abstract String getUrl(IAudioSection audioSection, String recordingFilename);
 }

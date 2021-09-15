@@ -9,6 +9,7 @@ import java.util.List;
 import com.xuggle.xuggler.ICodec.ID;
 
 import libsidplay.common.SamplingRate;
+import libsidplay.config.IAudioSection;
 import sidplay.audio.xuggle.XuggleVideoDriver;
 
 /**
@@ -36,7 +37,7 @@ public abstract class FLVDriver extends XuggleVideoDriver {
 	public static class FLVFileDriver extends FLVDriver {
 
 		@Override
-		protected String getRecordingFilename(String recordingFilename) {
+		protected String getUrl(IAudioSection audioSection, String recordingFilename) {
 			System.out.println("Recording, file=" + recordingFilename);
 			return recordingFilename;
 		}
@@ -47,9 +48,10 @@ public abstract class FLVDriver extends XuggleVideoDriver {
 	 * Driver to upload real-time video stream via RTMP protocol to a web
 	 * server.<BR>
 	 *
-	 * E.g "rtmp://localhost/live/test" <B>Note:</B> RTMP enabled web-server must be
-	 * running (e.g. nginx + rtmp module)
-	 *
+	 * E.g "rtmp://localhost/live/test"
+	 * 
+	 * <B>Note:</B> RTMP enabled web-server must be running (e.g. nginx + rtmp
+	 * module)
 	 *
 	 * <B>Note:</B> RTMP enabled web-server must be started beforehand (e.g. sudo
 	 * /usr/local/nginx/sbin/nginx)
@@ -59,22 +61,28 @@ public abstract class FLVDriver extends XuggleVideoDriver {
 	 */
 	public static class FLVStreamDriver extends FLVDriver {
 
-		private String rtmpUrl;
+		private final String url;
+
+		public FLVStreamDriver() {
+			this(null);
+		}
+
+		public FLVStreamDriver(String url) {
+			this.url = url;
+		}
 
 		/**
-		 * Live streaming video URL is set by USER interface setting!
+		 * @param audioSection      used to get live streaming URL by configuration
+		 * @param recordingFilename gets ignored, live streaming video URL is used,
+		 *                          instead. Either by configuration or by constructor
 		 */
-		public FLVStreamDriver() {
-		}
-
-		public FLVStreamDriver(String rtmpUrl) {
-			this.rtmpUrl = rtmpUrl;
-		}
-
 		@Override
-		protected String getRecordingFilename(String recordingFilename) {
-			// Note: a local recording file name is overridden by RTMP URL
-			return this.rtmpUrl;
+		protected String getUrl(IAudioSection audioSection, String recordingFilename) {
+			if (url != null) {
+				return url;
+			} else {
+				return audioSection.getVideoStreamingUrl();
+			}
 		}
 
 	}
