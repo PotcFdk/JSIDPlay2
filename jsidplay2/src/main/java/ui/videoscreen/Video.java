@@ -106,7 +106,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	 * Note: volatile, because Screen Updater thread writes it and javafx thread
 	 * reads it!
 	 */
-	private volatile Image currentImage;
+	private static volatile Image currentImage;
 
 	private double scaleY;
 
@@ -562,7 +562,7 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 	/**
 	 * @return VIC image with current frame
 	 */
-	public Image getVicImage() {
+	public static Image getVicImage() {
 		return currentImage;
 	}
 

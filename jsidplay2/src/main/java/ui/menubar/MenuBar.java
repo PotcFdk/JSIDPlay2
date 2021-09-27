@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -35,13 +33,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -53,7 +48,6 @@ import libsidplay.components.c1541.C1541;
 import libsidplay.components.c1541.ExtendImagePolicy;
 import libsidplay.components.c1541.FloppyType;
 import libsidplay.components.cart.CartridgeType;
-import libsidplay.sidtune.MP3Tune;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidplay.sidtune.SidTuneInfo;
@@ -61,7 +55,6 @@ import libsidutils.PathUtils;
 import sidplay.Player;
 import sidplay.player.PlayList;
 import sidplay.player.State;
-import ui.JSidPlay2;
 import ui.JSidPlay2Main;
 import ui.about.About;
 import ui.asm.Asm;
@@ -69,7 +62,6 @@ import ui.assembly64.Assembly64;
 import ui.audiosettings.AudioSettings;
 import ui.common.C64VBox;
 import ui.common.C64Window;
-import ui.common.Convenience;
 import ui.common.Toast;
 import ui.common.UIPart;
 import ui.common.filefilter.CartFileExtensions;
@@ -79,7 +71,6 @@ import ui.common.filefilter.TuneFileExtensions;
 import ui.common.util.DesktopUtil;
 import ui.console.Console;
 import ui.disassembler.Disassembler;
-import ui.diskcollection.DiskCollection;
 import ui.diskcollection.DiskCollectionType;
 import ui.emulationsettings.EmulationSettings;
 import ui.entities.config.C1541Section;
@@ -88,10 +79,8 @@ import ui.entities.config.PrinterSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.config.ViewEntity;
 import ui.favorites.Favorites;
-import ui.favorites.PlaybackType;
 import ui.gamebase.GameBase;
 import ui.joysticksettings.JoystickSettings;
-import ui.musiccollection.MusicCollection;
 import ui.musiccollection.MusicCollectionType;
 import ui.oscilloscope.Oscilloscope;
 import ui.printer.Printer;
@@ -101,7 +90,6 @@ import ui.sidreg.SidReg;
 import ui.ultimate64.Ultimate64Window;
 import ui.update.Update;
 import ui.videoscreen.Video;
-import ui.webview.WebView;
 import ui.webview.WebViewType;
 import ui.whatssidsettings.WhatsSidSettings;
 
@@ -166,31 +154,12 @@ public class MenuBar extends C64VBox implements UIPart {
 				if (event.getNewValue() == State.START) {
 					setCurrentTrack(sidTune);
 					updatePlayerButtons(util.getPlayer().getPlayList());
-
-					final Tab selectedItem = jSidPlay2.getTabbedPane().getSelectionModel().getSelectedItem();
-					boolean doNotSwitch = selectedItem != null
-							&& (MusicCollection.class.isAssignableFrom(selectedItem.getContent().getClass())
-									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
-					if (sidTune == RESET || !MP3Tune.class.isAssignableFrom(sidTune.getClass())
-							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch) {
-						video();
-					}
-				} else if (event.getNewValue().equals(State.END)) {
-					SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
-					PlaybackType pt = sidplay2Section.getPlaybackType();
-
-					if (!sidplay2Section.isLoop()) {
-						if (pt == PlaybackType.RANDOM_HVSC) {
-							playNextRandomHVSC();
-						}
-					}
 				}
 			});
 		}
 
 	}
 
-	private JSidPlay2 jSidPlay2;
 	private BooleanProperty nextFavoriteDisabledState;
 	private int hardcopyCounter;
 	private StateChangeListener propertyChangeListener;
@@ -210,8 +179,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		final SidPlay2Section sidplay2Section = config.getSidplay2Section();
 		final C1541Section c1541Section = config.getC1541Section();
 		final PrinterSection printer = config.getPrinterSection();
-
-		jSidPlay2 = (JSidPlay2) util.getWindow();
 
 		pauseContinue.selectedProperty().bindBidirectional(pauseContinue2.selectedProperty());
 		fastForward2.selectedProperty().bindBidirectional(fastForward.selectedProperty());
@@ -238,14 +205,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
 		updatePlayerButtons(util.getPlayer().getPlayList());
-
-		for (ViewEntity view : config.getViews()) {
-			Platform.runLater(() -> {
-				if (jSidPlay2.getTabbedPane() != null) {
-					addView(view.getFxId());
-				}
-			});
-		}
 
 		// preview view does not provide a window
 		if (util.getWindow() != null) {
@@ -275,37 +234,6 @@ public class MenuBar extends C64VBox implements UIPart {
 				});
 			}
 		}
-		Platform.runLater(() -> {
-			getScene().setOnDragOver(event -> {
-				Dragboard db = event.getDragboard();
-				if (db.hasFiles()) {
-					event.acceptTransferModes(TransferMode.COPY);
-				} else {
-					event.consume();
-				}
-			});
-			getScene().setOnDragDropped(event -> {
-				Dragboard db = event.getDragboard();
-				boolean success = false;
-				if (db.hasFiles()) {
-					success = true;
-					List<File> files = db.getFiles();
-					try {
-						video();
-						util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-								.filter(tab -> tab.getId().equals(Video.ID)).findFirst().get().getContent());
-						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
-								null);
-					} catch (IOException | SidTuneError e) {
-						openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
-					}
-				}
-				event.setDropCompleted(success);
-				event.consume();
-			});
-			jSidPlay2.getTabbedPane().requestFocus();
-		});
-
 		util.getPlayer().setWhatsSidHook(musicInfoWithConfidence -> {
 			Platform.runLater(() -> {
 				System.out.println(musicInfoWithConfidence);
@@ -343,7 +271,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			try {
-				playTune(SidTune.load(file));
+				util.getPlayer().play(SidTune.load(file));
 			} catch (IOException | SidTuneError e) {
 				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
@@ -389,7 +317,7 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void reset() {
-		playTune(RESET);
+		util.getPlayer().play(RESET);
 	}
 
 	@FXML
@@ -768,270 +696,209 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void video() {
-		if (!tabAlreadyOpen(Video.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Video.ID), new Video(util.getWindow(), util.getPlayer()));
-			tab.setId(Video.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Video.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Video.ID));
 		}
 	}
 
 	@FXML
 	private void oscilloscope() {
-		if (!tabAlreadyOpen(Oscilloscope.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Oscilloscope.ID),
-					new Oscilloscope(util.getWindow(), util.getPlayer()));
-			tab.setId(Oscilloscope.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Oscilloscope.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Oscilloscope.ID));
 		}
 	}
 
 	@FXML
 	private void hvsc() {
-		if (!tabAlreadyOpen(MusicCollectionType.HVSC.name())) {
-			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
-			collection.setType(MusicCollectionType.HVSC);
-			Tab tab = new Tab(util.getBundle().getString(MusicCollectionType.HVSC.name()), collection);
-			tab.setId(MusicCollectionType.HVSC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(MusicCollectionType.HVSC.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(MusicCollectionType.HVSC.name()));
 		}
 	}
 
 	@FXML
 	private void cgsc() {
-		if (!tabAlreadyOpen(MusicCollectionType.CGSC.name())) {
-			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
-			collection.setType(MusicCollectionType.CGSC);
-			Tab tab = new Tab(util.getBundle().getString(MusicCollectionType.CGSC.name()), collection);
-			tab.setId(MusicCollectionType.CGSC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(MusicCollectionType.CGSC.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(MusicCollectionType.CGSC.name()));
 		}
 	}
 
 	@FXML
 	private void hvmec() {
-		if (!tabAlreadyOpen(DiskCollectionType.HVMEC.name())) {
-			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
-			collection.setType(DiskCollectionType.HVMEC);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.HVMEC.name()), collection);
-			tab.setId(DiskCollectionType.HVMEC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.HVMEC.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.HVMEC.name()));
 		}
 	}
 
 	@FXML
 	private void demos() {
-		if (!tabAlreadyOpen(DiskCollectionType.DEMOS.name())) {
-			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
-			collection.setType(DiskCollectionType.DEMOS);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.DEMOS.name()), collection);
-			tab.setId(DiskCollectionType.DEMOS.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.DEMOS.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.DEMOS.name()));
 		}
 	}
 
 	@FXML
 	private void mags() {
-		if (!tabAlreadyOpen(DiskCollectionType.MAGS.name())) {
-			DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
-			collection.setType(DiskCollectionType.MAGS);
-			Tab tab = new Tab(util.getBundle().getString(DiskCollectionType.MAGS.name()), collection);
-			tab.setId(DiskCollectionType.MAGS.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.MAGS.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.MAGS.name()));
 		}
 	}
 
 	@FXML
 	private void favorites() {
-		if (!tabAlreadyOpen(Favorites.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Favorites.ID),
-					new Favorites(util.getWindow(), util.getPlayer()));
-			tab.setId(Favorites.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Favorites.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Favorites.ID));
 		}
 	}
 
 	@FXML
 	private void gamebase() {
-		if (!tabAlreadyOpen(GameBase.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(GameBase.ID),
-					new GameBase(util.getWindow(), util.getPlayer()));
-			tab.setId(GameBase.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(GameBase.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(GameBase.ID));
 		}
 	}
 
 	@FXML
 	private void asm() {
-		if (!tabAlreadyOpen(Asm.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Asm.ID), new Asm(util.getWindow(), util.getPlayer()));
-			tab.setId(Asm.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Asm.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Asm.ID));
 		}
 	}
 
 	@FXML
 	private void printer() {
-		if (!tabAlreadyOpen(Printer.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Printer.ID), new Printer(util.getWindow(), util.getPlayer()));
-			tab.setId(Printer.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Printer.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Printer.ID));
 		}
 	}
 
 	@FXML
 	private void console() {
-		if (!tabAlreadyOpen(Console.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Console.ID), new Console(util.getWindow(), util.getPlayer()));
-			tab.setId(Console.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Console.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Console.ID));
 		}
 	}
 
 	@FXML
 	private void sidDump() {
-		if (!tabAlreadyOpen(SidDump.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(SidDump.ID), new SidDump(util.getWindow(), util.getPlayer()));
-			tab.setId(SidDump.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(SidDump.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(SidDump.ID));
 		}
 	}
 
 	@FXML
 	private void sidRegisters() {
-		if (!tabAlreadyOpen(SidReg.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(SidReg.ID), new SidReg(util.getWindow(), util.getPlayer()));
-			tab.setId(SidReg.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(SidReg.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(SidReg.ID));
 		}
 	}
 
 	@FXML
 	private void disassembler() {
-		if (!tabAlreadyOpen(Disassembler.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Disassembler.ID),
-					new Disassembler(util.getWindow(), util.getPlayer()));
-			tab.setId(Disassembler.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Disassembler.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Disassembler.ID));
 		}
 	}
 
 	@FXML
 	private void assembly64() {
-		if (!tabAlreadyOpen(Assembly64.ID)) {
-			Tab tab = new Tab(util.getBundle().getString(Assembly64.ID),
-					new Assembly64(util.getWindow(), util.getPlayer()));
-			tab.setId(Assembly64.ID);
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Assembly64.ID)).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(Assembly64.ID));
 		}
 	}
 
 	@FXML
 	private void csdb() {
-		if (!tabAlreadyOpen(WebViewType.CSDB.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.CSDB);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.CSDB.name()), collection);
-			tab.setId(WebViewType.CSDB.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.CSDB.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.CSDB.name()));
 		}
 	}
 
 	@FXML
 	private void codebase64() {
-		if (!tabAlreadyOpen(WebViewType.CODEBASE64.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.CODEBASE64);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.CODEBASE64.name()), collection);
-			tab.setId(WebViewType.CODEBASE64.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.CODEBASE64.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.CODEBASE64.name()));
 		}
 	}
 
 	@FXML
 	private void remixKweqOrg() {
-		if (!tabAlreadyOpen(WebViewType.REMIX_KWED_ORG.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.REMIX_KWED_ORG);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.REMIX_KWED_ORG.name()), collection);
-			tab.setId(WebViewType.REMIX_KWED_ORG.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream()
+				.filter(view -> view.getFxId().equals(WebViewType.REMIX_KWED_ORG.name())).findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.REMIX_KWED_ORG.name()));
 		}
 	}
 
 	@FXML
 	private void c64Sk() {
-		if (!tabAlreadyOpen(WebViewType.C64_SK.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.C64_SK);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.C64_SK.name()), collection);
-			tab.setId(WebViewType.C64_SK.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.C64_SK.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.C64_SK.name()));
 		}
 	}
 
 	@FXML
 	private void forum64() {
-		if (!tabAlreadyOpen(WebViewType.FORUM64_DE.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.FORUM64_DE);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.FORUM64_DE.name()), collection);
-			tab.setId(WebViewType.FORUM64_DE.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.FORUM64_DE.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.FORUM64_DE.name()));
 		}
 	}
 
 	@FXML
 	private void lemon64() {
-		if (!tabAlreadyOpen(WebViewType.LEMON64_COM.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.LEMON64_COM);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.LEMON64_COM.name()), collection);
-			tab.setId(WebViewType.LEMON64_COM.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.LEMON64_COM.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.LEMON64_COM.name()));
 		}
 	}
 
 	@FXML
 	private void soasc() {
-		if (!tabAlreadyOpen(WebViewType.SOASC.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.SOASC);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.SOASC.name()), collection);
-			tab.setId(WebViewType.SOASC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.SOASC.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.SOASC.name()));
 		}
 	}
 
 	@FXML
 	private void jsidplay2Src() {
-		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_SRC.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.JSIDPLAY2_SRC);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_SRC.name()), collection);
-			tab.setId(WebViewType.JSIDPLAY2_SRC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream()
+				.filter(view -> view.getFxId().equals(WebViewType.JSIDPLAY2_SRC.name())).findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.JSIDPLAY2_SRC.name()));
 		}
 	}
 
 	@FXML
 	private void jsidplay2Javadoc() {
-		if (!tabAlreadyOpen(WebViewType.JSIDPLAY2_JAVADOC.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.JSIDPLAY2_JAVADOC.name()), collection);
-			tab.setId(WebViewType.JSIDPLAY2_JAVADOC.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream()
+				.filter(view -> view.getFxId().equals(WebViewType.JSIDPLAY2_JAVADOC.name())).findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.JSIDPLAY2_JAVADOC.name()));
 		}
 	}
 
 	@FXML
 	private void userguide() {
-		if (!tabAlreadyOpen(WebViewType.USERGUIDE.name())) {
-			WebView collection = new WebView(util.getWindow(), util.getPlayer());
-			collection.setType(WebViewType.USERGUIDE);
-			Tab tab = new Tab(util.getBundle().getString(WebViewType.USERGUIDE.name()), collection);
-			tab.setId(WebViewType.USERGUIDE.name());
-			addTab(tab);
+		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.USERGUIDE.name()))
+				.findFirst().isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(WebViewType.USERGUIDE.name()));
 		}
 	}
 
@@ -1043,84 +910,6 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
-	}
-
-	private void addView(String id) {
-		if (Video.ID.equals(id)) {
-			video();
-		} else if (Asm.ID.equals(id)) {
-			asm();
-		} else if (Oscilloscope.ID.equals(id)) {
-			oscilloscope();
-		} else if (MusicCollectionType.HVSC.name().equals(id)) {
-			hvsc();
-		} else if (MusicCollectionType.CGSC.name().equals(id)) {
-			cgsc();
-		} else if (DiskCollectionType.HVMEC.name().equals(id)) {
-			hvmec();
-		} else if (DiskCollectionType.DEMOS.name().equals(id)) {
-			demos();
-		} else if (DiskCollectionType.MAGS.name().equals(id)) {
-			mags();
-		} else if (GameBase.ID.equals(id)) {
-			gamebase();
-		} else if (Favorites.ID.equals(id)) {
-			favorites();
-		} else if (Printer.ID.equals(id)) {
-			printer();
-		} else if (Console.ID.equals(id)) {
-			console();
-		} else if (SidDump.ID.equals(id)) {
-			sidDump();
-		} else if (SidReg.ID.equals(id)) {
-			sidRegisters();
-		} else if (Disassembler.ID.equals(id)) {
-			disassembler();
-		} else if (Assembly64.ID.equals(id)) {
-			assembly64();
-		} else if (WebViewType.CSDB.name().equals(id)) {
-			csdb();
-		} else if (WebViewType.CODEBASE64.name().equals(id)) {
-			codebase64();
-		} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
-			remixKweqOrg();
-		} else if (WebViewType.C64_SK.name().equals(id)) {
-			c64Sk();
-		} else if (WebViewType.FORUM64_DE.name().equals(id)) {
-			forum64();
-		} else if (WebViewType.LEMON64_COM.name().equals(id)) {
-			lemon64();
-		} else if (WebViewType.SOASC.name().equals(id)) {
-			soasc();
-		} else if (WebViewType.JSIDPLAY2_SRC.name().equals(id)) {
-			jsidplay2Src();
-		} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(id)) {
-			jsidplay2Javadoc();
-		} else if (WebViewType.USERGUIDE.name().equals(id)) {
-			userguide();
-		}
-	}
-
-	private void addTab(Tab tab) {
-		final List<ViewEntity> views = util.getConfig().getViews();
-		if (!views.stream().anyMatch(tool -> tool.getFxId().equals(tab.getId()))) {
-			views.add(new ViewEntity(tab.getId()));
-		}
-		tab.setOnClosed(evt -> {
-			util.getWindow().close(tab.getContent());
-			views.removeIf(view -> view.getFxId().equals(tab.getId()));
-		});
-		jSidPlay2.getTabbedPane().getTabs().add(tab);
-		jSidPlay2.getTabbedPane().getSelectionModel().select(tab);
-	}
-
-	private boolean tabAlreadyOpen(String fxId) {
-		Optional<Tab> alreadyOpened = jSidPlay2.getTabbedPane().getTabs().stream()
-				.filter(tab -> tab.getId().equals(fxId)).findFirst();
-		if (alreadyOpened.isPresent()) {
-			jSidPlay2.getTabbedPane().getSelectionModel().select(alreadyOpened.get());
-		}
-		return alreadyOpened.isPresent();
 	}
 
 	private void chooseCartridge(final CartridgeType type) {
@@ -1160,13 +949,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		}
 	}
 
-	private void playTune(final SidTune tune) {
-		video();
-		util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
-				.findFirst().get().getContent());
-		util.getPlayer().play(tune);
-	}
-
 	private C1541 getFirstFloppy() {
 		return util.getPlayer().getFloppies()[0];
 	}
@@ -1174,10 +956,7 @@ public class MenuBar extends C64VBox implements UIPart {
 	private void createHardCopy(String format) {
 		video();
 		try {
-			Tab tab = jSidPlay2.getTabbedPane().getTabs().stream().filter(tab2 -> tab2.getId().equals(Video.ID))
-					.findFirst().get();
-			Video videoScreen = (Video) tab.getContent();
-			Image vicImage = videoScreen.getVicImage();
+			Image vicImage = Video.getVicImage();
 			if (vicImage != null) {
 				File file = new File(util.getConfig().getSidplay2Section().getTmpDir(),
 						"screenshot" + (++hardcopyCounter) + "." + format);
@@ -1219,22 +998,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		next2ToolTip.setText(next.getText());
 
 		save.setDisable(util.getPlayer().getTune() == RESET);
-	}
-
-	private void playNextRandomHVSC() {
-		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
-		if (rndPath != null) {
-			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc());
-			hvsc();
-			util.setPlayingTab(jSidPlay2.getTabbedPane().getTabs().stream()
-					.filter(tab -> tab.getId().equals(MusicCollectionType.HVSC.name())).findFirst().get().getContent());
-			try {
-				util.getPlayer().play(SidTune.load(file));
-			} catch (IOException | SidTuneError e) {
-				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
-			}
-		}
 	}
 
 	private void setCurrentTrack(SidTune sidTune) {
