@@ -69,12 +69,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
 					if (sidTune == RESET || !MP3Tune.class.isAssignableFrom(sidTune.getClass())
 							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch) {
-						if (!tabAlreadyOpen(Video.ID)) {
-							Tab tab = new Tab(util.getBundle().getString(Video.ID),
-									new Video(util.getWindow(), util.getPlayer()));
-							tab.setId(Video.ID);
-							addTab(tab);
-						}
+						video();
 					}
 				} else if (event.getNewValue().equals(State.END)) {
 					SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
@@ -148,12 +143,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 					success = true;
 					List<File> files = db.getFiles();
 					try {
-						if (!tabAlreadyOpen(Video.ID)) {
-							Tab tab1 = new Tab(util.getBundle().getString(Video.ID),
-									new Video(util.getWindow(), util.getPlayer()));
-							tab1.setId(Video.ID);
-							addTab(tab1);
-						}
+						video();
 						util.setPlayingTab(tabbedPane.getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
 								.findFirst().get().getContent());
 						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
@@ -314,13 +304,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
 		if (rndPath != null) {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc());
-			if (!tabAlreadyOpen(MusicCollectionType.HVSC.name())) {
-				MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
-				collection.setType(MusicCollectionType.HVSC);
-				Tab tab1 = new Tab(util.getBundle().getString(MusicCollectionType.HVSC.name()), collection);
-				tab1.setId(MusicCollectionType.HVSC.name());
-				addTab(tab1);
-			}
+			hvsc();
 			util.setPlayingTab(tabbedPane.getTabs().stream()
 					.filter(tab -> tab.getId().equals(MusicCollectionType.HVSC.name())).findFirst().get().getContent());
 			try {
@@ -328,6 +312,24 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			} catch (IOException | SidTuneError e) {
 				openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
 			}
+		}
+	}
+
+	private void video() {
+		if (!tabAlreadyOpen(Video.ID)) {
+			Tab tab = new Tab(util.getBundle().getString(Video.ID), new Video(util.getWindow(), util.getPlayer()));
+			tab.setId(Video.ID);
+			addTab(tab);
+		}
+	}
+
+	private void hvsc() {
+		if (!tabAlreadyOpen(MusicCollectionType.HVSC.name())) {
+			MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
+			collection.setType(MusicCollectionType.HVSC);
+			Tab tab = new Tab(util.getBundle().getString(MusicCollectionType.HVSC.name()), collection);
+			tab.setId(MusicCollectionType.HVSC.name());
+			addTab(tab);
 		}
 	}
 
