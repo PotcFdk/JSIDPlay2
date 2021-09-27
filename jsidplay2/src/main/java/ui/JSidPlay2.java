@@ -197,91 +197,90 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 	}
 
 	private void addView(String id) {
-		Tab tab;
 		if (!tabAlreadyOpen(id)) {
-			String text = util.getBundle().getString(id);
+			Tab tab;
 			if (Video.ID.equals(id)) {
-				tab = new Tab(text, new Video(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Video(util.getWindow(), util.getPlayer()));
 			} else if (Asm.ID.equals(id)) {
-				tab = new Tab(text, new Asm(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Asm(util.getWindow(), util.getPlayer()));
 			} else if (Oscilloscope.ID.equals(id)) {
-				tab = new Tab(text, new Oscilloscope(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Oscilloscope(util.getWindow(), util.getPlayer()));
 			} else if (MusicCollectionType.HVSC.name().equals(id)) {
 				MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 				collection.setType(MusicCollectionType.HVSC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (MusicCollectionType.CGSC.name().equals(id)) {
 				MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
 				collection.setType(MusicCollectionType.CGSC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (DiskCollectionType.HVMEC.name().equals(id)) {
 				DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 				collection.setType(DiskCollectionType.HVMEC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (DiskCollectionType.DEMOS.name().equals(id)) {
 				DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 				collection.setType(DiskCollectionType.DEMOS);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (DiskCollectionType.MAGS.name().equals(id)) {
 				DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 				collection.setType(DiskCollectionType.MAGS);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (GameBase.ID.equals(id)) {
-				tab = new Tab(text, new GameBase(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new GameBase(util.getWindow(), util.getPlayer()));
 			} else if (Favorites.ID.equals(id)) {
-				tab = new Tab(text, new Favorites(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Favorites(util.getWindow(), util.getPlayer()));
 			} else if (Printer.ID.equals(id)) {
-				tab = new Tab(text, new Printer(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Printer(util.getWindow(), util.getPlayer()));
 			} else if (Console.ID.equals(id)) {
-				tab = new Tab(text, new Console(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Console(util.getWindow(), util.getPlayer()));
 			} else if (SidDump.ID.equals(id)) {
-				tab = new Tab(text, new SidDump(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new SidDump(util.getWindow(), util.getPlayer()));
 			} else if (SidReg.ID.equals(id)) {
-				tab = new Tab(text, new SidReg(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new SidReg(util.getWindow(), util.getPlayer()));
 			} else if (Disassembler.ID.equals(id)) {
-				tab = new Tab(text, new Disassembler(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Disassembler(util.getWindow(), util.getPlayer()));
 			} else if (Assembly64.ID.equals(id)) {
-				tab = new Tab(text, new Assembly64(util.getWindow(), util.getPlayer()));
+				tab = new Tab(util.getBundle().getString(id), new Assembly64(util.getWindow(), util.getPlayer()));
 			} else if (WebViewType.CSDB.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.CSDB);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.CODEBASE64.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.CODEBASE64);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.REMIX_KWED_ORG.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.REMIX_KWED_ORG);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.C64_SK.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.C64_SK);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.FORUM64_DE.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.FORUM64_DE);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.LEMON64_COM.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.LEMON64_COM);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.SOASC.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.SOASC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.JSIDPLAY2_SRC.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.JSIDPLAY2_SRC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else if (WebViewType.USERGUIDE.name().equals(id)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.USERGUIDE);
-				tab = new Tab(text, collection);
+				tab = new Tab(util.getBundle().getString(id), collection);
 			} else {
 				throw new RuntimeException("Unknown view ID: " + id);
 			}
