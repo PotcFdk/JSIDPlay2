@@ -770,132 +770,132 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void video() {
-		showTab(Video.ID);
+		showView(Video.ID);
 	}
 
 	@FXML
 	private void oscilloscope() {
-		showTab(Oscilloscope.ID);
+		showView(Oscilloscope.ID);
 	}
 
 	@FXML
 	private void hvsc() {
-		showTab(MusicCollectionType.HVSC.name());
+		showView(MusicCollectionType.HVSC.name());
 	}
 
 	@FXML
 	private void cgsc() {
-		showTab(MusicCollectionType.CGSC.name());
+		showView(MusicCollectionType.CGSC.name());
 	}
 
 	@FXML
 	private void hvmec() {
-		showTab(DiskCollectionType.HVMEC.name());
+		showView(DiskCollectionType.HVMEC.name());
 	}
 
 	@FXML
 	private void demos() {
-		showTab(DiskCollectionType.DEMOS.name());
+		showView(DiskCollectionType.DEMOS.name());
 	}
 
 	@FXML
 	private void mags() {
-		showTab(DiskCollectionType.MAGS.name());
+		showView(DiskCollectionType.MAGS.name());
 	}
 
 	@FXML
 	private void favorites() {
-		showTab(Favorites.ID);
+		showView(Favorites.ID);
 	}
 
 	@FXML
 	private void gamebase() {
-		showTab(GameBase.ID);
+		showView(GameBase.ID);
 	}
 
 	@FXML
 	private void asm() {
-		showTab(Asm.ID);
+		showView(Asm.ID);
 	}
 
 	@FXML
 	private void printer() {
-		showTab(Printer.ID);
+		showView(Printer.ID);
 	}
 
 	@FXML
 	private void console() {
-		showTab(Console.ID);
+		showView(Console.ID);
 	}
 
 	@FXML
 	private void sidDump() {
-		showTab(SidDump.ID);
+		showView(SidDump.ID);
 	}
 
 	@FXML
 	private void sidRegisters() {
-		showTab(SidReg.ID);
+		showView(SidReg.ID);
 	}
 
 	@FXML
 	private void disassembler() {
-		showTab(Disassembler.ID);
+		showView(Disassembler.ID);
 	}
 
 	@FXML
 	private void assembly64() {
-		showTab(Assembly64.ID);
+		showView(Assembly64.ID);
 	}
 
 	@FXML
 	private void csdb() {
-		showTab(WebViewType.CSDB.name());
+		showView(WebViewType.CSDB.name());
 	}
 
 	@FXML
 	private void codebase64() {
-		showTab(WebViewType.CODEBASE64.name());
+		showView(WebViewType.CODEBASE64.name());
 	}
 
 	@FXML
 	private void remixKweqOrg() {
-		showTab(WebViewType.REMIX_KWED_ORG.name());
+		showView(WebViewType.REMIX_KWED_ORG.name());
 	}
 
 	@FXML
 	private void c64Sk() {
-		showTab(WebViewType.C64_SK.name());
+		showView(WebViewType.C64_SK.name());
 	}
 
 	@FXML
 	private void forum64() {
-		showTab(WebViewType.FORUM64_DE.name());
+		showView(WebViewType.FORUM64_DE.name());
 	}
 
 	@FXML
 	private void lemon64() {
-		showTab(WebViewType.LEMON64_COM.name());
+		showView(WebViewType.LEMON64_COM.name());
 	}
 
 	@FXML
 	private void soasc() {
-		showTab(WebViewType.SOASC.name());
+		showView(WebViewType.SOASC.name());
 	}
 
 	@FXML
 	private void jsidplay2Src() {
-		showTab(WebViewType.JSIDPLAY2_SRC.name());
+		showView(WebViewType.JSIDPLAY2_SRC.name());
 	}
 
 	@FXML
 	private void jsidplay2Javadoc() {
-		showTab(WebViewType.JSIDPLAY2_JAVADOC.name());
+		showView(WebViewType.JSIDPLAY2_JAVADOC.name());
 	}
 
 	@FXML
 	private void userguide() {
-		showTab(WebViewType.USERGUIDE.name());
+		showView(WebViewType.USERGUIDE.name());
 	}
 
 	@FXML
@@ -908,7 +908,7 @@ public class MenuBar extends C64VBox implements UIPart {
 		new About(util.getPlayer()).open();
 	}
 
-	private void showTab(String fxId) {
+	private void showView(String fxId) {
 		if (!util.getConfig().getViews().stream().map(ViewEntity::getFxId).filter(fxId::equals).findFirst()
 				.isPresent()) {
 			util.getConfig().getViews().add(new ViewEntity(fxId));
