@@ -69,7 +69,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 									|| Favorites.class.isAssignableFrom(selectedItem.getContent().getClass()));
 					if (sidTune == RESET || !MP3Tune.class.isAssignableFrom(sidTune.getClass())
 							&& sidTune.getInfo().getPlayAddr() == 0 && !doNotSwitch) {
-						showView(Video.ID);
+						addView(Video.ID);
 					}
 				} else if (event.getNewValue().equals(State.END)) {
 					SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
@@ -113,14 +113,14 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				.addListener((ListChangeListener.Change<? extends ViewEntity> c) -> {
 					while (c.next()) {
 						if (c.wasAdded()) {
-							c.getAddedSubList().forEach(view -> addTab(view.getFxId()));
+							c.getAddedSubList().forEach(view -> addAndSelectTab(view.getFxId()));
 						}
 					}
 				});
 		for (ViewEntity view : util.getConfig().getViews()) {
 			Platform.runLater(() -> {
 				if (tabbedPane != null) {
-					addTab(view.getFxId());
+					addAndSelectTab(view.getFxId());
 				}
 			});
 		}
@@ -141,7 +141,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 					success = true;
 					List<File> files = db.getFiles();
 					try {
-						showView(Video.ID);
+						addView(Video.ID);
 						util.setPlayingTab(tabbedPane.getTabs().stream().filter(tab -> tab.getId().equals(Video.ID))
 								.findFirst().get().getContent());
 						new Convenience(util.getPlayer()).autostart(files.get(0), Convenience.LEXICALLY_FIRST_MEDIA,
@@ -189,7 +189,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		}
 	}
 
-	private void addTab(String fxId) {
+	private void addAndSelectTab(String fxId) {
 		if (!tabAlreadyOpen(fxId)) {
 			if (Video.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new Video(util.getWindow(), util.getPlayer())), fxId);
@@ -311,7 +311,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		String rndPath = util.getPlayer().getSidDatabaseInfo(db -> db.getRandomPath(), null);
 		if (rndPath != null) {
 			File file = PathUtils.getFile(rndPath, sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc());
-			showView(MusicCollectionType.HVSC.name());
+			addView(MusicCollectionType.HVSC.name());
 			util.setPlayingTab(tabbedPane.getTabs().stream()
 					.filter(tab -> tab.getId().equals(MusicCollectionType.HVSC.name())).findFirst().get().getContent());
 			try {
@@ -322,11 +322,8 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		}
 	}
 
-	private void showView(String fxId) {
-		if (!util.getConfig().getViews().stream().map(ViewEntity::getFxId).filter(fxId::equals).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(fxId));
-		}
+	private void addView(String fxId) {
+		util.getConfig().getViews().add(new ViewEntity(fxId));
 	}
 
 	private void openErrorDialog(String msg) {
