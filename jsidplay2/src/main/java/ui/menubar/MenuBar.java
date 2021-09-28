@@ -33,7 +33,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleButton;
@@ -126,9 +125,6 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	protected RadioMenuItem fastForward, normalSpeed;
-
-	@FXML
-	protected Menu help;
 
 	@FXML
 	protected MenuItem video, oscilloscope, favorites, hvsc, cgsc, hvmec, demos, mags, sidDump, sidRegisters, asm,
