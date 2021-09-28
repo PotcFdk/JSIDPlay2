@@ -240,7 +240,6 @@ public class MenuBar extends C64VBox implements UIPart {
 				Toast.makeText("whatssid", whatssidPositioner, musicInfoWithConfidence.toString(), 5);
 			});
 		});
-		util.getPlayer().startC64();
 	}
 
 	@Override
@@ -696,210 +695,132 @@ public class MenuBar extends C64VBox implements UIPart {
 
 	@FXML
 	private void video() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Video.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Video.ID));
-		}
+		showTab(Video.ID);
 	}
 
 	@FXML
 	private void oscilloscope() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Oscilloscope.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Oscilloscope.ID));
-		}
+		showTab(Oscilloscope.ID);
 	}
 
 	@FXML
 	private void hvsc() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(MusicCollectionType.HVSC.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(MusicCollectionType.HVSC.name()));
-		}
+		showTab(MusicCollectionType.HVSC.name());
 	}
 
 	@FXML
 	private void cgsc() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(MusicCollectionType.CGSC.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(MusicCollectionType.CGSC.name()));
-		}
+		showTab(MusicCollectionType.CGSC.name());
 	}
 
 	@FXML
 	private void hvmec() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.HVMEC.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.HVMEC.name()));
-		}
+		showTab(DiskCollectionType.HVMEC.name());
 	}
 
 	@FXML
 	private void demos() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.DEMOS.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.DEMOS.name()));
-		}
+		showTab(DiskCollectionType.DEMOS.name());
 	}
 
 	@FXML
 	private void mags() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(DiskCollectionType.MAGS.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(DiskCollectionType.MAGS.name()));
-		}
+		showTab(DiskCollectionType.MAGS.name());
 	}
 
 	@FXML
 	private void favorites() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Favorites.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Favorites.ID));
-		}
+		showTab(Favorites.ID);
 	}
 
 	@FXML
 	private void gamebase() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(GameBase.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(GameBase.ID));
-		}
+		showTab(GameBase.ID);
 	}
 
 	@FXML
 	private void asm() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Asm.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Asm.ID));
-		}
+		showTab(Asm.ID);
 	}
 
 	@FXML
 	private void printer() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Printer.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Printer.ID));
-		}
+		showTab(Printer.ID);
 	}
 
 	@FXML
 	private void console() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Console.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Console.ID));
-		}
+		showTab(Console.ID);
 	}
 
 	@FXML
 	private void sidDump() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(SidDump.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(SidDump.ID));
-		}
+		showTab(SidDump.ID);
 	}
 
 	@FXML
 	private void sidRegisters() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(SidReg.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(SidReg.ID));
-		}
+		showTab(SidReg.ID);
 	}
 
 	@FXML
 	private void disassembler() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Disassembler.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Disassembler.ID));
-		}
+		showTab(Disassembler.ID);
 	}
 
 	@FXML
 	private void assembly64() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(Assembly64.ID)).findFirst()
-				.isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(Assembly64.ID));
-		}
+		showTab(Assembly64.ID);
 	}
 
 	@FXML
 	private void csdb() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.CSDB.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.CSDB.name()));
-		}
+		showTab(WebViewType.CSDB.name());
 	}
 
 	@FXML
 	private void codebase64() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.CODEBASE64.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.CODEBASE64.name()));
-		}
+		showTab(WebViewType.CODEBASE64.name());
 	}
 
 	@FXML
 	private void remixKweqOrg() {
-		if (!util.getConfig().getViews().stream()
-				.filter(view -> view.getFxId().equals(WebViewType.REMIX_KWED_ORG.name())).findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.REMIX_KWED_ORG.name()));
-		}
+		showTab(WebViewType.REMIX_KWED_ORG.name());
 	}
 
 	@FXML
 	private void c64Sk() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.C64_SK.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.C64_SK.name()));
-		}
+		showTab(WebViewType.C64_SK.name());
 	}
 
 	@FXML
 	private void forum64() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.FORUM64_DE.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.FORUM64_DE.name()));
-		}
+		showTab(WebViewType.FORUM64_DE.name());
 	}
 
 	@FXML
 	private void lemon64() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.LEMON64_COM.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.LEMON64_COM.name()));
-		}
+		showTab(WebViewType.LEMON64_COM.name());
 	}
 
 	@FXML
 	private void soasc() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.SOASC.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.SOASC.name()));
-		}
+		showTab(WebViewType.SOASC.name());
 	}
 
 	@FXML
 	private void jsidplay2Src() {
-		if (!util.getConfig().getViews().stream()
-				.filter(view -> view.getFxId().equals(WebViewType.JSIDPLAY2_SRC.name())).findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.JSIDPLAY2_SRC.name()));
-		}
+		showTab(WebViewType.JSIDPLAY2_SRC.name());
 	}
 
 	@FXML
 	private void jsidplay2Javadoc() {
-		if (!util.getConfig().getViews().stream()
-				.filter(view -> view.getFxId().equals(WebViewType.JSIDPLAY2_JAVADOC.name())).findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.JSIDPLAY2_JAVADOC.name()));
-		}
+		showTab(WebViewType.JSIDPLAY2_JAVADOC.name());
 	}
 
 	@FXML
 	private void userguide() {
-		if (!util.getConfig().getViews().stream().filter(view -> view.getFxId().equals(WebViewType.USERGUIDE.name()))
-				.findFirst().isPresent()) {
-			util.getConfig().getViews().add(new ViewEntity(WebViewType.USERGUIDE.name()));
-		}
+		showTab(WebViewType.USERGUIDE.name());
 	}
 
 	@FXML
@@ -910,6 +831,13 @@ public class MenuBar extends C64VBox implements UIPart {
 	@FXML
 	private void about() {
 		new About(util.getPlayer()).open();
+	}
+
+	private void showTab(String fxId) {
+		if (!util.getConfig().getViews().stream().map(ViewEntity::getFxId).filter(fxId::equals).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(fxId));
+		}
 	}
 
 	private void chooseCartridge(final CartridgeType type) {
