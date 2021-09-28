@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -22,6 +23,8 @@ import javax.imageio.ImageIO;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -128,7 +131,9 @@ public class MenuBar extends C64VBox implements UIPart {
 	protected Menu help;
 
 	@FXML
-	protected MenuItem save, previous, next;
+	protected MenuItem video, oscilloscope, favorites, hvsc, cgsc, hvmec, demos, mags, sidDump, sidRegisters, asm,
+			disassembler, assembly64, csdb, remixKwedOrg, lemon64, forum64, c64Sk, soasc, codebase64, gamebase,
+			jsidplay2Src, printer, console, jsidplay2userGuide, jsidplay2Javadoc, save, previous, next;
 
 	@FXML
 	protected Button previous2, next2, nextFavorite;
@@ -201,11 +206,6 @@ public class MenuBar extends C64VBox implements UIPart {
 		expand8000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled3Property());
 		expandA000.selectedProperty().bindBidirectional(c1541Section.ramExpansionEnabled4Property());
 
-		propertyChangeListener = new StateChangeListener();
-		util.getPlayer().stateProperty().addListener(propertyChangeListener);
-
-		updatePlayerButtons(util.getPlayer().getPlayList());
-
 		// preview view does not provide a window
 		if (util.getWindow() != null) {
 			Stage stage = util.getWindow().getStage();
@@ -234,18 +234,92 @@ public class MenuBar extends C64VBox implements UIPart {
 				});
 			}
 		}
+
+		((ObservableList<ViewEntity>) util.getConfig().getViews())
+				.addListener((ListChangeListener<ViewEntity>) c -> updateMenuItems());
+		updateMenuItems();
+
+		updatePlayerButtons(util.getPlayer().getPlayList());
+
+		propertyChangeListener = new StateChangeListener();
+		util.getPlayer().stateProperty().addListener(propertyChangeListener);
+
 		util.getPlayer().setWhatsSidHook(musicInfoWithConfidence -> {
 			Platform.runLater(() -> {
 				System.out.println(musicInfoWithConfidence);
 				Toast.makeText("whatssid", whatssidPositioner, musicInfoWithConfidence.toString(), 5);
 			});
 		});
-		// TODO menu items disabled property if tab already shown
 	}
 
 	@Override
 	public void doClose() {
 		util.getPlayer().stateProperty().removeListener(propertyChangeListener);
+	}
+
+	private void updateMenuItems() {
+		for (MenuItem menuItem : Arrays.asList(video, oscilloscope, favorites, hvsc, cgsc, hvmec, demos, mags, sidDump,
+				sidRegisters, asm, disassembler, assembly64, csdb, remixKwedOrg, lemon64, forum64, c64Sk, soasc,
+				codebase64, gamebase, jsidplay2Src, printer, console, jsidplay2userGuide, jsidplay2Javadoc)) {
+			menuItem.setDisable(false);
+		}
+		util.getConfig().getViews().stream().map(ViewEntity::getFxId).forEach(fxId -> {
+			if (Video.ID.equals(fxId)) {
+				video.setDisable(true);
+			} else if (Oscilloscope.ID.equals(fxId)) {
+				oscilloscope.setDisable(true);
+			} else if (Favorites.ID.equals(fxId)) {
+				favorites.setDisable(true);
+			} else if (MusicCollectionType.HVSC.name().equals(fxId)) {
+				hvsc.setDisable(true);
+			} else if (MusicCollectionType.CGSC.name().equals(fxId)) {
+				cgsc.setDisable(true);
+			} else if (DiskCollectionType.HVMEC.name().equals(fxId)) {
+				hvmec.setDisable(true);
+			} else if (DiskCollectionType.DEMOS.name().equals(fxId)) {
+				demos.setDisable(true);
+			} else if (DiskCollectionType.MAGS.name().equals(fxId)) {
+				mags.setDisable(true);
+			} else if (SidDump.ID.equals(fxId)) {
+				sidDump.setDisable(true);
+			} else if (SidReg.ID.equals(fxId)) {
+				sidRegisters.setDisable(true);
+			} else if (Asm.ID.equals(fxId)) {
+				asm.setDisable(true);
+			} else if (Disassembler.ID.equals(fxId)) {
+				disassembler.setDisable(true);
+			} else if (Assembly64.ID.equals(fxId)) {
+				assembly64.setDisable(true);
+			} else if (WebViewType.CSDB.name().equals(fxId)) {
+				csdb.setDisable(true);
+			} else if (WebViewType.REMIX_KWED_ORG.name().equals(fxId)) {
+				remixKwedOrg.setDisable(true);
+			} else if (WebViewType.LEMON64_COM.name().equals(fxId)) {
+				lemon64.setDisable(true);
+			} else if (WebViewType.FORUM64_DE.name().equals(fxId)) {
+				forum64.setDisable(true);
+			} else if (WebViewType.C64_SK.name().equals(fxId)) {
+				c64Sk.setDisable(true);
+			} else if (WebViewType.SOASC.name().equals(fxId)) {
+				soasc.setDisable(true);
+			} else if (WebViewType.CODEBASE64.name().equals(fxId)) {
+				codebase64.setDisable(true);
+			} else if (GameBase.ID.equals(fxId)) {
+				gamebase.setDisable(true);
+			} else if (WebViewType.JSIDPLAY2_SRC.name().equals(fxId)) {
+				jsidplay2Src.setDisable(true);
+			} else if (Printer.ID.equals(fxId)) {
+				printer.setDisable(true);
+			} else if (Console.ID.equals(fxId)) {
+				console.setDisable(true);
+			} else if (WebViewType.USERGUIDE.name().equals(fxId)) {
+				jsidplay2userGuide.setDisable(true);
+			} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(fxId)) {
+				jsidplay2Javadoc.setDisable(true);
+			} else {
+				throw new RuntimeException("Unknown view ID: " + fxId);
+			}
+		});
 	}
 
 	private void hideMainTabbedPane(Stage stage, Boolean hide) {

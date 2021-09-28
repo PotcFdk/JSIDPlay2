@@ -193,10 +193,11 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		if (!tabAlreadyOpen(fxId)) {
 			if (Video.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new Video(util.getWindow(), util.getPlayer())), fxId);
-			} else if (Asm.ID.equals(fxId)) {
-				addTab(new Tab(util.getBundle().getString(fxId), new Asm(util.getWindow(), util.getPlayer())), fxId);
 			} else if (Oscilloscope.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new Oscilloscope(util.getWindow(), util.getPlayer())),
+						fxId);
+			} else if (Favorites.ID.equals(fxId)) {
+				addTab(new Tab(util.getBundle().getString(fxId), new Favorites(util.getWindow(), util.getPlayer())),
 						fxId);
 			} else if (MusicCollectionType.HVSC.name().equals(fxId)) {
 				MusicCollection collection = new MusicCollection(util.getWindow(), util.getPlayer());
@@ -218,23 +219,13 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				DiskCollection collection = new DiskCollection(util.getWindow(), util.getPlayer());
 				collection.setType(DiskCollectionType.MAGS);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
-			} else if (GameBase.ID.equals(fxId)) {
-				addTab(new Tab(util.getBundle().getString(fxId), new GameBase(util.getWindow(), util.getPlayer())),
-						fxId);
-			} else if (Favorites.ID.equals(fxId)) {
-				addTab(new Tab(util.getBundle().getString(fxId), new Favorites(util.getWindow(), util.getPlayer())),
-						fxId);
-			} else if (Printer.ID.equals(fxId)) {
-				addTab(new Tab(util.getBundle().getString(fxId), new Printer(util.getWindow(), util.getPlayer())),
-						fxId);
-			} else if (Console.ID.equals(fxId)) {
-				addTab(new Tab(util.getBundle().getString(fxId), new Console(util.getWindow(), util.getPlayer())),
-						fxId);
 			} else if (SidDump.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new SidDump(util.getWindow(), util.getPlayer())),
 						fxId);
 			} else if (SidReg.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new SidReg(util.getWindow(), util.getPlayer())), fxId);
+			} else if (Asm.ID.equals(fxId)) {
+				addTab(new Tab(util.getBundle().getString(fxId), new Asm(util.getWindow(), util.getPlayer())), fxId);
 			} else if (Disassembler.ID.equals(fxId)) {
 				addTab(new Tab(util.getBundle().getString(fxId), new Disassembler(util.getWindow(), util.getPlayer())),
 						fxId);
@@ -245,41 +236,50 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.CSDB);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
-			} else if (WebViewType.CODEBASE64.name().equals(fxId)) {
-				WebView collection = new WebView(util.getWindow(), util.getPlayer());
-				collection.setType(WebViewType.CODEBASE64);
-				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
 			} else if (WebViewType.REMIX_KWED_ORG.name().equals(fxId)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.REMIX_KWED_ORG);
-				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
-			} else if (WebViewType.C64_SK.name().equals(fxId)) {
-				WebView collection = new WebView(util.getWindow(), util.getPlayer());
-				collection.setType(WebViewType.C64_SK);
-				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
-			} else if (WebViewType.FORUM64_DE.name().equals(fxId)) {
-				WebView collection = new WebView(util.getWindow(), util.getPlayer());
-				collection.setType(WebViewType.FORUM64_DE);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
 			} else if (WebViewType.LEMON64_COM.name().equals(fxId)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.LEMON64_COM);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (WebViewType.FORUM64_DE.name().equals(fxId)) {
+				WebView collection = new WebView(util.getWindow(), util.getPlayer());
+				collection.setType(WebViewType.FORUM64_DE);
+				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (WebViewType.C64_SK.name().equals(fxId)) {
+				WebView collection = new WebView(util.getWindow(), util.getPlayer());
+				collection.setType(WebViewType.C64_SK);
+				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
 			} else if (WebViewType.SOASC.name().equals(fxId)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.SOASC);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (WebViewType.CODEBASE64.name().equals(fxId)) {
+				WebView collection = new WebView(util.getWindow(), util.getPlayer());
+				collection.setType(WebViewType.CODEBASE64);
+				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (GameBase.ID.equals(fxId)) {
+				addTab(new Tab(util.getBundle().getString(fxId), new GameBase(util.getWindow(), util.getPlayer())),
+						fxId);
 			} else if (WebViewType.JSIDPLAY2_SRC.name().equals(fxId)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.JSIDPLAY2_SRC);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
-			} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(fxId)) {
-				WebView collection = new WebView(util.getWindow(), util.getPlayer());
-				collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
-				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (Printer.ID.equals(fxId)) {
+				addTab(new Tab(util.getBundle().getString(fxId), new Printer(util.getWindow(), util.getPlayer())),
+						fxId);
+			} else if (Console.ID.equals(fxId)) {
+				addTab(new Tab(util.getBundle().getString(fxId), new Console(util.getWindow(), util.getPlayer())),
+						fxId);
 			} else if (WebViewType.USERGUIDE.name().equals(fxId)) {
 				WebView collection = new WebView(util.getWindow(), util.getPlayer());
 				collection.setType(WebViewType.USERGUIDE);
+				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
+			} else if (WebViewType.JSIDPLAY2_JAVADOC.name().equals(fxId)) {
+				WebView collection = new WebView(util.getWindow(), util.getPlayer());
+				collection.setType(WebViewType.JSIDPLAY2_JAVADOC);
 				addTab(new Tab(util.getBundle().getString(fxId), collection), fxId);
 			} else {
 				throw new RuntimeException("Unknown view ID: " + fxId);
