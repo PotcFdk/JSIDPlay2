@@ -109,8 +109,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
 		});
 
-		util.getPlayer().setExtendImagePolicy(this);
-
 		((ObservableList<ViewEntity>) util.getConfig().getViews())
 				.addListener((ListChangeListener.Change<? extends ViewEntity> c) -> {
 					while (c.next()) {
@@ -161,6 +159,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
 
+		util.getPlayer().setExtendImagePolicy(this);
 		util.getPlayer().startC64();
 	}
 

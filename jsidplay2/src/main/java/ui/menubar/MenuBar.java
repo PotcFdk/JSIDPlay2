@@ -240,6 +240,7 @@ public class MenuBar extends C64VBox implements UIPart {
 				Toast.makeText("whatssid", whatssidPositioner, musicInfoWithConfidence.toString(), 5);
 			});
 		});
+		// TODO menu items disabled property if tab already shown
 	}
 
 	@Override
