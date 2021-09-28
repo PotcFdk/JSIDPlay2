@@ -72,7 +72,8 @@
 					</Menu>
 					<Menu text="%VIEW">
 						<MenuItem fx:id="video" text="%VIDEO" onAction="#video" />
-						<MenuItem fx:id="oscilloscope" text="%OSCILLOSCOPE" onAction="#oscilloscope" />
+						<MenuItem fx:id="oscilloscope" text="%OSCILLOSCOPE"
+							onAction="#oscilloscope" />
 						<MenuItem fx:id="favorites" text="%FAVORITES" onAction="#favorites" />
 						<Menu text="%MUSICCOLLECTIONS">
 							<MenuItem fx:id="hvsc" text="%HVSC" onAction="#hvsc" />
@@ -85,21 +86,27 @@
 						</Menu>
 						<Menu text="%TOOLS">
 							<MenuItem fx:id="sidDump" text="%SIDDUMP" onAction="#sidDump" />
-							<MenuItem fx:id="sidRegisters" text="%SIDREGISTERS" onAction="#sidRegisters" />
+							<MenuItem fx:id="sidRegisters" text="%SIDREGISTERS"
+								onAction="#sidRegisters" />
 							<MenuItem fx:id="asm" text="%ASM" onAction="#asm" />
-							<MenuItem fx:id="disassembler" text="%DISASSEMBLER" onAction="#disassembler" />
+							<MenuItem fx:id="disassembler" text="%DISASSEMBLER"
+								onAction="#disassembler" />
 						</Menu>
 						<Menu text="%ONLINE">
-							<MenuItem fx:id="assembly64" text="%ASSEMBLY64" onAction="#assembly64" />
+							<MenuItem fx:id="assembly64" text="%ASSEMBLY64"
+								onAction="#assembly64" />
 							<MenuItem fx:id="csdb" text="%CSDB" onAction="#csdb" />
-							<MenuItem fx:id="remixKwedOrg" text="%REMIX_KWED_ORG" onAction="#remixKweqOrg" />
+							<MenuItem fx:id="remixKwedOrg" text="%REMIX_KWED_ORG"
+								onAction="#remixKweqOrg" />
 							<MenuItem fx:id="lemon64" text="%LEMON64_COM" onAction="#lemon64" />
 							<MenuItem fx:id="forum64" text="%FORUM64_DE" onAction="#forum64" />
 							<MenuItem fx:id="c64Sk" text="%C64_SK" onAction="#c64Sk" />
 							<MenuItem fx:id="soasc" text="%SOASC" onAction="#soasc" />
-							<MenuItem fx:id="codebase64" text="%CODEBASE64" onAction="#codebase64" />
+							<MenuItem fx:id="codebase64" text="%CODEBASE64"
+								onAction="#codebase64" />
 							<MenuItem fx:id="gamebase" text="%GAMEBASE" onAction="#gamebase" />
-							<MenuItem fx:id="jsidplay2Src" text="%JSIDPLAY2_SRC" onAction="#jsidplay2Src" />
+							<MenuItem fx:id="jsidplay2Src" text="%JSIDPLAY2_SRC"
+								onAction="#jsidplay2Src" />
 						</Menu>
 						<MenuItem fx:id="printer" text="%PRINTER" onAction="#printer" />
 						<MenuItem fx:id="console" text="%CONSOLE" onAction="#console" />
@@ -273,8 +280,10 @@
 						<MenuItem text="%PROXY_SETTINGS" onAction="#proxySettings" />
 					</Menu>
 					<Menu text="%HELP">
-						<MenuItem fx:id="jsidplay2userGuide" text="%USERGUIDE" onAction="#userguide" />
-						<MenuItem fx:id="jsidplay2Javadoc" text="%JSIDPLAY2_JAVADOC" onAction="#jsidplay2Javadoc" />
+						<MenuItem fx:id="jsidplay2userGuide" text="%USERGUIDE"
+							onAction="#userguide" />
+						<MenuItem fx:id="jsidplay2Javadoc" text="%JSIDPLAY2_JAVADOC"
+							onAction="#jsidplay2Javadoc" />
 						<MenuItem text="%CHECK_FOR_UPDATES" onAction="#updateCheck" />
 						<SeparatorMenuItem />
 						<MenuItem text="%ABOUT" onAction="#about" />
