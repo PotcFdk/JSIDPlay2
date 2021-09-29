@@ -110,22 +110,6 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 					util.getBundle().getString("RELEASE"), date, util.getBundle().getString("AUTHOR")));
 		});
 
-		((ObservableList<ViewEntity>) util.getConfig().getViews())
-				.addListener((ListChangeListener.Change<? extends ViewEntity> c) -> {
-					while (c.next()) {
-						if (c.wasAdded()) {
-							c.getAddedSubList().forEach(view -> addAndSelectTab(view.getFxId()));
-						}
-					}
-				});
-		for (ViewEntity view : util.getConfig().getViews()) {
-			Platform.runLater(() -> {
-				if (tabbedPane != null) {
-					addAndSelectTab(view.getFxId());
-				}
-			});
-		}
-
 		Platform.runLater(() -> {
 			tabbedPane.getScene().setOnDragOver(event -> {
 				Dragboard db = event.getDragboard();
@@ -157,9 +141,18 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 			tabbedPane.requestFocus();
 		});
 
+		((ObservableList<ViewEntity>) util.getConfig().getViews())
+				.addListener((ListChangeListener.Change<? extends ViewEntity> c) -> {
+					while (c.next()) {
+						if (c.wasAdded()) {
+							c.getAddedSubList().forEach(view -> addAndSelectTab(view.getFxId()));
+						}
+					}
+				});
+		util.getConfig().getViews().forEach(view -> Platform.runLater(() -> addAndSelectTab(view.getFxId())));
+
 		propertyChangeListener = new StateChangeListener();
 		util.getPlayer().stateProperty().addListener(propertyChangeListener);
-
 		util.getPlayer().setExtendImagePolicy(this);
 		util.getPlayer().startC64();
 	}
