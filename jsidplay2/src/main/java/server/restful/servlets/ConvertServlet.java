@@ -20,6 +20,15 @@ import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
+import static sidplay.audio.Audio.AAC;
+import static sidplay.audio.Audio.AVI;
+import static sidplay.audio.Audio.FLAC;
+import static sidplay.audio.Audio.FLV;
+import static sidplay.audio.Audio.MP3;
+import static sidplay.audio.Audio.MP4;
+import static sidplay.audio.Audio.SID_DUMP;
+import static sidplay.audio.Audio.SID_REG;
+import static sidplay.audio.Audio.WAV;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,7 +165,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
-				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == Audio.FLV) {
+				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
 					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
 							.count() < MAX_RTMP_THREADS) {
 						Thread thread = new Thread(() -> {
@@ -210,20 +219,20 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private Audio getAudioFormat(IConfig config) {
-		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.MP3)) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(MP3)) {
 		case WAV:
-			return Audio.WAV;
+			return WAV;
 		case FLAC:
-			return Audio.FLAC;
+			return FLAC;
 		case AAC:
-			return Audio.AAC;
+			return AAC;
 		case MP3:
 		default:
-			return Audio.MP3;
+			return MP3;
 		case SID_DUMP:
-			return Audio.SID_DUMP;
+			return SID_DUMP;
 		case SID_REG:
-			return Audio.SID_REG;
+			return SID_REG;
 		}
 	}
 
@@ -261,14 +270,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	private Audio getVideoFormat(IConfig config) {
-		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(Audio.FLV)) {
+		switch (Optional.ofNullable(config.getAudioSection().getAudio()).orElse(FLV)) {
 		case FLV:
 		default:
-			return Audio.FLV;
+			return FLV;
 		case AVI:
-			return Audio.AVI;
+			return AVI;
 		case MP4:
-			return Audio.MP4;
+			return MP4;
 		}
 	}
 

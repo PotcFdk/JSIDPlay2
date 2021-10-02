@@ -21,6 +21,7 @@ import libsidplay.config.IWhatsSidSection;
 import sidplay.Player;
 import sidplay.fingerprinting.FingerprintJsonClient;
 import ui.common.C64Window;
+import ui.entities.config.EmulationSection;
 import ui.entities.config.WhatsSidSection;
 
 public class WhatsSidSettings extends C64Window {
@@ -46,6 +47,7 @@ public class WhatsSidSettings extends C64Window {
 	@FXML
 	@Override
 	protected void initialize() {
+		EmulationSection emulationSection = util.getConfig().getEmulationSection();
 		WhatsSidSection whatsSidSection = util.getConfig().getWhatsSidSection();
 
 		enable.selectedProperty().bindBidirectional(whatsSidSection.enableProperty());
@@ -67,6 +69,8 @@ public class WhatsSidSettings extends C64Window {
 		bindBidirectional(minimumRelativeConfidence.textProperty(), whatsSidSection.minimumRelativeConfidenceProperty(),
 				new NumberStringConverter());
 		detectWhatsSidChipModel.selectedProperty().bindBidirectional(whatsSidSection.detectChipModelProperty());
+		detectWhatsSidChipModel.selectedProperty()
+				.addListener((s, o, n) -> emulationSection.getOverrideSection().reset());
 	}
 
 	@FXML
