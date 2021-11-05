@@ -190,7 +190,7 @@ Now we are prepared to compile SIDBlaster library.
 Please go to the following site to download SIDBlaster sources:
 https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
 
-You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
+You *MUST* choose the apple branch to get the right sources to compile on your Windows.
 
 Click on "Code" combobox, then
 click on "download ZIP"
@@ -282,7 +282,7 @@ Now we are prepared to compile SIDBlaster library.
 Please go to the following site to download SIDBlaster sources:
 https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver
 
-You *MUST* choose the apple branch to get the right sources to compile on your MacOSX.
+You *MUST* choose the apple branch to get the right sources to compile on your Linux.
 
 Click on "Code" combobox, then
 click on "download ZIP"
@@ -486,4 +486,4 @@ chmod +x "SIDBlasterTool.sh"
 <4> Example to set serial number
 <5> Example to use SIDBlaster only on Windows
 
-*Note:* Windows users execute sidblastertool-{version}.exe, instead
+*Note:* Windows users execute sidblastertool-{version}.exe on the command line, instead!
