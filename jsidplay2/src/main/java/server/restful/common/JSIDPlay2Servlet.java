@@ -1,5 +1,6 @@
 package server.restful.common;
 
+import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 
@@ -89,7 +90,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 					break;
 				}
 				Constructor<T> constructor = tClass.getConstructor(new Class[] { byte[].class, long.class });
-				return constructor.newInstance(result.toByteArray(), Long.MAX_VALUE);
+				return constructor.newInstance(result.toByteArray(), FRAME_MAX_LENGTH_UPLOAD);
 			} else {
 				throw new IOException("Unsupported content type: " + contentType);
 			}
