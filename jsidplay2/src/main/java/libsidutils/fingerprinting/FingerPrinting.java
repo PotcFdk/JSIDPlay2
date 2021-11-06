@@ -1,7 +1,5 @@
 package libsidutils.fingerprinting;
 
-import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH;
-
 import java.io.IOException;
 
 import libsidutils.fingerprinting.fingerprint.Fingerprint;
@@ -45,8 +43,9 @@ public class FingerPrinting implements IFingerprintMatcher, IFingerprintInserter
 	@Override
 	public MusicInfoWithConfidenceBean match(WAVBean wavBean) throws IOException {
 		if (wavBean != null && wavBean.getWav().length > 0) {
+			long frameMaxLength = wavBean.getFrameMaxLength();
 
-			Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean, FRAME_MAX_LENGTH);
+			Fingerprint fingerprint = new FingerprintCreator().createFingerprint(config, wavBean, frameMaxLength);
 
 			Index index = new Index();
 			index.setFingerPrintingClient(fingerPrintingDataSource);

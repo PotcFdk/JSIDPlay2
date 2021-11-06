@@ -48,7 +48,7 @@
 	               		this.match = 'Sorry, no match!';
 	               	}
                 }, error => {
-                    console.error(error);
+                	console.error(error);
                 });
             }
         }

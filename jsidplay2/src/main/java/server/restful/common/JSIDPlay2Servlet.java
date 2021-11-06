@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -87,7 +88,8 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 					// just the first file
 					break;
 				}
-				return tClass.getConstructor(new Class[] { byte[].class }).newInstance(result.toByteArray());
+				Constructor<T> constructor = tClass.getConstructor(new Class[] { byte[].class, long.class });
+				return constructor.newInstance(result.toByteArray(), Long.MAX_VALUE);
 			} else {
 				throw new IOException("Unsupported content type: " + contentType);
 			}
