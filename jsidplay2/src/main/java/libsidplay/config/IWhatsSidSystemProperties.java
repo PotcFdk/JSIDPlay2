@@ -24,7 +24,7 @@ public interface IWhatsSidSystemProperties {
 	 * upload.
 	 */
 	long FRAME_MAX_LENGTH_UPLOAD = Long
-			.valueOf(System.getProperty("jsidplay2.whatssid.upload.frame.max.length", "360000"));
+			.valueOf(System.getProperty("jsidplay2.whatssid.upload.frame.max.length", "960000"));
 
 	/**
 	 * WhatsSID? query timeout of tune recognition's findHashes query to prevent
