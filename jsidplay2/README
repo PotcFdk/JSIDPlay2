@@ -139,3 +139,5 @@ TODO:
 =====
 - App: download sid register writes and siddump
 - Playlists are wanted to be shared online
+- the ability to have music playback occur alongside your SID dump feature. This would look a bit like a tracker,
+  and would allow a listener to see the connections between register values and sounds.
