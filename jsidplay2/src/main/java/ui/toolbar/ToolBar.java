@@ -220,7 +220,7 @@ public class ToolBar extends C64VBox implements UIPart {
 				() -> duringReplay = util.getPlayer().stateProperty().get() == State.RESTART);
 
 		videoStandardBox.setConverter(new EnumToStringConverter<CPUClock>(bundle));
-		videoStandardBox.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
+		videoStandardBox.valueProperty().bindBidirectional(emulationSection.userClockSpeedProperty());
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
 
 		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());

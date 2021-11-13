@@ -1,5 +1,7 @@
 package ui.emulationsettings;
 
+import static libsidplay.common.CPUClock.NTSC;
+import static libsidplay.common.CPUClock.PAL;
 import static libsidplay.common.ChipModel.MOS6581;
 import static libsidplay.common.ChipModel.MOS8580;
 import static libsidplay.common.Emulation.RESID;
@@ -90,6 +92,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Engine;
@@ -123,6 +126,8 @@ public class EmulationSettings extends C64Window {
 	private CheckBox muteVoice1, muteVoice2, muteVoice3, muteVoice4, muteVoice5, muteVoice6, muteVoice7, muteVoice8,
 			muteVoice9, muteVoice10, muteVoice11, muteVoice12;
 	@FXML
+	private ComboBox<CPUClock> defaultVideoStandard;
+	@FXML
 	private ComboBox<Emulation> sid1Emulation, sid2Emulation, sid3Emulation, defaultEmulation;
 	@FXML
 	private ComboBox<ChipModel> sid1Model, sid2Model, sid3Model, defaultModel;
@@ -147,6 +152,7 @@ public class EmulationSettings extends C64Window {
 	@FXML
 	private Button copy;
 
+	private ObservableList<CPUClock> defaultVideoStandards;
 	private ObservableList<Emulation> sid1Emulations, sid2Emulations, sid3Emulations, defaultEmulations;
 	private ObservableList<ChipModel> sid1Models, sid2Models, sid3Models, defaultModels;
 	private ObservableList<String> mainFilters, secondFilters, thirdFilters;
@@ -320,6 +326,12 @@ public class EmulationSettings extends C64Window {
 		defaultModel.valueProperty().bindBidirectional(emulationSection.defaultSidModelProperty());
 		defaultModel.valueProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());
 		defaultModel.setItems(defaultModels);
+
+		defaultVideoStandards = FXCollections.<CPUClock>observableArrayList(PAL, NTSC);
+		defaultVideoStandard.setConverter(new EnumToStringConverter<CPUClock>(bundle));
+		defaultVideoStandard.valueProperty().bindBidirectional(emulationSection.defaultClockSpeedProperty());
+		defaultVideoStandard.valueProperty().addListener((obj, o, n) -> restart());
+		defaultVideoStandard.setItems(defaultVideoStandards);
 
 		defaultEmulations = FXCollections.<Emulation>observableArrayList(RESID, RESIDFP);
 		defaultEmulation.setConverter(new EnumToStringConverter<Emulation>(bundle));
@@ -624,6 +636,12 @@ public class EmulationSettings extends C64Window {
 
 		updateFilterList(util.getPlayer().getTune(), 1, secondFilters, secondFilter);
 		updateFilterList(util.getPlayer().getTune(), 2, thirdFilters, thirdFilter);
+	}
+
+	private void restart() {
+		if (!duringInitialization && util.getPlayer().stateProperty().get() != State.RESTART) {
+			util.getPlayer().play(util.getPlayer().getTune());
+		}
 	}
 
 	/**

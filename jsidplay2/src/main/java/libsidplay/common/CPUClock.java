@@ -10,6 +10,8 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTune.Clock;
 
 public enum CPUClock {
+	/** Auto-detect clock frequency */
+	AUTO(),
 	/** PAL region clock frequency and screen refresh parameters */
 	PAL(985248.4, MOS6569.CYCLES_PER_LINE, MOS6569.MAX_RASTERS),
 	/** NTSC region clock frequency and screen refresh parameters */
@@ -17,6 +19,12 @@ public enum CPUClock {
 
 	private final double cpuFrequency, screenRefresh;
 	private final int cyclesPerFrame;
+
+	private CPUClock() {
+		this.cpuFrequency = 0;
+		this.cyclesPerFrame = 0;
+		this.screenRefresh = 0;
+	}
 
 	private CPUClock(double cpuFrequency, int cyclesPerLine, int maxRasters) {
 		this.cpuFrequency = cpuFrequency;
@@ -50,7 +58,7 @@ public enum CPUClock {
 		CPUClock forcedCPUClock = emulation.getUserClockSpeed();
 		Clock tuneCPUClock = tune != RESET ? tune.getInfo().getClockSpeed() : UNKNOWN;
 		CPUClock defaultCPUClock = emulation.getDefaultClockSpeed();
-		if (forcedCPUClock != null) {
+		if (forcedCPUClock != AUTO) {
 			return forcedCPUClock;
 		}
 		switch (tuneCPUClock) {

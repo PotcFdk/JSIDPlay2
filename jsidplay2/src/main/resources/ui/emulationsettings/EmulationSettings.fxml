@@ -141,6 +141,8 @@
 						</ComboBox>
 					</HBox>
 					<HBox spacing="5">
+						<Label text="%DEFAULT_VIDEO_STANDARD" />
+						<ComboBox fx:id="defaultVideoStandard" />
 						<Label text="%DEFAULT_EMULATION" />
 						<ComboBox fx:id="defaultEmulation" onAction="#setDefaultEmulation" />
 						<Label text="%DEFAULT_SID" />

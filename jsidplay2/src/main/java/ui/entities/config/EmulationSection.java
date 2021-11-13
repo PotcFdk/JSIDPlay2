@@ -58,6 +58,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_HOST;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_MODE;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_PORT;
 import static sidplay.ini.IniDefaults.DEFAULT_ULTIMATE64_SYNC_DELAY;
+import static sidplay.ini.IniDefaults.DEFAULT_USER_CLOCK_SPEED;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_EMULATION;
 import static sidplay.ini.IniDefaults.DEFAULT_USER_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_USE_3SID_FILTER;
@@ -262,7 +263,7 @@ public class EmulationSection implements IEmulationSection {
 	}
 
 	private ShadowField<ObjectProperty<CPUClock>, CPUClock> userClockSpeed = new ShadowField<>(
-			SimpleObjectProperty::new, null);
+			SimpleObjectProperty::new, DEFAULT_USER_CLOCK_SPEED);
 
 	@Enumerated(EnumType.STRING)
 	@Override
