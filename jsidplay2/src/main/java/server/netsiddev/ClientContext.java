@@ -386,8 +386,7 @@ class ClientContext {
 			}
 
 			dataWrite.put((byte) Response.INFO.ordinal());
-			dataWrite
-					.put((byte) (NetworkSIDDevice.getSidConfig(sidNumber).getChipModel() == ChipModel.MOS8580 ? 1 : 0));
+			dataWrite.put((byte) (NetworkSIDDevice.getSidModel(sidNumber) == ChipModel.MOS8580 ? 1 : 0));
 			byte[] name = NetworkSIDDevice.getSidName(sidNumber).getBytes(ISO_8859);
 
 			dataWrite.put(name, 0, Math.min(name.length, 255));

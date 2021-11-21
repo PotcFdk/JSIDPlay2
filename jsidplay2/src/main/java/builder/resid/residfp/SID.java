@@ -177,8 +177,7 @@ public class SID implements SIDChip {
 		}
 	}
 
-	@Override
-	public ChipModel getChipModel() {
+	protected ChipModel getChipModel() {
 		return model;
 	}
 

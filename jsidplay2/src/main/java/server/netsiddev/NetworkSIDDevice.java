@@ -70,6 +70,22 @@ public class NetworkSIDDevice {
 		return sid;
 	}
 
+	/**
+	 * Get SID model.
+	 *
+	 * @param sidNumber
+	 */
+	protected static ChipModel getSidModel(int sidNumber) {
+		IFilterSection iniFilter = config.getFilter(config.getFilterList()[sidNumber]);
+
+		if (iniFilter.isReSIDFilter6581() || iniFilter.isReSIDfpFilter6581()) {
+			return ChipModel.MOS6581;
+		} else if (iniFilter.isReSIDFilter8580() || iniFilter.isReSIDfpFilter8580()) {
+			return ChipModel.MOS8580;
+		}
+		return null;
+	}
+
 	public synchronized void start(boolean createIniFileIfNotExists) {
 		config = new JSIDDeviceConfig(createIniFileIfNotExists);
 		new Thread(() -> {

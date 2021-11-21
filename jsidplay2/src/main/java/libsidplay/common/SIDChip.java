@@ -32,8 +32,6 @@ public interface SIDChip {
 
 	void setClockFrequency(double clockFrequency);
 
-	ChipModel getChipModel();
-
 	void setChipModel(ChipModel model);
 
 	void setDigiBoost(boolean digiBoost);
