@@ -331,17 +331,17 @@ public class AudioGeneratorThread extends Thread {
 			whatsSidSupport.reset();
 		}
 	}
-	
+
 	private void initDriver() throws LineUnavailableException {
 		if (driver != null) {
 			driver.close();
 		}
 		driver = new JavaSound();
-		
+
 		final Vector<AudioDevice> audioDevices = new Vector<>();
 		final AudioDeviceCompare cmp = new AudioDeviceCompare();
 		int theDeviceIndex = 0;
-		
+
 		for (Info deviceInfo : JavaSound.getDevices()) {
 			final AudioDevice audioDeviceItem = new AudioDevice(theDeviceIndex, deviceInfo);
 			audioDevices.add(audioDeviceItem);
@@ -350,7 +350,7 @@ public class AudioGeneratorThread extends Thread {
 				// be translated on some systems
 				cmp.setPrimaryDeviceName(deviceInfo.getName());
 			}
-			
+
 			if (mixerInfo == null) {
 				if (audioDeviceItem.getIndex() == deviceIndex) {
 					mixerInfo = deviceInfo;
@@ -358,10 +358,10 @@ public class AudioGeneratorThread extends Thread {
 			} else if (mixerInfo.getName() == deviceInfo.getName()) {
 				mixerInfo = deviceInfo;
 			}
-			
+
 			theDeviceIndex++;
 		}
-		
+
 		Collections.sort(audioDevices, cmp);
 		driver.open(audioConfig, mixerInfo);
 	}
@@ -575,7 +575,7 @@ public class AudioGeneratorThread extends Thread {
 
 		for (SIDChip sidChip : sids) {
 			if (sidChip != null) {
-				sidChip.input(digiBoostEnabled ? sidChip.getInputDigiBoost() : 0);
+				sidChip.setDigiBoost(digiBoostEnabled);
 			}
 		}
 	}

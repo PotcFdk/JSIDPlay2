@@ -448,8 +448,12 @@ public class SID implements SIDChip {
 	}
 
 	@Override
-	public int getInputDigiBoost() {
-		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
+	public void setDigiBoost(boolean digiBoost) {
+		if (digiBoost && model.equals(ChipModel.MOS8580)) {
+			input(INPUTDIGIBOOST);
+		} else {
+			input(0);
+		}
 	}
 
 }

@@ -362,7 +362,12 @@ class ClientContext {
 				break;
 			}
 
-			eventConsumerThread.setClocking(CPUClock.values()[dataRead.get(4)]);
+			int palNtsc = dataRead.get(4);
+			if (palNtsc == 0) {
+				eventConsumerThread.setClocking(CPUClock.PAL);
+			} else {
+				eventConsumerThread.setClocking(CPUClock.NTSC);
+			}
 			dataWrite.put((byte) Response.OK.ordinal());
 			break;
 
@@ -543,7 +548,7 @@ class ClientContext {
 
 	protected void dispose() {
 		eventConsumerThread.getSidCommandQueue().add(SIDWrite.makeEnd());
-		
+
 		if (!eventConsumerThread.waitUntilQueueReady(MAX_TIME_TO_WAIT_FOR_QUEUE)) {
 			eventConsumerThread.interrupt();
 			return;

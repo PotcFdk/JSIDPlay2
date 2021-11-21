@@ -340,8 +340,8 @@ public class EmulationSettings extends C64Window {
 		defaultEmulation.setItems(defaultEmulations);
 
 		boosted8580.selectedProperty().bindBidirectional(emulationSection.digiBoosted8580Property());
-		boosted8580.selectedProperty().addListener((obj, o, n) -> util.getPlayer().configureSIDs(
-				(num, sid) -> sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0)));
+		boosted8580.selectedProperty().addListener((obj, o, n) -> util.getPlayer()
+				.configureSIDs((num, sid) -> sid.setDigiBoost(emulationSection.isDigiBoosted8580())));
 
 		fakeStereo.selectedProperty().bindBidirectional(emulationSection.fakeStereoProperty());
 		fakeStereo.selectedProperty().addListener((obj, o, n) -> updateSIDChipConfiguration());

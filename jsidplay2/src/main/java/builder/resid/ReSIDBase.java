@@ -106,8 +106,8 @@ public abstract class ReSIDBase extends SIDEmu {
 	}
 
 	@Override
-	public int getInputDigiBoost() {
-		return sid.getInputDigiBoost();
+	public void setDigiBoost(boolean digiBoost) {
+		sid.setDigiBoost(digiBoost);
 	}
 
 	public abstract byte readENV(int voiceNum);

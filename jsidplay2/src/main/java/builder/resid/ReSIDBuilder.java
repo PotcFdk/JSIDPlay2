@@ -53,7 +53,7 @@ public class ReSIDBuilder extends SIDMixer implements SIDBuilder {
 		sid.setClockFrequency(cpuClock.getCpuFrequency());
 		sid.setFilter(config, sidNum);
 		sid.setFilterEnable(emulationSection, sidNum);
-		sid.input(emulationSection.isDigiBoosted8580() ? sid.getInputDigiBoost() : 0);
+		sid.setDigiBoost(emulationSection.isDigiBoosted8580());
 		for (int voice = 0; voice < 4; voice++) {
 			sid.setVoiceMute(voice, emulationSection.isMuteVoice(sidNum, voice));
 		}

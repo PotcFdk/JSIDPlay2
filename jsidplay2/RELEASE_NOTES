@@ -5,6 +5,7 @@ Features:
 ---------
 Better C64 breadbox/PC64 images and Composer pictures
 GameBase64: show musicians photo
+Use fixed PAL/NTSC setting is now possible
 
 Recording formats:
 ------------------
@@ -19,3 +20,4 @@ startSong parameter added
 Bugfixes:
 ---------
 WhatsSID changes take now effect without restart
+Unboosted digis on 8580 are now equally audible for Dag Lem's ReSID 1.0beta same as for Antti's ReSIDfp

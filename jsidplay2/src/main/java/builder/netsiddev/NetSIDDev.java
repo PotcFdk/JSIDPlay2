@@ -116,9 +116,8 @@ public class NetSIDDev extends SIDEmu {
 	}
 
 	@Override
-	public int getInputDigiBoost() {
-		// XXX unsupported by JSIDDevice
-		return 0;
+	public void setDigiBoost(boolean digiBoost) {
+		// this setting must be changed in the JSIDDevice settings
 	}
 
 	@Override

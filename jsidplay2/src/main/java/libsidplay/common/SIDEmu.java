@@ -62,7 +62,7 @@ public abstract class SIDEmu {
 
 	public abstract void input(int input);
 
-	public abstract int getInputDigiBoost();
+	public abstract void setDigiBoost(boolean digiBoost);
 
 	public abstract void setVoiceMute(int num, boolean mute);
 

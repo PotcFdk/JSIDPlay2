@@ -37,6 +37,7 @@ import libsidplay.common.SIDChip;
  */
 public final class SID implements SIDChip {
 	private static final int INPUTDIGIBOOST = 0x3FF;
+	private static final int NO_INPUTDIGIBOOST = 0x07F;
 
 	/**
 	 * Output scaler.
@@ -526,8 +527,11 @@ public final class SID implements SIDChip {
 	}
 
 	@Override
-	public int getInputDigiBoost() {
-		return model.equals(ChipModel.MOS8580) ? INPUTDIGIBOOST : 0;
+	public void setDigiBoost(boolean digiBoost) {
+		if (digiBoost && model.equals(ChipModel.MOS8580)) {
+			input(INPUTDIGIBOOST);
+		} else {
+			input(NO_INPUTDIGIBOOST);
+		}
 	}
-
 }

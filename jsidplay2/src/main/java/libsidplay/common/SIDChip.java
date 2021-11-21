@@ -36,6 +36,6 @@ public interface SIDChip {
 
 	void setChipModel(ChipModel model);
 
-	int getInputDigiBoost();
+	void setDigiBoost(boolean digiBoost);
 
 }
