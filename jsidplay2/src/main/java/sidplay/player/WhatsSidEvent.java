@@ -63,7 +63,7 @@ public class WhatsSidEvent extends Event {
 							(long) (matchRetryTimeInSeconds * player.getC64().getClock().getCpuFrequency()));
 				}
 			}
-		});
+		}, "WhatsSID?");
 		whatsSidMatcherThread.setPriority(MIN_PRIORITY);
 		whatsSidMatcherThread.start();
 	}
