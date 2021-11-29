@@ -51,7 +51,8 @@ public class FingerprintCreator {
 
 			// remove wasted audio, not used for recognition
 			if (stream.getFrameLength() > frameMaxLength) {
-				stream.read(new byte[(int) (stream.getFrameLength() - frameMaxLength)]);
+				stream.read(new byte[(int) ((stream.getFrameLength() - frameMaxLength)
+						* stream.getFormat().getChannels() * Short.BYTES)]);
 			}
 
 			// 1. stereo to mono conversion
