@@ -144,7 +144,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
-							+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
+							+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 				}
 				convertAudio(config, file, driver, servletParameters.getSong());
 				response.setStatus(HttpServletResponse.SC_OK);
@@ -190,7 +190,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				} else {
 					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
-								+ (getFilenameWithoutSuffix(file.getName()) + driver.getExtension()));
+								+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 					}
 					File videoFile = convertVideo(config, file, driver);
 					copy(videoFile, response.getOutputStream());
