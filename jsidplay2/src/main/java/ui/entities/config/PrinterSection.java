@@ -20,21 +20,21 @@ public class PrinterSection implements IPrinterSection {
 			DEFAULT_PRINTER_ON);
 
 	@Override
-	public boolean isPrinterOn() {
+	public final boolean isPrinterOn() {
 		return printerOn.get();
 	}
 
 	@Override
-	public void setPrinterOn(boolean printerOn) {
+	public final void setPrinterOn(boolean printerOn) {
 		this.printerOn.set(printerOn);
 	}
 
-	public BooleanProperty printerOnProperty() {
+	public final BooleanProperty printerOnProperty() {
 		return printerOn.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

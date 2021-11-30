@@ -20,37 +20,37 @@ public class IniDeviceMapping implements IDeviceMapping {
 	}
 
 	@Override
-	public boolean isUsed() {
+	public final boolean isUsed() {
 		return used;
 	}
 
 	@Override
-	public void setUsed(boolean used) {
+	public final void setUsed(boolean used) {
 		this.used = used;
 	}
 
 	@Override
-	public String getSerialNum() {
+	public final String getSerialNum() {
 		return serialNum;
 	}
 
 	@Override
-	public void setSerialNum(String serialNum) {
+	public final void setSerialNum(String serialNum) {
 		this.serialNum = serialNum;
 	}
 
 	@Override
-	public ChipModel getChipModel() {
+	public final ChipModel getChipModel() {
 		return chipModel;
 	}
 
 	@Override
-	public void setChipModel(ChipModel chipModel) {
+	public final void setChipModel(ChipModel chipModel) {
 		this.chipModel = chipModel;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

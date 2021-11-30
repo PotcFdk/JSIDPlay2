@@ -40,7 +40,7 @@ public class IniPrinterSection extends IniSection implements IPrinterSection {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 

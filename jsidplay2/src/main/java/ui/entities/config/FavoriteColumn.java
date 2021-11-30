@@ -39,45 +39,45 @@ public class FavoriteColumn {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	@JsonIgnore
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<StringProperty, String> column = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public String getColumnProperty() {
+	public final String getColumnProperty() {
 		return column.get();
 	}
 
-	public void setColumnProperty(String columnProperty) {
+	public final void setColumnProperty(String columnProperty) {
 		this.column.set(columnProperty);
 	}
 
-	public StringProperty columnProperty() {
+	public final StringProperty columnProperty() {
 		return column.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.floatValue()), 0);
 
-	public double getWidth() {
+	public final double getWidth() {
 		return width.get().doubleValue();
 	}
 
-	public void setWidth(double width) {
+	public final void setWidth(double width) {
 		this.width.set(width);
 	}
 
-	public DoubleProperty widthProperty() {
+	public final DoubleProperty widthProperty() {
 		return width.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

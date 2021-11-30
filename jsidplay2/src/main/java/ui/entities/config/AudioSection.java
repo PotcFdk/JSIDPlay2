@@ -84,16 +84,16 @@ public class AudioSection implements IAudioSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Audio getAudio() {
+	public final Audio getAudio() {
 		return audio.get();
 	}
 
 	@Override
-	public void setAudio(Audio audio) {
+	public final void setAudio(Audio audio) {
 		this.audio.set(audio);
 	}
 
-	public ObjectProperty<Audio> audioProperty() {
+	public final ObjectProperty<Audio> audioProperty() {
 		return audio.property();
 	}
 
@@ -101,16 +101,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DEVICE);
 
 	@Override
-	public int getDevice() {
+	public final int getDevice() {
 		return device.get().intValue();
 	}
 
 	@Override
-	public void setDevice(int device) {
+	public final void setDevice(int device) {
 		this.device.set(device);
 	}
 
-	public IntegerProperty deviceProperty() {
+	public final IntegerProperty deviceProperty() {
 		return device.property();
 	}
 
@@ -119,16 +119,16 @@ public class AudioSection implements IAudioSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public SamplingRate getSamplingRate() {
+	public final SamplingRate getSamplingRate() {
 		return this.samplingRate.get();
 	}
 
 	@Override
-	public void setSamplingRate(SamplingRate samplingRate) {
+	public final void setSamplingRate(SamplingRate samplingRate) {
 		this.samplingRate.set(samplingRate);
 	}
 
-	public ObjectProperty<SamplingRate> samplingRateProperty() {
+	public final ObjectProperty<SamplingRate> samplingRateProperty() {
 		return samplingRate.property();
 	}
 
@@ -137,16 +137,16 @@ public class AudioSection implements IAudioSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public SamplingMethod getSampling() {
+	public final SamplingMethod getSampling() {
 		return this.sampling.get();
 	}
 
 	@Override
-	public void setSampling(SamplingMethod method) {
+	public final void setSampling(SamplingMethod method) {
 		this.sampling.set(method);
 	}
 
-	public ObjectProperty<SamplingMethod> samplingProperty() {
+	public final ObjectProperty<SamplingMethod> samplingProperty() {
 		return sampling.property();
 	}
 
@@ -154,16 +154,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_MAIN_VOLUME);
 
 	@Override
-	public float getMainVolume() {
+	public final float getMainVolume() {
 		return this.mainVolume.get().floatValue();
 	}
 
 	@Override
-	public void setMainVolume(float volume) {
+	public final void setMainVolume(float volume) {
 		this.mainVolume.set(volume);
 	}
 
-	public FloatProperty mainVolumeProperty() {
+	public final FloatProperty mainVolumeProperty() {
 		return mainVolume.property();
 	}
 
@@ -171,16 +171,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SECOND_VOLUME);
 
 	@Override
-	public float getSecondVolume() {
+	public final float getSecondVolume() {
 		return this.secondVolume.get().floatValue();
 	}
 
 	@Override
-	public void setSecondVolume(float volume) {
+	public final void setSecondVolume(float volume) {
 		this.secondVolume.set(volume);
 	}
 
-	public FloatProperty secondVolumeProperty() {
+	public final FloatProperty secondVolumeProperty() {
 		return secondVolume.property();
 	}
 
@@ -188,16 +188,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_THIRD_VOLUME);
 
 	@Override
-	public float getThirdVolume() {
+	public final float getThirdVolume() {
 		return this.thirdVolume.get().floatValue();
 	}
 
 	@Override
-	public void setThirdVolume(float volume) {
+	public final void setThirdVolume(float volume) {
 		this.thirdVolume.set(volume);
 	}
 
-	public FloatProperty thirdVolumeProperty() {
+	public final FloatProperty thirdVolumeProperty() {
 		return thirdVolume.property();
 	}
 
@@ -205,16 +205,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_MAIN_BALANCE);
 
 	@Override
-	public float getMainBalance() {
+	public final float getMainBalance() {
 		return this.mainBalance.get().floatValue();
 	}
 
 	@Override
-	public void setMainBalance(float balance) {
+	public final void setMainBalance(float balance) {
 		this.mainBalance.set(balance);
 	}
 
-	public FloatProperty mainBalanceProperty() {
+	public final FloatProperty mainBalanceProperty() {
 		return mainBalance.property();
 	}
 
@@ -222,16 +222,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SECOND_BALANCE);
 
 	@Override
-	public float getSecondBalance() {
+	public final float getSecondBalance() {
 		return this.secondBalance.get().floatValue();
 	}
 
 	@Override
-	public void setSecondBalance(float right) {
+	public final void setSecondBalance(float right) {
 		this.secondBalance.set(right);
 	}
 
-	public FloatProperty secondBalanceProperty() {
+	public final FloatProperty secondBalanceProperty() {
 		return secondBalance.property();
 	}
 
@@ -239,16 +239,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_THIRD_BALANCE);
 
 	@Override
-	public float getThirdBalance() {
+	public final float getThirdBalance() {
 		return this.thirdBalance.get().floatValue();
 	}
 
 	@Override
-	public void setThirdBalance(float third) {
+	public final void setThirdBalance(float third) {
 		this.thirdBalance.set(third);
 	}
 
-	public FloatProperty thirdBalanceProperty() {
+	public final FloatProperty thirdBalanceProperty() {
 		return thirdBalance.property();
 	}
 
@@ -256,16 +256,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_MAIN_DELAY);
 
 	@Override
-	public int getMainDelay() {
+	public final int getMainDelay() {
 		return this.mainDelay.get().intValue();
 	}
 
 	@Override
-	public void setMainDelay(int delay) {
+	public final void setMainDelay(int delay) {
 		this.mainDelay.set(delay);
 	}
 
-	public IntegerProperty mainDelayProperty() {
+	public final IntegerProperty mainDelayProperty() {
 		return mainDelay.property();
 	}
 
@@ -273,16 +273,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_SECOND_DELAY);
 
 	@Override
-	public int getSecondDelay() {
+	public final int getSecondDelay() {
 		return this.secondDelay.get().intValue();
 	}
 
 	@Override
-	public void setSecondDelay(int delay) {
+	public final void setSecondDelay(int delay) {
 		this.secondDelay.set(delay);
 	}
 
-	public IntegerProperty secondDelayProperty() {
+	public final IntegerProperty secondDelayProperty() {
 		return secondDelay.property();
 	}
 
@@ -290,16 +290,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_THIRD_DELAY);
 
 	@Override
-	public int getThirdDelay() {
+	public final int getThirdDelay() {
 		return this.thirdDelay.get().intValue();
 	}
 
 	@Override
-	public void setThirdDelay(int delay) {
+	public final void setThirdDelay(int delay) {
 		this.thirdDelay.set(delay);
 	}
 
-	public IntegerProperty thirdDelayProperty() {
+	public final IntegerProperty thirdDelayProperty() {
 		return this.thirdDelay.property();
 	}
 
@@ -307,16 +307,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_BUFFER_SIZE);
 
 	@Override
-	public int getBufferSize() {
+	public final int getBufferSize() {
 		return bufferSize.get().intValue();
 	}
 
 	@Override
-	public void setBufferSize(int bufferSize) {
+	public final void setBufferSize(int bufferSize) {
 		this.bufferSize.set(bufferSize);
 	}
 
-	public IntegerProperty bufferSizeProperty() {
+	public final IntegerProperty bufferSizeProperty() {
 		return bufferSize.property();
 	}
 
@@ -324,16 +324,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_AUDIO_BUFFER_SIZE);
 
 	@Override
-	public int getAudioBufferSize() {
+	public final int getAudioBufferSize() {
 		return audioBufferSize.get();
 	}
 
 	@Override
-	public void setAudioBufferSize(int audioBufferSize) {
+	public final void setAudioBufferSize(int audioBufferSize) {
 		this.audioBufferSize.set(audioBufferSize);
 	}
 
-	public ObjectProperty<Integer> audioBufferSizeProperty() {
+	public final ObjectProperty<Integer> audioBufferSizeProperty() {
 		return audioBufferSize.property();
 	}
 
@@ -341,16 +341,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_PLAY_ORIGINAL);
 
 	@Override
-	public boolean isPlayOriginal() {
+	public final boolean isPlayOriginal() {
 		return playOriginal.get();
 	}
 
 	@Override
-	public void setPlayOriginal(boolean original) {
+	public final void setPlayOriginal(boolean original) {
 		this.playOriginal.set(original);
 	}
 
-	public BooleanProperty playOriginalProperty() {
+	public final BooleanProperty playOriginalProperty() {
 		return playOriginal.property();
 	}
 
@@ -361,16 +361,16 @@ public class AudioSection implements IAudioSection {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getMp3() {
+	public final File getMp3() {
 		return this.mp3.get();
 	}
 
 	@Override
-	public void setMp3(File recording) {
+	public final void setMp3(File recording) {
 		this.mp3.set(recording);
 	}
 
-	public ObjectProperty<File> mp3Property() {
+	public final ObjectProperty<File> mp3Property() {
 		return mp3.property();
 	}
 
@@ -378,32 +378,32 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_CBR);
 
 	@Override
-	public int getCbr() {
+	public final int getCbr() {
 		return cbr.get();
 	}
 
 	@Override
-	public void setCbr(int cbr) {
+	public final void setCbr(int cbr) {
 		this.cbr.set(cbr);
 	}
 
-	public ObjectProperty<Integer> cbrProperty() {
+	public final ObjectProperty<Integer> cbrProperty() {
 		return cbr.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> vbr = new ShadowField<>(SimpleBooleanProperty::new, DEFAULT_VBR);
 
 	@Override
-	public boolean isVbr() {
+	public final boolean isVbr() {
 		return vbr.get();
 	}
 
 	@Override
-	public void setVbr(boolean vbr) {
+	public final void setVbr(boolean vbr) {
 		this.vbr.set(vbr);
 	}
 
-	public BooleanProperty vbrProperty() {
+	public final BooleanProperty vbrProperty() {
 		return vbr.property();
 	}
 
@@ -411,16 +411,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_VBR_QUALITY);
 
 	@Override
-	public int getVbrQuality() {
+	public final int getVbrQuality() {
 		return vbrQuality.get();
 	}
 
 	@Override
-	public void setVbrQuality(int vbrQuality) {
+	public final void setVbrQuality(int vbrQuality) {
 		this.vbrQuality.set(vbrQuality);
 	}
 
-	public ObjectProperty<Integer> vbrQualityProperty() {
+	public final ObjectProperty<Integer> vbrQualityProperty() {
 		return vbrQuality.property();
 	}
 
@@ -428,16 +428,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_DELAY_BYPASS);
 
 	@Override
-	public boolean getDelayBypass() {
+	public final boolean getDelayBypass() {
 		return delayBypass.get();
 	}
 
 	@Override
-	public void setDelayBypass(boolean delayBypass) {
+	public final void setDelayBypass(boolean delayBypass) {
 		this.delayBypass.set(delayBypass);
 	}
 
-	public BooleanProperty delayBypassProperty() {
+	public final BooleanProperty delayBypassProperty() {
 		return delayBypass.property();
 	}
 
@@ -445,16 +445,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_AUDIO_CODER_BIT_RATE);
 
 	@Override
-	public int getAudioCoderBitRate() {
+	public final int getAudioCoderBitRate() {
 		return audioCoderBitRate.get().intValue();
 	}
 
 	@Override
-	public void setAudioCoderBitRate(int bitRate) {
+	public final void setAudioCoderBitRate(int bitRate) {
 		this.audioCoderBitRate.set(bitRate);
 	}
 
-	public IntegerProperty audioCoderBitRateProperty() {
+	public final IntegerProperty audioCoderBitRateProperty() {
 		return audioCoderBitRate.property();
 	}
 
@@ -462,16 +462,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_AUDIO_CODER_BIT_RATE_TOLERANCE);
 
 	@Override
-	public int getAudioCoderBitRateTolerance() {
+	public final int getAudioCoderBitRateTolerance() {
 		return audioCoderBitRateTolerance.get().intValue();
 	}
 
 	@Override
-	public void setAudioCoderBitRateTolerance(int bitRateTolerance) {
+	public final void setAudioCoderBitRateTolerance(int bitRateTolerance) {
 		this.audioCoderBitRateTolerance.set(bitRateTolerance);
 	}
 
-	public IntegerProperty audioCoderBitRateToleranceProperty() {
+	public final IntegerProperty audioCoderBitRateToleranceProperty() {
 		return audioCoderBitRateTolerance.property();
 	}
 
@@ -479,16 +479,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_VIDEO_STREAMING_URL);
 
 	@Override
-	public String getVideoStreamingUrl() {
+	public final String getVideoStreamingUrl() {
 		return videoStreamingUrl.get();
 	}
 
 	@Override
-	public void setVideoStreamingUrl(String videoStreamingUrl) {
+	public final void setVideoStreamingUrl(String videoStreamingUrl) {
 		this.videoStreamingUrl.set(videoStreamingUrl);
 	}
 
-	public StringProperty videoStreamingUrlProperty() {
+	public final StringProperty videoStreamingUrlProperty() {
 		return videoStreamingUrl.property();
 	}
 
@@ -496,16 +496,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_GOP);
 
 	@Override
-	public int getVideoCoderNumPicturesInGroupOfPictures() {
+	public final int getVideoCoderNumPicturesInGroupOfPictures() {
 		return videoCoderNumPicturesInGroupOfPictures.get().intValue();
 	}
 
 	@Override
-	public void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures) {
+	public final void setVideoCoderNumPicturesInGroupOfPictures(int numPicturesInGroupOfPictures) {
 		this.videoCoderNumPicturesInGroupOfPictures.set(numPicturesInGroupOfPictures);
 	}
 
-	public IntegerProperty videoCoderNumPicturesInGroupOfPicturesProperty() {
+	public final IntegerProperty videoCoderNumPicturesInGroupOfPicturesProperty() {
 		return videoCoderNumPicturesInGroupOfPictures.property();
 	}
 
@@ -513,16 +513,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_BIT_RATE);
 
 	@Override
-	public int getVideoCoderBitRate() {
+	public final int getVideoCoderBitRate() {
 		return videoCoderBitRate.get().intValue();
 	}
 
 	@Override
-	public void setVideoCoderBitRate(int bitRate) {
+	public final void setVideoCoderBitRate(int bitRate) {
 		this.videoCoderBitRate.set(bitRate);
 	}
 
-	public IntegerProperty videoCoderBitRateProperty() {
+	public final IntegerProperty videoCoderBitRateProperty() {
 		return videoCoderBitRate.property();
 	}
 
@@ -530,16 +530,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_BIT_RATE_TOLERANCE);
 
 	@Override
-	public int getVideoCoderBitRateTolerance() {
+	public final int getVideoCoderBitRateTolerance() {
 		return videoCoderBitRateTolerance.get().intValue();
 	}
 
 	@Override
-	public void setVideoCoderBitRateTolerance(int bitRateTolerance) {
+	public final void setVideoCoderBitRateTolerance(int bitRateTolerance) {
 		this.videoCoderBitRateTolerance.set(bitRateTolerance);
 	}
 
-	public IntegerProperty videoCoderBitRateToleranceProperty() {
+	public final IntegerProperty videoCoderBitRateToleranceProperty() {
 		return videoCoderBitRateTolerance.property();
 	}
 
@@ -547,16 +547,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_VIDEO_CODER_GLOBAL_QUALITY);
 
 	@Override
-	public int getVideoCoderGlobalQuality() {
+	public final int getVideoCoderGlobalQuality() {
 		return videoCoderGlobalQuality.get().intValue();
 	}
 
 	@Override
-	public void setVideoCoderGlobalQuality(int globalQuality) {
+	public final void setVideoCoderGlobalQuality(int globalQuality) {
 		this.videoCoderGlobalQuality.set(globalQuality);
 	}
 
-	public IntegerProperty videoCoderGlobalQualityProperty() {
+	public final IntegerProperty videoCoderGlobalQualityProperty() {
 		return videoCoderGlobalQuality.property();
 	}
 
@@ -565,16 +565,16 @@ public class AudioSection implements IAudioSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public VideoCoderPreset getVideoCoderPreset() {
+	public final VideoCoderPreset getVideoCoderPreset() {
 		return videoCoderPreset.get();
 	}
 
 	@Override
-	public void setVideoCoderPreset(VideoCoderPreset videoEncoderPreset) {
+	public final void setVideoCoderPreset(VideoCoderPreset videoEncoderPreset) {
 		this.videoCoderPreset.set(videoEncoderPreset);
 	}
 
-	public ObjectProperty<VideoCoderPreset> sidVideoEncoderPresetProperty() {
+	public final ObjectProperty<VideoCoderPreset> sidVideoEncoderPresetProperty() {
 		return videoCoderPreset.property();
 	}
 
@@ -582,16 +582,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DELAY);
 
 	@Override
-	public int getDelay() {
+	public final int getDelay() {
 		return delay.get().intValue();
 	}
 
 	@Override
-	public void setDelay(int delay) {
+	public final void setDelay(int delay) {
 		this.delay.set(delay);
 	}
 
-	public IntegerProperty delayProperty() {
+	public final IntegerProperty delayProperty() {
 		return delay.property();
 	}
 
@@ -599,16 +599,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DELAY_DRY_LEVEL);
 
 	@Override
-	public int getDelayDryLevel() {
+	public final int getDelayDryLevel() {
 		return delayDryLevel.get().intValue();
 	}
 
 	@Override
-	public void setDelayDryLevel(int delayDryLevel) {
+	public final void setDelayDryLevel(int delayDryLevel) {
 		this.delayDryLevel.set(delayDryLevel);
 	}
 
-	public IntegerProperty delayDryLevelProperty() {
+	public final IntegerProperty delayDryLevelProperty() {
 		return delayDryLevel.property();
 	}
 
@@ -616,16 +616,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DELAY_WET_LEVEL);
 
 	@Override
-	public int getDelayWetLevel() {
+	public final int getDelayWetLevel() {
 		return delayWetLevel.get().intValue();
 	}
 
 	@Override
-	public void setDelayWetLevel(int delayWetLevel) {
+	public final void setDelayWetLevel(int delayWetLevel) {
 		this.delayWetLevel.set(delayWetLevel);
 	}
 
-	public IntegerProperty delayWetLevelProperty() {
+	public final IntegerProperty delayWetLevelProperty() {
 		return delayWetLevel.property();
 	}
 
@@ -633,16 +633,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DELAY_FEEDBACK_LEVEL);
 
 	@Override
-	public int getDelayFeedbackLevel() {
+	public final int getDelayFeedbackLevel() {
 		return delayFeedbackLevel.get().intValue();
 	}
 
 	@Override
-	public void setDelayFeedbackLevel(int delayFeedbackLevel) {
+	public final void setDelayFeedbackLevel(int delayFeedbackLevel) {
 		this.delayFeedbackLevel.set(delayFeedbackLevel);
 	}
 
-	public IntegerProperty delayFeedbackLevelProperty() {
+	public final IntegerProperty delayFeedbackLevelProperty() {
 		return delayFeedbackLevel.property();
 	}
 
@@ -650,16 +650,16 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_REVERB_BYPASS);
 
 	@Override
-	public boolean getReverbBypass() {
+	public final boolean getReverbBypass() {
 		return reverbBypass.get();
 	}
 
 	@Override
-	public void setReverbBypass(boolean reverbBypass) {
+	public final void setReverbBypass(boolean reverbBypass) {
 		this.reverbBypass.set(reverbBypass);
 	}
 
-	public BooleanProperty reverbBypassProperty() {
+	public final BooleanProperty reverbBypassProperty() {
 		return reverbBypass.property();
 	}
 
@@ -667,16 +667,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_COMB1_DELAY);
 
 	@Override
-	public float getReverbComb1Delay() {
+	public final float getReverbComb1Delay() {
 		return reverbComb1Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbComb1Delay(float reverbComb1Delay) {
+	public final void setReverbComb1Delay(float reverbComb1Delay) {
 		this.reverbComb1Delay.set(reverbComb1Delay);
 	}
 
-	public FloatProperty reverbComb1DelayProperty() {
+	public final FloatProperty reverbComb1DelayProperty() {
 		return reverbComb1Delay.property();
 	}
 
@@ -684,16 +684,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_COMB2_DELAY);
 
 	@Override
-	public float getReverbComb2Delay() {
+	public final float getReverbComb2Delay() {
 		return reverbComb2Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbComb2Delay(float reverbComb2Delay) {
+	public final void setReverbComb2Delay(float reverbComb2Delay) {
 		this.reverbComb2Delay.set(reverbComb2Delay);
 	}
 
-	public FloatProperty reverbComb2DelayProperty() {
+	public final FloatProperty reverbComb2DelayProperty() {
 		return reverbComb2Delay.property();
 	}
 
@@ -701,16 +701,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_COMB3_DELAY);
 
 	@Override
-	public float getReverbComb3Delay() {
+	public final float getReverbComb3Delay() {
 		return reverbComb3Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbComb3Delay(float reverbComb3Delay) {
+	public final void setReverbComb3Delay(float reverbComb3Delay) {
 		this.reverbComb3Delay.set(reverbComb3Delay);
 	}
 
-	public FloatProperty reverbComb3DelayProperty() {
+	public final FloatProperty reverbComb3DelayProperty() {
 		return reverbComb3Delay.property();
 	}
 
@@ -718,16 +718,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_COMB4_DELAY);
 
 	@Override
-	public float getReverbComb4Delay() {
+	public final float getReverbComb4Delay() {
 		return reverbComb4Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbComb4Delay(float reverbComb4Delay) {
+	public final void setReverbComb4Delay(float reverbComb4Delay) {
 		this.reverbComb4Delay.set(reverbComb4Delay);
 	}
 
-	public FloatProperty reverbComb4DelayProperty() {
+	public final FloatProperty reverbComb4DelayProperty() {
 		return reverbComb4Delay.property();
 	}
 
@@ -735,16 +735,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_ALL_PASS1_DELAY);
 
 	@Override
-	public float getReverbAllPass1Delay() {
+	public final float getReverbAllPass1Delay() {
 		return reverbAllPass1Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbAllPass1Delay(float reverbAllPass1Delay) {
+	public final void setReverbAllPass1Delay(float reverbAllPass1Delay) {
 		this.reverbAllPass1Delay.set(reverbAllPass1Delay);
 	}
 
-	public FloatProperty reverbAllPass1DelayProperty() {
+	public final FloatProperty reverbAllPass1DelayProperty() {
 		return reverbAllPass1Delay.property();
 	}
 
@@ -752,16 +752,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_ALL_PASS2_DELAY);
 
 	@Override
-	public float getReverbAllPass2Delay() {
+	public final float getReverbAllPass2Delay() {
 		return reverbAllPass2Delay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbAllPass2Delay(float reverbAllPass2Delay) {
+	public final void setReverbAllPass2Delay(float reverbAllPass2Delay) {
 		this.reverbAllPass2Delay.set(reverbAllPass2Delay);
 	}
 
-	public FloatProperty reverbAllPass2DelayProperty() {
+	public final FloatProperty reverbAllPass2DelayProperty() {
 		return reverbAllPass2Delay.property();
 	}
 
@@ -769,16 +769,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_SUSTAIN_DELAY);
 
 	@Override
-	public float getReverbSustainDelay() {
+	public final float getReverbSustainDelay() {
 		return reverbSustainDelay.get().floatValue();
 	}
 
 	@Override
-	public void setReverbSustainDelay(float reverbSustainDelay) {
+	public final void setReverbSustainDelay(float reverbSustainDelay) {
 		this.reverbSustainDelay.set(reverbSustainDelay);
 	}
 
-	public FloatProperty reverbSustainDelayProperty() {
+	public final FloatProperty reverbSustainDelayProperty() {
 		return reverbSustainDelay.property();
 	}
 
@@ -786,16 +786,16 @@ public class AudioSection implements IAudioSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_REVERB_DRY_WET_MIX);
 
 	@Override
-	public float getReverbDryWetMix() {
+	public final float getReverbDryWetMix() {
 		return reverbDryWetMix.get().floatValue();
 	}
 
 	@Override
-	public void setReverbDryWetMix(float reverbDryWetMix) {
+	public final void setReverbDryWetMix(float reverbDryWetMix) {
 		this.reverbDryWetMix.set(reverbDryWetMix);
 	}
 
-	public FloatProperty reverbDryWetMixProperty() {
+	public final FloatProperty reverbDryWetMixProperty() {
 		return reverbDryWetMix.property();
 	}
 
@@ -803,21 +803,21 @@ public class AudioSection implements IAudioSection {
 			DEFAULT_EXSID_FAKE_STEREO);
 
 	@Override
-	public boolean isExsidFakeStereo() {
+	public final boolean isExsidFakeStereo() {
 		return exsidFakeStereo.get();
 	}
 
 	@Override
-	public void setExsidFakeStereo(boolean exsidFakeStereo) {
+	public final void setExsidFakeStereo(boolean exsidFakeStereo) {
 		this.exsidFakeStereo.set(exsidFakeStereo);
 	}
 
-	public BooleanProperty exsidFakeStereoProperty() {
+	public final BooleanProperty exsidFakeStereoProperty() {
 		return exsidFakeStereo.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

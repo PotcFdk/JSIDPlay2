@@ -68,12 +68,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 	private int version;
 
 	@Override
-	public int getVersion() {
+	public final int getVersion() {
 		return version;
 	}
 
 	@Override
-	public void setVersion(int version) {
+	public final void setVersion(int version) {
 		this.version = version;
 	}
 
@@ -81,16 +81,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			DEFAULT_ENABLE_DATABASE);
 
 	@Override
-	public boolean isEnableDatabase() {
+	public final boolean isEnableDatabase() {
 		return enableDatabase.get();
 	}
 
 	@Override
-	public void setEnableDatabase(boolean isEnableDatabase) {
+	public final void setEnableDatabase(boolean isEnableDatabase) {
 		enableDatabase.set(isEnableDatabase);
 	}
 
-	public BooleanProperty enableDatabaseProperty() {
+	public final BooleanProperty enableDatabaseProperty() {
 		return enableDatabase.property();
 	}
 
@@ -98,16 +98,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_START_TIME);
 
 	@Override
-	public double getStartTime() {
+	public final double getStartTime() {
 		return startTime.get().doubleValue();
 	}
 
 	@Override
-	public void setStartTime(double startTime) {
+	public final void setStartTime(double startTime) {
 		this.startTime.set(startTime);
 	}
 
-	public DoubleProperty startTimeProperty() {
+	public final DoubleProperty startTimeProperty() {
 		return startTime.property();
 	}
 
@@ -115,16 +115,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_PLAY_LENGTH);
 
 	@Override
-	public double getDefaultPlayLength() {
+	public final double getDefaultPlayLength() {
 		return defaultPlayLength.get().doubleValue();
 	}
 
 	@Override
-	public void setDefaultPlayLength(double defaultPlayLength) {
+	public final void setDefaultPlayLength(double defaultPlayLength) {
 		this.defaultPlayLength.set(defaultPlayLength);
 	}
 
-	public DoubleProperty defaultPlayLengthProperty() {
+	public final DoubleProperty defaultPlayLengthProperty() {
 		return defaultPlayLength.property();
 	}
 
@@ -132,16 +132,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FADE_IN_TIME);
 
 	@Override
-	public double getFadeInTime() {
+	public final double getFadeInTime() {
 		return fadeInTime.get().doubleValue();
 	}
 
 	@Override
-	public void setFadeInTime(double fadeInTime) {
+	public final void setFadeInTime(double fadeInTime) {
 		this.fadeInTime.set(fadeInTime);
 	}
 
-	public DoubleProperty fadeInTimeProperty() {
+	public final DoubleProperty fadeInTimeProperty() {
 		return fadeInTime.property();
 	}
 
@@ -149,16 +149,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FADE_OUT_TIME);
 
 	@Override
-	public double getFadeOutTime() {
+	public final double getFadeOutTime() {
 		return fadeOutTime.get().doubleValue();
 	}
 
 	@Override
-	public void setFadeOutTime(double fadeOutTime) {
+	public final void setFadeOutTime(double fadeOutTime) {
 		this.fadeOutTime.set(fadeOutTime);
 	}
 
-	public DoubleProperty fadeOutTimeProperty() {
+	public final DoubleProperty fadeOutTimeProperty() {
 		return fadeOutTime.property();
 	}
 
@@ -166,31 +166,31 @@ public class SidPlay2Section implements ISidPlay2Section {
 			SimpleObjectProperty::new, DEFAULT_PLAYBACK_TYPE);
 
 	@Enumerated(EnumType.STRING)
-	public PlaybackType getPlaybackType() {
+	public final PlaybackType getPlaybackType() {
 		return playbackType.get();
 	}
 
-	public void setPlaybackType(PlaybackType playbackType) {
+	public final void setPlaybackType(PlaybackType playbackType) {
 		this.playbackType.set(playbackType);
 	}
 
-	public ObjectProperty<PlaybackType> playbackTypeProperty() {
+	public final ObjectProperty<PlaybackType> playbackTypeProperty() {
 		return playbackType.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> loop = new ShadowField<>(SimpleBooleanProperty::new, DEFAULT_LOOP);
 
 	@Override
-	public boolean isLoop() {
+	public final boolean isLoop() {
 		return loop.get();
 	}
 
 	@Override
-	public void setLoop(boolean loop) {
+	public final void setLoop(boolean loop) {
 		this.loop.set(loop);
 	}
 
-	public BooleanProperty loopProperty() {
+	public final BooleanProperty loopProperty() {
 		return loop.property();
 	}
 
@@ -198,16 +198,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			DEFAULT_SINGLE_TRACK);
 
 	@Override
-	public boolean isSingle() {
+	public final boolean isSingle() {
 		return single.get();
 	}
 
 	@Override
-	public void setSingle(boolean isSingle) {
+	public final void setSingle(boolean isSingle) {
 		single.set(isSingle);
 	}
 
-	public BooleanProperty singleProperty() {
+	public final BooleanProperty singleProperty() {
 		return single.property();
 	}
 
@@ -217,15 +217,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getHVMEC() {
+	public final File getHVMEC() {
 		return hvmec.get();
 	}
 
-	public void setHVMEC(File hVMEC) {
+	public final void setHVMEC(File hVMEC) {
 		hvmec.set(hVMEC);
 	}
 
-	public ObjectProperty<File> hvmecProperty() {
+	public final ObjectProperty<File> hvmecProperty() {
 		return hvmec.property();
 	}
 
@@ -235,15 +235,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getDemos() {
+	public final File getDemos() {
 		return demos.get();
 	}
 
-	public void setDemos(File demos) {
+	public final void setDemos(File demos) {
 		this.demos.set(demos);
 	}
 
-	public ObjectProperty<File> demosProperty() {
+	public final ObjectProperty<File> demosProperty() {
 		return demos.property();
 	}
 
@@ -253,15 +253,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getMags() {
+	public final File getMags() {
 		return mags.get();
 	}
 
-	public void setMags(File mags) {
+	public final void setMags(File mags) {
 		this.mags.set(mags);
 	}
 
-	public ObjectProperty<File> magsProperty() {
+	public final ObjectProperty<File> magsProperty() {
 		return mags.property();
 	}
 
@@ -271,15 +271,15 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getCgsc() {
+	public final File getCgsc() {
 		return cgsc.get();
 	}
 
-	public void setCgsc(File cgsc) {
+	public final void setCgsc(File cgsc) {
 		this.cgsc.set(cgsc);
 	}
 
-	public ObjectProperty<File> cgscProperty() {
+	public final ObjectProperty<File> cgscProperty() {
 		return cgsc.property();
 	}
 
@@ -290,16 +290,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@Override
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getHvsc() {
+	public final File getHvsc() {
 		return hvsc.get();
 	}
 
 	@Override
-	public void setHvsc(File hvsc) {
+	public final void setHvsc(File hvsc) {
 		this.hvsc.set(hvsc);
 	}
 
-	public ObjectProperty<File> hvscProperty() {
+	public final ObjectProperty<File> hvscProperty() {
 		return hvsc.property();
 	}
 
@@ -309,60 +309,60 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getGameBase64() {
+	public final File getGameBase64() {
 		return gameBase64.get();
 	}
 
-	public void setGameBase64(File gameBase64) {
+	public final void setGameBase64(File gameBase64) {
 		this.gameBase64.set(gameBase64);
 	}
 
-	public ObjectProperty<File> gameBase64Property() {
+	public final ObjectProperty<File> gameBase64Property() {
 		return gameBase64.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> proxyEnable = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_PROXY_ENABLE);
 
-	public boolean isProxyEnable() {
+	public final boolean isProxyEnable() {
 		return proxyEnable.get();
 	}
 
-	public void setProxyEnable(boolean isProxyEnable) {
+	public final void setProxyEnable(boolean isProxyEnable) {
 		proxyEnable.set(isProxyEnable);
 	}
 
-	public BooleanProperty proxyEnableProperty() {
+	public final BooleanProperty proxyEnableProperty() {
 		return proxyEnable.property();
 	}
 
 	private ShadowField<StringProperty, String> proxyHostname = new ShadowField<>(SimpleStringProperty::new,
 			DEFAULT_PROXY_HOSTNAME);
 
-	public String getProxyHostname() {
+	public final String getProxyHostname() {
 		return proxyHostname.get();
 	}
 
-	public void setProxyHostname(String hostname) {
+	public final void setProxyHostname(String hostname) {
 		this.proxyHostname.set(hostname);
 	}
 
-	public StringProperty proxyHostnameProperty() {
+	public final StringProperty proxyHostnameProperty() {
 		return proxyHostname.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> proxyPort = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_PROXY_PORT);
 
-	public int getProxyPort() {
+	public final int getProxyPort() {
 		return proxyPort.get();
 	}
 
-	public void setProxyPort(int port) {
+	public final void setProxyPort(int port) {
 		this.proxyPort.set(port);
 	}
 
-	public ObjectProperty<Integer> proxyPortProperty() {
+	public final ObjectProperty<Integer> proxyPortProperty() {
 		return proxyPort.property();
 	}
 
@@ -373,16 +373,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getLastDirectory() {
+	public final File getLastDirectory() {
 		return lastDirectory.get();
 	}
 
 	@Override
-	public void setLastDirectory(File lastDirectory) {
+	public final void setLastDirectory(File lastDirectory) {
 		this.lastDirectory.set(lastDirectory);
 	}
 
-	public ObjectProperty<File> lastDirectoryProperty() {
+	public final ObjectProperty<File> lastDirectoryProperty() {
 		return lastDirectory.property();
 	}
 
@@ -394,181 +394,181 @@ public class SidPlay2Section implements ISidPlay2Section {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getTmpDir() {
+	public final File getTmpDir() {
 		return tmpDir.get();
 	}
 
 	@Override
-	public void setTmpDir(File tmpDir) {
+	public final void setTmpDir(File tmpDir) {
 		this.tmpDir.set(tmpDir);
 	}
 
-	public ObjectProperty<File> tmpDirProperty() {
+	public final ObjectProperty<File> tmpDirProperty() {
 		return tmpDir.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> frameX = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_X);
 
-	public double getFrameX() {
+	public final double getFrameX() {
 		return frameX.get().doubleValue();
 	}
 
-	public void setFrameX(double frameX) {
+	public final void setFrameX(double frameX) {
 		this.frameX.set(frameX);
 	}
 
-	public DoubleProperty frameXProperty() {
+	public final DoubleProperty frameXProperty() {
 		return frameX.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> frameY = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_Y);
 
-	public double getFrameY() {
+	public final double getFrameY() {
 		return frameY.get().doubleValue();
 	}
 
-	public void setFrameY(double frameY) {
+	public final void setFrameY(double frameY) {
 		this.frameY.set(frameY);
 	}
 
-	public DoubleProperty frameYProperty() {
+	public final DoubleProperty frameYProperty() {
 		return frameY.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> frameWidth = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_WIDTH);
 
-	public double getFrameWidth() {
+	public final double getFrameWidth() {
 		return frameWidth.get().doubleValue();
 	}
 
-	public void setFrameWidth(double frameWidth) {
+	public final void setFrameWidth(double frameWidth) {
 		this.frameWidth.set(frameWidth);
 	}
 
-	public DoubleProperty frameWidthProperty() {
+	public final DoubleProperty frameWidthProperty() {
 		return frameWidth.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> frameHeight = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), DEFAULT_FRAME_HEIGHT);
 
-	public double getFrameHeight() {
+	public final double getFrameHeight() {
 		return frameHeight.get().doubleValue();
 	}
 
-	public void setFrameHeight(double frameHeight) {
+	public final void setFrameHeight(double frameHeight) {
 		this.frameHeight.set(frameHeight);
 	}
 
-	public DoubleProperty frameHeightProperty() {
+	public final DoubleProperty frameHeightProperty() {
 		return frameHeight.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> minimized = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_MINIMIZED);
 
-	public boolean isMinimized() {
+	public final boolean isMinimized() {
 		return minimized.get();
 	}
 
-	public void setMinimized(boolean isMinimized) {
+	public final void setMinimized(boolean isMinimized) {
 		minimized.set(isMinimized);
 	}
 
-	public BooleanProperty minimizedProperty() {
+	public final BooleanProperty minimizedProperty() {
 		return minimized.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> minimizedX = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public double getMinimizedX() {
+	public final double getMinimizedX() {
 		return minimizedX.get().doubleValue();
 	}
 
-	public void setMinimizedX(double minimizedX) {
+	public final void setMinimizedX(double minimizedX) {
 		this.minimizedX.set(minimizedX);
 	}
 
-	public DoubleProperty minimizedXProperty() {
+	public final DoubleProperty minimizedXProperty() {
 		return minimizedX.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> minimizedY = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public double getMinimizedY() {
+	public final double getMinimizedY() {
 		return minimizedY.get().doubleValue();
 	}
 
-	public void setMinimizedY(double minimizedY) {
+	public final void setMinimizedY(double minimizedY) {
 		this.minimizedY.set(minimizedY);
 	}
 
-	public DoubleProperty minimizedYProperty() {
+	public final DoubleProperty minimizedYProperty() {
 		return minimizedY.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> minimizedWidth = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public double getMinimizedWidth() {
+	public final double getMinimizedWidth() {
 		return minimizedWidth.get().doubleValue();
 	}
 
-	public void setMinimizedWidth(double minimizedWidth) {
+	public final void setMinimizedWidth(double minimizedWidth) {
 		this.minimizedWidth.set(minimizedWidth);
 	}
 
-	public DoubleProperty minimizedWidthProperty() {
+	public final DoubleProperty minimizedWidthProperty() {
 		return minimizedWidth.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> minimizedHeight = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public double getMinimizedHeight() {
+	public final double getMinimizedHeight() {
 		return minimizedHeight.get().doubleValue();
 	}
 
-	public void setMinimizedHeight(double minimizedHeight) {
+	public final void setMinimizedHeight(double minimizedHeight) {
 		this.minimizedHeight.set(minimizedHeight);
 	}
 
-	public DoubleProperty minimizedHeightProperty() {
+	public final DoubleProperty minimizedHeightProperty() {
 		return minimizedHeight.property();
 	}
 
 	private ShadowField<FloatProperty, Number> videoScaling = new ShadowField<>(
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_VIDEO_SCALING);
 
-	public float getVideoScaling() {
+	public final float getVideoScaling() {
 		return videoScaling.get().floatValue();
 	}
 
-	public void setVideoScaling(float videoScaling) {
+	public final void setVideoScaling(float videoScaling) {
 		this.videoScaling.set(videoScaling);
 	}
 
-	public FloatProperty videoScalingProperty() {
+	public final FloatProperty videoScalingProperty() {
 		return videoScaling.property();
 	}
 
 	private ShadowField<ObjectProperty<Boolean>, Boolean> showMonitor = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_SHOW_MONITOR);
 
-	public boolean isShowMonitor() {
+	public final boolean isShowMonitor() {
 		return showMonitor.get();
 	}
 
-	public void setShowMonitor(boolean showMonitor) {
+	public final void setShowMonitor(boolean showMonitor) {
 		this.showMonitor.set(showMonitor);
 	}
 
-	public ObjectProperty<Boolean> showMonitorProperty() {
+	public final ObjectProperty<Boolean> showMonitorProperty() {
 		return showMonitor.property();
 	}
 
@@ -576,16 +576,16 @@ public class SidPlay2Section implements ISidPlay2Section {
 			DEFAULT_PAL_EMULATION);
 
 	@Override
-	public boolean isPalEmulation() {
+	public final boolean isPalEmulation() {
 		return palEmulation.get();
 	}
 
 	@Override
-	public void setPalEmulation(boolean isPalEmulation) {
+	public final void setPalEmulation(boolean isPalEmulation) {
 		palEmulation.set(isPalEmulation);
 	}
 
-	public BooleanProperty palEmulationProperty() {
+	public final BooleanProperty palEmulationProperty() {
 		return palEmulation.property();
 	}
 
@@ -593,12 +593,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BRIGHTNESS);
 
 	@Override
-	public float getBrightness() {
+	public final float getBrightness() {
 		return brightness.get().floatValue();
 	}
 
 	@Override
-	public void setBrightness(float brightness) {
+	public final void setBrightness(float brightness) {
 		this.brightness.set(brightness);
 	}
 
@@ -610,12 +610,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_CONTRAST);
 
 	@Override
-	public float getContrast() {
+	public final float getContrast() {
 		return contrast.get().floatValue();
 	}
 
 	@Override
-	public void setContrast(float contrast) {
+	public final void setContrast(float contrast) {
 		this.contrast.set(contrast);
 	}
 
@@ -627,12 +627,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_GAMMA);
 
 	@Override
-	public float getGamma() {
+	public final float getGamma() {
 		return gamma.get().floatValue();
 	}
 
 	@Override
-	public void setGamma(float gamma) {
+	public final void setGamma(float gamma) {
 		this.gamma.set(gamma);
 	}
 
@@ -644,12 +644,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_SATURATION);
 
 	@Override
-	public float getSaturation() {
+	public final float getSaturation() {
 		return saturation.get().floatValue();
 	}
 
 	@Override
-	public void setSaturation(float saturation) {
+	public final void setSaturation(float saturation) {
 		this.saturation.set(saturation);
 	}
 
@@ -661,12 +661,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_PHASE_SHIFT);
 
 	@Override
-	public float getPhaseShift() {
+	public final float getPhaseShift() {
 		return phaseShift.get().floatValue();
 	}
 
 	@Override
-	public void setPhaseShift(float phaseShift) {
+	public final void setPhaseShift(float phaseShift) {
 		this.phaseShift.set(phaseShift);
 	}
 
@@ -678,12 +678,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_OFFSET);
 
 	@Override
-	public float getOffset() {
+	public final float getOffset() {
 		return offset.get().floatValue();
 	}
 
 	@Override
-	public void setOffset(float offset) {
+	public final void setOffset(float offset) {
 		this.offset.set(offset);
 	}
 
@@ -695,12 +695,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_TINT);
 
 	@Override
-	public float getTint() {
+	public final float getTint() {
 		return tint.get().floatValue();
 	}
 
 	@Override
-	public void setTint(float tint) {
+	public final void setTint(float tint) {
 		this.tint.set(tint);
 	}
 
@@ -712,12 +712,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLUR);
 
 	@Override
-	public float getBlur() {
+	public final float getBlur() {
 		return blur.get().floatValue();
 	}
 
 	@Override
-	public void setBlur(float blur) {
+	public final void setBlur(float blur) {
 		this.blur.set(blur);
 	}
 
@@ -729,12 +729,12 @@ public class SidPlay2Section implements ISidPlay2Section {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_BLEED);
 
 	@Override
-	public float getBleed() {
+	public final float getBleed() {
 		return bleed.get().floatValue();
 	}
 
 	@Override
-	public void setBleed(float bleed) {
+	public final void setBleed(float bleed) {
 		this.bleed.set(bleed);
 	}
 
@@ -746,21 +746,21 @@ public class SidPlay2Section implements ISidPlay2Section {
 			DEFAULT_TURBO_TAPE);
 
 	@Override
-	public boolean isTurboTape() {
+	public final boolean isTurboTape() {
 		return turboTape.get();
 	}
 
 	@Override
-	public void setTurboTape(boolean turboTape) {
+	public final void setTurboTape(boolean turboTape) {
 		this.turboTape.set(turboTape);
 	}
 
-	public BooleanProperty turboTapeProperty() {
+	public final BooleanProperty turboTapeProperty() {
 		return turboTape.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

@@ -69,12 +69,12 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	}
 
 	@Override
-	public boolean isJiffyDosInstalled() {
+	public final boolean isJiffyDosInstalled() {
 		return iniReader.getPropertyBool(SECTION_ID, "JiffyDos Installed", DEFAULT_JIFFYDOS_INSTALLED);
 	}
 
 	@Override
-	public void setJiffyDosInstalled(boolean on) {
+	public final void setJiffyDosInstalled(boolean on) {
 		iniReader.setProperty(SECTION_ID, "JiffyDos Installed", on);
 	}
 
@@ -159,7 +159,7 @@ public class IniC1541Section extends IniSection implements IC1541Section {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 

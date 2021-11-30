@@ -31,16 +31,16 @@ public class Assembly64Section {
 	private LazyListField<Assembly64Column> columns = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
-	public List<Assembly64Column> getColumns() {
+	public final List<Assembly64Column> getColumns() {
 		return columns.get(() -> DEFAULT_COLUMNS.stream().map(Assembly64Column::new).collect(toList()));
 	}
 
-	public void setColumns(List<Assembly64Column> columns) {
+	public final void setColumns(List<Assembly64Column> columns) {
 		this.columns.set(columns);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

@@ -97,24 +97,24 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public Engine getEngine() {
+	public final Engine getEngine() {
 		return iniReader.getPropertyEnum(SECTION_ID, "Engine", DEFAULT_ENGINE, Engine.class);
 	}
 
 	@Override
 	@Parameter(names = { "--engine", "-E" }, descriptionKey = "ENGINE", order = 1000)
-	public void setEngine(Engine engine) {
+	public final void setEngine(Engine engine) {
 		iniReader.setProperty(SECTION_ID, "Engine", engine);
 	}
 
 	@Override
-	public Emulation getDefaultEmulation() {
+	public final Emulation getDefaultEmulation() {
 		return iniReader.getPropertyEnum(SECTION_ID, "DefaultEmulation", DEFAULT_EMULATION, Emulation.class);
 	}
 
 	@Override
 	@Parameter(names = { "--defaultEmulation", "-e" }, descriptionKey = "DEFAULT_EMULATION", order = 1001)
-	public void setDefaultEmulation(Emulation emulation) {
+	public final void setDefaultEmulation(Emulation emulation) {
 		iniReader.setProperty(SECTION_ID, "DefaultEmulation", emulation);
 	}
 
@@ -233,7 +233,7 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public List<? extends IDeviceMapping> getSidBlasterDeviceList() {
+	public final List<? extends IDeviceMapping> getSidBlasterDeviceList() {
 		int mappingCount = iniReader.getPropertyInt(SECTION_ID, "SIDBlasterMapping_N", 0);
 
 		int mappingNum = 0;
@@ -251,88 +251,88 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public int getSidBlasterWriteBufferSize() {
+	public final int getSidBlasterWriteBufferSize() {
 		return iniReader.getPropertyInt(SECTION_ID, "SIDBlasterWriteBuffer Size", DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE);
 	}
 
 	@Override
-	public void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
+	public final void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
 		iniReader.setProperty(SECTION_ID, "SIDBlasterWriteBuffer Size", sidBlasterWriteBufferSize);
 	}
 
 	@Override
-	public String getSidBlasterSerialNumber() {
+	public final String getSidBlasterSerialNumber() {
 		return iniReader.getPropertyString(SECTION_ID, "SIDBlasterSerialNumber", DEFAULT_SIDBLASTER_SERIAL_NUMBER);
 	}
 
 	@Override
-	public void setSidBlasterSerialNumber(String sidBlasterSerialNumber) {
+	public final void setSidBlasterSerialNumber(String sidBlasterSerialNumber) {
 		iniReader.setProperty(SECTION_ID, "SIDBlasterSerialNumber", sidBlasterSerialNumber);
 	}
 
 	@Override
-	public String getNetSIDDevHost() {
+	public final String getNetSIDDevHost() {
 		return iniReader.getPropertyString(SECTION_ID, "NetSIDDev Host", DEFAULT_NETSIDDEV_HOST);
 	}
 
 	@Override
 	@Parameter(names = { "--NetSIDDevHost" }, descriptionKey = "NET_SID_DEV_HOST", order = 1006)
-	public void setNetSIDDevHost(String hostname) {
+	public final void setNetSIDDevHost(String hostname) {
 		iniReader.setProperty(SECTION_ID, "NetSIDDev Host", hostname);
 	}
 
 	@Override
-	public int getNetSIDDevPort() {
+	public final int getNetSIDDevPort() {
 		return iniReader.getPropertyInt(SECTION_ID, "NetSIDDev Port", DEFAULT_NETSIDDEV_PORT);
 	}
 
 	@Override
 	@Parameter(names = { "--NetSIDDevPort" }, descriptionKey = "NET_SID_DEV_PORT", order = 1007)
-	public void setNetSIDDevPort(int port) {
+	public final void setNetSIDDevPort(int port) {
 		iniReader.setProperty(SECTION_ID, "NetSIDDev Port", port);
 	}
 
 	@Override
-	public Ultimate64Mode getUltimate64Mode() {
+	public final Ultimate64Mode getUltimate64Mode() {
 		return iniReader.getPropertyEnum(SECTION_ID, "Ultimate64 Mode", DEFAULT_ULTIMATE64_MODE, Ultimate64Mode.class);
 	}
 
 	@Override
 	@Parameter(names = { "--ultimate64Mode" }, descriptionKey = "ULTIMATE64_MODE", order = 1008)
-	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
+	public final void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
 		iniReader.setProperty(SECTION_ID, "Ultimate64 Mode", ultimate64Mode);
 	}
 
 	@Override
-	public String getUltimate64Host() {
+	public final String getUltimate64Host() {
 		return iniReader.getPropertyString(SECTION_ID, "Ultimate64 Host", DEFAULT_ULTIMATE64_HOST);
 	}
 
 	@Override
 	@Parameter(names = { "--Ultimate64Host" }, descriptionKey = "ULTIMATE64_HOST", order = 1009)
-	public void setUltimate64Host(String hostname) {
+	public final void setUltimate64Host(String hostname) {
 		iniReader.setProperty(SECTION_ID, "Ultimate64 Host", hostname);
 	}
 
 	@Override
-	public int getUltimate64Port() {
+	public final int getUltimate64Port() {
 		return iniReader.getPropertyInt(SECTION_ID, "Ultimate64 Port", DEFAULT_ULTIMATE64_PORT);
 	}
 
 	@Override
 	@Parameter(names = { "--Ultimate64Port" }, descriptionKey = "ULTIMATE64_PORT", order = 1010)
-	public void setUltimate64Port(int port) {
+	public final void setUltimate64Port(int port) {
 		iniReader.setProperty(SECTION_ID, "Ultimate64 Port", port);
 	}
 
 	@Override
-	public int getUltimate64SyncDelay() {
+	public final int getUltimate64SyncDelay() {
 		return iniReader.getPropertyInt(SECTION_ID, "Ultimate64 Sync Delay", DEFAULT_ULTIMATE64_SYNC_DELAY);
 	}
 
 	@Override
 	@Parameter(names = { "--Ultimate64SyncDelay" }, descriptionKey = "ULTIMATE64_SYNC_DELAY", order = 1011)
-	public void setUltimate64SyncDelay(int syncDelay) {
+	public final void setUltimate64SyncDelay(int syncDelay) {
 		iniReader.setProperty(SECTION_ID, "Ultimate64 Sync Delay", syncDelay);
 	}
 
@@ -373,12 +373,12 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public int getSidNumToRead() {
+	public final int getSidNumToRead() {
 		return iniReader.getPropertyInt(SECTION_ID, "SidNumToRead", DEFAULT_SID_NUM_TO_READ);
 	}
 
 	@Override
-	public void setSidNumToRead(int sidNumToRead) {
+	public final void setSidNumToRead(int sidNumToRead) {
 		iniReader.setProperty(SECTION_ID, "SidNumToRead", sidNumToRead);
 	}
 
@@ -449,134 +449,134 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	}
 
 	@Override
-	public boolean isMuteVoice1() {
+	public final boolean isMuteVoice1() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteVoice1", DEFAULT_MUTE_VOICE1);
 	}
 
 	@Override
 	@Parameter(names = { "--muteVoice1", "-1" }, descriptionKey = "MUTE_VOICE_1", arity = 1, order = 1021)
-	public void setMuteVoice1(boolean mute) {
+	public final void setMuteVoice1(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteVoice1", mute);
 	}
 
 	@Override
-	public boolean isMuteVoice2() {
+	public final boolean isMuteVoice2() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteVoice2", DEFAULT_MUTE_VOICE2);
 	}
 
 	@Override
 	@Parameter(names = { "--muteVoice2", "-2" }, descriptionKey = "MUTE_VOICE_2", arity = 1, order = 1022)
-	public void setMuteVoice2(boolean mute) {
+	public final void setMuteVoice2(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteVoice2", mute);
 	}
 
 	@Override
-	public boolean isMuteVoice3() {
+	public final boolean isMuteVoice3() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteVoice3", DEFAULT_MUTE_VOICE3);
 	}
 
 	@Override
 	@Parameter(names = { "--muteVoice3", "-3" }, descriptionKey = "MUTE_VOICE_3", arity = 1, order = 1023)
-	public void setMuteVoice3(boolean mute) {
+	public final void setMuteVoice3(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteVoice3", mute);
 	}
 
 	@Override
-	public boolean isMuteVoice4() {
+	public final boolean isMuteVoice4() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteVoice4", DEFAULT_MUTE_VOICE4);
 	}
 
 	@Override
 	@Parameter(names = { "--muteVoice4", "-4" }, descriptionKey = "MUTE_VOICE_4", arity = 1, order = 1024)
-	public void setMuteVoice4(boolean mute) {
+	public final void setMuteVoice4(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteVoice4", mute);
 	}
 
 	@Override
-	public boolean isMuteStereoVoice1() {
+	public final boolean isMuteStereoVoice1() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteStereoVoice1", DEFAULT_MUTE_STEREO_VOICE1);
 	}
 
 	@Override
 	@Parameter(names = { "--muteStereoVoice1", "-5" }, descriptionKey = "MUTE_VOICE_5", arity = 1, order = 1025)
-	public void setMuteStereoVoice1(boolean mute) {
+	public final void setMuteStereoVoice1(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteStereoVoice1", mute);
 	}
 
 	@Override
-	public boolean isMuteStereoVoice2() {
+	public final boolean isMuteStereoVoice2() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteStereoVoice2", DEFAULT_MUTE_STEREO_VOICE2);
 	}
 
 	@Override
 	@Parameter(names = { "--muteStereoVoice2", "-6" }, descriptionKey = "MUTE_VOICE_6", arity = 1, order = 1026)
-	public void setMuteStereoVoice2(boolean mute) {
+	public final void setMuteStereoVoice2(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteStereoVoice2", mute);
 	}
 
 	@Override
-	public boolean isMuteStereoVoice3() {
+	public final boolean isMuteStereoVoice3() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteStereoVoice3", DEFAULT_MUTE_STEREO_VOICE3);
 	}
 
 	@Override
 	@Parameter(names = { "--muteStereoVoice3", "-7" }, descriptionKey = "MUTE_VOICE_7", arity = 1, order = 1027)
-	public void setMuteStereoVoice3(boolean mute) {
+	public final void setMuteStereoVoice3(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteStereoVoice3", mute);
 	}
 
 	@Override
-	public boolean isMuteStereoVoice4() {
+	public final boolean isMuteStereoVoice4() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteStereoVoice4", DEFAULT_MUTE_STEREO_VOICE4);
 	}
 
 	@Override
 	@Parameter(names = { "--muteStereoVoice4", "-8" }, descriptionKey = "MUTE_VOICE_8", arity = 1, order = 1028)
-	public void setMuteStereoVoice4(boolean mute) {
+	public final void setMuteStereoVoice4(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteStereoVoice4", mute);
 	}
 
 	@Override
-	public boolean isMuteThirdSIDVoice1() {
+	public final boolean isMuteThirdSIDVoice1() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteThirdSIDVoice1", DEFAULT_MUTE_THIRDSID_VOICE1);
 	}
 
 	@Override
 	@Parameter(names = { "--muteThirdSidVoice1", "-9" }, descriptionKey = "MUTE_VOICE_9", arity = 1, order = 1029)
-	public void setMuteThirdSIDVoice1(boolean mute) {
+	public final void setMuteThirdSIDVoice1(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteThirdSIDVoice1", mute);
 	}
 
 	@Override
-	public boolean isMuteThirdSIDVoice2() {
+	public final boolean isMuteThirdSIDVoice2() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteThirdSIDVoice2", DEFAULT_MUTE_THIRDSID_VOICE2);
 	}
 
 	@Override
 	@Parameter(names = { "--muteThirdSidVoice2", "-10" }, descriptionKey = "MUTE_VOICE_10", arity = 1, order = 1030)
-	public void setMuteThirdSIDVoice2(boolean mute) {
+	public final void setMuteThirdSIDVoice2(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteThirdSIDVoice2", mute);
 	}
 
 	@Override
-	public boolean isMuteThirdSIDVoice3() {
+	public final boolean isMuteThirdSIDVoice3() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteThirdSIDVoice3", DEFAULT_MUTE_THIRDSID_VOICE3);
 	}
 
 	@Override
 	@Parameter(names = { "--muteThirdSidVoice3", "-11" }, descriptionKey = "MUTE_VOICE_11", arity = 1, order = 1031)
-	public void setMuteThirdSIDVoice3(boolean mute) {
+	public final void setMuteThirdSIDVoice3(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteThirdSIDVoice3", mute);
 	}
 
 	@Override
-	public boolean isMuteThirdSIDVoice4() {
+	public final boolean isMuteThirdSIDVoice4() {
 		return iniReader.getPropertyBool(SECTION_ID, "muteThirdSIDVoice4", DEFAULT_MUTE_THIRDSID_VOICE4);
 	}
 
 	@Override
 	@Parameter(names = { "--muteThirdSidVoice4", "-12" }, descriptionKey = "MUTE_VOICE_12", arity = 1, order = 1032)
-	public void setMuteThirdSIDVoice4(boolean mute) {
+	public final void setMuteThirdSIDVoice4(boolean mute) {
 		iniReader.setProperty(SECTION_ID, "muteThirdSIDVoice4", mute);
 	}
 
@@ -775,12 +775,12 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	private OverrideSection overrideSection = new OverrideSection();
 
 	@Override
-	public OverrideSection getOverrideSection() {
+	public final OverrideSection getOverrideSection() {
 		return overrideSection;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 

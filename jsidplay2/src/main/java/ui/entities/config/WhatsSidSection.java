@@ -35,16 +35,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_ENABLE);
 
 	@Override
-	public boolean isEnable() {
+	public final boolean isEnable() {
 		return enable.get();
 	}
 
 	@Override
-	public void setEnable(boolean enable) {
+	public final void setEnable(boolean enable) {
 		this.enable.set(enable);
 	}
 
-	public BooleanProperty enableProperty() {
+	public final BooleanProperty enableProperty() {
 		return enable.property();
 	}
 
@@ -52,16 +52,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_URL);
 
 	@Override
-	public String getUrl() {
+	public final String getUrl() {
 		return url.get();
 	}
 
 	@Override
-	public void setUrl(String url) {
+	public final void setUrl(String url) {
 		this.url.set(url);
 	}
 
-	public StringProperty urlProperty() {
+	public final StringProperty urlProperty() {
 		return url.property();
 	}
 
@@ -69,16 +69,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_USERNAME);
 
 	@Override
-	public String getUsername() {
+	public final String getUsername() {
 		return username.get();
 	}
 
 	@Override
-	public void setUsername(String username) {
+	public final void setUsername(String username) {
 		this.username.set(username);
 	}
 
-	public StringProperty usernameProperty() {
+	public final StringProperty usernameProperty() {
 		return username.property();
 	}
 
@@ -86,16 +86,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_PASSWORD);
 
 	@Override
-	public String getPassword() {
+	public final String getPassword() {
 		return password.get();
 	}
 
 	@Override
-	public void setPassword(String password) {
+	public final void setPassword(String password) {
 		this.password.set(password);
 	}
 
-	public StringProperty passwordProperty() {
+	public final StringProperty passwordProperty() {
 		return password.property();
 	}
 
@@ -103,16 +103,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			SimpleObjectProperty::new, DEFAULT_WHATSSID_CONNECTION_TIMEOUT);
 
 	@Override
-	public int getConnectionTimeout() {
+	public final int getConnectionTimeout() {
 		return connectionTimeout.get();
 	}
 
 	@Override
-	public void setConnectionTimeout(int connectionTimeout) {
+	public final void setConnectionTimeout(int connectionTimeout) {
 		this.connectionTimeout.set(connectionTimeout);
 	}
 
-	public ObjectProperty<Integer> connectionTimeoutProperty() {
+	public final ObjectProperty<Integer> connectionTimeoutProperty() {
 		return connectionTimeout.property();
 	}
 
@@ -120,16 +120,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_CAPTURE_TIME);
 
 	@Override
-	public int getCaptureTime() {
+	public final int getCaptureTime() {
 		return captureTime.get();
 	}
 
 	@Override
-	public void setCaptureTime(int captureTime) {
+	public final void setCaptureTime(int captureTime) {
 		this.captureTime.set(captureTime);
 	}
 
-	public ObjectProperty<Integer> captureTimeProperty() {
+	public final ObjectProperty<Integer> captureTimeProperty() {
 		return captureTime.property();
 	}
 
@@ -137,16 +137,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_MATCH_START_TIME);
 
 	@Override
-	public int getMatchStartTime() {
+	public final int getMatchStartTime() {
 		return matchStartTime.get();
 	}
 
 	@Override
-	public void setMatchStartTime(int matchStartTime) {
+	public final void setMatchStartTime(int matchStartTime) {
 		this.matchStartTime.set(matchStartTime);
 	}
 
-	public ObjectProperty<Integer> matchStartTimeProperty() {
+	public final ObjectProperty<Integer> matchStartTimeProperty() {
 		return matchStartTime.property();
 	}
 
@@ -154,16 +154,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_MATCH_RETRY_TIME);
 
 	@Override
-	public int getMatchRetryTime() {
+	public final int getMatchRetryTime() {
 		return matchRetryTime.get();
 	}
 
 	@Override
-	public void setMatchRetryTime(int matchRetryTime) {
+	public final void setMatchRetryTime(int matchRetryTime) {
 		this.matchRetryTime.set(matchRetryTime);
 	}
 
-	public ObjectProperty<Integer> matchRetryTimeProperty() {
+	public final ObjectProperty<Integer> matchRetryTimeProperty() {
 		return matchRetryTime.property();
 	}
 
@@ -171,16 +171,16 @@ public class WhatsSidSection implements IWhatsSidSection {
 			number -> new SimpleFloatProperty(number.floatValue()), DEFAULT_WHATSSID_MINIMUM_RELATIVE_CONFIDENCE);
 
 	@Override
-	public float getMinimumRelativeConfidence() {
+	public final float getMinimumRelativeConfidence() {
 		return minimumRelativeConfidence.get().floatValue();
 	}
 
 	@Override
-	public void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
+	public final void setMinimumRelativeConfidence(float minimumRelativeConfidence) {
 		this.minimumRelativeConfidence.set(minimumRelativeConfidence);
 	}
 
-	public FloatProperty minimumRelativeConfidenceProperty() {
+	public final FloatProperty minimumRelativeConfidenceProperty() {
 		return minimumRelativeConfidence.property();
 	}
 
@@ -188,21 +188,21 @@ public class WhatsSidSection implements IWhatsSidSection {
 			DEFAULT_WHATSSID_DETECT_CHIP_MODEL);
 
 	@Override
-	public boolean isDetectChipModel() {
+	public final boolean isDetectChipModel() {
 		return detectChipModel.get();
 	}
 
 	@Override
-	public void setDetectChipModel(boolean detectChipModel) {
+	public final void setDetectChipModel(boolean detectChipModel) {
 		this.detectChipModel.set(detectChipModel);
 	}
 
-	public BooleanProperty detectChipModelProperty() {
+	public final BooleanProperty detectChipModelProperty() {
 		return detectChipModel.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

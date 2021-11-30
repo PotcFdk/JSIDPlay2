@@ -49,77 +49,77 @@ public class FavoritesSection {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<StringProperty, String> name = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public String getName() {
+	public final String getName() {
 		return name.get();
 	}
 
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name.set(name);
 	}
 
-	public StringProperty nameProperty() {
+	public final StringProperty nameProperty() {
 		return name.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public Double getWidth() {
+	public final Double getWidth() {
 		return width.get().doubleValue();
 	}
 
-	public void setWidth(Double width) {
+	public final void setWidth(Double width) {
 		this.width.set(width);
 	}
 
-	public DoubleProperty widthProperty() {
+	public final DoubleProperty widthProperty() {
 		return width.property();
 	}
 
 	private ShadowField<IntegerProperty, Number> selectedRowFrom = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
-	public Integer getSelectedRowFrom() {
+	public final Integer getSelectedRowFrom() {
 		return selectedRowFrom.get().intValue();
 	}
 
-	public void setSelectedRowFrom(Integer selectedRowFrom) {
+	public final void setSelectedRowFrom(Integer selectedRowFrom) {
 		this.selectedRowFrom.set(selectedRowFrom);
 	}
 
-	public IntegerProperty selectedRowFromProperty() {
+	public final IntegerProperty selectedRowFromProperty() {
 		return selectedRowFrom.property();
 	}
 
 	private ShadowField<IntegerProperty, Number> selectedRowTo = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
-	public Integer getSelectedRowTo() {
+	public final Integer getSelectedRowTo() {
 		return selectedRowTo.get().intValue();
 	}
 
-	public void setSelectedRowTo(Integer selectedRowTo) {
+	public final void setSelectedRowTo(Integer selectedRowTo) {
 		this.selectedRowTo.set(selectedRowTo);
 	}
 
-	public IntegerProperty selectedRowToProperty() {
+	public final IntegerProperty selectedRowToProperty() {
 		return selectedRowTo.property();
 	}
 
 	private LazyListField<FavoriteColumn> columns = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
-	public List<FavoriteColumn> getColumns() {
+	public final List<FavoriteColumn> getColumns() {
 		// Singular attributes cannot be resolved that early, therefore lazy:
 		if (DEFAULT_COLUMNS == null) {
 			DEFAULT_COLUMNS = Arrays.asList(new FavoriteColumn(title), new FavoriteColumn(author),
@@ -128,7 +128,7 @@ public class FavoritesSection {
 		return columns.get(() -> DEFAULT_COLUMNS.stream().map(FavoriteColumn::new).collect(toList()));
 	}
 
-	public void setColumns(List<FavoriteColumn> columns) {
+	public final void setColumns(List<FavoriteColumn> columns) {
 		this.columns.set(columns);
 	}
 
@@ -136,16 +136,16 @@ public class FavoritesSection {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
-	public List<HVSCEntry> getFavorites() {
+	public final List<HVSCEntry> getFavorites() {
 		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
-	public void setFavorites(List<HVSCEntry> favorites) {
+	public final void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites.set(favorites);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

@@ -56,7 +56,7 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public void setVersion(int version) {
+	public final void setVersion(int version) {
 		iniReader.setProperty(SECTION_ID, "Version", version);
 	}
 
@@ -98,38 +98,38 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public double getFadeInTime() {
+	public final double getFadeInTime() {
 		return iniReader.getPropertyTime(SECTION_ID, "Fade In Time", DEFAULT_FADE_IN_TIME);
 	}
 
 	@Override
 	@Parameter(names = { "--fadeIn" }, descriptionKey = "FADE_IN", converter = ParameterTimeConverter.class, order = 3)
-	public void setFadeInTime(double fadeInTime) {
+	public final void setFadeInTime(double fadeInTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeInTime * 1000)));
 		iniReader.setProperty(SECTION_ID, "Fade In Time", time);
 	}
 
 	@Override
-	public double getFadeOutTime() {
+	public final double getFadeOutTime() {
 		return iniReader.getPropertyTime(SECTION_ID, "Fade Out Time", DEFAULT_FADE_OUT_TIME);
 	}
 
 	@Override
 	@Parameter(names = {
 			"--fadeOut" }, descriptionKey = "FADE_OUT", converter = ParameterTimeConverter.class, order = 4)
-	public void setFadeOutTime(double fadeOutTime) {
+	public final void setFadeOutTime(double fadeOutTime) {
 		String time = new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (fadeOutTime * 1000)));
 		iniReader.setProperty(SECTION_ID, "Fade Out Time", time);
 	}
 
 	@Override
-	public boolean isLoop() {
+	public final boolean isLoop() {
 		return iniReader.getPropertyBool(SECTION_ID, "Loop", DEFAULT_LOOP);
 	}
 
 	@Override
 	@Parameter(names = { "--loop", "-l" }, descriptionKey = "LOOP", arity = 1, order = 5)
-	public void setLoop(boolean loop) {
+	public final void setLoop(boolean loop) {
 		iniReader.setProperty(SECTION_ID, "Loop", loop);
 	}
 
@@ -176,118 +176,118 @@ public class IniSidplay2Section extends IniSection implements ISidPlay2Section {
 	}
 
 	@Override
-	public boolean isPalEmulation() {
+	public final boolean isPalEmulation() {
 		return iniReader.getPropertyBool(SECTION_ID, "PAL Emulation", DEFAULT_PAL_EMULATION);
 	}
 
 	@Override
 	@Parameter(names = { "--palEmulation" }, descriptionKey = "PAL_EMULATION", arity = 1, order = 8)
-	public void setPalEmulation(boolean palEmulation) {
+	public final void setPalEmulation(boolean palEmulation) {
 		iniReader.setProperty(SECTION_ID, "PAL Emulation", palEmulation);
 	}
 
 	@Override
-	public float getBrightness() {
+	public final float getBrightness() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Brightness", DEFAULT_BRIGHTNESS);
 	}
 
 	@Override
-	public void setBrightness(float brightness) {
+	public final void setBrightness(float brightness) {
 		iniReader.setProperty(SECTION_ID, "Brightness", brightness);
 	}
 
 	@Override
-	public float getContrast() {
+	public final float getContrast() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Contrast", DEFAULT_CONTRAST);
 	}
 
 	@Override
-	public void setContrast(float contrast) {
+	public final void setContrast(float contrast) {
 		iniReader.setProperty(SECTION_ID, "Contrast", contrast);
 	}
 
 	@Override
-	public float getGamma() {
+	public final float getGamma() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Gamma", DEFAULT_GAMMA);
 	}
 
 	@Override
-	public void setGamma(float gamma) {
+	public final void setGamma(float gamma) {
 		iniReader.setProperty(SECTION_ID, "Gamma", gamma);
 	}
 
 	@Override
-	public float getSaturation() {
+	public final float getSaturation() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Saturation", DEFAULT_SATURATION);
 	}
 
 	@Override
-	public void setSaturation(float saturation) {
+	public final void setSaturation(float saturation) {
 		iniReader.setProperty(SECTION_ID, "Saturation", saturation);
 	}
 
 	@Override
-	public float getPhaseShift() {
+	public final float getPhaseShift() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Phase Shift", DEFAULT_PHASE_SHIFT);
 	}
 
 	@Override
-	public void setPhaseShift(float phaseShift) {
+	public final void setPhaseShift(float phaseShift) {
 		iniReader.setProperty(SECTION_ID, "Phase Shift", phaseShift);
 	}
 
 	@Override
-	public float getOffset() {
+	public final float getOffset() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Offset", DEFAULT_OFFSET);
 	}
 
 	@Override
-	public void setOffset(float offset) {
+	public final void setOffset(float offset) {
 		iniReader.setProperty(SECTION_ID, "Offset", offset);
 	}
 
 	@Override
-	public float getTint() {
+	public final float getTint() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Tint", DEFAULT_TINT);
 	}
 
 	@Override
-	public void setTint(float tint) {
+	public final void setTint(float tint) {
 		iniReader.setProperty(SECTION_ID, "Tint", tint);
 	}
 
 	@Override
-	public float getBlur() {
+	public final float getBlur() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Blur", DEFAULT_BLUR);
 	}
 
 	@Override
-	public void setBlur(float blur) {
+	public final void setBlur(float blur) {
 		iniReader.setProperty(SECTION_ID, "Blur", blur);
 	}
 
 	@Override
-	public float getBleed() {
+	public final float getBleed() {
 		return iniReader.getPropertyFloat(SECTION_ID, "Bleed", DEFAULT_BLEED);
 	}
 
 	@Override
-	public void setBleed(float bleed) {
+	public final void setBleed(float bleed) {
 		iniReader.setProperty(SECTION_ID, "Bleed", bleed);
 	}
 
 	@Override
-	public boolean isTurboTape() {
+	public final boolean isTurboTape() {
 		return iniReader.getPropertyBool(SECTION_ID, "TurboTape", DEFAULT_TURBO_TAPE);
 	}
 
 	@Override
-	public void setTurboTape(boolean turboTape) {
+	public final void setTurboTape(boolean turboTape) {
 		iniReader.setProperty(SECTION_ID, "TurboTape", turboTape);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 

@@ -50,16 +50,16 @@ public class FilterSection implements IFilterSection {
 
 	@Id
 	@Override
-	public String getName() {
+	public final String getName() {
 		return name.get();
 	}
 
 	@Override
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name.set(name);
 	}
 
-	public StringProperty nameProperty() {
+	public final StringProperty nameProperty() {
 		return name.property();
 	}
 
@@ -67,16 +67,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getFilter8580CurvePosition() {
+	public final float getFilter8580CurvePosition() {
 		return filter8580CurvePosition.get().floatValue();
 	}
 
 	@Override
-	public void setFilter8580CurvePosition(float filter8580CurvePosition) {
+	public final void setFilter8580CurvePosition(float filter8580CurvePosition) {
 		this.filter8580CurvePosition.set(filter8580CurvePosition);
 	}
 
-	public FloatProperty filter8580CurvePositionProperty() {
+	public final FloatProperty filter8580CurvePositionProperty() {
 		return filter8580CurvePosition.property();
 	}
 
@@ -84,16 +84,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getFilter6581CurvePosition() {
+	public final float getFilter6581CurvePosition() {
 		return filter6581CurvePosition.get().floatValue();
 	}
 
 	@Override
-	public void setFilter6581CurvePosition(float filter6581CurvePosition) {
+	public final void setFilter6581CurvePosition(float filter6581CurvePosition) {
 		this.filter6581CurvePosition.set(filter6581CurvePosition);
 	}
 
-	public FloatProperty filter6581CurvePositionProperty() {
+	public final FloatProperty filter6581CurvePositionProperty() {
 		return filter6581CurvePosition.property();
 	}
 
@@ -101,16 +101,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getAttenuation() {
+	public final float getAttenuation() {
 		return attenuation.get().floatValue();
 	}
 
 	@Override
-	public void setAttenuation(float attenuation) {
+	public final void setAttenuation(float attenuation) {
 		this.attenuation.set(attenuation);
 	}
 
-	public FloatProperty attenuationProperty() {
+	public final FloatProperty attenuationProperty() {
 		return attenuation.property();
 	}
 
@@ -118,16 +118,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getNonlinearity() {
+	public final float getNonlinearity() {
 		return nonlinearity.get().floatValue();
 	}
 
 	@Override
-	public void setNonlinearity(float nonlinearity) {
+	public final void setNonlinearity(float nonlinearity) {
 		this.nonlinearity.set(nonlinearity);
 	}
 
-	public FloatProperty nonlinearityProperty() {
+	public final FloatProperty nonlinearityProperty() {
 		return nonlinearity.property();
 	}
 
@@ -135,16 +135,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getVoiceNonlinearity() {
+	public final float getVoiceNonlinearity() {
 		return voiceNonlinearity.get().floatValue();
 	}
 
 	@Override
-	public void setVoiceNonlinearity(float voiceNonlinearity) {
+	public final void setVoiceNonlinearity(float voiceNonlinearity) {
 		this.voiceNonlinearity.set(voiceNonlinearity);
 	}
 
-	public FloatProperty voiceNonlinearityProperty() {
+	public final FloatProperty voiceNonlinearityProperty() {
 		return voiceNonlinearity.property();
 	}
 
@@ -152,16 +152,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getBaseresistance() {
+	public final float getBaseresistance() {
 		return baseresistance.get().floatValue();
 	}
 
 	@Override
-	public void setBaseresistance(float baseresistance) {
+	public final void setBaseresistance(float baseresistance) {
 		this.baseresistance.set(baseresistance);
 	}
 
-	public FloatProperty baseresistanceProperty() {
+	public final FloatProperty baseresistanceProperty() {
 		return baseresistance.property();
 	}
 
@@ -169,16 +169,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getOffset() {
+	public final float getOffset() {
 		return offset.get().floatValue();
 	}
 
 	@Override
-	public void setOffset(float offset) {
+	public final void setOffset(float offset) {
 		this.offset.set(offset);
 	}
 
-	public FloatProperty offsetProperty() {
+	public final FloatProperty offsetProperty() {
 		return offset.property();
 	}
 
@@ -186,16 +186,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getSteepness() {
+	public final float getSteepness() {
 		return steepness.get().floatValue();
 	}
 
 	@Override
-	public void setSteepness(float steepness) {
+	public final void setSteepness(float steepness) {
 		this.steepness.set(steepness);
 	}
 
-	public FloatProperty steepnessProperty() {
+	public final FloatProperty steepnessProperty() {
 		return steepness.property();
 	}
 
@@ -203,16 +203,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getMinimumfetresistance() {
+	public final float getMinimumfetresistance() {
 		return minimumfetresistance.get().floatValue();
 	}
 
 	@Override
-	public void setMinimumfetresistance(float minimumfetresistance) {
+	public final void setMinimumfetresistance(float minimumfetresistance) {
 		this.minimumfetresistance.set(minimumfetresistance);
 	}
 
-	public FloatProperty minimumfetresistanceProperty() {
+	public final FloatProperty minimumfetresistanceProperty() {
 		return minimumfetresistance.property();
 	}
 
@@ -220,16 +220,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getK() {
+	public final float getK() {
 		return k.get().floatValue();
 	}
 
 	@Override
-	public void setK(float k) {
+	public final void setK(float k) {
 		this.k.set(k);
 	}
 
-	public FloatProperty kProperty() {
+	public final FloatProperty kProperty() {
 		return k.property();
 	}
 
@@ -237,16 +237,16 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getB() {
+	public final float getB() {
 		return b.get().floatValue();
 	}
 
 	@Override
-	public void setB(float b) {
+	public final void setB(float b) {
 		this.b.set(b);
 	}
 
-	public FloatProperty bProperty() {
+	public final FloatProperty bProperty() {
 		return b.property();
 	}
 
@@ -254,21 +254,21 @@ public class FilterSection implements IFilterSection {
 			number -> new SimpleFloatProperty(number.floatValue()), 0);
 
 	@Override
-	public float getResonanceFactor() {
+	public final float getResonanceFactor() {
 		return resonanceFactor.get().floatValue();
 	}
 
 	@Override
-	public void setResonanceFactor(float resonanceFactor) {
+	public final void setResonanceFactor(float resonanceFactor) {
 		this.resonanceFactor.set(resonanceFactor);
 	}
 
-	public FloatProperty resonanceFactorProperty() {
+	public final FloatProperty resonanceFactorProperty() {
 		return resonanceFactor.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

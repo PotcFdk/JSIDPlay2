@@ -51,43 +51,43 @@ public class DeviceMapping implements IDeviceMapping {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<BooleanProperty, Boolean> used = new ShadowField<>(SimpleBooleanProperty::new, false);
 
 	@Override
-	public boolean isUsed() {
+	public final boolean isUsed() {
 		return used.get();
 	}
 
 	@Override
-	public void setUsed(boolean used) {
+	public final void setUsed(boolean used) {
 		this.used.set(used);
 	}
 
-	public BooleanProperty usedProperty() {
+	public final BooleanProperty usedProperty() {
 		return used.property();
 	}
 
 	private ShadowField<StringProperty, String> serialNum = new ShadowField<>(SimpleStringProperty::new, null);
 
 	@Override
-	public String getSerialNum() {
+	public final String getSerialNum() {
 		return serialNum.get();
 	}
 
 	@Override
-	public void setSerialNum(String serialNum) {
+	public final void setSerialNum(String serialNum) {
 		this.serialNum.set(serialNum);
 	}
 
-	public StringProperty serialNumberProperty() {
+	public final StringProperty serialNumberProperty() {
 		return serialNum.property();
 	}
 
@@ -96,21 +96,21 @@ public class DeviceMapping implements IDeviceMapping {
 
 	@Override
 	@Enumerated(EnumType.STRING)
-	public ChipModel getChipModel() {
+	public final ChipModel getChipModel() {
 		return chipModel.get();
 	}
 
 	@Override
-	public void setChipModel(ChipModel chipModel) {
+	public final void setChipModel(ChipModel chipModel) {
 		this.chipModel.set(chipModel);
 	}
 
-	public ObjectProperty<ChipModel> chipModelProperty() {
+	public final ObjectProperty<ChipModel> chipModelProperty() {
 		return chipModel.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

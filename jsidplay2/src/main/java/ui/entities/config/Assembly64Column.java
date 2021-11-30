@@ -42,11 +42,11 @@ public class Assembly64Column {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	@JsonIgnore
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -54,35 +54,35 @@ public class Assembly64Column {
 			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
-	public Assembly64ColumnType getColumnType() {
+	public final Assembly64ColumnType getColumnType() {
 		return columnType.get();
 	}
 
-	public void setColumnType(Assembly64ColumnType columnType) {
+	public final void setColumnType(Assembly64ColumnType columnType) {
 		this.columnType.set(columnType);
 	}
 
-	public ObjectProperty<Assembly64ColumnType> columnTypeProperty() {
+	public final ObjectProperty<Assembly64ColumnType> columnTypeProperty() {
 		return columnType.property();
 	}
 
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.floatValue()), 0);
 
-	public double getWidth() {
+	public final double getWidth() {
 		return width.get().doubleValue();
 	}
 
-	public void setWidth(double width) {
+	public final void setWidth(double width) {
 		this.width.set(width);
 	}
 
-	public DoubleProperty widthProperty() {
+	public final DoubleProperty widthProperty() {
 		return width.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

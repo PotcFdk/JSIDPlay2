@@ -51,7 +51,7 @@ public class IniConfig implements IConfig {
 	private static IniConfig singleInstance;
 
 	/** INI configuration filename or null (use internal configuration) */
-	private final File iniPath;
+	private File iniPath;
 
 	@ParametersDelegate
 	private ISidPlay2Section sidplay2Section;
@@ -81,7 +81,7 @@ public class IniConfig implements IConfig {
 	}
 
 	@Override
-	public List<? extends IFilterSection> getFilterSection() {
+	public final List<? extends IFilterSection> getFilterSection() {
 		final List<IFilterSection> filters = new ArrayList<>();
 		for (final String heading : iniReader.listSections()) {
 			if (!heading.matches("Filter.*")) {
@@ -100,7 +100,7 @@ public class IniConfig implements IConfig {
 	 *
 	 * @return default configuration
 	 */
-	public static IniConfig getDefault() {
+	public static final IniConfig getDefault() {
 		if (singleInstance == null) {
 			singleInstance = new IniConfig();
 		}
@@ -190,7 +190,7 @@ public class IniConfig implements IConfig {
 		}
 	}
 
-	public void write() {
+	public final void write() {
 		if (!iniReader.isDirty()) {
 			return;
 		}
@@ -233,12 +233,12 @@ public class IniConfig implements IConfig {
 	}
 
 	@Override
-	public IWhatsSidSection getWhatsSidSection() {
+	public final IWhatsSidSection getWhatsSidSection() {
 		return whatsSidSection;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

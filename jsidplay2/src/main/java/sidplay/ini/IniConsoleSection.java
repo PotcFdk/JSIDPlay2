@@ -35,7 +35,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Top Left", DEFAULT_CHAR_TOP_LEFT);
 	}
 
-	public void setTopLeft(char topLeft) {
+	public final void setTopLeft(char topLeft) {
 		iniReader.setProperty(SECTION_ID, "Char Top Left", topLeft);
 	}
 
@@ -49,7 +49,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Top Right", DEFAULT_CHAR_TOP_RIGHT);
 	}
 
-	public void setTopRight(char topRight) {
+	public final void setTopRight(char topRight) {
 		iniReader.setProperty(SECTION_ID, "Char Top Right", topRight);
 	}
 
@@ -63,7 +63,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Bottom Left", DEFAULT_CHAR_BOTTOM_LEFT);
 	}
 
-	public void setBottomLeft(char bottomLeft) {
+	public final void setBottomLeft(char bottomLeft) {
 		iniReader.setProperty(SECTION_ID, "Char Bottom Left", bottomLeft);
 	}
 
@@ -77,7 +77,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Bottom Right", DEFAULT_CHAR_BOTTOM_RIGHT);
 	}
 
-	public void setBottomRight(char bottomRight) {
+	public final void setBottomRight(char bottomRight) {
 		iniReader.setProperty(SECTION_ID, "Char Bottom Right", bottomRight);
 	}
 
@@ -91,7 +91,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Vertical", DEFAULT_CHAR_VERTICAL);
 	}
 
-	public void setVertical(char vertical) {
+	public final void setVertical(char vertical) {
 		iniReader.setProperty(SECTION_ID, "Char Vertical", vertical);
 	}
 
@@ -105,7 +105,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Horizontal", DEFAULT_CHAR_HORIZONTAL);
 	}
 
-	public void setHorizontal(char horizontal) {
+	public final void setHorizontal(char horizontal) {
 		iniReader.setProperty(SECTION_ID, "Char Horizontal", horizontal);
 	}
 
@@ -119,7 +119,7 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Junction Left", DEFAULT_CHAR_JUNCTION_LEFT);
 	}
 
-	public void setJunctionLeft(char junctionLeft) {
+	public final void setJunctionLeft(char junctionLeft) {
 		iniReader.setProperty(SECTION_ID, "Char Junction Left", junctionLeft);
 	}
 
@@ -133,12 +133,12 @@ public class IniConsoleSection extends IniSection {
 		return iniReader.getPropertyChar(SECTION_ID, "Char Junction Right", DEFAULT_CHAR_JUNCTION_RIGHT);
 	}
 
-	public void setJunctionRight(char junctionRight) {
+	public final void setJunctionRight(char junctionRight) {
 		iniReader.setProperty(SECTION_ID, "Char Junction Right", junctionRight);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 

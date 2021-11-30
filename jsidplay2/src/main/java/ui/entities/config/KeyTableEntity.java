@@ -37,7 +37,7 @@ public class KeyTableEntity {
 		setEntry(keyTableEntry);
 	}
 
-	public static KeyTableEntity of(String keyCode, KeyTableEntry entry) {
+	public final static KeyTableEntity of(String keyCode, KeyTableEntry entry) {
 		return new KeyTableEntity(keyCode, entry);
 	}
 
@@ -47,11 +47,11 @@ public class KeyTableEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -59,34 +59,34 @@ public class KeyTableEntity {
 			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
-	public KeyTableEntry getEntry() {
+	public final KeyTableEntry getEntry() {
 		return entry.get();
 	}
 
-	public void setEntry(KeyTableEntry entry) {
+	public final void setEntry(KeyTableEntry entry) {
 		this.entry.set(entry);
 	}
 
-	public ObjectProperty<KeyTableEntry> entryProperty() {
+	public final ObjectProperty<KeyTableEntry> entryProperty() {
 		return entry.property();
 	}
 
 	private ShadowField<StringProperty, String> keyCodeName = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public String getKeyCodeName() {
+	public final String getKeyCodeName() {
 		return keyCodeName.get();
 	}
 
-	public void setKeyCodeName(String keyCodeName) {
+	public final void setKeyCodeName(String keyCodeName) {
 		this.keyCodeName.set(keyCodeName);
 	}
 
-	public StringProperty keyCodeNameProperty() {
+	public final StringProperty keyCodeNameProperty() {
 		return keyCodeName.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

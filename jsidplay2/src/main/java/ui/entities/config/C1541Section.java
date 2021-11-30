@@ -34,31 +34,31 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_DRIVE_ON);
 
 	@Override
-	public boolean isDriveOn() {
+	public final boolean isDriveOn() {
 		return driveOn.get();
 	}
 
 	@Override
-	public void setDriveOn(boolean driveOn) {
+	public final void setDriveOn(boolean driveOn) {
 		this.driveOn.set(driveOn);
 	}
 
-	public BooleanProperty driveOnProperty() {
+	public final BooleanProperty driveOnProperty() {
 		return driveOn.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> driveSoundOn = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_DRIVE_SOUND);
 
-	public boolean isDriveSoundOn() {
+	public final boolean isDriveSoundOn() {
 		return driveSoundOn.get();
 	}
 
-	public void setDriveSoundOn(boolean driveSoundOn) {
+	public final void setDriveSoundOn(boolean driveSoundOn) {
 		this.driveSoundOn.set(driveSoundOn);
 	}
 
-	public BooleanProperty driveSoundOnProperty() {
+	public final BooleanProperty driveSoundOnProperty() {
 		return driveSoundOn.property();
 	}
 
@@ -66,16 +66,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_PARALLEL_CABLE);
 
 	@Override
-	public boolean isParallelCable() {
+	public final boolean isParallelCable() {
 		return parallelCable.get();
 	}
 
 	@Override
-	public void setParallelCable(boolean parallelCable) {
+	public final void setParallelCable(boolean parallelCable) {
 		this.parallelCable.set(parallelCable);
 	}
 
-	public BooleanProperty parallelCableProperty() {
+	public final BooleanProperty parallelCableProperty() {
 		return parallelCable.property();
 	}
 
@@ -83,16 +83,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_JIFFYDOS_INSTALLED);
 
 	@Override
-	public boolean isJiffyDosInstalled() {
+	public final boolean isJiffyDosInstalled() {
 		return this.jiffyDosInstalled.get();
 	}
 
 	@Override
-	public void setJiffyDosInstalled(boolean on) {
+	public final void setJiffyDosInstalled(boolean on) {
 		this.jiffyDosInstalled.set(on);
 	}
 
-	public BooleanProperty jiffyDosInstalledProperty() {
+	public final BooleanProperty jiffyDosInstalledProperty() {
 		return jiffyDosInstalled.property();
 	}
 
@@ -100,16 +100,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_RAM_EXPAND_0X2000);
 
 	@Override
-	public boolean isRamExpansionEnabled0() {
+	public final boolean isRamExpansionEnabled0() {
 		return ramExpansionEnabled0.get();
 	}
 
 	@Override
-	public void setRamExpansionEnabled0(boolean on) {
+	public final void setRamExpansionEnabled0(boolean on) {
 		this.ramExpansionEnabled0.set(on);
 	}
 
-	public BooleanProperty ramExpansionEnabled0Property() {
+	public final BooleanProperty ramExpansionEnabled0Property() {
 		return ramExpansionEnabled0.property();
 	}
 
@@ -117,16 +117,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_RAM_EXPAND_0X4000);
 
 	@Override
-	public boolean isRamExpansionEnabled1() {
+	public final boolean isRamExpansionEnabled1() {
 		return ramExpansionEnabled1.get();
 	}
 
 	@Override
-	public void setRamExpansionEnabled1(boolean on) {
+	public final void setRamExpansionEnabled1(boolean on) {
 		this.ramExpansionEnabled1.set(on);
 	}
 
-	public BooleanProperty ramExpansionEnabled1Property() {
+	public final BooleanProperty ramExpansionEnabled1Property() {
 		return ramExpansionEnabled1.property();
 	}
 
@@ -134,16 +134,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_RAM_EXPAND_0X6000);
 
 	@Override
-	public boolean isRamExpansionEnabled2() {
+	public final boolean isRamExpansionEnabled2() {
 		return ramExpansionEnabled2.get();
 	}
 
 	@Override
-	public void setRamExpansionEnabled2(boolean on) {
+	public final void setRamExpansionEnabled2(boolean on) {
 		this.ramExpansionEnabled2.set(on);
 	}
 
-	public BooleanProperty ramExpansionEnabled2Property() {
+	public final BooleanProperty ramExpansionEnabled2Property() {
 		return ramExpansionEnabled2.property();
 	}
 
@@ -151,16 +151,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_RAM_EXPAND_0X8000);
 
 	@Override
-	public boolean isRamExpansionEnabled3() {
+	public final boolean isRamExpansionEnabled3() {
 		return ramExpansionEnabled3.get();
 	}
 
 	@Override
-	public void setRamExpansionEnabled3(boolean on) {
+	public final void setRamExpansionEnabled3(boolean on) {
 		this.ramExpansionEnabled3.set(on);
 	}
 
-	public BooleanProperty ramExpansionEnabled3Property() {
+	public final BooleanProperty ramExpansionEnabled3Property() {
 		return ramExpansionEnabled3.property();
 	}
 
@@ -168,16 +168,16 @@ public class C1541Section implements IC1541Section {
 			DEFAULT_RAM_EXPAND_0XA000);
 
 	@Override
-	public boolean isRamExpansionEnabled4() {
+	public final boolean isRamExpansionEnabled4() {
 		return ramExpansionEnabled4.get();
 	}
 
 	@Override
-	public void setRamExpansionEnabled4(boolean on) {
+	public final void setRamExpansionEnabled4(boolean on) {
 		this.ramExpansionEnabled4.set(on);
 	}
 
-	public BooleanProperty ramExpansionEnabled4Property() {
+	public final BooleanProperty ramExpansionEnabled4Property() {
 		return ramExpansionEnabled4.property();
 	}
 
@@ -185,15 +185,15 @@ public class C1541Section implements IC1541Section {
 			SimpleObjectProperty::new, DEFAULT_EXTEND_IMAGE_POLICY);
 
 	@Enumerated(EnumType.STRING)
-	public ExtendImagePolicy getExtendImagePolicy() {
+	public final ExtendImagePolicy getExtendImagePolicy() {
 		return extendImagePolicy.get();
 	}
 
-	public void setExtendImagePolicy(ExtendImagePolicy policy) {
+	public final void setExtendImagePolicy(ExtendImagePolicy policy) {
 		this.extendImagePolicy.set(policy);
 	}
 
-	public ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
+	public final ObjectProperty<ExtendImagePolicy> extendImagePolicyProperty() {
 		return extendImagePolicy.property();
 	}
 
@@ -202,21 +202,21 @@ public class C1541Section implements IC1541Section {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public FloppyType getFloppyType() {
+	public final FloppyType getFloppyType() {
 		return floppyType.get();
 	}
 
 	@Override
-	public void setFloppyType(FloppyType floppyType) {
+	public final void setFloppyType(FloppyType floppyType) {
 		this.floppyType.set(floppyType);
 	}
 
-	public ObjectProperty<FloppyType> floppyTypeProperty() {
+	public final ObjectProperty<FloppyType> floppyTypeProperty() {
 		return floppyType.property();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

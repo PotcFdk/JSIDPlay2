@@ -159,16 +159,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Engine getEngine() {
+	public final Engine getEngine() {
 		return this.engine.get();
 	}
 
 	@Override
-	public void setEngine(Engine engine) {
+	public final void setEngine(Engine engine) {
 		this.engine.set(engine);
 	}
 
-	public ObjectProperty<Engine> engineProperty() {
+	public final ObjectProperty<Engine> engineProperty() {
 		return engine.property();
 	}
 
@@ -177,16 +177,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Emulation getDefaultEmulation() {
+	public final Emulation getDefaultEmulation() {
 		return this.defaultEmulation.get();
 	}
 
 	@Override
-	public void setDefaultEmulation(Emulation emulation) {
+	public final void setDefaultEmulation(Emulation emulation) {
 		this.defaultEmulation.set(emulation);
 	}
 
-	public ObjectProperty<Emulation> defaultEmulationProperty() {
+	public final ObjectProperty<Emulation> defaultEmulationProperty() {
 		return defaultEmulation.property();
 	}
 
@@ -195,16 +195,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Emulation getUserEmulation() {
+	public final Emulation getUserEmulation() {
 		return this.userEmulation.get();
 	}
 
 	@Override
-	public void setUserEmulation(Emulation userEmulation) {
+	public final void setUserEmulation(Emulation userEmulation) {
 		this.userEmulation.set(userEmulation);
 	}
 
-	public ObjectProperty<Emulation> userEmulationProperty() {
+	public final ObjectProperty<Emulation> userEmulationProperty() {
 		return userEmulation.property();
 	}
 
@@ -213,16 +213,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Emulation getStereoEmulation() {
+	public final Emulation getStereoEmulation() {
 		return this.stereoEmulation.get();
 	}
 
 	@Override
-	public void setStereoEmulation(Emulation stereoEmulation) {
+	public final void setStereoEmulation(Emulation stereoEmulation) {
 		this.stereoEmulation.set(stereoEmulation);
 	}
 
-	public ObjectProperty<Emulation> stereoEmulationProperty() {
+	public final ObjectProperty<Emulation> stereoEmulationProperty() {
 		return stereoEmulation.property();
 	}
 
@@ -231,16 +231,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Emulation getThirdEmulation() {
+	public final Emulation getThirdEmulation() {
 		return this.thirdEmulation.get();
 	}
 
 	@Override
-	public void setThirdEmulation(Emulation thirdEmulation) {
+	public final void setThirdEmulation(Emulation thirdEmulation) {
 		this.thirdEmulation.set(thirdEmulation);
 	}
 
-	public ObjectProperty<Emulation> thirdEmulationProperty() {
+	public final ObjectProperty<Emulation> thirdEmulationProperty() {
 		return thirdEmulation.property();
 	}
 
@@ -249,16 +249,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public CPUClock getDefaultClockSpeed() {
+	public final CPUClock getDefaultClockSpeed() {
 		return this.defaultClockSpeed.get();
 	}
 
 	@Override
-	public void setDefaultClockSpeed(CPUClock speed) {
+	public final void setDefaultClockSpeed(CPUClock speed) {
 		this.defaultClockSpeed.set(speed);
 	}
 
-	public ObjectProperty<CPUClock> defaultClockSpeedProperty() {
+	public final ObjectProperty<CPUClock> defaultClockSpeedProperty() {
 		return defaultClockSpeed.property();
 	}
 
@@ -267,16 +267,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public CPUClock getUserClockSpeed() {
+	public final CPUClock getUserClockSpeed() {
 		return userClockSpeed.get();
 	}
 
 	@Override
-	public void setUserClockSpeed(CPUClock userClockSpeed) {
+	public final void setUserClockSpeed(CPUClock userClockSpeed) {
 		this.userClockSpeed.set(userClockSpeed);
 	}
 
-	public ObjectProperty<CPUClock> userClockSpeedProperty() {
+	public final ObjectProperty<CPUClock> userClockSpeedProperty() {
 		return userClockSpeed.property();
 	}
 
@@ -285,31 +285,31 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public ChipModel getDefaultSidModel() {
+	public final ChipModel getDefaultSidModel() {
 		return defaultSidModel.get();
 	}
 
 	@Override
-	public void setDefaultSidModel(ChipModel defaultSidModel) {
+	public final void setDefaultSidModel(ChipModel defaultSidModel) {
 		this.defaultSidModel.set(defaultSidModel);
 	}
 
-	public ObjectProperty<ChipModel> defaultSidModelProperty() {
+	public final ObjectProperty<ChipModel> defaultSidModelProperty() {
 		return defaultSidModel.property();
 	}
 
 	private ShadowField<BooleanProperty, Boolean> detectPSID64ChipModel = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_DETECT_PSID64_CHIP_MODEL);
 
-	public boolean isDetectPSID64ChipModel() {
+	public final boolean isDetectPSID64ChipModel() {
 		return detectPSID64ChipModel.get();
 	}
 
-	public void setDetectPSID64ChipModel(boolean detectPSID64ChipModel) {
+	public final void setDetectPSID64ChipModel(boolean detectPSID64ChipModel) {
 		this.detectPSID64ChipModel.set(detectPSID64ChipModel);
 	}
 
-	public BooleanProperty detectPSID64ChipModelProperty() {
+	public final BooleanProperty detectPSID64ChipModelProperty() {
 		return detectPSID64ChipModel.property();
 	}
 
@@ -318,16 +318,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public ChipModel getUserSidModel() {
+	public final ChipModel getUserSidModel() {
 		return userSidModel.get();
 	}
 
 	@Override
-	public void setUserSidModel(ChipModel userSidModel) {
+	public final void setUserSidModel(ChipModel userSidModel) {
 		this.userSidModel.set(userSidModel);
 	}
 
-	public ObjectProperty<ChipModel> userSidModelProperty() {
+	public final ObjectProperty<ChipModel> userSidModelProperty() {
 		return userSidModel.property();
 	}
 
@@ -336,16 +336,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public ChipModel getStereoSidModel() {
+	public final ChipModel getStereoSidModel() {
 		return stereoSidModel.get();
 	}
 
 	@Override
-	public void setStereoSidModel(ChipModel stereoSidModel) {
+	public final void setStereoSidModel(ChipModel stereoSidModel) {
 		this.stereoSidModel.set(stereoSidModel);
 	}
 
-	public ObjectProperty<ChipModel> stereoSidModelProperty() {
+	public final ObjectProperty<ChipModel> stereoSidModelProperty() {
 		return stereoSidModel.property();
 	}
 
@@ -354,16 +354,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public ChipModel getThirdSIDModel() {
+	public final ChipModel getThirdSIDModel() {
 		return thirdSIDModel.get();
 	}
 
 	@Override
-	public void setThirdSIDModel(ChipModel stereoSidModel) {
+	public final void setThirdSIDModel(ChipModel stereoSidModel) {
 		this.thirdSIDModel.set(stereoSidModel);
 	}
 
-	public ObjectProperty<ChipModel> thirdSIDModelProperty() {
+	public final ObjectProperty<ChipModel> thirdSIDModelProperty() {
 		return thirdSIDModel.property();
 	}
 
@@ -371,16 +371,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_HARD_SID_6581);
 
 	@Override
-	public int getHardsid6581() {
+	public final int getHardsid6581() {
 		return hardsid6581.get();
 	}
 
 	@Override
-	public void setHardsid6581(int hardsid6581) {
+	public final void setHardsid6581(int hardsid6581) {
 		this.hardsid6581.set(hardsid6581);
 	}
 
-	public ObjectProperty<Integer> hardsid6581Property() {
+	public final ObjectProperty<Integer> hardsid6581Property() {
 		return hardsid6581.property();
 	}
 
@@ -388,28 +388,28 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_HARD_SID_8580);
 
 	@Override
-	public int getHardsid8580() {
+	public final int getHardsid8580() {
 		return hardsid8580.get();
 	}
 
 	@Override
-	public void setHardsid8580(int hardsid8580) {
+	public final void setHardsid8580(int hardsid8580) {
 		this.hardsid8580.set(hardsid8580);
 	}
 
-	public ObjectProperty<Integer> hardsid8580Property() {
+	public final ObjectProperty<Integer> hardsid8580Property() {
 		return hardsid8580.property();
 	}
 
 	private LazyListField<DeviceMapping> sidBlasterDeviceList = new LazyListField<>();
 
-	public void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
+	public final void setSidBlasterDeviceList(List<DeviceMapping> sidBlasterDeviceList) {
 		this.sidBlasterDeviceList.set(sidBlasterDeviceList);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@Override
-	public List<DeviceMapping> getSidBlasterDeviceList() {
+	public final List<DeviceMapping> getSidBlasterDeviceList() {
 		return sidBlasterDeviceList
 				.get(() -> DEFAULT_SIDBLASTER_DEVICES.stream().map(DeviceMapping::new).collect(toList()));
 	}
@@ -418,16 +418,16 @@ public class EmulationSection implements IEmulationSection {
 			SimpleObjectProperty::new, DEFAULT_SIDBLASTER_WRITE_BUFFER_SIZE);
 
 	@Override
-	public int getSidBlasterWriteBufferSize() {
+	public final int getSidBlasterWriteBufferSize() {
 		return sidBlasterWriteBufferSize.get();
 	}
 
 	@Override
-	public void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
+	public final void setSidBlasterWriteBufferSize(int sidBlasterWriteBufferSize) {
 		this.sidBlasterWriteBufferSize.set(sidBlasterWriteBufferSize);
 	}
 
-	public ObjectProperty<Integer> sidBlasterWriteBufferSizeProperty() {
+	public final ObjectProperty<Integer> sidBlasterWriteBufferSizeProperty() {
 		return sidBlasterWriteBufferSize.property();
 	}
 
@@ -435,16 +435,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_SIDBLASTER_SERIAL_NUMBER);
 
 	@Override
-	public String getSidBlasterSerialNumber() {
+	public final String getSidBlasterSerialNumber() {
 		return sidBlasterSerialNumber.get();
 	}
 
 	@Override
-	public void setSidBlasterSerialNumber(String sidBlasterSerialNumber) {
+	public final void setSidBlasterSerialNumber(String sidBlasterSerialNumber) {
 		this.sidBlasterSerialNumber.set(sidBlasterSerialNumber);
 	}
 
-	public StringProperty sidBlasterSerialNumberProperty() {
+	public final StringProperty sidBlasterSerialNumberProperty() {
 		return sidBlasterSerialNumber.property();
 	}
 
@@ -452,16 +452,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSIDDEV_HOST);
 
 	@Override
-	public String getNetSIDDevHost() {
+	public final String getNetSIDDevHost() {
 		return netSidDevHost.get();
 	}
 
 	@Override
-	public void setNetSIDDevHost(String hostname) {
+	public final void setNetSIDDevHost(String hostname) {
 		this.netSidDevHost.set(hostname);
 	}
 
-	public StringProperty netSidDevHostProperty() {
+	public final StringProperty netSidDevHostProperty() {
 		return netSidDevHost.property();
 	}
 
@@ -469,16 +469,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSIDDEV_PORT);
 
 	@Override
-	public int getNetSIDDevPort() {
+	public final int getNetSIDDevPort() {
 		return netSidDevPort.get();
 	}
 
 	@Override
-	public void setNetSIDDevPort(int port) {
+	public final void setNetSIDDevPort(int port) {
 		this.netSidDevPort.set(port);
 	}
 
-	public ObjectProperty<Integer> netSidDevPortProperty() {
+	public final ObjectProperty<Integer> netSidDevPortProperty() {
 		return netSidDevPort.property();
 	}
 
@@ -487,16 +487,16 @@ public class EmulationSection implements IEmulationSection {
 
 	@Enumerated(EnumType.STRING)
 	@Override
-	public Ultimate64Mode getUltimate64Mode() {
+	public final Ultimate64Mode getUltimate64Mode() {
 		return ultimate64Mode.get();
 	}
 
 	@Override
-	public void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
+	public final void setUltimate64Mode(Ultimate64Mode ultimate64Mode) {
 		this.ultimate64Mode.set(ultimate64Mode);
 	}
 
-	public ObjectProperty<Ultimate64Mode> ultimate64ModeProperty() {
+	public final ObjectProperty<Ultimate64Mode> ultimate64ModeProperty() {
 		return ultimate64Mode.property();
 	}
 
@@ -504,16 +504,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ULTIMATE64_HOST);
 
 	@Override
-	public String getUltimate64Host() {
+	public final String getUltimate64Host() {
 		return ultimate64Host.get();
 	}
 
 	@Override
-	public void setUltimate64Host(String hostname) {
+	public final void setUltimate64Host(String hostname) {
 		this.ultimate64Host.set(hostname);
 	}
 
-	public StringProperty ultimate64HostProperty() {
+	public final StringProperty ultimate64HostProperty() {
 		return ultimate64Host.property();
 	}
 
@@ -521,16 +521,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ULTIMATE64_PORT);
 
 	@Override
-	public int getUltimate64Port() {
+	public final int getUltimate64Port() {
 		return ultimate64Port.get();
 	}
 
 	@Override
-	public void setUltimate64Port(int port) {
+	public final void setUltimate64Port(int port) {
 		this.ultimate64Port.set(port);
 	}
 
-	public ObjectProperty<Integer> ultimate64PortProperty() {
+	public final ObjectProperty<Integer> ultimate64PortProperty() {
 		return ultimate64Port.property();
 	}
 
@@ -538,61 +538,61 @@ public class EmulationSection implements IEmulationSection {
 			SimpleObjectProperty::new, DEFAULT_ULTIMATE64_SYNC_DELAY);
 
 	@Override
-	public int getUltimate64SyncDelay() {
+	public final int getUltimate64SyncDelay() {
 		return ultimate64SyncDelay.get();
 	}
 
 	@Override
-	public void setUltimate64SyncDelay(int syncDelay) {
+	public final void setUltimate64SyncDelay(int syncDelay) {
 		this.ultimate64SyncDelay.set(syncDelay);
 	}
 
-	public ObjectProperty<Integer> ultimate64SyncDelayProperty() {
+	public final ObjectProperty<Integer> ultimate64SyncDelayProperty() {
 		return ultimate64SyncDelay.property();
 	}
 
 	private ShadowField<StringProperty, String> ultimate64StreamingTarget = new ShadowField<>(SimpleStringProperty::new,
 			DEFAULT_ULTIMATE64_STREAMING_TARGET);
 
-	public String getUltimate64StreamingTarget() {
+	public final String getUltimate64StreamingTarget() {
 		return ultimate64StreamingTarget.get();
 	}
 
-	public void setUltimate64StreamingTarget(String ultimate64StreamingTarget) {
+	public final void setUltimate64StreamingTarget(String ultimate64StreamingTarget) {
 		this.ultimate64StreamingTarget.set(ultimate64StreamingTarget);
 	}
 
-	public StringProperty ultimate64StreamingTargetProperty() {
+	public final StringProperty ultimate64StreamingTargetProperty() {
 		return ultimate64StreamingTarget.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> ultimate64StreamingAudioPort = new ShadowField<>(
 			SimpleObjectProperty::new, DEFAULT_ULTIMATE64_STREAMING_AUDIO_PORT);
 
-	public int getUltimate64StreamingAudioPort() {
+	public final int getUltimate64StreamingAudioPort() {
 		return ultimate64StreamingAudioPort.get();
 	}
 
-	public void setUltimate64StreamingAudioPort(int ultimate64StreamingAudioPort) {
+	public final void setUltimate64StreamingAudioPort(int ultimate64StreamingAudioPort) {
 		this.ultimate64StreamingAudioPort.set(ultimate64StreamingAudioPort);
 	}
 
-	public ObjectProperty<Integer> ultimate64StreamingAudioPortProperty() {
+	public final ObjectProperty<Integer> ultimate64StreamingAudioPortProperty() {
 		return ultimate64StreamingAudioPort.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> ultimate64StreamingVideoPort = new ShadowField<>(
 			SimpleObjectProperty::new, DEFAULT_ULTIMATE64_STREAMING_VIDEO_PORT);
 
-	public int getUltimate64StreamingVideoPort() {
+	public final int getUltimate64StreamingVideoPort() {
 		return ultimate64StreamingVideoPort.get();
 	}
 
-	public void setUltimate64StreamingVideoPort(int ultimate64StreamingVideoPort) {
+	public final void setUltimate64StreamingVideoPort(int ultimate64StreamingVideoPort) {
 		this.ultimate64StreamingVideoPort.set(ultimate64StreamingVideoPort);
 	}
 
-	public ObjectProperty<Integer> ultimate64StreamingVideoPortProperty() {
+	public final ObjectProperty<Integer> ultimate64StreamingVideoPortProperty() {
 		return ultimate64StreamingVideoPort.property();
 	}
 
@@ -600,48 +600,48 @@ public class EmulationSection implements IEmulationSection {
 			SimpleObjectProperty::new, DEFAULT_CONNECTORS);
 
 	@Enumerated(EnumType.STRING)
-	public Connectors getAppServerConnectors() {
+	public final Connectors getAppServerConnectors() {
 		return this.appServerConnectors.get();
 	}
 
 	@Parameter(names = { "--appServerConnectors" }, descriptionKey = "APP_SERVER_CONNECTORS", order = 0)
-	public void setAppServerConnectors(Connectors appServerConnectors) {
+	public final void setAppServerConnectors(Connectors appServerConnectors) {
 		this.appServerConnectors.set(appServerConnectors);
 	}
 
-	public ObjectProperty<Connectors> appServerConnectorsProperty() {
+	public final ObjectProperty<Connectors> appServerConnectorsProperty() {
 		return appServerConnectors.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> appServerPort = new ShadowField<>(SimpleObjectProperty::new,
 			DEFAULT_APP_SERVER_PORT);
 
-	public int getAppServerPort() {
+	public final int getAppServerPort() {
 		return appServerPort.get();
 	}
 
 	@Parameter(names = { "--appServerPort" }, descriptionKey = "APP_SERVER_PORT", order = 1)
-	public void setAppServerPort(int port) {
+	public final void setAppServerPort(int port) {
 		this.appServerPort.set(port);
 	}
 
-	public ObjectProperty<Integer> appServerPortProperty() {
+	public final ObjectProperty<Integer> appServerPortProperty() {
 		return appServerPort.property();
 	}
 
 	private ShadowField<ObjectProperty<Integer>, Integer> appServerSecurePort = new ShadowField<>(
 			SimpleObjectProperty::new, DEFAULT_APP_SERVER_SECURE_PORT);
 
-	public int getAppServerSecurePort() {
+	public final int getAppServerSecurePort() {
 		return appServerSecurePort.get();
 	}
 
 	@Parameter(names = { "--appServerSecurePort" }, descriptionKey = "APP_SERVER_SECURE_PORT", order = 2)
-	public void setAppServerSecurePort(int securePort) {
+	public final void setAppServerSecurePort(int securePort) {
 		this.appServerSecurePort.set(securePort);
 	}
 
-	public ObjectProperty<Integer> appServerSecurePortProperty() {
+	public final ObjectProperty<Integer> appServerSecurePortProperty() {
 		return appServerSecurePort.property();
 	}
 
@@ -652,17 +652,17 @@ public class EmulationSection implements IEmulationSection {
 	@XmlJavaTypeAdapter(FileXmlAdapter.class)
 	@JsonSerialize(using = FileToStringSerializer.class)
 	@JsonDeserialize(using = FileToStringDeserializer.class)
-	public File getAppServerKeystoreFile() {
+	public final File getAppServerKeystoreFile() {
 		return this.appServerKeystore.get();
 	}
 
 	@Parameter(names = {
 			"--appServerKeystore" }, descriptionKey = "APP_SERVER_KEYSTORE", converter = FileToStringConverter.class, order = 3)
-	public void setAppServerKeystoreFile(File appServerKeystoreFile) {
+	public final void setAppServerKeystoreFile(File appServerKeystoreFile) {
 		this.appServerKeystore.set(appServerKeystoreFile);
 	}
 
-	public ObjectProperty<File> appServerKeystoreFile() {
+	public final ObjectProperty<File> appServerKeystoreFile() {
 		return this.appServerKeystore.property();
 	}
 
@@ -675,31 +675,31 @@ public class EmulationSection implements IEmulationSection {
 	@Transient
 	@XmlTransient
 	@JsonIgnore
-	public String getAppServerKeystorePassword() {
+	public final String getAppServerKeystorePassword() {
 		return appServerKeystorePassword.get();
 	}
 
 	@Parameter(names = { "--appServerKeystorePassword" }, descriptionKey = "APP_SERVER_KEYSTORE_PASSWORD", order = 4)
-	public void setAppServerKeystorePassword(String appServerKeyStorePassword) {
+	public final void setAppServerKeystorePassword(String appServerKeyStorePassword) {
 		this.appServerKeystorePassword.set(appServerKeyStorePassword);
 	}
 
-	public StringProperty appServerKeystorePasswordProperty() {
+	public final StringProperty appServerKeystorePasswordProperty() {
 		return appServerKeystorePassword.property();
 	}
 
 	private ShadowField<StringProperty, String> appServerKeyAlias = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public String getAppServerKeyAlias() {
+	public final String getAppServerKeyAlias() {
 		return appServerKeyAlias.get();
 	}
 
 	@Parameter(names = { "--appServerKeyAlias" }, descriptionKey = "APP_SERVER_KEY_ALIAS", order = 5)
-	public void setAppServerKeyAlias(String appServerKeyAlias) {
+	public final void setAppServerKeyAlias(String appServerKeyAlias) {
 		this.appServerKeyAlias.set(appServerKeyAlias);
 	}
 
-	public StringProperty appServerKeyAliasProperty() {
+	public final StringProperty appServerKeyAliasProperty() {
 		return appServerKeyAlias.property();
 	}
 
@@ -712,16 +712,16 @@ public class EmulationSection implements IEmulationSection {
 	@Transient
 	@XmlTransient
 	@JsonIgnore
-	public String getAppServerKeyPassword() {
+	public final String getAppServerKeyPassword() {
 		return appServerKeyPassword.get();
 	}
 
 	@Parameter(names = { "--appServerKeyPassword" }, descriptionKey = "APP_SERVER_KEY_PASSWORD", order = 6)
-	public void setAppServerKeyPassword(String appServerKeyPassword) {
+	public final void setAppServerKeyPassword(String appServerKeyPassword) {
 		this.appServerKeyPassword.set(appServerKeyPassword);
 	}
 
-	public StringProperty appServerKeyPasswordProperty() {
+	public final StringProperty appServerKeyPasswordProperty() {
 		return appServerKeyPassword.property();
 	}
 
@@ -729,16 +729,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_USE_FILTER);
 
 	@Override
-	public boolean isFilter() {
+	public final boolean isFilter() {
 		return filter.get();
 	}
 
 	@Override
-	public void setFilter(boolean isFilter) {
+	public final void setFilter(boolean isFilter) {
 		this.filter.set(isFilter);
 	}
 
-	public BooleanProperty filterProperty() {
+	public final BooleanProperty filterProperty() {
 		return filter.property();
 	}
 
@@ -746,16 +746,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_USE_STEREO_FILTER);
 
 	@Override
-	public boolean isStereoFilter() {
+	public final boolean isStereoFilter() {
 		return stereoFilter.get();
 	}
 
 	@Override
-	public void setStereoFilter(boolean isFilter) {
+	public final void setStereoFilter(boolean isFilter) {
 		this.stereoFilter.set(isFilter);
 	}
 
-	public BooleanProperty stereoFilterProperty() {
+	public final BooleanProperty stereoFilterProperty() {
 		return stereoFilter.property();
 	}
 
@@ -763,16 +763,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_USE_3SID_FILTER);
 
 	@Override
-	public boolean isThirdSIDFilter() {
+	public final boolean isThirdSIDFilter() {
 		return thirdSIDFilter.get();
 	}
 
 	@Override
-	public void setThirdSIDFilter(boolean isFilter) {
+	public final void setThirdSIDFilter(boolean isFilter) {
 		this.thirdSIDFilter.set(isFilter);
 	}
 
-	public BooleanProperty thirdSIDFilterProperty() {
+	public final BooleanProperty thirdSIDFilterProperty() {
 		return thirdSIDFilter.property();
 	}
 
@@ -780,16 +780,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_SID_NUM_TO_READ);
 
 	@Override
-	public int getSidNumToRead() {
+	public final int getSidNumToRead() {
 		return sidNumToRead.get();
 	}
 
 	@Override
-	public void setSidNumToRead(int sidNumToRead) {
+	public final void setSidNumToRead(int sidNumToRead) {
 		this.sidNumToRead.set(sidNumToRead);
 	}
 
-	public ObjectProperty<Integer> sidNumToReadProperty() {
+	public final ObjectProperty<Integer> sidNumToReadProperty() {
 		return sidNumToRead.property();
 	}
 
@@ -797,16 +797,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_DIGI_BOOSTED_8580);
 
 	@Override
-	public boolean isDigiBoosted8580() {
+	public final boolean isDigiBoosted8580() {
 		return digiBoosted8580.get();
 	}
 
 	@Override
-	public void setDigiBoosted8580(boolean isDigiBoosted8580) {
+	public final void setDigiBoosted8580(boolean isDigiBoosted8580) {
 		this.digiBoosted8580.set(isDigiBoosted8580);
 	}
 
-	public BooleanProperty digiBoosted8580Property() {
+	public final BooleanProperty digiBoosted8580Property() {
 		return digiBoosted8580.property();
 	}
 
@@ -814,16 +814,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_FAKE_STEREO);
 
 	@Override
-	public boolean isFakeStereo() {
+	public final boolean isFakeStereo() {
 		return fakeStereo.get();
 	}
 
 	@Override
-	public void setFakeStereo(boolean fakeStereo) {
+	public final void setFakeStereo(boolean fakeStereo) {
 		this.fakeStereo.set(fakeStereo);
 	}
 
-	public BooleanProperty fakeStereoProperty() {
+	public final BooleanProperty fakeStereoProperty() {
 		return fakeStereo.property();
 	}
 
@@ -831,16 +831,16 @@ public class EmulationSection implements IEmulationSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_DUAL_SID_BASE);
 
 	@Override
-	public int getDualSidBase() {
+	public final int getDualSidBase() {
 		return dualSidBase.get().intValue();
 	}
 
 	@Override
-	public void setDualSidBase(int dualSidBase) {
+	public final void setDualSidBase(int dualSidBase) {
 		this.dualSidBase.set(dualSidBase);
 	}
 
-	public IntegerProperty dualSidBaseProperty() {
+	public final IntegerProperty dualSidBaseProperty() {
 		return dualSidBase.property();
 	}
 
@@ -848,16 +848,16 @@ public class EmulationSection implements IEmulationSection {
 			number -> new SimpleIntegerProperty(number.intValue()), DEFAULT_THIRD_SID_BASE);
 
 	@Override
-	public int getThirdSIDBase() {
+	public final int getThirdSIDBase() {
 		return thirdSIDBase.get().intValue();
 	}
 
 	@Override
-	public void setThirdSIDBase(int dualSidBase) {
+	public final void setThirdSIDBase(int dualSidBase) {
 		this.thirdSIDBase.set(dualSidBase);
 	}
 
-	public IntegerProperty thirdSIDBaseProperty() {
+	public final IntegerProperty thirdSIDBaseProperty() {
 		return thirdSIDBase.property();
 	}
 
@@ -865,16 +865,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_FORCE_STEREO_TUNE);
 
 	@Override
-	public boolean isForceStereoTune() {
+	public final boolean isForceStereoTune() {
 		return forceStereoTune.get();
 	}
 
 	@Override
-	public void setForceStereoTune(boolean isForceStereoTune) {
+	public final void setForceStereoTune(boolean isForceStereoTune) {
 		this.forceStereoTune.set(isForceStereoTune);
 	}
 
-	public BooleanProperty forceStereoTuneProperty() {
+	public final BooleanProperty forceStereoTuneProperty() {
 		return forceStereoTune.property();
 	}
 
@@ -882,16 +882,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_FORCE_3SID_TUNE);
 
 	@Override
-	public boolean isForce3SIDTune() {
+	public final boolean isForce3SIDTune() {
 		return force3SIDTune.get();
 	}
 
 	@Override
-	public void setForce3SIDTune(boolean isForceStereoTune) {
+	public final void setForce3SIDTune(boolean isForceStereoTune) {
 		this.force3SIDTune.set(isForceStereoTune);
 	}
 
-	public BooleanProperty force3SIDTuneProperty() {
+	public final BooleanProperty force3SIDTuneProperty() {
 		return force3SIDTune.property();
 	}
 
@@ -899,16 +899,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_VOICE1);
 
 	@Override
-	public boolean isMuteVoice1() {
+	public final boolean isMuteVoice1() {
 		return muteVoice1.get();
 	}
 
 	@Override
-	public void setMuteVoice1(boolean mute) {
+	public final void setMuteVoice1(boolean mute) {
 		muteVoice1.set(mute);
 	}
 
-	public BooleanProperty muteVoice1Property() {
+	public final BooleanProperty muteVoice1Property() {
 		return muteVoice1.property();
 	}
 
@@ -916,16 +916,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_VOICE2);
 
 	@Override
-	public boolean isMuteVoice2() {
+	public final boolean isMuteVoice2() {
 		return muteVoice2.get();
 	}
 
 	@Override
-	public void setMuteVoice2(boolean mute) {
+	public final void setMuteVoice2(boolean mute) {
 		muteVoice2.set(mute);
 	}
 
-	public BooleanProperty muteVoice2Property() {
+	public final BooleanProperty muteVoice2Property() {
 		return muteVoice2.property();
 	}
 
@@ -933,16 +933,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_VOICE3);
 
 	@Override
-	public boolean isMuteVoice3() {
+	public final boolean isMuteVoice3() {
 		return muteVoice3.get();
 	}
 
 	@Override
-	public void setMuteVoice3(boolean mute) {
+	public final void setMuteVoice3(boolean mute) {
 		muteVoice3.set(mute);
 	}
 
-	public BooleanProperty muteVoice3Property() {
+	public final BooleanProperty muteVoice3Property() {
 		return muteVoice3.property();
 	}
 
@@ -950,16 +950,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_VOICE4);
 
 	@Override
-	public boolean isMuteVoice4() {
+	public final boolean isMuteVoice4() {
 		return muteVoice4.get();
 	}
 
 	@Override
-	public void setMuteVoice4(boolean mute) {
+	public final void setMuteVoice4(boolean mute) {
 		muteVoice4.set(mute);
 	}
 
-	public BooleanProperty muteVoice4Property() {
+	public final BooleanProperty muteVoice4Property() {
 		return muteVoice4.property();
 	}
 
@@ -967,16 +967,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_STEREO_VOICE1);
 
 	@Override
-	public boolean isMuteStereoVoice1() {
+	public final boolean isMuteStereoVoice1() {
 		return muteStereoVoice1.get();
 	}
 
 	@Override
-	public void setMuteStereoVoice1(boolean mute) {
+	public final void setMuteStereoVoice1(boolean mute) {
 		muteStereoVoice1.set(mute);
 	}
 
-	public BooleanProperty muteStereoVoice1Property() {
+	public final BooleanProperty muteStereoVoice1Property() {
 		return muteStereoVoice1.property();
 	}
 
@@ -984,16 +984,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_STEREO_VOICE2);
 
 	@Override
-	public boolean isMuteStereoVoice2() {
+	public final boolean isMuteStereoVoice2() {
 		return muteStereoVoice2.get();
 	}
 
 	@Override
-	public void setMuteStereoVoice2(boolean mute) {
+	public final void setMuteStereoVoice2(boolean mute) {
 		muteStereoVoice2.set(mute);
 	}
 
-	public BooleanProperty muteStereoVoice2Property() {
+	public final BooleanProperty muteStereoVoice2Property() {
 		return muteStereoVoice2.property();
 	}
 
@@ -1001,16 +1001,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_STEREO_VOICE3);
 
 	@Override
-	public boolean isMuteStereoVoice3() {
+	public final boolean isMuteStereoVoice3() {
 		return muteStereoVoice3.get();
 	}
 
 	@Override
-	public void setMuteStereoVoice3(boolean mute) {
+	public final void setMuteStereoVoice3(boolean mute) {
 		muteStereoVoice3.set(mute);
 	}
 
-	public BooleanProperty muteStereoVoice3Property() {
+	public final BooleanProperty muteStereoVoice3Property() {
 		return muteStereoVoice3.property();
 	}
 
@@ -1018,16 +1018,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_STEREO_VOICE4);
 
 	@Override
-	public boolean isMuteStereoVoice4() {
+	public final boolean isMuteStereoVoice4() {
 		return muteStereoVoice4.get();
 	}
 
 	@Override
-	public void setMuteStereoVoice4(boolean mute) {
+	public final void setMuteStereoVoice4(boolean mute) {
 		muteStereoVoice4.set(mute);
 	}
 
-	public BooleanProperty muteStereoVoice4Property() {
+	public final BooleanProperty muteStereoVoice4Property() {
 		return muteStereoVoice4.property();
 	}
 
@@ -1035,16 +1035,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_THIRDSID_VOICE1);
 
 	@Override
-	public boolean isMuteThirdSIDVoice1() {
+	public final boolean isMuteThirdSIDVoice1() {
 		return muteThirdSIDVoice1.get();
 	}
 
 	@Override
-	public void setMuteThirdSIDVoice1(boolean mute) {
+	public final void setMuteThirdSIDVoice1(boolean mute) {
 		muteThirdSIDVoice1.set(mute);
 	}
 
-	public BooleanProperty muteThirdSIDVoice1Property() {
+	public final BooleanProperty muteThirdSIDVoice1Property() {
 		return muteThirdSIDVoice1.property();
 	}
 
@@ -1052,16 +1052,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_THIRDSID_VOICE2);
 
 	@Override
-	public boolean isMuteThirdSIDVoice2() {
+	public final boolean isMuteThirdSIDVoice2() {
 		return muteThirdSIDVoice2.get();
 	}
 
 	@Override
-	public void setMuteThirdSIDVoice2(boolean mute) {
+	public final void setMuteThirdSIDVoice2(boolean mute) {
 		muteThirdSIDVoice2.set(mute);
 	}
 
-	public BooleanProperty muteThirdSIDVoice2Property() {
+	public final BooleanProperty muteThirdSIDVoice2Property() {
 		return muteThirdSIDVoice2.property();
 	}
 
@@ -1069,16 +1069,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_THIRDSID_VOICE3);
 
 	@Override
-	public boolean isMuteThirdSIDVoice3() {
+	public final boolean isMuteThirdSIDVoice3() {
 		return muteThirdSIDVoice3.get();
 	}
 
 	@Override
-	public void setMuteThirdSIDVoice3(boolean mute) {
+	public final void setMuteThirdSIDVoice3(boolean mute) {
 		muteThirdSIDVoice3.set(mute);
 	}
 
-	public BooleanProperty muteThirdSIDVoice3Property() {
+	public final BooleanProperty muteThirdSIDVoice3Property() {
 		return muteThirdSIDVoice3.property();
 	}
 
@@ -1086,16 +1086,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_MUTE_THIRDSID_VOICE4);
 
 	@Override
-	public boolean isMuteThirdSIDVoice4() {
+	public final boolean isMuteThirdSIDVoice4() {
 		return muteThirdSIDVoice4.get();
 	}
 
 	@Override
-	public void setMuteThirdSIDVoice4(boolean mute) {
+	public final void setMuteThirdSIDVoice4(boolean mute) {
 		muteThirdSIDVoice4.set(mute);
 	}
 
-	public BooleanProperty muteThirdSIDVoice4Property() {
+	public final BooleanProperty muteThirdSIDVoice4Property() {
 		return muteThirdSIDVoice4.property();
 	}
 
@@ -1103,16 +1103,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_FILTER_6581);
 
 	@Override
-	public String getNetSIDFilter6581() {
+	public final String getNetSIDFilter6581() {
 		return netSIDFilter6581.get();
 	}
 
 	@Override
-	public void setNetSIDFilter6581(String netSIDFilter6581) {
+	public final void setNetSIDFilter6581(String netSIDFilter6581) {
 		this.netSIDFilter6581.set(netSIDFilter6581);
 	}
 
-	public StringProperty netSIDFilter6581Property() {
+	public final StringProperty netSIDFilter6581Property() {
 		return netSIDFilter6581.property();
 	}
 
@@ -1120,16 +1120,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_STEREO_FILTER_6581);
 
 	@Override
-	public String getNetSIDStereoFilter6581() {
+	public final String getNetSIDStereoFilter6581() {
 		return netSIDStereoFilter6581.get();
 	}
 
 	@Override
-	public void setNetSIDStereoFilter6581(String netSIDFilter6581) {
+	public final void setNetSIDStereoFilter6581(String netSIDFilter6581) {
 		this.netSIDStereoFilter6581.set(netSIDFilter6581);
 	}
 
-	public StringProperty netSIDStereoFilter6581Property() {
+	public final StringProperty netSIDStereoFilter6581Property() {
 		return netSIDStereoFilter6581.property();
 	}
 
@@ -1137,16 +1137,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_3SID_FILTER_6581);
 
 	@Override
-	public String getNetSIDThirdSIDFilter6581() {
+	public final String getNetSIDThirdSIDFilter6581() {
 		return netSID3rdSIDFilter6581.get();
 	}
 
 	@Override
-	public void setNetSIDThirdSIDFilter6581(String netSIDFilter6581) {
+	public final void setNetSIDThirdSIDFilter6581(String netSIDFilter6581) {
 		this.netSID3rdSIDFilter6581.set(netSIDFilter6581);
 	}
 
-	public StringProperty netSID3rdSIDFilter6581Property() {
+	public final StringProperty netSID3rdSIDFilter6581Property() {
 		return netSID3rdSIDFilter6581.property();
 	}
 
@@ -1154,16 +1154,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_FILTER_8580);
 
 	@Override
-	public String getNetSIDFilter8580() {
+	public final String getNetSIDFilter8580() {
 		return netSIDFilter8580.get();
 	}
 
 	@Override
-	public void setNetSIDFilter8580(String netSIDFilter8580) {
+	public final void setNetSIDFilter8580(String netSIDFilter8580) {
 		this.netSIDFilter8580.set(netSIDFilter8580);
 	}
 
-	public StringProperty netSIDFilter8580Property() {
+	public final StringProperty netSIDFilter8580Property() {
 		return netSIDFilter8580.property();
 	}
 
@@ -1171,16 +1171,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_STEREO_FILTER_8580);
 
 	@Override
-	public String getNetSIDStereoFilter8580() {
+	public final String getNetSIDStereoFilter8580() {
 		return netSIDStereoFilter8580.get();
 	}
 
 	@Override
-	public void setNetSIDStereoFilter8580(String netSIDFilter8580) {
+	public final void setNetSIDStereoFilter8580(String netSIDFilter8580) {
 		this.netSIDStereoFilter8580.set(netSIDFilter8580);
 	}
 
-	public StringProperty netSIDStereoFilter858Property() {
+	public final StringProperty netSIDStereoFilter858Property() {
 		return netSIDStereoFilter8580.property();
 	}
 
@@ -1188,16 +1188,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_NETSID_3SID_FILTER_8580);
 
 	@Override
-	public String getNetSIDThirdSIDFilter8580() {
+	public final String getNetSIDThirdSIDFilter8580() {
 		return netSID3rdSIDFilter8580.get();
 	}
 
 	@Override
-	public void setNetSIDThirdSIDFilter8580(String netSIDFilter8580) {
+	public final void setNetSIDThirdSIDFilter8580(String netSIDFilter8580) {
 		this.netSID3rdSIDFilter8580.set(netSIDFilter8580);
 	}
 
-	public StringProperty netSID3rdSIDFilter8580Property() {
+	public final StringProperty netSID3rdSIDFilter8580Property() {
 		return netSID3rdSIDFilter8580.property();
 	}
 
@@ -1205,16 +1205,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_FILTER_6581);
 
 	@Override
-	public String getFilter6581() {
+	public final String getFilter6581() {
 		return filter6581.get();
 	}
 
 	@Override
-	public void setFilter6581(String filter6581) {
+	public final void setFilter6581(String filter6581) {
 		this.filter6581.set(filter6581);
 	}
 
-	public StringProperty filter6581Property() {
+	public final StringProperty filter6581Property() {
 		return filter6581.property();
 	}
 
@@ -1222,16 +1222,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_STEREO_FILTER_6581);
 
 	@Override
-	public String getStereoFilter6581() {
+	public final String getStereoFilter6581() {
 		return stereoFilter6581.get();
 	}
 
 	@Override
-	public void setStereoFilter6581(String filter6581) {
+	public final void setStereoFilter6581(String filter6581) {
 		this.stereoFilter6581.set(filter6581);
 	}
 
-	public StringProperty stereoFilter6581Property() {
+	public final StringProperty stereoFilter6581Property() {
 		return stereoFilter6581.property();
 	}
 
@@ -1239,16 +1239,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_3SID_FILTER_6581);
 
 	@Override
-	public String getThirdSIDFilter6581() {
+	public final String getThirdSIDFilter6581() {
 		return thirdSIDFilter6581.get();
 	}
 
 	@Override
-	public void setThirdSIDFilter6581(String filter6581) {
+	public final void setThirdSIDFilter6581(String filter6581) {
 		this.thirdSIDFilter6581.set(filter6581);
 	}
 
-	public StringProperty thirdSIDFilter6581Property() {
+	public final StringProperty thirdSIDFilter6581Property() {
 		return thirdSIDFilter6581.property();
 	}
 
@@ -1256,16 +1256,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_FILTER_8580);
 
 	@Override
-	public String getFilter8580() {
+	public final String getFilter8580() {
 		return filter8580.get();
 	}
 
 	@Override
-	public void setFilter8580(String filter8580) {
+	public final void setFilter8580(String filter8580) {
 		this.filter8580.set(filter8580);
 	}
 
-	public StringProperty filter8580Property() {
+	public final StringProperty filter8580Property() {
 		return filter8580.property();
 	}
 
@@ -1273,16 +1273,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_STEREO_FILTER_8580);
 
 	@Override
-	public String getStereoFilter8580() {
+	public final String getStereoFilter8580() {
 		return stereoFilter8580.get();
 	}
 
 	@Override
-	public void setStereoFilter8580(String filter8580) {
+	public final void setStereoFilter8580(String filter8580) {
 		this.stereoFilter8580.set(filter8580);
 	}
 
-	public StringProperty stereoFilter8580Property() {
+	public final StringProperty stereoFilter8580Property() {
 		return stereoFilter8580.property();
 	}
 
@@ -1290,16 +1290,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_3SID_FILTER_8580);
 
 	@Override
-	public String getThirdSIDFilter8580() {
+	public final String getThirdSIDFilter8580() {
 		return thirdSIDFilter8580.get();
 	}
 
 	@Override
-	public void setThirdSIDFilter8580(String filter8580) {
+	public final void setThirdSIDFilter8580(String filter8580) {
 		this.thirdSIDFilter8580.set(filter8580);
 	}
 
-	public StringProperty thirdSIDFilter8580Property() {
+	public final StringProperty thirdSIDFilter8580Property() {
 		return thirdSIDFilter8580.property();
 	}
 
@@ -1307,16 +1307,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_FILTER_6581);
 
 	@Override
-	public String getReSIDfpFilter6581() {
+	public final String getReSIDfpFilter6581() {
 		return reSIDfpFilter6581.get();
 	}
 
 	@Override
-	public void setReSIDfpFilter6581(String reSIDfpFilter6581) {
+	public final void setReSIDfpFilter6581(String reSIDfpFilter6581) {
 		this.reSIDfpFilter6581.set(reSIDfpFilter6581);
 	}
 
-	public StringProperty reSIDfpFilter6581Property() {
+	public final StringProperty reSIDfpFilter6581Property() {
 		return reSIDfpFilter6581.property();
 	}
 
@@ -1324,16 +1324,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_STEREO_FILTER_6581);
 
 	@Override
-	public String getReSIDfpStereoFilter6581() {
+	public final String getReSIDfpStereoFilter6581() {
 		return reSIDfpStereoFilter6581.get();
 	}
 
 	@Override
-	public void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
+	public final void setReSIDfpStereoFilter6581(String reSIDfpFilter6581) {
 		this.reSIDfpStereoFilter6581.set(reSIDfpFilter6581);
 	}
 
-	public StringProperty reSIDfpStereoFilter6581Property() {
+	public final StringProperty reSIDfpStereoFilter6581Property() {
 		return reSIDfpStereoFilter6581.property();
 	}
 
@@ -1341,16 +1341,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_3SID_FILTER_6581);
 
 	@Override
-	public String getReSIDfpThirdSIDFilter6581() {
+	public final String getReSIDfpThirdSIDFilter6581() {
 		return reSIDfp3rdSIDFilter6581.get();
 	}
 
 	@Override
-	public void setReSIDfpThirdSIDFilter6581(String reSIDfpFilter6581) {
+	public final void setReSIDfpThirdSIDFilter6581(String reSIDfpFilter6581) {
 		this.reSIDfp3rdSIDFilter6581.set(reSIDfpFilter6581);
 	}
 
-	public StringProperty reSIDfp3rdSIDFilter6581Property() {
+	public final StringProperty reSIDfp3rdSIDFilter6581Property() {
 		return reSIDfp3rdSIDFilter6581.property();
 	}
 
@@ -1358,16 +1358,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_FILTER_8580);
 
 	@Override
-	public String getReSIDfpFilter8580() {
+	public final String getReSIDfpFilter8580() {
 		return reSIDfpFilter8580.get();
 	}
 
 	@Override
-	public void setReSIDfpFilter8580(String reSIDfpFilter8580) {
+	public final void setReSIDfpFilter8580(String reSIDfpFilter8580) {
 		this.reSIDfpFilter8580.set(reSIDfpFilter8580);
 	}
 
-	public StringProperty reSIDfpFilter8580Property() {
+	public final StringProperty reSIDfpFilter8580Property() {
 		return reSIDfpFilter8580.property();
 	}
 
@@ -1375,16 +1375,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_STEREO_FILTER_8580);
 
 	@Override
-	public String getReSIDfpStereoFilter8580() {
+	public final String getReSIDfpStereoFilter8580() {
 		return reSIDfpStereoFilter8580.get();
 	}
 
 	@Override
-	public void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
+	public final void setReSIDfpStereoFilter8580(String reSIDfpFilter8580) {
 		this.reSIDfpStereoFilter8580.set(reSIDfpFilter8580);
 	}
 
-	public StringProperty reSIDfpStereoFilter858Property() {
+	public final StringProperty reSIDfpStereoFilter858Property() {
 		return reSIDfpStereoFilter8580.property();
 	}
 
@@ -1392,16 +1392,16 @@ public class EmulationSection implements IEmulationSection {
 			DEFAULT_ReSIDfp_3SID_FILTER_8580);
 
 	@Override
-	public String getReSIDfpThirdSIDFilter8580() {
+	public final String getReSIDfpThirdSIDFilter8580() {
 		return reSIDfp3rdSIDFilter8580.get();
 	}
 
 	@Override
-	public void setReSIDfpThirdSIDFilter8580(String reSIDfpFilter8580) {
+	public final void setReSIDfpThirdSIDFilter8580(String reSIDfpFilter8580) {
 		this.reSIDfp3rdSIDFilter8580.set(reSIDfpFilter8580);
 	}
 
-	public StringProperty reSIDfp3rdSIDFilter8580Property() {
+	public final StringProperty reSIDfp3rdSIDFilter8580Property() {
 		return reSIDfp3rdSIDFilter8580.property();
 	}
 
@@ -1411,12 +1411,12 @@ public class EmulationSection implements IEmulationSection {
 	@XmlTransient
 	@JsonIgnore
 	@Override
-	public OverrideSection getOverrideSection() {
+	public final OverrideSection getOverrideSection() {
 		return overrideSection;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

@@ -64,7 +64,7 @@ public class IniReader {
 
 	private boolean dirty;
 
-	public boolean isDirty() {
+	public final boolean isDirty() {
 		return dirty;
 	}
 
@@ -80,11 +80,11 @@ public class IniReader {
 		initialize(new BufferedReader(input));
 	}
 
-	public String[] listSections() {
+	public final String[] listSections() {
 		return sections.keySet().toArray(new String[] {});
 	}
 
-	public String[] sectionProperties(String section) {
+	public final String[] sectionProperties(String section) {
 		Map<String, String> properties = sections.get(section);
 		return properties.keySet().toArray(new String[] {});
 	}
@@ -137,7 +137,7 @@ public class IniReader {
 		}
 	}
 
-	public void save(String outputname) throws IOException {
+	public final void save(String outputname) throws IOException {
 		try (PrintWriter wr = new PrintWriter(new File(outputname))) {
 			for (String section : sections.keySet()) {
 				Map<String, String> unsaved = sections.get(section);
@@ -172,7 +172,7 @@ public class IniReader {
 		dirty = false;
 	}
 
-	public String getPropertyString(final String section, final String key, final String defaultValue) {
+	public final String getPropertyString(final String section, final String key, final String defaultValue) {
 		final Map<String, String> map = sections.get(section);
 		if (map != null) {
 			final String value = map.get(key);
@@ -183,7 +183,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public float[] getPropertyFloats(final String section, final String key, final float[] defaultValue) {
+	public final float[] getPropertyFloats(final String section, final String key, final float[] defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			double[] doubles = asList(s.split(",")).stream().map(String::trim).mapToDouble(Double::parseDouble)
@@ -197,7 +197,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public float getPropertyFloat(final String section, final String key, final float defaultValue) {
+	public final float getPropertyFloat(final String section, final String key, final float defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Float.parseFloat(s);
@@ -205,7 +205,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int[] getPropertyInts(final String section, final String key, final int[] defaultValue) {
+	public final int[] getPropertyInts(final String section, final String key, final int[] defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return asList(s.split(",")).stream().map(String::trim).mapToInt(Integer::parseInt).toArray();
@@ -213,7 +213,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public int getPropertyInt(final String section, final String key, final int defaultValue) {
+	public final int getPropertyInt(final String section, final String key, final int defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null && !s.equals("")) {
 			return Integer.decode(s);
@@ -221,7 +221,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public boolean getPropertyBool(final String section, final String key, final boolean defaultValue) {
+	public final boolean getPropertyBool(final String section, final String key, final boolean defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return Boolean.valueOf(s);
@@ -229,7 +229,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public char getPropertyChar(final String section, final String key, final char defaultValue) {
+	public final char getPropertyChar(final String section, final String key, final char defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null && s.length() > 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
 			return s.substring(1, s.length() - 1).toCharArray()[0];
@@ -237,7 +237,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public double getPropertyTime(final String section, final String key, final double defaultValue) {
+	public final double getPropertyTime(final String section, final String key, final double defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return parseTime(s);
@@ -245,7 +245,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public File getPropertyFile(final String section, final String key, final File defaultValue) {
+	public final File getPropertyFile(final String section, final String key, final File defaultValue) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			return newFile(null, s);
@@ -253,7 +253,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<T> class1) {
+	public final <T extends Enum<T>> T getPropertyEnum(String section, String key, T defaultValue, Class<T> class1) {
 		final String s = getPropertyString(section, key, null);
 		if (s != null) {
 			try {
@@ -267,7 +267,7 @@ public class IniReader {
 		return defaultValue;
 	}
 
-	public void setPropertyArray(String section, String key, Object... value) {
+	public final void setPropertyArray(String section, String key, Object... value) {
 		StringBuilder valueAsString = new StringBuilder();
 		for (int i = 0; i < value.length; i++) {
 			valueAsString.append(value[i]);
@@ -278,7 +278,7 @@ public class IniReader {
 		setProperty(section, key, valueAsString);
 	}
 
-	public void setProperty(String section, String key, Object value) {
+	public final void setProperty(String section, String key, Object value) {
 		Map<String, String> settings = sections.get(section);
 		if (settings == null) {
 			sections.put(section, settings = new HashMap<>());

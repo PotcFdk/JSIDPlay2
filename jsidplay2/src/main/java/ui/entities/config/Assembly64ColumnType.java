@@ -9,7 +9,7 @@ public enum Assembly64ColumnType {
 		this.defaultWidth = defaultWidth;
 	}
 
-	public double getDefaultWidth() {
+	public final double getDefaultWidth() {
 		return defaultWidth;
 	}
 
