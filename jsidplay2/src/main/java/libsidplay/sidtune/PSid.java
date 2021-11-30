@@ -625,9 +625,4 @@ class PSid extends Prg {
 				: 2500;
 	}
 
-	@Override
-	protected boolean canStoreSidModel() {
-		return true;
-	}
-
 }

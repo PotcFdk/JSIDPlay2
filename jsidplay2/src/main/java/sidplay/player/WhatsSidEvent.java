@@ -2,6 +2,8 @@ package sidplay.player;
 
 import static java.lang.Thread.MIN_PRIORITY;
 import static libsidplay.components.pla.PLA.MAX_SIDS;
+import static libsidplay.sidtune.SidTune.RESET;
+import static libsidplay.sidtune.SidTune.Model.UNKNOWN;
 
 import java.io.IOException;
 
@@ -11,6 +13,7 @@ import libsidplay.config.IEmulationSection;
 import libsidplay.config.ISidPlay2Section;
 import libsidplay.config.IWhatsSidSection;
 import libsidplay.sidtune.SidTune;
+import libsidplay.sidtune.SidTune.Model;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
@@ -87,26 +90,25 @@ public class WhatsSidEvent extends Event {
 	}
 
 	private void setWhatsSidDetectedChipModel(MusicInfoWithConfidenceBean result) throws IOException, SidTuneError {
+		SidTune tune = player.getTune();
 		ISidPlay2Section sidPlay2Section = player.getConfig().getSidplay2Section();
 		IEmulationSection emulationSection = player.getConfig().getEmulationSection();
 
-		if (!SidTune.canStoreSidModel(player.getTune())) {
-			final String infoDir = result.getMusicInfo().getInfoDir();
-			SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
+		final String infoDir = result.getMusicInfo().getInfoDir();
+		SidTune detectedTune = SidTune.load(PathUtils.getFile(infoDir, sidPlay2Section.getHvsc(), null));
 
-			boolean update = false;
-			for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
-				ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
+		boolean update = false;
+		for (int sidNum = 0; sidNum < MAX_SIDS; sidNum++) {
+			ChipModel detectedChipModel = detectedTune.getInfo().getSIDModel(sidNum).asChipModel();
+			Model tuneSidModel = tune != RESET ? tune.getInfo().getSIDModel(0) : UNKNOWN;
 
-				if (detectedChipModel != null
-						&& detectedChipModel != ChipModel.getChipModel(emulationSection, player.getTune(), sidNum)) {
-					emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
-					update = true;
-				}
+			if (tuneSidModel == UNKNOWN && detectedChipModel != null) {
+				emulationSection.getOverrideSection().getSidModel()[sidNum] = detectedChipModel;
+				update = true;
 			}
-			if (update) {
-				player.updateSIDChipConfiguration();
-			}
+		}
+		if (update) {
+			player.updateSIDChipConfiguration();
 		}
 	}
 }
