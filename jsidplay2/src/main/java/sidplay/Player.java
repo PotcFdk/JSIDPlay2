@@ -53,6 +53,7 @@ import libsidplay.common.Event.Phase;
 import libsidplay.common.EventScheduler;
 import libsidplay.common.HardwareSIDBuilder;
 import libsidplay.common.Mixer;
+import libsidplay.common.OS;
 import libsidplay.common.SIDBuilder;
 import libsidplay.common.SIDEmu;
 import libsidplay.common.SIDListener;
@@ -1167,7 +1168,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	public final String getCredits(final String version) {
 		final StringBuffer credits = new StringBuffer();
 		credits.append("Operating System:\n");
-		credits.append(System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")\n");
+		credits.append(OS.get() + "\n");
 		credits.append("\nJava version:\n");
 		credits.append(System.getProperty("java.runtime.version"));
 		credits.append("\n" + System.getProperty("sun.arch.data.model") + " bits");

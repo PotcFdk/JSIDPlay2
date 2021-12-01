@@ -22,4 +22,9 @@ public enum OS {
 	public static OS get() {
 		return os;
 	}
+
+	@Override
+	public String toString() {
+		return System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")";
+	}
 }
