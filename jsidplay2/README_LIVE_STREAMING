@@ -1,0 +1,12 @@
+Start/Stop/Restart NGINX:
+-------------------------
+sudo /usr/local/nginx/sbin/nginx
+sudo /usr/local/nginx/sbin/nginx -s quit
+
+Set recommended NGINX settings for RTMP:
+----------------------------------------
+sudo vi /usr/local/nginx/conf/nginx.conf
+
+Example configuration:
+----------------------
+src/main/deploy/jsidplay2/nginx.conf
