@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>kickassembler</groupId>
 			<artifactId>kickassembler</artifactId>
-			<version>5.15</version>
+			<version>5.23</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import kickass.AssemblerToolbox;
-import kickass.common.errors.AsmError;
+import kickass.common.diagnostics.IDiagnostic;
 import kickass.common.errors.printers.OneLineErrorPrinter;
 import kickass.common.exceptions.AsmErrorException;
 import kickass.parsing.sourcelocation.SourceRange;
@@ -28,77 +28,80 @@ public class KickAssembler {
 	 * @return assembly bytes of the ASM resource
 	 */
 	public KickAssemblerResult assemble(String resource, InputStream asm, final Map<String, String> globals) {
-		final EvaluationState var1 = new EvaluationState();
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+
+		final EvaluationState state = new EvaluationState();
 		try {
-			ByteArrayOutputStream result = new ByteArrayOutputStream();
-			var1.outputMgr = (a, b) -> result;
-			HashtableValue var5 = new HashtableValue().addStringValues(globals);
-			var5.lock((SourceRange) null);
-			var1.namespaceMgr.getSystemNamespace().getScope()
-					.defineErrorIfExist("cmdLineVars", var1x -> new ConstantValueHolder(var5), var1,
+			state.outputMgr = (a, b) -> result;
+			state.c64OutputMgr.inputfileWithoutExt = resource;
+			state.parameters.outputfile = resource + ".bin";
+			state.segmentMgr.defaultSegment
+					.setAllowOverlappingMemoryBlocks(state.parameters.allowOverlappingMemoryblocks);
+
+			HashtableValue globalValues = new HashtableValue().addStringValues(globals);
+			globalValues.lock((SourceRange) null);
+			state.namespaceMgr.getSystemNamespace().getScope()
+					.defineErrorIfExist("cmdLineVars", x -> new ConstantValueHolder(globalValues), state,
 							"ERROR! cmdLineVars is already defined", (SourceRange) null)
 					.setStatus(SymbolStatus.defined);
 
-			var1.prepareNewPass();
-			AsmNode var15 = AssemblerToolbox.loadAndLexOrError(asm, resource, var1, (SourceRange) null);
-			if (var15 == null) {
-				throw new RuntimeException("Parse error for assembler resource: " + resource);
-			}
-			NamespaceNode var51 = new NamespaceNode(var15, var1.namespaceMgr.getRootNamespace());
-			var15 = var51.executeMetaRegistrations(var1);
-			AsmNodeList var52 = new AsmNodeList(new ArrayList<>());
-			AsmNode var53 = var52.executeMetaRegistrations(var1);
-			AsmNodePair var54 = new AsmNodePair(var53, var15);
-			ScopeAndSymbolPageNode var55 = new ScopeAndSymbolPageNode(var54,
-					var1.namespaceMgr.getSystemNamespace().getScope());
-			AsmNode var56 = var55.executePrepass(var1);
-			printErrorsAndTerminate(var1);
+			state.prepareNewPass();
+			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, state, (SourceRange) null);
+			NamespaceNode namespaceNode = new NamespaceNode(asmNode, state.namespaceMgr.getRootNamespace());
+			asmNode = namespaceNode.executeMetaRegistrations(state);
+			AsmNodeList asmNodeList = new AsmNodeList(new ArrayList<>());
+			AsmNodePair asmNodePair = new AsmNodePair(asmNodeList.executeMetaRegistrations(state), asmNode);
+			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodePair,
+					state.namespaceMgr.getSystemNamespace().getScope());
+			AsmNode currentAsmNode = scopeAndSymbolPageNode.executePrepass(state);
+			this.printErrorsAndTerminate(state);
+
 			do {
-				var1.prepareNewPass();
-				var56 = var56.executePass(var1);
-				var1.segmentMgr.postPassExecution();
-				printErrorsAndTerminate(var1);
-				if (!var1.getMadeMetaProgress() && !var56.isFinished()) {
-					var1.prepareNewPass();
-					var1.setFailOnInvalidValue(true);
-					var56.executePass(var1);
+				state.prepareNewPass();
+				currentAsmNode = currentAsmNode.executePass(state);
+				state.segmentMgr.postPassExecution();
+				this.printErrorsAndTerminate(state);
+				if (!state.getMadeMetaProgress() && !currentAsmNode.isFinished()) {
+					state.prepareNewPass();
+					state.setFailOnInvalidValue(true);
+					currentAsmNode.executePass(state);
 					throw new AsmErrorException(
-							"Made no progress and can\'t solve the program. You should have gotten an error. Contact the author!",
+							"Made no progress and can't solve the program.. You should have gotten an error. Contact the author!",
 							(SourceRange) null);
 				}
-			} while (!var56.isFinished());
-			MainOutputReciever var25 = new MainOutputReciever(var1.outputMgr, var1.log);
-			var56.deliverOutput(var25);
-			var25.finish();
-			var1.segmentMgr.postPassesExecution();
-			printErrorsAndTerminate(var1);
-			var1.c64OutputMgr.postPassExecution();
-			printErrorsAndTerminate(var1);
-			var1.segmentMgr.doOutputAfterPasses();
-			printErrorsAndTerminate(var1);
+			} while (!currentAsmNode.isFinished());
+			MainOutputReciever mainOutputReceiver = new MainOutputReciever(state.outputMgr, state.log);
+			currentAsmNode.deliverOutput(mainOutputReceiver);
+			mainOutputReceiver.finish();
+			state.segmentMgr.postPassesExecution();
+			this.printErrorsAndTerminate(state);
+			state.c64OutputMgr.postPassExecution();
+			this.printErrorsAndTerminate(state);
+			state.segmentMgr.doOutputAfterPasses();
+			this.printErrorsAndTerminate(state);
 
-			Map<String, Integer> resolvedSymbols = var1.scopeMgr.getResolvedSymbols().stream()
+			Map<String, Integer> resolvedSymbols = state.scopeMgr.getResolvedSymbols().stream()
 					.collect(Collectors.toMap(res -> res.name, res -> res.address, (entry1, entry2) -> entry2));
 			return new KickAssemblerResult(result.toByteArray(), resolvedSymbols);
 		} catch (AsmErrorException e) {
-			AsmError asmError = e.getError();
-			asmError.setCallStack(var1.callStack);
-			System.err.println(OneLineErrorPrinter.instance.printError(asmError, var1));
-			throw new AsmErrorException(asmError);
+			IDiagnostic asmError = e.getError();
+			asmError.setCallStack(state.callStack);
+			System.err.println(OneLineErrorPrinter.instance.printError(asmError, state));
+			throw new AsmErrorException(asmError, false);
 		} catch (Exception e) {
 			throw new RuntimeException("Internal Error!", e);
 		}
 	}
 
 	private void printErrorsAndTerminate(EvaluationState evaluationState) {
-		if (!evaluationState.errorMgr.getErrors().isEmpty()) {
-			int n = evaluationState.errorMgr.getErrors().size();
+		if (!evaluationState.diagnosticMgr.getErrors().isEmpty()) {
+			int n = evaluationState.diagnosticMgr.getErrors().size();
 			System.err.println("Got " + n + " errors while parsing:");
 			for (int i = 0; i < n; ++i) {
-				AsmError asmError = evaluationState.errorMgr.getErrors().get(i);
+				IDiagnostic asmError = evaluationState.diagnosticMgr.getErrors().get(i);
 				System.err.println("  " + OneLineErrorPrinter.instance.printError(asmError, evaluationState));
 			}
-			throw new AsmErrorException(evaluationState.errorMgr.getErrors().get(0));
+			throw new AsmErrorException(evaluationState.diagnosticMgr.getErrors().get(0), false);
 		}
 	}
 

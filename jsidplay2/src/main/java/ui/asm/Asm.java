@@ -19,7 +19,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import kickass.common.errors.AsmError;
+import kickass.common.diagnostics.IDiagnostic;
 import kickass.common.exceptions.AsmErrorException;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
@@ -138,7 +138,7 @@ public class Asm extends C64VBox implements UIPart {
 		}
 	}
 
-	private void highlightError(AsmError e) {
+	private void highlightError(IDiagnostic e) {
 		int pos = 0;
 		int line = 0;
 		if (e.getRange() != null) {
