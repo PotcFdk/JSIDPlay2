@@ -60,12 +60,13 @@ public class TuneDirectory extends Directory {
 					new DirEntry(0, iso88591ToPetscii(author.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
 		}
 		if (released != null) {
-			dirEntries.add(
-					new DirEntry(0, iso88591ToPetscii(released.toUpperCase(Locale.US), MAXLEN_FILENAME), FILETYPE_NONE));
+			dirEntries.add(new DirEntry(0, iso88591ToPetscii(released.toUpperCase(Locale.US), MAXLEN_FILENAME),
+					FILETYPE_NONE));
 		}
-		dirEntries.add(
-				new DirEntry(0, iso88591ToPetscii("FORMAT" + "=" + tune.getClass().getSimpleName().toUpperCase(Locale.US),
-						MAXLEN_FILENAME), FILETYPE_NONE));
+		dirEntries.add(new DirEntry(0,
+				iso88591ToPetscii("FORMAT" + "=" + tune.getClass().getSimpleName().toUpperCase(Locale.US),
+						MAXLEN_FILENAME),
+				FILETYPE_NONE));
 		dirEntries
 				.add(new DirEntry(0,
 						iso88591ToPetscii("PLAYERID" + "="
@@ -76,7 +77,8 @@ public class TuneDirectory extends Directory {
 				iso88591ToPetscii("CLOCKFREQ" + "=" + String.valueOf(info.getClockSpeed()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
 		dirEntries.add(new DirEntry(0,
-				iso88591ToPetscii("SPEED" + "=" + String.valueOf(tune.getSongSpeed(1)), MAXLEN_FILENAME), FILETYPE_NONE));
+				iso88591ToPetscii("SPEED" + "=" + String.valueOf(tune.getSongSpeed(1)), MAXLEN_FILENAME),
+				FILETYPE_NONE));
 		dirEntries.add(new DirEntry(0,
 				iso88591ToPetscii("SIDMODEL1" + "=" + String.valueOf(info.getSIDModel(0)), MAXLEN_FILENAME),
 				FILETYPE_NONE));
@@ -96,10 +98,7 @@ public class TuneDirectory extends Directory {
 		dirEntries.add(new DirEntry(0,
 				iso88591ToPetscii("TUNE_LGTH" + "=" + String.valueOf(lengthFnct.getAsDouble()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
-		dirEntries.add(new DirEntry(0,
-				iso88591ToPetscii("AUDIO" + "="
-						+ (info.getSIDChipBase(1) != 0 ? info.getSIDChipBase(2) != 0 ? "3-SID" : "STEREO" : "MONO"),
-						MAXLEN_FILENAME),
+		dirEntries.add(new DirEntry(0, iso88591ToPetscii("AUDIO" + "=" + info.getAudioTypeString(), MAXLEN_FILENAME),
 				FILETYPE_NONE));
 		dirEntries.add(new DirEntry(0,
 				iso88591ToPetscii("CHIP_BASE1" + "=" + String.valueOf(info.getSIDChipBase(0)), MAXLEN_FILENAME),
@@ -126,9 +125,9 @@ public class TuneDirectory extends Directory {
 		dirEntries.add(new DirEntry(0,
 				iso88591ToPetscii("INIT_ADDR" + "=" + String.valueOf(info.getInitAddr()), MAXLEN_FILENAME),
 				FILETYPE_NONE));
-		dirEntries.add(
-				new DirEntry(0, iso88591ToPetscii("PLY_ADDR" + "=" + String.valueOf(info.getPlayAddr()), MAXLEN_FILENAME),
-						FILETYPE_NONE));
+		dirEntries.add(new DirEntry(0,
+				iso88591ToPetscii("PLY_ADDR" + "=" + String.valueOf(info.getPlayAddr()), MAXLEN_FILENAME),
+				FILETYPE_NONE));
 		dirEntries.add(new DirEntry(0, iso88591ToPetscii(
 				"FILE_DATE" + "=" + String.valueOf(
 						Instant.ofEpochMilli(tuneFile.lastModified()).atZone(ZoneId.systemDefault()).toLocalDateTime()),

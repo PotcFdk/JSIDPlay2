@@ -35,8 +35,6 @@ public class KickAssembler {
 			state.outputMgr = (a, b) -> result;
 			state.c64OutputMgr.inputfileWithoutExt = resource;
 			state.parameters.outputfile = resource + ".bin";
-			state.segmentMgr.defaultSegment
-					.setAllowOverlappingMemoryBlocks(state.parameters.allowOverlappingMemoryblocks);
 
 			HashtableValue globalValues = new HashtableValue().addStringValues(globals);
 			globalValues.lock((SourceRange) null);
@@ -46,14 +44,12 @@ public class KickAssembler {
 					.setStatus(SymbolStatus.defined);
 
 			state.prepareNewPass();
-			AsmNode asmNode = AssemblerToolbox.loadAndLexOrError(asm, resource, state, (SourceRange) null);
-			NamespaceNode namespaceNode = new NamespaceNode(asmNode, state.namespaceMgr.getRootNamespace());
-			asmNode = namespaceNode.executeMetaRegistrations(state);
-			AsmNodeList asmNodeList = new AsmNodeList(new ArrayList<>());
-			AsmNodePair asmNodePair = new AsmNodePair(asmNodeList.executeMetaRegistrations(state), asmNode);
-			ScopeAndSymbolPageNode scopeAndSymbolPageNode = new ScopeAndSymbolPageNode(asmNodePair,
-					state.namespaceMgr.getSystemNamespace().getScope());
-			AsmNode currentAsmNode = scopeAndSymbolPageNode.executePrepass(state);
+			AsmNode currentAsmNode = new ScopeAndSymbolPageNode(
+					new AsmNodePair(new AsmNodeList(new ArrayList<>()).executeMetaRegistrations(state),
+							new NamespaceNode(
+									AssemblerToolbox.loadAndLexOrError(asm, resource, state, (SourceRange) null),
+									state.namespaceMgr.getRootNamespace()).executeMetaRegistrations(state)),
+					state.namespaceMgr.getSystemNamespace().getScope()).executePrepass(state);
 			this.printErrorsAndTerminate(state);
 
 			do {

@@ -79,7 +79,7 @@ public class HVSCEntry {
 			this.sidModel3 = info.getSIDModel(2);
 			this.compatibility = info.getCompatibility();
 			this.tuneLength = lengthFnct.getAsDouble();
-			this.audio = info.getSIDChipBase(1) != 0 ? info.getSIDChipBase(2) != 0 ? "3-SID" : "Stereo" : "Mono";
+			this.audio = info.getAudioTypeString();
 			this.sidChipBase1 = info.getSIDChipBase(0);
 			this.sidChipBase2 = info.getSIDChipBase(1);
 			this.sidChipBase3 = info.getSIDChipBase(2);

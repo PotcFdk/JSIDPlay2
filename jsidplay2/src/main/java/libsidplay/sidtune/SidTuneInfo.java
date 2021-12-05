@@ -233,4 +233,7 @@ public class SidTuneInfo {
 		}
 	}
 
+	public String getAudioTypeString() {
+		return getSIDChipBase(1) != 0 ? getSIDChipBase(2) != 0 ? "3-SID" : "Stereo" : "Mono";
+	}
 }
