@@ -130,7 +130,7 @@ public class ExSIDBuilder implements HardwareSIDBuilder, Mixer {
 		} else if (OS.get() == OS.MAC) {
 			printMacInstallationHint();
 		}
-		System.err.println("Maybe you just forgot to plugin in your USB devices?");
+		System.err.println("Maybe you just forgot to plug-in your USB devices?");
 		System.err.println();
 	}
 
