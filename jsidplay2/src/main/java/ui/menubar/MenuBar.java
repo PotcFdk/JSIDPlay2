@@ -905,7 +905,10 @@ public class MenuBar extends C64VBox implements UIPart {
 	}
 
 	private void addView(String fxId) {
-		util.getConfig().getViews().add(new ViewEntity(fxId));
+		if (!util.getConfig().getViews().stream().map(ViewEntity::getFxId).filter(fxId::equals).findFirst()
+				.isPresent()) {
+			util.getConfig().getViews().add(new ViewEntity(fxId));
+		}
 	}
 
 	private void chooseCartridge(final CartridgeType type) {
