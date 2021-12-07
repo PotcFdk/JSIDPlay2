@@ -25,93 +25,93 @@ public class MusicInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idMusicInfo", nullable = false)
-	public int getIdMusicInfo() {
+	public final int getIdMusicInfo() {
 		return idMusicInfo;
 	}
 
-	public void setIdMusicInfo(int idMusicInfo) {
+	public final void setIdMusicInfo(int idMusicInfo) {
 		this.idMusicInfo = idMusicInfo;
 	}
 
 	private Integer songNo;
 
 	@Column(name = "songNo")
-	public Integer getSongNo() {
+	public final Integer getSongNo() {
 		return songNo;
 	}
 
-	public void setSongNo(Integer songNo) {
+	public final void setSongNo(Integer songNo) {
 		this.songNo = songNo;
 	}
 
 	private String title;
 
 	@Column(name = "Title", nullable = false)
-	public String getTitle() {
+	public final String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public final void setTitle(String title) {
 		this.title = title;
 	}
 
 	private String artist;
 
 	@Column(name = "Artist", nullable = false)
-	public String getArtist() {
+	public final String getArtist() {
 		return artist;
 	}
 
-	public void setArtist(String artist) {
+	public final void setArtist(String artist) {
 		this.artist = artist;
 	}
 
 	private String album;
 
 	@Column(name = "Album", nullable = false)
-	public String getAlbum() {
+	public final String getAlbum() {
 		return album;
 	}
 
-	public void setAlbum(String album) {
+	public final void setAlbum(String album) {
 		this.album = album;
 	}
 
 	private String fileDir;
 
 	@Column(name = "FileDir")
-	public String getFileDir() {
+	public final String getFileDir() {
 		return fileDir;
 	}
 
-	public void setFileDir(String fileDir) {
+	public final void setFileDir(String fileDir) {
 		this.fileDir = fileDir;
 	}
 
 	private String infoDir;
 
 	@Column(name = "InfoDir")
-	public String getInfoDir() {
+	public final String getInfoDir() {
 		return infoDir;
 	}
 
-	public void setInfoDir(String infoDir) {
+	public final void setInfoDir(String infoDir) {
 		this.infoDir = infoDir;
 	}
 
 	private double audioLength;
 
 	@Column(name = "audio_length")
-	public double getAudioLength() {
+	public final double getAudioLength() {
 		return audioLength;
 	}
 
-	public void setAudioLength(double audioLength) {
+	public final void setAudioLength(double audioLength) {
 		this.audioLength = audioLength;
 	}
 
 	@Transient
-	public MusicInfoBean toBean() {
+	public final MusicInfoBean toBean() {
 		MusicInfoBean result = new MusicInfoBean();
 		result.setSongNo(songNo);
 		result.setTitle(title);
@@ -124,7 +124,7 @@ public class MusicInfo {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

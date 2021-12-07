@@ -20,11 +20,11 @@ public class Years {
 
 	@Id
 	@Column(name = "YE_ID")
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
@@ -32,27 +32,27 @@ public class Years {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "YE_ID")
-	public Games getGames() {
+	public final Games getGames() {
 		return games;
 	}
 
-	public void setGames(Games games) {
+	public final void setGames(Games games) {
 		this.games = games;
 	}
 
 	private int year;
 
 	@Column(name = "YEAR")
-	public int getYear() {
+	public final int getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public final void setYear(int year) {
 		this.year = year;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

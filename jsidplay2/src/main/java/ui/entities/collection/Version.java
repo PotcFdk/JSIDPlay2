@@ -17,26 +17,26 @@ public class Version {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
 	private int version;
 
-	public int getVersion() {
+	public final int getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public final void setVersion(int version) {
 		this.version = version;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

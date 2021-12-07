@@ -14,22 +14,22 @@ public class Config {
 	private int majorVersion;
 
 	@Column(name = "MAJORVERSION")
-	public int getMajorVersion() {
+	public final int getMajorVersion() {
 		return majorVersion;
 	}
 
-	public void setMajorVersion(int majorVersion) {
+	public final void setMajorVersion(int majorVersion) {
 		this.majorVersion = majorVersion;
 	}
 
 	private int minorVersion;
 
 	@Column(name = "MINORVERSION")
-	public int getMinorVersion() {
+	public final int getMinorVersion() {
 		return minorVersion;
 	}
 
-	public void setMinorVersion(int minorVersion) {
+	public final void setMinorVersion(int minorVersion) {
 		this.minorVersion = minorVersion;
 	}
 
@@ -37,16 +37,16 @@ public class Config {
 
 	@Id
 	@Column(name = "OFFICIALUPDATE")
-	public int getOfficialUpdate() {
+	public final int getOfficialUpdate() {
 		return officialUpdate;
 	}
 
-	public void setOfficialUpdate(int officialUpdate) {
+	public final void setOfficialUpdate(int officialUpdate) {
 		this.officialUpdate = officialUpdate;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

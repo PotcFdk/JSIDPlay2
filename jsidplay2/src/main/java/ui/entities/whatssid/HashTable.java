@@ -24,48 +24,48 @@ public class HashTable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idHashTable", nullable = false)
-	public int getIdHashTable() {
+	public final int getIdHashTable() {
 		return idHashTable;
 	}
 
-	public void setIdHashTable(int idHashTable) {
+	public final void setIdHashTable(int idHashTable) {
 		this.idHashTable = idHashTable;
 	}
 
 	private int hash;
 
 	@Column(name = "HASH", nullable = false)
-	public int getHash() {
+	public final int getHash() {
 		return hash;
 	}
 
-	public void setHash(int hash) {
+	public final void setHash(int hash) {
 		this.hash = hash;
 	}
 
 	private int id;
 
 	@Column(name = "ID", nullable = false)
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
 	private int time;
 
 	@Column(name = "Time", nullable = false)
-	public int getTime() {
+	public final int getTime() {
 		return time;
 	}
 
-	public void setTime(int time) {
+	public final void setTime(int time) {
 		this.time = time;
 	}
 
-	public HashBean toBean() {
+	public final HashBean toBean() {
 		HashBean result = new HashBean();
 		result.setHash(hash);
 		result.setId(id);
@@ -74,7 +74,7 @@ public class HashTable {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

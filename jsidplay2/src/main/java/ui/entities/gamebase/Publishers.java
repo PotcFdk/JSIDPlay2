@@ -22,11 +22,11 @@ public class Publishers {
 
 	@Id
 	@Column(name = "PU_ID")
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
@@ -34,27 +34,27 @@ public class Publishers {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PU_ID")
-	public Games getGames() {
+	public final Games getGames() {
 		return games;
 	}
 
-	public void setGames(Games games) {
+	public final void setGames(Games games) {
 		this.games = games;
 	}
 
 	private String publisher;
 
 	@Column(name = "PUBLISHER")
-	public String getPublisher() {
+	public final String getPublisher() {
 		return publisher;
 	}
 
-	public void setPublisher(String publisher) {
+	public final void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }
