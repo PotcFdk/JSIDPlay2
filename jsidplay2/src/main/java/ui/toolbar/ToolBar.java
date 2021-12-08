@@ -6,6 +6,7 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import static server.restful.common.Connectors.HTTP;
 import static server.restful.common.Connectors.HTTPS;
 import static server.restful.common.Connectors.HTTP_HTTPS;
+import static sidplay.audio.Audio.getLiveAudio;
 import static ui.common.properties.BindingUtils.bindBidirectional;
 import static ui.common.properties.BindingUtils.bindBidirectionalThreadSafe;
 
@@ -196,9 +197,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		jsidplay2Server = JSIDPlay2Server.getInstance(config);
 
 		audioBox.setConverter(new EnumToStringConverter<Audio>(bundle));
-		audioBox.setItems(FXCollections.<Audio>observableArrayList(Audio.SOUNDCARD, Audio.LIVE_WAV, Audio.LIVE_FLAC,
-				Audio.LIVE_AAC, Audio.LIVE_MP3, Audio.LIVE_FLV, Audio.LIVE_AVI, Audio.LIVE_MP4,
-				Audio.LIVE_VIDEO_STREAMING, Audio.LIVE_SID_REG, Audio.LIVE_SID_DUMP, Audio.COMPARE_MP3));
+		audioBox.setItems(FXCollections.<Audio>observableArrayList(getLiveAudio()));
 		audioBox.valueProperty().addListener((obj, o, n) -> {
 			mp3Browse.setDisable(!Audio.COMPARE_MP3.equals(n));
 			playMP3.setDisable(!Audio.COMPARE_MP3.equals(n));

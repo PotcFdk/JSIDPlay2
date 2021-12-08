@@ -1,8 +1,12 @@
 package sidplay.audio;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 import libsidplay.config.IAudioSection;
@@ -128,4 +132,8 @@ public enum Audio {
 		return getAudioDriver();
 	}
 
+	public final static List<Audio> getLiveAudio() {
+		return Stream.of(values()).filter(audio -> asList(JavaSound.class, ProxyDriver.class, CmpToMP3FileDriver.class)
+				.stream().filter(audio.audioDriverClass::equals).findFirst().isPresent()).collect(toList());
+	}
 }

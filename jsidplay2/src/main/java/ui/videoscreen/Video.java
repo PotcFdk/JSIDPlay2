@@ -540,9 +540,9 @@ public class Video extends C64VBox implements UIPart, VideoDriver {
 
 	private void updateVICChipConfiguration(Consumer<VIC> action, boolean apply) {
 		util.getPlayer().configureVICs(action.andThen(vic -> {
-			if (apply) {
-				vic.getPalEmulation().updatePalette();
-			}
+			if (apply)
+				apply();
+
 		}));
 	}
 
