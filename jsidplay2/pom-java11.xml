@@ -576,20 +576,20 @@
 								<include>builder/resid/resample/*.class</include>
 								<include>builder/resid/resid/*.class</include>
 								<include>builder/resid/residfp/*.class</include>
-								<include>libsidplay/common/OS.class</include>
 								<include>libsidplay/common/ChipModel.class</include>
 								<include>libsidplay/common/CPUClock.class</include>
+								<include>libsidplay/common/OS.class</include>
 								<include>libsidplay/common/Potentiometer.class</include>
 								<include>libsidplay/common/SamplingMethod.class</include>
 								<include>libsidplay/common/SamplingRate.class</include>
 								<include>libsidplay/common/SIDChip.class</include>
+								<include>libsidplay/config/IFilterSection.class</include>
+								<include>libsidplay/config/IWhatsSidSystemProperties.class</include>
 								<include>libsidutils/fingerprinting/IFingerprintMatcher.class</include>
 								<include>libsidutils/fingerprinting/rest/beans/WAVBean.class</include>
 								<include>libsidutils/fingerprinting/rest/beans/MusicInfoBean.class</include>
 								<include>libsidutils/fingerprinting/rest/beans/MusicInfoWithConfidenceBean.class</include>
 								<include>libsidplay/sidtune/PSidHeader.class</include>
-								<include>libsidplay/config/IFilterSection.class</include>
-								<include>sidplay/fingerprinting/*.class</include>
 								<include>sidplay/audio/AudioConfig.class</include>
 								<include>sidplay/audio/AudioDriver.class</include>
 								<include>sidplay/audio/JavaSound.class</include>
@@ -597,6 +597,7 @@
 								<include>sidplay/ini/IniSection.class</include>
 								<include>sidplay/ini/IniReader.class</include>
 								<include>sidplay/ini/IniFilterSection.class</include>
+								<include>sidplay/fingerprinting/*.class</include>
 							</includes>
 							<excludes>
 								<exclude>builder/resid/resid/ReSID.class</exclude>
