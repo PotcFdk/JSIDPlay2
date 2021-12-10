@@ -15,7 +15,7 @@ Recordings are now created using ffmpeg for better performance and quality contr
 
 JSIDPlay2Server:
 ----------------
-startSong parameter added
+startSong parameter added to restful services API
 
 Bugfixes:
 ---------

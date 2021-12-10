@@ -78,6 +78,8 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
  * 
  * 3rd) WhatsSID? Which tune is currently played?
  * 
+ * Use this class to start JSIDPlay2 in server mode!
+ * 
  * @author ken
  *
  */
