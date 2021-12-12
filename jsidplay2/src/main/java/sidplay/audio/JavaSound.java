@@ -3,8 +3,10 @@ package sidplay.audio;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -29,24 +31,6 @@ public class JavaSound implements AudioDriver {
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
 		open(new AudioConfig(audioSection), getMixerInfo(audioSection));
-	}
-
-	public static final Mixer.Info getMixerInfo(IAudioSection audioSection) {
-		List<Info> devices = getDevices();
-		int device = audioSection.getDevice();
-		return device >= 0 && device < devices.size() ? devices.get(device) : (Info) null;
-	}
-
-	public static final List<Info> getDevices() {
-		List<Info> devices = new ArrayList<>();
-		for (Info info : AudioSystem.getMixerInfo()) {
-			Mixer mixer = AudioSystem.getMixer(info);
-			Line.Info lineInfo = new Line.Info(SourceDataLine.class);
-			if (mixer.isLineSupported(lineInfo)) {
-				devices.add(info);
-			}
-		}
-		return devices;
 	}
 
 	/**
@@ -150,6 +134,18 @@ public class JavaSound implements AudioDriver {
 	@Override
 	public boolean isRecording() {
 		return false;
+	}
+
+	public static final Mixer.Info getMixerInfo(IAudioSection audioSection) {
+		List<Info> devices = getDevices();
+		return IntStream.range(0, devices.size()).filter(i -> i == audioSection.getDevice()).mapToObj(devices::get)
+				.findFirst().orElse((Info) null);
+	}
+
+	public static final List<Info> getDevices() {
+		return Arrays.asList(AudioSystem.getMixerInfo()).stream().map(AudioSystem::getMixer)
+				.filter(mixer -> mixer.isLineSupported(new Line.Info(SourceDataLine.class))).map(Mixer::getMixerInfo)
+				.collect(Collectors.toList());
 	}
 
 }
