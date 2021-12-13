@@ -206,7 +206,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioBox.valueProperty().bindBidirectional(audioSection.audioProperty());
 
 		devicesBox.setConverter(new MixerInfoToStringConverter(util.getBundle(), "NO_AUDIO"));
-		devicesBox.setItems(FXCollections.<Info>observableArrayList(JavaSound.getDevices()));
+		devicesBox.setItems(FXCollections.<Info>observableArrayList(JavaSound.getDeviceInfos()));
 		devicesBox.getSelectionModel().select(Math.min(audioSection.getDevice(), devicesBox.getItems().size() - 1));
 
 		samplingBox.setConverter(new EnumToStringConverter<SamplingMethod>(bundle));

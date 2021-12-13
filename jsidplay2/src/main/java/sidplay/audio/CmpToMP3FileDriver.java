@@ -67,12 +67,12 @@ public class CmpToMP3FileDriver extends JavaSound {
 		mp3Buffer = ByteBuffer.allocateDirect(factor * frameSize * Short.BYTES * cfg.getChannels())
 				.order(ByteOrder.nativeOrder());
 
-		super.open(cfg, getMixerInfo(audioSection));
+		super.open(cfg, getDeviceInfo(audioSection));
 		if (buffer().capacity() < mp3Buffer.capacity()) {
 			// Prevent BufferOverflowException
 			cfg.setBufferFrames(mp3Buffer.capacity());
 			cfg.setAudioBufferSize(mp3Buffer.capacity());
-			super.open(cfg, getMixerInfo(audioSection));
+			super.open(cfg, getDeviceInfo(audioSection));
 		}
 	}
 

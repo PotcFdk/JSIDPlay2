@@ -70,15 +70,15 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
 
 /**
  * 
+ * Use this class to start JSIDPlay2 in server mode!
+ * 
  * Server part of JSIDPlay2 to answer server requests like:
  * 
  * 1st) get a stream with SID music as MP3 for the mobile version or
  * 
- * 2nd) get a stream with demo as RTMP for the mobile version or
+ * 2nd) get a stream with demo as RTMP stream for the mobile version or
  * 
  * 3rd) WhatsSID? Which tune is currently played?
- * 
- * Use this class to start JSIDPlay2 in server mode!
  * 
  * @author ken
  *
@@ -392,7 +392,7 @@ public class JSIDPlay2Server {
 
 	public static void main(String[] args) {
 		try {
-			Configuration configuration = new ConfigService(ConfigurationType.XML).load();
+			final Configuration configuration = new ConfigService(ConfigurationType.XML).load();
 
 			JSIDPlay2Server jsidplay2Server = getInstance(configuration);
 			JCommander commander = JCommander.newBuilder().addObject(jsidplay2Server)

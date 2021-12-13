@@ -299,7 +299,7 @@ public class Settings extends SIDDeviceStage {
 		
 		int deviceIndex = 0;
 		
-		for (Info deviceInfo : JavaSound.getDevices()) {
+		for (Info deviceInfo : JavaSound.getDeviceInfos()) {
 			final AudioDevice audioDeviceItem = new AudioDevice(deviceIndex, deviceInfo);
 			audioDevices.add(audioDeviceItem);
 			if (deviceIndex == 0) {

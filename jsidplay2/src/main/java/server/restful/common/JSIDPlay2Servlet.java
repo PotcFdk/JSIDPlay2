@@ -10,6 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -80,10 +83,9 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			} else if (ServletFileUpload.isMultipartContent(request)) {
 				// file upload (multipart/mixed)
 				ByteArrayOutputStream result = new ByteArrayOutputStream();
-				ServletFileUpload fileUpload = new ServletFileUpload();
-				FileItemIterator items = fileUpload.getItemIterator(request);
-				while (items.hasNext()) {
-					try (InputStream itemInputStream = items.next().openStream()) {
+				FileItemIterator itemIterator = new ServletFileUpload().getItemIterator(request);
+				while (itemIterator.hasNext()) {
+					try (InputStream itemInputStream = itemIterator.next().openStream()) {
 						ZipFileUtils.copy(itemInputStream, result);
 					}
 					// just the first file
@@ -104,18 +106,15 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			if (result == null) {
 				return;
 			}
-			String acceptedHeader = request.getHeader(HttpHeaders.ACCEPT);
-			String[] contentTypes = acceptedHeader != null ? acceptedHeader.split(",") : new String[] { null };
-			for (String contentType : contentTypes) {
-				if (contentType == null || MIME_TYPE_JSON.isCompatible(contentType)) {
-					response.setContentType(MIME_TYPE_JSON.toString());
-					new ObjectMapper().writeValue(out, result);
-					break;
-				} else if (MIME_TYPE_XML.isCompatible(contentType)) {
-					response.setContentType(MIME_TYPE_XML.toString());
-					JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
-					break;
-				}
+			Optional<String> optionalContentType = Optional.ofNullable(request.getHeader(HttpHeaders.ACCEPT))
+					.map(accept -> Arrays.asList(accept.split(","))).orElse(Collections.emptyList()).stream()
+					.findFirst();
+			if (!optionalContentType.isPresent() || MIME_TYPE_JSON.isCompatible(optionalContentType.get())) {
+				response.setContentType(MIME_TYPE_JSON.toString());
+				new ObjectMapper().writeValue(out, result);
+			} else if (MIME_TYPE_XML.isCompatible(optionalContentType.get())) {
+				response.setContentType(MIME_TYPE_XML.toString());
+				JAXBContext.newInstance(tClass).createMarshaller().marshal(result, out);
 			}
 		} catch (Exception e) {
 			// ignore client aborts

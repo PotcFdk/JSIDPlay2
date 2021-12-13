@@ -5,7 +5,7 @@ import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_AUDIOSTREA
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_OFF;
 import static libsidplay.Ultimate64.SocketStreamingCommand.SOCKET_CMD_VICSTREAM_ON;
 import static sidplay.audio.AudioConfig.getDefaultBufferSize;
-import static sidplay.audio.JavaSound.getMixerInfo;
+import static sidplay.audio.JavaSound.getDeviceInfo;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -84,7 +84,7 @@ public class Ultimate64Window extends C64Window implements Ultimate64 {
 			int connectionTimeout = whatsSidSection.getConnectionTimeout();
 
 			AudioConfig audioConfig = new AudioConfig(FRAME_RATE, CHANNELS, audioBufferSize.getValue());
-			javaSound.open(audioConfig, getMixerInfo(audioSection));
+			javaSound.open(audioConfig, getDeviceInfo(audioSection));
 
 			whatsSidEnabled = whatsSidSection.isEnable();
 			whatsSidSupport = new WhatsSidSupport(FRAME_RATE, whatsSidSection.getCaptureTime(),

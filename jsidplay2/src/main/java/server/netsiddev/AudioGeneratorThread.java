@@ -342,7 +342,7 @@ public class AudioGeneratorThread extends Thread {
 		final AudioDeviceCompare cmp = new AudioDeviceCompare();
 		int theDeviceIndex = 0;
 
-		for (Info deviceInfo : JavaSound.getDevices()) {
+		for (Info deviceInfo : JavaSound.getDeviceInfos()) {
 			final AudioDevice audioDeviceItem = new AudioDevice(theDeviceIndex, deviceInfo);
 			audioDevices.add(audioDeviceItem);
 			if (theDeviceIndex == 0) {

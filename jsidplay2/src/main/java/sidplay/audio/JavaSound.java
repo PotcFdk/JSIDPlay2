@@ -1,5 +1,8 @@
 package sidplay.audio;
 
+import static javax.sound.sampled.AudioSystem.getMixerInfo;
+import static javax.sound.sampled.AudioSystem.getSourceDataLine;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,7 +33,7 @@ public class JavaSound implements AudioDriver {
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
 			throws IOException, LineUnavailableException, InterruptedException {
-		open(new AudioConfig(audioSection), getMixerInfo(audioSection));
+		open(new AudioConfig(audioSection), getDeviceInfo(audioSection));
 	}
 
 	/**
@@ -40,7 +43,7 @@ public class JavaSound implements AudioDriver {
 	 * @param info mixer info
 	 * @throws LineUnavailableException
 	 */
-	public void open(final AudioConfig cfg, final Mixer.Info info) throws LineUnavailableException {
+	public void open(final AudioConfig cfg, final Info info) throws LineUnavailableException {
 		this.cfg = cfg;
 		boolean signed = true;
 		boolean bigEndian = false;
@@ -48,11 +51,11 @@ public class JavaSound implements AudioDriver {
 		setAudioDevice(info);
 	}
 
-	public void setAudioDevice(final Mixer.Info info) throws LineUnavailableException {
+	public void setAudioDevice(final Info info) throws LineUnavailableException {
 		try {
 			// first close previous dataLine when it is already present
 			close();
-			dataLine = AudioSystem.getSourceDataLine(audioFormat, info);
+			dataLine = getSourceDataLine(audioFormat, info);
 			dataLine.open(dataLine.getFormat(), cfg.getBufferFrames() * Short.BYTES * cfg.getChannels());
 
 			dataLine.start();
@@ -136,14 +139,14 @@ public class JavaSound implements AudioDriver {
 		return false;
 	}
 
-	public static final Mixer.Info getMixerInfo(IAudioSection audioSection) {
-		List<Info> devices = getDevices();
+	public static final Info getDeviceInfo(IAudioSection audioSection) {
+		List<Info> devices = getDeviceInfos();
 		return IntStream.range(0, devices.size()).filter(i -> i == audioSection.getDevice()).mapToObj(devices::get)
 				.findFirst().orElse((Info) null);
 	}
 
-	public static final List<Info> getDevices() {
-		return Arrays.asList(AudioSystem.getMixerInfo()).stream().map(AudioSystem::getMixer)
+	public static final List<Info> getDeviceInfos() {
+		return Arrays.asList(getMixerInfo()).stream().map(AudioSystem::getMixer)
 				.filter(mixer -> mixer.isLineSupported(new Line.Info(SourceDataLine.class))).map(Mixer::getMixerInfo)
 				.collect(Collectors.toList());
 	}
