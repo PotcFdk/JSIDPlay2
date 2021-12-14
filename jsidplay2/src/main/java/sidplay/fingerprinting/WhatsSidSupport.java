@@ -152,7 +152,6 @@ public final class WhatsSidSupport {
 		((Buffer) copy).reset();
 		((Buffer) copy).flip();
 		result.put(copy);
-		((Buffer) copy).limit(whatsSidBufferSize);
 		return result.array();
 	}
 
