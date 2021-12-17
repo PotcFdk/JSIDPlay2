@@ -76,7 +76,7 @@ import ui.entities.config.service.ConfigService.ConfigurationType;
  * 
  * 1st) get a stream with SID music as MP3 for the mobile version or
  * 
- * 2nd) get a stream with demo as RTMP stream for the mobile version or
+ * 2nd) get a stream of a C64 demo as RTMP stream for the mobile version or
  * 
  * 3rd) WhatsSID? Which tune is currently played?
  * 

@@ -54,7 +54,7 @@ public class ProxyDriver implements AudioDriver, VideoDriver, SIDListener, IMOS6
 		driverOne.write();
 		ByteBuffer driverTwoBuffer = driverTwo.buffer();
 		if (driverTwoBuffer != null) {
-			// Driver two's buffer gets the content of driver one's buffer
+			// Driver two's buffer gets the contents of driver one's buffer
 			ByteBuffer readOnlyCopy = driverOne.buffer().asReadOnlyBuffer();
 			((Buffer) readOnlyCopy).flip();
 			((Buffer) driverTwoBuffer).clear();
