@@ -317,6 +317,7 @@ public class JSidPlay2 extends C64Window implements IExtendImageListener {
 				.isPresent()) {
 			util.getConfig().getViews().add(new ViewEntity(fxId));
 		}
+		selectTab(fxId);
 	}
 
 	private void openErrorDialog(String msg) {
