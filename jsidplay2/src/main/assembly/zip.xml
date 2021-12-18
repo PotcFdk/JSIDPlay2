@@ -20,6 +20,7 @@
                 <include>SIDBlasterTool.sh</include>
             </includes>			
 			<filtered>true</filtered>
+			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>${basedir}/src/main/deploy/jsidplay2</directory>

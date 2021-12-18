@@ -19,5 +19,6 @@ startSong parameter added to restful services API
 
 Bugfixes:
 ---------
+File permissions of linux shell scripts fixed
 WhatsSID changes take now effect without restart
 Unboosted digis on 8580 are now equally audible for Dag Lem's ReSID 1.0beta same as for Antti's ReSIDfp
