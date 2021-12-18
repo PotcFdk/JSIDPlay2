@@ -962,7 +962,7 @@
 								<descriptor>src/main/assembly/zip.xml</descriptor>
 							</descriptors>
 							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-							<finalName>${project.artifactId}-${project.version}</finalName>
+							<finalName>${project.artifactId}-${project.version}-java11-${javafx.platform}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 					</execution>
