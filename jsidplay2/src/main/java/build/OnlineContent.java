@@ -121,7 +121,6 @@ public class OnlineContent {
 			if (upxExe != null) {
 				upx();
 			}
-			zipJSidDevice();
 
 			createDemos();
 
@@ -164,24 +163,6 @@ public class OnlineContent {
 		ZipFileUtils.copy(proc.getInputStream(), System.out);
 
 		proc.waitFor();
-	}
-
-	private void zipJSidDevice() throws IOException {
-		String jsidDeviceArtifact = "jsiddevice-" + projectVersion;
-
-		TFile zipFile = new TFile(deployDir, jsidDeviceArtifact + ".zip");
-		TFile src;
-		src = new TFile(deployDir, "JSIDDevice.desktop");
-		src.mv(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, "JSIDDevice.sh");
-		src.mv(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, "jsiddevice.png");
-		src.cp(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, jsidDeviceArtifact + ".jar", TArchiveDetector.NULL);
-		src.cp(new TFile(zipFile, src.getName()));
-		src = new TFile(deployDir, jsidDeviceArtifact + ".exe", TArchiveDetector.NULL);
-		src.cp(new TFile(zipFile, src.getName()));
-		TVFS.umount();
 	}
 
 	private void createDemos() throws IOException {

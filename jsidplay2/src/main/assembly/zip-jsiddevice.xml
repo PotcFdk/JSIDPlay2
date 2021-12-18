@@ -8,11 +8,7 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>${project.build.directory}/standalone</directory>
-			<outputDirectory></outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>${basedir}/src/main/linux/jsidplay2</directory>
+			<directory>${basedir}/src/main/linux/jsiddevice</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
                 <include>*.desktop</include>
@@ -22,12 +18,14 @@
 			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/src/main/deploy/jsidplay2</directory>
+			<directory>${project.build.directory}/deploy</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-                <include>jsidplay2.ico</include>
-                <include>jsidplay2.png</include>
-            </includes>			
+                <include>jsiddevice-${project.version}.exe</include>
+                <include>jsiddevice-${project.version}.jar</include>
+                <include>jsiddevice.png</include>
+            </includes>
+			<filtered>false</filtered>
 		</fileSet>
 	</fileSets>
 </assembly>

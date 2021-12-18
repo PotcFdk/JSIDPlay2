@@ -651,7 +651,7 @@
 									</excludes>
 								</resource>
 								<resource>
-									<directory>src/main/linux</directory>
+									<directory>src/main/linux/jsidplay2</directory>
 									<filtering>true</filtering>
 									<includes>
 										<include>**/*.desktop</include>
@@ -659,7 +659,7 @@
 									</includes>
 								</resource>
 								<resource>
-									<directory>src/main/linux</directory>
+									<directory>src/main/linux/jsidplay2</directory>
 									<filtering>false</filtering>
 									<excludes>
 										<exclude>**/*.desktop</exclude>
@@ -896,14 +896,6 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/zip.xml</descriptor>
-					</descriptors>
-					<outputDirectory>${project.build.directory}/deploy</outputDirectory>
-					<finalName>${project.artifactId}-${project.version}</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
 				<executions>
 					<execution>
 						<id>zip-standalone</id>
@@ -911,6 +903,29 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/zip.xml</descriptor>
+							</descriptors>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<finalName>${project.artifactId}-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+					<execution>
+						<id>zip-jsiddevice</id>
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/zip-jsiddevice.xml</descriptor>
+							</descriptors>
+							<outputDirectory>${project.build.directory}/deploy</outputDirectory>
+							<finalName>jsiddevice-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
