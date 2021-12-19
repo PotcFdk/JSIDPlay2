@@ -112,6 +112,7 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 			<version>4.4.14</version>
+			<!-- version>4.4.15</version> invalid POM-->
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -162,6 +163,7 @@
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<version>10.0.13</version>
+			<!-- version>10.0.14</version> invalid POM-->
 		</dependency>
 		<dependency>
 			<groupId>net.java.jinput</groupId>
