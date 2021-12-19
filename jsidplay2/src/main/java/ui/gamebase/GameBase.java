@@ -67,14 +67,9 @@ public class GameBase extends C64VBox implements UIPart {
 				final File tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
 				TFile.cp_rp(zip, tmpDir, TArchiveDetector.ALL);
-				Platform.runLater(() -> {
-					enableGameBase.setDisable(true);
-					letter.getTabs().stream().forEach(tab -> tab.setDisable(true));
-				});
 				setRoot(new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName()));
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
 				Platform.runLater(() -> {
 					enableGameBase.setDisable(false);
 				});
@@ -235,6 +230,9 @@ public class GameBase extends C64VBox implements UIPart {
 		final SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 
 		sidPlay2Section.setGameBase64(file);
+
+		enableGameBase.setDisable(true);
+		letter.getTabs().stream().forEach(tab -> tab.setDisable(true));
 
 		connect(file);
 
