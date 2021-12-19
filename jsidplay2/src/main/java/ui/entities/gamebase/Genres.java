@@ -22,31 +22,19 @@ public class Genres {
 
 	@Id
 	@Column(name = "GE_ID")
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
-	}
-
-	private Games games;
-
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "GE_ID")
-	public Games getGames() {
-		return games;
-	}
-
-	public void setGames(Games games) {
-		this.games = games;
 	}
 
 	private PGenres parentGenres;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PG_ID")
-	public PGenres getParentGenres() {
+	public final PGenres getParentGenres() {
 		return parentGenres;
 	}
 
@@ -57,16 +45,16 @@ public class Genres {
 	private String genre;
 
 	@Column(name = "GENRE")
-	public String getGenre() {
+	public final String getGenre() {
 		return genre;
 	}
 
-	public void setGenre(String genre) {
+	public final void setGenre(String genre) {
 		this.genre = genre;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

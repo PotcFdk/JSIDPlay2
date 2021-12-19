@@ -4,11 +4,8 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import sidplay.ini.converter.BeanToStringConverter;
@@ -23,72 +20,60 @@ public class Musicians {
 
 	@Id
 	@Column(name = "MU_ID")
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
-	}
-
-	private Games games;
-
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "MU_ID")
-	public Games getGames() {
-		return games;
-	}
-
-	public void setGames(Games games) {
-		this.games = games;
 	}
 
 	private String photoFilename;
 
 	@Column(name = "PHOTO")
-	public String getPhotoFilename() {
+	public final String getPhotoFilename() {
 		return photoFilename;
 	}
 
-	public void setPhotoFilename(String photo) {
+	public final void setPhotoFilename(String photo) {
 		this.photoFilename = photo;
 	}
 
 	private String musician;
 
 	@Column(name = "MUSICIAN")
-	public String getMusician() {
+	public final String getMusician() {
 		return musician;
 	}
 
-	public void setMusician(String musician) {
+	public final void setMusician(String musician) {
 		this.musician = musician;
 	}
 
 	private String group;
 
 	@Column(name = "GRP")
-	public String getGroup() {
+	public final String getGroup() {
 		return group;
 	}
 
-	public void setGroup(String group) {
+	public final void setGroup(String group) {
 		this.group = group;
 	}
 
 	private String nickname;
 
 	@Column(name = "NICK")
-	public String getNickname() {
+	public final String getNickname() {
 		return nickname;
 	}
 
-	public void setNickname(String nickname) {
+	public final void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }
