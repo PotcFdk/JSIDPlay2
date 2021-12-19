@@ -12,6 +12,7 @@ import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
@@ -91,6 +92,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		this.context = context;
 		AudioConfig cfg = new AudioConfig(audioSection);
 		String url = getUrl(audioSection, recordingFilename);
+		if (url == null) {
+			throw new FileNotFoundException(" (No such file or URL)");
+		}
 
 		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
 			throw new IniConfigException("Sampling rate is not supported by encoder, use default",

@@ -124,7 +124,7 @@ public abstract class SIDDumpDriver extends SIDDumpExtension implements AudioDri
 
 	@Override
 	public String getExtension() {
-		return ".csv";
+		return ".txt";
 	}
 
 	@Override

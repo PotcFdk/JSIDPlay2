@@ -45,8 +45,11 @@ public class CmpToMP3FileDriver extends JavaSound {
 		AudioConfig cfg = new AudioConfig(audioSection);
 		this.audioSection = audioSection;
 		File mp3 = audioSection.getMp3();
-		if (mp3 == null || !mp3.exists()) {
-			throw new FileNotFoundException(mp3.getAbsolutePath());
+		if (mp3 == null) {
+			throw new FileNotFoundException(" (Please choose mp3 file...)");
+		}
+		if (!mp3.exists()) {
+			throw new FileNotFoundException(mp3.getAbsolutePath() + " (No such file or directory)");
 		}
 		jump3r = new LameDecoder(mp3.getAbsolutePath());
 		int sampleRate = jump3r.getSampleRate();
