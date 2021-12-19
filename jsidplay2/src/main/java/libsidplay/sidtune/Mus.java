@@ -306,9 +306,9 @@ class Mus extends PSid {
 	}
 
 	@Override
-	public void save(final String destFileName) throws IOException {
-		try (FileOutputStream fMyOut = new FileOutputStream(destFileName)) {
-			fMyOut.write(program);
+	public void save(final String name) throws IOException {
+		try (FileOutputStream fos = new FileOutputStream(!name.endsWith(".mus") ? name + ".mus" : name)) {
+			fos.write(program);
 		}
 	}
 

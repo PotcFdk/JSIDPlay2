@@ -484,7 +484,7 @@ class PSid extends Prg {
 
 	@Override
 	public void save(final String name) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(name)) {
+		try (FileOutputStream fos = new FileOutputStream(!name.endsWith(".sid") ? name + ".sid" : name)) {
 			final PSidHeader header = new PSidHeader();
 			header.id = "PSID".getBytes(ISO_8859_1);
 			if (info.sidChipBase[2] != 0) {
