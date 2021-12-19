@@ -12,8 +12,8 @@ Start command-line database tool:
 mysql -u newuser -p
 Password: ***
 
-Check database engine is innodb or mysam:
------------------------------------------
+Check, if database engine is innodb or mysam:
+---------------------------------------------
 SHOW DATABASES;
 USE hvsc75;
 SHOW TABLE STATUS WHERE `Name` = 'HashTable';
@@ -35,10 +35,6 @@ innodb_buffer_pool_size = 16G
 wait_timeout = 500
 interactive_timeout = 500
 
-fast queries for database table (Pre-loading the indexes of the table into innodb_buffer_pool):
------------------------------------------------------------------------------------------------
-SELECT count(*) FROM "HashTable"
-
 Show current database connections:
 ----------------------------------
 SHOW PROCESSLIST;
@@ -49,11 +45,6 @@ select  table_rows
 from    information_schema.tables
 where   table_schema = 'hvsc75'
   and   table_name = 'HashTable' ;
-
-Optimize table:
----------------
-use hvsc75
-OPTIMIZE TABLE HashTable
 
 Faster database warm-up phase:
 ------------------------------

@@ -98,11 +98,11 @@ pactl load-module module-loopback latency_msec=1
 and disable with
 pactl unload-module module-loopback
 
-Wenn der Lautstärkeregler unter Ubuntu nicht angezeigt wird:
-gsettings set com.canonical.indicator.sound visible true
-Wenn das Mikrofone ausgegraut ist:
-kmix
-Ausgabegerät auf Analog Stereo Duplex ändern
+If volume control is not shown in Ubuntu, type:
+"gsettings set com.canonical.indicator.sound visible true"
+If microphone is greyed out, type:
+"kmix"
+and change "output device" to "Analog Stereo Duplex".
 
 General tips:
 =============
