@@ -26,22 +26,22 @@ public class Games {
 
 	@Id
 	@Column(name = "GA_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private String name;
 
 	@Column(name = "NAME")
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -49,55 +49,55 @@ public class Games {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "YE_ID")
-	public final Years getYears() {
+	public Years getYears() {
 		return years;
 	}
 
-	public final void setYears(Years years) {
+	public void setYears(Years years) {
 		this.years = years;
 	}
 
 	private String filename;
 
 	@Column(name = "FILENAME")
-	public final String getFilename() {
+	public String getFilename() {
 		return filename;
 	}
 
-	public final void setFilename(String filename) {
+	public void setFilename(String filename) {
 		this.filename = filename;
 	}
 
 	private String fileToRun;
 
 	@Column(name = "FILETORUN")
-	public final String getFileToRun() {
+	public String getFileToRun() {
 		return fileToRun;
 	}
 
-	public final void setFileToRun(String fileToRun) {
+	public void setFileToRun(String fileToRun) {
 		this.fileToRun = fileToRun;
 	}
 
 	private int filenameIdx;
 
 	@Column(name = "FILENAMEINDEX")
-	public final int getFilenameIdx() {
+	public int getFilenameIdx() {
 		return filenameIdx;
 	}
 
-	public final void setFilenameIdx(int filenameIdx) {
+	public void setFilenameIdx(int filenameIdx) {
 		this.filenameIdx = filenameIdx;
 	}
 
 	private String screenshotFilename;
 
 	@Column(name = "SCRNSHOTFILENAME")
-	public final String getScreenshotFilename() {
+	public String getScreenshotFilename() {
 		return screenshotFilename;
 	}
 
-	public final void setScreenshotFilename(String screenshotFilename) {
+	public void setScreenshotFilename(String screenshotFilename) {
 		this.screenshotFilename = screenshotFilename;
 	}
 
@@ -105,11 +105,11 @@ public class Games {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "MU_ID")
-	public final Musicians getMusicians() {
+	public Musicians getMusicians() {
 		return musicians;
 	}
 
-	public final void setMusicians(Musicians musicians) {
+	public void setMusicians(Musicians musicians) {
 		this.musicians = musicians;
 	}
 
@@ -117,11 +117,11 @@ public class Games {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GE_ID")
-	public final Genres getGenres() {
+	public Genres getGenres() {
 		return genres;
 	}
 
-	public final void setGenres(Genres genres) {
+	public void setGenres(Genres genres) {
 		this.genres = genres;
 	}
 
@@ -129,22 +129,22 @@ public class Games {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PU_ID")
-	public final Publishers getPublishers() {
+	public Publishers getPublishers() {
 		return publishers;
 	}
 
-	public final void setPublishers(Publishers publishers) {
+	public void setPublishers(Publishers publishers) {
 		this.publishers = publishers;
 	}
 
 	private String sidFilename;
 
 	@Column(name = "SIDFILENAME")
-	public final String getSidFilename() {
+	public String getSidFilename() {
 		return sidFilename;
 	}
 
-	public final void setSidFilename(String sidFilename) {
+	public void setSidFilename(String sidFilename) {
 		this.sidFilename = sidFilename;
 	}
 
@@ -152,27 +152,27 @@ public class Games {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PR_ID")
-	public final Programmers getProgrammers() {
+	public Programmers getProgrammers() {
 		return programmers;
 	}
 
-	public final void setProgrammers(Programmers programmers) {
+	public void setProgrammers(Programmers programmers) {
 		this.programmers = programmers;
 	}
 
 	private String comment;
 
 	@Column(name = "COMMENT")
-	public final String getComment() {
+	public String getComment() {
 		return comment;
 	}
 
-	public final void setComment(String comment) {
+	public void setComment(String comment) {
 		this.comment = comment;
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

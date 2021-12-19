@@ -23,11 +23,11 @@ public class PGenres {
 
 	@Id
 	@Column(name = "PG_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -35,27 +35,27 @@ public class PGenres {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PG_ID")
-	public final Games getGames() {
+	public Games getGames() {
 		return games;
 	}
 
-	public final void setGames(Games games) {
+	public void setGames(Games games) {
 		this.games = games;
 	}
 
 	private String parentGenre;
 
 	@Column(name = "PARENTGENRE")
-	public final String getParentGenre() {
+	public String getParentGenre() {
 		return parentGenre;
 	}
 
-	public final void setParentGenre(String parentGenre) {
+	public void setParentGenre(String parentGenre) {
 		this.parentGenre = parentGenre;
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

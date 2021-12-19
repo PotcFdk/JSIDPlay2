@@ -22,11 +22,11 @@ public class Programmers {
 
 	@Id
 	@Column(name = "PR_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -34,27 +34,27 @@ public class Programmers {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PR_ID")
-	public final Games getGames() {
+	public Games getGames() {
 		return games;
 	}
 
-	public final void setGames(Games games) {
+	public void setGames(Games games) {
 		this.games = games;
 	}
 
 	private String programmer;
 
 	@Column(name = "PROGRAMMER")
-	public final String getProgrammer() {
+	public String getProgrammer() {
 		return programmer;
 	}
 
-	public final void setProgrammer(String programmer) {
+	public void setProgrammer(String programmer) {
 		this.programmer = programmer;
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

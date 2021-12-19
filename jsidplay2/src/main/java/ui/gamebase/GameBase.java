@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -39,6 +43,7 @@ import ui.common.util.DesktopUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
 import ui.entities.config.SidPlay2Section;
+import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.GamesService;
 
 public class GameBase extends C64VBox implements UIPart {
@@ -54,24 +59,19 @@ public class GameBase extends C64VBox implements UIPart {
 
 		@Override
 		public void downloaded(File downloadedFile) {
+			final SidPlay2Section sidplay2 = util.getConfig().getSidplay2Section();
 			try {
 				if (downloadedFile == null) {
 					return;
 				}
-				final SidPlay2Section sidplay2 = util.getConfig().getSidplay2Section();
 				final File tmpDir = sidplay2.getTmpDir();
 				TFile zip = new TFile(downloadedFile);
 				TFile.cp_rp(zip, tmpDir, TArchiveDetector.ALL);
 				Platform.runLater(() -> {
 					enableGameBase.setDisable(true);
-					setLettersDisable(true);
+					letter.getTabs().stream().forEach(tab -> tab.setDisable(true));
 				});
-				File dbFile = new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName());
-				sidplay2.setGameBase64(dbFile);
-				setRoot(dbFile);
-				Platform.runLater(() -> {
-					gameBaseFile.setText(dbFile.getAbsolutePath());
-				});
+				setRoot(new File(tmpDir, zip.listFiles((dir, name) -> name.endsWith(EXT_MDB))[0].getName()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -115,52 +115,18 @@ public class GameBase extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		filterField.setOnKeyReleased(event -> {
-			GameBasePage page = (GameBasePage) letter.getSelectionModel().getSelectedItem().getContent();
-			if (filterField.getText().trim().length() == 0) {
-				page.filter("");
-			} else {
-				page.filter(filterField.getText());
-			}
-		});
+		final SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+
+		filterField.setOnKeyReleased(event -> ((GameBasePage) letter.getSelectionModel().getSelectedItem().getContent())
+				.filter(filterField.getText().trim()));
 
 		contents.setPrefHeight(Double.MAX_VALUE);
-		for (Tab tab : letter.getTabs()) {
-			GameBasePage page = (GameBasePage) tab.getContent();
-			if (page.getGamebaseTable() != null) {
-				page.getGamebaseTable().getSelectionModel().selectedItemProperty()
-						.addListener((observable, oldValue, newValue) -> {
-							if (newValue != null) {
-								comment.setText(newValue.getComment());
-								String genre = newValue.getGenres().getGenre();
-								String pGenre = newValue.getGenres().getParentGenres().getParentGenre();
-								if (pGenre != null && pGenre.length() != 0) {
-									category.setText(pGenre + "-" + genre);
-								} else {
-									category.setText(genre);
-								}
-								infos.setText(String.format(util.getBundle().getString("PUBLISHER"),
-										newValue.getYears().getYear(), newValue.getPublishers().getPublisher()));
-								musician.setText(newValue.getMusicians().getMusician());
-								programmer.setText(newValue.getProgrammers().getProgrammer());
-								String sidFilename = newValue.getSidFilename();
-								linkMusic.setText(sidFilename != null ? sidFilename : "");
-								linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
-							}
-						});
-			}
-		}
-		letter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			selectTab(newValue);
-		});
-		Platform.runLater(() -> {
-			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			File initialRoot = sidPlay2Section.getGameBase64();
-			if (initialRoot != null && initialRoot.exists()) {
-				gameBaseFile.setText(initialRoot.getAbsolutePath());
-				setRoot(initialRoot);
-			}
-		});
+
+		letter.getTabs().stream()
+				.forEach(tab -> ((GameBasePage) tab.getContent()).getGamebaseTable().getSelectionModel()
+						.selectedItemProperty().addListener((observable, oldValue, newValue) -> selectGame(newValue)));
+
+		Platform.runLater(() -> setRoot(sidPlay2Section.getGameBase64()));
 	}
 
 	@FXML
@@ -206,15 +172,7 @@ public class GameBase extends C64VBox implements UIPart {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.getExtensionFilters()
 				.add(new ExtensionFilter(MDBFileExtensions.DESCRIPTION, MDBFileExtensions.EXTENSIONS));
-		File file = fileDialog.showOpenDialog(letter.getScene().getWindow());
-		if (file != null) {
-			gameBaseFile.setText(file.getAbsolutePath());
-			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-			sidPlay2Section.setGameBase64(file);
-			File theRootFile = sidPlay2Section.getGameBase64();
-			gameBaseFile.setText(file.getAbsolutePath());
-			setRoot(theRootFile);
-		}
+		setRoot(fileDialog.showOpenDialog(letter.getScene().getWindow()));
 	}
 
 	@FXML
@@ -222,32 +180,76 @@ public class GameBase extends C64VBox implements UIPart {
 		DesktopUtil.browse(GB64_URL);
 	}
 
-	private void setRoot(File file) {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			public Void call() throws Exception {
-				connect(file);
-				enableGameBaseUI();
-				return null;
-			}
-		};
-		new Thread(task).start();
+	@Override
+	public void doClose() {
+		disconnect();
 	}
 
-	private void enableGameBaseUI() {
-		enableGameBase.setDisable(false);
-		setLettersDisable(false);
-		letter.getSelectionModel().selectFirst();
-		selectTab(letter.getSelectionModel().getSelectedItem());
-	}
-
-	protected void setLettersDisable(boolean b) {
-		for (Tab tab : letter.getTabs()) {
-			tab.setDisable(b);
+	private void selectGame(Games newValue) {
+		if (newValue != null) {
+			comment.setText(newValue.getComment());
+			category.setText(getCategory(newValue));
+			infos.setText(getInfos(newValue));
+			musician.setText(newValue.getMusicians().getMusician());
+			programmer.setText(newValue.getProgrammers().getProgrammer());
+			String sidFilename = newValue.getSidFilename();
+			linkMusic.setText(sidFilename != null ? sidFilename : "");
+			linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
 		}
 	}
 
-	protected void connect(File dbFile) {
+	private String getInfos(Games newValue) {
+		return String.format(util.getBundle().getString("PUBLISHER"), newValue.getYears().getYear(),
+				newValue.getPublishers().getPublisher());
+	}
+
+	private String getCategory(Games newValue) {
+		String genre = newValue.getGenres().getGenre();
+		String parentGenre = newValue.getGenres().getParentGenres().getParentGenre();
+		if (parentGenre != null && parentGenre.length() != 0) {
+			return parentGenre + "-" + genre;
+		}
+		return genre;
+	}
+
+	private void setRoot(File file) {
+		if (file != null && file.exists()) {
+			Task<Void> task = new Task<Void>() {
+				@Override
+				public Void call() throws Exception {
+					try {
+						fetchGames(file);
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+			};
+			Thread thread = new Thread(task);
+			thread.setPriority(Thread.MIN_PRIORITY);
+			thread.start();
+		}
+	}
+
+	private void fetchGames(File file) {
+		final SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+
+		sidPlay2Section.setGameBase64(file);
+
+		connect(file);
+
+		Map<Tab, List<Games>> gamesForTabs = letter.getTabs().stream()
+				.collect(Collectors.toMap(Function.identity(), tab -> gamesService.select(tab.getText().charAt(0))));
+		letter.getTabs().stream().forEach(tab -> ((GameBasePage) tab.getContent()).setGames(gamesForTabs.get(tab)));
+
+		enableGameBase.setDisable(false);
+		letter.getTabs().stream().forEach(tab -> tab.setDisable(false));
+		letter.getSelectionModel().selectFirst();
+		filterField.setText("");
+		gameBaseFile.setText(file.getAbsolutePath());
+	}
+
+	private void connect(File dbFile) {
 		if (em != null) {
 			em.close();
 		}
@@ -258,18 +260,10 @@ public class GameBase extends C64VBox implements UIPart {
 		gamesService = new GamesService(em);
 	}
 
-	@Override
-	public void doClose() {
+	private void disconnect() {
 		if (em != null && em.isOpen()) {
 			em.getEntityManagerFactory().close();
 		}
-	}
-
-	protected void selectTab(Tab newValue) {
-		if (gamesService != null) {
-			((GameBasePage) newValue.getContent()).setGames(gamesService.select(newValue.getText().charAt(0)));
-		}
-		filterField.setText("");
 	}
 
 }
