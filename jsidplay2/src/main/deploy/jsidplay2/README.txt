@@ -27,7 +27,7 @@ JSIDPlay2 is a Java program and should run on every Java enabled platform,
 that is at least Windows, Linux and Mac OS X. Java version 1.8 is required as a minimum to run JSIDPlay2.
 Because the emulation is cycle exact, a fast PC is also required. I recommend to use at least a double core CPU
 for the highest quality settings. CPU usage may vary depending on the settings of the emulator.
-You also need a soundcard (16 bit sampling at 44.1KHz-96KHz). Sound output is mono or stereo (for specific tunes).
+You also need a soundcard (16 bit sampling at 44.1KHz-96KHz). Sound output is stereo.
 
 6. Which music formats does JSIDPlay2 support?
 SID - HVSC format (containing one or multiple songs)
@@ -41,7 +41,7 @@ the Datasette C1530 and plugged-in Cartridges. These are emulated using the foll
 as a replacement of the Floppy disk, the tape and the cartridge.
 D64 - Disk image
 G64 - Disk image
-NIB - Disk Image (read-omly)
+NIB - Disk Image (read-only)
 TAP - Tape image
 T64 - Tape image
 REU - Ram Expansion Unit memory dump
