@@ -42,6 +42,7 @@ import ui.common.filefilter.MDBFileExtensions;
 import ui.common.util.DesktopUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;
+import ui.entities.config.OnlineSection;
 import ui.entities.config.SidPlay2Section;
 import ui.entities.gamebase.Games;
 import ui.entities.gamebase.service.GamesService;
@@ -124,12 +125,19 @@ public class GameBase extends C64VBox implements UIPart {
 		Platform.runLater(() -> setRoot(sidPlay2Section.getGameBase64()));
 	}
 
+	@Override
+	public void doClose() {
+		disconnect();
+	}
+
 	@FXML
 	private void doEnableGameBase() {
+		final OnlineSection onlineSection = util.getConfig().getOnlineSection();
+
 		if (enableGameBase.isSelected()) {
 			enableGameBase.setDisable(true);
 			try {
-				final URL url = new URL(util.getConfig().getOnlineSection().getGamebaseUrl());
+				final URL url = new URL(onlineSection.getGamebaseUrl());
 				DownloadThread downloadThread = new DownloadThread(util.getConfig(),
 						new GameBaseListener(util, letter.getScene()), url, true);
 				downloadThread.start();
@@ -141,16 +149,17 @@ public class GameBase extends C64VBox implements UIPart {
 
 	@FXML
 	private void downloadMusic() {
+		final SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+		final OnlineSection onlineSection = util.getConfig().getOnlineSection();
+
 		try {
-			URL url = new URL(
-					util.getConfig().getOnlineSection().getGb64MusicUrl() + linkMusic.getText().replace('\\', '/'));
+			URL url = new URL(onlineSection.getGb64MusicUrl() + linkMusic.getText().replace('\\', '/'));
 			try (InputStream is = url.openStream()) {
 				util.getPlayer().play(SidTune.load(linkMusic.getText(), is));
 				util.setPlayingTab(this);
 			}
 		} catch (IOException | SidTuneError e) {
 			System.err.println(e.getMessage());
-			SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 			File file = PathUtils.getFile(linkMusic.getText().replace('\\', '/'), sidPlay2Section.getHvsc(),
 					sidPlay2Section.getCgsc());
 			try {
@@ -173,11 +182,6 @@ public class GameBase extends C64VBox implements UIPart {
 	@FXML
 	private void gotoURL() {
 		DesktopUtil.browse(GB64_URL);
-	}
-
-	@Override
-	public void doClose() {
-		disconnect();
 	}
 
 	private void selectGame(Games newValue) {
@@ -210,6 +214,7 @@ public class GameBase extends C64VBox implements UIPart {
 	private void setRoot(File file) {
 		if (file != null && file.exists()) {
 			Task<Void> task = new Task<Void>() {
+
 				@Override
 				public Void call() throws Exception {
 					try {
@@ -242,6 +247,7 @@ public class GameBase extends C64VBox implements UIPart {
 
 		enableGameBase.setDisable(false);
 		letter.getTabs().stream().forEach(tab -> tab.setDisable(false));
+
 		letter.getSelectionModel().selectFirst();
 		filterField.setText("");
 		gameBaseFile.setText(file.getAbsolutePath());
