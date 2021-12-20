@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-import ui.JSidPlay2Main;
 import ui.entities.config.SidPlay2Section;
 
 public class VersionUtil {
@@ -21,7 +20,7 @@ public class VersionUtil {
 
 	static {
 		try {
-			URLConnection connection = JSidPlay2Main.class.getResource(LOCAL_VERSION_RESOURCE).openConnection();
+			URLConnection connection = VersionUtil.class.getResource(LOCAL_VERSION_RESOURCE).openConnection();
 			VERSION = getVersion(connection);
 		} catch (Exception e) {
 			VERSION = "(beta)";
