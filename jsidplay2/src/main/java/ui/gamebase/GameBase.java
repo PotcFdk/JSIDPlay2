@@ -192,8 +192,8 @@ public class GameBase extends C64VBox implements UIPart {
 			musician.setText(newValue.getMusicians().getMusician());
 			programmer.setText(newValue.getProgrammers().getProgrammer());
 			String sidFilename = newValue.getSidFilename();
-			linkMusic.setText(sidFilename != null ? sidFilename : "");
-			linkMusic.setVisible(sidFilename != null && sidFilename.length() > 0);
+			linkMusic.setDisable(sidFilename == null || sidFilename.isEmpty());
+			linkMusic.setText(linkMusic.isDisable() ? "" : sidFilename);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class GameBase extends C64VBox implements UIPart {
 		String genre = newValue.getGenres().getGenre();
 		String parentGenre = newValue.getGenres().getParentGenres().getParentGenre();
 		if (parentGenre != null && parentGenre.length() != 0) {
-			return parentGenre + "-" + genre;
+			return parentGenre + " - " + genre;
 		}
 		return genre;
 	}
