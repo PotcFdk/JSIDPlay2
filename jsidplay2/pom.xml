@@ -112,7 +112,7 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 			<version>4.4.14</version>
-			<!-- version>4.4.15</version> invalid POM-->
+			<!-- version>4.4.15</version> invalid POM -->
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -163,7 +163,7 @@
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<version>10.0.13</version>
-			<!-- version>10.0.14</version> invalid POM-->
+			<!-- version>10.0.14</version> invalid POM -->
 		</dependency>
 		<dependency>
 			<groupId>net.java.jinput</groupId>
@@ -272,7 +272,7 @@
 				<version>2.7</version>
 				<configuration>
 					<generateBackupPoms>false</generateBackupPoms>
-			        <rulesUri>file:///${project.basedir}/rule-set.xml</rulesUri>
+					<rulesUri>file:///${project.basedir}/rule-set.xml</rulesUri>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -901,6 +901,7 @@
 				<version>1.5</version>
 				<executions>
 					<execution>
+						<id>keytool</id>
 						<phase>package</phase>
 						<goals>
 							<goal>generateKeyPair</goal>
@@ -909,7 +910,8 @@
 							<alias>jsidplay2</alias>
 							<keystore>${project.build.directory}/deploy/keystore.jks</keystore>
 							<storetype>pkcs12</storetype>
-							<dname>cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c="DE"</dname>
+							<dname>cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source",
+								l="Berlin", c="DE"</dname>
 							<keypass>jsidplay2</keypass>
 							<storepass>jsidplay2</storepass>
 							<validity>365</validity>
@@ -924,6 +926,7 @@
 				<version>4.0</version>
 				<executions>
 					<execution>
+						<id>sign</id>
 						<phase>package</phase>
 						<goals>
 							<goal>sign</goal>
@@ -936,8 +939,28 @@
 									<include>${project.artifactId}_console-${project.version}.exe</include>
 									<include>sidblastertool-${project.version}.exe</include>
 								</includes>
-							</fileset>						
+							</fileset>
 							<name>${project.name}</name>
+							<url>https://sourceforge.net/projects/jsidplay2/</url>
+							<keystore>${project.build.directory}/deploy/keystore.jks</keystore>
+							<alias>jsidplay2</alias>
+							<storepass>jsidplay2</storepass>
+						</configuration>
+					</execution>
+					<execution>
+						<id>sign-jsiddevice</id>
+						<phase>install</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<fileset>
+								<directory>${project.build.directory}/deploy</directory>
+								<includes>
+									<include>jsiddevice-${project.version}.exe</include>
+								</includes>
+							</fileset>
+							<name>jsiddevice</name>
 							<url>https://sourceforge.net/projects/jsidplay2/</url>
 							<keystore>${project.build.directory}/deploy/keystore.jks</keystore>
 							<alias>jsidplay2</alias>
