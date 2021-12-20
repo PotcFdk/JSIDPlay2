@@ -21,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -236,21 +237,28 @@ public class GameBase extends C64VBox implements UIPart {
 
 		sidPlay2Section.setGameBase64(file);
 
-		enableGameBase.setDisable(true);
-		letter.getTabs().stream().forEach(tab -> tab.setDisable(true));
+		Platform.runLater(() -> {
+			enableGameBase.setDisable(true);
+			letter.getTabs().stream().forEach(tab -> tab.setDisable(true));
+			util.progressProperty(letter.getScene()).set(ProgressIndicator.INDETERMINATE_PROGRESS);
+		});
 
 		connect(file);
 
 		Map<Tab, List<Games>> gamesForTabs = letter.getTabs().stream()
 				.collect(Collectors.toMap(Function.identity(), tab -> gamesService.select(tab.getText().charAt(0))));
-		letter.getTabs().stream().forEach(tab -> ((GameBasePage) tab.getContent()).setGames(gamesForTabs.get(tab)));
 
-		enableGameBase.setDisable(false);
-		letter.getTabs().stream().forEach(tab -> tab.setDisable(false));
+		Platform.runLater(() -> {
+			letter.getTabs().stream().forEach(tab -> ((GameBasePage) tab.getContent()).setGames(gamesForTabs.get(tab)));
 
-		letter.getSelectionModel().selectFirst();
-		filterField.setText("");
-		gameBaseFile.setText(file.getAbsolutePath());
+			enableGameBase.setDisable(false);
+			letter.getTabs().stream().forEach(tab -> tab.setDisable(false));
+
+			letter.getSelectionModel().selectFirst();
+			filterField.setText("");
+			gameBaseFile.setText(file.getAbsolutePath());
+			util.progressProperty(letter.getScene()).set(0);
+		});
 	}
 
 	private void connect(File dbFile) {
