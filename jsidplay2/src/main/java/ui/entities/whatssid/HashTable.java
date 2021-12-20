@@ -24,44 +24,44 @@ public class HashTable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idHashTable", nullable = false)
-	public final int getIdHashTable() {
+	public int getIdHashTable() {
 		return idHashTable;
 	}
 
-	public final void setIdHashTable(int idHashTable) {
+	public void setIdHashTable(int idHashTable) {
 		this.idHashTable = idHashTable;
 	}
 
 	private int hash;
 
 	@Column(name = "HASH", nullable = false)
-	public final int getHash() {
+	public int getHash() {
 		return hash;
 	}
 
-	public final void setHash(int hash) {
+	public void setHash(int hash) {
 		this.hash = hash;
 	}
 
 	private int id;
 
 	@Column(name = "ID", nullable = false)
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private int time;
 
 	@Column(name = "Time", nullable = false)
-	public final int getTime() {
+	public int getTime() {
 		return time;
 	}
 
-	public final void setTime(int time) {
+	public void setTime(int time) {
 		this.time = time;
 	}
 

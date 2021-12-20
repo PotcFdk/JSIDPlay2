@@ -17,21 +17,21 @@ public class Version {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private int version;
 
-	public final int getVersion() {
+	public int getVersion() {
 		return version;
 	}
 
-	public final void setVersion(int version) {
+	public void setVersion(int version) {
 		this.version = version;
 	}
 

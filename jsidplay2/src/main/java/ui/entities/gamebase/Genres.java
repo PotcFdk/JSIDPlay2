@@ -22,11 +22,11 @@ public class Genres {
 
 	@Id
 	@Column(name = "GE_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -34,7 +34,7 @@ public class Genres {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PG_ID")
-	public final PGenres getParentGenres() {
+	public PGenres getParentGenres() {
 		return parentGenres;
 	}
 
@@ -45,11 +45,11 @@ public class Genres {
 	private String genre;
 
 	@Column(name = "GENRE")
-	public final String getGenre() {
+	public String getGenre() {
 		return genre;
 	}
 
-	public final void setGenre(String genre) {
+	public void setGenre(String genre) {
 		this.genre = genre;
 	}
 

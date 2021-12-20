@@ -17,27 +17,27 @@ public class Years {
 
 	@Id
 	@Column(name = "YE_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private int year;
 
 	@Column(name = "YEAR")
-	public final int getYear() {
+	public int getYear() {
 		return year;
 	}
 
-	public final void setYear(int year) {
+	public void setYear(int year) {
 		this.year = year;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

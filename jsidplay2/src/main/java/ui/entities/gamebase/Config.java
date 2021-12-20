@@ -14,22 +14,22 @@ public class Config {
 	private int majorVersion;
 
 	@Column(name = "MAJORVERSION")
-	public final int getMajorVersion() {
+	public int getMajorVersion() {
 		return majorVersion;
 	}
 
-	public final void setMajorVersion(int majorVersion) {
+	public void setMajorVersion(int majorVersion) {
 		this.majorVersion = majorVersion;
 	}
 
 	private int minorVersion;
 
 	@Column(name = "MINORVERSION")
-	public final int getMinorVersion() {
+	public int getMinorVersion() {
 		return minorVersion;
 	}
 
-	public final void setMinorVersion(int minorVersion) {
+	public void setMinorVersion(int minorVersion) {
 		this.minorVersion = minorVersion;
 	}
 
@@ -37,11 +37,11 @@ public class Config {
 
 	@Id
 	@Column(name = "OFFICIALUPDATE")
-	public final int getOfficialUpdate() {
+	public int getOfficialUpdate() {
 		return officialUpdate;
 	}
 
-	public final void setOfficialUpdate(int officialUpdate) {
+	public void setOfficialUpdate(int officialUpdate) {
 		this.officialUpdate = officialUpdate;
 	}
 

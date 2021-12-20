@@ -25,88 +25,88 @@ public class MusicInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idMusicInfo", nullable = false)
-	public final int getIdMusicInfo() {
+	public int getIdMusicInfo() {
 		return idMusicInfo;
 	}
 
-	public final void setIdMusicInfo(int idMusicInfo) {
+	public void setIdMusicInfo(int idMusicInfo) {
 		this.idMusicInfo = idMusicInfo;
 	}
 
 	private Integer songNo;
 
 	@Column(name = "songNo")
-	public final Integer getSongNo() {
+	public Integer getSongNo() {
 		return songNo;
 	}
 
-	public final void setSongNo(Integer songNo) {
+	public void setSongNo(Integer songNo) {
 		this.songNo = songNo;
 	}
 
 	private String title;
 
 	@Column(name = "Title", nullable = false)
-	public final String getTitle() {
+	public String getTitle() {
 		return title;
 	}
 
-	public final void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
 	private String artist;
 
 	@Column(name = "Artist", nullable = false)
-	public final String getArtist() {
+	public String getArtist() {
 		return artist;
 	}
 
-	public final void setArtist(String artist) {
+	public void setArtist(String artist) {
 		this.artist = artist;
 	}
 
 	private String album;
 
 	@Column(name = "Album", nullable = false)
-	public final String getAlbum() {
+	public String getAlbum() {
 		return album;
 	}
 
-	public final void setAlbum(String album) {
+	public void setAlbum(String album) {
 		this.album = album;
 	}
 
 	private String fileDir;
 
 	@Column(name = "FileDir")
-	public final String getFileDir() {
+	public String getFileDir() {
 		return fileDir;
 	}
 
-	public final void setFileDir(String fileDir) {
+	public void setFileDir(String fileDir) {
 		this.fileDir = fileDir;
 	}
 
 	private String infoDir;
 
 	@Column(name = "InfoDir")
-	public final String getInfoDir() {
+	public String getInfoDir() {
 		return infoDir;
 	}
 
-	public final void setInfoDir(String infoDir) {
+	public void setInfoDir(String infoDir) {
 		this.infoDir = infoDir;
 	}
 
 	private double audioLength;
 
 	@Column(name = "audio_length")
-	public final double getAudioLength() {
+	public double getAudioLength() {
 		return audioLength;
 	}
 
-	public final void setAudioLength(double audioLength) {
+	public void setAudioLength(double audioLength) {
 		this.audioLength = audioLength;
 	}
 

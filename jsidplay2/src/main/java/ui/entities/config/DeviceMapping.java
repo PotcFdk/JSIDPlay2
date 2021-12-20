@@ -51,23 +51,23 @@ public class DeviceMapping implements IDeviceMapping {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<BooleanProperty, Boolean> used = new ShadowField<>(SimpleBooleanProperty::new, false);
 
 	@Override
-	public final boolean isUsed() {
+	public boolean isUsed() {
 		return used.get();
 	}
 
 	@Override
-	public final void setUsed(boolean used) {
+	public void setUsed(boolean used) {
 		this.used.set(used);
 	}
 
@@ -78,12 +78,12 @@ public class DeviceMapping implements IDeviceMapping {
 	private ShadowField<StringProperty, String> serialNum = new ShadowField<>(SimpleStringProperty::new, null);
 
 	@Override
-	public final String getSerialNum() {
+	public String getSerialNum() {
 		return serialNum.get();
 	}
 
 	@Override
-	public final void setSerialNum(String serialNum) {
+	public void setSerialNum(String serialNum) {
 		this.serialNum.set(serialNum);
 	}
 
@@ -96,12 +96,12 @@ public class DeviceMapping implements IDeviceMapping {
 
 	@Override
 	@Enumerated(EnumType.STRING)
-	public final ChipModel getChipModel() {
+	public ChipModel getChipModel() {
 		return chipModel.get();
 	}
 
 	@Override
-	public final void setChipModel(ChipModel chipModel) {
+	public void setChipModel(ChipModel chipModel) {
 		this.chipModel.set(chipModel);
 	}
 
@@ -110,7 +110,7 @@ public class DeviceMapping implements IDeviceMapping {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return BeanToStringConverter.toString(this);
 	}
 }

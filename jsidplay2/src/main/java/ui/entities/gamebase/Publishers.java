@@ -19,22 +19,22 @@ public class Publishers {
 
 	@Id
 	@Column(name = "PU_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private String publisher;
 
 	@Column(name = "PUBLISHER")
-	public final String getPublisher() {
+	public String getPublisher() {
 		return publisher;
 	}
 
-	public final void setPublisher(String publisher) {
+	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
 

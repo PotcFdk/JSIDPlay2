@@ -19,22 +19,22 @@ public class Programmers {
 
 	@Id
 	@Column(name = "PR_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private String programmer;
 
 	@Column(name = "PROGRAMMER")
-	public final String getProgrammer() {
+	public String getProgrammer() {
 		return programmer;
 	}
 
-	public final void setProgrammer(String programmer) {
+	public void setProgrammer(String programmer) {
 		this.programmer = programmer;
 	}
 

@@ -47,11 +47,11 @@ public class KeyTableEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -59,11 +59,11 @@ public class KeyTableEntity {
 			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
-	public final KeyTableEntry getEntry() {
+	public KeyTableEntry getEntry() {
 		return entry.get();
 	}
 
-	public final void setEntry(KeyTableEntry entry) {
+	public void setEntry(KeyTableEntry entry) {
 		this.entry.set(entry);
 	}
 
@@ -73,11 +73,11 @@ public class KeyTableEntity {
 
 	private ShadowField<StringProperty, String> keyCodeName = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public final String getKeyCodeName() {
+	public String getKeyCodeName() {
 		return keyCodeName.get();
 	}
 
-	public final void setKeyCodeName(String keyCodeName) {
+	public void setKeyCodeName(String keyCodeName) {
 		this.keyCodeName.set(keyCodeName);
 	}
 

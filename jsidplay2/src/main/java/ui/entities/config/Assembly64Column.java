@@ -42,11 +42,11 @@ public class Assembly64Column {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -54,11 +54,11 @@ public class Assembly64Column {
 			SimpleObjectProperty::new, null);
 
 	@Enumerated(EnumType.STRING)
-	public final Assembly64ColumnType getColumnType() {
+	public Assembly64ColumnType getColumnType() {
 		return columnType.get();
 	}
 
-	public final void setColumnType(Assembly64ColumnType columnType) {
+	public void setColumnType(Assembly64ColumnType columnType) {
 		this.columnType.set(columnType);
 	}
 
@@ -69,11 +69,11 @@ public class Assembly64Column {
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.floatValue()), 0);
 
-	public final double getWidth() {
+	public double getWidth() {
 		return width.get().doubleValue();
 	}
 
-	public final void setWidth(double width) {
+	public void setWidth(double width) {
 		this.width.set(width);
 	}
 

@@ -39,73 +39,73 @@ public class StilEntry {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private HVSCEntry hvscEntry;
 
 	@ManyToOne
-	public final HVSCEntry getHvscEntry() {
+	public HVSCEntry getHvscEntry() {
 		return hvscEntry;
 	}
 
-	public final void setHvscEntry(HVSCEntry hvscEntry) {
+	public void setHvscEntry(HVSCEntry hvscEntry) {
 		this.hvscEntry = hvscEntry;
 	}
 
 	private String stilName;
 
-	public final String getStilName() {
+	public String getStilName() {
 		return stilName;
 	}
 
-	public final void setStilName(String name) {
+	public void setStilName(String name) {
 		this.stilName = name;
 	}
 
 	private String stilAuthor;
 
-	public final String getStilAuthor() {
+	public String getStilAuthor() {
 		return stilAuthor;
 	}
 
-	public final void setStilAuthor(String author) {
+	public void setStilAuthor(String author) {
 		this.stilAuthor = author;
 	}
 
 	private String stilTitle;
 
-	public final String getStilTitle() {
+	public String getStilTitle() {
 		return stilTitle;
 	}
 
-	public final void setStilTitle(String title) {
+	public void setStilTitle(String title) {
 		this.stilTitle = title;
 	}
 
 	private String stilArtist;
 
-	public final String getStilArtist() {
+	public String getStilArtist() {
 		return stilArtist;
 	}
 
-	public final void setStilArtist(String artist) {
+	public void setStilArtist(String artist) {
 		this.stilArtist = artist;
 	}
 
 	private String stilComment;
 
 	@Column(length = 4096)
-	public final String getStilComment() {
+	public String getStilComment() {
 		return stilComment;
 	}
 
-	public final void setStilComment(String comment) {
+	public void setStilComment(String comment) {
 		this.stilComment = comment;
 	}
 

@@ -20,22 +20,22 @@ public class PGenres {
 
 	@Id
 	@Column(name = "PG_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private String parentGenre;
 
 	@Column(name = "PARENTGENRE")
-	public final String getParentGenre() {
+	public String getParentGenre() {
 		return parentGenre;
 	}
 
-	public final void setParentGenre(String parentGenre) {
+	public void setParentGenre(String parentGenre) {
 		this.parentGenre = parentGenre;
 	}
 

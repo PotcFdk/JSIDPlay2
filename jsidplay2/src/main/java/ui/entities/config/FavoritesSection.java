@@ -49,21 +49,21 @@ public class FavoritesSection {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<StringProperty, String> name = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public final String getName() {
+	public String getName() {
 		return name.get();
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name.set(name);
 	}
 
@@ -74,11 +74,11 @@ public class FavoritesSection {
 	private ShadowField<DoubleProperty, Number> width = new ShadowField<>(
 			number -> new SimpleDoubleProperty(number.doubleValue()), 0);
 
-	public final Double getWidth() {
+	public Double getWidth() {
 		return width.get().doubleValue();
 	}
 
-	public final void setWidth(Double width) {
+	public void setWidth(Double width) {
 		this.width.set(width);
 	}
 
@@ -89,11 +89,11 @@ public class FavoritesSection {
 	private ShadowField<IntegerProperty, Number> selectedRowFrom = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
-	public final Integer getSelectedRowFrom() {
+	public Integer getSelectedRowFrom() {
 		return selectedRowFrom.get().intValue();
 	}
 
-	public final void setSelectedRowFrom(Integer selectedRowFrom) {
+	public void setSelectedRowFrom(Integer selectedRowFrom) {
 		this.selectedRowFrom.set(selectedRowFrom);
 	}
 
@@ -104,11 +104,11 @@ public class FavoritesSection {
 	private ShadowField<IntegerProperty, Number> selectedRowTo = new ShadowField<>(
 			number -> new SimpleIntegerProperty(number.intValue()), -1);
 
-	public final Integer getSelectedRowTo() {
+	public Integer getSelectedRowTo() {
 		return selectedRowTo.get().intValue();
 	}
 
-	public final void setSelectedRowTo(Integer selectedRowTo) {
+	public void setSelectedRowTo(Integer selectedRowTo) {
 		this.selectedRowTo.set(selectedRowTo);
 	}
 
@@ -119,7 +119,7 @@ public class FavoritesSection {
 	private LazyListField<FavoriteColumn> columns = new LazyListField<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
-	public final List<FavoriteColumn> getColumns() {
+	public List<FavoriteColumn> getColumns() {
 		// Singular attributes cannot be resolved that early, therefore lazy:
 		if (DEFAULT_COLUMNS == null) {
 			DEFAULT_COLUMNS = Arrays.asList(new FavoriteColumn(title), new FavoriteColumn(author),
@@ -128,7 +128,7 @@ public class FavoritesSection {
 		return columns.get(() -> DEFAULT_COLUMNS.stream().map(FavoriteColumn::new).collect(toList()));
 	}
 
-	public final void setColumns(List<FavoriteColumn> columns) {
+	public void setColumns(List<FavoriteColumn> columns) {
 		this.columns.set(columns);
 	}
 
@@ -136,11 +136,11 @@ public class FavoritesSection {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@XmlElement(name = "favorite")
-	public final List<HVSCEntry> getFavorites() {
+	public List<HVSCEntry> getFavorites() {
 		return favorites.get(() -> new ArrayList<>(DEFAULT_FAVORITES));
 	}
 
-	public final void setFavorites(List<HVSCEntry> favorites) {
+	public void setFavorites(List<HVSCEntry> favorites) {
 		this.favorites.set(favorites);
 	}
 

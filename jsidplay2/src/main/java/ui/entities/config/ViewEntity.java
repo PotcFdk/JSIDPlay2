@@ -32,21 +32,21 @@ public class ViewEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	private ShadowField<StringProperty, String> fxId = new ShadowField<>(SimpleStringProperty::new, null);
 
-	public final String getFxId() {
+	public String getFxId() {
 		return fxId.get();
 	}
 
-	public final void setFxId(String fxId) {
+	public void setFxId(String fxId) {
 		this.fxId.set(fxId);
 	}
 

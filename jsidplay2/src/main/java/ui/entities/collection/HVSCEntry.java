@@ -103,268 +103,268 @@ public class HVSCEntry {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@XmlTransient
 	@JsonIgnore
-	public final Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public final void setId(Integer id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	private String path;
 
-	public final String getPath() {
+	public String getPath() {
 		return path;
 	}
 
-	public final void setPath(String path) {
+	public void setPath(String path) {
 		this.path = path;
 	}
 
 	private String name;
 
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	private String title;
 
-	public final String getTitle() {
+	public String getTitle() {
 		return title;
 	}
 
-	public final void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
 	private String author;
 
-	public final String getAuthor() {
+	public String getAuthor() {
 		return author;
 	}
 
-	public final void setAuthor(String author) {
+	public void setAuthor(String author) {
 		this.author = author;
 	}
 
 	private String released;
 
-	public final String getReleased() {
+	public String getReleased() {
 		return released;
 	}
 
-	public final void setReleased(String released) {
+	public void setReleased(String released) {
 		this.released = released;
 	}
 
 	private String format;
 
-	public final String getFormat() {
+	public String getFormat() {
 		return format;
 	}
 
-	public final void setFormat(String format) {
+	public void setFormat(String format) {
 		this.format = format;
 	}
 
 	private String playerId;
 
 	@Column(length = 2048)
-	public final String getPlayerId() {
+	public String getPlayerId() {
 		return playerId;
 	}
 
-	public final void setPlayerId(String playerId) {
+	public void setPlayerId(String playerId) {
 		this.playerId = playerId;
 	}
 
 	private Integer noOfSongs;
 
-	public final Integer getNoOfSongs() {
+	public Integer getNoOfSongs() {
 		return noOfSongs;
 	}
 
-	public final void setNoOfSongs(Integer noOfSongs) {
+	public void setNoOfSongs(Integer noOfSongs) {
 		this.noOfSongs = noOfSongs;
 	}
 
 	private Integer startSong;
 
-	public final Integer getStartSong() {
+	public Integer getStartSong() {
 		return startSong;
 	}
 
-	public final void setStartSong(Integer startSong) {
+	public void setStartSong(Integer startSong) {
 		this.startSong = startSong;
 	}
 
 	private Clock clockFreq;
 
 	@Enumerated(EnumType.STRING)
-	public final Clock getClockFreq() {
+	public Clock getClockFreq() {
 		return clockFreq;
 	}
 
-	public final void setClockFreq(Clock clockFreq) {
+	public void setClockFreq(Clock clockFreq) {
 		this.clockFreq = clockFreq;
 	}
 
 	private Speed speed;
 
 	@Enumerated(EnumType.STRING)
-	public final Speed getSpeed() {
+	public Speed getSpeed() {
 		return speed;
 	}
 
-	public final void setSpeed(Speed speed) {
+	public void setSpeed(Speed speed) {
 		this.speed = speed;
 	}
 
 	private Model sidModel1;
 
 	@Enumerated(EnumType.STRING)
-	public final Model getSidModel1() {
+	public Model getSidModel1() {
 		return sidModel1;
 	}
 
-	public final void setSidModel1(Model sidModel1) {
+	public void setSidModel1(Model sidModel1) {
 		this.sidModel1 = sidModel1;
 	}
 
 	private Model sidModel2;
 
 	@Enumerated(EnumType.STRING)
-	public final Model getSidModel2() {
+	public Model getSidModel2() {
 		return sidModel2;
 	}
 
-	public final void setSidModel2(Model sidModel2) {
+	public void setSidModel2(Model sidModel2) {
 		this.sidModel2 = sidModel2;
 	}
 
 	private Model sidModel3;
 
 	@Enumerated(EnumType.STRING)
-	public final Model getSidModel3() {
+	public Model getSidModel3() {
 		return sidModel3;
 	}
 
-	public final void setSidModel3(Model sidModel3) {
+	public void setSidModel3(Model sidModel3) {
 		this.sidModel3 = sidModel3;
 	}
 
 	private Compatibility compatibility;
 
 	@Enumerated(EnumType.STRING)
-	public final Compatibility getCompatibility() {
+	public Compatibility getCompatibility() {
 		return compatibility;
 	}
 
-	public final void setCompatibility(Compatibility compatibility) {
+	public void setCompatibility(Compatibility compatibility) {
 		this.compatibility = compatibility;
 	}
 
 	private Double tuneLength;
 
-	public final Double getTuneLength() {
+	public Double getTuneLength() {
 		return tuneLength;
 	}
 
-	public final void setTuneLength(Double tuneLength) {
+	public void setTuneLength(Double tuneLength) {
 		this.tuneLength = tuneLength;
 	}
 
 	private String audio;
 
-	public final String getAudio() {
+	public String getAudio() {
 		return audio;
 	}
 
-	public final void setAudio(String audio) {
+	public void setAudio(String audio) {
 		this.audio = audio;
 	}
 
 	private Integer sidChipBase1;
 
-	public final Integer getSidChipBase1() {
+	public Integer getSidChipBase1() {
 		return sidChipBase1;
 	}
 
-	public final void setSidChipBase1(Integer sidChipBase1) {
+	public void setSidChipBase1(Integer sidChipBase1) {
 		this.sidChipBase1 = sidChipBase1;
 	}
 
 	private Integer sidChipBase2;
 
-	public final Integer getSidChipBase2() {
+	public Integer getSidChipBase2() {
 		return sidChipBase2;
 	}
 
-	public final void setSidChipBase2(Integer sidChipBase2) {
+	public void setSidChipBase2(Integer sidChipBase2) {
 		this.sidChipBase2 = sidChipBase2;
 	}
 
 	private Integer sidChipBase3;
 
-	public final Integer getSidChipBase3() {
+	public Integer getSidChipBase3() {
 		return sidChipBase3;
 	}
 
-	public final void setSidChipBase3(Integer sidChipBase3) {
+	public void setSidChipBase3(Integer sidChipBase3) {
 		this.sidChipBase3 = sidChipBase3;
 	}
 
 	private Integer driverAddress;
 
-	public final Integer getDriverAddress() {
+	public Integer getDriverAddress() {
 		return driverAddress;
 	}
 
-	public final void setDriverAddress(Integer driverAddress) {
+	public void setDriverAddress(Integer driverAddress) {
 		this.driverAddress = driverAddress;
 	}
 
 	private Integer loadAddress;
 
-	public final Integer getLoadAddress() {
+	public Integer getLoadAddress() {
 		return loadAddress;
 	}
 
-	public final void setLoadAddress(Integer loadAddress) {
+	public void setLoadAddress(Integer loadAddress) {
 		this.loadAddress = loadAddress;
 	}
 
 	private Integer loadLength;
 
-	public final Integer getLoadLength() {
+	public Integer getLoadLength() {
 		return loadLength;
 	}
 
-	public final void setLoadLength(Integer loadLength) {
+	public void setLoadLength(Integer loadLength) {
 		this.loadLength = loadLength;
 	}
 
 	private Integer initAddress;
 
-	public final Integer getInitAddress() {
+	public Integer getInitAddress() {
 		return initAddress;
 	}
 
-	public final void setInitAddress(Integer initAddress) {
+	public void setInitAddress(Integer initAddress) {
 		this.initAddress = initAddress;
 	}
 
 	private Integer playerAddress;
 
-	public final Integer getPlayerAddress() {
+	public Integer getPlayerAddress() {
 		return playerAddress;
 	}
 
-	public final void setPlayerAddress(Integer playerAddress) {
+	public void setPlayerAddress(Integer playerAddress) {
 		this.playerAddress = playerAddress;
 	}
 
@@ -373,62 +373,62 @@ public class HVSCEntry {
 	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	@JsonSerialize(using = LocalDateTimeToStringSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeToStringDeserializer.class)
-	public final LocalDateTime getFileDate() {
+	public LocalDateTime getFileDate() {
 		return fileDate;
 	}
 
-	public final void setFileDate(LocalDateTime fileDate) {
+	public void setFileDate(LocalDateTime fileDate) {
 		this.fileDate = fileDate;
 	}
 
 	private Long fileSizeKb;
 
-	public final Long getFileSizeKb() {
+	public Long getFileSizeKb() {
 		return fileSizeKb;
 	}
 
-	public final void setFileSizeKb(Long fileSizeInKb) {
+	public void setFileSizeKb(Long fileSizeInKb) {
 		this.fileSizeKb = fileSizeInKb;
 	}
 
 	private Long tuneSizeB;
 
-	public final Long getTuneSizeB() {
+	public Long getTuneSizeB() {
 		return tuneSizeB;
 	}
 
-	public final void setTuneSizeB(Long tuneSizeInB) {
+	public void setTuneSizeB(Long tuneSizeInB) {
 		this.tuneSizeB = tuneSizeInB;
 	}
 
 	private Short relocStartPage;
 
-	public final Short getRelocStartPage() {
+	public Short getRelocStartPage() {
 		return relocStartPage;
 	}
 
-	public final void setRelocStartPage(Short relocStartPage) {
+	public void setRelocStartPage(Short relocStartPage) {
 		this.relocStartPage = relocStartPage;
 	}
 
 	private Short relocNoPages;
 
-	public final Short getRelocNoPages() {
+	public Short getRelocNoPages() {
 		return relocNoPages;
 	}
 
-	public final void setRelocNoPages(Short relocNoPages) {
+	public void setRelocNoPages(Short relocNoPages) {
 		this.relocNoPages = relocNoPages;
 	}
 
 	private LazyListField<StilEntry> stil = new LazyListField<StilEntry>();
 
 	@OneToMany(mappedBy = "hvscEntry", fetch = FetchType.LAZY)
-	public final List<StilEntry> getStil() {
+	public List<StilEntry> getStil() {
 		return stil.get(() -> DEFAULT_STIL.stream().map(StilEntry::new).collect(toList()));
 	}
 
-	public final void setStil(List<StilEntry> stil) {
+	public void setStil(List<StilEntry> stil) {
 		this.stil.set(stil);
 	}
 

@@ -20,55 +20,55 @@ public class Musicians {
 
 	@Id
 	@Column(name = "MU_ID")
-	public final int getId() {
+	public int getId() {
 		return id;
 	}
 
-	public final void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	private String photoFilename;
 
 	@Column(name = "PHOTO")
-	public final String getPhotoFilename() {
+	public String getPhotoFilename() {
 		return photoFilename;
 	}
 
-	public final void setPhotoFilename(String photo) {
+	public void setPhotoFilename(String photo) {
 		this.photoFilename = photo;
 	}
 
 	private String musician;
 
 	@Column(name = "MUSICIAN")
-	public final String getMusician() {
+	public String getMusician() {
 		return musician;
 	}
 
-	public final void setMusician(String musician) {
+	public void setMusician(String musician) {
 		this.musician = musician;
 	}
 
 	private String group;
 
 	@Column(name = "GRP")
-	public final String getGroup() {
+	public String getGroup() {
 		return group;
 	}
 
-	public final void setGroup(String group) {
+	public void setGroup(String group) {
 		this.group = group;
 	}
 
 	private String nickname;
 
 	@Column(name = "NICK")
-	public final String getNickname() {
+	public String getNickname() {
 		return nickname;
 	}
 
-	public final void setNickname(String nickname) {
+	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
 
