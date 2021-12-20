@@ -896,6 +896,57 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>keytool-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>generateKeyPair</goal>
+						</goals>
+						<configuration>
+							<alias>jsidplay2</alias>
+							<keystore>${project.build.directory}/deploy/keystore.jks</keystore>
+							<storetype>pkcs12</storetype>
+							<dname>cn="JSIDPlay2", ou="JSIDPlay2", o="Open Source", l="Berlin", c="DE"</dname>
+							<keypass>jsidplay2</keypass>
+							<storepass>jsidplay2</storepass>
+							<validity>365</validity>
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>net.jsign</groupId>
+				<artifactId>jsign-maven-plugin</artifactId>
+				<version>4.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<fileset>
+								<directory>${project.build.directory}/standalone</directory>
+								<includes>
+									<include>${project.artifactId}-${project.version}.exe</include>
+									<include>${project.artifactId}_console-${project.version}.exe</include>
+									<include>sidblastertool-${project.version}.exe</include>
+								</includes>
+							</fileset>						
+							<name>${project.name}</name>
+							<url>https://sourceforge.net/projects/jsidplay2/</url>
+							<keystore>${project.build.directory}/deploy/keystore.jks</keystore>
+							<alias>jsidplay2</alias>
+							<storepass>jsidplay2</storepass>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
 				<executions>

@@ -3,6 +3,7 @@ Release Notes:
 
 Features:
 ---------
+Windows executables have been self-signed, now, to prevent annoying "Unknown Publisher" warning.
 Better C64 breadbox/PC64 images and Composer pictures
 GameBase64: show musicians photo
 Use fixed PAL/NTSC setting is now possible
