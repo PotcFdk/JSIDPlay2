@@ -156,7 +156,8 @@
 					<TextArea fx:id="comment" />
 				</TitledPane>
 				<Button fx:id="linkMusic" onAction="#downloadMusic"
-					GridPane.rowIndex="8" GridPane.columnIndex="1" disable="true" />
+					GridPane.rowIndex="8" GridPane.columnIndex="1" disable="true"
+					mnemonicParsing="false" />
 				<TitledPane text="%CONFIGURATION" collapsible="true"
 					expanded="false" GridPane.rowIndex="9" GridPane.columnIndex="0"
 					GridPane.columnSpan="3">
