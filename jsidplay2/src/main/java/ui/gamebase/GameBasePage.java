@@ -62,8 +62,7 @@ public class GameBasePage extends C64VBox implements UIPart {
 		gamebaseTable.setItems(sortedList);
 		gamebaseTable.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
-				Games game = gamebaseTable.getSelectionModel().getSelectedItem();
-				startGame(game);
+				autostart();
 			}
 		});
 		gamebaseTable.setOnMousePressed(event -> {
@@ -97,6 +96,12 @@ public class GameBasePage extends C64VBox implements UIPart {
 		});
 	}
 
+	@FXML
+	private void autostart() {
+		Games game = gamebaseTable.getSelectionModel().getSelectedItem();
+		startGame(game);
+	}
+
 	private void setScreenshot(URL url) {
 		if (screenshot == null) {
 			screenshot = (ImageView) gamebaseTable.getScene().lookup("#gamebase_screenshot");
@@ -116,6 +121,9 @@ public class GameBasePage extends C64VBox implements UIPart {
 	}
 
 	protected void startGame(Games game) {
+		if (game == null) {
+			return;
+		}
 		if (game.getFilename().isEmpty()) {
 			System.out.println("Game is not available on GameBase64: " + game.getName());
 			return;

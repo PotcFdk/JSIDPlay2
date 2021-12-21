@@ -27,7 +27,7 @@ import ui.common.properties.ShadowField;
 @Embeddable
 public class C1541Section implements IC1541Section {
 
-	public static final boolean DEFAULT_DRIVE_SOUND = false;
+	public static final boolean DEFAULT_DRIVE_SOUND = true;
 	public static final ExtendImagePolicy DEFAULT_EXTEND_IMAGE_POLICY = ExtendImagePolicy.EXTEND_ACCESS;
 
 	private ShadowField<BooleanProperty, Boolean> driveOn = new ShadowField<>(SimpleBooleanProperty::new,

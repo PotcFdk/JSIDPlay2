@@ -97,7 +97,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		}
 
 		if (!getSupportedSamplingRates().contains(audioSection.getSamplingRate())) {
-			throw new IniConfigException("Sampling rate is not supported by encoder, use default",
+			throw new IniConfigException("Sampling rate is not supported by encoder, switch to default",
 					() -> audioSection.setSamplingRate(getDefaultSamplingRate()));
 		}
 		container = IContainer.make();

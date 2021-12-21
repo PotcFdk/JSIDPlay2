@@ -187,27 +187,29 @@ public class WebView extends C64VBox implements UIPart {
 			forward.setDisable(newValue.intValue() + 1 >= engine.getHistory().getEntries().size());
 
 		};
+
 		convenience = new Convenience(util.getPlayer());
 		convenience.setAutoStartedFile(file -> {
 			if (showTuneInfos && PathUtils.getFilenameSuffix(file.getName()).equalsIgnoreCase(".sid")) {
 				showTuneInfos(util.getPlayer().getTune(), file);
 			}
 		});
-		webView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-			if (isDownloading) {
-				event.consume();
-			}
-		});
+
 		engine = webView.getEngine();
 		engine.getHistory().currentIndexProperty().addListener(historyListener);
 		engine.locationProperty().addListener(locationListener);
 		engine.getLoadWorker().stateProperty().addListener(hyperlinkRedirectListener);
 		engine.getLoadWorker().progressProperty().addListener(progressListener);
-		zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
-			util.getConfig().getOnlineSection().setZoom(newValue.doubleValue());
-			webView.setZoom(newValue.doubleValue());
+
+		zoom.valueProperty().bindBidirectional(util.getConfig().getOnlineSection().zoomProperty());
+		zoom.valueProperty().addListener((observable, oldValue, newValue) -> webView.setZoom(newValue.doubleValue()));
+
+		webView.setZoom(util.getConfig().getOnlineSection().getZoom());
+		webView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+			if (isDownloading) {
+				event.consume();
+			}
 		});
-		zoom.setValue(util.getConfig().getOnlineSection().getZoom());
 	}
 
 	@Override
