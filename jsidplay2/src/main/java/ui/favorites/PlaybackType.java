@@ -7,6 +7,11 @@ public enum PlaybackType {
 	 */
 	NORMAL,
 	/**
+	 * Play tune after another within one favorites list and repeat if list is ended
+	 * (repeated mode)
+	 */
+	REPEATED,
+	/**
 	 * Play random tunes within one favorites list
 	 */
 	RANDOM_ONE,

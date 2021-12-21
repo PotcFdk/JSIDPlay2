@@ -301,6 +301,11 @@ public class Favorites extends C64VBox implements UIPart {
 	}
 
 	@FXML
+	private void repeated() {
+		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.REPEATED);
+	}
+
+	@FXML
 	private void randomOne() {
 		util.getConfig().getSidplay2Section().setPlaybackType(PlaybackType.RANDOM_ONE);
 	}
@@ -380,7 +385,10 @@ public class Favorites extends C64VBox implements UIPart {
 				currentlyPlayedFavorites.playNextRandom();
 			} else if (pt == PlaybackType.NORMAL && currentlyPlayedFavorites != null
 					&& util.getPlayer().getTune() != null) {
-				currentlyPlayedFavorites.playNext();
+				currentlyPlayedFavorites.playNext(false);
+			} else if (pt == PlaybackType.REPEATED && currentlyPlayedFavorites != null
+					&& util.getPlayer().getTune() != null) {
+				currentlyPlayedFavorites.playNext(true);
 			} else {
 				// PlaybackType.RANDOM_HVSC || PlaybackType.PLAYBACK_OFF
 				if (currentlyPlayedFavorites != null) {

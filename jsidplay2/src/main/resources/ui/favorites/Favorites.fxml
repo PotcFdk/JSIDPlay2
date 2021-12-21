@@ -142,16 +142,20 @@
 							GridPane.rowIndex="1" GridPane.columnIndex="1" onAction="#normal">
 							<userData>NORMAL</userData>
 						</RadioButton>
+						<RadioButton text="%REPEATED" toggleGroup="$playbackGroup"
+							GridPane.rowIndex="1" GridPane.columnIndex="2" onAction="#repeated">
+							<userData>REPEATED</userData>
+						</RadioButton>
 						<RadioButton text="%RANDOM_ONE_PLAYLIST" toggleGroup="$playbackGroup"
-							GridPane.rowIndex="1" GridPane.columnIndex="2" onAction="#randomOne">
+							GridPane.rowIndex="1" GridPane.columnIndex="3" onAction="#randomOne">
 							<userData>RANDOM_ONE</userData>
 						</RadioButton>
 						<RadioButton text="%RANDOM_ALL_PLAYLISTS" toggleGroup="$playbackGroup"
-							GridPane.rowIndex="1" GridPane.columnIndex="3" onAction="#randomAll">
+							GridPane.rowIndex="1" GridPane.columnIndex="4" onAction="#randomAll">
 							<userData>RANDOM_ALL</userData>
 						</RadioButton>
 						<RadioButton text="%RANDOM_HVSC" toggleGroup="$playbackGroup"
-							GridPane.rowIndex="1" GridPane.columnIndex="4" onAction="#randomHVSC">
+							GridPane.rowIndex="1" GridPane.columnIndex="5" onAction="#randomHVSC">
 							<userData>RANDOM_HVSC</userData>
 						</RadioButton>
 

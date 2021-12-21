@@ -450,16 +450,21 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void playNext() {
+	void playNext(boolean repeated) {
+		boolean playsNext = false;
 		boolean recentlyPlayedFound = false;
 		for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
 			if (recentlyPlayedFound) {
 				playTune(hvscEntry);
+				playsNext = true;
 				break;
 			}
 			if (hvscEntry == currentlyPlayedHVSCEntryProperty.get()) {
 				recentlyPlayedFound = true;
 			}
+		}
+		if (repeated && !playsNext) {
+			favoritesSection.getFavorites().stream().findFirst().ifPresent(this::playTune);
 		}
 	}
 
