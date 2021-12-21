@@ -386,13 +386,12 @@ public class EmulationSettings extends C64Window {
 
 		stereoMode.getSelectionModel().select(emulationSection.getStereoMode());
 		mainVolume.setDisable(hardwareBasedSid);
-		secondVolume.setDisable(hardwareBasedSid);
-		thirdVolume.setDisable(hardwareBasedSid);
 		sid1Emulation.setDisable(hardwareBasedSid);
 		mainFilter.setDisable(hardwareBasedSid);
 		mainFilterCurve.setDisable(hardwareBasedSid);
 		copy.setDisable(hardwareBasedSid);
 		// stereo, only:
+		secondVolume.setDisable(!second || hardwareBasedSid);
 		mainBalance.setDisable(!second || hardwareBasedSid);
 		mainDelay.setDisable(!second);
 		secondBalance.setDisable(!second || hardwareBasedSid);
@@ -402,7 +401,12 @@ public class EmulationSettings extends C64Window {
 		secondFilter.setDisable(!second || hardwareBasedSid);
 		secondFilterCurve.setDisable(!second || hardwareBasedSid);
 		stereoFilter.setDisable(!second);
+		muteVoice5.setDisable(!second);
+		muteVoice6.setDisable(!second);
+		muteVoice7.setDisable(!second);
+		muteVoice8.setDisable(!second);
 		// 3-SID, only:
+		thirdVolume.setDisable(!third || hardwareBasedSid);
 		thirdBalance.setDisable(!third || hardwareBasedSid);
 		thirdDelay.setDisable(!third);
 		sid3Emulation.setDisable(!third || hardwareBasedSid);
@@ -410,6 +414,10 @@ public class EmulationSettings extends C64Window {
 		thirdFilter.setDisable(!third || hardwareBasedSid);
 		thirdFilterCurve.setDisable(!third || hardwareBasedSid);
 		thirdSidFilter.setDisable(!third);
+		muteVoice9.setDisable(!third);
+		muteVoice10.setDisable(!third);
+		muteVoice11.setDisable(!third);
+		muteVoice12.setDisable(!third);
 		// fake stereo, only:
 		sidToRead.setDisable(!emulationSection.isFakeStereo());
 		// forced stereo or forced 3-SID, only:

@@ -96,15 +96,15 @@
 							<MenuItem fx:id="assembly64" text="%ASSEMBLY64"
 								onAction="#assembly64" />
 							<MenuItem fx:id="csdb" text="%CSDB" onAction="#csdb" />
+							<MenuItem fx:id="soasc" text="%SOASC" onAction="#soasc" />
 							<MenuItem fx:id="remixKwedOrg" text="%REMIX_KWED_ORG"
 								onAction="#remixKweqOrg" />
+							<MenuItem fx:id="gamebase" text="%GAMEBASE" onAction="#gamebase" />
+							<MenuItem fx:id="codebase64" text="%CODEBASE64"
+								onAction="#codebase64" />
 							<MenuItem fx:id="lemon64" text="%LEMON64_COM" onAction="#lemon64" />
 							<MenuItem fx:id="forum64" text="%FORUM64_DE" onAction="#forum64" />
 							<MenuItem fx:id="c64Sk" text="%C64_SK" onAction="#c64Sk" />
-							<MenuItem fx:id="soasc" text="%SOASC" onAction="#soasc" />
-							<MenuItem fx:id="codebase64" text="%CODEBASE64"
-								onAction="#codebase64" />
-							<MenuItem fx:id="gamebase" text="%GAMEBASE" onAction="#gamebase" />
 							<MenuItem fx:id="jsidplay2Src" text="%JSIDPLAY2_SRC"
 								onAction="#jsidplay2Src" />
 						</Menu>

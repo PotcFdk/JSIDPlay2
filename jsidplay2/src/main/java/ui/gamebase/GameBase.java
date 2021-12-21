@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -114,8 +115,24 @@ public class GameBase extends C64VBox implements UIPart {
 	protected void initialize() {
 		final SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 
-		filterField.setOnKeyReleased(event -> ((GameBasePage) letter.getSelectionModel().getSelectedItem().getContent())
-				.filter(filterField.getText().trim()));
+		filterField.setOnKeyReleased(event -> {
+			// reset filter
+			letter.getTabs().stream().forEach(tab -> ((GameBasePage) tab.getContent()).filter(""));
+
+			Tab selectedTab = letter.getSelectionModel().getSelectedItem();
+			String trim = filterField.getText().trim();
+			OptionalInt optionalFilteredFirstChar = trim.chars().map(Character::toUpperCase).findFirst();
+			OptionalInt optionalTabFirstChar = selectedTab.getText().chars().findFirst();
+			if (optionalFilteredFirstChar.isPresent()
+					&& optionalFilteredFirstChar.getAsInt() != optionalTabFirstChar.getAsInt()) {
+				selectedTab = letter.getTabs().stream().filter(
+						tab -> tab.getText().chars().findFirst().getAsInt() == optionalFilteredFirstChar.getAsInt())
+						.findFirst().orElse(letter.getTabs().stream().findFirst().get());
+				letter.getSelectionModel().select(selectedTab);
+			}
+
+			((GameBasePage) selectedTab.getContent()).filter(trim);
+		});
 
 		contents.setPrefHeight(Double.MAX_VALUE);
 

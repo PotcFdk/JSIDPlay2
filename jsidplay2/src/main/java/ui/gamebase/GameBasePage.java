@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiPredicate;
 
 import javafx.application.Platform;
@@ -161,11 +162,9 @@ public class GameBasePage extends C64VBox implements UIPart {
 		if (filterText.trim().length() == 0) {
 			filteredGames.addAll(allGames);
 		} else {
-			for (Games game : allGames) {
-				if (game.getName().contains(filterText)) {
-					filteredGames.add(game);
-				}
-			}
+			allGames.stream()
+					.filter(game -> game.getName().toLowerCase(Locale.US).contains(filterText.toLowerCase(Locale.US)))
+					.forEach(filteredGames::add);
 		}
 	}
 
