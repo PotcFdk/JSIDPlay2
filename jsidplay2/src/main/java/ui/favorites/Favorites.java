@@ -3,6 +3,7 @@ package ui.favorites;
 import static javafx.beans.binding.Bindings.bindBidirectional;
 import static ui.common.properties.BindingUtils.bindBidirectional;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import de.schlichtherle.truezip.file.TFile;
 import de.schlichtherle.truezip.file.TFileInputStream;
@@ -46,6 +48,18 @@ import ui.entities.config.SidPlay2Section;
 
 public class Favorites extends C64VBox implements UIPart {
 
+	private class StateChangeListener implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			Platform.runLater(() -> {
+				if (event.getNewValue() == State.END) {
+					Platform.runLater(() -> playNextTune());
+				}
+			});
+		}
+
+	}
+
 	public static final String ID = "FAVORITES";
 
 	@FXML
@@ -60,7 +74,8 @@ public class Favorites extends C64VBox implements UIPart {
 	private ToggleGroup playbackGroup, repeatGroup;
 
 	private FavoritesTab currentlyPlayedFavorites;
-	protected Random random = new Random();
+
+	private Random random = new Random();
 
 	private PropertyChangeListener nextTuneListener;
 
@@ -75,11 +90,6 @@ public class Favorites extends C64VBox implements UIPart {
 	@FXML
 	@Override
 	protected void initialize() {
-		nextTuneListener = event -> {
-			if (event.getNewValue() == State.END) {
-				Platform.runLater(() -> playNextTune());
-			}
-		};
 		SidPlay2Section sidplay2Section = util.getConfig().getSidplay2Section();
 
 		// Not already configured, yet?
@@ -107,9 +117,6 @@ public class Favorites extends C64VBox implements UIPart {
 
 		bindBidirectional(repeatGroup, sidplay2Section.loopProperty());
 
-		util.getPlayer().stateProperty().addListener(nextTuneListener);
-		List<? extends FavoritesSection> favorites = util.getConfig().getFavorites();
-
 		((ObservableList<FavoritesSection>) util.getConfig().getFavorites())
 				.addListener((ListChangeListener.Change<? extends FavoritesSection> change) -> {
 					while (change.next()) {
@@ -124,27 +131,26 @@ public class Favorites extends C64VBox implements UIPart {
 						}
 					}
 				});
+
 		favoritesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			// Save last selected tab
 			if (newValue != null) {
 				util.getConfig().setCurrentFavorite(newValue.getText());
 			}
 		});
+
+		nextTuneListener = new StateChangeListener();
+		util.getPlayer().stateProperty().addListener(nextTuneListener);
+
 		Platform.runLater(() -> {
 			// Initially select last selected tab
-			String currentFavorite = util.getConfig().getCurrentFavorite();
-			for (FavoritesSection favorite : favorites) {
-				addTab(favorite);
-			}
-			if (currentFavorite != null) {
-				for (Tab tab : favoritesList.getTabs()) {
-					if (tab.getText().equals(currentFavorite)) {
+			util.getConfig().getFavorites().stream().forEach(this::addTab);
+
+			favoritesList.getTabs().stream().filter(tab -> tab.getText().equals(util.getConfig().getCurrentFavorite()))
+					.findFirst().ifPresent(tab -> {
 						favoritesList.getSelectionModel().select(tab);
-						currentlyPlayedFavorites = (FavoritesTab) getSelectedTab().getContent();
-						break;
-					}
-				}
-			}
+						currentlyPlayedFavorites = getSelectedFavoritesTab();
+					});
 		});
 		Platform.runLater(() -> {
 			favoritesList.setOnDragOver(event -> {
@@ -161,8 +167,7 @@ public class Favorites extends C64VBox implements UIPart {
 				if (db.hasFiles()) {
 					success = true;
 					List<File> files = db.getFiles();
-					FavoritesTab selectedTab = (FavoritesTab) getSelectedTab().getContent();
-					selectedTab.addFavorites(files);
+					getSelectedFavoritesTab().addFavorites(files);
 				}
 				event.setDropCompleted(success);
 				event.consume();
@@ -193,7 +198,7 @@ public class Favorites extends C64VBox implements UIPart {
 									favoritesSection.setName(tabName);
 									favorites.add(favoritesSection);
 									try {
-										((FavoritesTab) getSelectedTab().getContent()).loadFavorites(file);
+										getSelectedFavoritesTab().loadFavorites(file);
 									} catch (IOException e1) {
 										e1.printStackTrace();
 									}
@@ -217,28 +222,28 @@ public class Favorites extends C64VBox implements UIPart {
 		if (files != null && files.size() > 0) {
 			File file = files.get(0);
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
-			Tab tab = getSelectedTab();
 
-			FavoritesTab selectedTab = (FavoritesTab) tab.getContent();
+			FavoritesTab selectedTab = getSelectedFavoritesTab();
 			selectedTab.addFavorites(files);
-			renameTab(tab, PathUtils.getFilenameWithoutSuffix(file.getParentFile().getName()));
-			tab.setText(selectedTab.getFavoritesSection().getName());
+			renameTab(PathUtils.getFilenameWithoutSuffix(file.getParentFile().getName()));
+			Tab tab = favoritesList.getSelectionModel().getSelectedItem();
+			tab.setText(selectedTab.getName());
 		}
 	}
 
 	@FXML
 	private void removeFavorites() {
-		((FavoritesTab) getSelectedTab().getContent()).removeSelectedFavorites();
+		getSelectedFavoritesTab().removeSelectedFavorites();
 	}
 
 	@FXML
 	private void selectAllFavorites() {
-		((FavoritesTab) getSelectedTab().getContent()).selectAllFavorites();
+		getSelectedFavoritesTab().selectAllFavorites();
 	}
 
 	@FXML
 	private void clearSelection() {
-		((FavoritesTab) getSelectedTab().getContent()).clearSelection();
+		getSelectedFavoritesTab().clearSelection();
 	}
 
 	@FXML
@@ -251,7 +256,7 @@ public class Favorites extends C64VBox implements UIPart {
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			try {
-				((FavoritesTab) getSelectedTab().getContent()).loadFavorites(file);
+				getSelectedFavoritesTab().loadFavorites(file);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -269,7 +274,7 @@ public class Favorites extends C64VBox implements UIPart {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
 			File target = new File(file.getParentFile(), PathUtils.getFilenameWithoutSuffix(file.getName()) + ".js2");
 			try {
-				((FavoritesTab) getSelectedTab().getContent()).saveFavorites(target);
+				getSelectedFavoritesTab().saveFavorites(target);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -286,8 +291,9 @@ public class Favorites extends C64VBox implements UIPart {
 
 	@FXML
 	private void renameTab() {
-		renameTab(getSelectedTab(), renameTab.getText());
-		getSelectedTab().setText(renameTab.getText());
+		renameTab(renameTab.getText());
+		Tab tab = favoritesList.getSelectionModel().getSelectedItem();
+		tab.setText(renameTab.getText());
 	}
 
 	@FXML
@@ -330,6 +336,20 @@ public class Favorites extends C64VBox implements UIPart {
 		util.getConfig().getSidplay2Section().setLoop(true);
 	}
 
+	public void setCurrentlyPlayedFavorites(FavoritesTab currentlyPlayedFavorites) {
+		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
+	}
+
+	public List<Tab> getOtherFavoriteTabs() {
+		return favoritesList.getTabs().stream()
+				.filter(tab -> !tab.equals(favoritesList.getSelectionModel().getSelectedItem()))
+				.collect(Collectors.toList());
+	}
+
+	private FavoritesTab getSelectedFavoritesTab() {
+		return (FavoritesTab) favoritesList.getSelectionModel().getSelectedItem().getContent();
+	}
+
 	private void setSongLengthDatabase(File hvscRoot) {
 		try {
 			util.getPlayer().setSidDatabase(new SidDatabase(hvscRoot));
@@ -348,11 +368,7 @@ public class Favorites extends C64VBox implements UIPart {
 		}
 	}
 
-	Tab getSelectedTab() {
-		return favoritesList.getSelectionModel().getSelectedItem();
-	}
-
-	protected void addTab(final FavoritesSection favoritesSection) {
+	private void addTab(final FavoritesSection favoritesSection) {
 		final FavoritesTab newTab = new FavoritesTab(util.getWindow(), util.getPlayer());
 		if (favoritesSection.getName() == null) {
 			favoritesSection.setName(util.getBundle().getString("NEW_TAB"));
@@ -367,11 +383,11 @@ public class Favorites extends C64VBox implements UIPart {
 		favoritesList.getSelectionModel().select(tab);
 	}
 
-	private void renameTab(Tab selectedTab, String name) {
-		((FavoritesTab) selectedTab.getContent()).getFavoritesSection().setName(name);
+	private void renameTab(String name) {
+		getSelectedFavoritesTab().setName(name);
 	}
 
-	protected void playNextTune() {
+	private void playNextTune() {
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		PlaybackType pt = sidPlay2Section.getPlaybackType();
 
@@ -379,7 +395,7 @@ public class Favorites extends C64VBox implements UIPart {
 			if (pt == PlaybackType.RANDOM_ALL) {
 				favoritesList.getSelectionModel()
 						.select(Math.abs(random.nextInt(Integer.MAX_VALUE)) % favoritesList.getTabs().size());
-				currentlyPlayedFavorites = (FavoritesTab) getSelectedTab().getContent();
+				currentlyPlayedFavorites = getSelectedFavoritesTab();
 				currentlyPlayedFavorites.playNextRandom();
 			} else if (pt == PlaybackType.RANDOM_ONE && currentlyPlayedFavorites != null) {
 				currentlyPlayedFavorites.playNextRandom();
@@ -397,13 +413,5 @@ public class Favorites extends C64VBox implements UIPart {
 				}
 			}
 		}
-	}
-
-	void setCurrentlyPlayedFavorites(FavoritesTab currentlyPlayedFavorites) {
-		this.currentlyPlayedFavorites = currentlyPlayedFavorites;
-	}
-
-	ObservableList<Tab> getFavoriteTabs() {
-		return favoritesList.getTabs();
 	}
 }

@@ -157,13 +157,10 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		contextMenu.setOnShown(event -> {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel().getSelectedItem();
 			showStil.setDisable(hvscEntry == null || util.getPlayer().getStilEntry(hvscEntry.getPath()) == null);
-			List<Tab> tabs = favorites.getFavoriteTabs();
+			List<Tab> tabs = favorites.getOtherFavoriteTabs();
 			moveToTab.getItems().clear();
 			copyToTab.getItems().clear();
 			for (final Tab tab : tabs) {
-				if (tab.equals(favorites.getSelectedTab())) {
-					continue;
-				}
 				final String name = tab.getText();
 				MenuItem moveToTabItem = new MenuItem(name);
 				moveToTabItem.setOnAction(event2 -> {
@@ -201,13 +198,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 			cellFactory.setPlayer(util.getPlayer());
 			cellFactory.setCurrentlyPlayedHVSCEntryProperty(currentlyPlayedHVSCEntryProperty);
 		}
-	}
-
-	private File getHVSCFile(HVSCEntry hvscEntry) {
-		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
-		return hvscEntry != null
-				? PathUtils.getFile(hvscEntry.getPath(), sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc())
-				: null;
 	}
 
 	@FXML
@@ -254,23 +244,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	private void copyToUniqueName(File file, File directory, String name, int number) {
-		String newName = name;
-		if (number > 1) {
-			newName = PathUtils.getFilenameWithoutSuffix(name) + "_" + number + PathUtils.getFilenameSuffix(name);
-		}
-		File newFile = new File(directory, newName);
-		if (newFile.exists()) {
-			copyToUniqueName(file, directory, name, ++number);
-		} else {
-			try {
-				TFile.cp(file, newFile);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
-
 	@FXML
 	private void showStil() {
 		HVSCEntry hvscEntry = favoritesTable.getSelectionModel().getSelectedItem();
@@ -306,11 +279,39 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 	}
 
-	FavoritesSection getFavoritesSection() {
-		return favoritesSection;
+	private File getHVSCFile(HVSCEntry hvscEntry) {
+		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
+		return hvscEntry != null
+				? PathUtils.getFile(hvscEntry.getPath(), sidPlay2Section.getHvsc(), sidPlay2Section.getCgsc())
+				: null;
 	}
 
-	void addFavorites(List<File> files) {
+	private void copyToUniqueName(File file, File directory, String name, int number) {
+		String newName = name;
+		if (number > 1) {
+			newName = PathUtils.getFilenameWithoutSuffix(name) + "_" + number + PathUtils.getFilenameSuffix(name);
+		}
+		File newFile = new File(directory, newName);
+		if (newFile.exists()) {
+			copyToUniqueName(file, directory, name, ++number);
+		} else {
+			try {
+				TFile.cp(file, newFile);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	public String getName() {
+		return favoritesSection.getName();
+	}
+
+	public void setName(String name) {
+		favoritesSection.setName(name);
+	}
+
+	public void addFavorites(List<File> files) {
 		String result = "";
 		for (File file : files) {
 			final File[] listFiles = file.listFiles();
@@ -325,7 +326,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void restoreColumns(final FavoritesSection favoritesSection) {
+	public void restoreColumns(final FavoritesSection favoritesSection) {
 		this.favoritesSection = favoritesSection;
 		filteredFavorites.addAll(favoritesSection.getFavorites());
 
@@ -376,16 +377,16 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void removeSelectedFavorites() {
+	public void removeSelectedFavorites() {
 		removeFavorites(favoritesTable.getSelectionModel().getSelectedItems());
 	}
 
-	void removeAllFavorites() {
+	public void removeAllFavorites() {
 		favoritesSection.getFavorites().clear();
 		util.getConfig().getFavorites().remove(favoritesSection);
 	}
 
-	void filter(String filterText) {
+	public void filter(String filterText) {
 		filteredFavorites.clear();
 		if (filterText.trim().length() == 0) {
 			filteredFavorites.addAll(favoritesSection.getFavorites());
@@ -410,15 +411,15 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void selectAllFavorites() {
+	public void selectAllFavorites() {
 		favoritesTable.getSelectionModel().selectAll();
 	}
 
-	void clearSelection() {
+	public void clearSelection() {
 		favoritesTable.getSelectionModel().clearSelection();
 	}
 
-	void loadFavorites(File favoritesFile) throws IOException {
+	public void loadFavorites(File favoritesFile) throws IOException {
 		String result = "";
 		SidPlay2Section sidPlay2Section = util.getConfig().getSidplay2Section();
 		favoritesFile = addFileExtension(favoritesFile);
@@ -441,7 +442,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void saveFavorites(File favoritesFile) throws IOException {
+	public void saveFavorites(File favoritesFile) throws IOException {
 		favoritesFile = addFileExtension(favoritesFile);
 		try (PrintStream p = new PrintStream(favoritesFile)) {
 			for (HVSCEntry hvscEntry : favoritesTable.getItems()) {
@@ -450,31 +451,102 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		}
 	}
 
-	void playNext(boolean repeated) {
-		boolean playsNext = false;
-		boolean recentlyPlayedFound = false;
-		for (HVSCEntry hvscEntry : favoritesSection.getFavorites()) {
-			if (recentlyPlayedFound) {
-				playTune(hvscEntry);
-				playsNext = true;
-				break;
-			}
+	public void playNext(boolean repeated) {
+		Iterator<HVSCEntry> it = favoritesSection.getFavorites().iterator();
+		while (it.hasNext()) {
+			HVSCEntry hvscEntry = it.next();
 			if (hvscEntry == currentlyPlayedHVSCEntryProperty.get()) {
-				recentlyPlayedFound = true;
+				if (it.hasNext()) {
+					playTune(it.next());
+				} else if (repeated) {
+					favoritesSection.getFavorites().stream().findFirst().ifPresent(this::playTune);
+				}
 			}
-		}
-		if (repeated && !playsNext) {
-			favoritesSection.getFavorites().stream().findFirst().ifPresent(this::playTune);
 		}
 	}
 
-	void playNextRandom() {
+	public void playNextRandom() {
 		if (favoritesSection.getFavorites().isEmpty()) {
 			return;
 		}
 		HVSCEntry hvscEntry = favoritesSection.getFavorites()
 				.get(Math.abs(new Random().nextInt(Integer.MAX_VALUE)) % favoritesSection.getFavorites().size());
 		playTune(hvscEntry);
+	}
+
+	public void removeFavorites(ObservableList<HVSCEntry> selectedItems) {
+		favoritesSection.getFavorites().removeAll(selectedItems);
+		filter(filterField.getText());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void addColumn(SingularAttribute<?, ?> attribute, final FavoriteColumn favoriteColumn) {
+		String text = util.getBundle()
+				.getString(attribute.getDeclaringType().getJavaType().getSimpleName() + "." + attribute.getName());
+		TableColumn tableColumn = new TableColumn();
+		tableColumn.setUserData(favoriteColumn);
+		tableColumn.setText(text);
+		tableColumn.setCellValueFactory(new PropertyValueFactory(attribute.getName()));
+		FavoritesCellFactory cellFactory = new FavoritesCellFactory();
+		cellFactory.setPlayer(util.getPlayer());
+		cellFactory.setCurrentlyPlayedHVSCEntryProperty(currentlyPlayedHVSCEntryProperty);
+		tableColumn.setCellFactory(cellFactory);
+		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
+			favoriteColumn.setWidth(newValue.doubleValue());
+		});
+		favoritesTable.getColumns().add(tableColumn);
+	}
+
+	public void moveColumn() {
+		Collection<FavoriteColumn> newOrderList = new ArrayList<>();
+		for (TableColumn<HVSCEntry, ?> tableColumn : favoritesTable.getColumns()) {
+			FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn.getUserData();
+			if (favoriteColumn != null) {
+				newOrderList.add(favoriteColumn);
+			}
+		}
+		favoritesSection.getColumns().clear();
+		favoritesSection.getColumns().addAll(newOrderList);
+	}
+
+	public void moveRow(int from, int to) {
+		Collections.swap(favoritesSection.getFavorites(), from, to);
+		filter(filterField.getText());
+		favoritesTable.getSelectionModel().select(to);
+	}
+
+	public void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
+		String result = "";
+		for (HVSCEntry hvscEntry : toCopy) {
+			result = String.join("", result, tab.addFavorite(getHVSCFile(hvscEntry)));
+		}
+		if (!result.isEmpty()) {
+			openErrorDialog(result);
+		}
+	}
+
+	public void deselectCurrentlyPlayedHVSCEntry() {
+		currentlyPlayedHVSCEntryProperty.set(null);
+	}
+
+	public void playTune(final HVSCEntry hvscEntry) {
+		favorites.setCurrentlyPlayedFavorites(this);
+		util.setPlayingTab(this, currentlyPlayedHVSCEntryProperty);
+		try {
+			util.getPlayer().getC64().ejectCartridge();
+			util.getPlayer().play(SidTune.load(getHVSCFile(hvscEntry)));
+			currentlyPlayedHVSCEntryProperty.set(hvscEntry);
+			favoritesTable.scrollTo(hvscEntry);
+			int selectedIndex = filteredFavorites.indexOf(hvscEntry);
+			favoritesSection.setSelectedRowFrom(selectedIndex);
+			favoritesSection.setSelectedRowTo(selectedIndex);
+		} catch (IOException | SidTuneError e) {
+			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
+		}
+	}
+
+	public void setFavorites(Favorites favorites) {
+		this.favorites = favorites;
 	}
 
 	private File addFileExtension(File favoritesFile) {
@@ -504,11 +576,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		return result;
 	}
 
-	void removeFavorites(ObservableList<HVSCEntry> selectedItems) {
-		favoritesSection.getFavorites().removeAll(selectedItems);
-		filter(filterField.getText());
-	}
-
 	private SingularAttribute<?, ?> getAttribute(String columnProperty) throws IllegalAccessException {
 		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
 			if (field.getName().equals(HVSCEntry_.id.getName())) {
@@ -535,72 +602,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		addColumnMenu.getItems().add(menuItem);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void addColumn(SingularAttribute<?, ?> attribute, final FavoriteColumn favoriteColumn) {
-		String text = util.getBundle()
-				.getString(attribute.getDeclaringType().getJavaType().getSimpleName() + "." + attribute.getName());
-		TableColumn tableColumn = new TableColumn();
-		tableColumn.setUserData(favoriteColumn);
-		tableColumn.setText(text);
-		tableColumn.setCellValueFactory(new PropertyValueFactory(attribute.getName()));
-		FavoritesCellFactory cellFactory = new FavoritesCellFactory();
-		cellFactory.setPlayer(util.getPlayer());
-		cellFactory.setCurrentlyPlayedHVSCEntryProperty(currentlyPlayedHVSCEntryProperty);
-		tableColumn.setCellFactory(cellFactory);
-		tableColumn.widthProperty().addListener((observable, oldValue, newValue) -> {
-			favoriteColumn.setWidth(newValue.doubleValue());
-		});
-		favoritesTable.getColumns().add(tableColumn);
-	}
-
-	void moveColumn() {
-		Collection<FavoriteColumn> newOrderList = new ArrayList<>();
-		for (TableColumn<HVSCEntry, ?> tableColumn : favoritesTable.getColumns()) {
-			FavoriteColumn favoriteColumn = (FavoriteColumn) tableColumn.getUserData();
-			if (favoriteColumn != null) {
-				newOrderList.add(favoriteColumn);
-			}
-		}
-		favoritesSection.getColumns().clear();
-		favoritesSection.getColumns().addAll(newOrderList);
-	}
-
-	void moveRow(int from, int to) {
-		Collections.swap(favoritesSection.getFavorites(), from, to);
-		filter(filterField.getText());
-		favoritesTable.getSelectionModel().select(to);
-	}
-
-	void copyToTab(final List<HVSCEntry> toCopy, final FavoritesTab tab) {
-		String result = "";
-		for (HVSCEntry hvscEntry : toCopy) {
-			result = String.join("", result, tab.addFavorite(getHVSCFile(hvscEntry)));
-		}
-		if (!result.isEmpty()) {
-			openErrorDialog(result);
-		}
-	}
-
-	void deselectCurrentlyPlayedHVSCEntry() {
-		currentlyPlayedHVSCEntryProperty.set(null);
-	}
-
-	void playTune(final HVSCEntry hvscEntry) {
-		favorites.setCurrentlyPlayedFavorites(this);
-		util.setPlayingTab(this, currentlyPlayedHVSCEntryProperty);
-		try {
-			util.getPlayer().getC64().ejectCartridge();
-			util.getPlayer().play(SidTune.load(getHVSCFile(hvscEntry)));
-			currentlyPlayedHVSCEntryProperty.set(hvscEntry);
-			favoritesTable.scrollTo(hvscEntry);
-			int selectedIndex = filteredFavorites.indexOf(hvscEntry);
-			favoritesSection.setSelectedRowFrom(selectedIndex);
-			favoritesSection.setSelectedRowTo(selectedIndex);
-		} catch (IOException | SidTuneError e) {
-			openErrorDialog(String.format(util.getBundle().getString("ERR_IO_ERROR"), e.getMessage()));
-		}
-	}
-
 	private void openErrorDialog(String msg) {
 		Alert alert = new Alert(AlertType.ERROR, "");
 		alert.setTitle(util.getBundle().getString("ALERT_TITLE"));
@@ -609,10 +610,6 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		textArea.setWrapText(true);
 		alert.getDialogPane().setContent(textArea);
 		alert.showAndWait();
-	}
-
-	public void setFavorites(Favorites favorites) {
-		this.favorites = favorites;
 	}
 
 }
