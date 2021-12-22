@@ -6,6 +6,7 @@ Features:
 Better C64 breadbox/PC64 images and Composer pictures
 GameBase64: show musicians photo
 Use fixed PAL/NTSC setting is now possible
+New playback option: sequential (repeated) added
 
 Recording formats:
 ------------------
@@ -24,3 +25,4 @@ Windows executables have been self-signed, now, to prevent annoying "Unknown Pub
 Unboosted digis on 8580 are now equally audible for Dag Lem's ReSID 1.0beta same as for Antti's ReSIDfp
 WhatsSID changes take now effect without restart
 File extension for SIDDump driver changed to .txt
+Favorites Tab: Add Column - names ar now sorted and ordered
