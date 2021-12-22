@@ -8,8 +8,9 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
 
@@ -54,12 +55,12 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 			String filePath = request.getPathInfo();
 			response.setContentType(MIME_TYPE_JSON.toString());
 			File tuneFile = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
-			HVSCEntry hvscEntry = createHVSCEntry(tuneFile);
-			Map<String, String> tuneInfos = SearchCriteria
-					.getAttributeValues(hvscEntry,
+
+			TreeMap<String, String> tuneInfos = listToSortedMap(
+					SearchCriteria.getAttributeValues(createHVSCEntry(tuneFile),
 							field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
-									+ field.getAttribute().getName())
-					.stream().collect(Collectors.toMap(Pair<String, String>::getKey, pair -> pair.getValue()));
+									+ field.getAttribute().getName()));
+
 			response.getWriter().println(new ObjectMapper().writer().writeValueAsString(tuneInfos));
 		} catch (Throwable t) {
 			error(t);
@@ -81,6 +82,11 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 			songLengthFnct = () -> db.getTuneLength(tune);
 		}
 		return new HVSCEntry(songLengthFnct, "", tuneFile, tune);
+	}
+
+	private TreeMap<String, String> listToSortedMap(List<Pair<String, String>> attributeValues) {
+		return attributeValues.stream()
+				.collect(Collectors.toMap(Pair::getKey, Pair::getValue, (o1, o2) -> o1, TreeMap::new));
 	}
 
 }

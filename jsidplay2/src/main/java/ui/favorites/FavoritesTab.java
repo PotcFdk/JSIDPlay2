@@ -60,6 +60,7 @@ import ui.entities.collection.HVSCEntry_;
 import ui.entities.config.FavoriteColumn;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
+import ui.musiccollection.SearchCriteria;
 import ui.stilview.STILView;
 
 public class FavoritesTab extends C64VBox implements UIPart {
@@ -141,18 +142,10 @@ public class FavoritesTab extends C64VBox implements UIPart {
 		});
 		filterField.setOnKeyReleased(event -> filter(filterField.getText()));
 
-		for (Field field : HVSCEntry_.class.getDeclaredFields()) {
-			if (field.getName().equals(HVSCEntry_.id.getName())
-					|| !SingularAttribute.class.isAssignableFrom(field.getType())) {
-				continue;
-			}
-			try {
-				SingularAttribute<?, ?> singleAttribute = (SingularAttribute<?, ?>) field.get(null);
-				addAddColumnHeaderMenuItem(addColumnMenu, singleAttribute);
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
+		SearchCriteria.getSearchableAttributes().stream()
+				.filter(searchCriteria -> searchCriteria.getAttribute().getDeclaringType().getJavaType().getSimpleName()
+						.startsWith(HVSCEntry.class.getSimpleName()))
+				.forEach(searchCriteria -> addAddColumnHeaderMenuItem(addColumnMenu, searchCriteria.getAttribute()));
 
 		contextMenu.setOnShown(event -> {
 			HVSCEntry hvscEntry = favoritesTable.getSelectionModel().getSelectedItem();
@@ -593,7 +586,10 @@ public class FavoritesTab extends C64VBox implements UIPart {
 
 	private void addAddColumnHeaderMenuItem(Menu addColumnMenu, final SingularAttribute<?, ?> attribute) {
 		MenuItem menuItem = new MenuItem();
-		menuItem.setText(attribute.getName());
+
+		String text = util.getBundle()
+				.getString(attribute.getDeclaringType().getJavaType().getSimpleName() + "." + attribute.getName());
+		menuItem.setText(text);
 		menuItem.setOnAction(event -> {
 			FavoriteColumn favoriteColumn = new FavoriteColumn(attribute);
 			favoritesSection.getColumns().add(favoriteColumn);
