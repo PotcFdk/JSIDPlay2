@@ -141,3 +141,31 @@ TODO:
 - Playlists are wanted to be shared online
 - the ability to have music playback occur alongside your SID dump feature. This would look a bit like a tracker,
   and would allow a listener to see the connections between register values and sounds.
+
+Steps to create a release version:
+==================================
+Check release notes a last time
+At 00:00 o' clock
+Increase Version in pom.xml
+Increase Version in pom-java11.xml
+Increase Version in latest.properties
+Run launch "Release JSIDPlay2"
+
+Download latest versions ov HVSC, CGSC, HVMEC and GB64
+Open Eclipse menu: Window/Preferences
+Click Run/Dubug/String substitution
+and update all file paths to the latest releases
+Run launch "clean deploy (plus additional online content)"
+Check in all local changes, please note: Update check will report a new release, immediately
+
+Update JSIDPlay2 server with latest version:
+Copy '/home/ken/workspace/jsidplay2/target/deploy/jsidplay2-4.5.zip' to
+sftp://ken-whatssid/home/ken/Downloads
+pkill -f server.restful.JSIDPlay2Server
+cd Downloads/
+rm -rf jsidplay2-4.4
+unzip jsidplay2-4.4.zip
+cd
+./server.sh
+less server.log
+
