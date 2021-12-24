@@ -1,28 +1,2 @@
 Release Notes:
 ==============
-
-Features:
----------
-Better C64 breadbox/PC64 images and Composer pictures
-GameBase64: show musicians photo
-Use fixed PAL/NTSC setting is now possible
-New playback option: sequential (repeated) added
-
-Recording formats:
-------------------
-FLV recordings added
-Live Video Streaming added
-Recordings are now created using ffmpeg for better performance and quality control
-
-JSIDPlay2Server:
-----------------
-startSong parameter added to restful services API
-
-Bugfixes:
----------
-File permissions of linux shell scripts fixed (executable bit)
-Windows executables have been self-signed, now, to prevent annoying "Unknown Publisher" warning.
-Unboosted digis on 8580 are now equally audible for Dag Lem's ReSID 1.0beta same as for Antti's ReSIDfp
-WhatsSID changes take now effect without restart
-File extension for SIDDump driver changed to .txt
-Favorites Tab: Add Column - names are now sorted and ordered

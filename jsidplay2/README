@@ -166,6 +166,65 @@ cd Downloads/
 rm -rf jsidplay2-4.4
 unzip jsidplay2-4.4.zip
 cd
+Version in "server.sh" und "fingerprintCreater.sh" ändern
 ./server.sh
 less server.log
 
+Version in "~/Desktop/JSIDPlay2.desktop" und "~/Desktop/JSIDPlay2 (Java11).desktop" ändern
+
+Upload the following release files to sourceforge and
+mark it with the correct OS (only for jsidplay2-4.5-*.zip and jsidplay2app.apk)
+jsiddevice-4.5.zip
+libsidplay-4.5.jar
+jsidplay2app.apk
+jsidplay2-4.5.zip
+jsidplay2-4.5-java11-linux.zip
+jsidplay2-4.5-java11-mac.zip
+jsidplay2-4.5-java11-win.zip
+RELEASE_NOTES
+README_2nd.txt
+README.txt
+
+Optional: Exchange screenshots
+
+Create a new News Entry:
+New Version released: 4.5
+**Release Notes:**
+* ...
+
+Add two release entries to CSDB:
+Click Userpage/Add Release "JSIDPlay2 V4.5"
+Release Type: "Other Platform C64 Tool"
+Website: "https://sourceforge.net/projects/jsidplay2/"
+Release date: ...
+Click "Create Release"
+Click "Add New Credit"
+Code: alankile, wilfred, kenchis
+Concept: kenchis
+Screenshot machen:
+~/jsidplay2.xml wegbewegen
+Launch "JSIDPlay2Frame (english)"
+Alt+Druck im Fenster
+Bild mit Gimp öffnen
+Bild/Bild skalieren
+Breite: 384px
+Click "Upload screenshot from this release"
+Click "Set me as a maintainer"
+Click "Add Download Link": https://sourceforge.net/projects/jsidplay2/files/jsidplay2/4.5/
+Click "Released by": Scener/kenchis
+
+Click Userpage/Add Release "JSIDDevice V4.5"
+Release Type: "Other Platform C64 Tool"
+Website: "https://sourceforge.net/projects/jsidplay2/"
+Release date: ...
+Click "Create Release"
+Click "Add New Credit"
+Code: alankile, wilfred, kenchis
+Concept: kenchis
+Screenshot machen:
+Launch "Network SIDDevice"
+Alt+Druck im Fenster
+Click "Upload screenshot from this release"
+Click "Set me as a maintainer"
+Click "Upload": jsiddevice-4.5.zip
+Click "Released by": Scener/kenchis
