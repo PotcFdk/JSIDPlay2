@@ -15,7 +15,7 @@ Password: ***
 Check, if database engine is innodb or mysam:
 ---------------------------------------------
 SHOW DATABASES;
-USE hvsc75;
+USE hvsc76;
 SHOW TABLE STATUS WHERE `Name` = 'HashTable';
 
 Estimate innodb_buffer_pool_size (check database size):
@@ -43,7 +43,7 @@ Get estimate row count of database:
 -----------------------------------
 select  table_rows
 from    information_schema.tables
-where   table_schema = 'hvsc75'
+where   table_schema = 'hvsc76'
   and   table_name = 'HashTable' ;
 
 Faster database warm-up phase:
@@ -57,4 +57,4 @@ SHOW STATUS LIKE 'Innodb_buffer_pool_load_status';
 
 Remove old database:
 --------------------
-DROP DATABASE hvsc74;
+DROP DATABASE hvsc75;

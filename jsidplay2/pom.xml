@@ -36,6 +36,8 @@
 		<cgsc.7z />
 		<hvmec.zip />
 		<upx.exe />
+		<!-- Optional: server database name -->
+		<hvsc.version>hvsc76</hvsc.version>
 	</properties>
 
 	<scm>
@@ -299,6 +301,7 @@
 								<protocol>${protocol}</protocol>
 								<hostname>${hostname}</hostname>
 								<port>${port}</port>
+								<hvsc_version>${hvsc.version}</hvsc_version>
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->
@@ -328,6 +331,7 @@
 								<protocol>${protocol}</protocol>
 								<hostname>${hostname}</hostname>
 								<port>${port}</port>
+								<hvsc_version>${hvsc.version}</hvsc_version>
 								<!-- Display anchors on html document -->
 								<sectanchors>true</sectanchors>
 								<!-- Table of contents -->
