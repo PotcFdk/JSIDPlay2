@@ -58,3 +58,4 @@ SHOW STATUS LIKE 'Innodb_buffer_pool_load_status';
 Remove old database:
 --------------------
 DROP DATABASE hvsc75;
+sudo rm -rf /var/lib/mysql/hvsc75		# remove remaining (non-database table) files
