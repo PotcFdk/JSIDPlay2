@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -31,6 +32,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
+import libsidutils.fingerprinting.rest.beans.WAVBean;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
@@ -40,6 +43,9 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected static final String CGSC = "/CGSC";
 
 	protected static final String RTMP_THREAD = "RTMP";
+
+	private static final Map<WAVBean, MusicInfoWithConfidenceBean> cache = Collections
+			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(60000));
 
 	protected Configuration configuration;
 
@@ -139,6 +145,16 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			}
 		}
 		throw new FileNotFoundException(path);
+	}
+
+	protected MusicInfoWithConfidenceBean get(WAVBean wavBean) {
+		return cache.get(wavBean);
+	}
+
+	protected MusicInfoWithConfidenceBean put(WAVBean wavBean,
+			MusicInfoWithConfidenceBean musicInfoWithConfidenceBean) {
+		cache.put(wavBean, musicInfoWithConfidenceBean);
+		return musicInfoWithConfidenceBean;
 	}
 
 	private String requestURI(HttpServletRequest request) {

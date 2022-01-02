@@ -45,14 +45,14 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		try {
 			WAVBean wavBean = getInput(request, WAVBean.class);
 
-			MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
-			if (!getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals).findFirst()
-					.isPresent()) {
+			MusicInfoWithConfidenceBean musicInfoWithConfidence = get(wavBean);
+			if (musicInfoWithConfidence == null && !getAllStackTraces().keySet().stream().map(Thread::getName)
+					.filter(RTMP_THREAD::equals).findFirst().isPresent()) {
 				final WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
-				musicInfoWithConfidence = new FingerPrinting(new IniFingerprintConfig(), whatsSidService)
-						.match(wavBean);
-				info(String.valueOf(musicInfoWithConfidence));
+				musicInfoWithConfidence = put(wavBean,
+						new FingerPrinting(new IniFingerprintConfig(), whatsSidService).match(wavBean));
 			}
+			info(String.valueOf(musicInfoWithConfidence));
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 		} catch (Throwable t) {
 			error(t);
