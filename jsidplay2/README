@@ -141,6 +141,8 @@ TODO:
 - Playlists are wanted to be shared online
 - the ability to have music playback occur alongside your SID dump feature. This would look a bit like a tracker,
   and would allow a listener to see the connections between register values and sounds.
+- Removal of splash screen
+- Drag and Drop of HVSC zip file
 
 Steps to create a release version:
 ==================================
