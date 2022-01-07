@@ -32,10 +32,15 @@ public interface IWhatsSidSystemProperties {
 			.valueOf(System.getProperty("jsidplay2.whatssid.connection.timeout", valueOf(120/* s */ * 1000)));
 
 	/**
-	 * WhatsSID? query timeout in ms of tune recognition's findHashes query to
+	 * WhatsSID? Query timeout in ms of tune recognition's findHashes query to
 	 * prevent blocking database connections during database startup.
 	 */
 	int QUERY_TIMEOUT = Integer
 			.valueOf(System.getProperty("jsidplay2.whatssid.query.timeout", valueOf(30/* s */ * 1000)));
+
+	/**
+	 * WhatsSID? Cache size. Recognized audio is cached for performance reasons.
+	 */
+	int CACHE_SIZE = Integer.valueOf(System.getProperty("jsidplay2.whatssid.cache.size", valueOf(60000)));
 
 }

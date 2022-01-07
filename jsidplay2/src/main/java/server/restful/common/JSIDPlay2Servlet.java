@@ -1,5 +1,6 @@
 package server.restful.common;
 
+import static libsidplay.config.IWhatsSidSystemProperties.CACHE_SIZE;
 import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
@@ -45,7 +46,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected static final String RTMP_THREAD = "RTMP";
 
 	private static final Map<WAVBean, MusicInfoWithConfidenceBean> cache = Collections
-			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(60000));
+			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
 
 	protected Configuration configuration;
 
