@@ -169,6 +169,9 @@ rm -rf jsidplay2-4.4
 unzip jsidplay2-4.4.zip
 cd
 Version in "server.sh" und "fingerprintCreater.sh" ändern
+Autostart ändern:
+sudo vi /etc/systemd/system/jsidplay2.service
+
 ./server.sh
 less server.log
 
