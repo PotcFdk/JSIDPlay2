@@ -31,11 +31,11 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * RTMP directive on_play.
+	 * RTMP directive on_play_done.
 	 *
 	 * {@code
 	 * http://haendel.ddns.net:8080/static/on_play_done
-	 * }
+	 * } Example result:
 	 * 
 	 * <pre>
 	 * app=live
