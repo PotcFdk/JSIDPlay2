@@ -13,9 +13,11 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 
@@ -35,6 +37,7 @@ import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WAVBean;
+import sidplay.Player;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
@@ -43,10 +46,10 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected static final String C64_MUSIC = "/C64Music";
 	protected static final String CGSC = "/CGSC";
 
-	protected static final String RTMP_THREAD = "RTMP";
-
-	private static final Map<WAVBean, MusicInfoWithConfidenceBean> cache = Collections
+	private static final Map<WAVBean, MusicInfoWithConfidenceBean> musicInfoWithConfidenceBeanMap = Collections
 			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
+
+	private static final Map<UUID, Player> playerMap = Collections.synchronizedMap(new HashMap<>());
 
 	protected Configuration configuration;
 
@@ -148,14 +151,23 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		throw new FileNotFoundException(path);
 	}
 
-	protected MusicInfoWithConfidenceBean get(WAVBean wavBean) {
-		return cache.get(wavBean);
+	protected MusicInfoWithConfidenceBean getMusicInfoWithConfidenceBean(WAVBean wavBean) {
+		return musicInfoWithConfidenceBeanMap.get(wavBean);
 	}
 
-	protected MusicInfoWithConfidenceBean put(WAVBean wavBean,
+	protected MusicInfoWithConfidenceBean putMusicInfoWithConfidenceBean(WAVBean wavBean,
 			MusicInfoWithConfidenceBean musicInfoWithConfidenceBean) {
-		cache.put(wavBean, musicInfoWithConfidenceBean);
+		musicInfoWithConfidenceBeanMap.put(wavBean, musicInfoWithConfidenceBean);
 		return musicInfoWithConfidenceBean;
+	}
+
+	protected Player putPlayer(UUID uuid, Player player) {
+		playerMap.put(uuid, player);
+		return player;
+	}
+
+	protected Player removePlayer(UUID uuid) {
+		return playerMap.remove(uuid);
 	}
 
 	private String requestURI(HttpServletRequest request) {

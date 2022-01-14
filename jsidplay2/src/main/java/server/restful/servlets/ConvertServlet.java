@@ -1,10 +1,8 @@
 package server.restful.servlets;
 
 import static java.lang.Thread.MAX_PRIORITY;
-import static java.lang.Thread.getAllStackTraces;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidplay.config.IAudioSystemProperties.MAX_LENGTH;
-import static libsidplay.config.IAudioSystemProperties.MAX_RTMP_THREADS;
 import static libsidplay.config.IAudioSystemProperties.PRESS_SPACE_INTERVALL;
 import static libsidplay.config.IAudioSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static libsidplay.config.IAudioSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -166,27 +164,22 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
-					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter(RTMP_THREAD::equals)
-							.count() < MAX_RTMP_THREADS) {
-						Thread thread = new Thread(() -> {
-							try {
-								convertLiveVideo(config, file, driver, getEntityManager());
-							} catch (IOException | SidTuneError e) {
-								log("Error converting video!", e);
-							} finally {
-								closeEntityManager();
-							}
-						}, RTMP_THREAD);
-						thread.setPriority(MAX_PRIORITY);
-						thread.start();
-						response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-						response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
-					} else {
-						String message = "Max threads reached: " + MAX_RTMP_THREADS + ", please retry in some minutes!";
-						info(message);
-						response.setContentType(MIME_TYPE_TEXT.toString());
-						new PrintStream(response.getOutputStream()).println(message);
-					}
+					final Player player = putPlayer(uuid, new Player(config));
+					Thread thread = new Thread(() -> {
+						try {
+							info("START RTMP stream of: " + uuid);
+							convertLiveVideo(player, file, driver, getEntityManager());
+							info("END RTMP stream of: " + uuid);
+						} catch (IOException | SidTuneError e) {
+							log("ERROR RTMP stream of: " + uuid + ":", e);
+						} finally {
+							closeEntityManager();
+						}
+					}, "RTMP");
+					thread.setPriority(MAX_PRIORITY);
+					thread.start();
+					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
 				} else {
 					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
@@ -294,15 +287,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convertLiveVideo(IConfig config, File file, AudioDriver driver, EntityManager em)
+	private void convertLiveVideo(Player player, File file, AudioDriver driver, EntityManager em)
 			throws IOException, SidTuneError {
-		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
-		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), MAX_LENGTH));
-
-		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
-			config.getSidplay2Section().setHvsc(root);
+			player.getConfig().getSidplay2Section().setHvsc(root);
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));

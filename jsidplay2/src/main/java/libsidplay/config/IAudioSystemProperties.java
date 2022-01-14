@@ -15,11 +15,6 @@ public interface IAudioSystemProperties {
 	int MAX_TIME_GAP = Integer.valueOf(System.getProperty("jsidplay2.sleep_driver.max_time_gap", "1000"));
 
 	/**
-	 * Maximum number of video creation threads at the same time.
-	 */
-	int MAX_RTMP_THREADS = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_threads", "3"));
-
-	/**
 	 * Maximum length in seconds the video generation process is running.
 	 */
 	int MAX_LENGTH = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_seconds", "600"));
