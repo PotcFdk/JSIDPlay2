@@ -39,14 +39,14 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 	 * 
 	 * <pre>
 	 * app=live
-	 * flashver=LNX &lt;version>
+	 * flashver=LNX &lt;version&gt;
 	 * swfurl=
 	 * tcurl=rtmp://haendel.ddns.net:1935/live
 	 * pageurl=
-	 * addr=&lt;ip-address>
+	 * addr=&lt;ip-address&gt;
 	 * clientid=25
 	 * call=play_done
-	 * name=&lt;UUID>
+	 * name=&lt;UUID&gt;
 	 * start=4294965296
 	 * duration=0
 	 * reset=0
