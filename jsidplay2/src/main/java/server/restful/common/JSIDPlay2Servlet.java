@@ -63,23 +63,23 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	public abstract String getServletPath();
 
 	protected void doGet(HttpServletRequest request) {
-		log(requestURI(request) + queryString(request) + remoteAddr(request) + localAddr(request) + memory());
+		log(thread() + request(request) + queryString(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void doPost(HttpServletRequest request) {
-		log(requestURI(request) + remoteAddr(request) + localAddr(request) + memory());
+		log(thread() + request(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void doPut(HttpServletRequest request) {
-		log(requestURI(request) + remoteAddr(request) + localAddr(request) + memory());
+		log(thread() + request(request) + remoteAddr(request) + localAddr(request) + memory());
 	}
 
 	protected void info(String msg) {
-		log(msg);
+		log(thread() + msg);
 	}
 
 	protected void error(Throwable t) {
-		log(t.getMessage(), t);
+		log(thread() + t.getMessage(), t);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -170,7 +170,14 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		return playerMap.remove(uuid);
 	}
 
-	private String requestURI(HttpServletRequest request) {
+	private String thread() {
+		StringBuilder result = new StringBuilder();
+		result.append(Thread.currentThread().getName());
+		result.append(": ");
+		return result.toString();
+	}
+
+	private String request(HttpServletRequest request) {
 		StringBuilder result = new StringBuilder();
 		result.append(request.getMethod());
 		result.append(" ");
@@ -210,7 +217,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	private String memory() {
 		StringBuilder result = new StringBuilder();
 		Runtime runtime = Runtime.getRuntime();
-		result.append(String.format(", %sMb/%sMb", runtime.totalMemory() - runtime.freeMemory() >> 20,
+		result.append(String.format(", %,dMb/%,dMb", runtime.totalMemory() - runtime.freeMemory() >> 20,
 				runtime.maxMemory() >> 20));
 		return result.toString();
 	}

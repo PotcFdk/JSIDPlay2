@@ -35,7 +35,7 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 	 *
 	 * {@code
 	 * http://haendel.ddns.net:8080/static/on_play_done
-	 * } Example result:
+	 * } Example parameters:
 	 * 
 	 * <pre>
 	 * app=live
