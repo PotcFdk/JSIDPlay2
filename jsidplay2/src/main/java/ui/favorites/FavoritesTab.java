@@ -543,7 +543,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	private File addFileExtension(File favoritesFile) {
-		String extension = FavoritesExtension.EXTENSION;
+		String extension = FavoritesExtension.EXTENSIONS.iterator().next();
 		if (extension.startsWith("*")) {
 			extension = extension.substring(1);
 		}

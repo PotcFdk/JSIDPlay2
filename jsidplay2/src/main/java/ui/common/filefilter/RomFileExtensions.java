@@ -1,10 +1,12 @@
 package ui.common.filefilter;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+import static libsidutils.PathUtils.addUpperCase;
+
 import java.util.List;
 
 public interface RomFileExtensions {
-	List<String> EXTENSIONS = Arrays.asList("*.[bB][iI][nN]", "*.[zZ][iI][pP]");
+	List<String> EXTENSIONS = addUpperCase(asList("*.bin", "*.zip"));
 
 	String DESCRIPTION = "ROM images";
 

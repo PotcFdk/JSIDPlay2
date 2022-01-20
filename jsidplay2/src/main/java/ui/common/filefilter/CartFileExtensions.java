@@ -1,11 +1,12 @@
 package ui.common.filefilter;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+import static libsidutils.PathUtils.addUpperCase;
+
 import java.util.List;
 
 public interface CartFileExtensions {
-	List<String> EXTENSIONS = Arrays.asList("*.reu", "*.ima", "*.crt", "*.img", "*.zip", "*.[rR][eE][uU]",
-			"*.[iI][mM][aA]", "*.[cC][rR][tT]", "*.[iI][mM][gG]", "*.[zZ][iI][pP]");
+	List<String> EXTENSIONS = addUpperCase(asList("*.reu", "*.ima", "*.crt", "*.img", "*.zip"));
 
 	String DESCRIPTION = "C64 Cartridges";
 
