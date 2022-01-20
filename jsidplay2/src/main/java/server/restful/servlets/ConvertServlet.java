@@ -35,11 +35,9 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
@@ -79,10 +77,11 @@ import sidplay.audio.WAVDriver.WAVStreamDriver;
 import sidplay.ini.IniConfig;
 import sidplay.player.State;
 import ui.common.Convenience;
+import ui.common.filefilter.AudioTuneFileFilter;
 import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
-import ui.common.filefilter.TuneFileFilter;
+import ui.common.filefilter.VideoTuneFileFilter;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 
@@ -91,7 +90,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String CONVERT_PATH = "/convert";
 
-	private static final TuneFileFilter tuneFileFilter = new TuneFileFilter();
+	private static final AudioTuneFileFilter audioTuneFileFilter = new AudioTuneFileFilter();
+	private static final VideoTuneFileFilter videoTuneFileFilter = new VideoTuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
 	private static final TapeFileFilter tapeFileFilter = new TapeFileFilter();
 	private static final CartFileFilter cartFileFilter = new CartFileFilter();
@@ -125,8 +125,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		try {
 			String filePath = request.getPathInfo();
 			File file = getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN));
-			if (Stream.of(".sid", ".dat", ".mus", ".str")
-					.filter(ext -> file.getName().toLowerCase(Locale.ENGLISH).endsWith(ext)).findFirst().isPresent()) {
+			if (audioTuneFileFilter.accept(file)) {
 
 				final ServletParameters servletParameters = new ServletParameters();
 				final IniConfig config = servletParameters.getConfig();
@@ -146,8 +145,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				}
 				convert2audio(config, file, driver, servletParameters.getSong());
 				response.setStatus(HttpServletResponse.SC_OK);
-			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
-					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
+			} else if (videoTuneFileFilter.accept(file) || cartFileFilter.accept(file) || diskFileFilter.accept(file)
+					|| tapeFileFilter.accept(file)) {
 
 				final ServletParameters servletParameters = new ServletParameters();
 				final IniConfig config = servletParameters.getConfig();
