@@ -5,10 +5,8 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * This class provides general filename utility functions.
@@ -146,11 +144,4 @@ public class PathUtils {
 		return lastIndexOf != -1 ? filename.substring(lastIndexOf) : "";
 	}
 
-	public static final List<String> addUpperCase(List<String> fileExtensions) {
-		List<String> result = new ArrayList<>();
-		result.addAll(fileExtensions);
-		result.addAll(
-				fileExtensions.stream().map(fileName -> fileName.toUpperCase(Locale.US)).collect(Collectors.toList()));
-		return result;
-	}
 }

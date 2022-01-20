@@ -1,7 +1,7 @@
 package ui.common.filefilter;
 
 import static java.util.Arrays.asList;
-import static libsidutils.PathUtils.addUpperCase;
+import static ui.common.filefilter.TuneFileFilter.addUpperCase;
 
 import java.util.List;
 
