@@ -1119,6 +1119,7 @@
 							<serverId>${serverId}</serverId>
 							<url>${serverUrl}</url>
 							<toDir>${remoteDir}</toDir>
+							<excludes>keystore.jks</excludes>
 						</configuration>
 					</execution>
 				</executions>
