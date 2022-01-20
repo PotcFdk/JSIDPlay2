@@ -28,7 +28,7 @@ public interface IAudioSystemProperties {
 	/**
 	 * Live streaming upload url for the video creation process.
 	 */
-	String RTMP_UPLOAD_URL = System.getProperty("jsidplay2.rtmp.upload.url", "rtmp://localhost/live");
+	String RTMP_UPLOAD_URL = System.getProperty("jsidplay2.rtmp.upload.url", "rtmp://haendel.ddns.net/live");
 
 	/**
 	 * Live streaming download url for the video player for requests from the

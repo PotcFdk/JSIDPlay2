@@ -106,7 +106,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * Stream SID as MP3.
+	 * Stream e.g. SID as MP3 or D64 as RTMP video stream.
 	 *
 	 * <BR>
 	 * E.g. stream audio<BR>
@@ -144,7 +144,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 				}
-				convertAudio(config, file, driver, servletParameters.getSong());
+				convert2audio(config, file, driver, servletParameters.getSong());
 				response.setStatus(HttpServletResponse.SC_OK);
 			} else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".mp3") && (cartFileFilter.accept(file)
 					|| tuneFileFilter.accept(file) || diskFileFilter.accept(file) || tapeFileFilter.accept(file))) {
@@ -168,7 +168,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					Thread thread = new Thread(() -> {
 						try {
 							info("START RTMP stream of: " + uuid);
-							convertLiveVideo(player, file, driver, getEntityManager());
+							convert2liveVideo(player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
 							log("ERROR RTMP stream of: " + uuid + ":", e);
@@ -185,7 +185,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 								+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 					}
-					File videoFile = convertVideo(config, file, driver);
+					File videoFile = convert2video(config, file, driver);
 					copy(videoFile, response.getOutputStream());
 					videoFile.delete();
 
@@ -247,7 +247,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convertAudio(IConfig config, File file, AudioDriver driver, Integer song)
+	private void convert2audio(IConfig config, File file, AudioDriver driver, Integer song)
 			throws IOException, SidTuneError {
 		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
@@ -278,8 +278,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		switch (audio) {
 		case FLV:
 		default:
-			return Boolean.TRUE.equals(download) ? new FLVFileDriver()
-					: new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
+			if (Boolean.TRUE.equals(download)) {
+				return new FLVFileDriver();
+			} else {
+				return new ProxyDriver(new SleepDriver(), new FLVStreamDriver(RTMP_UPLOAD_URL + "/" + uuid));
+			}
 		case AVI:
 			return new AVIFileDriver();
 		case MP4:
@@ -287,7 +290,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convertLiveVideo(Player player, File file, AudioDriver driver, EntityManager em)
+	private void convert2liveVideo(Player player, File file, AudioDriver driver, EntityManager em)
 			throws IOException, SidTuneError {
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
@@ -302,7 +305,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private File convertVideo(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
+	private File convert2video(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), MAX_LENGTH));
 

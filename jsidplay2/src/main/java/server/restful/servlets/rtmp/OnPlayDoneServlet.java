@@ -1,6 +1,5 @@
 package server.restful.servlets.rtmp;
 
-import static java.util.Optional.ofNullable;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
@@ -31,7 +30,9 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * RTMP directive on_play_done.
+	 * Stop Video streaming.
+	 * 
+	 * Implements RTMP directive on_play_done configured in nginx.conf.
 	 *
 	 * {@code
 	 * http://haendel.ddns.net:8080/static/on_play_done
@@ -57,7 +58,7 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		super.doPost(request);
 		try {
-			UUID uuid = UUID.fromString(ofNullable(String.join("", request.getParameterMap().get("name"))).orElse(""));
+			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
 			Player player = removePlayer(uuid);
 			if (player != null) {
 				player.quit();
