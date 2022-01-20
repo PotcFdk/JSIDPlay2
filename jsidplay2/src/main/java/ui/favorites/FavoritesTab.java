@@ -53,7 +53,7 @@ import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.fileextension.FavoritesExtension;
+import ui.common.fileextension.FavoritesExtensions;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
@@ -543,7 +543,7 @@ public class FavoritesTab extends C64VBox implements UIPart {
 	}
 
 	private File addFileExtension(File favoritesFile) {
-		String extension = FavoritesExtension.EXTENSIONS.iterator().next();
+		String extension = FavoritesExtensions.EXTENSIONS.iterator().next();
 		if (extension.startsWith("*")) {
 			extension = extension.substring(1);
 		}

@@ -5,7 +5,7 @@ import static ui.common.fileextension.TuneFileExtensions.addUpperCase;
 
 import java.util.List;
 
-public interface FavoritesExtension {
+public interface FavoritesExtensions {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.js2"));
 

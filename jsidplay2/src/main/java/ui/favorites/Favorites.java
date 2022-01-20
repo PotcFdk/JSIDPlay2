@@ -41,7 +41,7 @@ import ui.common.UIPart;
 import ui.common.converter.TimeToStringConverter;
 import ui.common.download.DownloadThread;
 import ui.common.download.ProgressListener;
-import ui.common.fileextension.FavoritesExtension;
+import ui.common.fileextension.FavoritesExtensions;
 import ui.common.fileextension.TuneFileExtensions;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
@@ -251,7 +251,7 @@ public class Favorites extends C64VBox implements UIPart {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
-				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSIONS));
+				.add(new ExtensionFilter(FavoritesExtensions.DESCRIPTION, FavoritesExtensions.EXTENSIONS));
 		final File file = fileDialog.showOpenDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
@@ -268,7 +268,7 @@ public class Favorites extends C64VBox implements UIPart {
 		final FileChooser fileDialog = new FileChooser();
 		fileDialog.setInitialDirectory(util.getConfig().getSidplay2Section().getLastDirectory());
 		fileDialog.getExtensionFilters()
-				.add(new ExtensionFilter(FavoritesExtension.DESCRIPTION, FavoritesExtension.EXTENSIONS));
+				.add(new ExtensionFilter(FavoritesExtensions.DESCRIPTION, FavoritesExtensions.EXTENSIONS));
 		final File file = fileDialog.showSaveDialog(favoritesList.getScene().getWindow());
 		if (file != null) {
 			util.getConfig().getSidplay2Section().setLastDirectory(file.getParentFile());
