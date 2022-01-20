@@ -40,7 +40,7 @@ import ui.common.UIPart;
 import ui.common.UIUtil;
 import ui.common.download.DownloadThread;
 import ui.common.download.ProgressListener;
-import ui.common.filefilter.MDBFileExtensions;
+import ui.common.fileextension.MDBFileExtensions;
 import ui.common.util.DesktopUtil;
 import ui.entities.DatabaseType;
 import ui.entities.PersistenceProperties;

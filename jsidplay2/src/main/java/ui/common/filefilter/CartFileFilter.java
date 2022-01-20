@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 
-public class CartFileFilter implements FileFilter {
+public final class CartFileFilter implements FileFilter {
 
 	private static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".reu", ".crt" };
 
@@ -15,5 +15,4 @@ public class CartFileFilter implements FileFilter {
 		return file.isDirectory() || stream(DEFAULT_FILE_NAME_EXT)
 				.filter(file.getName().toLowerCase(Locale.ENGLISH)::endsWith).findFirst().isPresent();
 	}
-
 }

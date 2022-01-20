@@ -1,6 +1,3 @@
-/**
- *
- */
 package ui.common.filefilter;
 
 import static java.util.Arrays.stream;

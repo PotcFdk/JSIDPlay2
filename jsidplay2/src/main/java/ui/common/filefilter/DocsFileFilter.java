@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 
-public class DocsFileFilter implements FileFilter {
+public final class DocsFileFilter implements FileFilter {
 
 	private static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".pdf" };
 
@@ -15,5 +15,4 @@ public class DocsFileFilter implements FileFilter {
 		return file.isDirectory() || stream(DEFAULT_FILE_NAME_EXT)
 				.filter(file.getName().toLowerCase(Locale.ENGLISH)::endsWith).findFirst().isPresent();
 	}
-
 }

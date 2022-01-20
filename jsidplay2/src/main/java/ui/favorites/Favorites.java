@@ -41,8 +41,8 @@ import ui.common.UIPart;
 import ui.common.converter.TimeToStringConverter;
 import ui.common.download.DownloadThread;
 import ui.common.download.ProgressListener;
-import ui.common.filefilter.FavoritesExtension;
-import ui.common.filefilter.TuneFileExtensions;
+import ui.common.fileextension.FavoritesExtension;
+import ui.common.fileextension.TuneFileExtensions;
 import ui.entities.config.FavoritesSection;
 import ui.entities.config.SidPlay2Section;
 

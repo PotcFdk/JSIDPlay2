@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 
-public class DiskFileFilter implements FileFilter {
+public final class DiskFileFilter implements FileFilter {
 
 	private static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".d64", ".g64", ".nib" };
 
@@ -15,5 +15,4 @@ public class DiskFileFilter implements FileFilter {
 		return file.isDirectory() || stream(DEFAULT_FILE_NAME_EXT)
 				.filter(file.getName().toLowerCase(Locale.ENGLISH)::endsWith).findFirst().isPresent();
 	}
-
 }

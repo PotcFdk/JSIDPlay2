@@ -1,6 +1,3 @@
-/**
- *
- */
 package ui.common.filefilter;
 
 import static java.util.Arrays.stream;
@@ -11,7 +8,7 @@ import java.util.Locale;
 
 public final class MP3TuneFileFilter implements FileFilter {
 
-	public static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".mp3" };
+	private static final String DEFAULT_FILE_NAME_EXT[] = new String[] { ".mp3" };
 
 	@Override
 	public boolean accept(File file) {

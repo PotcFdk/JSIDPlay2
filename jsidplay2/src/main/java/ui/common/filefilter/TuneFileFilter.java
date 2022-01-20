@@ -1,6 +1,3 @@
-/**
-*
-*/
 package ui.common.filefilter;
 
 import java.io.File;
@@ -8,7 +5,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public final class TuneFileFilter implements FileFilter {
 
@@ -22,11 +18,8 @@ public final class TuneFileFilter implements FileFilter {
 	}
 
 	static final List<String> addUpperCase(List<String> fileExtensions) {
-		List<String> result = new ArrayList<>();
-		result.addAll(fileExtensions);
-		result.addAll(
-				fileExtensions.stream().map(fileName -> fileName.toUpperCase(Locale.US)).collect(Collectors.toList()));
+		List<String> result = new ArrayList<>(fileExtensions);
+		fileExtensions.stream().map(fileName -> fileName.toUpperCase(Locale.US)).forEach(result::add);
 		return result;
 	}
-
 }

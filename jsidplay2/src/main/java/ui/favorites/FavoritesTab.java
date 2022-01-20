@@ -53,7 +53,7 @@ import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
-import ui.common.filefilter.FavoritesExtension;
+import ui.common.fileextension.FavoritesExtension;
 import ui.common.filefilter.TuneFileFilter;
 import ui.entities.collection.HVSCEntry;
 import ui.entities.collection.HVSCEntry_;
