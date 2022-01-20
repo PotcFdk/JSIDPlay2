@@ -9,5 +9,5 @@ public interface RomFileExtensions {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.bin"));
 
-	String DESCRIPTION = "ROM images";
+	String DESCRIPTION = "C64 ROMs";
 }

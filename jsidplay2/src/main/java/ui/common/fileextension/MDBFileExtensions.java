@@ -9,5 +9,5 @@ public interface MDBFileExtensions {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.mdb"));
 
-	String DESCRIPTION = "GameBase64 Database";
+	String DESCRIPTION = "GameBase64 Databases";
 }

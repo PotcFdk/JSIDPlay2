@@ -9,5 +9,5 @@ public interface TapeFileExtensions {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.tap", "*.t64", "*.prg", "*.p00"));
 
-	String DESCRIPTION = "Tape Image";
+	String DESCRIPTION = "C64 Tapes";
 }

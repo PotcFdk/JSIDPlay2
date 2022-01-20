@@ -9,5 +9,5 @@ public interface DiskFileExtensions {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.d64", "*.g64", "*.nib"));
 
-	String DESCRIPTION = "Disk Image";
+	String DESCRIPTION = "C64 Disks";
 }

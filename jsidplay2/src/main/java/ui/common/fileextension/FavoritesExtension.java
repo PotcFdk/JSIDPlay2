@@ -9,5 +9,5 @@ public interface FavoritesExtension {
 
 	List<String> EXTENSIONS = addUpperCase(asList("*.js2"));
 
-	String DESCRIPTION = "Favorite Tunes";
+	String DESCRIPTION = "C64 Favorites";
 }
