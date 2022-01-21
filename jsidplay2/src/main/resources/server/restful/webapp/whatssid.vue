@@ -10,7 +10,6 @@
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 	<h1>WhatsSID?</h1>
-	<span>Please use username='jsidplay2', password='jsidplay2!'</span>
 
 	<div id="app">
 		<h1>Upload a WAV File</h1>
@@ -41,7 +40,15 @@
             },
             upload() {
             	this.match = 'Please wait...';
-                axios({ method: "POST", "url": "/jsidplay2service/JSIDPlay2REST/whatssid", "data": this.files }).then(result => {
+				axios({
+					method: 'post',
+					url: '/jsidplay2service/JSIDPlay2REST/whatssid',
+					data: this.files,
+					auth: {
+					  username: 'jsidplay2',
+					  password: 'jsidplay2!'
+					}
+				}).then(result => {
                 	if (result.data && result.headers['content-length']) {
 	                	this.match = result.data;
 	               	} else {
@@ -49,7 +56,7 @@
 	               	}
                 }, error => {
                 	console.error(error);
-                });
+                })
             }
         }
 	})
