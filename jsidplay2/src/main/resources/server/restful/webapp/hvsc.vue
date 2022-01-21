@@ -10,6 +10,7 @@
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 	<h1>HVSC</h1>
+	<span>Please use username='jsidplay2', password='jsidplay2!'</span>
 
 	<div id="app">
 		<ul>
