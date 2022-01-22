@@ -177,6 +177,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}, "RTMP");
 					thread.setPriority(MAX_PRIORITY);
 					thread.start();
+					Thread.sleep(1000);
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
 				} else {
