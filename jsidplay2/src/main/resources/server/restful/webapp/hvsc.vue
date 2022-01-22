@@ -10,7 +10,6 @@
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 	<h1>HVSC</h1>
-	<span>Please use username='jsidplay2', password='jsidplay2!'</span>
 
 	<div id="app">
 		<ul>
@@ -24,20 +23,16 @@
 				<div
 					v-else-if="entry.endsWith('.sid') || entry.endsWith('.dat') || entry.endsWith('.mus') || entry.endsWith('.str')">
 					<div>
-						<a
-							v-bind:href="'/jsidplay2service/JSIDPlay2REST/convert' + encodeURI(entry).replace(/\+/g,'%2B') + '?enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true'"
-							target="_blank"> {{entry}} </a>
-					</div>
-					<div>
-						<img
-							v-bind:src="'/jsidplay2service/JSIDPlay2REST/photo' + encodeURI(entry).replace(/\+/g,'%2B')" />
+						<a v-bind:href="'https://jsidplay2:jsidplay2!@haendel.ddns.net:8443/jsidplay2service/JSIDPlay2REST/convert' + encodeURI(entry).replace(/\+/g,'%2B') + '?enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true&cbr=64&vbrQuality=0&vbr=true'">
+							{{entry}}
+						</a>
 					</div>
 				</div> <!-- others -->
 				<div v-else>
 					<div>
-						<a
-							v-bind:href="'/jsidplay2service/JSIDPlay2REST/convert' + encodeURI(entry).replace(/\+/g,'%2B') + '?enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true'"
-							target="_blank"> {{entry}} </a>
+						<a v-bind:href="'https://jsidplay2:jsidplay2!@haendel.ddns.net:8443/jsidplay2service/JSIDPlay2REST/convert' + encodeURI(entry).replace(/\+/g,'%2B') + '?enableSidDatabase=true&single=true&loop=false&bufferSize=65536&sampling=RESAMPLE&frequency=MEDIUM&defaultEmulation=RESIDFP&defaultModel=MOS8580&filter6581=FilterAlankila6581R4AR_3789&stereoFilter6581=FilterAlankila6581R4AR_3789&thirdFilter6581=FilterAlankila6581R4AR_3789&filter8580=FilterAlankila6581R4AR_3789&stereoFilter8580=FilterAlankila6581R4AR_3789&thirdFilter8580=FilterAlankila6581R4AR_3789&reSIDfpFilter6581=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter6581=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter6581=FilterAlankila6581R4AR_3789&reSIDfpFilter8580=FilterAlankila6581R4AR_3789&reSIDfpStereoFilter8580=FilterAlankila6581R4AR_3789&reSIDfpThirdFilter8580=FilterAlankila6581R4AR_3789&digiBoosted8580=true'">
+							{{entry}}
+						</a>
 					</div>
 				</div>
 			</li>
@@ -59,7 +54,7 @@
 				if (type == 'directory') {
 					axios({
 						method: 'get',
-						url: '/jsidplay2service/JSIDPlay2REST/' + type + encodeURI(entry).replace(/\+/g,'%2B') + '?filter=.*%5C.(sid%7Cdat%7Cmus%7Cstr%7Cmp3%7Cmp4%7Cjpg%7Cprg%7Cd64)$',
+						url: '/jsidplay2service/JSIDPlay2REST/' + type + encodeURI(entry).replace(/\+/g,'%2B') + '?filter=.*%5C.(sid%7Cdat%7Cmus%7Cstr%7Cmp3%7Cmp4%7Cjpg%7Cprg%7Cd64%7Cg64%7Cnib%7Creu%7Ccrt%7Ctap%7Ct64%7Cp00)$',
 						auth: {
 						  username: 'jsidplay2',
 						  password: 'jsidplay2!'
