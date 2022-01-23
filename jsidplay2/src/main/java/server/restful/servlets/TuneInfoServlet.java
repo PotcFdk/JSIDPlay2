@@ -8,10 +8,13 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.function.DoubleSupplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,11 +84,18 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 	}
 
 	private TreeMap<String, String> hvscEntry2SortedMap(HVSCEntry hvscEntry) {
-		return SearchCriteria
-				.getAttributeValues(hvscEntry,
-						field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
-								+ field.getAttribute().getName())
-				.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue, (o1, o2) -> o1, TreeMap::new));
+		List<Pair<String, String>> attributeValues = SearchCriteria.getAttributeValues(hvscEntry,
+				field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
+						+ field.getAttribute().getName());
+		// same order of keys as n the list
+		return attributeValues.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue, (o1, o2) -> {
+			throw new RuntimeException(String.format("Duplicate key for values %s and %s, I will not merge!", o1, o2));
+		}, () -> new TreeMap<>((o1, o2) -> index(attributeValues, o1) - index(attributeValues, o2))));
+	}
+
+	private int index(List<Pair<String, String>> attributeValues, String o) {
+		return IntStream.range(0, attributeValues.size())
+				.filter(index -> Objects.equals(attributeValues.get(index).getKey(), o)).findFirst().getAsInt();
 	}
 
 }
