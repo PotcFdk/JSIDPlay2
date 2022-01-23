@@ -87,7 +87,7 @@ public class TuneInfoServlet extends JSIDPlay2Servlet {
 		List<Pair<String, String>> attributeValues = SearchCriteria.getAttributeValues(hvscEntry,
 				field -> field.getAttribute().getDeclaringType().getJavaType().getSimpleName() + "."
 						+ field.getAttribute().getName());
-		// same order of keys as n the list
+		// same order of keys as in the list
 		return attributeValues.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue, (o1, o2) -> {
 			throw new RuntimeException(String.format("Duplicate key for values %s and %s, I will not merge!", o1, o2));
 		}, () -> new TreeMap<>((o1, o2) -> index(attributeValues, o1) - index(attributeValues, o2))));
