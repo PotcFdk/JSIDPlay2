@@ -185,9 +185,26 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	private SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver;
 	/**
-	 * Check maximum recording length.
+	 * Check default length in record mode (default is true).
+	 * 
+	 * <B>Note:</B> In record mode the player requires a default length. If it is
+	 * not available, it will be limited to 180s.
 	 */
-	private boolean checkMaxRecordLen;
+	private boolean checkDefaultLengthInRecordMode;
+	/**
+	 * Set check loop off in record mode (default is true).
+	 * 
+	 * <B>Note:</B> In record mode the player must not loop forever. However, it can
+	 * be forced to not being checked.
+	 */
+	private boolean checkLoopOffInRecordMode;
+	/**
+	 * Force check song length (default is false).
+	 * 
+	 * <B>Note:</B> If song length has been reached, the player ends the current
+	 * song, but not in RESET mode. However this can be forced by this switch.
+	 */
+	private boolean forceCheckSongLength;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -322,14 +339,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			 * <LI>End tune
 			 * </OL>
 			 *
-			 * <B>Note:</B> Our streaming audio drivers must never play infinitely (e.g. MP4
-			 * recording)
-			 *
 			 * @see sidplay.player.Timer#end()
 			 */
 			@Override
 			public void end() {
-				if (tune != RESET || getAudio() == null) {
+				if (tune != RESET || forceCheckSongLength) {
 					if (!config.getSidplay2Section().isSingle() && playList.hasNext()) {
 						nextSong();
 					} else if (config.getSidplay2Section().isLoop()) {
@@ -368,7 +382,9 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		initializeTmpDir(config);
 		stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
 		audioAndDriver = new SimpleImmutableEntry<>(DEFAULT_AUDIO, DEFAULT_AUDIO.getAudioDriver());
-		checkMaxRecordLen = true;
+		checkDefaultLengthInRecordMode = true;
+		checkLoopOffInRecordMode = true;
+		forceCheckSongLength = false;
 		recordingFilenameProvider = tune -> new File(config.getSidplay2Section().getTmpDir(), "jsidplay2")
 				.getAbsolutePath();
 	}
@@ -732,10 +748,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		// Audio configuration, if audio driver has not been set by setAudioDriver()!
 		if (getAudio() != null) {
 			setAudioAndDriver(audioSection.getAudio(), audioSection.getAudio().getAudioDriver(audioSection, tune));
-			if (getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
-				sidplay2Section.setLoop(false);
-				System.out.println("Warning: Loop has been disabled during recording!");
-			}
 		}
 		verifyConfiguration(sidplay2Section);
 		// open audio driver
@@ -783,11 +795,16 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 *
 	 * @throws IOException configuration error
 	 */
-	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
-		if (checkMaxRecordLen && getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
+	private void verifyConfiguration(ISidPlay2Section sidplay2Section) throws IOException {
+		if (checkDefaultLengthInRecordMode && getAudioDriver().isRecording()
+				&& sidplay2Section.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
 			throw new IniConfigException("Unknown song length in record mode, use default",
-					() -> sidplaySection.setDefaultPlayLength(180));
+					() -> sidplay2Section.setDefaultPlayLength(180));
+		}
+		if (checkLoopOffInRecordMode && getAudioDriver().isRecording() && sidplay2Section.isLoop()) {
+			sidplay2Section.setLoop(false);
+			System.out.println("Warning: Loop has been disabled during recording!");
 		}
 		if (getAudio() == Audio.LIVE_SID_DUMP && (tune == RESET || tune.getInfo().getPlayAddr() == 0)) {
 			throw new RuntimeException("SIDDump audio driver requires a well-known player address of the tune");
@@ -835,12 +852,30 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	}
 
 	/**
-	 * Set check maximum recording length.
+	 * Set check default length in record mode (default is true).
 	 * 
-	 * @param checkMaxRecordLen check maximum recording length
+	 * @param checkDefaultLengthInRecordMode check default length in record mode
 	 */
-	public void setCheckMaxRecordLen(boolean checkMaxRecordLen) {
-		this.checkMaxRecordLen = checkMaxRecordLen;
+	public void setDefaultLengthInRecordMode(boolean checkDefaultLengthInRecordMode) {
+		this.checkDefaultLengthInRecordMode = checkDefaultLengthInRecordMode;
+	}
+
+	/**
+	 * Set check loop off in record mode (default is true).
+	 * 
+	 * @param checkLoopOffInRecordMode check loop off in record mode
+	 */
+	public void setCheckLoopOffInRecordMode(boolean checkLoopOffInRecordMode) {
+		this.checkLoopOffInRecordMode = checkLoopOffInRecordMode;
+	}
+
+	/**
+	 * Set force check song length (default is false).
+	 * 
+	 * @param forceCheckSongLength force check song length
+	 */
+	public void setForceCheckSongLength(boolean forceCheckSongLength) {
+		this.forceCheckSongLength = forceCheckSongLength;
 	}
 
 	/**

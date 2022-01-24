@@ -299,7 +299,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 		player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
 		player.setAudioDriver(driver);
-		player.setCheckMaxRecordLen(false);
+		player.setDefaultLengthInRecordMode(false);
+		player.setCheckLoopOffInRecordMode(false);
+		player.setForceCheckSongLength(true);
 
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
@@ -316,6 +318,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		Player player = new Player(config);
 		player.setRecordingFilenameProvider(tune -> PathUtils.getFilenameWithoutSuffix(videoFile.getAbsolutePath()));
 		player.setAudioDriver(driver);
+		player.setDefaultLengthInRecordMode(true);
+		player.setCheckLoopOffInRecordMode(false);
+		player.setForceCheckSongLength(true);
 
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
