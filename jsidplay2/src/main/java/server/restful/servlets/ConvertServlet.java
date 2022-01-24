@@ -299,6 +299,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 		player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
 		player.setAudioDriver(driver);
+		player.setCheckMaxRecordLen(false);
 
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);

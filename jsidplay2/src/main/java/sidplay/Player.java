@@ -185,6 +185,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	private SimpleImmutableEntry<Audio, AudioDriver> audioAndDriver;
 	/**
+	 * Check maximum recording length.
+	 */
+	private boolean checkMaxRecordLen;
+	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
 	private SIDBuilder sidBuilder;
@@ -364,6 +368,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		initializeTmpDir(config);
 		stateProperty = new ObjectProperty<>(State.class.getSimpleName(), QUIT);
 		audioAndDriver = new SimpleImmutableEntry<>(DEFAULT_AUDIO, DEFAULT_AUDIO.getAudioDriver());
+		checkMaxRecordLen = true;
 		recordingFilenameProvider = tune -> new File(config.getSidplay2Section().getTmpDir(), "jsidplay2")
 				.getAbsolutePath();
 	}
@@ -779,7 +784,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * @throws IOException configuration error
 	 */
 	private void verifyConfiguration(ISidPlay2Section sidplaySection) throws IOException {
-		if (getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
+		if (checkMaxRecordLen && getAudioDriver().isRecording() && sidplaySection.getDefaultPlayLength() <= 0
 				&& getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) == 0) {
 			throw new IniConfigException("Unknown song length in record mode, use default",
 					() -> sidplaySection.setDefaultPlayLength(180));
@@ -827,6 +832,15 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 */
 	private void setAudioAndDriver(final Audio audio, final AudioDriver audioDriver) throws IOException {
 		this.audioAndDriver = new SimpleImmutableEntry<>(audio, audioDriver);
+	}
+
+	/**
+	 * Set check maximum recording length.
+	 * 
+	 * @param checkMaxRecordLen check maximum recording length
+	 */
+	public void setCheckMaxRecordLen(boolean checkMaxRecordLen) {
+		this.checkMaxRecordLen = checkMaxRecordLen;
 	}
 
 	/**
