@@ -54,10 +54,11 @@ import sidplay.audio.exceptions.IniConfigException;
  * by 0.07 to get the bit rate in bps. <br>
  * 
  * <pre>
- * PAL low motion:		63 * 312 * 50,1246 * 1 * 0,07	=  68.967
- * PAL high motion:		63 * 312 * 50,1246 * 4 * 0,07	= 275.870
- * NTSC LOW motion:		65 * 263 * 59,83   * 1 * 0,07	=  71.596
- * NTSC high motion:	65 * 263 * 59,83   * 4 * 0,07	= 286.382
+ * Video Coder Bit Rate - full screen with borders (MAX_WIDTH * MAX_HEIGHT):
+ * PAL low motion:		192 * 312 * 50,1246 * 1 * 0,07	=   210.186
+ * PAL high motion:		192 * 312 * 50,1246 * 4 * 0,07	=   840.746
+ * NTSC low motion:		192 * 312 * 59,83 * 1 * 0,07	=   250.884
+ * NTSC high motion:	192 * 312 * 59,83 * 4 * 0,07	= 1.003.536
  * </pre>
  * 
  * E.g. stream video<BR>
