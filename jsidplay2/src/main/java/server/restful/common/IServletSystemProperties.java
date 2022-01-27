@@ -35,7 +35,7 @@ public interface IServletSystemProperties {
 	 * internet.
 	 */
 	String RTMP_EXTERNAL_DOWNLOAD_URL = System.getProperty("jsidplay2.rtmp.external.download.url",
-			"rtmp://haendel.ddns.net/live");
+			"rtmp://haendel.ddns.net/live"/* http://haendel.ddns.net:90/hls */);
 
 	/**
 	 * Video streaming: Download url for the video player for requests from inside
