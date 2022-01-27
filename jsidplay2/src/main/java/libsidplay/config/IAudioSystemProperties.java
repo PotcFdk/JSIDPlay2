@@ -12,7 +12,7 @@ public interface IAudioSystemProperties {
 	/**
 	 * Time gap between emulation time and real time of the SleepDriver in ms.
 	 */
-	int MAX_TIME_GAP = Integer.valueOf(System.getProperty("jsidplay2.sleep_driver.max_time_gap", "1000"));
+	int MAX_TIME_GAP = Integer.valueOf(System.getProperty("jsidplay2.sleep_driver.max_time_gap", "10000"));
 
 	/**
 	 * Maximum length in seconds the video generation process is running.
@@ -23,7 +23,7 @@ public interface IAudioSystemProperties {
 	 * Interval between simulated key presses of the space key in s (required to
 	 * watch some demos).
 	 */
-	int PRESS_SPACE_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.press_space_intervall", "40"));
+	int PRESS_SPACE_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.press_space_intervall", "90"));
 
 	/**
 	 * Live streaming upload url for the video creation process.
