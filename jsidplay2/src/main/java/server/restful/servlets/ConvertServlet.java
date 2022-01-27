@@ -185,7 +185,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 								+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 					}
-					File videoFile = convert2video(config, file, driver);
+					File videoFile = convert2videoFile(config, file, driver);
 					copy(videoFile, response.getOutputStream());
 					videoFile.delete();
 
@@ -308,7 +308,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.stopC64(false);
 	}
 
-	private File convert2video(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
+	private File convert2videoFile(IConfig config, File file, AudioDriver driver) throws IOException, SidTuneError {
 		final ISidPlay2Section sidplay2Section = config.getSidplay2Section();
 		sidplay2Section.setDefaultPlayLength(Math.min(sidplay2Section.getDefaultPlayLength(), MAX_LENGTH));
 
