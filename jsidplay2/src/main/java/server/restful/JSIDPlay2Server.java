@@ -3,8 +3,8 @@ package server.restful;
 import static jakarta.servlet.http.HttpServletRequest.BASIC_AUTH;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static libsidplay.config.IWhatsSidSystemProperties.CONNECTION_TIMEOUT;
 import static org.apache.catalina.startup.Tomcat.addServlet;
+import static server.restful.common.IServletSystemProperties.CONNECTION_TIMEOUT;
 
 import java.io.File;
 import java.io.FileInputStream;

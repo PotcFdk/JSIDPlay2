@@ -1,9 +1,9 @@
 package server.restful.common;
 
-import static libsidplay.config.IWhatsSidSystemProperties.CACHE_SIZE;
-import static libsidplay.config.IWhatsSidSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
+import static server.restful.common.IServletSystemProperties.CACHE_SIZE;
+import static server.restful.common.IServletSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
