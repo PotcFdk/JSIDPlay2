@@ -278,6 +278,11 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	private int fastForwardVICFrames;
 
 	/**
+	 * Emulation buffer size.
+	 */
+	private int bufferSize;
+
+	/**
 	 * WhatsSID?
 	 */
 	private IFingerprintMatcher fingerPrintMatcher;
@@ -761,6 +766,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		c64.setPlayRoutineObserver(this);
 
 		fastForwardVICFrames = 0;
+		bufferSize = config.getAudioSection().getBufferSize();
 
 		stateProperty.addListener(pauseListener);
 
@@ -887,7 +893,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * @throws InterruptedException audio production interrupted
 	 */
 	private boolean play() throws InterruptedException {
-		for (int i = 0; i < config.getAudioSection().getBufferSize(); i++) {
+		for (int i = 0; i < bufferSize; i++) {
 			if (stateProperty.get() == PLAY) {
 				c64.getEventScheduler().clock();
 			}
