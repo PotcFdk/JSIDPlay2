@@ -10,3 +10,8 @@ sudo vi /usr/local/nginx/conf/nginx.conf
 Example configuration:
 ----------------------
 src/main/deploy/jsidplay2/nginx.conf
+
+JSIDPlay2Server: Live streaming parameters:
+-------------------------------------------
+-D"jsidplay2.rtmp.external.download.url=rtmp://haendel.ddns.net/live"
+-D"jsidplay2.rtmp.external.download.url=http://haendel.ddns.net:90/hls"

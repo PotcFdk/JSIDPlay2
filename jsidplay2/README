@@ -135,6 +135,13 @@ Increase max memory, if required to load huge heap dumps in file MemoryAnalyzer.
 -Xmx=5g
 In MAT - Load heap dump: File/Open heap.bin
 
+Java JMX - jvisualvm connection parameters:
+-Dcom.sun.management.jmxremote.port=9999
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.local.only=false
+-Djava.rmi.server.hostname=<server-ip>
+
 TODO:
 =====
 - App: download sid register writes and siddump
