@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -168,6 +169,10 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 
 	protected Player removePlayer(UUID uuid) {
 		return playerMap.remove(uuid);
+	}
+
+	protected Set<UUID> getPlayerUUIDs() {
+		return playerMap.keySet();
 	}
 
 	private String thread() {

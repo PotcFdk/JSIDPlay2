@@ -163,10 +163,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
-					final Player player = putPlayer(uuid, new Player(config));
 					Thread thread = new Thread(() -> {
 						try {
 							info("START RTMP stream of: " + uuid);
+							Player player = putPlayer(uuid, new Player(config));
 							convert2liveVideo(player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
@@ -177,9 +177,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}, "RTMP");
 					thread.setPriority(MAX_PRIORITY);
 					thread.start();
+					// wait to ensure RTMP publishing has been started before redirect to it
 					Thread.sleep(1000);
-					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+					// Set standard HTTP/1.1 no-cache headers.
+					response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+					// Set standard HTTP/1.0 no-cache header.
+					response.setHeader("Pragma", "no-cache");
 					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
+					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 				} else {
 					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="

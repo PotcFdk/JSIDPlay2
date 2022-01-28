@@ -61,9 +61,14 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
 			Player player = removePlayer(uuid);
 			if (player != null) {
+				info("QUIT RTMP stream of: " + uuid);
 				player.quit();
+			} else {
+				info("NO RTMP stream of: " + uuid);
 			}
-			info("QUIT RTMP stream of: " + uuid);
+			for (UUID otherUuid : getPlayerUUIDs()) {
+				info("REMAINING RTMP stream: " + otherUuid);
+			}
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
