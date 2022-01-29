@@ -26,6 +26,16 @@ public interface IServletSystemProperties {
 	int PRESS_SPACE_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.press_space_intervall", "90"));
 
 	/**
+	 * Video streaming: Interval between of the players age in s.
+	 */
+	int PLAYER_TOO_OLD_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.player_too_old_intervall", "60"));
+
+	/**
+	 * Video streaming: maximum players age, before player is quit in s.
+	 */
+	int MAX_PLAYER_AGE = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_player_age", "60*60"));;
+
+	/**
 	 * Video streaming: Upload url for the video creation process.
 	 */
 	String RTMP_UPLOAD_URL = System.getProperty("jsidplay2.rtmp.upload.url", "rtmp://haendel.ddns.net/live");

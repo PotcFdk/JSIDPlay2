@@ -14,6 +14,8 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
+import static server.restful.common.IServletSystemProperties.MAX_PLAYER_AGE;
+import static server.restful.common.IServletSystemProperties.PLAYER_TOO_OLD_INTERVALL;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -308,6 +310,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setCheckLoopOffInRecordMode(false);
 		player.setForceCheckSongLength(true);
 
+		addPlayerTooOldListener(player);
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
@@ -355,6 +358,27 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}
 
 				}, PRESS_SPACE_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
+			}
+		});
+	}
+
+	private void addPlayerTooOldListener(Player player) {
+		player.stateProperty().addListener(event -> {
+			if (event.getNewValue() == State.START) {
+				player.getC64().getEventScheduler().schedule(new Event("PlayerTooOld") {
+
+					@Override
+					public void event() throws InterruptedException {
+						// Player auto-quit after max age
+						if (player.getC64().getEventScheduler().getTime(Phase.PHI2) > MAX_PLAYER_AGE
+								* (long) player.getC64().getClock().getCpuFrequency()) {
+							player.quit();
+						}
+						player.getC64().getEventScheduler().schedule(this,
+								PLAYER_TOO_OLD_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
+					}
+
+				}, PLAYER_TOO_OLD_INTERVALL * (long) player.getC64().getClock().getCpuFrequency());
 			}
 		});
 	}
