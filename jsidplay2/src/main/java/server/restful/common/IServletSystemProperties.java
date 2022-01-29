@@ -33,7 +33,7 @@ public interface IServletSystemProperties {
 	/**
 	 * Video streaming: maximum players age, before player is quit in s.
 	 */
-	int MAX_PLAYER_AGE = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_player_age", "60*60"));;
+	int MAX_PLAYER_AGE = Integer.valueOf(System.getProperty("jsidplay2.rtmp.max_player_age", valueOf(60 * 60/* s */)));
 
 	/**
 	 * Video streaming: Upload url for the video creation process.
