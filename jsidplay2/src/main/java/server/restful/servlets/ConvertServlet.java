@@ -169,7 +169,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						try {
 							info("START RTMP stream of: " + uuid);
 							Player player = putPlayer(uuid, new Player(config));
-							convert2liveVideo(player, file, driver, getEntityManager());
+							convert2liveVideo(uuid, player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
 							log("ERROR RTMP stream of: " + uuid + ":", e);
@@ -297,7 +297,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convert2liveVideo(Player player, File file, AudioDriver driver, EntityManager em)
+	private void convert2liveVideo(UUID uuid, Player player, File file, AudioDriver driver, EntityManager em)
 			throws IOException, SidTuneError {
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
@@ -310,7 +310,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setCheckLoopOffInRecordMode(false);
 		player.setForceCheckSongLength(true);
 
-		addPlayerTooOldListener(player);
+		addPlayerTooOldListener(uuid, player);
 		addPressSpaceListener(player);
 		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		player.stopC64(false);
@@ -362,7 +362,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		});
 	}
 
-	private void addPlayerTooOldListener(Player player) {
+	private void addPlayerTooOldListener(UUID uuid, Player player) {
 		player.stateProperty().addListener(event -> {
 			if (event.getNewValue() == State.START) {
 				player.getC64().getEventScheduler().schedule(new Event("PlayerTooOld") {
@@ -372,6 +372,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						// Player auto-quit after max age
 						if (player.getC64().getEventScheduler().getTime(Phase.PHI2) > MAX_PLAYER_AGE
 								* (long) player.getC64().getClock().getCpuFrequency()) {
+							info("AUTO-QUIT RTMP stream of: " + uuid);
 							player.quit();
 						}
 						player.getC64().getEventScheduler().schedule(this,
