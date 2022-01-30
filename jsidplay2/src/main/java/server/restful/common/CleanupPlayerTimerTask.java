@@ -50,7 +50,7 @@ public class CleanupPlayerTimerTask extends TimerTask {
 			if (playerWithStatus != null) {
 				Player player = playerWithStatus.getKey();
 				if (player != null) {
-					logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + playerWithStatus.getValue());
+					logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + uuid);
 					player.quit();
 				}
 			}
@@ -58,7 +58,7 @@ public class CleanupPlayerTimerTask extends TimerTask {
 		playerMap.keySet().removeIf(toRemove::contains);
 
 		for (UUID otherUuid : playerMap.keySet()) {
-			logger.info("CleanupPlayerTimerTask: RTMP streams left: " + otherUuid);
+			logger.info("CleanupPlayerTimerTask: RTMP stream left: " + otherUuid);
 		}
 	}
 
