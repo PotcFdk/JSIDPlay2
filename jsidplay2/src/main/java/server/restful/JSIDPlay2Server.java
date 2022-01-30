@@ -54,6 +54,7 @@ import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
 import server.restful.servlets.rtmp.OnPlayDoneServlet;
+import server.restful.servlets.rtmp.OnPlayServlet;
 import server.restful.servlets.whatssid.FindHashServlet;
 import server.restful.servlets.whatssid.FindTuneServlet;
 import server.restful.servlets.whatssid.InsertHashesServlet;
@@ -147,7 +148,7 @@ public class JSIDPlay2Server {
 			DirectoryServlet.class, TuneInfoServlet.class, PhotoServlet.class, ConvertServlet.class,
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
-			WhatsSidServlet.class, TuneExistsServlet.class, OnPlayDoneServlet.class);
+			WhatsSidServlet.class, TuneExistsServlet.class, OnPlayDoneServlet.class, OnPlayServlet.class);
 
 	private static EntityManagerFactory entityManagerFactory;
 
@@ -252,6 +253,8 @@ public class JSIDPlay2Server {
 
 		addSecurityConstraints(context);
 		addServlets(context);
+
+		JSIDPlay2Servlet.cleanupPlayerPeriodically();
 
 		return tomcat;
 	}

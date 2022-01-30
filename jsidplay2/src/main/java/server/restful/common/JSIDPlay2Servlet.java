@@ -4,6 +4,9 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
 import static server.restful.common.IServletSystemProperties.CACHE_SIZE;
 import static server.restful.common.IServletSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
+import static server.restful.common.IServletSystemProperties.RTMP_DURATION_TOO_LONG_TIMEOUT;
+import static server.restful.common.IServletSystemProperties.RTMP_NOT_PLAYED_TIMEOUT;
+import static server.restful.common.IServletSystemProperties.RTMP_PLAYER_TIMEOUT_PERIOD;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,13 +14,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -44,13 +53,24 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public abstract class JSIDPlay2Servlet extends HttpServlet {
 
+	private enum Status {
+		INIT, ON_PLAY;
+
+		private LocalDateTime started;
+
+		private Status() {
+			this.started = LocalDateTime.now();
+		}
+	}
+
 	protected static final String C64_MUSIC = "/C64Music";
 	protected static final String CGSC = "/CGSC";
 
 	private static final Map<WAVBean, MusicInfoWithConfidenceBean> musicInfoWithConfidenceBeanMap = Collections
 			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
 
-	private static final Map<UUID, Player> playerMap = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<UUID, SimpleImmutableEntry<Player, Status>> playerMap = Collections
+			.synchronizedMap(new HashMap<>());
 
 	protected Configuration configuration;
 
@@ -162,17 +182,64 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 		return musicInfoWithConfidenceBean;
 	}
 
-	protected Player putPlayer(UUID uuid, Player player) {
-		playerMap.put(uuid, player);
+	protected Player createPlayer(UUID uuid, Player player) {
+		playerMap.put(uuid, new SimpleImmutableEntry<>(player, Status.INIT));
 		return player;
 	}
 
-	protected Player removePlayer(UUID uuid) {
-		return playerMap.remove(uuid);
+	protected void onPlay(UUID uuid) {
+		info("onPlay: RTMP stream of: " + uuid);
+
+		Player player = playerMap.get(uuid).getKey();
+		playerMap.put(uuid, new SimpleImmutableEntry<>(player, Status.ON_PLAY));
+
+		for (UUID otherUuid : playerMap.keySet()) {
+			info("onPlay: REMAINING RTMP stream: " + otherUuid);
+		}
 	}
 
-	protected Set<UUID> getPlayerUUIDs() {
-		return playerMap.keySet();
+	protected void onPlayDone(UUID uuid) {
+		info("onPlayDone: RTMP stream of: " + uuid);
+
+		Player player = playerMap.remove(uuid).getKey();
+
+		if (player != null) {
+			info("onPlayDone: QUIT RTMP stream of: " + uuid);
+			player.quit();
+		}
+
+		for (UUID otherUuid : playerMap.keySet()) {
+			info("onPlayDone: REMAINING RTMP stream: " + otherUuid);
+		}
+	}
+
+	public static void cleanupPlayerPeriodically() {
+		TimerTask task = new TimerTask() {
+
+			@Override
+			public void run() {
+				Collection<UUID> toRemove = new ArrayList<>();
+				for (UUID uuid : playerMap.keySet()) {
+					SimpleImmutableEntry<Player, Status> pair = playerMap.get(uuid);
+					if ((pair.getValue() == Status.INIT
+							&& Duration.between(pair.getValue().started, LocalDateTime.now())
+									.getSeconds() > RTMP_NOT_PLAYED_TIMEOUT)
+							|| (pair.getValue() == Status.ON_PLAY
+									&& Duration.between(pair.getValue().started, LocalDateTime.now())
+											.getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT)) {
+						toRemove.add(uuid);
+					}
+				}
+				for (UUID uuid : toRemove) {
+					Player player = playerMap.get(uuid).getKey();
+					if (player != null) {
+						player.quit();
+					}
+				}
+				playerMap.keySet().removeIf(toRemove::contains);
+			}
+		};
+		new Timer().schedule(task, 0, RTMP_PLAYER_TIMEOUT_PERIOD);
 	}
 
 	private String thread() {

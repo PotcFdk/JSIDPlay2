@@ -15,26 +15,26 @@ import server.restful.common.JSIDPlay2Servlet;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
-public class OnPlayDoneServlet extends JSIDPlay2Servlet {
+public class OnPlayServlet extends JSIDPlay2Servlet {
 
-	public static final String ON_PLAY_DONE_PATH = "/on_play_done";
+	public static final String ON_PLAY_PATH = "/on_play";
 
-	public OnPlayDoneServlet(Configuration configuration, Properties directoryProperties) {
+	public OnPlayServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_STATIC + ON_PLAY_DONE_PATH;
+		return CONTEXT_ROOT_STATIC + ON_PLAY_PATH;
 	}
 
 	/**
 	 * Stop Video streaming.
 	 * 
-	 * Implements RTMP directive on_play_done configured in nginx.conf.
+	 * Implements RTMP directive on_play configured in nginx.conf.
 	 *
 	 * {@code
-	 * http://haendel.ddns.net:8080/static/on_play_done
+	 * http://haendel.ddns.net:8080/static/on_play
 	 * } Example parameters:
 	 * 
 	 * <pre>
@@ -58,7 +58,7 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
-			onPlayDone(uuid);
+			onPlay(uuid);
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());

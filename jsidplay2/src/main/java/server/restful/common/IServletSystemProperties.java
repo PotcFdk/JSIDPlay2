@@ -26,9 +26,25 @@ public interface IServletSystemProperties {
 	int PRESS_SPACE_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.press_space_intervall", "90"));
 
 	/**
-	 * Video streaming: Interval between of the players age in s.
+	 * Video streaming: Live stream created but not played will be quit after
+	 * timeout in s.
 	 */
-	int PLAYER_TOO_OLD_INTERVALL = Integer.valueOf(System.getProperty("jsidplay2.rtmp.player_too_old_intervall", "60"));
+	int RTMP_NOT_PLAYED_TIMEOUT = Integer.valueOf(System.getProperty("jsidplay2.rtmp.rtmp_not_played.timeout", "30"));
+
+	/**
+	 * Video streaming: Live stream created and duration is too long will be quit
+	 * after timeout in s.
+	 */
+	int RTMP_DURATION_TOO_LONG_TIMEOUT = Integer
+			.valueOf(System.getProperty("jsidplay2.rtmp.rtmp_not_played.timeout", "3600"));
+
+	/**
+	 * Video streaming: Period of time in s to check for created but not played
+	 * videos (RTMP_NOT_PLAYED_TIMEOUT) or videos which duration is too long
+	 * (RTMP_DURATION_TOO_LONG_TIMEOUT) to then quit generation process.
+	 */
+	int RTMP_PLAYER_TIMEOUT_PERIOD = Integer
+			.valueOf(System.getProperty("jsidplay2.rtmp.rtmp_played.timeout.period", valueOf(60/* s */ * 1000)));
 
 	/**
 	 * Video streaming: maximum players age, before player is quit in s.
