@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.apache.catalina.startup.Tomcat.addServlet;
 import static server.restful.common.IServletSystemProperties.CONNECTION_TIMEOUT;
+import static server.restful.common.IServletSystemProperties.RTMP_PLAYER_TIMEOUT_PERIOD;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -41,6 +43,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
+import server.restful.common.CleanupPlayerTimerTask;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.NoOpJarScanner;
@@ -254,8 +257,8 @@ public class JSIDPlay2Server {
 		addSecurityConstraints(context);
 		addServlets(context);
 
-		JSIDPlay2Servlet.cleanupPlayerPeriodically();
-
+		new Timer().schedule(new CleanupPlayerTimerTask(context.getParent().getLogger()), 0,
+				RTMP_PLAYER_TIMEOUT_PERIOD);
 		return tomcat;
 	}
 
