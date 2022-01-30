@@ -20,7 +20,7 @@ import sidplay.Player;
 
 public class CleanupPlayerTimerTask extends TimerTask {
 
-	public static final Map<UUID, SimpleImmutableEntry<Player, RTMPPlayerStatus>> playerMap = Collections
+	public static final Map<UUID, SimpleImmutableEntry<Player, RTMPPlayerStatus>> PLAYER_MAP = Collections
 			.synchronizedMap(new HashMap<>());
 
 	private Log logger;
@@ -32,36 +32,39 @@ public class CleanupPlayerTimerTask extends TimerTask {
 	@Override
 	public void run() {
 		Collection<UUID> toRemove = new ArrayList<>();
-		for (UUID uuid : playerMap.keySet()) {
-			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = playerMap.get(uuid);
+		for (UUID uuid : PLAYER_MAP.keySet()) {
+			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = PLAYER_MAP.get(uuid);
 			if (playerWithStatus != null) {
 				if (playerWithStatus.getValue() == RTMPPlayerStatus.CREATED
 						&& Duration.between(playerWithStatus.getValue().getCreated(), LocalDateTime.now())
 								.getSeconds() > RTMP_NOT_PLAYED_TIMEOUT) {
 					logger.info("CleanupPlayerTimerTask: RTMP_NOT_PLAYED_TIMEOUT RTMP stream of: " + uuid);
+
 					toRemove.add(uuid);
 				}
 				if (playerWithStatus.getValue() == RTMPPlayerStatus.ON_PLAY
 						&& Duration.between(playerWithStatus.getValue().getCreated(), LocalDateTime.now())
 								.getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT) {
 					logger.info("CleanupPlayerTimerTask: RTMP_DURATION_TOO_LONG_TIMEOUT RTMP stream of: " + uuid);
+
 					toRemove.add(uuid);
 				}
 			}
 		}
 		for (UUID uuid : toRemove) {
-			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = playerMap.get(uuid);
+			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = PLAYER_MAP.get(uuid);
 			if (playerWithStatus != null) {
 				Player player = playerWithStatus.getKey();
 				if (player != null) {
 					logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + uuid);
+
 					player.quit();
 				}
 			}
 		}
-		playerMap.keySet().removeIf(toRemove::contains);
+		PLAYER_MAP.keySet().removeIf(toRemove::contains);
 
-		for (UUID otherUuid : playerMap.keySet()) {
+		for (UUID otherUuid : PLAYER_MAP.keySet()) {
 			logger.info("CleanupPlayerTimerTask: RTMP stream left: " + otherUuid);
 		}
 	}

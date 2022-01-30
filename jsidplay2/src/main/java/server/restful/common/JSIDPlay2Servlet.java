@@ -43,7 +43,7 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected static final String C64_MUSIC = "/C64Music";
 	protected static final String CGSC = "/CGSC";
 
-	private static final Map<WAVBean, MusicInfoWithConfidenceBean> musicInfoWithConfidenceBeanMap = Collections
+	private static final Map<WAVBean, MusicInfoWithConfidenceBean> MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP = Collections
 			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
 
 	protected Configuration configuration;
@@ -147,12 +147,12 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	protected MusicInfoWithConfidenceBean getMusicInfoWithConfidenceBean(WAVBean wavBean) {
-		return musicInfoWithConfidenceBeanMap.get(wavBean);
+		return MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(wavBean);
 	}
 
 	protected MusicInfoWithConfidenceBean putMusicInfoWithConfidenceBean(WAVBean wavBean,
 			MusicInfoWithConfidenceBean musicInfoWithConfidenceBean) {
-		musicInfoWithConfidenceBeanMap.put(wavBean, musicInfoWithConfidenceBean);
+		MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(wavBean, musicInfoWithConfidenceBean);
 		return musicInfoWithConfidenceBean;
 	}
 

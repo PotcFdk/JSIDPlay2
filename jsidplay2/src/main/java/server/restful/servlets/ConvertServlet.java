@@ -11,7 +11,7 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
-import static server.restful.common.CleanupPlayerTimerTask.playerMap;
+import static server.restful.common.CleanupPlayerTimerTask.PLAYER_MAP;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
@@ -170,7 +170,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						try {
 							info("START RTMP stream of: " + uuid);
 							Player player = new Player(config);
-							playerMap.put(uuid, new SimpleImmutableEntry<>(player, RTMPPlayerStatus.CREATED));
+							PLAYER_MAP.put(uuid, new SimpleImmutableEntry<>(player, RTMPPlayerStatus.CREATED));
 							convert2liveVideo(uuid, player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
@@ -183,10 +183,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					thread.start();
 					// wait to ensure RTMP publishing has been started before redirect to it
 					Thread.sleep(1000);
-					// Set standard HTTP/1.1 no-cache headers.
-					response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
 					// Set standard HTTP/1.0 no-cache header.
-					response.setHeader("Pragma", "no-cache");
+					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
+					// Set standard HTTP/1.1 no-cache headers.
+					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
 					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 				} else {
