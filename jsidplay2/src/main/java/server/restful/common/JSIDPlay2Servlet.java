@@ -188,11 +188,11 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	protected void onPlay(UUID uuid) {
-		info("onPlay: RTMP stream of: " + uuid);
+		SimpleImmutableEntry<Player, Status> playerWithStatus = playerMap.get(uuid);
+		if (playerWithStatus != null) {
+			info("onPlay: RTMP stream of: " + uuid);
 
-		SimpleImmutableEntry<Player, Status> simpleImmutableEntry = playerMap.get(uuid);
-		if (simpleImmutableEntry != null) {
-			Player player = simpleImmutableEntry.getKey();
+			Player player = playerWithStatus.getKey();
 			playerMap.put(uuid, new SimpleImmutableEntry<>(player, Status.ON_PLAY));
 
 			for (UUID otherUuid : playerMap.keySet()) {
@@ -202,11 +202,11 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	protected void onPlayDone(UUID uuid) {
-		info("onPlayDone: RTMP stream of: " + uuid);
+		SimpleImmutableEntry<Player, Status> playerWithStatus = playerMap.remove(uuid);
+		if (playerWithStatus != null) {
+			info("onPlayDone: RTMP stream of: " + uuid);
 
-		SimpleImmutableEntry<Player, Status> simpleImmutableEntry = playerMap.remove(uuid);
-		if (simpleImmutableEntry != null) {
-			Player player = simpleImmutableEntry.getKey();
+			Player player = playerWithStatus.getKey();
 
 			if (player != null) {
 				info("onPlayDone: QUIT RTMP stream of: " + uuid);
