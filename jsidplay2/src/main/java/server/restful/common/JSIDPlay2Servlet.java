@@ -190,26 +190,32 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	protected void onPlay(UUID uuid) {
 		info("onPlay: RTMP stream of: " + uuid);
 
-		Player player = playerMap.get(uuid).getKey();
-		playerMap.put(uuid, new SimpleImmutableEntry<>(player, Status.ON_PLAY));
+		SimpleImmutableEntry<Player, Status> simpleImmutableEntry = playerMap.get(uuid);
+		if (simpleImmutableEntry != null) {
+			Player player = simpleImmutableEntry.getKey();
+			playerMap.put(uuid, new SimpleImmutableEntry<>(player, Status.ON_PLAY));
 
-		for (UUID otherUuid : playerMap.keySet()) {
-			info("onPlay: REMAINING RTMP stream: " + otherUuid);
+			for (UUID otherUuid : playerMap.keySet()) {
+				info("onPlay: REMAINING RTMP stream: " + otherUuid);
+			}
 		}
 	}
 
 	protected void onPlayDone(UUID uuid) {
 		info("onPlayDone: RTMP stream of: " + uuid);
 
-		Player player = playerMap.remove(uuid).getKey();
+		SimpleImmutableEntry<Player, Status> simpleImmutableEntry = playerMap.remove(uuid);
+		if (simpleImmutableEntry != null) {
+			Player player = simpleImmutableEntry.getKey();
 
-		if (player != null) {
-			info("onPlayDone: QUIT RTMP stream of: " + uuid);
-			player.quit();
-		}
+			if (player != null) {
+				info("onPlayDone: QUIT RTMP stream of: " + uuid);
+				player.quit();
+			}
 
-		for (UUID otherUuid : playerMap.keySet()) {
-			info("onPlayDone: REMAINING RTMP stream: " + otherUuid);
+			for (UUID otherUuid : playerMap.keySet()) {
+				info("onPlayDone: REMAINING RTMP stream: " + otherUuid);
+			}
 		}
 	}
 
