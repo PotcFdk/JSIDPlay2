@@ -35,12 +35,16 @@ public class CleanupPlayerTimerTask extends TimerTask {
 		for (UUID uuid : playerMap.keySet()) {
 			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = playerMap.get(uuid);
 			if (playerWithStatus != null) {
-				if ((playerWithStatus.getValue() == RTMPPlayerStatus.CREATED
+				if (playerWithStatus.getValue() == RTMPPlayerStatus.CREATED
 						&& Duration.between(playerWithStatus.getValue().getCreated(), LocalDateTime.now())
-								.getSeconds() > RTMP_NOT_PLAYED_TIMEOUT)
-						|| (playerWithStatus.getValue() == RTMPPlayerStatus.ON_PLAY
-								&& Duration.between(playerWithStatus.getValue().getCreated(), LocalDateTime.now())
-										.getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT)) {
+								.getSeconds() > RTMP_NOT_PLAYED_TIMEOUT) {
+					logger.info("CleanupPlayerTimerTask: RTMP_NOT_PLAYED_TIMEOUT RTMP stream of: " + uuid);
+					toRemove.add(uuid);
+				}
+				if (playerWithStatus.getValue() == RTMPPlayerStatus.ON_PLAY
+						&& Duration.between(playerWithStatus.getValue().getCreated(), LocalDateTime.now())
+								.getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT) {
+					logger.info("CleanupPlayerTimerTask: RTMP_DURATION_TOO_LONG_TIMEOUT RTMP stream of: " + uuid);
 					toRemove.add(uuid);
 				}
 			}
