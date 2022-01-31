@@ -2,7 +2,6 @@ package server.restful.common;
 
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_JSON;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_XML;
-import static server.restful.common.IServletSystemProperties.CACHE_SIZE;
 import static server.restful.common.IServletSystemProperties.FRAME_MAX_LENGTH_UPLOAD;
 
 import java.io.ByteArrayOutputStream;
@@ -13,7 +12,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -33,8 +31,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
-import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
-import libsidutils.fingerprinting.rest.beans.WAVBean;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
@@ -42,9 +38,6 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 
 	protected static final String C64_MUSIC = "/C64Music";
 	protected static final String CGSC = "/CGSC";
-
-	private static final Map<WAVBean, MusicInfoWithConfidenceBean> MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP = Collections
-			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
 
 	protected Configuration configuration;
 
@@ -144,16 +137,6 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 			}
 		}
 		throw new FileNotFoundException(path);
-	}
-
-	protected MusicInfoWithConfidenceBean getMusicInfoWithConfidenceBean(WAVBean wavBean) {
-		return MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(wavBean);
-	}
-
-	protected MusicInfoWithConfidenceBean putMusicInfoWithConfidenceBean(WAVBean wavBean,
-			MusicInfoWithConfidenceBean musicInfoWithConfidenceBean) {
-		MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(wavBean, musicInfoWithConfidenceBean);
-		return musicInfoWithConfidenceBean;
 	}
 
 	private String thread() {
