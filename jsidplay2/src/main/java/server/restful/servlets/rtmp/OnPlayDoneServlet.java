@@ -6,7 +6,6 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -14,7 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.RTMPPlayerStatus;
+import server.restful.common.RTMPPlayerWithStatus;
 import sidplay.Player;
 import ui.entities.config.Configuration;
 
@@ -62,11 +61,11 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
-			SimpleImmutableEntry<Player, RTMPPlayerStatus> playerWithStatus = PLAYER_MAP.remove(uuid);
+			RTMPPlayerWithStatus playerWithStatus = PLAYER_MAP.remove(uuid);
 			if (playerWithStatus != null) {
 				info("onPlayDone: RTMP stream of: " + uuid);
 
-				Player player = playerWithStatus.getKey();
+				Player player = playerWithStatus.getPlayer();
 				if (player != null) {
 					info("onPlayDone: QUIT RTMP stream of: " + uuid);
 					player.quit();

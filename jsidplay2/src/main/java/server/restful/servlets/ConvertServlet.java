@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +59,7 @@ import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.RTMPPlayerStatus;
+import server.restful.common.RTMPPlayerWithStatus;
 import server.restful.common.ServletParameters;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
@@ -170,7 +169,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						try {
 							info("START RTMP stream of: " + uuid);
 							Player player = new Player(config);
-							PLAYER_MAP.put(uuid, new SimpleImmutableEntry<>(player, RTMPPlayerStatus.CREATED));
+							PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player));
 							convert2liveVideo(uuid, player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
