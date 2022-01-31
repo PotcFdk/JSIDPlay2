@@ -1,7 +1,7 @@
 package server.restful.servlets.rtmp;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
-import static server.restful.common.CleanupPlayerTimerTask.PLAYER_MAP;
+import static server.restful.common.CleanupPlayerTimerTask.onPlay;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
@@ -13,8 +13,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.RTMPPlayerWithStatus;
-import server.restful.common.RTMPPlayerWithStatus.Status;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
@@ -61,12 +59,8 @@ public class OnPlayServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
-			RTMPPlayerWithStatus playerWithStatus = PLAYER_MAP.get(uuid);
-			if (playerWithStatus != null) {
-				info("onPlay: RTMP stream of: " + uuid);
-
-				playerWithStatus.setStatus(Status.ON_PLAY);
-			}
+			info("onPlay: RTMP stream of: " + uuid);
+			onPlay(uuid);
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());

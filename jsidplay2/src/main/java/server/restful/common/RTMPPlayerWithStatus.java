@@ -1,12 +1,16 @@
 package server.restful.common;
 
+import static server.restful.common.IServletSystemProperties.RTMP_DURATION_TOO_LONG_TIMEOUT;
+import static server.restful.common.IServletSystemProperties.RTMP_NOT_PLAYED_TIMEOUT;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import sidplay.Player;
 
 public class RTMPPlayerWithStatus {
 
-	public static enum Status {
+	private static enum Status {
 		CREATED, ON_PLAY;
 	}
 
@@ -22,19 +26,25 @@ public class RTMPPlayerWithStatus {
 		this.player = player;
 	}
 
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public LocalDateTime getCreated() {
-		return created;
-	}
-
 	public Player getPlayer() {
 		return player;
+	}
+
+	public void setOnPlay() {
+		status = Status.ON_PLAY;
+	}
+
+	public boolean toRemove() {
+		return notYetPlayed() || exceedsMaximumDuration();
+	}
+
+	private boolean notYetPlayed() {
+		return status == Status.CREATED
+				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_NOT_PLAYED_TIMEOUT;
+	}
+
+	private boolean exceedsMaximumDuration() {
+		return status == Status.ON_PLAY
+				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT;
 	}
 }

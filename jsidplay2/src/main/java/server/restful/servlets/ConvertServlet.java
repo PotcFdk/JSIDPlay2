@@ -11,7 +11,7 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
-import static server.restful.common.CleanupPlayerTimerTask.PLAYER_MAP;
+import static server.restful.common.CleanupPlayerTimerTask.create;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
@@ -59,7 +59,6 @@ import libsidutils.fingerprinting.FingerPrinting;
 import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
-import server.restful.common.RTMPPlayerWithStatus;
 import server.restful.common.ServletParameters;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
@@ -167,9 +166,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
 					Thread thread = new Thread(() -> {
 						try {
-							info("START RTMP stream of: " + uuid);
 							Player player = new Player(config);
-							PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player));
+							info("START RTMP stream of: " + uuid);
+							create(uuid, player);
 							convert2liveVideo(uuid, player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {

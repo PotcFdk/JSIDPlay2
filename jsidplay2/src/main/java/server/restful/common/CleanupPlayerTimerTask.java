@@ -1,71 +1,65 @@
 package server.restful.common;
 
-import static server.restful.common.IServletSystemProperties.RTMP_DURATION_TOO_LONG_TIMEOUT;
-import static server.restful.common.IServletSystemProperties.RTMP_NOT_PLAYED_TIMEOUT;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.juli.logging.Log;
 
-import server.restful.common.RTMPPlayerWithStatus.Status;
 import sidplay.Player;
 
-public class CleanupPlayerTimerTask extends TimerTask {
+public final class CleanupPlayerTimerTask extends TimerTask {
 
-	public static final Map<UUID, RTMPPlayerWithStatus> PLAYER_MAP = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<UUID, RTMPPlayerWithStatus> PLAYER_MAP = Collections.synchronizedMap(new HashMap<>());
 
-	private Log logger;
+	private final Log logger;
 
 	public CleanupPlayerTimerTask(Log logger) {
 		this.logger = logger;
 	}
 
-	@Override
-	public void run() {
-		Collection<UUID> toRemove = new ArrayList<>();
-		for (UUID uuid : PLAYER_MAP.keySet()) {
-			RTMPPlayerWithStatus playerWithStatus = PLAYER_MAP.get(uuid);
-			if (playerWithStatus != null) {
-				if (playerWithStatus.getStatus() == Status.CREATED
-						&& Duration.between(playerWithStatus.getCreated(), LocalDateTime.now())
-								.getSeconds() > RTMP_NOT_PLAYED_TIMEOUT) {
-					logger.info("CleanupPlayerTimerTask: RTMP_NOT_PLAYED_TIMEOUT RTMP stream of: " + uuid);
-
-					toRemove.add(uuid);
-				}
-				if (playerWithStatus.getStatus() == Status.ON_PLAY
-						&& Duration.between(playerWithStatus.getCreated(), LocalDateTime.now())
-								.getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT) {
-					logger.info("CleanupPlayerTimerTask: RTMP_DURATION_TOO_LONG_TIMEOUT RTMP stream of: " + uuid);
-
-					toRemove.add(uuid);
-				}
-			}
-		}
-		for (UUID uuid : toRemove) {
-			RTMPPlayerWithStatus playerWithStatus = PLAYER_MAP.get(uuid);
-			if (playerWithStatus != null) {
-				Player player = playerWithStatus.getPlayer();
-				if (player != null) {
-					logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + uuid);
-
-					player.quit();
-				}
-			}
-		}
-		PLAYER_MAP.keySet().removeIf(toRemove::contains);
-
-		for (UUID otherUuid : PLAYER_MAP.keySet()) {
-			logger.info("CleanupPlayerTimerTask: RTMP stream left: " + otherUuid);
-		}
+	public static final void create(UUID uuid, Player player) {
+		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player));
 	}
 
+	public static final void onPlay(UUID uuid) {
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setOnPlay);
+	}
+
+	public static final void onPlayDone(UUID uuid) {
+		Optional.ofNullable(PLAYER_MAP.remove(uuid)).ifPresent(CleanupPlayerTimerTask::quitPlayer);
+	}
+
+	@Override
+	public final void run() {
+		Collection<Entry<UUID, RTMPPlayerWithStatus>> rtmpEntriesToRemove = PLAYER_MAP.entrySet().stream()
+				.filter(entrySet -> entrySet.getValue().toRemove()).collect(Collectors.toList());
+
+		rtmpEntriesToRemove.forEach(entry -> autoQuitPlayer(entry));
+
+		PLAYER_MAP.entrySet().removeIf(rtmpEntriesToRemove::contains);
+
+		PLAYER_MAP.keySet().stream().forEach(uuid -> logger.info("CleanupPlayerTimerTask: RTMP stream left: " + uuid));
+	}
+
+	private void autoQuitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {
+		logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + entry.getKey());
+		quitPlayer(entry.getValue());
+	}
+
+	private static void quitPlayer(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
+		quitPlayer(rtmpPlayerWithStatus.getPlayer());
+	}
+
+	private static void quitPlayer(Player player) {
+		if (player != null) {
+			player.quit();
+		}
+	}
 }
