@@ -5,7 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.apache.catalina.startup.Tomcat.addServlet;
 import static server.restful.common.IServletSystemProperties.CONNECTION_TIMEOUT;
-import static server.restful.common.IServletSystemProperties.RTMP_PLAYER_TIMEOUT_PERIOD;
+import static server.restful.common.IServletSystemProperties.RTMP_CLEANUP_PLAYER_PERIOD;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -258,7 +258,7 @@ public class JSIDPlay2Server {
 		addServlets(context);
 
 		new Timer().schedule(new CleanupPlayerTimerTask(context.getParent().getLogger()), 0,
-				RTMP_PLAYER_TIMEOUT_PERIOD);
+				RTMP_CLEANUP_PLAYER_PERIOD * 1000l);
 		return tomcat;
 	}
 
@@ -313,7 +313,7 @@ public class JSIDPlay2Server {
 
 		Http11Nio2Protocol protocol = (Http11Nio2Protocol) httpConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerPort());
-		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
+		protocol.setConnectionTimeout(CONNECTION_TIMEOUT * 1000);
 
 		return httpConnector;
 	}
@@ -325,7 +325,7 @@ public class JSIDPlay2Server {
 
 		Http11Nio2Protocol protocol = (Http11Nio2Protocol) httpsConnector.getProtocolHandler();
 		protocol.setPort(emulationSection.getAppServerSecurePort());
-		protocol.setConnectionTimeout(CONNECTION_TIMEOUT);
+		protocol.setConnectionTimeout(CONNECTION_TIMEOUT * 1000);
 		protocol.setSecure(true);
 		protocol.setSSLEnabled(true);
 

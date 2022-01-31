@@ -1,7 +1,7 @@
 package server.restful.common;
 
-import static server.restful.common.IServletSystemProperties.RTMP_DURATION_TOO_LONG_TIMEOUT;
-import static server.restful.common.IServletSystemProperties.RTMP_NOT_PLAYED_TIMEOUT;
+import static server.restful.common.IServletSystemProperties.RTMP_EXCEEDS_MAXIMUM_DURATION;
+import static server.restful.common.IServletSystemProperties.RTMP_NOT_YET_PLAYED_TIMEOUT;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -40,11 +40,11 @@ public class RTMPPlayerWithStatus {
 
 	private boolean notYetPlayed() {
 		return status == Status.CREATED
-				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_NOT_PLAYED_TIMEOUT;
+				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_NOT_YET_PLAYED_TIMEOUT;
 	}
 
 	private boolean exceedsMaximumDuration() {
 		return status == Status.ON_PLAY
-				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_DURATION_TOO_LONG_TIMEOUT;
+				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_EXCEEDS_MAXIMUM_DURATION;
 	}
 }

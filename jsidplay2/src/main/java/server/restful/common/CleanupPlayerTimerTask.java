@@ -41,7 +41,7 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 		Collection<Entry<UUID, RTMPPlayerWithStatus>> rtmpEntriesToRemove = PLAYER_MAP.entrySet().stream()
 				.filter(entrySet -> entrySet.getValue().toRemove()).collect(Collectors.toList());
 
-		rtmpEntriesToRemove.forEach(entry -> autoQuitPlayer(entry));
+		rtmpEntriesToRemove.forEach(this::autoQuitPlayer);
 
 		PLAYER_MAP.entrySet().removeIf(rtmpEntriesToRemove::contains);
 
