@@ -30,7 +30,7 @@ public class OnPlayServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * Stop Video streaming.
+	 * Play video stream.
 	 * 
 	 * Implements RTMP directive on_play configured in nginx.conf.
 	 *
@@ -58,7 +58,7 @@ public class OnPlayServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		super.doPost(request);
 		try {
-			UUID uuid = UUID.fromString(String.join("", request.getParameterMap().get("name")));
+			UUID uuid = UUID.fromString(request.getParameter("name"));
 			info("onPlay: RTMP stream of: " + uuid);
 			onPlay(uuid);
 		} catch (Throwable t) {
