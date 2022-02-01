@@ -54,12 +54,7 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	}
 
 	private static void quitPlayer(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
-		quitPlayer(rtmpPlayerWithStatus.getPlayer());
+		rtmpPlayerWithStatus.getPlayer().quit();
 	}
 
-	private static void quitPlayer(Player player) {
-		if (player != null) {
-			player.quit();
-		}
-	}
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import sidplay.Player;
 
-public class RTMPPlayerWithStatus {
+public final class RTMPPlayerWithStatus {
 
 	private static enum Status {
 		CREATED, ON_PLAY;
