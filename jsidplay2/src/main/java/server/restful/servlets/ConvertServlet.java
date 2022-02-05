@@ -1,9 +1,11 @@
 package server.restful.servlets;
 
 import static java.lang.Thread.MAX_PRIORITY;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
 import static libsidutils.PathUtils.getFilenameWithoutSuffix;
+import static libsidutils.ZipFileUtils.convertStreamToString;
 import static libsidutils.ZipFileUtils.copy;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.ATTACHMENT;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
@@ -12,6 +14,7 @@ import static server.restful.JSIDPlay2Server.ROLE_ADMIN;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.CleanupPlayerTimerTask.create;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
@@ -31,11 +34,14 @@ import static sidplay.audio.Audio.WAV;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
@@ -162,13 +168,11 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				Audio audio = getVideoFormat(config);
 				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
-				response.setContentType(getMimeType(driver.getExtension()).toString());
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
 					Thread thread = new Thread(() -> {
 						try {
 							Player player = new Player(config);
 							info("START RTMP stream of: " + uuid);
-							create(uuid, player);
 							convert2liveVideo(uuid, player, file, driver, getEntityManager());
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
@@ -185,9 +189,24 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
 					// Set standard HTTP/1.1 no-cache headers.
 					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
-					response.setHeader(HttpHeaders.LOCATION, getRTMPUrl(request.getRemoteAddr(), uuid));
-					response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+
+					Map<String, String> replacements = new HashMap<>();
+					replacements.put("<uuid>", uuid.toString());
+					replacements.put("<rtmp>", getRTMPUrl(request.getRemoteAddr(), uuid));
+
+					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
+						if (is != null) {
+							response.setContentType(MIME_TYPE_HTML.toString());
+							response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
+						} else {
+							response.setContentType(MIME_TYPE_TEXT.toString());
+							new PrintStream(response.getOutputStream())
+									.print("File not found: /server/restful/webapp/convert.html");
+						}
+					}
+					response.setStatus(HttpServletResponse.SC_OK);
 				} else {
+					response.setContentType(getMimeType(driver.getExtension()).toString());
 					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
 						response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 								+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
@@ -311,7 +330,9 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		player.setForceCheckSongLength(true);
 
 		addPressSpaceListener(player);
-		new Convenience(player).autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
+		Convenience convenience = new Convenience(player);
+		convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
+		create(uuid, player, file);
 		player.stopC64(false);
 	}
 

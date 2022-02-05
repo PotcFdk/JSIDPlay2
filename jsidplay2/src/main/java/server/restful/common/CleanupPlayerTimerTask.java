@@ -1,5 +1,7 @@
 package server.restful.common;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +26,8 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 		this.logger = logger;
 	}
 
-	public static final void create(UUID uuid, Player player) {
-		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player));
+	public static final void create(UUID uuid, Player player, File diskImage) {
+		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player, diskImage));
 	}
 
 	public static final void onPlay(UUID uuid) {
@@ -34,6 +36,10 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 	public static final void onPlayDone(UUID uuid) {
 		Optional.ofNullable(PLAYER_MAP.remove(uuid)).ifPresent(CleanupPlayerTimerTask::quitPlayer);
+	}
+
+	public static final void insertNextDisk(UUID uuid) {
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(CleanupPlayerTimerTask::insertNextDisk);
 	}
 
 	@Override
@@ -55,6 +61,15 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 	private static void quitPlayer(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
 		rtmpPlayerWithStatus.getPlayer().quit();
+	}
+
+	public static void insertNextDisk(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
+		try {
+			rtmpPlayerWithStatus.nextDiskImage();
+			rtmpPlayerWithStatus.getPlayer().insertDisk(rtmpPlayerWithStatus.extract());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
