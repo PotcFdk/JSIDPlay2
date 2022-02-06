@@ -1,20 +1,22 @@
 <html>
 <head>
 <script type="text/javascript">
-	function load() {
-		window.open('<rtmp>', '_self');
+	function startVideo() {
+		setTimeout(function() {
+			window.open('<rtmp>', '_self');
+		}, 1000);
 	}
 	function insertDisk() {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-		    if (this.readyState == 4 && this.status == 200) {
-		    	document.getElementById("alarmmsg").innerHTML = 'Next disk has been inserted!';
+			if (this.readyState == 4 && this.status == 200) {
+				document.getElementById("alarmmsg").innerHTML = 'Next disk has been inserted!';
 
-		    	setTimeout(function(){
-		    	    document.getElementById("alarmmsg").innerHTML = '';
-		    	}, 3000);
+				setTimeout(function() {
+					document.getElementById("alarmmsg").innerHTML = '';
+				}, 3000);
 
-		    }
+			}
 		};
 		xhttp.open("POST", "/static/insert_next_disk?name=<uuid>", true);
 		xhttp.send();
@@ -22,11 +24,18 @@
 </script>
 </head>
 
-<body onload="load()">
-	<h1>Commands</h1>
+<body onload="startVideo()">
+	<h1>JSIDPlay2 Controls</h1>
+	<p>
+		Make sure to continue video within
+		<notYetPlayedTimeout> seconds, otherwise it
+		quits automatically! 
+	</p>
 
-	<a href="javascript:insertDisk()">insert next disk</a>
-	
+	<h2>
+		<a href="javascript:insertDisk()">insert next disk</a>
+	</h2>
+
 	<p id="alarmmsg"></p>
 </body>
 </html>

@@ -21,6 +21,7 @@ import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
+import static server.restful.common.IServletSystemProperties.RTMP_NOT_YET_PLAYED_TIMEOUT;
 import static server.restful.common.IServletSystemProperties.RTMP_UPLOAD_URL;
 import static sidplay.audio.Audio.AAC;
 import static sidplay.audio.Audio.AVI;
@@ -183,16 +184,13 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					}, "RTMP");
 					thread.setPriority(MAX_PRIORITY);
 					thread.start();
-					// wait to ensure RTMP publishing has been started before redirect to it
-					Thread.sleep(1000);
-					// Set standard HTTP/1.0 no-cache header.
 					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
-					// Set standard HTTP/1.1 no-cache headers.
 					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 
 					Map<String, String> replacements = new HashMap<>();
 					replacements.put("<uuid>", uuid.toString());
 					replacements.put("<rtmp>", getRTMPUrl(request.getRemoteAddr(), uuid));
+					replacements.put("<notYetPlayedTimeout>", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
 
 					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
 						if (is != null) {
