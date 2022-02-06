@@ -1,41 +1,170 @@
 <html>
 <head>
+<style>
+.insert-disk .key {
+	font-size: 32px;
+}
+</style>
 <script type="text/javascript">
 	function startVideo() {
 		setTimeout(function() {
 			window.open('<rtmp>', '_self');
 		}, 1000);
 	}
+	function printMsg(msg) {
+		document.getElementById("alarmmsg").innerHTML = msg;
+		setTimeout(function() {
+			document.getElementById("alarmmsg").innerHTML = '';
+		}, 1000);
+	}
 	function insertDisk() {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				document.getElementById("alarmmsg").innerHTML = 'Next disk has been inserted!';
-
-				setTimeout(function() {
-					document.getElementById("alarmmsg").innerHTML = '';
-				}, 3000);
-
-			}
+			if (this.readyState == 4 && this.status == 200)
+				printMsg('Next disk has been inserted!');
 		};
 		xhttp.open("POST", "/static/insert_next_disk?name=<uuid>", true);
+		xhttp.send();
+	}
+	function typeKey(key) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200)
+				printMsg('Key has been typed: ' + key);
+		};
+		xhttp.open("POST", "/static/press_key?name=<uuid>&type=" + key, true);
+		xhttp.send();
+	}
+	function pressKey(key) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200)
+				printMsg('Key has been pressed: ' + key);
+		};
+		xhttp.open("POST", "/static/press_key?name=<uuid>&press=" + key, true);
+		xhttp.send();
+	}
+	function releaseKey(key) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200)
+				printMsg('Key has been released: ' + key);
+		};
+		xhttp
+				.open("POST", "/static/press_key?name=<uuid>&release=" + key,
+						true);
 		xhttp.send();
 	}
 </script>
 </head>
 
 <body onload="startVideo()">
-	<h1>JSIDPlay2 Controls</h1>
+	<h1>
+		JSIDPlay2 presents:
+		<filename>
+	</h1>
 	<p>
 		Make sure to continue video within
 		<notYetPlayedTimeout> seconds, otherwise it
 		quits automatically! 
 	</p>
 
-	<h2>
+	<div class="insert-disk">
 		<a href="javascript:insertDisk()">insert next disk</a>
-	</h2>
+	</div>
 
 	<p id="alarmmsg"></p>
+
+	<table>
+		<tr>
+			<td class="key"><a href="javascript:typeKey('ARROW_LEFT')">&#8592;</a></td>
+			<td class="key"><a href="javascript:typeKey('ONE')">1</a></td>
+			<td class="key"><a href="javascript:typeKey('TWO')">2</a></td>
+			<td class="key"><a href="javascript:typeKey('THREE')">3</a></td>
+			<td class="key"><a href="javascript:typeKey('FOUR')">4</a></td>
+			<td class="key"><a href="javascript:typeKey('FIVE')">5</a></td>
+			<td class="key"><a href="javascript:typeKey('SIX')">6</a></td>
+			<td class="key"><a href="javascript:typeKey('SEVEN')">7</a></td>
+			<td class="key"><a href="javascript:typeKey('EIGHT')">8</a></td>
+			<td class="key"><a href="javascript:typeKey('NINE')">9</a></td>
+			<td class="key"><a href="javascript:typeKey('ZERO')">0</a></td>
+			<td class="key"><a href="javascript:typeKey('PLUS')">+</a></td>
+			<td class="key"><a href="javascript:typeKey('MINUS')">-</a></td>
+			<td class="key"><a href="javascript:typeKey('POUND')">&#163;</a></td>
+			<td class="key"><a href="javascript:typeKey('CLEAR_HOME')">CLR/HOME</a></td>
+			<td class="key"><a href="javascript:typeKey('INS_DEL')">INS/DEL</a></td>
+			<td class="key">&nbsp;</td>
+			<td class="key"><a href="javascript:typeKey('F1')">F1</a></td>
+		</tr>
+		<tr>
+			<td class="key"><a href="javascript:typeKey('CTRL')">Ctrl</a></td>
+			<td class="key"><a href="javascript:typeKey('Q')">Q</a></td>
+			<td class="key"><a href="javascript:typeKey('W')">W</a></td>
+			<td class="key"><a href="javascript:typeKey('E')">E</a></td>
+			<td class="key"><a href="javascript:typeKey('R')">R</a></td>
+			<td class="key"><a href="javascript:typeKey('T')">T</a></td>
+			<td class="key"><a href="javascript:typeKey('Y')">Y</a></td>
+			<td class="key"><a href="javascript:typeKey('U')">U</a></td>
+			<td class="key"><a href="javascript:typeKey('I')">I</a></td>
+			<td class="key"><a href="javascript:typeKey('O')">O</a></td>
+			<td class="key"><a href="javascript:typeKey('P')">P</a></td>
+			<td class="key"><a href="javascript:typeKey('AT')">@</a></td>
+			<td class="key"><a href="javascript:typeKey('STAR')">*</a></td>
+			<td class="key"><a href="javascript:typeKey('ARROW_UP')">&#8593;</a></td>
+			<td class="key" colspan="2">
+				<!--a href="javascript:typeKey('RESTORE')"-->Restore
+			</td>
+			<td class="key">&nbsp;</td>
+			<td class="key"><a href="javascript:typeKey('F3')">F3</a></td>
+		</tr>
+		<tr>
+			<td class="key"><a href="javascript:typeKey('RUN_STOP')">Ctrl</a></td>
+			<td class="key">
+				<!--a href="javascript:typeKey('SHIFT_LOCK')"-->S/L
+			</td>
+			<td class="key"><a href="javascript:typeKey('A')">A</a></td>
+			<td class="key"><a href="javascript:typeKey('S')">S</a></td>
+			<td class="key"><a href="javascript:typeKey('D')">D</a></td>
+			<td class="key"><a href="javascript:typeKey('F')">F</a></td>
+			<td class="key"><a href="javascript:typeKey('G')">G</a></td>
+			<td class="key"><a href="javascript:typeKey('H')">H</a></td>
+			<td class="key"><a href="javascript:typeKey('J')">J</a></td>
+			<td class="key"><a href="javascript:typeKey('K')">K</a></td>
+			<td class="key"><a href="javascript:typeKey('L')">L</a></td>
+			<td class="key"><a href="javascript:typeKey('COLON')">:</a></td>
+			<td class="key"><a href="javascript:typeKey('SEMICOLON')">;</a></td>
+			<td class="key"><a href="javascript:typeKey('EQUALS')">=</a></td>
+			<td class="key" colspan="2"><a
+				href="javascript:typeKey('RETURN')">Return</a></td>
+			<td class="key">&nbsp;</td>
+			<td class="key"><a href="javascript:typeKey('F5')">F5</a></td>
+		</tr>
+		<tr>
+			<td class="key"><a href="javascript:typeKey('COMMODORE')">C=</a></td>
+			<td class="key"><a href="javascript:typeKey('SHIFT_LEFT')">Sht</a></td>
+			<td class="key"><a href="javascript:typeKey('Z')">Z</a></td>
+			<td class="key"><a href="javascript:typeKey('X')">X</a></td>
+			<td class="key"><a href="javascript:typeKey('C')">C</a></td>
+			<td class="key"><a href="javascript:typeKey('V')">V</a></td>
+			<td class="key"><a href="javascript:typeKey('B')">B</a></td>
+			<td class="key"><a href="javascript:typeKey('N')">N</a></td>
+			<td class="key"><a href="javascript:typeKey('M')">M</a></td>
+			<td class="key"><a href="javascript:typeKey('COMMA')">,</a></td>
+			<td class="key"><a href="javascript:typeKey('PERIOD')">.</a></td>
+			<td class="key"><a href="javascript:typeKey('SLASH')">/</a></td>
+			<td class="key"><a href="javascript:typeKey('SHIFT_RIGHT')">Sht</a></td>
+			<td class="key"><a href="javascript:typeKey('CURSOR_UP_DOWN')">&#8593;&#8595;</a></td>
+			<td class="key"><a
+				href="javascript:typeKey('CURSOR_LEFT_RIGHT')">&#8592;&#8594;</a></td>
+			<td class="key">&nbsp;</td>
+			<td class="key">&nbsp;</td>
+			<td class="key"><a href="javascript:typeKey('F7')">F7</a></td>
+		</tr>
+		<tr>
+			<td class="key" colspan="18"><a
+				href="javascript:typeKey('SPACE')">Space</a></td>
+		</tr>
+	</table>
+
 </body>
 </html>

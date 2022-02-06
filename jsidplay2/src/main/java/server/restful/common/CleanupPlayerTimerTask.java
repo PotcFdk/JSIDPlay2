@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.apache.juli.logging.Log;
 
+import libsidplay.components.keyboard.KeyTableEntry;
 import sidplay.Player;
 
 public final class CleanupPlayerTimerTask extends TimerTask {
@@ -39,6 +40,19 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 	public static final void insertNextDisk(UUID uuid) {
 		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::insertNextDisk);
+	}
+
+	public static final void typeKey(UUID uuid, KeyTableEntry key) {
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.typeKey(key));
+	}
+
+	public static final void pressKey(UUID uuid, KeyTableEntry key) {
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.pressKey(key));
+	}
+
+	public static final void releaseKey(UUID uuid, KeyTableEntry key) {
+		Optional.ofNullable(PLAYER_MAP.get(uuid))
+				.ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.releaseKey(key));
 	}
 
 	@Override

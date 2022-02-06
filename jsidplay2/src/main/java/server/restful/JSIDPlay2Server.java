@@ -54,6 +54,7 @@ import server.restful.servlets.FavoritesServlet;
 import server.restful.servlets.FiltersServlet;
 import server.restful.servlets.InsertNextDiskServlet;
 import server.restful.servlets.PhotoServlet;
+import server.restful.servlets.PressKeyServlet;
 import server.restful.servlets.StartPageServlet;
 import server.restful.servlets.StaticServlet;
 import server.restful.servlets.TuneInfoServlet;
@@ -153,7 +154,7 @@ public class JSIDPlay2Server {
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class, OnPlayDoneServlet.class, OnPlayServlet.class,
-			InsertNextDiskServlet.class);
+			InsertNextDiskServlet.class, PressKeyServlet.class);
 
 	private static EntityManagerFactory entityManagerFactory;
 

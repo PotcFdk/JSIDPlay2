@@ -13,6 +13,8 @@ import java.util.List;
 
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
+import libsidplay.common.Event;
+import libsidplay.components.keyboard.KeyTableEntry;
 import sidplay.Player;
 import ui.common.filefilter.DiskFileFilter;
 
@@ -58,6 +60,43 @@ public final class RTMPPlayerWithStatus {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void typeKey(KeyTableEntry key) {
+		player.getC64().getEventScheduler()
+				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						player.getC64().getKeyboard().keyPressed(key);
+						player.getC64().getEventScheduler()
+								.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
+									@Override
+									public void event() throws InterruptedException {
+										player.getC64().getKeyboard().keyReleased(key);
+									}
+								});
+					}
+				});
+	}
+
+	public void pressKey(KeyTableEntry key) {
+		player.getC64().getEventScheduler()
+				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						player.getC64().getKeyboard().keyPressed(key);
+					}
+				});
+	}
+
+	public void releaseKey(KeyTableEntry key) {
+		player.getC64().getEventScheduler()
+				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
+					@Override
+					public void event() throws InterruptedException {
+						player.getC64().getKeyboard().keyReleased(key);
+					}
+				});
 	}
 
 	private void setNextDiskImage() {
