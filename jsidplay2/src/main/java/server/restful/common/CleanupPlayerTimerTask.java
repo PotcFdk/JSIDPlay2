@@ -1,7 +1,6 @@
 package server.restful.common;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,41 +34,32 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	}
 
 	public static final void onPlayDone(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.remove(uuid)).ifPresent(CleanupPlayerTimerTask::quitPlayer);
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setOnPlayDone);
 	}
 
 	public static final void insertNextDisk(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(CleanupPlayerTimerTask::insertNextDisk);
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::insertNextDisk);
 	}
 
 	@Override
 	public final void run() {
 		Collection<Entry<UUID, RTMPPlayerWithStatus>> rtmpEntriesToRemove = PLAYER_MAP.entrySet().stream()
-				.filter(entrySet -> entrySet.getValue().toRemove()).collect(Collectors.toList());
+				.filter(entrySet -> entrySet.getValue().isValid()).collect(Collectors.toList());
 
-		rtmpEntriesToRemove.forEach(this::autoQuitPlayer);
+		rtmpEntriesToRemove.forEach(this::quitPlayer);
 
 		PLAYER_MAP.entrySet().removeIf(rtmpEntriesToRemove::contains);
 
-		PLAYER_MAP.keySet().stream().forEach(uuid -> logger.info("CleanupPlayerTimerTask: RTMP stream left: " + uuid));
+		PLAYER_MAP.entrySet().stream().forEach(this::printPlayer);
 	}
 
-	private void autoQuitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {
+	private void printPlayer(Entry<UUID, RTMPPlayerWithStatus> entry) {
+		logger.info("CleanupPlayerTimerTask: RTMP stream left: " + entry.getKey());
+	}
+
+	private void quitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {
 		logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + entry.getKey());
-		quitPlayer(entry.getValue());
-	}
-
-	private static void quitPlayer(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
-		rtmpPlayerWithStatus.getPlayer().quit();
-	}
-
-	public static void insertNextDisk(RTMPPlayerWithStatus rtmpPlayerWithStatus) {
-		try {
-			rtmpPlayerWithStatus.nextDiskImage();
-			rtmpPlayerWithStatus.getPlayer().insertDisk(rtmpPlayerWithStatus.extract());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		entry.getValue().quitPlayer();
 	}
 
 }

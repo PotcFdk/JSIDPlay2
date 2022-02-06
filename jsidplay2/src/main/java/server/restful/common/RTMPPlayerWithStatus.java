@@ -5,7 +5,6 @@ import static server.restful.common.IServletSystemProperties.RTMP_NOT_YET_PLAYED
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,48 +20,47 @@ public final class RTMPPlayerWithStatus {
 
 	private static final DiskFileFilter DISK_FILE_FILTER = new DiskFileFilter();
 
-	private static enum Status {
-		CREATED, ON_PLAY;
-	}
-
-	private final LocalDateTime created;
-
 	private final Player player;
-
-	private Status status;
 
 	private File diskImage;
 
-	public RTMPPlayerWithStatus(Player player, File diskImage) {
-		this.created = LocalDateTime.now();
-		this.player = player;
-		this.status = Status.CREATED;
-		this.diskImage = diskImage;
-	}
+	private final LocalDateTime created;
 
-	public Player getPlayer() {
-		return player;
+	private LocalDateTime validUntil;
+
+	public RTMPPlayerWithStatus(Player player, File diskImage) {
+		this.player = player;
+		this.diskImage = diskImage;
+		created = LocalDateTime.now();
+		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 	}
 
 	public void setOnPlay() {
-		status = Status.ON_PLAY;
+		validUntil = created.plusSeconds(RTMP_EXCEEDS_MAXIMUM_DURATION);
 	}
 
-	public boolean toRemove() {
-		return notYetPlayed() || exceedsMaximumDuration();
+	public void setOnPlayDone() {
+		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 	}
 
-	private boolean notYetPlayed() {
-		return status == Status.CREATED
-				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_NOT_YET_PLAYED_TIMEOUT;
+	public boolean isValid() {
+		return LocalDateTime.now().isAfter(validUntil);
 	}
 
-	private boolean exceedsMaximumDuration() {
-		return status == Status.ON_PLAY
-				&& Duration.between(created, LocalDateTime.now()).getSeconds() > RTMP_EXCEEDS_MAXIMUM_DURATION;
+	public void quitPlayer() {
+		player.quit();
 	}
 
-	public void nextDiskImage() {
+	public void insertNextDisk() {
+		try {
+			setNextDiskImage();
+			player.insertDisk(extract());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setNextDiskImage() {
 		if (diskImage != null) {
 			List<File> asList = Arrays.asList(diskImage.getParentFile().listFiles(DISK_FILE_FILTER));
 			Collections.sort(asList);
@@ -76,7 +74,7 @@ public final class RTMPPlayerWithStatus {
 		}
 	}
 
-	public File extract() throws IOException {
+	private File extract() throws IOException {
 		if (diskImage != null) {
 			TFile file = new TFile(diskImage);
 			if (file.isEntry()) {
