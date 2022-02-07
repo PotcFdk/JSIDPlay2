@@ -37,15 +37,15 @@ public final class RTMPPlayerWithStatus {
 		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 	}
 
-	public void setOnPlay() {
+	public void onPlay() {
 		validUntil = created.plusSeconds(RTMP_EXCEEDS_MAXIMUM_DURATION);
 	}
 
-	public void setOnPlayDone() {
+	public void onPlayDone() {
 		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 	}
 
-	public boolean isValid() {
+	public boolean isInvalid() {
 		return LocalDateTime.now().isAfter(validUntil);
 	}
 

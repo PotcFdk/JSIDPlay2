@@ -31,11 +31,11 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	}
 
 	public static final void onPlay(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setOnPlay);
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlay);
 	}
 
 	public static final void onPlayDone(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setOnPlayDone);
+		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlayDone);
 	}
 
 	public static final void insertNextDisk(UUID uuid) {
@@ -58,7 +58,7 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	@Override
 	public final void run() {
 		Collection<Entry<UUID, RTMPPlayerWithStatus>> rtmpEntriesToRemove = PLAYER_MAP.entrySet().stream()
-				.filter(entrySet -> entrySet.getValue().isValid()).collect(Collectors.toList());
+				.filter(entrySet -> entrySet.getValue().isInvalid()).collect(Collectors.toList());
 
 		rtmpEntriesToRemove.forEach(this::quitPlayer);
 
