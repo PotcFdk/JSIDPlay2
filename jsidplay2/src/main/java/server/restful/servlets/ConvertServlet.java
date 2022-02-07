@@ -62,8 +62,6 @@ import libsidplay.config.ISidPlay2Section;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
-import libsidutils.fingerprinting.FingerPrinting;
-import libsidutils.fingerprinting.ini.IniFingerprintConfig;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletParameters;
@@ -91,7 +89,6 @@ import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.VideoTuneFileFilter;
 import ui.entities.config.Configuration;
-import ui.entities.whatssid.service.WhatsSidService;
 
 @SuppressWarnings("serial")
 public class ConvertServlet extends JSIDPlay2Servlet {
@@ -322,7 +319,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			player.getConfig().getSidplay2Section().setHvsc(root);
 			player.setSidDatabase(new SidDatabase(root));
 		}
-		player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
+		// Commented out for server performance
+		// player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
 		player.setAudioDriver(driver);
 		player.setDefaultLengthInRecordMode(false);
 		player.setCheckLoopOffInRecordMode(false);
