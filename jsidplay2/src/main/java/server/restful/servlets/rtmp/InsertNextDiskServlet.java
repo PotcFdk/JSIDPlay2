@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.rtmp;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
 import static server.restful.common.CleanupPlayerTimerTask.insertNextDisk;

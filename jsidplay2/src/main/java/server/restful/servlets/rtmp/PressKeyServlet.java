@@ -1,4 +1,4 @@
-package server.restful.servlets;
+package server.restful.servlets.rtmp;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
 import static server.restful.common.CleanupPlayerTimerTask.pressKey;
@@ -51,15 +51,13 @@ public class PressKeyServlet extends JSIDPlay2Servlet {
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
 			info("PressKey: RTMP stream of: " + uuid);
+
 			if (request.getParameter("type") != null) {
-				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("type"));
-				typeKey(uuid, key);
+				typeKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("type")));
 			} else if (request.getParameter("press") != null) {
-				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("press"));
-				pressKey(uuid, key);
+				pressKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("press")));
 			} else if (request.getParameter("release") != null) {
-				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("release"));
-				releaseKey(uuid, key);
+				releaseKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("release")));
 			}
 		} catch (Throwable t) {
 			error(t);
