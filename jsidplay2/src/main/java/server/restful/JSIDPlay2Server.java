@@ -442,10 +442,13 @@ public class JSIDPlay2Server {
 
 	public static void closeEntityManager() {
 		EntityManager em = threadLocalEntityManager.get();
-		threadLocalEntityManager.remove();
+		// Since one EntityManager is used for each thread we re-use next time, we clear
+		// but never close here!
+//		threadLocalEntityManager.remove();
 
 		if (em != null) {
-			em.close();
+			em.clear();
+//			em.close();
 		}
 	}
 }
