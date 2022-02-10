@@ -1,6 +1,5 @@
 package server.restful.servlets;
 
-import static java.lang.Thread.MAX_PRIORITY;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
@@ -149,7 +148,6 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 				}
 				convert2audio(config, file, driver, servletParameters.getSong());
-				response.setStatus(HttpServletResponse.SC_OK);
 			} else if (videoTuneFileFilter.accept(file) || cartFileFilter.accept(file) || diskFileFilter.accept(file)
 					|| tapeFileFilter.accept(file)) {
 
@@ -167,7 +165,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
-					Thread thread = new Thread(() -> {
+					new Thread(() -> {
 						try {
 							Player player = new Player(config);
 							info("START RTMP stream of: " + uuid);
@@ -178,9 +176,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						} finally {
 							closeEntityManager();
 						}
-					}, "RTMP");
-					thread.setPriority(MAX_PRIORITY);
-					thread.start();
+					}, "RTMP").start();
 					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
 					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 
@@ -190,17 +186,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					replacements.put("<notYetPlayedTimeout>", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
 					replacements.put("<filename>", String.valueOf(file));
 
+					response.setContentType(MIME_TYPE_HTML.toString());
 					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
-						if (is != null) {
-							response.setContentType(MIME_TYPE_HTML.toString());
-							response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
-						} else {
-							response.setContentType(MIME_TYPE_TEXT.toString());
-							new PrintStream(response.getOutputStream())
-									.print("File not found: /server/restful/webapp/convert.html");
-						}
+						response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
 					}
-					response.setStatus(HttpServletResponse.SC_OK);
 				} else {
 					response.setContentType(getMimeType(driver.getExtension()).toString());
 					if (Boolean.TRUE.equals(servletParameters.getDownload())) {
@@ -210,20 +199,18 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					File videoFile = convert2videoFile(config, file, driver);
 					copy(videoFile, response.getOutputStream());
 					videoFile.delete();
-
-					response.setStatus(HttpServletResponse.SC_OK);
 				}
 			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
-				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
 			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	private String[] getRequestParameters(HttpServletRequest request) {
@@ -320,7 +307,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		// Commented out for server performance
-		// player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(), new WhatsSidService(em)));
+		// player.setFingerPrintMatcher(new FingerPrinting(new IniFingerprintConfig(),
+		// new WhatsSidService(em)));
 		player.setAudioDriver(driver);
 		player.setDefaultLengthInRecordMode(false);
 		player.setCheckLoopOffInRecordMode(false);

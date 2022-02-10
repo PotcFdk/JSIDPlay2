@@ -49,14 +49,9 @@ public class StartPageServlet extends JSIDPlay2Servlet {
 			Map<String, String> replacements = new HashMap<>();
 			replacements.put("https://haendel.ddns.net:8443", preferredProtocol + "://" + hostname + ":" + portNum);
 
+			response.setContentType(MIME_TYPE_HTML.toString());
 			try (InputStream is = SidTune.class.getResourceAsStream("/doc/restful.html")) {
-				if (is != null) {
-					response.setContentType(MIME_TYPE_HTML.toString());
-					response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
-				} else {
-					response.setContentType(MIME_TYPE_TEXT.toString());
-					new PrintStream(response.getOutputStream()).print("File not found: /doc/restful.html");
-				}
+				response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
 			}
 		} catch (Throwable t) {
 			error(t);
