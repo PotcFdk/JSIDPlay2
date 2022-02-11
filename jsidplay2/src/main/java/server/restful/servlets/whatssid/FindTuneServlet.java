@@ -46,5 +46,6 @@ public class FindTuneServlet extends JSIDPlay2Servlet {
 		} finally {
 			closeEntityManager();
 		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 }

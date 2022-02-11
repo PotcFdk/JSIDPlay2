@@ -4,6 +4,7 @@ import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.IServletSystemProperties.CACHE_SIZE;
+import static server.restful.common.IServletSystemProperties.MAX_WHATSIDS_IN_PARALLEL;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,10 +26,12 @@ import ui.entities.whatssid.service.WhatsSidService;
 @SuppressWarnings("serial")
 public class WhatsSidServlet extends JSIDPlay2Servlet {
 
-	private static final Map<WAVBean, MusicInfoWithConfidenceBean> MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP = Collections
-			.synchronizedMap(new LRUCache<WAVBean, MusicInfoWithConfidenceBean>(CACHE_SIZE));
+	private static final Map<Integer, MusicInfoWithConfidenceBean> MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP = Collections
+			.synchronizedMap(new LRUCache<Integer, MusicInfoWithConfidenceBean>(CACHE_SIZE));
 
 	public static final String WHATSSID_PATH = "/whatssid";
+
+	private static volatile int currentWhatsSidRequestCount;
 
 	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -48,25 +51,39 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doPost(request);
-		try {
-			WAVBean wavBean = getInput(request, WAVBean.class);
+		boolean ok;
+		synchronized (JSIDPlay2Servlet.class) {
+			ok = currentWhatsSidRequestCount++ < MAX_WHATSIDS_IN_PARALLEL;
+		}
+		if (ok) {
+			try {
+				WAVBean wavBean = getInput(request, WAVBean.class);
+				int hashCode = wavBean.hashCode();
 
-			MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
-			if (!MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.containsKey(wavBean)) {
-				WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
-				FingerPrinting fingerPrinting = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
-				musicInfoWithConfidence = fingerPrinting.match(wavBean);
-				MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(wavBean, musicInfoWithConfidence);
-				info(String.valueOf(musicInfoWithConfidence));
-			} else {
-				musicInfoWithConfidence = MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(wavBean);
-				info(String.valueOf(musicInfoWithConfidence) + " (cached)");
+				MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
+				if (!MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.containsKey(hashCode)) {
+					WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+					FingerPrinting fingerPrinting = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
+					musicInfoWithConfidence = fingerPrinting.match(wavBean);
+					MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(hashCode, musicInfoWithConfidence);
+					info(String.valueOf(musicInfoWithConfidence));
+				} else {
+					musicInfoWithConfidence = MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(hashCode);
+					info(String.valueOf(musicInfoWithConfidence) + " (cached)");
+				}
+				setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
+			} catch (Throwable t) {
+				error(t);
+			} finally {
+				closeEntityManager();
 			}
-			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
-		} catch (Throwable t) {
-			error(t);
-		} finally {
-			closeEntityManager();
+			response.setStatus(HttpServletResponse.SC_OK);
+		} else {
+			info("Too Many Requests");
+			response.sendError(429, "Too Many Requests");
+		}
+		synchronized (JSIDPlay2Servlet.class) {
+			currentWhatsSidRequestCount--;
 		}
 	}
 

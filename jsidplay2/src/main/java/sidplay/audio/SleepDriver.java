@@ -56,7 +56,7 @@ public class SleepDriver implements AudioDriver {
 		if (sleepTime > MAX_TIME_GAP) {
 			try {
 				// slow down video production to stay in sync with a possible viewer
-				Thread.sleep(sleepTime - MAX_TIME_GAP);
+				Thread.sleep((sleepTime - MAX_TIME_GAP) * 2 / 3);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -81,4 +81,10 @@ public interface IServletSystemProperties {
 	 * WhatsSID? Cache size. Recognized audio is cached for performance reasons.
 	 */
 	int CACHE_SIZE = valueOf(getProperty("jsidplay2.whatssid.cache.size", "60000"));
+
+	/**
+	 * WhatsSID? Maximum number of requests in parallel.
+	 */
+	int MAX_WHATSIDS_IN_PARALLEL = valueOf(getProperty("jsidplay2.whatssid.max.parallel", "3"));
+
 }
