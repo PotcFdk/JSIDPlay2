@@ -30,6 +30,8 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11Nio2Protocol;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
@@ -43,6 +45,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 
+import jakarta.servlet.Filter;
 import server.restful.common.CleanupPlayerTimerTask;
 import server.restful.common.Connectors;
 import server.restful.common.JSIDPlay2Servlet;
@@ -383,6 +386,25 @@ public class JSIDPlay2Server {
 			JSIDPlay2Servlet servlet = servletCls.getDeclaredConstructor(Configuration.class, Properties.class)
 					.newInstance(configuration, servletUtilProperties);
 			addServlet(context, servletCls.getSimpleName(), servlet).addMapping(servlet.getServletPath() + "/*");
+			addServletFilter(context, servlet);
+		}
+	}
+
+	private void addServletFilter(Context context, JSIDPlay2Servlet servlet) {
+		Filter servletFilter = servlet.createServletFilter();
+
+		if (servletFilter != null) {
+			String servletFilterName = servletFilter.getClass().getSimpleName();
+
+			FilterDef filterDefinition = new FilterDef();
+			filterDefinition.setFilterName(servletFilterName);
+			filterDefinition.setFilter(servletFilter);
+			context.addFilterDef(filterDefinition);
+
+			FilterMap filterMapping = new FilterMap();
+			filterMapping.setFilterName(servletFilterName);
+			filterMapping.addURLPattern(servlet.getServletPath() + "/*");
+			context.addFilterMap(filterMapping);
 		}
 	}
 

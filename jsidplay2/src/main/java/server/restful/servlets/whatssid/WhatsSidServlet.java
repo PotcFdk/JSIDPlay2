@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WAVBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.LRUCache;
+import server.restful.filters.LimitRequestFilter;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 
@@ -31,8 +33,6 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	public static final String WHATSSID_PATH = "/whatssid";
 
-	private static volatile int currentRequestCount;
-
 	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
 	}
@@ -40,6 +40,11 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	@Override
 	public String getServletPath() {
 		return CONTEXT_ROOT_SERVLET + WHATSSID_PATH;
+	}
+
+	@Override
+	public Filter createServletFilter() {
+		return new LimitRequestFilter(MAX_WHATSIDS_IN_PARALLEL);
 	}
 
 	/**
@@ -51,40 +56,28 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		super.doPost(request);
-		boolean ok;
-		synchronized (WhatsSidServlet.class) {
-			ok = currentRequestCount++ < MAX_WHATSIDS_IN_PARALLEL;
-		}
-		if (ok) {
-			try {
-				WAVBean wavBean = getInput(request, WAVBean.class);
-				int hashCode = wavBean.hashCode();
+		try {
+			WAVBean wavBean = getInput(request, WAVBean.class);
+			int hashCode = wavBean.hashCode();
 
-				MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
-				if (!MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.containsKey(hashCode)) {
-					WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
-					FingerPrinting fingerPrinting = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
-					musicInfoWithConfidence = fingerPrinting.match(wavBean);
-					MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(hashCode, musicInfoWithConfidence);
-					info(String.valueOf(musicInfoWithConfidence));
-				} else {
-					musicInfoWithConfidence = MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(hashCode);
-					info(String.valueOf(musicInfoWithConfidence) + " (cached)");
-				}
-				setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
-			} catch (Throwable t) {
-				error(t);
-			} finally {
-				closeEntityManager();
+			MusicInfoWithConfidenceBean musicInfoWithConfidence = null;
+			if (!MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.containsKey(hashCode)) {
+				WhatsSidService whatsSidService = new WhatsSidService(getEntityManager());
+				FingerPrinting fingerPrinting = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
+				musicInfoWithConfidence = fingerPrinting.match(wavBean);
+				MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(hashCode, musicInfoWithConfidence);
+				info(String.valueOf(musicInfoWithConfidence));
+			} else {
+				musicInfoWithConfidence = MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(hashCode);
+				info(String.valueOf(musicInfoWithConfidence) + " (cached)");
 			}
-			response.setStatus(HttpServletResponse.SC_OK);
-		} else {
-			info("Too Many Requests");
-			response.sendError(429, "Too Many Requests");
+			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
+		} catch (Throwable t) {
+			error(t);
+		} finally {
+			closeEntityManager();
 		}
-		synchronized (WhatsSidServlet.class) {
-			currentRequestCount--;
-		}
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 }

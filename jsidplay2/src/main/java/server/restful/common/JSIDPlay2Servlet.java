@@ -25,6 +25,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.schlichtherle.truezip.file.TFile;
+import jakarta.servlet.Filter;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
@@ -50,6 +51,10 @@ public abstract class JSIDPlay2Servlet extends HttpServlet {
 	}
 
 	public abstract String getServletPath();
+
+	public Filter createServletFilter() {
+		return null;
+	}
 
 	protected void doGet(HttpServletRequest request) {
 		log(thread() + request(request) + queryString(request) + remoteAddr(request) + localAddr(request) + memory());
