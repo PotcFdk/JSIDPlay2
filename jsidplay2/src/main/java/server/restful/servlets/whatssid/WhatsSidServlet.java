@@ -52,7 +52,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			throws ServletException, IOException {
 		super.doPost(request);
 		boolean ok;
-		synchronized (JSIDPlay2Servlet.class) {
+		synchronized (WhatsSidServlet.class) {
 			ok = currentRequestCount++ < MAX_WHATSIDS_IN_PARALLEL;
 		}
 		if (ok) {
@@ -82,7 +82,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			info("Too Many Requests");
 			response.sendError(429, "Too Many Requests");
 		}
-		synchronized (JSIDPlay2Servlet.class) {
+		synchronized (WhatsSidServlet.class) {
 			currentRequestCount--;
 		}
 	}

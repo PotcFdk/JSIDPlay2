@@ -171,7 +171,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
 
 					boolean ok;
-					synchronized (JSIDPlay2Servlet.class) {
+					synchronized (ConvertServlet.class) {
 						ok = currentRequestCount++ < MAX_RTMP_IN_PARALLEL;
 					}
 					if (ok) {
@@ -206,7 +206,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						info("Too Many Requests");
 						response.sendError(429, "Too Many Requests");
 					}
-					synchronized (JSIDPlay2Servlet.class) {
+					synchronized (ConvertServlet.class) {
 						currentRequestCount--;
 					}
 				} else {
