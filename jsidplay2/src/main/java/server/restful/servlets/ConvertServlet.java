@@ -17,6 +17,7 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
+import static server.restful.common.IServletSystemProperties.MAX_RTMP_IN_PARALLEL;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -94,6 +95,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	public static final String CONVERT_PATH = "/convert";
 
+	private static volatile int currentRequestCount;
+
 	private static final AudioTuneFileFilter audioTuneFileFilter = new AudioTuneFileFilter();
 	private static final VideoTuneFileFilter videoTuneFileFilter = new VideoTuneFileFilter();
 	private static final DiskFileFilter diskFileFilter = new DiskFileFilter();
@@ -148,6 +151,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 							+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 				}
 				convert2audio(config, file, driver, servletParameters.getSong());
+				response.setStatus(HttpServletResponse.SC_OK);
 			} else if (videoTuneFileFilter.accept(file) || cartFileFilter.accept(file) || diskFileFilter.accept(file)
 					|| tapeFileFilter.accept(file)) {
 
@@ -165,30 +169,45 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
-					new Thread(() -> {
-						try {
-							Player player = new Player(config);
-							info("START RTMP stream of: " + uuid);
-							convert2liveVideo(uuid, player, file, driver, getEntityManager());
-							info("END RTMP stream of: " + uuid);
-						} catch (IOException | SidTuneError e) {
-							log("ERROR RTMP stream of: " + uuid + ":", e);
-						} finally {
-							closeEntityManager();
+
+					boolean ok;
+					synchronized (JSIDPlay2Servlet.class) {
+						ok = currentRequestCount++ < MAX_RTMP_IN_PARALLEL;
+					}
+					if (ok) {
+						new Thread(() -> {
+							try {
+								Player player = new Player(config);
+								info("START RTMP stream of: " + uuid);
+								convert2liveVideo(uuid, player, file, driver, getEntityManager());
+								info("END RTMP stream of: " + uuid);
+							} catch (IOException | SidTuneError e) {
+								log("ERROR RTMP stream of: " + uuid + ":", e);
+							} finally {
+								closeEntityManager();
+							}
+						}, "RTMP").start();
+						response.setHeader(HttpHeaders.PRAGMA, "no-cache");
+						response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
+
+						Map<String, String> replacements = new HashMap<>();
+						replacements.put("<uuid>", uuid.toString());
+						replacements.put("<rtmp>", getRTMPUrl(request.getRemoteAddr(), uuid));
+						replacements.put("<notYetPlayedTimeout>", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
+						replacements.put("<filename>", String.valueOf(file));
+
+						response.setContentType(MIME_TYPE_HTML.toString());
+						try (InputStream is = SidTune.class
+								.getResourceAsStream("/server/restful/webapp/convert.html")) {
+							response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
 						}
-					}, "RTMP").start();
-					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
-					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
-
-					Map<String, String> replacements = new HashMap<>();
-					replacements.put("<uuid>", uuid.toString());
-					replacements.put("<rtmp>", getRTMPUrl(request.getRemoteAddr(), uuid));
-					replacements.put("<notYetPlayedTimeout>", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
-					replacements.put("<filename>", String.valueOf(file));
-
-					response.setContentType(MIME_TYPE_HTML.toString());
-					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
-						response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
+						response.setStatus(HttpServletResponse.SC_OK);
+					} else {
+						info("Too Many Requests");
+						response.sendError(429, "Too Many Requests");
+					}
+					synchronized (JSIDPlay2Servlet.class) {
+						currentRequestCount--;
 					}
 				} else {
 					response.setContentType(getMimeType(driver.getExtension()).toString());
@@ -199,18 +218,19 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					File videoFile = convert2videoFile(config, file, driver);
 					copy(videoFile, response.getOutputStream());
 					videoFile.delete();
+					response.setStatus(HttpServletResponse.SC_OK);
 				}
 			} else {
 				response.setContentType(getMimeType(getFilenameSuffix(filePath)).toString());
 				response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename=" + new File(filePath).getName());
 				copy(getAbsoluteFile(filePath, request.isUserInRole(ROLE_ADMIN)), response.getOutputStream());
+				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
 			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		}
-		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	private String[] getRequestParameters(HttpServletRequest request) {

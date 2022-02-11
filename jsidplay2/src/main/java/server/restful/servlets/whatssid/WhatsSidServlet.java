@@ -31,7 +31,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	public static final String WHATSSID_PATH = "/whatssid";
 
-	private static volatile int currentWhatsSidRequestCount;
+	private static volatile int currentRequestCount;
 
 	public WhatsSidServlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -53,7 +53,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		boolean ok;
 		synchronized (JSIDPlay2Servlet.class) {
-			ok = currentWhatsSidRequestCount++ < MAX_WHATSIDS_IN_PARALLEL;
+			ok = currentRequestCount++ < MAX_WHATSIDS_IN_PARALLEL;
 		}
 		if (ok) {
 			try {
@@ -83,7 +83,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			response.sendError(429, "Too Many Requests");
 		}
 		synchronized (JSIDPlay2Servlet.class) {
-			currentWhatsSidRequestCount--;
+			currentRequestCount--;
 		}
 	}
 

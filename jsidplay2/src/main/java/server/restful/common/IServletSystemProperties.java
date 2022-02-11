@@ -68,6 +68,11 @@ public interface IServletSystemProperties {
 	 */
 	int MAX_LENGTH = valueOf(getProperty("jsidplay2.rtmp.max_seconds", "600"));
 
+	/**
+	 * WhatsSID? Maximum number of requests in parallel.
+	 */
+	int MAX_RTMP_IN_PARALLEL = valueOf(getProperty("jsidplay2.rtmp.max.parallel", "4"));
+
 	//
 	// WhatsSIDServlet
 	//
