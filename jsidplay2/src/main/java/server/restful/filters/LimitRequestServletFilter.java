@@ -26,9 +26,6 @@ public class LimitRequestServletFilter implements Filter {
 	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
 			final FilterChain chain) throws IOException, ServletException {
 		try {
-			// Safe to downcast at this point.
-			HttpServletResponse response = (HttpServletResponse) servletResponse;
-
 			boolean ok;
 			synchronized (lock) {
 				ok = count++ < limit;
@@ -38,6 +35,7 @@ public class LimitRequestServletFilter implements Filter {
 				chain.doFilter(servletRequest, servletResponse);
 			} else {
 				// handle limit case, e.g. return status code 429 (Too Many Requests)
+				HttpServletResponse response = (HttpServletResponse) servletResponse;
 				response.setContentType(MIME_TYPE_TEXT.toString());
 				// see https://www.rfc-editor.org/rfc/rfc6585#page-3
 				response.sendError(429, "Too Many Requests");
