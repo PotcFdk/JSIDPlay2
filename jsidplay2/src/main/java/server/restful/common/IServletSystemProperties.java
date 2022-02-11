@@ -19,6 +19,11 @@ public interface IServletSystemProperties {
 	//
 
 	/**
+	 * WhatsSID? Maximum number of requests in parallel.
+	 */
+	int MAX_CONVERT_IN_PARALLEL = valueOf(getProperty("jsidplay2.convert.max.parallel", "7"));
+
+	/**
 	 * Video streaming: Interval between simulated key presses of the space key in s
 	 * (required to watch some demos).
 	 */
@@ -68,14 +73,14 @@ public interface IServletSystemProperties {
 	 */
 	int MAX_LENGTH = valueOf(getProperty("jsidplay2.rtmp.max_seconds", "600"));
 
-	/**
-	 * WhatsSID? Maximum number of requests in parallel.
-	 */
-	int MAX_RTMP_IN_PARALLEL = valueOf(getProperty("jsidplay2.rtmp.max.parallel", "4"));
-
 	//
 	// WhatsSIDServlet
 	//
+
+	/**
+	 * WhatsSID? Maximum number of requests in parallel.
+	 */
+	int MAX_WHATSIDS_IN_PARALLEL = valueOf(getProperty("jsidplay2.whatssid.max.parallel", "3"));
 
 	/**
 	 * WhatsSID? Maximum duration used to recognize a tune for file upload.
@@ -86,10 +91,5 @@ public interface IServletSystemProperties {
 	 * WhatsSID? Cache size. Recognized audio is cached for performance reasons.
 	 */
 	int CACHE_SIZE = valueOf(getProperty("jsidplay2.whatssid.cache.size", "60000"));
-
-	/**
-	 * WhatsSID? Maximum number of requests in parallel.
-	 */
-	int MAX_WHATSIDS_IN_PARALLEL = valueOf(getProperty("jsidplay2.whatssid.max.parallel", "3"));
 
 }

@@ -17,7 +17,7 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
-import static server.restful.common.IServletSystemProperties.MAX_RTMP_IN_PARALLEL;
+import static server.restful.common.IServletSystemProperties.MAX_CONVERT_IN_PARALLEL;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -114,7 +114,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public Filter createServletFilter() {
-		return new LimitRequestFilter(MAX_RTMP_IN_PARALLEL);
+		return new LimitRequestFilter(MAX_CONVERT_IN_PARALLEL);
 	}
 
 	/**
