@@ -16,8 +16,8 @@ import static server.restful.common.CleanupPlayerTimerTask.create;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_HTML;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
-import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
 import static server.restful.common.IServletSystemProperties.MAX_CONVERT_IN_PARALLEL;
+import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -155,7 +155,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.addHeader(CONTENT_DISPOSITION, ATTACHMENT + "; filename="
 							+ getFilenameWithoutSuffix(file.getName()) + driver.getExtension());
 				}
-				convert2audio(config, file, driver, servletParameters.getSong());
+				convert2audio(config, file, driver, servletParameters);
 			} else if (videoTuneFileFilter.accept(file) || cartFileFilter.accept(file) || diskFileFilter.accept(file)
 					|| tapeFileFilter.accept(file)) {
 
@@ -265,7 +265,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convert2audio(IConfig config, File file, AudioDriver driver, Integer song)
+	private void convert2audio(IConfig config, File file, AudioDriver driver, ServletParameters servletParameters)
 			throws IOException, SidTuneError {
 		Player player = new Player(config);
 		File root = configuration.getSidplay2Section().getHvsc();
@@ -273,9 +273,12 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 			player.setSidDatabase(new SidDatabase(root));
 		}
 		player.setAudioDriver(driver);
+		player.setDefaultLengthInRecordMode(true);
+		player.setCheckLoopOffInRecordMode(Boolean.TRUE.equals(servletParameters.getDownload()));
+		player.setForceCheckSongLength(true);
 
 		SidTune tune = SidTune.load(file);
-		tune.getInfo().setSelectedSong(song);
+		tune.getInfo().setSelectedSong(servletParameters.getSong());
 		player.play(tune);
 		player.stopC64(false);
 	}
