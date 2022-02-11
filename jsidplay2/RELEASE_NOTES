@@ -1,2 +1,5 @@
 Release Notes:
 ==============
+JSIDPlay2Server:
+Live videos now controllable by keyboard
+kind-of DDOS protection limits maximum requests for playback
