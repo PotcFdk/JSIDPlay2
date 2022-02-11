@@ -11,16 +11,15 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class LimitRequestFilter implements Filter {
+public class LimitRequestServletFilter implements Filter {
 
 	private final Object lock = new Object();
 
 	private final int limit;
 	private int count;
 
-	public LimitRequestFilter(int limit) {
+	public LimitRequestServletFilter(int limit) {
 		this.limit = limit;
-		count = 0;
 	}
 
 	@Override

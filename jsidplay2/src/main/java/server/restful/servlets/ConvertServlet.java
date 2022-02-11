@@ -66,7 +66,7 @@ import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.ServletParameters;
-import server.restful.filters.LimitRequestFilter;
+import server.restful.filters.LimitRequestServletFilter;
 import sidplay.Player;
 import sidplay.audio.AACDriver.AACStreamDriver;
 import sidplay.audio.AVIDriver.AVIFileDriver;
@@ -114,7 +114,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public Filter createServletFilter() {
-		return new LimitRequestFilter(MAX_CONVERT_IN_PARALLEL);
+		return new LimitRequestServletFilter(MAX_CONVERT_IN_PARALLEL);
 	}
 
 	/**

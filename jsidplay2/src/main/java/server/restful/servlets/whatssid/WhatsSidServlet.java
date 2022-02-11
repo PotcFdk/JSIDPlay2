@@ -21,7 +21,7 @@ import libsidutils.fingerprinting.rest.beans.MusicInfoWithConfidenceBean;
 import libsidutils.fingerprinting.rest.beans.WAVBean;
 import server.restful.common.JSIDPlay2Servlet;
 import server.restful.common.LRUCache;
-import server.restful.filters.LimitRequestFilter;
+import server.restful.filters.LimitRequestServletFilter;
 import ui.entities.config.Configuration;
 import ui.entities.whatssid.service.WhatsSidService;
 
@@ -44,7 +44,7 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 
 	@Override
 	public Filter createServletFilter() {
-		return new LimitRequestFilter(MAX_WHATSIDS_IN_PARALLEL);
+		return new LimitRequestServletFilter(MAX_WHATSIDS_IN_PARALLEL);
 	}
 
 	/**
