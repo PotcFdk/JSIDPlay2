@@ -1,5 +1,6 @@
 package server.restful.servlets.whatssid;
 
+import static java.lang.String.valueOf;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
@@ -66,10 +67,10 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 				FingerPrinting fingerPrinting = new FingerPrinting(new IniFingerprintConfig(), whatsSidService);
 				musicInfoWithConfidence = fingerPrinting.match(wavBean);
 				MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.put(hashCode, musicInfoWithConfidence);
-				info(String.valueOf(musicInfoWithConfidence));
+				info(valueOf(musicInfoWithConfidence));
 			} else {
 				musicInfoWithConfidence = MUSIC_INFO_WITH_CONFIDENCE_BEAN_MAP.get(hashCode);
-				info(String.valueOf(musicInfoWithConfidence) + " (cached)");
+				info(valueOf(musicInfoWithConfidence) + " (cached)");
 			}
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 		} catch (Throwable t) {
