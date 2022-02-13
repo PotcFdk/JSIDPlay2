@@ -80,7 +80,7 @@ public interface IServletSystemProperties {
 	/**
 	 * WhatsSID? Maximum number of requests in parallel.
 	 */
-	int MAX_WHATSIDS_IN_PARALLEL = valueOf(getProperty("jsidplay2.whatssid.max.parallel", "3"));
+	int MAX_WHATSIDS_IN_PARALLEL = valueOf(getProperty("jsidplay2.whatssid.max.parallel", "7"));
 
 	/**
 	 * WhatsSID? Maximum duration used to recognize a tune for file upload.
