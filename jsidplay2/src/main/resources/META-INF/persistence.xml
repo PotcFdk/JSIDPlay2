@@ -69,7 +69,7 @@
 		</properties>
 	</persistence-unit>
 	<persistence-unit name="cgsc-ds" transaction-type="RESOURCE_LOCAL">
-		<description>HVSC Entities</description>
+		<description>CGSC Entities</description>
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>ui.entities.collection.Version</class>
