@@ -68,7 +68,8 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	}
 
 	private void printPlayer(Entry<UUID, RTMPPlayerWithStatus> entry) {
-		logger.info("CleanupPlayerTimerTask: RTMP stream left: " + entry.getKey());
+		logger.info(String.format("CleanupPlayerTimerTask: RTMP stream left: %s (valid until %s)", entry.getKey(),
+				entry.getValue().getValidUntil()));
 	}
 
 	private void quitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {

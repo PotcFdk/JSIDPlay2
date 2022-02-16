@@ -49,6 +49,10 @@ public final class RTMPPlayerWithStatus {
 		return LocalDateTime.now().isAfter(validUntil);
 	}
 
+	public LocalDateTime getValidUntil() {
+		return validUntil;
+	}
+
 	public void quitPlayer() {
 		player.quit();
 	}
