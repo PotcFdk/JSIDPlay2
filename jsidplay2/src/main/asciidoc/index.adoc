@@ -78,15 +78,15 @@ link:{codebase}jsiddevice-{version}.jar[Download Network SID Device] (standalone
 |
 link:{codebase}java/jdk-8u211-linux-x64.tar.gz[[small]*Java8*]
 |
-link:https://adoptopenjdk.net[https://adoptopenjdk.net]
+link:https://adoptium.net[https://adoptium.net]
 | Windows |
 link:{codebase}java/jdk-8u211-windows-x64.exe[[small]*Java8*]
 |
-link:https://adoptopenjdk.net[https://adoptopenjdk.net]
+link:https://adoptium.net[https://adoptium.net]
 | MacOSX |
 link:{codebase}java/jdk-8u211-macosx-x64.dmg[[small]*Java8*]
 |
-link:https://adoptopenjdk.net[https://adoptopenjdk.net]
+link:https://adoptium.net[https://adoptium.net]
 |===
 
 == Releases

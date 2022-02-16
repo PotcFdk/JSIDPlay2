@@ -29,7 +29,7 @@ This is my recommendation, because JavaFX is already included!
 
 OpenJDK
 =======
-If you prefer more recent versions get your installer here: https://adoptopenjdk.net
+If you prefer more recent versions get your installer here: https://adoptium.net
 
 Java 9,10,11 in Eclipse:
 ========================
@@ -160,9 +160,9 @@ Increase Version in pom-java11.xml
 Increase Version in latest.properties
 Run launch "Release JSIDPlay2"
 
-Download latest versions ov HVSC, CGSC, HVMEC and GB64
+Download latest versions of HVSC, CGSC, HVMEC and GB64
 Open Eclipse menu: Window/Preferences
-Click Run/Dubug/String substitution
+Click Run/Debug/String substitution
 and update all file paths to the latest releases
 Run launch "clean deploy (plus additional online content)"
 Check in all local changes, please note: Update check will report a new release, immediately
@@ -182,7 +182,7 @@ sudo vi /etc/systemd/system/jsidplay2.service
 ./server.sh
 less server.log
 
-Version in "~/Desktop/JSIDPlay2.desktop" und "~/Desktop/JSIDPlay2 (Java11).desktop" ändern
+Change version in "~/Desktop/JSIDPlay2.desktop" und "~/Desktop/JSIDPlay2 (Java11).desktop"
 
 Upload the following release files to sourceforge and
 mark it with the correct OS (only for jsidplay2-4.5-*.zip and jsidplay2app.apk)
@@ -211,14 +211,14 @@ Website: "https://sourceforge.net/projects/jsidplay2/"
 Release date: ...
 Click "Create Release"
 Click "Add New Credit"
-Code: alankile, wilfred, kenchis
+Code: alankila, wilfred, kenchis
 Concept: kenchis
-Screenshot machen:
+Make screenshot:
 ~/jsidplay2.xml wegbewegen
 Launch "JSIDPlay2Frame (english)"
-Alt+Druck im Fenster
-Bild mit Gimp öffnen
-Bild/Bild skalieren
+Press Alt+Prt in window
+Open picture with Gimp
+Bild/Bild scale
 Breite: 384px
 Click "Upload screenshot from this release"
 Click "Set me as a maintainer"
@@ -231,11 +231,11 @@ Website: "https://sourceforge.net/projects/jsidplay2/"
 Release date: ...
 Click "Create Release"
 Click "Add New Credit"
-Code: alankile, wilfred, kenchis
+Code: alankila, wilfred, kenchis
 Concept: kenchis
-Screenshot machen:
+Make screenshot:
 Launch "Network SIDDevice"
-Alt+Druck im Fenster
+Press Alt+Prt in window
 Click "Upload screenshot from this release"
 Click "Set me as a maintainer"
 Click "Upload": jsiddevice-4.5.zip

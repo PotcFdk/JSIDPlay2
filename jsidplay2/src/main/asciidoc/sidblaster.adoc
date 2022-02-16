@@ -315,7 +315,7 @@ Please follow the steps in section "Installing the required ftd2xx library" of t
 
 JSIDPlay2 requires Java, therefore install java first.
 I recommend to install it from the folowing site:
-https://adoptopenjdk.net
+https://adoptium.net
 
 Choose "OpenJDT11" and "Hotspot"
 
@@ -366,7 +366,7 @@ Does it play? Then we are fine.
 
 JSIDPlay2 requires Java, therefore install java first.
 I recommend to install it from the folowing site:
-https://adoptopenjdk.net
+https://adoptium.net
 
 Choose "OpenJDT11" and "Hotspot"
 
@@ -408,7 +408,7 @@ Does it play? Then we are fine.
 
 JSIDPlay2 requires Java, therefore install java first.
 I recommend to install it from the folowing site:
-https://adoptopenjdk.net
+https://adoptium.net
 
 Choose "OpenJDT11" and "Hotspot"
 
