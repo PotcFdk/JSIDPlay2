@@ -10,6 +10,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.FileNotFoundException;
@@ -80,7 +81,8 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	private IContainer container;
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
-	private BufferedImage vicImage;
+	private BufferedImage vicImage, statusImage;
+	private Graphics2D graphics;
 	private ByteBuffer pictureBuffer;
 	private long frameNo, framesPerKeyFrames, firstTimeStamp;
 	private double ticksPerMicrosecond;
@@ -123,6 +125,10 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		videoCoder.open(null, null);
 
 		vicImage = new BufferedImage(MAX_WIDTH, MAX_HEIGHT, TYPE_3BYTE_BGR);
+		graphics = vicImage.createGraphics();
+		statusImage = new BufferedImage(MAX_WIDTH, graphics.getFontMetrics().getHeight(), TYPE_3BYTE_BGR);
+		setStatusText("Recorded by JSIDPlay2!");
+
 		pictureBuffer = ByteBuffer.wrap(((DataBufferByte) vicImage.getRaster().getDataBuffer()).getData());
 		converter = ConverterFactory.createConverter(vicImage, YUV420P);
 
@@ -178,6 +184,11 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 		to3ByteGBR(vic.getPixels());
 
+		// memory leak prevention!?
+		// https://github.com/kasemir/org.csstudio.display.builder/issues/174
+		graphics.clearRect(0, vic.getBorderHeight(), statusImage.getWidth(), statusImage.getHeight());
+		graphics.drawImage(statusImage, 0, vic.getBorderHeight(), null);
+
 		IVideoPicture videoPicture = converter.toPicture(vicImage, timeStamp);
 		videoPicture.setKeyFrame((frameNo++ % framesPerKeyFrames) == 0);
 
@@ -232,6 +243,9 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			if (container.isOpened()) {
 				container.close();
 			}
+			if (graphics != null) {
+				graphics.dispose();
+			}
 			container = null;
 		}
 	}
@@ -244,6 +258,15 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	@Override
 	public boolean isRecording() {
 		return true;
+	}
+
+	public void setStatusText(String statusText) {
+		if (statusImage != null) {
+			Graphics2D graphics = statusImage.createGraphics();
+			graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
+			graphics.drawString(statusText, 0, graphics.getFontMetrics().getAscent());
+			graphics.dispose();
+		}
 	}
 
 	private void configurePresets(String presetName) {
