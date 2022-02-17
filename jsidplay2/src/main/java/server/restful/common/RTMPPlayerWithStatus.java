@@ -135,22 +135,6 @@ public final class RTMPPlayerWithStatus {
 				});
 	}
 
-	public void updateStatusText() {
-		player.getC64().getEventScheduler().scheduleThreadSafe(new Event("Update Status Text") {
-			@Override
-			public void event() throws InterruptedException {
-				AudioDriver audioDriver = player.getAudioDriver();
-				if (audioDriver instanceof ProxyDriver) {
-					ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
-					if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
-						FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
-						flvStreamDriver.setStatusText(createStatusText());
-					}
-				}
-			}
-		});
-	}
-
 	private void setNextDiskImage() {
 		if (diskImage != null) {
 			List<File> asList = Arrays.asList(diskImage.getParentFile().listFiles(DISK_FILE_FILTER));
@@ -183,9 +167,28 @@ public final class RTMPPlayerWithStatus {
 	private void addStatusTextListener() {
 		player.stateProperty().addListener(event -> {
 			if (event.getNewValue() == State.START) {
-				updateStatusText();
+
+				player.getC64().getEventScheduler().schedule(new Event("Update Status Text") {
+					@Override
+					public void event() throws InterruptedException {
+						updateStatusText();
+						player.getC64().getEventScheduler().schedule(this,
+								(long) (player.getC64().getClock().getCpuFrequency()));
+					}
+				}, 0);
 			}
 		});
+	}
+
+	private void updateStatusText() {
+		AudioDriver audioDriver = player.getAudioDriver();
+		if (audioDriver instanceof ProxyDriver) {
+			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
+			if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
+				FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
+				flvStreamDriver.setStatusText(createStatusText());
+			}
+		}
 	}
 
 	private String createStatusText() {

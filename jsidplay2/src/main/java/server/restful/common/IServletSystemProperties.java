@@ -44,7 +44,7 @@ public interface IServletSystemProperties {
 	/**
 	 * Video streaming: Timer rate in ms to update RTMP video status
 	 */
-	int RTMP_CLEANUP_PLAYER_TIMER_RATE = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.timer.rate", "300"));
+	int RTMP_CLEANUP_PLAYER_TIMER_RATE = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.timer.rate", "1000"));
 
 	/**
 	 * Video streaming: Timer counter (every Nth timer invocation) print current
@@ -52,7 +52,7 @@ public interface IServletSystemProperties {
 	 * 
 	 * This parameter is related to RTMP_CLEANUP_PLAYER_TIMER_RATE.
 	 */
-	int RTMP_CLEANUP_PLAYER_COUNTER = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.period", "90"));
+	int RTMP_CLEANUP_PLAYER_COUNTER = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.period", "30"));
 
 	/**
 	 * Video streaming: Upload url for the video creation process.

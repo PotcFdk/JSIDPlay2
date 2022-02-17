@@ -84,8 +84,6 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 		PLAYER_MAP.entrySet().removeIf(rtmpEntriesToRemove::contains);
 
-		PLAYER_MAP.entrySet().stream().forEach(this::setStatusText);
-
 		if (timerCounter++ % RTMP_CLEANUP_PLAYER_COUNTER == 0) {
 			PLAYER_MAP.entrySet().stream().forEach(this::printPlayer);
 		}
@@ -94,10 +92,6 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	private void quitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {
 		logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + entry.getKey());
 		entry.getValue().quitPlayer();
-	}
-
-	private void setStatusText(Entry<UUID, RTMPPlayerWithStatus> entry) {
-		entry.getValue().updateStatusText();
 	}
 
 	private void printPlayer(Entry<UUID, RTMPPlayerWithStatus> entry) {
