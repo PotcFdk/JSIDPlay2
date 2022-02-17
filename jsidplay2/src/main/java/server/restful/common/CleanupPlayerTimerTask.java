@@ -1,5 +1,7 @@
 package server.restful.common;
 
+import static server.restful.common.IServletSystemProperties.RTMP_CLEANUP_PLAYER_COUNTER;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,12 +25,14 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 	private final Log logger;
 
+	private int timerCounter;
+
 	public CleanupPlayerTimerTask(Log logger) {
 		this.logger = logger;
 	}
 
-	public static final void create(UUID uuid, Player player, File diskImage) {
-		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player, diskImage));
+	public static final void create(UUID uuid, Player player, File diskImage, ResourceBundle resourceBundle) {
+		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player, diskImage, resourceBundle));
 	}
 
 	public static final void onPlay(UUID uuid) {
@@ -64,17 +69,25 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 
 		PLAYER_MAP.entrySet().removeIf(rtmpEntriesToRemove::contains);
 
-		PLAYER_MAP.entrySet().stream().forEach(this::printPlayer);
-	}
+		PLAYER_MAP.entrySet().stream().forEach(this::setStatusText);
 
-	private void printPlayer(Entry<UUID, RTMPPlayerWithStatus> entry) {
-		logger.info(String.format("CleanupPlayerTimerTask: RTMP stream left: %s (valid until %s)", entry.getKey(),
-				entry.getValue().getValidUntil()));
+		if (timerCounter++ % RTMP_CLEANUP_PLAYER_COUNTER == 0) {
+			PLAYER_MAP.entrySet().stream().forEach(this::printPlayer);
+		}
 	}
 
 	private void quitPlayer(Map.Entry<UUID, RTMPPlayerWithStatus> entry) {
 		logger.info("CleanupPlayerTimerTask: AUTO-QUIT RTMP stream of: " + entry.getKey());
 		entry.getValue().quitPlayer();
+	}
+
+	private void setStatusText(Entry<UUID, RTMPPlayerWithStatus> entry) {
+		entry.getValue().updateStatusText();
+	}
+
+	private void printPlayer(Entry<UUID, RTMPPlayerWithStatus> entry) {
+		logger.info(String.format("CleanupPlayerTimerTask: RTMP stream left: %s (valid until %s)", entry.getKey(),
+				entry.getValue().getValidUntil()));
 	}
 
 }

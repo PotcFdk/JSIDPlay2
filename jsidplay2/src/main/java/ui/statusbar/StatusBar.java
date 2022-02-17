@@ -5,9 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -26,16 +23,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
-import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
-import libsidplay.common.Emulation;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
-import libsidplay.sidtune.SidTuneInfo;
 import libsidutils.psid64.PSid64TuneInfo;
 import libsidutils.psid64.Psid64;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
+import libsidutils.status.Status;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
@@ -71,9 +66,10 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	@FXML
-	private Label status;
+	private Label statusLbl;
 
 	private StringBuilder playerId, playerinfos;
+	private Status status;
 	private Tooltip statusTooltip;
 	private Timeline scrollText;
 
@@ -110,10 +106,10 @@ public class StatusBar extends C64VBox implements UIPart {
 					playerId.append(", ");
 					playerId.append(util.getBundle().getString("PLAYER_ID")).append(": ").append(id);
 					PlayerInfoSection playerInfo = sidTune.getPlayerInfo(id);
-					status.setUserData(null);
+					statusLbl.setUserData(null);
 					if (playerInfo != null) {
 						playerinfos.append(playerInfo.toString()).append("\n");
-						status.setUserData(playerInfo.getReference());
+						statusLbl.setUserData(playerInfo.getReference());
 					}
 					playerId.setLength(playerId.length() - (id.length() - Math.min(id.length(), 14)));
 					if (id.length() > 14) {
@@ -138,10 +134,11 @@ public class StatusBar extends C64VBox implements UIPart {
 	protected void initialize() {
 		this.playerId = new StringBuilder();
 		this.playerinfos = new StringBuilder();
+		this.status = new Status(util.getPlayer(), util.getBundle());
 		this.statusTooltip = new Tooltip();
-		this.status.setOnMouseClicked(e -> {
-			if (status.getUserData() != null) {
-				DesktopUtil.browse(status.getUserData().toString());
+		this.statusLbl.setOnMouseClicked(e -> {
+			if (statusLbl.getUserData() != null) {
+				DesktopUtil.browse(statusLbl.getUserData().toString());
 			}
 		});
 		propertyChangeListener = new StateChangeListener();
@@ -191,16 +188,12 @@ public class StatusBar extends C64VBox implements UIPart {
 		}
 		// final status bar text
 		StringBuilder line = new StringBuilder();
-		line.append(determineVideoNorm());
-		line.append(determineChipModel());
-		line.append(determineEmulation());
+		line.append(status.determineVideoNorm());
+		line.append(", " + status.determineChipModels(true));
+		line.append(", " + status.determineEmulations());
 		line.append(detectPSID64ChipModel());
 		line.append(playerId);
-		double tuneSpeed = util.getPlayer().getC64().determineTuneSpeed();
-		if (tuneSpeed > 0) {
-			line.append(String.format(", %s: %.1fx", util.getBundle().getString("SPEED"), tuneSpeed));
-		}
-		line.append(determineSong());
+		line.append(status.determineTuneSpeed());
 		if (datasette.getMotor()) {
 			line.append(String.format(", %s: %03d", util.getBundle().getString("DATASETTE_COUNTER"),
 					datasette.getCounter()));
@@ -211,15 +204,15 @@ public class StatusBar extends C64VBox implements UIPart {
 		Runtime runtime = Runtime.getRuntime();
 		line.append(String.format(", %s: %sMb/%sMb", util.getBundle().getString("MEMORY"),
 				runtime.totalMemory() - runtime.freeMemory() >> 20, runtime.maxMemory() >> 20));
-		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), determinePlayTime(),
-				determineSongLength()));
+		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), status.determinePlayTime(true),
+				status.determineSongLength()));
 		if (util.getPlayer().getAudioDriver().isRecording()) {
 			line.append(String.format(", %s: %s (%s)", util.getBundle().getString("RECORDING_FILENAME"),
 					util.getPlayer().getRecordingFilename(),
 					getFileSize(new File(util.getPlayer().getRecordingFilename()).length())));
 		}
-		status.setText(line.toString());
-		status.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
+		statusLbl.setText(line.toString());
+		statusLbl.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
 	}
 
@@ -242,21 +235,21 @@ public class StatusBar extends C64VBox implements UIPart {
 	}
 
 	private Timeline createScrollTextTimeLine() {
-		status.setTranslateX(0);
+		statusLbl.setTranslateX(0);
 
 		double sceneWidth = getScene().getWidth() - 20 /* spacing */;
-		double statusWidth = status.getLayoutBounds().getWidth();
+		double statusWidth = statusLbl.getLayoutBounds().getWidth();
 
 		Timeline timeLine;
 		if (statusWidth > sceneWidth) {
 			double duration = (statusWidth - sceneWidth) / 40.;
 
 			// 1. wait a moment doing nothing
-			KeyValue initKeyValue = new KeyValue(status.translateXProperty(), 0);
+			KeyValue initKeyValue = new KeyValue(statusLbl.translateXProperty(), 0);
 			KeyFrame initFrame = new KeyFrame(Duration.seconds(duration), initKeyValue);
 
 			// 2. move scroll text to the left
-			KeyValue leftKeyValue = new KeyValue(status.translateXProperty(), -1.0 * (statusWidth - sceneWidth));
+			KeyValue leftKeyValue = new KeyValue(statusLbl.translateXProperty(), -1.0 * (statusWidth - sceneWidth));
 			KeyFrame leftFrame = new KeyFrame(Duration.seconds(duration + 5), leftKeyValue);
 
 			// 3. wait a moment doing nothing
@@ -267,7 +260,7 @@ public class StatusBar extends C64VBox implements UIPart {
 
 			timeLine = new Timeline(initFrame, leftFrame, stillLeftFrame, rightFrame);
 		} else {
-			KeyValue initKeyValue = new KeyValue(status.translateXProperty(), 0);
+			KeyValue initKeyValue = new KeyValue(statusLbl.translateXProperty(), 0);
 			KeyFrame initFrame = new KeyFrame(Duration.seconds(5), initKeyValue);
 			timeLine = new Timeline(initFrame);
 		}
@@ -316,139 +309,6 @@ public class StatusBar extends C64VBox implements UIPart {
 			if (psid64TuneInfo.isDetected()) {
 				return ", PSID64";
 			}
-		}
-		return "";
-	}
-
-	private String determineChipModel() {
-		EmulationSection emulation = util.getConfig().getEmulationSection();
-		StringBuilder line = new StringBuilder();
-		line.append(", ");
-		if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 0)) {
-			determineChipModel(line, 0);
-			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-				line.append("+");
-				determineChipModel(line, 1);
-				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-					line.append("+");
-					determineChipModel(line, 2);
-				}
-			}
-
-		}
-		return line.toString();
-	}
-
-	private void determineChipModel(StringBuilder line, int sidNum) {
-		EmulationSection emulation = util.getConfig().getEmulationSection();
-
-		ChipModel chipModel = ChipModel.getChipModel(emulation, util.getPlayer().getTune(), sidNum);
-		int sidBase = SidTune.getSIDAddress(emulation, util.getPlayer().getTune(), sidNum);
-		line.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
-
-	}
-
-	private String determineEmulation() {
-		EmulationSection emulation = util.getConfig().getEmulationSection();
-		StringBuilder line = new StringBuilder();
-		line.append(", ");
-		switch (emulation.getEngine()) {
-		case EMULATION:
-			line.append(Emulation.getEmulation(emulation, 0).name());
-			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-				String stereoEmulation = Emulation.getEmulation(emulation, 1).name();
-				line.append("+");
-				line.append(stereoEmulation);
-				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-					String thirdEmulation = Emulation.getEmulation(emulation, 2).name();
-					line.append("+");
-					line.append(thirdEmulation);
-				}
-			}
-			break;
-		case HARDSID:
-		case SIDBLASTER:
-		case EXSID:
-			Integer deviceCount = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(),
-					null);
-			if (deviceCount != null) {
-				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 0)) {
-					determineEmulation(line, 0);
-					if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-						line.append("+");
-						determineEmulation(line, 1);
-						if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-							line.append("+");
-							determineEmulation(line, 2);
-						}
-					}
-				}
-				line.append(" ").append(String.format(util.getBundle().getString("DEVICES"), deviceCount));
-				break;
-			}
-			// $FALL-THROUGH$
-		case NETSID:
-			line.append(emulation.getEngine().name());
-			if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 1)) {
-				line.append("+");
-				line.append(emulation.getEngine().name());
-				if (SidTune.isSIDUsed(emulation, util.getPlayer().getTune(), 2)) {
-					line.append("+");
-					line.append(emulation.getEngine().name());
-				}
-			}
-			break;
-		default:
-			break;
-		}
-		return line.toString();
-	}
-
-	private void determineEmulation(StringBuilder line, int sidNum) {
-		EmulationSection emulation = util.getConfig().getEmulationSection();
-
-		Integer deviceId = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(sidNum),
-				null);
-		String deviceName = util.getPlayer().getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(sidNum),
-				null);
-		ChipModel deviceChipModel = util.getPlayer()
-				.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(sidNum), null);
-		if (deviceId != null) {
-			line.append(String.format(util.getBundle().getString("DEVICE"), emulation.getEngine().name(), deviceId,
-					Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
-					Optional.ofNullable(deviceName).orElse("")));
-		} else {
-			line.append(emulation.getEngine().name());
-		}
-	}
-
-	private String determineVideoNorm() {
-		return CPUClock.getCPUClock(util.getConfig().getEmulationSection(), util.getPlayer().getTune()).name();
-	}
-
-	private String determineSong() {
-		SidTune tune = util.getPlayer().getTune();
-		if (tune != null) {
-			SidTuneInfo info = tune.getInfo();
-			if (info.getSongs() > 1) {
-				return String.format(", %s: %d/%d", util.getBundle().getString("SONG"), info.getCurrentSong(),
-						info.getSongs());
-			}
-		}
-		return "";
-	}
-
-	private String determinePlayTime() {
-		double timeInSeconds = util.getPlayer().time();
-		return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timeInSeconds * 1000)));
-	}
-
-	private String determineSongLength() {
-		SidTune tune = util.getPlayer().getTune();
-		double songLength = tune != null ? util.getPlayer().getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) : 0;
-		if (songLength > 0) {
-			// song length well-known?
-			return new SimpleDateFormat("/mm:ss.SSS").format(new Date((long) (songLength * 1000)));
 		}
 		return "";
 	}

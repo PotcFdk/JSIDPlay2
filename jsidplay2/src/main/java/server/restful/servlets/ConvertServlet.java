@@ -331,7 +331,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		addPressSpaceListener(player);
 		Convenience convenience = new Convenience(player);
 		convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
-		create(uuid, player, file);
+		create(uuid, player, file, resourceBundle);
 		player.stopC64(false);
 	}
 

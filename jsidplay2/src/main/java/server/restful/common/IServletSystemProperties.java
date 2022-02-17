@@ -42,11 +42,17 @@ public interface IServletSystemProperties {
 	int RTMP_EXCEEDS_MAXIMUM_DURATION = valueOf(getProperty("jsidplay2.rtmp.exceeds_maximum.duration", "3600"));
 
 	/**
-	 * Video streaming: Period of time in s to check for created but not yet played
-	 * videos (RTMP_NOT_YET_PLAYED_TIMEOUT) or videos played but exceeds maximum
-	 * duration (RTMP_EXCEEDS_MAXIMUM_DURATION) to then quit generation process.
+	 * Video streaming: Timer rate in ms to update RTMP video status
 	 */
-	int RTMP_CLEANUP_PLAYER_PERIOD = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.period", "5"));
+	int RTMP_CLEANUP_PLAYER_TIMER_RATE = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.timer.rate", "300"));
+
+	/**
+	 * Video streaming: Timer counter (every Nth timer invocation) print current
+	 * RTMP video players.
+	 * 
+	 * This parameter is related to RTMP_CLEANUP_PLAYER_TIMER_RATE.
+	 */
+	int RTMP_CLEANUP_PLAYER_COUNTER = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.period", "90"));
 
 	/**
 	 * Video streaming: Upload url for the video creation process.

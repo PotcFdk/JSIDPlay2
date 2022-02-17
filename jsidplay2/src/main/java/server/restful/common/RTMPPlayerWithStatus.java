@@ -10,16 +10,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
-import libsidplay.common.CPUClock;
-import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
-import libsidplay.common.SIDChip;
 import libsidplay.components.keyboard.KeyTableEntry;
-import libsidplay.config.IEmulationSection;
-import libsidplay.sidtune.SidTune;
+import libsidutils.status.Status;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.FLVDriver.FLVStreamDriver;
@@ -33,15 +30,18 @@ public final class RTMPPlayerWithStatus {
 
 	private final Player player;
 
+	private final Status status;
+
 	private File diskImage;
 
 	private final LocalDateTime created;
 
 	private LocalDateTime validUntil;
 
-	public RTMPPlayerWithStatus(Player player, File diskImage) {
+	public RTMPPlayerWithStatus(Player player, File diskImage, ResourceBundle resourceBundle) {
 		this.player = player;
 		this.diskImage = diskImage;
+		status = new Status(player, resourceBundle);
 		created = LocalDateTime.now();
 		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 		addStatusTextListener();
@@ -71,7 +71,6 @@ public final class RTMPPlayerWithStatus {
 		try {
 			setNextDiskImage();
 			player.insertDisk(extract());
-			setStatusText();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -114,6 +113,17 @@ public final class RTMPPlayerWithStatus {
 				});
 	}
 
+	public void updateStatusText() {
+		AudioDriver audioDriver = player.getAudioDriver();
+		if (audioDriver instanceof ProxyDriver) {
+			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
+			if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
+				FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
+				flvStreamDriver.setStatusText(createStatusText());
+			}
+		}
+	}
+
 	private void setNextDiskImage() {
 		if (diskImage != null) {
 			List<File> asList = Arrays.asList(diskImage.getParentFile().listFiles(DISK_FILE_FILTER));
@@ -146,72 +156,21 @@ public final class RTMPPlayerWithStatus {
 	private void addStatusTextListener() {
 		player.stateProperty().addListener(event -> {
 			if (event.getNewValue() == State.START) {
-				setStatusText();
+				updateStatusText();
 			}
 		});
-	}
-
-	private void setStatusText() {
-		AudioDriver audioDriver = player.getAudioDriver();
-		if (audioDriver instanceof ProxyDriver) {
-			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
-			if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
-				FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
-				flvStreamDriver.setStatusText(createStatusText());
-			}
-		}
 	}
 
 	private String createStatusText() {
 		StringBuilder result = new StringBuilder();
 
-		result.append(determineVideoNorm());
-		result.append(determineChipModels());
-		result.append(determineSidTune());
+		result.append(status.determineVideoNorm());
+		result.append(", " + status.determineChipModels(false));
+		result.append(", " + status.determineEmulations());
+		result.append(", " + status.determinePlayTime(false));
+		result.append(", " + diskImage.getName());
 
 		return result.toString();
-	}
-
-	private String determineVideoNorm() {
-		return CPUClock.getCPUClock(player.getConfig().getEmulationSection(), player.getTune()).name();
-	}
-
-	private String determineChipModels() {
-		IEmulationSection emulation = player.getConfig().getEmulationSection();
-		StringBuilder line = new StringBuilder();
-		line.append(", ");
-		if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-			determineChipModel(line, 0);
-			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
-				line.append("+");
-				determineChipModel(line, 1);
-				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
-					line.append("+");
-					determineChipModel(line, 2);
-				}
-			}
-
-		}
-		return line.toString();
-	}
-
-	private void determineChipModel(StringBuilder result, int sidNum) {
-		IEmulationSection emulation = player.getConfig().getEmulationSection();
-
-		ChipModel chipModel = ChipModel.getChipModel(emulation, player.getTune(), sidNum);
-		int sidBase = SidTune.getSIDAddress(emulation, player.getTune(), sidNum);
-		if (sidBase != SIDChip.DEF_BASE_ADDRESS) {
-			result.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
-		} else {
-			result.append(chipModel);
-		}
-	}
-
-	private String determineSidTune() {
-		StringBuilder line = new StringBuilder();
-		line.append(", ");
-		line.append(diskImage.getName());
-		return line.toString();
 	}
 
 }

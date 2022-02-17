@@ -5,7 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.apache.catalina.startup.Tomcat.addServlet;
 import static server.restful.common.IServletSystemProperties.CONNECTION_TIMEOUT;
-import static server.restful.common.IServletSystemProperties.RTMP_CLEANUP_PLAYER_PERIOD;
+import static server.restful.common.IServletSystemProperties.RTMP_CLEANUP_PLAYER_TIMER_RATE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +30,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11Nio2Protocol;
+import org.apache.juli.logging.Log;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
@@ -263,8 +264,9 @@ public class JSIDPlay2Server {
 		addSecurityConstraints(context);
 		addServlets(context);
 
-		new Timer().schedule(new CleanupPlayerTimerTask(context.getParent().getLogger()), 0,
-				RTMP_CLEANUP_PLAYER_PERIOD * 1000l);
+		Log logger = context.getParent().getLogger();
+		new Timer().schedule(new CleanupPlayerTimerTask(logger), 0, RTMP_CLEANUP_PLAYER_TIMER_RATE);
+
 		return tomcat;
 	}
 
