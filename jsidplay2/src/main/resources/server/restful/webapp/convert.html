@@ -14,14 +14,13 @@ body {
 	background-color: #D5D9D5;
 }
 
-.container1, .container2, .container3 {
+.switches {
+	width: 750px;
 	margin: 16px 16px;
 }
 
-.default-sid-model6581, .default-emulation-resid
-	{
-	float: left;
-	margin-right: 32px;
+tr.row1>td {
+	padding-bottom: 1em;
 }
 
 .keyboard {
@@ -295,7 +294,7 @@ body {
 <body onload="startVideo()">
 	<h1>C64 Jukebox</h1>
 	<div>
-		<b>JSIDPlay2 presents:<br /> <filename></b>
+		<b>JSIDPlay2 presents:<br/><filename></b>
 	</div>
 	<p>
 		<b>Keep in mind:</b> Key presses are delayed a few seconds. If video
@@ -304,32 +303,33 @@ body {
 		otherwise it quits automatically! 
 	</p>
 
-	<div class="container1">
-		<div class="default-emulation-resid">
-			<a href="javascript:setDefaultEmulationReSid()">Default emulation
-				RESID</a>
-		</div>
-		<div class="default-emulation-residfp">
-			<a href="javascript:setDefaultEmulationReSidFp()">Default
-				emulation RESIDFP</a>
-		</div>
-	</div>
-	<div class="container2">
-		<div class="default-sid-model6581">
-			<a href="javascript:setDefaultSidModel6581()">Default chip model
-				6581</a>
-		</div>
-		<div class="default-sid-model8580">
-			<a href="javascript:setDefaultSidModel8580()">Default chip model
-				8580</a>
-		</div>
-	</div>
-	<div class="container3">
-		<div class="insert-disk">
-			<a href="javascript:insertDisk()">insert next disk</a>
-		</div>
-	</div>
-
+	<table class="switches">
+		<tbody>
+			<tr class="row1">
+				<td>
+					<a href="javascript:setDefaultSidModel6581()">Default chip model
+						6581</a>
+				</td>
+				<td>
+					<a href="javascript:setDefaultSidModel8580()">Default chip model
+						8580</a>
+				</td>
+				<td>
+					<a href="javascript:setDefaultEmulationReSid()">Default emulation
+						RESID</a>
+				</td>
+				<td>
+					<a href="javascript:setDefaultEmulationReSidFp()">Default
+						emulation RESIDFP</a>
+				</td>
+			</tr>
+			<tr class="row2">
+				<td>
+					<a href="javascript:insertDisk()">insert next disk</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 	<div class="keyboard">
 		<div class="logo">C= Commodore &nbsp;&nbsp;&nbsp;&nbsp; 64</div>
 
