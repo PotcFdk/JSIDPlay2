@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 
 import de.schlichtherle.truezip.file.TArchiveDetector;
 import de.schlichtherle.truezip.file.TFile;
+import libsidplay.common.ChipModel;
+import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidutils.status.Status;
@@ -76,6 +78,26 @@ public final class RTMPPlayerWithStatus {
 		}
 	}
 
+	public void setDefaultSidModel6581() {
+		player.getConfig().getEmulationSection().setDefaultSidModel(ChipModel.MOS6581);
+		player.updateSIDChipConfiguration();
+	}
+
+	public void setDefaultSidModel8580() {
+		player.getConfig().getEmulationSection().setDefaultSidModel(ChipModel.MOS8580);
+		player.updateSIDChipConfiguration();
+	}
+
+	public void setDefaultEmulationReSid() {
+		player.getConfig().getEmulationSection().setDefaultEmulation(Emulation.RESID);
+		player.updateSIDChipConfiguration();
+	}
+
+	public void setDefaultEmulationReSidFp() {
+		player.getConfig().getEmulationSection().setDefaultEmulation(Emulation.RESIDFP);
+		player.updateSIDChipConfiguration();
+	}
+
 	public void typeKey(KeyTableEntry key) {
 		player.getC64().getEventScheduler()
 				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
@@ -114,14 +136,19 @@ public final class RTMPPlayerWithStatus {
 	}
 
 	public void updateStatusText() {
-		AudioDriver audioDriver = player.getAudioDriver();
-		if (audioDriver instanceof ProxyDriver) {
-			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
-			if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
-				FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
-				flvStreamDriver.setStatusText(createStatusText());
+		player.getC64().getEventScheduler().scheduleThreadSafe(new Event("Update Status Text") {
+			@Override
+			public void event() throws InterruptedException {
+				AudioDriver audioDriver = player.getAudioDriver();
+				if (audioDriver instanceof ProxyDriver) {
+					ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
+					if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
+						FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
+						flvStreamDriver.setStatusText(createStatusText());
+					}
+				}
 			}
-		}
+		});
 	}
 
 	private void setNextDiskImage() {

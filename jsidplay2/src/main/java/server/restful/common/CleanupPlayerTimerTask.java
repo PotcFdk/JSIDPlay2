@@ -1,5 +1,6 @@
 package server.restful.common;
 
+import static java.util.Optional.ofNullable;
 import static server.restful.common.IServletSystemProperties.RTMP_CLEANUP_PLAYER_COUNTER;
 
 import java.io.File;
@@ -8,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -36,28 +36,43 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 	}
 
 	public static final void onPlay(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlay);
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlay);
 	}
 
 	public static final void onPlayDone(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlayDone);
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::onPlayDone);
 	}
 
 	public static final void insertNextDisk(UUID uuid) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::insertNextDisk);
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::insertNextDisk);
+	}
+
+	public static final void setDefaultSidModel6581(UUID uuid) {
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setDefaultSidModel6581);
+	}
+
+	public static final void setDefaultSidModel8580(UUID uuid) {
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setDefaultSidModel8580);
+	}
+
+	public static final void setDefaultEmulationReSid(UUID uuid) {
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setDefaultEmulationReSid);
+	}
+
+	public static final void setDefaultEmulationReSidFp(UUID uuid) {
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(RTMPPlayerWithStatus::setDefaultEmulationReSidFp);
 	}
 
 	public static final void typeKey(UUID uuid, KeyTableEntry key) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.typeKey(key));
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.typeKey(key));
 	}
 
 	public static final void pressKey(UUID uuid, KeyTableEntry key) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.pressKey(key));
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.pressKey(key));
 	}
 
 	public static final void releaseKey(UUID uuid, KeyTableEntry key) {
-		Optional.ofNullable(PLAYER_MAP.get(uuid))
-				.ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.releaseKey(key));
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus -> rtmpPlayerWithStatus.releaseKey(key));
 	}
 
 	@Override

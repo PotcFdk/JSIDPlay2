@@ -5,95 +5,189 @@
 	font-size: 32px;
 }
 
-::selection{background-color:none; color:inherit;}
-
-body{
-  background-color: #D5D9D5; 
+::selection {
+	background-color: none;
+	color: inherit;
 }
 
-.cable{height:100px; width:10px; background-color:#000; margin:0 60%;}
-.keyboard{
-  width:800px; height: 320px;
-  background-color: #938c78;
-  margin: 0px auto;
-  border-radius: 9px;
-  padding: 30px;
-  color: #eee;
-  position: relative;
+body {
+	background-color: #D5D9D5;
 }
 
-.logo{
-  width:220px; height:40px;
-  background-color:#595858;
-  font-weight:300;
-  font-style: oblique;
-  font-size:14px;
-  line-height:40px;
-  text-align: center;
-  margin: -20px auto 20px 16px;
-  border-radius:400px;
+.container1, .container2 {
+	margin: 16px 16px;
 }
 
-
-.lights{
-  position:absolute;
-  top:12px;
-  right:120px;
-}
-.lights span{margin:0 20px 0 20px; padding:0; text-align: center;}
-.lights span:after{
-  content:"";
-  width:10px; height:10px;
-  top: 10px; margin-left:-12px;
-  background-color: red;
-  position:absolute;
-  border-radius: 8px;
+.default-sid-model6581, .default-sid-model8580, .default-emulation-resid
+	{
+	float: left;
+	margin-right: 32px;
 }
 
-.key{
-  width: 40px; height:40px;
-  display:block;
-  background-color:#333;
-  text-align: left;
-  padding-left: 8px;
-  line-height: 29px;
-  border-radius:2px;
-  float:left; margin-left: 2px;
-  margin-bottom:2px;
-  cursor: pointer;
-  transition: box-shadow 0.7s ease;
+.keyboard {
+	width: 750px;
+	height: 280px;
+	background-color: #938c78;
+	margin: 16px 16px;
+	border-radius: 9px;
+	padding: 30px;
+	color: #eee;
+	position: relative;
 }
 
-.function{
-  width: 48px; height:40px;
-  text-align: center;
-  display:block;
-  background-color:#595858;
-  padding-left: 8px;
-  line-height: 29px;
-  border-radius:2px;
-  margin-left: 2px;
-  margin-bottom:2px;
-  cursor: pointer;
-  transition: box-shadow 0.7s ease;
+.logo {
+	width: 220px;
+	height: 40px;
+	background-color: #595858;
+	font-weight: 300;
+	font-style: oblique;
+	font-size: 14px;
+	line-height: 40px;
+	text-align: center;
+	margin: -20px auto 20px 16px;
+	border-radius: 400px;
 }
 
-.section-a{width:650px; height:260px; float:left;}
-.section-b{width:134px; height:260px; float:left; margin-left: 16px;}
+.lights {
+	position: absolute;
+	top: 12px;
+	right: 120px;
+}
 
-.dual {font-size: 14px; line-height: 20px; width:30px; }
-.tab {width: 50px; line-height: 40px; font-size:13px;}
-.letter{width:30px;}
-.enter{width:74px; line-height:40px; text-align: center; padding-left:0;}
-.clr-home{width:44px; line-height:20px; text-align: center; padding-left:0; font-size: 14px; }
-.ins-del{width:36px; line-height:20px; text-align: center; padding-left:0; font-size: 14px; }
-.restore{width:64px; line-height:40px; text-align: center; padding-left:0;}
-.shift.left{width: 48px;line-height: 40px; font-size:13px;}
-.shift.right{width: 48px;line-height: 40px; font-size:13px;}
-.ctrl{width: 50px; line-height: 40px; font-size:13px;}
-.space{margin-left: 94px; width:364px;}
-.key:hover{box-shadow:0px 0px 10px #14B524; z-index:1000;}
+.lights span {
+	margin: 0 20px 0 20px;
+	padding: 0;
+	text-align: center;
+}
 
+.lights span:after {
+	content: "";
+	width: 10px;
+	height: 10px;
+	top: 10px;
+	margin-left: -12px;
+	background-color: red;
+	position: absolute;
+	border-radius: 8px;
+}
+
+.key {
+	width: 40px;
+	height: 40px;
+	display: block;
+	background-color: #333;
+	text-align: left;
+	padding-left: 8px;
+	line-height: 29px;
+	border-radius: 2px;
+	float: left;
+	margin-left: 2px;
+	margin-bottom: 2px;
+	cursor: pointer;
+	transition: box-shadow 0.7s ease;
+}
+
+.function {
+	width: 48px;
+	height: 40px;
+	text-align: center;
+	display: block;
+	background-color: #595858;
+	padding-left: 8px;
+	line-height: 29px;
+	border-radius: 2px;
+	margin-left: 2px;
+	margin-bottom: 2px;
+	cursor: pointer;
+	transition: box-shadow 0.7s ease;
+}
+
+.section-a {
+	width: 650px;
+	height: 260px;
+	float: left;
+}
+
+.section-b {
+	width: 80px;
+	height: 260px;
+	float: left;
+	margin-left: 16px;
+}
+
+.dual {
+	font-size: 14px;
+	line-height: 20px;
+	width: 30px;
+}
+
+.tab {
+	width: 50px;
+	line-height: 40px;
+	font-size: 13px;
+}
+
+.letter {
+	width: 30px;
+}
+
+.enter {
+	width: 74px;
+	line-height: 40px;
+	text-align: center;
+	padding-left: 0;
+}
+
+.clr-home {
+	width: 44px;
+	line-height: 20px;
+	text-align: center;
+	padding-left: 0;
+	font-size: 14px;
+}
+
+.ins-del {
+	width: 36px;
+	line-height: 20px;
+	text-align: center;
+	padding-left: 0;
+	font-size: 14px;
+}
+
+.restore {
+	width: 64px;
+	line-height: 40px;
+	text-align: center;
+	padding-left: 0;
+}
+
+.shift.left {
+	width: 48px;
+	line-height: 40px;
+	font-size: 13px;
+}
+
+.shift.right {
+	width: 48px;
+	line-height: 40px;
+	font-size: 13px;
+}
+
+.ctrl {
+	width: 50px;
+	line-height: 40px;
+	font-size: 13px;
+}
+
+.space {
+	margin-left: 94px;
+	width: 364px;
+}
+
+.key:hover {
+	box-shadow: 0px 0px 10px #14B524;
+	z-index: 1000;
+}
 </style>
 <script type="text/javascript">
 	function startVideo() {
@@ -116,6 +210,54 @@ body{
 			}
 		};
 		xhttp.open("POST", "/static/insert_next_disk?name=<uuid>", true);
+		xhttp.send();
+	}
+	function setDefaultSidModel6581() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				printMsg('Default SID model has been set to 8561!');
+				startVideo();
+			}
+		};
+		xhttp.open("POST", "/static/set_default_sid_model_6581?name=<uuid>",
+				true);
+		xhttp.send();
+	}
+	function setDefaultSidModel8580() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				printMsg('Default SID model has been set to 8580!');
+				startVideo();
+			}
+		};
+		xhttp.open("POST", "/static/set_default_sid_model_8580?name=<uuid>",
+				true);
+		xhttp.send();
+	}
+	function setDefaultEmulationReSid() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				printMsg('Default emulation has been set to RESID!');
+				startVideo();
+			}
+		};
+		xhttp.open("POST", "/static/set_default_emulation_resid?name=<uuid>",
+				true);
+		xhttp.send();
+	}
+	function setDefaultEmulationReSidFp() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				printMsg('Default emulation has been set to RESIDFP!');
+				startVideo();
+			}
+		};
+		xhttp.open("POST", "/static/set_default_emulation_residfp?name=<uuid>",
+				true);
 		xhttp.send();
 	}
 	function typeKey(key) {
@@ -151,255 +293,208 @@ body{
 </head>
 
 <body onload="startVideo()">
-	<h1>
-		JSIDPlay2 presents:
-		<filename>
-	</h1>
+	<h1>C64 Jukebox</h1>
+	<div>
+		<b>JSIDPlay2 presents:<br /> <filename></b>
+	</div>
 	<p>
-		Keep in mind: Key presses are delayed a few seconds.
-		If video gets stopped, make sure to continue within
-		<notYetPlayedTimeout> seconds, otherwise it
-		quits automatically! 
+		<b>Keep in mind:</b> Key presses are delayed a few seconds. If video
+		gets stopped, make sure to continue within
+		<notYetPlayedTimeout> seconds,<br />
+		otherwise it quits automatically! 
 	</p>
 
-	<div class="insert-disk">
-		<a href="javascript:insertDisk()">insert next disk</a>
+	<div class="container1">
+		<div class="default-sid-model6581">
+			<a href="javascript:setDefaultSidModel6581()">Default chip model
+				6581</a>
+		</div>
+
+		<div class="default-sid-model8580">
+			<a href="javascript:setDefaultSidModel8580()">Default chip model
+				8580</a>
+		</div>
+
+		<div class="default-emulation-resid">
+			<a href="javascript:setDefaultEmulationReSid()">Default emulation
+				RESID</a>
+		</div>
+
+		<div class="default-emulation-residfp">
+			<a href="javascript:setDefaultEmulationReSidFp()">Default
+				emulation RESIDFP</a>
+		</div>
+	</div>
+	<div class="container2">
+		<div class="insert-disk">
+			<a href="javascript:insertDisk()">insert next disk</a>
+		</div>
+	</div>
+
+	<div class="keyboard">
+		<div class="logo">C= Commodore &nbsp;&nbsp;&nbsp;&nbsp; 64</div>
+
+		<div class="lights">
+			<span>&nbsp;</span>
+		</div>
+
+
+		<div class="section-a">
+
+			<div class="key num dual" onclick="javascript:typeKey('ARROW_LEFT');">
+				&#8592;<br>
+			</div>
+
+			<div class="key num dual" onclick="javascript:typeKey('ONE');">
+				!<br>1
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('TWO');">
+				&quot;<br>2
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('THREE');">
+				#<br>3
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('FOUR');">
+				$<br>4
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('FIVE');">
+				%<br>5
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('SIX');">
+				&amp;<br>6
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('SEVEN');">
+				'<br>7
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('EIGHT');">
+				(<br>8
+			</div>
+			<div class="key num dual" onclick="javascript:typeKey('NINE');">
+				)<br>9
+			</div>
+			<div class="key letter" onclick="javascript:typeKey('ZERO');">
+				0</div>
+			<div class="key letter" onclick="javascript:typeKey('PLUS');">
+				+</div>
+			<div class="key letter" onclick="javascript:typeKey('MINUS');">
+				-</div>
+			<div class="key letter" onclick="javascript:typeKey('POUND');">
+				&#163;</div>
+			<div class="key clr-home" onclick="javascript:typeKey('CLEAR_HOME');">
+				Clr<br>Home
+			</div>
+			<div class="key ins-del" onclick="javascript:typeKey('INS_DEL');">
+				Ins<br>Del
+			</div>
+
+			<!--END NUMBER KEYS -->
+
+			<div class="key tab" onclick="javascript:typeKey('CTRL');">
+				Ctrl</div>
+
+			<div class="key letter" onclick="javascript:typeKey('Q');">Q</div>
+			<div class="key letter" onclick="javascript:typeKey('W');">W</div>
+			<div class="key letter" onclick="javascript:typeKey('E');">E</div>
+			<div class="key letter" onclick="javascript:typeKey('R');">R</div>
+			<div class="key letter" onclick="javascript:typeKey('T');">T</div>
+			<div class="key letter" onclick="javascript:typeKey('Y');">Y</div>
+			<div class="key letter" onclick="javascript:typeKey('U');">U</div>
+			<div class="key letter" onclick="javascript:typeKey('I');">I</div>
+			<div class="key letter" onclick="javascript:typeKey('O');">O</div>
+			<div class="key letter" onclick="javascript:typeKey('P');">P</div>
+			<div class="key letter" onclick="javascript:typeKey('AT');">@</div>
+			<div class="key letter" onclick="javascript:typeKey('STAR');">
+				*</div>
+			<div class="key letter" onclick="javascript:typeKey('ARROW_UP');">
+				&#8593;</div>
+			<div class="key restore">Restore</div>
+
+
+			<div class="key num dual" onclick="javascript:typeKey('RUN_STOP');">
+				Run<br>Stop
+			</div>
+			<div class="key num dual">
+				Shft<br>Lck
+			</div>
+			<div class="key letter" onclick="javascript:typeKey('A');">A</div>
+			<div class="key letter" onclick="javascript:typeKey('S');">S</div>
+			<div class="key letter" onclick="javascript:typeKey('D');">D</div>
+			<div class="key letter" onclick="javascript:typeKey('F');">F</div>
+			<div class="key letter" onclick="javascript:typeKey('G');">G</div>
+			<div class="key letter" onclick="javascript:typeKey('H');">H</div>
+			<div class="key letter" onclick="javascript:typeKey('J');">J</div>
+			<div class="key letter" onclick="javascript:typeKey('K');">K</div>
+			<div class="key letter" onclick="javascript:typeKey('L');">L</div>
+			<div class="key dual" onclick="javascript:typeKey('COLON');">
+				:<br>[
+			</div>
+			<div class="key dual" onclick="javascript:typeKey('SEMICOLON');">
+				;<br>]
+			</div>
+			<div class="key letter" onclick="javascript:typeKey('EQUALS');">
+				=</div>
+			<div class="key enter" onclick="javascript:typeKey('RETURN');">
+				Return</div>
+
+			<div class="key letter" onclick="javascript:typeKey('COMMODORE');">
+				C=</div>
+			<div class="key shift left"
+				onclick="javascript:typeKey('SHIFT_LEFT');">Shift</div>
+			<div class="key letter" onclick="javascript:typeKey('Z');">Z</div>
+			<div class="key letter" onclick="javascript:typeKey('X');">X</div>
+			<div class="key letter" onclick="javascript:typeKey('C');">C</div>
+			<div class="key letter" onclick="javascript:typeKey('V');">V</div>
+			<div class="key letter" onclick="javascript:typeKey('B');">B</div>
+			<div class="key letter" onclick="javascript:typeKey('N');">N</div>
+			<div class="key letter" onclick="javascript:typeKey('M');">M</div>
+			<div class="key dual" onclick="javascript:typeKey('COMMA');">
+				< <br>,
+			</div>
+			<div class="key dual" onclick="javascript:typeKey('PERIOD');">
+				><br>.
+			</div>
+			<div class="key dual" onclick="javascript:typeKey('SLASH');">
+				?<br>/
+			</div>
+			<div class="key shift right"
+				onclick="javascript:typeKey('SHIFT_RIGTH');">Shift</div>
+			<div class="key dual" onclick="javascript:typeKey('CURSOR_UP_DOWN');">
+				&#8593;<br>&#8595;
+			</div>
+			<div class="key dual"
+				onclick="javascript:typeKey('CURSOR_LEFT_RIGHT');">
+				&#8592;<br>&#8594;
+			</div>
+			<div class="key space" onclick="javascript:typeKey('SPACE');">
+			</div>
+		</div>
+		<!-- end section-a-->
+
+		<div class="section-b">
+
+			<div style="width: 100%; float: left;">
+				<div class="key function" onclick="javascript:typeKey('F1');">
+					F1</div>
+			</div>
+			<div style="width: 100%; float: left;">
+				<div class="key function" onclick="javascript:typeKey('F3');">
+					F3</div>
+			</div>
+			<div style="width: 100%; float: left;">
+				<div class="key function" onclick="javascript:typeKey('F5');">
+					F5</div>
+			</div>
+			<div style="width: 100%; float: left;">
+				<div class="key function" onclick="javascript:typeKey('F7');">
+					F7</div>
+			</div>
+
+		</div>
+		<!-- end section-b-->
+
 	</div>
 
 	<p id="alarmmsg"></p>
-
-<div class="cable">
-</div>
-<div class="keyboard">
-  <div class="logo">
-    C= Commodore &nbsp;&nbsp;&nbsp;&nbsp; 64
-  </div>
-  
-  <div class="lights" >
-    <span>&nbsp;</span>
-  </div>
-  
-  
-  <div class="section-a">
-    
-  <div class="key num dual" onclick="javascript:typeKey('ARROW_LEFT');">
-    &#8592;<br>
-  </div>
-    
-  <div class="key num dual" onclick="javascript:typeKey('ONE');">
-    !<br>1
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('TWO');">
-    &quot;<br>2
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('THREE');">
-    #<br>3
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('FOUR');">
-    $<br>4
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('FIVE');">
-    %<br>5
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('SIX');">
-    &amp;<br>6
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('SEVEN');">
-    '<br>7
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('EIGHT');">
-    (<br>8
-  </div>
-  <div class="key num dual" onclick="javascript:typeKey('NINE');">
-    )<br>9
-  </div>
-  <div class="key letter" onclick="javascript:typeKey('ZERO');">
-    0
-  </div>
-  <div class="key letter" onclick="javascript:typeKey('PLUS');">
-    +
-  </div>
-  <div class="key letter" onclick="javascript:typeKey('MINUS');">
-    -
-  </div>
-  <div class="key letter" onclick="javascript:typeKey('POUND');">
-    &#163;
-  </div>
-  <div class="key clr-home" onclick="javascript:typeKey('CLEAR_HOME');">
-    Clr<br>Home
-  </div>
-  <div class="key ins-del" onclick="javascript:typeKey('INS_DEL');">
-    Ins<br>Del
-  </div>
-  
-   <!--END NUMBER KEYS -->
-    
-  <div class="key tab" onclick="javascript:typeKey('CTRL');">
-    Ctrl
-  </div>
-  
-  <div class="key letter" onclick="javascript:typeKey('Q');">
-    Q
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('W');">
-    W
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('E');">
-    E
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('R');">
-    R
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('T');">
-    T
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('Y');">
-    Y
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('U');">
-    U
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('I');">
-    I
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('O');">
-    O
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('P');">
-    P
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('AT');">
-    @
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('STAR');">
-    *
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('ARROW_UP');">
-    &#8593;
-  </div>
-    <div class="key restore">
-    Restore
-    </div>
-    
-
-  <div class="key num dual" onclick="javascript:typeKey('RUN_STOP');">
-    Run<br>Stop
-    </div>
-  <div class="key num dual">
-    Shft<br>Lck
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('A');">
-    A
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('S');">
-    S
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('D');">
-    D
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('F');">
-    F
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('G');">
-    G
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('H');">
-    H
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('J');">
-    J
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('K');">
-    K
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('L');">
-    L
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('COLON');">
-    :<br>[
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('SEMICOLON');">
-    ;<br>]
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('EQUALS');">
-    =
-  </div>
-    <div class="key enter" onclick="javascript:typeKey('RETURN');">
-    Return
-  </div>
-    
-  <div class="key letter" onclick="javascript:typeKey('COMMODORE');">
-    C=
-  </div>  
-    <div class="key shift left" onclick="javascript:typeKey('SHIFT_LEFT');">
-    Shift
-  </div>
-  <div class="key letter" onclick="javascript:typeKey('Z');">
-    Z
-  </div>  
-    <div class="key letter" onclick="javascript:typeKey('X');">
-    X
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('C');">
-    C
-  </div>
-    <div class="key letter" onclick="javascript:typeKey('V');">
-    V
-  </div><div class="key letter" onclick="javascript:typeKey('B');">
-    B
-  </div><div class="key letter" onclick="javascript:typeKey('N');">
-    N
-  </div><div class="key letter" onclick="javascript:typeKey('M');">
-    M
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('COMMA');">
-    < <br>,
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('PERIOD');">
-    ><br>.
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('SLASH');">
-    ?<br>/
-  </div>
-    <div class="key shift right" onclick="javascript:typeKey('SHIFT_RIGTH');">
-    Shift
-  </div>
-  <div class="key dual" onclick="javascript:typeKey('CURSOR_UP_DOWN');">
-    &#8593;<br>&#8595;
-  </div>
-    <div class="key dual" onclick="javascript:typeKey('CURSOR_LEFT_RIGHT');">
-    &#8592;<br>&#8594;
-  </div>
-    <div class="key space" onclick="javascript:typeKey('SPACE');">
-    </div>
-  </div><!-- end section-a-->
-  
-  <div class="section-b">
-
-	<div style="width: 100%; float: left;">  
-	  <div class="key function" onclick="javascript:typeKey('F1');">
-	    F1
-	  </div>
-	</div>
-	<div style="width: 100%; float: left;">  
-	  <div class="key function" onclick="javascript:typeKey('F3');">
-	    F3
-	  </div>
-	</div>
-	<div style="width: 100%; float: left;">  
-	  <div class="key function" onclick="javascript:typeKey('F5');">
-	    F5
-	  </div>
-	</div>
-	<div style="width: 100%; float: left;">  
-	  <div class="key function" onclick="javascript:typeKey('F7');">
-	    F7
-	  </div>
-	</div>
-    
-  </div><!-- end section-b-->
-  
-</div>
 
 </body>
 </html>

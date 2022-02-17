@@ -64,6 +64,10 @@ import server.restful.servlets.rtmp.InsertNextDiskServlet;
 import server.restful.servlets.rtmp.OnPlayDoneServlet;
 import server.restful.servlets.rtmp.OnPlayServlet;
 import server.restful.servlets.rtmp.PressKeyServlet;
+import server.restful.servlets.rtmp.SetDefaultEmulationReSidFpServlet;
+import server.restful.servlets.rtmp.SetDefaultEmulationReSidServlet;
+import server.restful.servlets.rtmp.SetSidModel6581Servlet;
+import server.restful.servlets.rtmp.SetSidModel8580Servlet;
 import server.restful.servlets.whatssid.FindHashServlet;
 import server.restful.servlets.whatssid.FindTuneServlet;
 import server.restful.servlets.whatssid.InsertHashesServlet;
@@ -158,7 +162,8 @@ public class JSIDPlay2Server {
 			DownloadServlet.class, FavoritesServlet.class, StaticServlet.class, StartPageServlet.class,
 			InsertTuneServlet.class, InsertHashesServlet.class, FindTuneServlet.class, FindHashServlet.class,
 			WhatsSidServlet.class, TuneExistsServlet.class, OnPlayDoneServlet.class, OnPlayServlet.class,
-			InsertNextDiskServlet.class, PressKeyServlet.class);
+			InsertNextDiskServlet.class, SetSidModel6581Servlet.class, SetSidModel8580Servlet.class,
+			SetDefaultEmulationReSidServlet.class, SetDefaultEmulationReSidFpServlet.class, PressKeyServlet.class);
 
 	private static EntityManagerFactory entityManagerFactory;
 
