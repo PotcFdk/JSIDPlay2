@@ -166,7 +166,7 @@ public final class RTMPPlayerWithStatus {
 
 		result.append(status.determineVideoNorm());
 		result.append(", " + status.determineChipModels(false));
-		result.append(", " + status.determineEmulations());
+		result.append(", " + status.determineEmulations(false));
 		result.append(", " + status.determinePlayTime(false));
 		result.append(", " + diskImage.getName());
 

@@ -57,13 +57,13 @@ public class Status {
 		}
 	}
 
-	public String determineEmulations() {
+	public String determineEmulations(boolean all) {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		switch (emulation.getEngine()) {
 		case EMULATION:
 			line.append(Emulation.getEmulation(emulation, 0).name());
-			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+			if (all && SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				String stereoEmulation = Emulation.getEmulation(emulation, 1).name();
 				line.append("+");
 				line.append(stereoEmulation);
@@ -81,7 +81,7 @@ public class Status {
 			if (deviceCount != null) {
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
 					determineEmulation(line, 0);
-					if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+					if (all & SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 						line.append("+");
 						determineEmulation(line, 1);
 						if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
@@ -96,7 +96,7 @@ public class Status {
 			// $FALL-THROUGH$
 		case NETSID:
 			line.append(emulation.getEngine().name());
-			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+			if (all & SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				line.append("+");
 				line.append(emulation.getEngine().name());
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
