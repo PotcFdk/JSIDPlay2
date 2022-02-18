@@ -14,6 +14,19 @@ body {
 	background-color: #D5D9D5;
 }
 
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
 .switches {
 	width: 750px;
 	margin: 16px 16px;
@@ -191,7 +204,7 @@ tr.row1>td {
 <script type="text/javascript">
 	function startVideo() {
 		setTimeout(function() {
-			window.open('<rtmp>', '_self');
+			window.open('$rtmp', '_self');
 		}, 1000);
 	}
 	function printMsg(msg) {
@@ -208,7 +221,7 @@ tr.row1>td {
 				startVideo();
 			}
 		};
-		xhttp.open("POST", "/static/insert_next_disk?name=<uuid>", true);
+		xhttp.open("POST", "/static/insert_next_disk?name=$uuid", true);
 		xhttp.send();
 	}
 	function setDefaultSidModel6581() {
@@ -219,7 +232,7 @@ tr.row1>td {
 				startVideo();
 			}
 		};
-		xhttp.open("POST", "/static/set_default_sid_model_6581?name=<uuid>",
+		xhttp.open("POST", "/static/set_default_sid_model_6581?name=$uuid",
 				true);
 		xhttp.send();
 	}
@@ -231,7 +244,7 @@ tr.row1>td {
 				startVideo();
 			}
 		};
-		xhttp.open("POST", "/static/set_default_sid_model_8580?name=<uuid>",
+		xhttp.open("POST", "/static/set_default_sid_model_8580?name=$uuid",
 				true);
 		xhttp.send();
 	}
@@ -243,7 +256,7 @@ tr.row1>td {
 				startVideo();
 			}
 		};
-		xhttp.open("POST", "/static/set_default_emulation_resid?name=<uuid>",
+		xhttp.open("POST", "/static/set_default_emulation_resid?name=$uuid",
 				true);
 		xhttp.send();
 	}
@@ -255,7 +268,7 @@ tr.row1>td {
 				startVideo();
 			}
 		};
-		xhttp.open("POST", "/static/set_default_emulation_residfp?name=<uuid>",
+		xhttp.open("POST", "/static/set_default_emulation_residfp?name=$uuid",
 				true);
 		xhttp.send();
 	}
@@ -264,8 +277,9 @@ tr.row1>td {
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200)
 				printMsg('Key has been typed: ' + key);
+			startVideo();
 		};
-		xhttp.open("POST", "/static/press_key?name=<uuid>&type=" + key, true);
+		xhttp.open("POST", "/static/press_key?name=$uuid&type=" + key, true);
 		xhttp.send();
 	}
 	function pressKey(key) {
@@ -274,7 +288,7 @@ tr.row1>td {
 			if (this.readyState == 4 && this.status == 200)
 				printMsg('Key has been pressed: ' + key);
 		};
-		xhttp.open("POST", "/static/press_key?name=<uuid>&press=" + key, true);
+		xhttp.open("POST", "/static/press_key?name=$uuid&press=" + key, true);
 		xhttp.send();
 	}
 	function releaseKey(key) {
@@ -283,9 +297,7 @@ tr.row1>td {
 			if (this.readyState == 4 && this.status == 200)
 				printMsg('Key has been released: ' + key);
 		};
-		xhttp
-				.open("POST", "/static/press_key?name=<uuid>&release=" + key,
-						true);
+		xhttp.open("POST", "/static/press_key?name=$uuid&release=" + key, true);
 		xhttp.send();
 	}
 </script>
@@ -294,30 +306,22 @@ tr.row1>td {
 <body onload="startVideo()">
 	<h1>C64 Jukebox</h1>
 	<div>
-		<b>JSIDPlay2 presents:<br />
-		<filename></b>
+		<b>JSIDPlay2 presents: $filename</b>
 	</div>
 	<p>
 		<b>Keep in mind:</b> Key presses are delayed a few seconds. If video
-		gets stopped, make sure to continue within
-		<notYetPlayedTimeout> seconds,<br />
-		otherwise it quits automatically! 
+		gets stopped, make sure to continue within $notYetPlayedTimeout
+		seconds,<br /> otherwise it quits automatically!
 	</p>
 
 	<table class="switches">
 		<tbody>
 			<tr class="row1">
-				<td><a href="javascript:setDefaultSidModel6581()">Default
-						chip model 6581</a></td>
-				<td><a href="javascript:setDefaultSidModel8580()">Default
-						chip model 8580</a></td>
-				<td><a href="javascript:setDefaultEmulationReSid()">Default
-						emulation RESID</a></td>
-				<td><a href="javascript:setDefaultEmulationReSidFp()">Default
-						emulation RESIDFP</a></td>
-			</tr>
-			<tr class="row2">
-				<td><a href="javascript:insertDisk()">insert next disk</a></td>
+				<td><a href="javascript:setDefaultSidModel6581()" class="button">6581</a></td>
+				<td><a href="javascript:setDefaultSidModel8580()" class="button">8580</a></td>
+				<td><a href="javascript:setDefaultEmulationReSid()" class="button">RESID</a></td>
+				<td><a href="javascript:setDefaultEmulationReSidFp()" class="button">RESIDFP</a></td>
+				<td><a href="javascript:insertDisk()" class="button">insert next disk</a></td>
 			</tr>
 		</tbody>
 	</table>

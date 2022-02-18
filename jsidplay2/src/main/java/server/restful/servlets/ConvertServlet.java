@@ -184,10 +184,10 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 
 					Map<String, String> replacements = new HashMap<>();
-					replacements.put("<uuid>", uuid.toString());
-					replacements.put("<rtmp>", getRTMPUrl(request.getRemoteAddr(), uuid));
-					replacements.put("<notYetPlayedTimeout>", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
-					replacements.put("<filename>", String.valueOf(file));
+					replacements.put("$uuid", uuid.toString());
+					replacements.put("$rtmp", getRTMPUrl(request.getRemoteAddr(), uuid));
+					replacements.put("$notYetPlayedTimeout", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
+					replacements.put("$filename", String.valueOf(file));
 
 					response.setContentType(MIME_TYPE_HTML.toString());
 					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
