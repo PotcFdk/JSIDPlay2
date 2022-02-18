@@ -82,12 +82,16 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
 	private BufferedImage vicImage, statusImage;
+	private int statusImagePosition;
+
 	private Graphics2D graphics;
 	private ByteBuffer pictureBuffer;
 	private long frameNo, framesPerKeyFrames, firstTimeStamp;
 	private double ticksPerMicrosecond;
 
 	private ByteBuffer sampleBuffer;
+
+	private int statusImageOverflow;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
@@ -260,12 +264,37 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		return true;
 	}
 
+	//
+	// Status text support
+	//
+
+	public int getStatusImageOverflow() {
+		return statusImageOverflow;
+	}
+
+	public int getStatusImagePosition() {
+		return statusImagePosition;
+	}
+
+	public void setStatusTextPosition(int statusImagePosition) {
+		this.statusImagePosition = statusImagePosition;
+	}
+
 	public void setStatusText(String statusText) {
-		if (statusImage != null) {
-			Graphics2D graphics = statusImage.createGraphics();
-			graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
-			graphics.drawString(statusText, 0, graphics.getFontMetrics().getAscent());
-			graphics.dispose();
+		Graphics2D graphics = null;
+		try {
+			if (statusImage != null) {
+				graphics = statusImage.createGraphics();
+				graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
+				graphics.drawString(statusText, -statusImagePosition, graphics.getFontMetrics().getAscent());
+				statusImageOverflow = graphics.getFontMetrics().stringWidth(statusText) - statusImagePosition
+						- MAX_WIDTH;
+				statusImageOverflow = statusImageOverflow > 0 ? statusImageOverflow : 0;
+			}
+		} finally {
+			if (graphics != null) {
+				graphics.dispose();
+			}
 		}
 	}
 

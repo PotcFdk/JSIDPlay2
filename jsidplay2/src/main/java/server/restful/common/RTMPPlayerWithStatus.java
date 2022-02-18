@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import de.schlichtherle.truezip.file.TArchiveDetector;
@@ -21,8 +22,8 @@ import libsidplay.components.keyboard.KeyTableEntry;
 import libsidutils.status.Status;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
-import sidplay.audio.FLVDriver.FLVStreamDriver;
 import sidplay.audio.ProxyDriver;
+import sidplay.audio.xuggle.XuggleVideoDriver;
 import sidplay.player.State;
 import ui.common.filefilter.DiskFileFilter;
 
@@ -39,6 +40,8 @@ public final class RTMPPlayerWithStatus {
 	private final LocalDateTime created;
 
 	private LocalDateTime validUntil;
+
+	private int counter;
 
 	public RTMPPlayerWithStatus(Player player, File diskImage, ResourceBundle resourceBundle) {
 		this.player = player;
@@ -171,14 +174,23 @@ public final class RTMPPlayerWithStatus {
 				player.getC64().getEventScheduler().schedule(new Event("Update Status Text") {
 					@Override
 					public void event() throws InterruptedException {
-						AudioDriver audioDriver = player.getAudioDriver();
-						if (audioDriver instanceof ProxyDriver) {
-							ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
-							if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
-								FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
-								flvStreamDriver.setStatusText(createStatusText());
+
+						getXuggleVideoDriver().ifPresent(xuggleVideoDriver -> {
+							xuggleVideoDriver.setStatusText(createStatusText());
+							int statusImagePosition = xuggleVideoDriver.getStatusImagePosition();
+							int overflow = xuggleVideoDriver.getStatusImageOverflow();
+
+							// scroll forward
+							if (counter++ > 10) {
+								if (overflow > 0) {
+									xuggleVideoDriver.setStatusTextPosition(statusImagePosition + 8);
+								}
 							}
-						}
+							if (overflow == 0) {
+								counter = 0;
+								xuggleVideoDriver.setStatusTextPosition(0);
+							}
+						});
 						player.getC64().getEventScheduler().schedule(this,
 								(long) (player.getC64().getClock().getCpuFrequency()));
 					}
@@ -187,16 +199,27 @@ public final class RTMPPlayerWithStatus {
 		});
 	}
 
+	private Optional<XuggleVideoDriver> getXuggleVideoDriver() {
+		AudioDriver audioDriver = player.getAudioDriver();
+		if (audioDriver instanceof ProxyDriver) {
+			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
+			if (proxyDriver.getDriverTwo() instanceof XuggleVideoDriver) {
+				return Optional.of((XuggleVideoDriver) proxyDriver.getDriverTwo());
+			}
+		}
+		return Optional.empty();
+	}
+
 	private String createStatusText() {
 		StringBuilder result = new StringBuilder();
 
+		result.append(status.determinePlayTime(false));
+		result.append(", ");
 		result.append(status.determineVideoNorm());
 		result.append(", ");
-		result.append(status.determineChipModels(false));
+		result.append(status.determineChipModels(true));
 		result.append(", ");
-		result.append(status.determineEmulations(false));
-		result.append(", ");
-		result.append(status.determinePlayTime(false));
+		result.append(status.determineEmulations(true));
 		result.append(", ");
 		result.append(diskImage.getName());
 

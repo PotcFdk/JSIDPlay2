@@ -33,7 +33,7 @@ public interface IServletSystemProperties {
 	 * Video streaming: Live stream created but not yet played will be quit after
 	 * timeout in s.
 	 */
-	int RTMP_NOT_YET_PLAYED_TIMEOUT = valueOf(getProperty("jsidplay2.rtmp.not_yet_played.timeout", "10"));
+	int RTMP_NOT_YET_PLAYED_TIMEOUT = valueOf(getProperty("jsidplay2.rtmp.not_yet_played.timeout", "20"));
 
 	/**
 	 * Video streaming: Live stream played and exceeds maximum duration will be quit
