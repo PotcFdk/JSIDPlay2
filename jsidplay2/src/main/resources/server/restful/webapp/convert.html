@@ -280,7 +280,6 @@ tr.row1>td {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				printMsg('Key has been typed: ' + key);
 			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&type=" + key, true);
@@ -300,7 +299,6 @@ tr.row1>td {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				printMsg('Key has been pressed: ' + key);
 			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&press=" + key, true);
@@ -310,7 +308,6 @@ tr.row1>td {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				printMsg('Key has been released: ' + key);
 			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&release=" + key, true);
