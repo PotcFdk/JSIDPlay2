@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
+import libsidplay.common.SIDChip;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
@@ -27,17 +28,17 @@ public class Status {
 		return CPUClock.getCPUClock(player.getConfig().getEmulationSection(), player.getTune()).name();
 	}
 
-	public String determineChipModels(boolean withAddress) {
+	public String determineChipModels() {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-			determineChipModel(line, 0, withAddress);
+			determineChipModel(line, 0);
 			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				line.append("+");
-				determineChipModel(line, 1, withAddress);
+				determineChipModel(line, 1);
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
 					line.append("+");
-					determineChipModel(line, 2, withAddress);
+					determineChipModel(line, 2);
 				}
 			}
 
@@ -45,25 +46,25 @@ public class Status {
 		return line.toString();
 	}
 
-	public void determineChipModel(StringBuilder line, int sidNum, boolean withAddress) {
+	public void determineChipModel(StringBuilder line, int sidNum) {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 
 		ChipModel chipModel = ChipModel.getChipModel(emulation, player.getTune(), sidNum);
 		int sidBase = SidTune.getSIDAddress(emulation, player.getTune(), sidNum);
-		if (withAddress) {
+		if (sidBase != SIDChip.DEF_BASE_ADDRESS) {
 			line.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
 		} else {
 			line.append(chipModel);
 		}
 	}
 
-	public String determineEmulations(boolean all) {
+	public String determineEmulations() {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		switch (emulation.getEngine()) {
 		case EMULATION:
 			line.append(Emulation.getEmulation(emulation, 0).name());
-			if (all && SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				String stereoEmulation = Emulation.getEmulation(emulation, 1).name();
 				line.append("+");
 				line.append(stereoEmulation);
@@ -81,7 +82,7 @@ public class Status {
 			if (deviceCount != null) {
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
 					determineEmulation(line, 0);
-					if (all & SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+					if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 						line.append("+");
 						determineEmulation(line, 1);
 						if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
@@ -96,7 +97,7 @@ public class Status {
 			// $FALL-THROUGH$
 		case NETSID:
 			line.append(emulation.getEngine().name());
-			if (all & SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				line.append("+");
 				line.append(emulation.getEngine().name());
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {

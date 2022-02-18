@@ -268,11 +268,11 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	// Status text support
 	//
 
-	public int getStatusImageOverflow() {
+	public int getStatusTextOverflow() {
 		return statusImageOverflow;
 	}
 
-	public int getStatusImagePosition() {
+	public int getTextImagePosition() {
 		return statusImagePosition;
 	}
 

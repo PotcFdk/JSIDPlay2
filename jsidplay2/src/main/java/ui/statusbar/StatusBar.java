@@ -190,9 +190,9 @@ public class StatusBar extends C64VBox implements UIPart {
 		StringBuilder line = new StringBuilder();
 		line.append(status.determineVideoNorm());
 		line.append(", ");
-		line.append(status.determineChipModels(true));
+		line.append(status.determineChipModels());
 		line.append(", ");
-		line.append(status.determineEmulations(true));
+		line.append(status.determineEmulations());
 		line.append(detectPSID64ChipModel());
 		line.append(playerId);
 		line.append(status.determineTuneSpeed());

@@ -177,8 +177,8 @@ public final class RTMPPlayerWithStatus {
 
 						getXuggleVideoDriver().ifPresent(xuggleVideoDriver -> {
 							xuggleVideoDriver.setStatusText(createStatusText());
-							int statusImagePosition = xuggleVideoDriver.getStatusImagePosition();
-							int overflow = xuggleVideoDriver.getStatusImageOverflow();
+							int statusImagePosition = xuggleVideoDriver.getTextImagePosition();
+							int overflow = xuggleVideoDriver.getStatusTextOverflow();
 
 							// scroll forward
 							if (counter++ > 10) {
@@ -217,9 +217,9 @@ public final class RTMPPlayerWithStatus {
 		result.append(", ");
 		result.append(status.determineVideoNorm());
 		result.append(", ");
-		result.append(status.determineChipModels(true));
+		result.append(status.determineChipModels());
 		result.append(", ");
-		result.append(status.determineEmulations(true));
+		result.append(status.determineEmulations());
 		result.append(", ");
 		result.append(diskImage.getName());
 
