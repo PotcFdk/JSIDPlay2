@@ -10,6 +10,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static libsidplay.components.mos656x.VIC.MAX_HEIGHT;
 import static libsidplay.components.mos656x.VIC.MAX_WIDTH;
 
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -82,7 +83,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
 	private BufferedImage vicImage, statusImage;
-	private int statusImageOffset;
+	private int statusTextOffset;
 
 	private Graphics2D graphics;
 	private ByteBuffer pictureBuffer;
@@ -91,7 +92,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 	private ByteBuffer sampleBuffer;
 
-	private int statusImageOverflow;
+	private int statusTextOverflow;
 
 	@Override
 	public void open(IAudioSection audioSection, String recordingFilename, CPUClock cpuClock, EventScheduler context)
@@ -264,37 +265,33 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		return true;
 	}
 
-	//
-	// Status text support
-	//
-
-	public int getStatusTextOverflow() {
-		return statusImageOverflow;
-	}
-
-	public int getStatusTextOffset() {
-		return statusImageOffset;
-	}
-
-	public void setStatusTextOffset(int statusImageOffset) {
-		this.statusImageOffset = statusImageOffset;
-	}
-
 	public void setStatusText(String statusText) {
 		Graphics2D graphics = null;
 		try {
 			if (statusImage != null) {
 				graphics = statusImage.createGraphics();
+				FontMetrics fontMetrics = graphics.getFontMetrics();
 				graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
-				graphics.drawString(statusText, -statusImageOffset, graphics.getFontMetrics().getAscent());
-				statusImageOverflow = graphics.getFontMetrics().stringWidth(statusText) - statusImageOffset - MAX_WIDTH;
-				statusImageOverflow = statusImageOverflow > 0 ? statusImageOverflow : 0;
+				graphics.drawString(statusText, -statusTextOffset, fontMetrics.getAscent());
+				statusTextOverflow = Math.min(0, fontMetrics.stringWidth(statusText) - statusTextOffset - MAX_WIDTH);
 			}
 		} finally {
 			if (graphics != null) {
 				graphics.dispose();
 			}
 		}
+	}
+
+	public int getStatusTextOverflow() {
+		return statusTextOverflow;
+	}
+
+	public int getStatusTextOffset() {
+		return statusTextOffset;
+	}
+
+	public void setStatusTextOffset(int statusImageOffset) {
+		this.statusTextOffset = statusImageOffset;
 	}
 
 	private void configurePresets(String presetName) {

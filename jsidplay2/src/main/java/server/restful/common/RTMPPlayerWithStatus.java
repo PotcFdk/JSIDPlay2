@@ -177,16 +177,16 @@ public final class RTMPPlayerWithStatus {
 
 						getXuggleVideoDriver().ifPresent(xuggleVideoDriver -> {
 							xuggleVideoDriver.setStatusText(createStatusText());
-							int statusImagePosition = xuggleVideoDriver.getStatusTextOffset();
-							int overflow = xuggleVideoDriver.getStatusTextOverflow();
+							int statusTextOffset = xuggleVideoDriver.getStatusTextOffset();
+							int statusTextOverflow = xuggleVideoDriver.getStatusTextOverflow();
 
 							// scroll forward
 							if (counter++ > 10) {
-								if (overflow > 0) {
-									xuggleVideoDriver.setStatusTextOffset(statusImagePosition + 8);
+								if (statusTextOverflow > 0) {
+									xuggleVideoDriver.setStatusTextOffset(statusTextOffset + 8);
 								}
 							}
-							if (overflow == 0) {
+							if (statusTextOverflow == 0) {
 								counter = 0;
 								xuggleVideoDriver.setStatusTextOffset(0);
 							}
