@@ -173,6 +173,10 @@ tr.row1>td {
 	padding-left: 0;
 }
 
+.uppercase {
+	text-transform: uppercase;
+}
+
 .shift.left {
 	width: 48px;
 	line-height: 40px;
@@ -275,18 +279,29 @@ tr.row1>td {
 	function typeKey(key) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200)
+			if (this.readyState == 4 && this.status == 200) {
 				printMsg('Key has been typed: ' + key);
-			startVideo();
+			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&type=" + key, true);
 		xhttp.send();
 	}
+
+	function toggleKey(element, key) {
+		element.classList.toggle("uppercase");
+		if (element.classList.contains('uppercase')) {
+			pressKey(key);
+		} else {
+			releaseKey(key);
+		}
+	}
+
 	function pressKey(key) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200)
+			if (this.readyState == 4 && this.status == 200) {
 				printMsg('Key has been pressed: ' + key);
+			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&press=" + key, true);
 		xhttp.send();
@@ -294,8 +309,9 @@ tr.row1>td {
 	function releaseKey(key) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200)
+			if (this.readyState == 4 && this.status == 200) {
 				printMsg('Key has been released: ' + key);
+			}
 		};
 		xhttp.open("POST", "/static/press_key?name=$uuid&release=" + key, true);
 		xhttp.send();
@@ -436,7 +452,7 @@ tr.row1>td {
 			<div class="key letter" onclick="javascript:typeKey('COMMODORE');">
 				C=</div>
 			<div class="key shift left"
-				onclick="javascript:typeKey('SHIFT_LEFT');">Shift</div>
+				onclick="javascript:toggleKey(this, 'SHIFT_LEFT');">Shift</div>
 			<div class="key letter" onclick="javascript:typeKey('Z');">Z</div>
 			<div class="key letter" onclick="javascript:typeKey('X');">X</div>
 			<div class="key letter" onclick="javascript:typeKey('C');">C</div>
@@ -454,7 +470,7 @@ tr.row1>td {
 				?<br>/
 			</div>
 			<div class="key shift right"
-				onclick="javascript:typeKey('SHIFT_RIGTH');">Shift</div>
+				onclick="javascript:toggleKey(this, 'SHIFT_RIGTH');">Shift</div>
 			<div class="key dual" onclick="javascript:typeKey('CURSOR_UP_DOWN');">
 				&#8593;<br>&#8595;
 			</div>
