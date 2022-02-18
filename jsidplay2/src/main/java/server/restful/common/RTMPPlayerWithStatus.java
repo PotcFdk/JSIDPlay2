@@ -171,7 +171,14 @@ public final class RTMPPlayerWithStatus {
 				player.getC64().getEventScheduler().schedule(new Event("Update Status Text") {
 					@Override
 					public void event() throws InterruptedException {
-						updateStatusText();
+						AudioDriver audioDriver = player.getAudioDriver();
+						if (audioDriver instanceof ProxyDriver) {
+							ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
+							if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
+								FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
+								flvStreamDriver.setStatusText(createStatusText());
+							}
+						}
 						player.getC64().getEventScheduler().schedule(this,
 								(long) (player.getC64().getClock().getCpuFrequency()));
 					}
@@ -180,25 +187,18 @@ public final class RTMPPlayerWithStatus {
 		});
 	}
 
-	private void updateStatusText() {
-		AudioDriver audioDriver = player.getAudioDriver();
-		if (audioDriver instanceof ProxyDriver) {
-			ProxyDriver proxyDriver = (ProxyDriver) audioDriver;
-			if (proxyDriver.getDriverTwo() instanceof FLVStreamDriver) {
-				FLVStreamDriver flvStreamDriver = (FLVStreamDriver) proxyDriver.getDriverTwo();
-				flvStreamDriver.setStatusText(createStatusText());
-			}
-		}
-	}
-
 	private String createStatusText() {
 		StringBuilder result = new StringBuilder();
 
 		result.append(status.determineVideoNorm());
-		result.append(", " + status.determineChipModels(false));
-		result.append(", " + status.determineEmulations(false));
-		result.append(", " + status.determinePlayTime(false));
-		result.append(", " + diskImage.getName());
+		result.append(", ");
+		result.append(status.determineChipModels(false));
+		result.append(", ");
+		result.append(status.determineEmulations(false));
+		result.append(", ");
+		result.append(status.determinePlayTime(false));
+		result.append(", ");
+		result.append(diskImage.getName());
 
 		return result.toString();
 	}

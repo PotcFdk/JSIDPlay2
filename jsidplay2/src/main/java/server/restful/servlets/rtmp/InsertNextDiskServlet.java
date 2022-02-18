@@ -1,7 +1,7 @@
 package server.restful.servlets.rtmp;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
-import static server.restful.common.CleanupPlayerTimerTask.insertNextDisk;
+import static server.restful.common.CleanupPlayerTimerTask.update;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import server.restful.common.JSIDPlay2Servlet;
+import server.restful.common.RTMPPlayerWithStatus;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")
@@ -46,7 +47,7 @@ public class InsertNextDiskServlet extends JSIDPlay2Servlet {
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
 			info("insertNextDisk: RTMP stream of: " + uuid);
-			insertNextDisk(uuid);
+			update(uuid, RTMPPlayerWithStatus::insertNextDisk);
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());

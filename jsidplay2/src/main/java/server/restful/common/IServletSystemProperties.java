@@ -42,15 +42,7 @@ public interface IServletSystemProperties {
 	int RTMP_EXCEEDS_MAXIMUM_DURATION = valueOf(getProperty("jsidplay2.rtmp.exceeds_maximum.duration", "3600"));
 
 	/**
-	 * Video streaming: Timer rate in ms to update RTMP video status
-	 */
-	int RTMP_CLEANUP_PLAYER_TIMER_RATE = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.timer.rate", "1000"));
-
-	/**
-	 * Video streaming: Timer counter (every Nth timer invocation) print current
-	 * RTMP video players.
-	 * 
-	 * This parameter is related to RTMP_CLEANUP_PLAYER_TIMER_RATE.
+	 * Video streaming: Time in s to print current RTMP video players.
 	 */
 	int RTMP_CLEANUP_PLAYER_COUNTER = valueOf(getProperty("jsidplay2.rtmp.cleanup.player.period", "30"));
 

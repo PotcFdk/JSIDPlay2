@@ -1,9 +1,7 @@
 package server.restful.servlets.rtmp;
 
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_STATIC;
-import static server.restful.common.CleanupPlayerTimerTask.pressKey;
-import static server.restful.common.CleanupPlayerTimerTask.releaseKey;
-import static server.restful.common.CleanupPlayerTimerTask.typeKey;
+import static server.restful.common.CleanupPlayerTimerTask.update;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
@@ -50,14 +48,19 @@ public class PressKeyServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
-			info("PressKey: RTMP stream of: " + uuid);
 
 			if (request.getParameter("type") != null) {
-				typeKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("type")));
+				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("type"));
+				info("typeKey: RTMP stream of: " + uuid + ", " + key);
+				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.typeKey(key));
 			} else if (request.getParameter("press") != null) {
-				pressKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("press")));
+				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("press"));
+				info("pressKey: RTMP stream of: " + uuid + ", " + key);
+				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.pressKey(key));
 			} else if (request.getParameter("release") != null) {
-				releaseKey(uuid, KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("release")));
+				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("release"));
+				info("releaseKey: RTMP stream of: " + uuid + ", " + key);
+				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.releaseKey(key));
 			}
 		} catch (Throwable t) {
 			error(t);
