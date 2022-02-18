@@ -108,12 +108,12 @@ public class Convenience {
 			// uncompress zip
 			TFile.cp_rp(zip, tmpDir, TArchiveDetector.ALL);
 			// search media file to attach
-			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null);
+			toAttach = getToAttach(tmpDir, zip, isMediaToAttach, null, true);
 			TFile.rm_r(zip);
 		} else if (file.getName().toLowerCase(Locale.US).endsWith("7z")) {
 			Extract7ZipUtil extract7Zip = new Extract7ZipUtil(zip, tmpDir);
 			extract7Zip.extract();
-			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null);
+			toAttach = getToAttach(tmpDir, extract7Zip.getZipFile(), isMediaToAttach, null, true);
 			TFile.rm_r(zip);
 		} else if (zip.isEntry()) {
 			// uncompress zip entry
@@ -121,8 +121,16 @@ public class Convenience {
 			zipEntry.deleteOnExit();
 			TFile.cp_rp(zip, zipEntry, TArchiveDetector.ALL);
 			// search media file to attach
+//			toAttach = zipEntry;
+			toAttach = getToAttach(tmpDir, zipEntry.getParentFile(), (f1, f2) -> {
+				return false;
+			}, null, false);
 			toAttach = zipEntry;
 		} else if (isSupportedMedia(file)) {
+//			toAttach = file;
+			toAttach = getToAttach(file.getParentFile(), file.getParentFile(), (f1, f2) -> {
+				return false;
+			}, null, false);
 			toAttach = file;
 		}
 		if (toAttach != null) {
@@ -181,7 +189,8 @@ public class Convenience {
 	 * @param toAttach    current media to attach
 	 * @return media to attach
 	 */
-	private File getToAttach(File dir, File file, BiPredicate<File, File> mediaTester, File toAttach) {
+	private File getToAttach(File dir, File file, BiPredicate<File, File> mediaTester, File toAttach,
+			boolean deleteOnExit) {
 		final File[] listFiles = file.listFiles();
 		if (listFiles == null) {
 			return toAttach;
@@ -190,7 +199,9 @@ public class Convenience {
 		asList.sort(TOP_LEVEL_FIRST_COMPARATOR);
 		for (File member : asList) {
 			File memberFile = new File(dir, member.getName());
-			memberFile.deleteOnExit();
+			if (deleteOnExit) {
+				memberFile.deleteOnExit();
+			}
 			if (memberFile.isFile() && isSupportedMedia(memberFile)) {
 				if (memberFile.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 					try {
@@ -211,7 +222,8 @@ public class Convenience {
 					}
 				}
 			} else if (memberFile.isDirectory() && !memberFile.getName().equals(MACOSX)) {
-				File toAttachChild = getToAttach(memberFile, new TFile(memberFile), mediaTester, toAttach);
+				File toAttachChild = getToAttach(memberFile, new TFile(memberFile), mediaTester, toAttach,
+						deleteOnExit);
 				if (toAttachChild != null) {
 					toAttach = toAttachChild;
 				}
