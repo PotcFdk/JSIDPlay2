@@ -82,7 +82,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 	private IStreamCoder videoCoder, audioCoder;
 	private IConverter converter;
 	private BufferedImage vicImage, statusImage;
-	private int statusImagePosition;
+	private int statusImageOffset;
 
 	private Graphics2D graphics;
 	private ByteBuffer pictureBuffer;
@@ -272,12 +272,12 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 		return statusImageOverflow;
 	}
 
-	public int getTextImagePosition() {
-		return statusImagePosition;
+	public int getStatusTextOffset() {
+		return statusImageOffset;
 	}
 
-	public void setStatusTextPosition(int statusImagePosition) {
-		this.statusImagePosition = statusImagePosition;
+	public void setStatusTextOffset(int statusImageOffset) {
+		this.statusImageOffset = statusImageOffset;
 	}
 
 	public void setStatusText(String statusText) {
@@ -286,9 +286,8 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 			if (statusImage != null) {
 				graphics = statusImage.createGraphics();
 				graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
-				graphics.drawString(statusText, -statusImagePosition, graphics.getFontMetrics().getAscent());
-				statusImageOverflow = graphics.getFontMetrics().stringWidth(statusText) - statusImagePosition
-						- MAX_WIDTH;
+				graphics.drawString(statusText, -statusImageOffset, graphics.getFontMetrics().getAscent());
+				statusImageOverflow = graphics.getFontMetrics().stringWidth(statusText) - statusImageOffset - MAX_WIDTH;
 				statusImageOverflow = statusImageOverflow > 0 ? statusImageOverflow : 0;
 			}
 		} finally {
