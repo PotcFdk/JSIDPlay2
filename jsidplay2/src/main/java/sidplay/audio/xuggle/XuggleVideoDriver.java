@@ -273,7 +273,7 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 				FontMetrics fontMetrics = graphics.getFontMetrics();
 				graphics.clearRect(0, 0, statusImage.getWidth(), statusImage.getHeight());
 				graphics.drawString(statusText, -statusTextOffset, fontMetrics.getAscent());
-				statusTextOverflow = Math.min(0, fontMetrics.stringWidth(statusText) - statusTextOffset - MAX_WIDTH);
+				statusTextOverflow = Math.max(0, fontMetrics.stringWidth(statusText) - statusTextOffset - MAX_WIDTH);
 			}
 		} finally {
 			if (graphics != null) {
