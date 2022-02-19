@@ -2,10 +2,14 @@ package ui.entities.whatssid.service;
 
 import static libsidplay.config.IWhatsSidSystemProperties.QUERY_TIMEOUT;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -134,9 +138,12 @@ public class WhatsSidService implements FingerPrintingDataSource {
 				CriteriaQuery<HashTable> query = cb.createQuery(HashTable.class);
 				Root<HashTable> root = query.from(HashTable.class);
 
-				query.select(root).where(root.get(HashTable_.hash).in((Object[]) intArrayBean.getHash()));
+				@SuppressWarnings("rawtypes")
+				ParameterExpression<List> parameter = cb.parameter(List.class);
+				query.select(root).where(root.get(HashTable_.hash).in(parameter));
 
-				em.createQuery(query).setHint(QueryHints.READ_ONLY, true).setHint(QueryHints.TIMEOUT_JPA, QUERY_TIMEOUT)
+				em.createQuery(query).setParameter(parameter, Arrays.asList(intArrayBean.getHash()))
+						.setHint(QueryHints.READ_ONLY, true).setHint(QueryHints.TIMEOUT_JPA, QUERY_TIMEOUT)
 						.getResultList().stream().map(HashTable::toBean).forEach(result.getHashes()::add);
 
 				em.getTransaction().commit();
