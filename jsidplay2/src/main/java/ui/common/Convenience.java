@@ -166,6 +166,7 @@ public class Convenience {
 				return true;
 			} else if (toAttach.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
 				playVideo(toAttach);
+				return true;
 			} else if (cartFileFilter.accept(toAttach)) {
 				player.insertCartridge(CartridgeType.CRT, toAttach);
 				autoStart(autoStartFile, null);
