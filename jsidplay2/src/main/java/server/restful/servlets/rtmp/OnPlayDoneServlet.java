@@ -60,7 +60,8 @@ public class OnPlayDoneServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
-			info("onPlayDone: RTMP stream of: " + uuid);
+
+			info(String.format("onPlayDone: RTMP stream of: %s", uuid));
 			update(uuid, RTMPPlayerWithStatus::onPlayDone);
 		} catch (Throwable t) {
 			error(t);

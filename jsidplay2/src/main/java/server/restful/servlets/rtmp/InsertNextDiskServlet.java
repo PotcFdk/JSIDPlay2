@@ -31,8 +31,6 @@ public class InsertNextDiskServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * Insert next disk.
-	 * 
 	 * Insert next disk for Player running as a RTMP live video stream.
 	 *
 	 * {@code
@@ -46,7 +44,8 @@ public class InsertNextDiskServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
-			info("insertNextDisk: RTMP stream of: " + uuid);
+
+			info(String.format("insertNextDisk: RTMP stream of: %s", uuid));
 			update(uuid, RTMPPlayerWithStatus::insertNextDisk);
 		} catch (Throwable t) {
 			error(t);

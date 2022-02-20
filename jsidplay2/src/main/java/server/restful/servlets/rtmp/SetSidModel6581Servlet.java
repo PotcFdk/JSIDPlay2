@@ -19,7 +19,7 @@ import ui.entities.config.Configuration;
 @SuppressWarnings("serial")
 public class SetSidModel6581Servlet extends JSIDPlay2Servlet {
 
-	public static final String SET_MODEL_6581_PATH = "/set_default_sid_model_6581";
+	public static final String SET_DEFAULT_SID_MODEL_6581_PATH = "/set_default_sid_model_6581";
 
 	public SetSidModel6581Servlet(Configuration configuration, Properties directoryProperties) {
 		super(configuration, directoryProperties);
@@ -27,7 +27,7 @@ public class SetSidModel6581Servlet extends JSIDPlay2Servlet {
 
 	@Override
 	public String getServletPath() {
-		return CONTEXT_ROOT_STATIC + SET_MODEL_6581_PATH;
+		return CONTEXT_ROOT_STATIC + SET_DEFAULT_SID_MODEL_6581_PATH;
 	}
 
 	/**
@@ -45,7 +45,8 @@ public class SetSidModel6581Servlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
-			info("setDefaultSidModel6581: RTMP stream of: " + uuid);
+
+			info(String.format("setDefaultSidModel6581: RTMP stream of: %s", uuid));
 			update(uuid, RTMPPlayerWithStatus::setDefaultSidModel6581);
 		} catch (Throwable t) {
 			error(t);

@@ -46,7 +46,8 @@ public class JoystickServlet extends JSIDPlay2Servlet {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
 			int number = Integer.valueOf(request.getParameter("number"));
 			byte value = Byte.valueOf(request.getParameter("value"));
-			info("joystick: RTMP stream of: " + uuid + ", " + number + "=" + value);
+
+			info(String.format("joystick: RTMP stream of: %s, number=%d, value=%d", uuid, number, value));
 			update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.joystick(number, value));
 		} catch (Throwable t) {
 			error(t);

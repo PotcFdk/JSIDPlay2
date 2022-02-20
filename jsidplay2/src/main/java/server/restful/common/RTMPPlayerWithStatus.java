@@ -7,9 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -48,24 +46,23 @@ public final class RTMPPlayerWithStatus {
 		this.diskImage = diskImage;
 		status = new Status(player, resourceBundle);
 		created = LocalDateTime.now();
-		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
+		validUntil = created.plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 		addStatusTextListener();
 	}
 
 	public void onPlay() {
-		playCounter++;
+		++playCounter;
 		validUntil = created.plusSeconds(RTMP_EXCEEDS_MAXIMUM_DURATION);
 	}
 
 	public void onPlayDone() {
-		playCounter--;
-		if (playCounter == 0) {
+		if (--playCounter == 0) {
 			validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
 		}
 	}
 
 	public boolean isInvalid() {
-		return LocalDateTime.now().isAfter(validUntil);
+		return validUntil.isBefore(LocalDateTime.now());
 	}
 
 	public LocalDateTime getValidUntil() {
@@ -156,9 +153,9 @@ public final class RTMPPlayerWithStatus {
 
 	private void setNextDiskImage() {
 		if (diskImage != null) {
-			List<File> asList = Arrays.asList(diskImage.getParentFile().listFiles(DISK_FILE_FILTER));
-			Collections.sort(asList);
-			Iterator<File> asListIt = asList.iterator();
+			Iterator<File> asListIt = Arrays.asList(
+					Optional.ofNullable(diskImage.getParentFile().listFiles(DISK_FILE_FILTER)).orElse(new File[0]))
+					.stream().sorted().iterator();
 			while (asListIt.hasNext()) {
 				File siblingFile = asListIt.next();
 				if (siblingFile.equals(diskImage) && asListIt.hasNext()) {
@@ -196,12 +193,13 @@ public final class RTMPPlayerWithStatus {
 							int statusTextOffset = xuggleVideoDriver.getStatusTextOffset();
 							int statusTextOverflow = xuggleVideoDriver.getStatusTextOverflow();
 
-							// scroll forward
+							// scroll forward after some time
 							if (counter++ > 10) {
 								if (statusTextOverflow > 0) {
 									xuggleVideoDriver.setStatusTextOffset(statusTextOffset + 8);
 								}
 							}
+							// reset scroll status if scroll has finished
 							if (statusTextOverflow == 0) {
 								counter = 0;
 								xuggleVideoDriver.setStatusTextOffset(0);

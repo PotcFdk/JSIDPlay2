@@ -31,8 +31,6 @@ public class PressKeyServlet extends JSIDPlay2Servlet {
 	}
 
 	/**
-	 * Press key.
-	 * 
 	 * Press key for Player running as a RTMP live video stream.
 	 *
 	 * {@code
@@ -51,15 +49,18 @@ public class PressKeyServlet extends JSIDPlay2Servlet {
 
 			if (request.getParameter("type") != null) {
 				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("type"));
-				info("typeKey: RTMP stream of: " + uuid + ", " + key.name());
+
+				info(String.format("typeKey: RTMP stream of: %s, key=%s", uuid, key.name()));
 				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.typeKey(key));
 			} else if (request.getParameter("press") != null) {
 				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("press"));
-				info("pressKey: RTMP stream of: " + uuid + ", " + key.name());
+
+				info(String.format("pressKey: RTMP stream of: %s, key=%s", uuid, key.name()));
 				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.pressKey(key));
 			} else if (request.getParameter("release") != null) {
 				KeyTableEntry key = KeyTableEntry.valueOf(KeyTableEntry.class, request.getParameter("release"));
-				info("releaseKey: RTMP stream of: " + uuid + ", " + key.name());
+
+				info(String.format("releaseKey: RTMP stream of: %s, key=%s", uuid, key.name()));
 				update(uuid, rtmpPlayerWithStatus -> rtmpPlayerWithStatus.releaseKey(key));
 			}
 		} catch (Throwable t) {

@@ -45,7 +45,8 @@ public class SetDefaultEmulationReSidServlet extends JSIDPlay2Servlet {
 		super.doPost(request);
 		try {
 			UUID uuid = UUID.fromString(request.getParameter("name"));
-			info("setDefaultEmulationReSid: RTMP stream of: " + uuid);
+
+			info(String.format("setDefaultEmulationReSid: RTMP stream of: %s", uuid));
 			update(uuid, RTMPPlayerWithStatus::setDefaultEmulationReSid);
 		} catch (Throwable t) {
 			error(t);

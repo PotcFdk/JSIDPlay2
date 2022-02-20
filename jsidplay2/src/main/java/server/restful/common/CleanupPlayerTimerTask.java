@@ -35,8 +35,8 @@ public final class CleanupPlayerTimerTask extends TimerTask {
 		PLAYER_MAP.put(uuid, new RTMPPlayerWithStatus(player, diskImage, resourceBundle));
 	}
 
-	public static final void update(UUID uuid, Consumer<RTMPPlayerWithStatus> rtmpPlayerWithStatus) {
-		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatus);
+	public static final void update(UUID uuid, Consumer<RTMPPlayerWithStatus> rtmpPlayerWithStatusConsumer) {
+		ofNullable(PLAYER_MAP.get(uuid)).ifPresent(rtmpPlayerWithStatusConsumer);
 	}
 
 	@Override
