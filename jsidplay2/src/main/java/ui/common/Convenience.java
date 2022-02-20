@@ -1,7 +1,11 @@
 package ui.common;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -16,11 +20,13 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import sidplay.Player;
+import ui.JSidPlay2Main;
 import ui.common.filefilter.CartFileFilter;
 import ui.common.filefilter.DiskFileFilter;
 import ui.common.filefilter.TapeFileFilter;
 import ui.common.filefilter.TuneFileFilter;
 import ui.common.util.Extract7ZipUtil;
+import ui.menubar.MenuBar;
 
 /**
  * Automation for the Player.
@@ -48,6 +54,20 @@ public class Convenience {
 		}
 		return f1.compareTo(f2);
 	};
+
+	/** NUVIE video player */
+	private static final String NUVIE_PLAYER_PRG = "/libsidplay/roms/nuvieplayer-v1.0.prg";
+	private static byte[] NUVIE_PLAYER;
+
+	static {
+		try (DataInputStream is = new DataInputStream(MenuBar.class.getResourceAsStream(NUVIE_PLAYER_PRG))) {
+			URL us2 = JSidPlay2Main.class.getResource(NUVIE_PLAYER_PRG);
+			NUVIE_PLAYER = new byte[us2.openConnection().getContentLength()];
+			is.readFully(NUVIE_PLAYER);
+		} catch (IOException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	/**
 	 * Useless Apple directory.
@@ -121,13 +141,11 @@ public class Convenience {
 			zipEntry.deleteOnExit();
 			TFile.cp_rp(zip, zipEntry, TArchiveDetector.ALL);
 			// search media file to attach
-//			toAttach = zipEntry;
 			toAttach = getToAttach(tmpDir, zipEntry.getParentFile(), (f1, f2) -> {
 				return false;
 			}, null, false);
 			toAttach = zipEntry;
 		} else if (isSupportedMedia(file)) {
-//			toAttach = file;
 			toAttach = getToAttach(file.getParentFile(), file.getParentFile(), (f1, f2) -> {
 				return false;
 			}, null, false);
@@ -147,11 +165,7 @@ public class Convenience {
 				autoStart(autoStartFile, LOAD_RUN);
 				return true;
 			} else if (toAttach.getName().toLowerCase(Locale.ENGLISH).endsWith(".reu")) {
-				try {
-					player.insertCartridge(CartridgeType.REU, toAttach);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				playVideo(toAttach);
 			} else if (cartFileFilter.accept(toAttach)) {
 				player.insertCartridge(CartridgeType.CRT, toAttach);
 				autoStart(autoStartFile, null);
@@ -243,4 +257,15 @@ public class Convenience {
 				|| tapeFileFilter.accept(file);
 	}
 
+	private void playVideo(File file) {
+		final File tmpFile = new File(player.getConfig().getSidplay2Section().getTmpDir(), "nuvieplayer-v1.0.prg");
+		tmpFile.deleteOnExit();
+		try (DataOutputStream os = new DataOutputStream(new FileOutputStream(tmpFile))) {
+			os.write(NUVIE_PLAYER);
+			player.insertCartridge(CartridgeType.REU, file);
+			player.play(SidTune.load(tmpFile));
+		} catch (IOException | SidTuneError e) {
+			System.err.println();
+		}
+	}
 }

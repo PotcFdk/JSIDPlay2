@@ -209,7 +209,7 @@ tr.row1>td {
 	function startVideo() {
 		setTimeout(function() {
 			window.open('$rtmp', '_self');
-		}, 1000);
+		}, $waitForRTMP);
 	}
 	function printMsg(msg) {
 		document.getElementById("alarmmsg").innerHTML = msg;

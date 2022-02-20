@@ -21,6 +21,7 @@ import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNL
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_NOT_YET_PLAYED_TIMEOUT;
 import static server.restful.common.IServletSystemProperties.RTMP_UPLOAD_URL;
+import static server.restful.common.IServletSystemProperties.WAIT_FOR_RTMP;
 import static sidplay.audio.Audio.AAC;
 import static sidplay.audio.Audio.AVI;
 import static sidplay.audio.Audio.FLAC;
@@ -186,6 +187,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 					Map<String, String> replacements = new HashMap<>();
 					replacements.put("$uuid", uuid.toString());
 					replacements.put("$rtmp", getRTMPUrl(request.getRemoteAddr(), uuid));
+					replacements.put("$waitForRTMP", String.valueOf(WAIT_FOR_RTMP));
 					replacements.put("$notYetPlayedTimeout", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
 					replacements.put("$filename", file.getName());
 

@@ -30,6 +30,11 @@ public interface IServletSystemProperties {
 	int PRESS_SPACE_INTERVALL = valueOf(getProperty("jsidplay2.rtmp.press_space_intervall", "90"));
 
 	/**
+	 * Time span to wait until RTMP is available after requesting it.
+	 */
+	int WAIT_FOR_RTMP = valueOf(getProperty("jsidplay2.rtmp.wait.for", "2000"));
+
+	/**
 	 * Video streaming: Live stream created but not yet played will be quit after
 	 * timeout in s.
 	 */

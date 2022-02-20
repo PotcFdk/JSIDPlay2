@@ -41,7 +41,7 @@ public final class RTMPPlayerWithStatus {
 
 	private LocalDateTime validUntil;
 
-	private int counter;
+	private int playCounter, counter;
 
 	public RTMPPlayerWithStatus(Player player, File diskImage, ResourceBundle resourceBundle) {
 		this.player = player;
@@ -53,11 +53,15 @@ public final class RTMPPlayerWithStatus {
 	}
 
 	public void onPlay() {
+		playCounter++;
 		validUntil = created.plusSeconds(RTMP_EXCEEDS_MAXIMUM_DURATION);
 	}
 
 	public void onPlayDone() {
-		validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
+		playCounter--;
+		if (playCounter == 0) {
+			validUntil = LocalDateTime.now().plusSeconds(RTMP_NOT_YET_PLAYED_TIMEOUT);
+		}
 	}
 
 	public boolean isInvalid() {
