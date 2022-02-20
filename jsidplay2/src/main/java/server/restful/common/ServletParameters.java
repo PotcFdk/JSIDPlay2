@@ -18,6 +18,8 @@ public class ServletParameters {
 	@ParametersDelegate
 	private IniConfig config = new IniConfig();
 
+	private volatile boolean started;
+
 	public Integer getSong() {
 		return song;
 	}
@@ -30,4 +32,11 @@ public class ServletParameters {
 		return config;
 	}
 
+	public boolean isStarted() {
+		return started;
+	}
+
+	public void setStarted(boolean started) {
+		this.started = started;
+	}
 }

@@ -175,12 +175,17 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 						try {
 							Player player = new Player(config);
 							info("START RTMP stream of: " + uuid);
-							convert2liveVideo(uuid, player, file, driver);
+							convert2liveVideo(uuid, player, file, driver, servletParameters);
 							info("END RTMP stream of: " + uuid);
 						} catch (IOException | SidTuneError e) {
 							log("ERROR RTMP stream of: " + uuid + ":", e);
+						} finally {
+							servletParameters.setStarted(true);
 						}
 					}, "RTMP").start();
+					while (!servletParameters.isStarted()) {
+						Thread.yield();
+					}
 					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
 					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 
@@ -307,8 +312,8 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		}
 	}
 
-	private void convert2liveVideo(UUID uuid, Player player, File file, AudioDriver driver)
-			throws IOException, SidTuneError {
+	private void convert2liveVideo(UUID uuid, Player player, File file, AudioDriver driver,
+			ServletParameters servletParameters) throws IOException, SidTuneError {
 		File root = configuration.getSidplay2Section().getHvsc();
 		if (root != null) {
 			player.getConfig().getSidplay2Section().setHvsc(root);
@@ -323,6 +328,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		Convenience convenience = new Convenience(player);
 		convenience.autostart(file, Convenience.LEXICALLY_FIRST_MEDIA, null);
 		create(uuid, player, file, resourceBundle);
+		servletParameters.setStarted(true);
 		player.stopC64(false);
 	}
 

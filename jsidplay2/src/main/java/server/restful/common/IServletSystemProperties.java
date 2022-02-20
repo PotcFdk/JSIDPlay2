@@ -32,7 +32,7 @@ public interface IServletSystemProperties {
 	/**
 	 * Time span to wait until RTMP is available after requesting it.
 	 */
-	int WAIT_FOR_RTMP = valueOf(getProperty("jsidplay2.rtmp.wait.for", "2000"));
+	int WAIT_FOR_RTMP = valueOf(getProperty("jsidplay2.rtmp.wait.for", "1000"));
 
 	/**
 	 * Video streaming: Live stream created but not yet played will be quit after
