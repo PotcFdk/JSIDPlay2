@@ -106,40 +106,52 @@ public final class RTMPPlayerWithStatus {
 	}
 
 	public void typeKey(KeyTableEntry key) {
-		player.getC64().getEventScheduler()
-				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						player.getC64().getKeyboard().keyPressed(key);
-						player.getC64().getEventScheduler()
-								.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
-									@Override
-									public void event() throws InterruptedException {
-										player.getC64().getKeyboard().keyReleased(key);
-									}
-								});
-					}
-				});
+		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed") {
+			@Override
+			public void event() throws InterruptedException {
+				player.getC64().getKeyboard().keyPressed(key);
+				player.getC64().getEventScheduler()
+						.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released") {
+							@Override
+							public void event() throws InterruptedException {
+								player.getC64().getKeyboard().keyReleased(key);
+							}
+						});
+			}
+		});
 	}
 
 	public void pressKey(KeyTableEntry key) {
-		player.getC64().getEventScheduler()
-				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed: " + key.name()) {
-					@Override
-					public void event() throws InterruptedException {
-						player.getC64().getKeyboard().keyPressed(key);
-					}
-				});
+		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Pressed") {
+			@Override
+			public void event() throws InterruptedException {
+				player.getC64().getKeyboard().keyPressed(key);
+			}
+		});
 	}
 
 	public void releaseKey(KeyTableEntry key) {
-		player.getC64().getEventScheduler()
-				.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released: " + key.name()) {
+		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released") {
+			@Override
+			public void event() throws InterruptedException {
+				player.getC64().getKeyboard().keyReleased(key);
+			}
+		});
+	}
+
+	public void joystick(int number, byte value) {
+		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Joystick Pressed") {
+			@Override
+			public void event() throws InterruptedException {
+				player.getC64().setJoystick(number, () -> (byte) (0xff ^ value));
+				player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Joystick Released") {
 					@Override
 					public void event() throws InterruptedException {
-						player.getC64().getKeyboard().keyReleased(key);
+						player.getC64().setJoystick(number, () -> (byte) 0xff);
 					}
 				});
+			}
+		});
 	}
 
 	private void setNextDiskImage() {
@@ -225,6 +237,7 @@ public final class RTMPPlayerWithStatus {
 		result.append(", ");
 		result.append(status.determineEmulations());
 		result.append(", ");
+		result.append(status.determineDiskActivity());
 		result.append(diskImage.getName());
 
 		return result.toString();

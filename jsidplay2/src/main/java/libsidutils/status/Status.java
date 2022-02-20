@@ -167,4 +167,7 @@ public class Status {
 		return "";
 	}
 
+	public String determineDiskActivity() {
+		return player.getFloppies()[0].getDiskController().isMotorOn() ? "*" : " ";
+	}
 }
