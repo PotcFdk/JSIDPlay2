@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public final class LimitRequestServletFilter implements Filter {
 
-	private final AtomicInteger atomicRequestServletCounter = new AtomicInteger();
+	private final AtomicInteger atomicServletRequestCounter = new AtomicInteger();
 
 	private final int maxRequestServletCount;
 
@@ -26,7 +26,7 @@ public final class LimitRequestServletFilter implements Filter {
 	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
 			final FilterChain chain) throws IOException, ServletException {
 		try {
-			if (atomicRequestServletCounter.getAndIncrement() < maxRequestServletCount) {
+			if (atomicServletRequestCounter.getAndIncrement() < maxRequestServletCount) {
 				// let the request through and process as usual
 				chain.doFilter(servletRequest, servletResponse);
 			} else {
@@ -36,7 +36,7 @@ public final class LimitRequestServletFilter implements Filter {
 				response.sendError(429, "Too Many Requests");
 			}
 		} finally {
-			atomicRequestServletCounter.getAndDecrement();
+			atomicServletRequestCounter.getAndDecrement();
 		}
 	}
 }
