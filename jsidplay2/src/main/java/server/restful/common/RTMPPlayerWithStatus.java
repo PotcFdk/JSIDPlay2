@@ -142,6 +142,7 @@ public final class RTMPPlayerWithStatus {
 			@Override
 			public void event() throws InterruptedException {
 				player.getC64().setJoystick(number, () -> (byte) (0xff ^ value));
+
 				player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Joystick Released") {
 					@Override
 					public void event() throws InterruptedException {

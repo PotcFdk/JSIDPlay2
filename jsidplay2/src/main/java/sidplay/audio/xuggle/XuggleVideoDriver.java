@@ -189,9 +189,6 @@ public abstract class XuggleVideoDriver implements AudioDriver, VideoDriver {
 
 		to3ByteGBR(vic.getPixels());
 
-		// memory leak prevention!?
-		// https://github.com/kasemir/org.csstudio.display.builder/issues/174
-		graphics.clearRect(0, vic.getBorderHeight(), statusImage.getWidth(), statusImage.getHeight());
 		graphics.drawImage(statusImage, 0, vic.getBorderHeight(), null);
 
 		IVideoPicture videoPicture = converter.toPicture(vicImage, timeStamp);
