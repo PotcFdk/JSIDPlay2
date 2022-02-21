@@ -102,10 +102,9 @@ public enum Audio {
 				Class<?> parameterTypes[] = Stream.<Class<?>>generate(() -> AudioDriver.class)
 						.limit(parameterClasses.length).toArray(Class<?>[]::new);
 				Collection<Object> initArgs = new ArrayList<>();
-				for (Class<?> parameterClass : parameterClasses) {
-					initArgs.add(Stream.of(values()).map(audio -> audio.audioDriver)
-							.filter(audioDriver -> parameterClass.isInstance(audioDriver)).findFirst()
-							.orElse((AudioDriver) parameterClass.getConstructor().newInstance()));
+				for (Class<? extends AudioDriver> parameterClass : parameterClasses) {
+					initArgs.add(Stream.of(values()).map(audio -> audio.audioDriver).filter(parameterClass::isInstance)
+							.findFirst().orElse(parameterClass.getConstructor().newInstance()));
 				}
 				audioDriver = audioDriverClass.getConstructor(parameterTypes).newInstance(initArgs.toArray());
 			}
