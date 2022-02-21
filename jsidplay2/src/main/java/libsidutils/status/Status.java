@@ -1,5 +1,7 @@
 package libsidutils.status;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.SIDChip;
+import libsidplay.components.c1530.Datasette;
+import libsidplay.components.c1541.C1541;
 import libsidplay.config.IEmulationSection;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneInfo;
@@ -46,7 +50,7 @@ public class Status {
 		return line.toString();
 	}
 
-	public void determineChipModel(StringBuilder line, int sidNum) {
+	private void determineChipModel(StringBuilder line, int sidNum) {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 
 		ChipModel chipModel = ChipModel.getChipModel(emulation, player.getTune(), sidNum);
@@ -112,7 +116,7 @@ public class Status {
 		return line.toString();
 	}
 
-	public void determineEmulation(StringBuilder line, int sidNum) {
+	private void determineEmulation(StringBuilder line, int sidNum) {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 
 		Integer deviceId = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(sidNum), null);
@@ -148,10 +152,50 @@ public class Status {
 		return "";
 	}
 
-	public String determinePlayTime(boolean inMillis) {
+	public String determineDiskActivity(boolean showTrack) {
+		C1541 c1541 = player.getFloppies()[0];
+		if (showTrack) {
+			int halfTrack = c1541.getDiskController().getHalfTrack();
+			if (c1541.getDiskController().isMotorOn()) {
+				return String.format("%s: %02d", resourceBundle.getString("FLOPPY_TRACK"), halfTrack >> 1);
+			}
+		} else {
+			if (c1541.getDiskController().isMotorOn()) {
+				return "*";
+			} else {
+				return " ";
+			}
+		}
+		return "";
+	}
+
+	public String determineTapeActivity(boolean showCounter) {
+		Datasette datasette = player.getDatasette();
+		if (showCounter) {
+			if (datasette.getMotor()) {
+				return String.format("%s: %03d", resourceBundle.getString("DATASETTE_COUNTER"), datasette.getCounter());
+			}
+		} else {
+			if (datasette.getMotor()) {
+				return "+";
+			} else {
+				return " ";
+			}
+		}
+		return "";
+	}
+
+	public String determineHeap() {
+		Runtime runtime = Runtime.getRuntime();
+		return String.format("%s: %sMb/%sMb", resourceBundle.getString("MEMORY"),
+				runtime.totalMemory() - runtime.freeMemory() >> 20, runtime.maxMemory() >> 20);
+	}
+
+	public String determineTime(boolean longFormat) {
 		double timeInSeconds = player.time();
-		if (inMillis) {
-			return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timeInSeconds * 1000)));
+		if (longFormat) {
+			return String.format("%s: %s", resourceBundle.getString("TIME"),
+					new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timeInSeconds * 1000))));
 		} else {
 			return new SimpleDateFormat("mm:ss").format(new Date((long) (timeInSeconds * 1000)));
 		}
@@ -162,12 +206,25 @@ public class Status {
 		double songLength = tune != null ? player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) : 0;
 		if (songLength > 0) {
 			// song length well-known?
-			return new SimpleDateFormat("/mm:ss.SSS").format(new Date((long) (songLength * 1000)));
+			return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (songLength * 1000)));
 		}
 		return "";
 	}
 
-	public String determineDiskActivity() {
-		return player.getFloppies()[0].getDiskController().isMotorOn() ? "*" : " ";
+	public String determineRecording() {
+		if (player.getAudioDriver().isRecording()) {
+			return String.format("%s: %s (%s)", resourceBundle.getString("RECORDING_FILENAME"),
+					player.getRecordingFilename(), getFileSize(new File(player.getRecordingFilename()).length()));
+		}
+		return "";
+	}
+
+	private String getFileSize(long size) {
+		if (size <= 0) {
+			return "0 b";
+		}
+		final String[] units = new String[] { "b", "Kb", "Mb", "Gb", "Tb" };
+		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 }

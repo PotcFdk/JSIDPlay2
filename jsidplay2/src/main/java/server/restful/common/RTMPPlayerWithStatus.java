@@ -107,6 +107,7 @@ public final class RTMPPlayerWithStatus {
 			@Override
 			public void event() throws InterruptedException {
 				player.getC64().getKeyboard().keyPressed(key);
+
 				player.getC64().getEventScheduler()
 						.scheduleThreadSafeKeyEvent(new Event("Virtual Keyboard Key Released") {
 							@Override
@@ -136,7 +137,7 @@ public final class RTMPPlayerWithStatus {
 		});
 	}
 
-	public void joystick(int number, byte value) {
+	public void joystick(int number, int value) {
 		player.getC64().getEventScheduler().scheduleThreadSafeKeyEvent(new Event("Virtual Joystick Pressed") {
 			@Override
 			public void event() throws InterruptedException {
@@ -227,7 +228,7 @@ public final class RTMPPlayerWithStatus {
 	private String createStatusText() {
 		StringBuilder result = new StringBuilder();
 
-		result.append(status.determinePlayTime(false));
+		result.append(status.determineTime(false));
 		result.append(", ");
 		result.append(status.determineVideoNorm());
 		result.append(", ");
@@ -235,7 +236,8 @@ public final class RTMPPlayerWithStatus {
 		result.append(", ");
 		result.append(status.determineEmulations());
 		result.append(", ");
-		result.append(status.determineDiskActivity());
+		result.append(status.determineTapeActivity(false));
+		result.append(status.determineDiskActivity(false));
 		result.append(diskImage.getName());
 
 		return result.toString();

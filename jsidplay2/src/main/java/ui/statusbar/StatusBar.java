@@ -2,9 +2,7 @@ package ui.statusbar;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -158,7 +156,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		C1541Section c1541Section = util.getConfig().getC1541Section();
 
 		// Get status information of the first disk drive
-		final C1541 c1541 = getFirstFloppy();
+		final C1541 c1541 = util.getPlayer().getFloppies()[0];
 		// Disk motor status
 		boolean motorOn = c1541Section.isDriveSoundOn() && c1541.getDiskController().isMotorOn();
 		if (MOTORSOUND_AUDIOCLIP != null) {
@@ -187,6 +185,11 @@ public class StatusBar extends C64VBox implements UIPart {
 			progressProperty.setValue(datasette.getProgress());
 		}
 		// final status bar text
+		String determineTapeActivity = status.determineTapeActivity(true);
+		String determineDiskActivity = status.determineDiskActivity(true);
+		String determineSongLength = status.determineSongLength();
+		String determineRecording = status.determineRecording();
+
 		StringBuilder line = new StringBuilder();
 		line.append(status.determineVideoNorm());
 		line.append(", ");
@@ -196,23 +199,14 @@ public class StatusBar extends C64VBox implements UIPart {
 		line.append(detectPSID64ChipModel());
 		line.append(playerId);
 		line.append(status.determineTuneSpeed());
-		if (datasette.getMotor()) {
-			line.append(String.format(", %s: %03d", util.getBundle().getString("DATASETTE_COUNTER"),
-					datasette.getCounter()));
-		}
-		if (c1541.getDiskController().isMotorOn()) {
-			line.append(String.format(", %s: %02d", util.getBundle().getString("FLOPPY_TRACK"), halfTrack >> 1));
-		}
-		Runtime runtime = Runtime.getRuntime();
-		line.append(String.format(", %s: %sMb/%sMb", util.getBundle().getString("MEMORY"),
-				runtime.totalMemory() - runtime.freeMemory() >> 20, runtime.maxMemory() >> 20));
-		line.append(String.format(", %s: %s%s", util.getBundle().getString("TIME"), status.determinePlayTime(true),
-				status.determineSongLength()));
-		if (util.getPlayer().getAudioDriver().isRecording()) {
-			line.append(String.format(", %s: %s (%s)", util.getBundle().getString("RECORDING_FILENAME"),
-					util.getPlayer().getRecordingFilename(),
-					getFileSize(new File(util.getPlayer().getRecordingFilename()).length())));
-		}
+		line.append(determineTapeActivity.isEmpty() ? "" : ", " + determineTapeActivity);
+		line.append(determineDiskActivity.isEmpty() ? "" : ", " + determineDiskActivity);
+		line.append(", ");
+		line.append(status.determineHeap());
+		line.append(", ");
+		line.append(status.determineTime(true));
+		line.append(determineSongLength.isEmpty() ? "" : "/" + determineSongLength);
+		line.append(determineRecording.isEmpty() ? "" : ", " + determineRecording);
 		statusLbl.setText(line.toString());
 		statusLbl.setTooltip(playerinfos.length() > 0 ? statusTooltip : null);
 		statusTooltip.setText(playerinfos.toString());
@@ -315,16 +309,4 @@ public class StatusBar extends C64VBox implements UIPart {
 		return "";
 	}
 
-	private C1541 getFirstFloppy() {
-		return util.getPlayer().getFloppies()[0];
-	}
-
-	private String getFileSize(long size) {
-		if (size <= 0) {
-			return "0 b";
-		}
-		final String[] units = new String[] { "b", "Kb", "Mb", "Gb", "Tb" };
-		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
-	}
 }
