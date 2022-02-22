@@ -356,13 +356,14 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 	private void addPressSpaceListener(Player player) {
 		player.stateProperty().addListener(event -> {
 			if (event.getNewValue() == State.START) {
-				player.getC64().getEventScheduler().schedule(new Event("Press Space") {
+				player.getC64().getEventScheduler().schedule(new Event("Key Pressed") {
 
 					@Override
 					public void event() throws InterruptedException {
 						// press space every N seconds
 						player.getC64().getKeyboard().keyPressed(SPACE);
-						player.getC64().getEventScheduler().schedule(new Event("Key Released: " + SPACE.name()) {
+
+						player.getC64().getEventScheduler().schedule(new Event("Key Released") {
 							@Override
 							public void event() throws InterruptedException {
 								player.getC64().getKeyboard().keyReleased(SPACE);

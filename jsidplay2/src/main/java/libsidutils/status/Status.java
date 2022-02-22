@@ -36,13 +36,13 @@ public class Status {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
 		StringBuilder line = new StringBuilder();
 		if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-			determineChipModel(line, 0);
+			determineChipModel(line, emulation, 0);
 			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 				line.append("+");
-				determineChipModel(line, 1);
+				determineChipModel(line, emulation, 1);
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
 					line.append("+");
-					determineChipModel(line, 2);
+					determineChipModel(line, emulation, 2);
 				}
 			}
 
@@ -50,11 +50,9 @@ public class Status {
 		return line.toString();
 	}
 
-	private void determineChipModel(StringBuilder line, int sidNum) {
-		IEmulationSection emulation = player.getConfig().getEmulationSection();
-
-		ChipModel chipModel = ChipModel.getChipModel(emulation, player.getTune(), sidNum);
-		int sidBase = SidTune.getSIDAddress(emulation, player.getTune(), sidNum);
+	private void determineChipModel(StringBuilder line, IEmulationSection emulationSection, int sidNum) {
+		ChipModel chipModel = ChipModel.getChipModel(emulationSection, player.getTune(), sidNum);
+		int sidBase = SidTune.getSIDAddress(emulationSection, player.getTune(), sidNum);
 		if (sidBase != SIDChip.DEF_BASE_ADDRESS) {
 			line.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
 		} else {
@@ -85,13 +83,13 @@ public class Status {
 			Integer deviceCount = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(), null);
 			if (deviceCount != null) {
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-					determineEmulation(line, 0);
+					determineEmulation(line, emulation, 0);
 					if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
 						line.append("+");
-						determineEmulation(line, 1);
+						determineEmulation(line, emulation, 1);
 						if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
 							line.append("+");
-							determineEmulation(line, 2);
+							determineEmulation(line, emulation, 2);
 						}
 					}
 				}
@@ -116,19 +114,17 @@ public class Status {
 		return line.toString();
 	}
 
-	private void determineEmulation(StringBuilder line, int sidNum) {
-		IEmulationSection emulation = player.getConfig().getEmulationSection();
-
+	private void determineEmulation(StringBuilder line, IEmulationSection emulationSection, int sidNum) {
 		Integer deviceId = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(sidNum), null);
 		String deviceName = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(sidNum), null);
 		ChipModel deviceChipModel = player
 				.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(sidNum), null);
 		if (deviceId != null) {
-			line.append(String.format(resourceBundle.getString("DEVICE"), emulation.getEngine().name(), deviceId,
+			line.append(String.format(resourceBundle.getString("DEVICE"), emulationSection.getEngine().name(), deviceId,
 					Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
 					Optional.ofNullable(deviceName).orElse("")));
 		} else {
-			line.append(emulation.getEngine().name());
+			line.append(emulationSection.getEngine().name());
 		}
 	}
 
