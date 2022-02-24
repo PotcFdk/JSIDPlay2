@@ -1,5 +1,7 @@
 package libsidutils.status;
 
+import static libsidplay.sidtune.SidTune.RESET;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -20,8 +22,8 @@ import sidplay.Player;
 
 public class Status {
 
-	private Player player;
-	private ResourceBundle resourceBundle;
+	private final Player player;
+	private final ResourceBundle resourceBundle;
 
 	public Status(Player player, ResourceBundle resourceBundle) {
 		this.player = player;
@@ -34,46 +36,43 @@ public class Status {
 
 	public String determineChipModels() {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
-		StringBuilder line = new StringBuilder();
-		if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-			determineChipModel(line, emulation, 0);
-			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
-				line.append("+");
-				determineChipModel(line, emulation, 1);
-				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
-					line.append("+");
-					determineChipModel(line, emulation, 2);
-				}
-			}
 
+		StringBuilder result = new StringBuilder();
+		determineChipModel(result, emulation, 0);
+		if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+			result.append("+");
+			determineChipModel(result, emulation, 1);
+			if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
+				result.append("+");
+				determineChipModel(result, emulation, 2);
+			}
 		}
-		return line.toString();
+		return result.toString();
 	}
 
-	private void determineChipModel(StringBuilder line, IEmulationSection emulationSection, int sidNum) {
+	private void determineChipModel(StringBuilder result, IEmulationSection emulationSection, int sidNum) {
 		ChipModel chipModel = ChipModel.getChipModel(emulationSection, player.getTune(), sidNum);
 		int sidBase = SidTune.getSIDAddress(emulationSection, player.getTune(), sidNum);
 		if (sidBase != SIDChip.DEF_BASE_ADDRESS) {
-			line.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
+			result.append(String.format("%s(at 0x%4x)", chipModel, sidBase));
 		} else {
-			line.append(chipModel);
+			result.append(chipModel);
 		}
 	}
 
 	public String determineEmulations() {
 		IEmulationSection emulation = player.getConfig().getEmulationSection();
-		StringBuilder line = new StringBuilder();
+
+		StringBuilder result = new StringBuilder();
 		switch (emulation.getEngine()) {
 		case EMULATION:
-			line.append(Emulation.getEmulation(emulation, 0).name());
+			result.append(Emulation.getEmulation(emulation, 0).name());
 			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
-				String stereoEmulation = Emulation.getEmulation(emulation, 1).name();
-				line.append("+");
-				line.append(stereoEmulation);
+				result.append("+");
+				result.append(Emulation.getEmulation(emulation, 1).name());
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
-					String thirdEmulation = Emulation.getEmulation(emulation, 2).name();
-					line.append("+");
-					line.append(thirdEmulation);
+					result.append("+");
+					result.append(Emulation.getEmulation(emulation, 2).name());
 				}
 			}
 			break;
@@ -82,66 +81,65 @@ public class Status {
 		case EXSID:
 			Integer deviceCount = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(), null);
 			if (deviceCount != null) {
-				if (SidTune.isSIDUsed(emulation, player.getTune(), 0)) {
-					determineEmulation(line, emulation, 0);
-					if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
-						line.append("+");
-						determineEmulation(line, emulation, 1);
-						if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
-							line.append("+");
-							determineEmulation(line, emulation, 2);
-						}
+				determineEmulation(result, emulation, 0);
+				if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
+					result.append("+");
+					determineEmulation(result, emulation, 1);
+					if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
+						result.append("+");
+						determineEmulation(result, emulation, 2);
 					}
 				}
-				line.append(" ").append(String.format(resourceBundle.getString("DEVICES"), deviceCount));
+				result.append(" ");
+				result.append(String.format(resourceBundle.getString("DEVICES"), deviceCount));
 				break;
 			}
 			// $FALL-THROUGH$
 		case NETSID:
-			line.append(emulation.getEngine().name());
+			result.append(emulation.getEngine().name());
 			if (SidTune.isSIDUsed(emulation, player.getTune(), 1)) {
-				line.append("+");
-				line.append(emulation.getEngine().name());
+				result.append("+");
+				result.append(emulation.getEngine().name());
 				if (SidTune.isSIDUsed(emulation, player.getTune(), 2)) {
-					line.append("+");
-					line.append(emulation.getEngine().name());
+					result.append("+");
+					result.append(emulation.getEngine().name());
 				}
 			}
 			break;
 		default:
 			break;
 		}
-		return line.toString();
+		return result.toString();
 	}
 
-	private void determineEmulation(StringBuilder line, IEmulationSection emulationSection, int sidNum) {
+	private void determineEmulation(StringBuilder result, IEmulationSection emulationSection, int sidNum) {
 		Integer deviceId = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceId(sidNum), null);
 		String deviceName = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceName(sidNum), null);
 		ChipModel deviceChipModel = player
 				.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(sidNum), null);
 		if (deviceId != null) {
-			line.append(String.format(resourceBundle.getString("DEVICE"), emulationSection.getEngine().name(), deviceId,
-					Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
+			result.append(String.format(resourceBundle.getString("DEVICE"), emulationSection.getEngine().name(),
+					deviceId, Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
 					Optional.ofNullable(deviceName).orElse("")));
 		} else {
-			line.append(emulationSection.getEngine().name());
+			result.append(emulationSection.getEngine().name());
 		}
 	}
 
 	public String determineTuneSpeed() {
 		double tuneSpeed = player.getC64().determineTuneSpeed();
 		if (tuneSpeed > 0) {
-			return (String.format(", %s: %.1fx", resourceBundle.getString("SPEED"), tuneSpeed));
+			return (String.format("%s: %.1fx", resourceBundle.getString("SPEED"), tuneSpeed));
 		}
 		return "";
 	}
 
 	public String determineSong() {
 		SidTune tune = player.getTune();
-		if (tune != null) {
+		if (tune != RESET) {
 			SidTuneInfo info = tune.getInfo();
 			if (info.getSongs() > 1) {
-				return String.format(", %s: %d/%d", resourceBundle.getString("SONG"), info.getCurrentSong(),
+				return String.format("%s: %d/%d", resourceBundle.getString("SONG"), info.getCurrentSong(),
 						info.getSongs());
 			}
 		}
@@ -156,11 +154,7 @@ public class Status {
 				return String.format("%s: %02d", resourceBundle.getString("FLOPPY_TRACK"), halfTrack >> 1);
 			}
 		} else {
-			if (c1541.getDiskController().isMotorOn()) {
-				return "*";
-			} else {
-				return " ";
-			}
+			return c1541.getDiskController().isMotorOn() ? "*" : " ";
 		}
 		return "";
 	}
@@ -172,11 +166,7 @@ public class Status {
 				return String.format("%s: %03d", resourceBundle.getString("DATASETTE_COUNTER"), datasette.getCounter());
 			}
 		} else {
-			if (datasette.getMotor()) {
-				return "+";
-			} else {
-				return " ";
-			}
+			return datasette.getMotor() ? "+" : " ";
 		}
 		return "";
 	}
@@ -187,9 +177,9 @@ public class Status {
 				runtime.totalMemory() - runtime.freeMemory() >> 20, runtime.maxMemory() >> 20);
 	}
 
-	public String determineTime(boolean longFormat) {
+	public String determineTime(boolean showMillis) {
 		double timeInSeconds = player.time();
-		if (longFormat) {
+		if (showMillis) {
 			return String.format("%s: %s", resourceBundle.getString("TIME"),
 					new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (timeInSeconds * 1000))));
 		} else {
@@ -197,12 +187,18 @@ public class Status {
 		}
 	}
 
-	public String determineSongLength() {
+	public String determineSongLength(boolean showMillis) {
 		SidTune tune = player.getTune();
-		double songLength = tune != null ? player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0.) : 0;
-		if (songLength > 0) {
-			// song length well-known?
-			return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (songLength * 1000)));
+		if (tune != RESET) {
+			double songLength = player.getSidDatabaseInfo(db -> db.getSongLength(tune), 0.);
+			if (songLength > 0) {
+				// song length well-known?
+				if (showMillis) {
+					return new SimpleDateFormat("mm:ss.SSS").format(new Date((long) (songLength * 1000)));
+				} else {
+					return new SimpleDateFormat("mm:ss").format(new Date((long) (songLength * 1000)));
+				}
+			}
 		}
 		return "";
 	}
