@@ -416,7 +416,7 @@ public class JSIDPlay2Server {
 
 	private static void exit(int rc) {
 		try {
-			if (entityManagerFactory != null) {
+			if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
 				entityManagerFactory.close();
 			}
 			System.out.println("Press <enter> to exit the player!");
