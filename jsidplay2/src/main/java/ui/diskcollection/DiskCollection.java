@@ -91,8 +91,8 @@ public class DiskCollection extends C64VBox implements UIPart {
 			if (getType() == DiskCollectionType.HVMEC && file.isDirectory() && file.getName().equals(HVMEC_CONTROL)) {
 				return false;
 			}
-			file = extractGZip(file);
-			return file.getName().toLowerCase(Locale.US).endsWith(".zip") || diskFileFilter.accept(file)
+			return file.getName().toLowerCase(Locale.US).endsWith(".zip")
+					|| file.getName().toLowerCase(Locale.US).endsWith(".gz") || diskFileFilter.accept(file)
 					|| tapeFileFilter.accept(file) || docsFileFilter.accept(file);
 		}
 	};
@@ -327,29 +327,19 @@ public class DiskCollection extends C64VBox implements UIPart {
 	}
 
 	private File extract(File file) throws IOException {
+		File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
+		File dst;
 		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
-			return extractGZip(file);
-		} else {
-			File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
-			File dst = new File(tmpDir, file.getName());
-			TFile.cp(file, dst);
-			dst.deleteOnExit();
-			return dst;
-		}
-	}
-
-	private File extractGZip(File file) {
-		if (file.getName().toLowerCase(Locale.US).endsWith(".gz")) {
-			File tmpDir = util.getConfig().getSidplay2Section().getTmpDir();
-			File dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
+			dst = new File(tmpDir, PathUtils.getFilenameWithoutSuffix(file.getName()));
 			try (InputStream is = new GZIPInputStream(ZipFileUtils.newFileInputStream(file))) {
 				TFile.cp(is, dst);
-			} catch (IOException e) {
-				return file;
 			}
-			dst.deleteOnExit();
-			return dst;
+		} else {
+			dst = new File(tmpDir, file.getName());
+			TFile.cp(file, dst);
 		}
-		return file;
+		dst.deleteOnExit();
+		return dst;
 	}
+
 }
