@@ -370,10 +370,6 @@ public abstract class SidTune {
 		return tune != RESET ? tune.getInitDelay() : RESET_INIT_DELAY;
 	}
 
-	public static boolean isSolelyPrg(SidTune tune) {
-		return tune != RESET && tune.getClass().equals(Prg.class);
-	}
-
 	public void prepare() {
 	}
 }

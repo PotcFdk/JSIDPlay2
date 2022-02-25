@@ -219,4 +219,12 @@ public class Status {
 		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
 		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
+
+	public String determinePSID64() {
+		if (player.isPsid64Detected()) {
+			return "PSID64";
+		}
+		return "";
+	}
+
 }

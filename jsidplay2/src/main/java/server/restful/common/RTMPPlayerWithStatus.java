@@ -229,6 +229,7 @@ public final class RTMPPlayerWithStatus {
 	private String createStatusText() {
 		StringBuilder result = new StringBuilder();
 
+		String determinePSID64 = status.determinePSID64();
 		result.append(status.determineTime(false));
 		result.append(", ");
 		result.append(status.determineVideoNorm());
@@ -236,6 +237,7 @@ public final class RTMPPlayerWithStatus {
 		result.append(status.determineChipModels());
 		result.append(", ");
 		result.append(status.determineEmulations());
+		result.append(determinePSID64.isEmpty() ? "" : ", " + determinePSID64);
 		result.append(", ");
 		result.append(status.determineTapeActivity(false));
 		result.append(status.determineDiskActivity(false));

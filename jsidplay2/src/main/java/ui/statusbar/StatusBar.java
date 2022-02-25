@@ -21,12 +21,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
-import libsidplay.common.ChipModel;
 import libsidplay.components.c1530.Datasette;
 import libsidplay.components.c1541.C1541;
 import libsidplay.sidtune.SidTune;
-import libsidutils.psid64.PSid64TuneInfo;
-import libsidutils.psid64.Psid64;
 import libsidutils.sidid.SidIdInfo.PlayerInfoSection;
 import libsidutils.status.Status;
 import sidplay.Player;
@@ -36,7 +33,6 @@ import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.util.DesktopUtil;
 import ui.entities.config.C1541Section;
-import ui.entities.config.EmulationSection;
 
 public class StatusBar extends C64VBox implements UIPart {
 
@@ -189,6 +185,7 @@ public class StatusBar extends C64VBox implements UIPart {
 		String determineDiskActivity = status.determineDiskActivity(true);
 		String determineSongLength = status.determineSongLength(true);
 		String determineRecording = status.determineRecording();
+		String determinePSID64 = status.determinePSID64();
 		String determineTuneSpeed = status.determineTuneSpeed();
 		String determineSong = status.determineSong();
 
@@ -198,8 +195,8 @@ public class StatusBar extends C64VBox implements UIPart {
 		line.append(status.determineChipModels());
 		line.append(", ");
 		line.append(status.determineEmulations());
-		line.append(detectPSID64ChipModel());
 		line.append(playerId);
+		line.append(determinePSID64.isEmpty() ? "" : ", " + determinePSID64);
 		line.append(determineTuneSpeed.isEmpty() ? "" : ", " + determineTuneSpeed);
 		line.append(determineSong.isEmpty() ? "" : ", " + determineSong);
 		line.append(determineDiskActivity.isEmpty() ? "" : ", " + determineDiskActivity);
@@ -278,38 +275,6 @@ public class StatusBar extends C64VBox implements UIPart {
 			}
 			clip.close();
 		}
-	}
-
-	private String detectPSID64ChipModel() {
-		EmulationSection emulationSection = util.getConfig().getEmulationSection();
-		if (SidTune.isSolelyPrg(util.getPlayer().getTune()) && emulationSection.isDetectPSID64ChipModel()) {
-			PSid64TuneInfo psid64TuneInfo = Psid64.detectPSid64TuneInfo(util.getPlayer().getC64().getRAM(),
-					util.getPlayer().getC64().getVicMemBase()
-							+ util.getPlayer().getC64().getVIC().getVideoMatrixBase());
-			boolean update = false;
-			if (psid64TuneInfo.hasDifferentUserChipModel(
-					ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 0))) {
-				emulationSection.getOverrideSection().getSidModel()[0] = psid64TuneInfo.getUserChipModel();
-				update = true;
-			}
-			if (psid64TuneInfo.hasDifferentStereoChipModel(
-					ChipModel.getChipModel(emulationSection, util.getPlayer().getTune(), 1))) {
-				emulationSection.getOverrideSection().getSidModel()[1] = psid64TuneInfo.getStereoChipModel();
-				update = true;
-			}
-			if (psid64TuneInfo.hasDifferentStereoAddress(
-					SidTune.getSIDAddress(emulationSection, util.getPlayer().getTune(), 1))) {
-				emulationSection.getOverrideSection().getSidBase()[1] = psid64TuneInfo.getStereoAddress();
-				update = true;
-			}
-			if (update) {
-				util.getPlayer().updateSIDChipConfiguration();
-			}
-			if (psid64TuneInfo.isDetected()) {
-				return ", PSID64";
-			}
-		}
-		return "";
 	}
 
 }

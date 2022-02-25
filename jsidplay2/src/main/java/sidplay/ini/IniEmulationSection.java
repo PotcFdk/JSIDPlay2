@@ -5,6 +5,7 @@ import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_6581;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_FILTER_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_3SID_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_CLOCK_SPEED;
+import static sidplay.ini.IniDefaults.DEFAULT_DETECT_PSID64_CHIP_MODEL;
 import static sidplay.ini.IniDefaults.DEFAULT_DIGI_BOOSTED_8580;
 import static sidplay.ini.IniDefaults.DEFAULT_DUAL_SID_BASE;
 import static sidplay.ini.IniDefaults.DEFAULT_EMULATION;
@@ -777,6 +778,18 @@ public class IniEmulationSection extends IniSection implements IEmulationSection
 	@Override
 	public final OverrideSection getOverrideSection() {
 		return overrideSection;
+	}
+
+	@Override
+	public final boolean isDetectPSID64ChipModel() {
+		return iniReader.getPropertyBool(SECTION_ID, "DetectPSID64ChipModel", DEFAULT_DETECT_PSID64_CHIP_MODEL);
+	}
+
+	@Override
+	@Parameter(names = {
+			"--detectPSID64ChipModel" }, descriptionKey = "DETECT_PSID64_CHIP_MODEL", arity = 1, order = 1045)
+	public final void setDetectPSID64ChipModel(final boolean detectPSID64ChipModel) {
+		iniReader.setProperty(SECTION_ID, "DetectPSID64ChipModel", detectPSID64ChipModel);
 	}
 
 	@Override

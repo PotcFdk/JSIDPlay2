@@ -1,18 +1,18 @@
-package libsidutils.psid64;
+package sidplay.player;
 
 import java.util.List;
 
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 
-public class PSid64TuneInfo {
+public final class PSid64DetectedTuneInfo {
 
 	private final boolean detected;
 	private final CPUClock cpuClock;
 	private final List<ChipModel> chipModels;
 	private final int stereoAddress;
 
-	public PSid64TuneInfo(boolean detected, CPUClock cpuClock, List<ChipModel> chipModels, int stereoAddress) {
+	public PSid64DetectedTuneInfo(boolean detected, CPUClock cpuClock, List<ChipModel> chipModels, int stereoAddress) {
 		this.detected = detected;
 		this.cpuClock = cpuClock;
 		this.chipModels = chipModels;

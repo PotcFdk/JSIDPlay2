@@ -904,6 +904,20 @@ public interface IEmulationSection {
 	OverrideSection getOverrideSection();
 
 	/**
+	 * Getter of the PSID64 chip model detection.
+	 * 
+	 * @return PSID64 chip model detection
+	 */
+	boolean isDetectPSID64ChipModel();
+
+	/**
+	 * Setter of the PSID64 chip model detection.
+	 * 
+	 * @param detectPSID64ChipModel PSID64 chip model detection
+	 */
+	void setDetectPSID64ChipModel(boolean detectPSID64ChipModel);
+
+	/**
 	 * Get stereo mode.
 	 *
 	 * @return stereo mode

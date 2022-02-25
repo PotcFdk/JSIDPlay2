@@ -301,10 +301,12 @@ public class EmulationSection implements IEmulationSection {
 	private ShadowField<BooleanProperty, Boolean> detectPSID64ChipModel = new ShadowField<>(SimpleBooleanProperty::new,
 			DEFAULT_DETECT_PSID64_CHIP_MODEL);
 
+	@Override
 	public final boolean isDetectPSID64ChipModel() {
 		return detectPSID64ChipModel.get();
 	}
 
+	@Override
 	public final void setDetectPSID64ChipModel(boolean detectPSID64ChipModel) {
 		this.detectPSID64ChipModel.set(detectPSID64ChipModel);
 	}

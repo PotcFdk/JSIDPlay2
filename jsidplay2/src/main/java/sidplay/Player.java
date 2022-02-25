@@ -47,6 +47,7 @@ import builder.resid.SIDMixer;
 import builder.sidblaster.SIDBlasterBuilder;
 import libsidplay.HardwareEnsemble;
 import libsidplay.common.CPUClock;
+import libsidplay.common.ChipModel;
 import libsidplay.common.Engine;
 import libsidplay.common.Event;
 import libsidplay.common.Event.Phase;
@@ -82,6 +83,8 @@ import sidplay.audio.exceptions.IniConfigException;
 import sidplay.audio.exceptions.SongEndException;
 import sidplay.ini.IniConfig;
 import sidplay.player.ObjectProperty;
+import sidplay.player.PSID64Detection;
+import sidplay.player.PSid64DetectedTuneInfo;
 import sidplay.player.PlayList;
 import sidplay.player.State;
 import sidplay.player.Timer;
@@ -205,6 +208,10 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 	 * song, but not in RESET mode. However this can be forced by this switch.
 	 */
 	private boolean forceCheckSongLength;
+	/**
+	 * PSID64 format has been detected?
+	 */
+	private boolean psid64Detected;
 	/**
 	 * SID builder being used to create SID chips (real hardware or emulation).
 	 */
@@ -545,6 +552,14 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 						sendCommand(config, command);
 					}
 				}
+				c64.getEventScheduler().schedule(new Event("PSID64 Detection") {
+					@Override
+					public void event() throws InterruptedException {
+						autodetectPSID64();
+
+						c64.getEventScheduler().schedule(this, (long) (c64.getClock().getCpuFrequency()));
+					}
+				}, (long) (c64.getClock().getCpuFrequency()));
 			}
 		}, SidTune.getInitDelay(tune));
 	}
@@ -1212,6 +1227,39 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		while (iterator.hasNext()) {
 			iterator.next().jmpJsr();
 		}
+	}
+
+	private void autodetectPSID64() {
+		IEmulationSection emulationSection = config.getEmulationSection();
+
+		if (emulationSection.isDetectPSID64ChipModel()) {
+			PSid64DetectedTuneInfo psid64TuneInfo = PSID64Detection.detectPSid64TuneInfo(c64.getRAM(),
+					c64.getVicMemBase() + c64.getVIC().getVideoMatrixBase());
+			if (psid64TuneInfo.isDetected()) {
+				psid64Detected = true;
+
+				boolean update = false;
+				if (psid64TuneInfo.hasDifferentUserChipModel(ChipModel.getChipModel(emulationSection, tune, 0))) {
+					emulationSection.getOverrideSection().getSidModel()[0] = psid64TuneInfo.getUserChipModel();
+					update = true;
+				}
+				if (psid64TuneInfo.hasDifferentStereoChipModel(ChipModel.getChipModel(emulationSection, tune, 1))) {
+					emulationSection.getOverrideSection().getSidModel()[1] = psid64TuneInfo.getStereoChipModel();
+					update = true;
+				}
+				if (psid64TuneInfo.hasDifferentStereoAddress(SidTune.getSIDAddress(emulationSection, tune, 1))) {
+					emulationSection.getOverrideSection().getSidBase()[1] = psid64TuneInfo.getStereoAddress();
+					update = true;
+				}
+				if (update) {
+					updateSIDChipConfiguration();
+				}
+			}
+		}
+	}
+
+	public boolean isPsid64Detected() {
+		return psid64Detected;
 	}
 
 	/**
