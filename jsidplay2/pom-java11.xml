@@ -249,6 +249,7 @@
 		    <groupId>net.java.truecommons</groupId>
 		    <artifactId>truecommons-key-disable</artifactId>
 		    <version>2.5.0</version>
+		    <scope>runtime</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
@@ -256,7 +257,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 		    <groupId>net.java.truevfs</groupId>
 		    <artifactId>truevfs-driver-tar</artifactId>
