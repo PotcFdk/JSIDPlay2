@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
-import de.schlichtherle.truezip.file.TVFS;
-import de.schlichtherle.truezip.fs.FsSyncException;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,6 +27,10 @@ import javafx.stage.DirectoryChooser;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import net.java.truevfs.access.TFile;
+import net.java.truevfs.access.TFileInputStream;
+import net.java.truevfs.access.TVFS;
+import net.java.truevfs.kernel.spec.FsSyncException;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;
@@ -92,7 +92,8 @@ public class DiskCollection extends C64VBox implements UIPart {
 				return false;
 			}
 			file = extractGZip(file);
-			return diskFileFilter.accept(file) || tapeFileFilter.accept(file) || docsFileFilter.accept(file);
+			return file.getName().toLowerCase(Locale.US).endsWith(".zip") || diskFileFilter.accept(file)
+					|| tapeFileFilter.accept(file) || docsFileFilter.accept(file);
 		}
 	};
 

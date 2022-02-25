@@ -13,12 +13,12 @@ import java.util.Locale;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
 import libsidplay.components.cart.CartridgeType;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import net.java.truevfs.access.TArchiveDetector;
+import net.java.truevfs.access.TFile;
 import sidplay.Player;
 import ui.JSidPlay2Main;
 import ui.common.filefilter.CartFileFilter;

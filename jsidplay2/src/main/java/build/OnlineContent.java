@@ -35,14 +35,14 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
-import de.schlichtherle.truezip.file.TVFS;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
+import net.java.truevfs.access.TArchiveDetector;
+import net.java.truevfs.access.TFile;
+import net.java.truevfs.access.TFileInputStream;
+import net.java.truevfs.access.TVFS;
 import sidplay.Player;
 import sidplay.ini.IniDefaults;
 import ui.common.download.DownloadThread;

@@ -31,9 +31,9 @@ public class ZipFileUtils {
 			FILE = File.class.getConstructor(File.class, String.class);
 			INPUT_STREAM = FileInputStream.class.getConstructor(File.class);
 			// support for files contained in a ZIP (optionally in the classpath)
-			FILE = (Constructor<File>) Class.forName("de.schlichtherle.truezip.file.TFile").getConstructor(File.class,
+			FILE = (Constructor<File>) Class.forName("net.java.truevfs.access.TFile").getConstructor(File.class,
 					String.class);
-			INPUT_STREAM = (Constructor<InputStream>) Class.forName("de.schlichtherle.truezip.file.TFileInputStream")
+			INPUT_STREAM = (Constructor<InputStream>) Class.forName("net.java.truevfs.access.TFileInputStream")
 					.getConstructor(File.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
 		}

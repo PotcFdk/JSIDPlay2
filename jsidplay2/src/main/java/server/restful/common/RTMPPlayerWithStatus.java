@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Emulation;
 import libsidplay.common.Event;
 import libsidplay.components.keyboard.KeyTableEntry;
 import libsidutils.status.Status;
+import net.java.truevfs.access.TArchiveDetector;
+import net.java.truevfs.access.TFile;
 import sidplay.Player;
 import sidplay.audio.AudioDriver;
 import sidplay.audio.ProxyDriver;

@@ -20,7 +20,6 @@ import java.util.Random;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-import de.schlichtherle.truezip.file.TFile;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -49,6 +48,7 @@ import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
 import libsidutils.psid64.Psid64;
+import net.java.truevfs.access.TFile;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;

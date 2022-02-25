@@ -26,7 +26,6 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.schlichtherle.truezip.file.TFile;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletOutputStream;
@@ -35,6 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import net.java.truevfs.access.TFile;
 import ui.entities.config.Configuration;
 
 @SuppressWarnings("serial")

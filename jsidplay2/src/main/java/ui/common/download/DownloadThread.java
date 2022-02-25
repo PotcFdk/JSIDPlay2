@@ -23,7 +23,7 @@ import java.util.Properties;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
-import de.schlichtherle.truezip.file.TFile;
+import net.java.truevfs.access.TFile;
 import ui.common.util.InternetUtil;
 import ui.entities.config.Configuration;
 import ui.entities.config.SidPlay2Section;

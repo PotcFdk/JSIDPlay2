@@ -17,12 +17,12 @@ import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.schlichtherle.truezip.file.TFile;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import libsidutils.PathUtils;
 import libsidutils.ZipFileUtils;
+import net.java.truevfs.access.TFile;
 import server.restful.common.CollectionFileComparator;
 import server.restful.common.JSIDPlay2Servlet;
 import ui.entities.config.Configuration;

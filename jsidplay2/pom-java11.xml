@@ -204,9 +204,9 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-file</artifactId>
-			<version>7.7.10</version>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-access</artifactId>
+		    <version>0.14.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
@@ -216,10 +216,10 @@
 		</dependency>
 		<!-- runtime dependencies -->
 		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-zip</artifactId>
-			<version>7.7.10</version>
-			<scope>runtime</scope>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-file</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
@@ -228,10 +228,58 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>de.schlichtherle.truezip</groupId>
-			<artifactId>truezip-driver-tar</artifactId>
-			<version>7.7.10</version>
-			<scope>runtime</scope>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-zip</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-zip-raes</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truecommons</groupId>
+		    <artifactId>truecommons-key-disable</artifactId>
+		    <version>2.5.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-tar</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-tar-bzip2</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-tar-gzip</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-tar-xz</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<!-- required for JSIDPlay2Server -->

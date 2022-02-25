@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import de.schlichtherle.truezip.file.TArchiveDetector;
-import de.schlichtherle.truezip.file.TFile;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -33,6 +31,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import libsidplay.sidtune.SidTune;
 import libsidplay.sidtune.SidTuneError;
 import libsidutils.PathUtils;
+import net.java.truevfs.access.TArchiveDetector;
+import net.java.truevfs.access.TFile;
 import sidplay.Player;
 import ui.common.C64VBox;
 import ui.common.C64Window;

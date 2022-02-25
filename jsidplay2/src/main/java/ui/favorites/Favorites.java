@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import de.schlichtherle.truezip.file.TFile;
-import de.schlichtherle.truezip.file.TFileInputStream;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,6 +31,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import libsidutils.PathUtils;
 import libsidutils.siddatabase.SidDatabase;
 import libsidutils.stil.STIL;
+import net.java.truevfs.access.TFile;
+import net.java.truevfs.access.TFileInputStream;
 import sidplay.Player;
 import sidplay.player.State;
 import ui.common.C64VBox;
