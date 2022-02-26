@@ -241,7 +241,13 @@
 		</dependency>
 		<dependency>
 		    <groupId>net.java.truevfs</groupId>
-		    <artifactId>truevfs-driver-zip-raes</artifactId>
+		    <artifactId>truevfs-driver-tar</artifactId>
+		    <version>0.14.0</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.java.truevfs</groupId>
+		    <artifactId>truevfs-driver-tar-gzip</artifactId>
 		    <version>0.14.0</version>
 		    <scope>runtime</scope>
 		</dependency>
@@ -256,30 +262,6 @@
 					<artifactId>annotations</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>net.java.truevfs</groupId>
-		    <artifactId>truevfs-driver-tar</artifactId>
-		    <version>0.14.0</version>
-		    <scope>runtime</scope>
-		</dependency>
-		<dependency>
-		    <groupId>net.java.truevfs</groupId>
-		    <artifactId>truevfs-driver-tar-bzip2</artifactId>
-		    <version>0.14.0</version>
-		    <scope>runtime</scope>
-		</dependency>
-		<dependency>
-		    <groupId>net.java.truevfs</groupId>
-		    <artifactId>truevfs-driver-tar-gzip</artifactId>
-		    <version>0.14.0</version>
-		    <scope>runtime</scope>
-		</dependency>
-		<dependency>
-		    <groupId>net.java.truevfs</groupId>
-		    <artifactId>truevfs-driver-tar-xz</artifactId>
-		    <version>0.14.0</version>
-		    <scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<!-- required for JSIDPlay2Server -->
