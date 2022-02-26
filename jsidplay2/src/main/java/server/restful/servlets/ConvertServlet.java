@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -218,7 +218,7 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			t.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintWriter(response.getWriter()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

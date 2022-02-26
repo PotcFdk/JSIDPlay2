@@ -11,7 +11,7 @@ import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
@@ -52,7 +52,7 @@ public class DownloadServlet extends JSIDPlay2Servlet {
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			t.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintWriter(response.getWriter()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

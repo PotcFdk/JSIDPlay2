@@ -6,7 +6,7 @@ import static server.restful.JSIDPlay2Server.getEntityManager;
 import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
@@ -46,7 +46,7 @@ public class FindTuneServlet extends JSIDPlay2Servlet {
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			t.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintWriter(response.getWriter()));
 		} finally {
 			closeEntityManager();
 		}
