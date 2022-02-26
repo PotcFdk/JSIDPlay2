@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
@@ -49,12 +49,12 @@ public class StaticServlet extends JSIDPlay2Servlet {
 				response.getWriter().println(ZipFileUtils.convertStreamToString(source, "UTF-8"));
 			} catch (IOException e) {
 				response.setContentType(MIME_TYPE_TEXT.toString());
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
+				e.printStackTrace(new PrintWriter(response.getWriter()));
 			}
 		} catch (Throwable t) {
 			error(t);
 			response.setContentType(MIME_TYPE_TEXT.toString());
-			t.printStackTrace(new PrintStream(response.getOutputStream()));
+			t.printStackTrace(new PrintWriter(response.getWriter()));
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 	}

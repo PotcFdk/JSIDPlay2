@@ -4,10 +4,12 @@ import static java.lang.String.valueOf;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.IServletSystemProperties.CACHE_SIZE;
 import static server.restful.common.IServletSystemProperties.MAX_WHATSIDS_IN_PARALLEL;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -75,6 +77,8 @@ public class WhatsSidServlet extends JSIDPlay2Servlet {
 			setOutput(request, response, musicInfoWithConfidence, MusicInfoWithConfidenceBean.class);
 		} catch (Throwable t) {
 			error(t);
+			response.setContentType(MIME_TYPE_TEXT.toString());
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		} finally {
 			closeEntityManager();
 		}

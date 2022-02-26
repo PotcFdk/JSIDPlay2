@@ -3,8 +3,10 @@ package server.restful.servlets.whatssid;
 import static server.restful.JSIDPlay2Server.CONTEXT_ROOT_SERVLET;
 import static server.restful.JSIDPlay2Server.closeEntityManager;
 import static server.restful.JSIDPlay2Server.getEntityManager;
+import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
@@ -43,6 +45,8 @@ public class InsertTuneServlet extends JSIDPlay2Servlet {
 			setOutput(request, response, idBean, IdBean.class);
 		} catch (Throwable t) {
 			error(t);
+			response.setContentType(MIME_TYPE_TEXT.toString());
+			t.printStackTrace(new PrintStream(response.getOutputStream()));
 		} finally {
 			closeEntityManager();
 		}
