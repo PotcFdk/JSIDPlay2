@@ -163,16 +163,6 @@
 			<version>1.81</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.sevenzipjbinding</groupId>
-			<artifactId>sevenzipjbinding</artifactId>
-			<version>16.02-2.01</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.sevenzipjbinding</groupId>
-			<artifactId>sevenzipjbinding-all-platforms</artifactId>
-			<version>16.02-2.01</version>
-		</dependency>
-		<dependency>
 			<groupId>xuggle</groupId>
 			<artifactId>xuggle-xuggler</artifactId>
 			<version>5.4</version>
@@ -202,6 +192,11 @@
 			<groupId>com.github.wendykierp</groupId>
 			<artifactId>JTransforms</artifactId>
 			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.sevenzipjbinding</groupId>
+			<artifactId>sevenzipjbinding</artifactId>
+			<version>16.02-2.01</version>
 		</dependency>
 		<dependency>
 		    <groupId>net.java.truevfs</groupId>
@@ -262,6 +257,12 @@
 					<artifactId>annotations</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.sevenzipjbinding</groupId>
+			<artifactId>sevenzipjbinding-all-platforms</artifactId>
+			<version>16.02-2.01</version>
+		    <scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<!-- required for JSIDPlay2Server -->
