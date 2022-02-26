@@ -27,6 +27,18 @@ public final class PSid64DetectedTuneInfo {
 		return cpuClock;
 	}
 
+	public ChipModel getUserChipModel() {
+		return chipModels.get(0);
+	}
+
+	public ChipModel getStereoChipModel() {
+		return chipModels.get(1);
+	}
+
+	public int getStereoAddress() {
+		return stereoAddress;
+	}
+
 	public boolean hasDifferentCPUClock(CPUClock clock) {
 		return cpuClock != null && cpuClock != clock;
 	}
@@ -35,32 +47,12 @@ public final class PSid64DetectedTuneInfo {
 		return chipModels.size() > 0 && userSidModel != chipModels.get(0);
 	}
 
-	public ChipModel getUserChipModel() {
-		return chipModels.get(0);
-	}
-
 	public boolean hasDifferentStereoChipModel(ChipModel stereoSidModel) {
 		return chipModels.size() > 1 && stereoSidModel != chipModels.get(1);
 	}
 
-	public ChipModel getStereoChipModel() {
-		return chipModels.get(1);
-	}
-
-	public boolean isMonoTune() {
-		return chipModels.size() == 1;
-	}
-
-	public boolean isStereoTune() {
-		return chipModels.size() == 2;
-	}
-
 	public boolean hasDifferentStereoAddress(int dualSidBase) {
 		return stereoAddress != 0 && dualSidBase != stereoAddress;
-	}
-
-	public int getStereoAddress() {
-		return stereoAddress;
 	}
 
 }
