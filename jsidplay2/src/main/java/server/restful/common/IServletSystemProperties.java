@@ -24,6 +24,11 @@ public interface IServletSystemProperties {
 	int MAX_CONVERT_IN_PARALLEL = valueOf(getProperty("jsidplay2.convert.max.parallel", "7"));
 
 	/**
+	 * WhatsSID? Maximum number of RTMP threads in parallel.
+	 */
+	int MAX_RTMP_IN_PARALLEL = valueOf(getProperty("jsidplay2.rtmp.max.parallel", "7"));
+
+	/**
 	 * Video streaming: Interval between simulated key presses of the space key in s
 	 * (required to watch some demos).
 	 */

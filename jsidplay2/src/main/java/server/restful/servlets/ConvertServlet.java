@@ -1,5 +1,6 @@
 package server.restful.servlets;
 
+import static java.lang.Thread.getAllStackTraces;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static libsidplay.components.keyboard.KeyTableEntry.SPACE;
 import static libsidutils.PathUtils.getFilenameSuffix;
@@ -16,6 +17,7 @@ import static server.restful.common.ContentTypeAndFileExtensions.MIME_TYPE_TEXT;
 import static server.restful.common.ContentTypeAndFileExtensions.getMimeType;
 import static server.restful.common.IServletSystemProperties.MAX_CONVERT_IN_PARALLEL;
 import static server.restful.common.IServletSystemProperties.MAX_LENGTH;
+import static server.restful.common.IServletSystemProperties.MAX_RTMP_IN_PARALLEL;
 import static server.restful.common.IServletSystemProperties.PRESS_SPACE_INTERVALL;
 import static server.restful.common.IServletSystemProperties.RTMP_EXTERNAL_DOWNLOAD_URL;
 import static server.restful.common.IServletSystemProperties.RTMP_INTERNAL_DOWNLOAD_URL;
@@ -170,35 +172,42 @@ public class ConvertServlet extends JSIDPlay2Servlet {
 				AudioDriver driver = getAudioDriverOfVideoFormat(audio, uuid, servletParameters.getDownload());
 
 				if (Boolean.FALSE.equals(servletParameters.getDownload()) && audio == FLV) {
-
-					new Thread(() -> {
-						try {
-							Player player = new Player(config);
-							info("START RTMP stream of: " + uuid);
-							convert2liveVideo(uuid, player, file, driver, servletParameters);
-							info("END RTMP stream of: " + uuid);
-						} catch (IOException | SidTuneError e) {
-							log("ERROR RTMP stream of: " + uuid + ":", e);
-						} finally {
-							servletParameters.setStarted(true);
+					if (getAllStackTraces().keySet().stream().map(Thread::getName).filter("RTMP"::equals)
+							.count() < MAX_RTMP_IN_PARALLEL) {
+						new Thread(() -> {
+							try {
+								Player player = new Player(config);
+								info("START RTMP stream of: " + uuid);
+								convert2liveVideo(uuid, player, file, driver, servletParameters);
+								info("END RTMP stream of: " + uuid);
+							} catch (IOException | SidTuneError e) {
+								log("ERROR RTMP stream of: " + uuid + ":", e);
+							} finally {
+								servletParameters.setStarted(true);
+							}
+						}, "RTMP").start();
+						while (!servletParameters.isStarted()) {
+							Thread.yield();
 						}
-					}, "RTMP").start();
-					while (!servletParameters.isStarted()) {
-						Thread.yield();
-					}
-					response.setHeader(HttpHeaders.PRAGMA, "no-cache");
-					response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
+						response.setHeader(HttpHeaders.PRAGMA, "no-cache");
+						response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-store, no-cache, must-revalidate");
 
-					Map<String, String> replacements = new HashMap<>();
-					replacements.put("$uuid", uuid.toString());
-					replacements.put("$rtmp", getRTMPUrl(request.getRemoteAddr(), uuid));
-					replacements.put("$waitForRTMP", String.valueOf(WAIT_FOR_RTMP));
-					replacements.put("$notYetPlayedTimeout", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
-					replacements.put("$filename", file.getName());
+						Map<String, String> replacements = new HashMap<>();
+						replacements.put("$uuid", uuid.toString());
+						replacements.put("$rtmp", getRTMPUrl(request.getRemoteAddr(), uuid));
+						replacements.put("$waitForRTMP", String.valueOf(WAIT_FOR_RTMP));
+						replacements.put("$notYetPlayedTimeout", String.valueOf(RTMP_NOT_YET_PLAYED_TIMEOUT));
+						replacements.put("$filename", file.getName());
 
-					response.setContentType(MIME_TYPE_HTML.toString());
-					try (InputStream is = SidTune.class.getResourceAsStream("/server/restful/webapp/convert.html")) {
-						response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
+						response.setContentType(MIME_TYPE_HTML.toString());
+						try (InputStream is = SidTune.class
+								.getResourceAsStream("/server/restful/webapp/convert.html")) {
+							response.getWriter().println(convertStreamToString(is, UTF_8.name(), replacements));
+						}
+					} else {
+						response.setContentType(MIME_TYPE_TEXT.toString());
+						response.sendError(429, "Too Many Requests");
+						return;
 					}
 				} else {
 					response.setContentType(getMimeType(driver.getExtension()).toString());
