@@ -9,22 +9,19 @@ import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
 import javax.usb.UsbDisconnectedException;
-import javax.usb.UsbEndpoint;
 import javax.usb.UsbException;
 import javax.usb.UsbHostManager;
 import javax.usb.UsbHub;
 import javax.usb.UsbInterface;
-import javax.usb.UsbInterfacePolicy;
 import javax.usb.UsbNotActiveException;
 import javax.usb.UsbNotClaimedException;
 import javax.usb.UsbNotOpenException;
 import javax.usb.UsbPipe;
 
 /**
- * Implements hardsid.dll api calls Written by Sandor Téli java port by Ken
- * Händel
+ * Implements hardsid.dll api calls Written by Sandor Téli
  * 
- * XXX
+ * Java port by Ken Händel
  * 
  * <pre>
  * To tell the USB Host Manager of javax-usb to use the usb4java implementation you have to put the following property into the javax.usb.properties file which must be located in the root of your classpath
@@ -43,9 +40,10 @@ import javax.usb.UsbPipe;
 public class HardSIDUSB {
 
 	private static final int USB_PACKAGE_SIZE = 512;
-	private static final int WRITEBUFF_SIZE = USB_PACKAGE_SIZE; // write buffer for async mode - only one USB
-																// package
+
+	private static final int WRITEBUFF_SIZE = USB_PACKAGE_SIZE;
 	private static final int WRITEBUFF_SIZE_SYNC = 0x800;
+
 	private static final int MAX_DEVCOUNT = 4;
 	private static final int READBUFF_SIZE = 64;
 	private static final int HW_BUFFBEG = 0x2000;
@@ -56,40 +54,34 @@ public class HardSIDUSB {
 	private static final short PRODUCT_ID = (short) 0x8580;
 
 	private UsbInterface iface;
-	private UsbPipe[] inPipeBulk = new UsbPipe[MAX_DEVCOUNT], outPipeBulk = new UsbPipe[MAX_DEVCOUNT];
-
-	byte lastaccsids[] = new byte[MAX_DEVCOUNT];
-
-	private DevType[] devtypes = new DevType[MAX_DEVCOUNT];
-	private ByteBuffer[] writebuff = new ByteBuffer[MAX_DEVCOUNT];
-
 	private UsbDevice[] devhandles = new UsbDevice[MAX_DEVCOUNT];
+	private UsbPipe[] inPipeBulk = new UsbPipe[MAX_DEVCOUNT];
+	private UsbPipe[] outPipeBulk = new UsbPipe[MAX_DEVCOUNT];
 
-	private int devcount = 0;
+	private DevType[] deviceTypes = new DevType[MAX_DEVCOUNT];
+	private ByteBuffer[] writeBuffer = new ByteBuffer[MAX_DEVCOUNT];
+	private byte lastaccsids[] = new byte[MAX_DEVCOUNT];
 
-	private boolean initialized = false;
-	private boolean error = false;
+	private boolean initialized, error, sync, buffChk;
 
-	boolean sync = false;
+	private int deviceCount, bufferSize, pkgCount, playCursor, circBuffCursor;
 
-	boolean buffchk = true;
-	int buffsize = WRITEBUFF_SIZE;
+	private short sysMode;
 
-	private int pkgcount = 0;
-	private short sysmode = 0;
-	private int playcursor = HW_BUFFBEG;
-	private int circbuffcursor = HW_BUFFBEG;
-
-	private long lastrelayswitch = 0;
+	private long lastRelaySwitch;
 
 	public HardSIDUSB() {
-		for (int i = 0; i < devtypes.length; i++) {
-			devtypes[i] = DevType.UNKNOWN;
+		for (int i = 0; i < deviceTypes.length; i++) {
+			deviceTypes[i] = DevType.UNKNOWN;
 		}
+		buffChk = true;
+		bufferSize = WRITEBUFF_SIZE;
+		playCursor = HW_BUFFBEG;
+		circBuffCursor = HW_BUFFBEG;
 	}
 
 	/**
-	 * initializes the managament library
+	 * initializes the management library
 	 * 
 	 * @param syncmode synchronous or asynchronous mode
 	 * @param sysmode  SIDPLAY or VST
@@ -106,17 +98,18 @@ public class HardSIDUSB {
 			boolean fnd = false;
 			sync = syncmode;
 
-			if (sync)
-				buffsize = WRITEBUFF_SIZE_SYNC;
-			else
-				buffsize = WRITEBUFF_SIZE;
+			if (sync) {
+				bufferSize = WRITEBUFF_SIZE_SYNC;
+			} else {
+				bufferSize = WRITEBUFF_SIZE;
+			}
 
 			if (initialized) {
 				hardsid_usb_close();
 			}
 			initialized = true;
 			error = false;
-			fnd = findalldevices(UsbHostManager.getUsbServices().getRootUsbHub(), VENDOR_ID, PRODUCT_ID);
+			fnd = findAllDevices(UsbHostManager.getUsbServices().getRootUsbHub(), VENDOR_ID, PRODUCT_ID);
 			if (fnd) {
 				sync = true;
 				hardsid_usb_setmode(0, sysmode); // incomplete device number handling...
@@ -142,9 +135,9 @@ public class HardSIDUSB {
 //			if (!sync)
 //				IsoStream(devhandles[0], true);
 
-				for (d = 0; d < devcount; d++) {
+				for (d = 0; d < deviceCount; d++) {
 
-					if (devtypes[d] == DevType.HSUP || devtypes[d] == DevType.HSUNO) {
+					if (deviceTypes[d] == DevType.HSUP || deviceTypes[d] == DevType.HSUNO) {
 						// wait 5ms
 						while (hardsid_usb_delay(d, 5000) == WState.BUSY) {
 							Thread.sleep(0);
@@ -166,14 +159,12 @@ public class HardSIDUSB {
 						}
 						lastaccsids[d] = (byte) 0xff;
 					}
-
 					outPipeBulk[d].abortAllSubmissions();
 					outPipeBulk[d].close();
 					inPipeBulk[d].abortAllSubmissions();
 					inPipeBulk[d].close();
 					iface.release();
 				}
-
 				initialized = false;
 			}
 		} catch (UsbNotActiveException | UsbNotOpenException | IllegalArgumentException | UsbDisconnectedException
@@ -192,7 +183,7 @@ public class HardSIDUSB {
 		if (!initialized || error) {
 			return 0;
 		}
-		return devcount;
+		return deviceCount;
 	}
 
 	/**
@@ -204,7 +195,7 @@ public class HardSIDUSB {
 		if (!initialized || error) {
 			return 0;
 		}
-		switch (devtypes[deviceId]) {
+		switch (deviceTypes[deviceId]) {
 		case HS4U:
 			return 4;
 		case HSUP:
@@ -217,9 +208,9 @@ public class HardSIDUSB {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean findalldevices(UsbHub hub, short vendorId, short productId) {
+	private boolean findAllDevices(UsbHub hub, short vendorId, short productId) {
 		try {
-			devcount = 0;
+			deviceCount = 0;
 
 			// When you set this interval to 0 then usb4java only scans once during
 			// application startup. If you want to trigger a manual device scan you can do
@@ -230,28 +221,37 @@ public class HardSIDUSB {
 			for (UsbDevice device : (List<UsbDevice>) hub.getAttachedUsbDevices()) {
 				UsbDeviceDescriptor desc = device.getUsbDeviceDescriptor();
 				if (device.isUsbHub()) {
-					return findalldevices((UsbHub) device, vendorId, productId);
+					return findAllDevices((UsbHub) device, vendorId, productId);
+
 				} else if (desc.idVendor() == vendorId && desc.idProduct() == productId) {
+
 					UsbConfiguration configuration = device.getActiveUsbConfiguration();
 					iface = configuration.getUsbInterface((byte) 0);
-					iface.claim(new UsbInterfacePolicy() {
-						@Override
-						public boolean forceClaim(UsbInterface usbInterface) {
-							return true;
+					try {
+						// force claiming USB device, if supported!
+						iface.claim(usbInterface -> true);
+					} catch (UsbException e) {
+						System.err.println("WARN: failed to force to claim device!");
+						// try to just claim USB device, if supported!
+						try {
+							iface.claim();
+						} catch (UsbException e2) {
+							System.err.println("WARN: failed to claim device!");
 						}
-					});
+					}
+					devhandles[deviceCount] = device;
+					// XXX hard-wired for now (where to get?)
+					deviceTypes[deviceCount] = DevType.HS4U;
+					lastaccsids[deviceCount] = (byte) 0xff;
 
-					devhandles[devcount] = device;
-					devtypes[devcount] = DevType.HS4U; // XXX hard-wired for now
-					lastaccsids[devcount] = (byte) 0xff;
-					UsbEndpoint endpoint = iface.getUsbEndpoint((byte) 0x02);
-					outPipeBulk[devcount] = endpoint.getUsbPipe();
-					outPipeBulk[devcount].open();
-					UsbEndpoint inEndpoint = iface.getUsbEndpoint((byte) 0x81);
-					inPipeBulk[devcount] = inEndpoint.getUsbPipe();
-					inPipeBulk[devcount].open();
-					writebuff[devcount] = ByteBuffer.allocate(buffsize).order(ByteOrder.LITTLE_ENDIAN);
-					devcount++;
+					outPipeBulk[deviceCount] = iface.getUsbEndpoint((byte) 0x02).getUsbPipe();
+					outPipeBulk[deviceCount].open();
+
+					inPipeBulk[deviceCount] = iface.getUsbEndpoint((byte) 0x81).getUsbPipe();
+					inPipeBulk[deviceCount].open();
+
+					writeBuffer[deviceCount] = ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN);
+					deviceCount++;
 					return true;
 				}
 			}
@@ -287,10 +287,10 @@ public class HardSIDUSB {
 //				int comm_reset_cnt = readbuff[0] & 0xffff;
 //				int error_shadow = readbuff[1] & 0xffff;
 //				int error_addr_shadow = readbuff[2] & 0xffff;
-				pkgcount = s.get(12) & 0xffff;
-				playcursor = s.get(13) & 0xffff;
-				circbuffcursor = s.get(14) & 0xffff;
-				sysmode = s.get(15);
+				pkgCount = s.get(12) & 0xffff;
+				playCursor = s.get(13) & 0xffff;
+				circBuffCursor = s.get(14) & 0xffff;
+				sysMode = s.get(15);
 				return WState.OK;
 			}
 		} catch (UsbNotActiveException | UsbNotOpenException | IllegalArgumentException | UsbDisconnectedException
@@ -318,10 +318,10 @@ public class HardSIDUSB {
 		} else {
 			int freespace;
 
-			if (playcursor < circbuffcursor)
-				freespace = playcursor + HW_BUFFSIZE - circbuffcursor;
-			else if (playcursor > circbuffcursor)
-				freespace = playcursor - circbuffcursor;
+			if (playCursor < circBuffCursor)
+				freespace = playCursor + HW_BUFFSIZE - circBuffCursor;
+			else if (playCursor > circBuffCursor)
+				freespace = playCursor - circBuffCursor;
 			else
 				freespace = HW_BUFFSIZE;
 
@@ -340,13 +340,13 @@ public class HardSIDUSB {
 	 */
 	private WState hardsid_usb_write_internal(int deviceId) {
 		try {
-			if (!initialized || error || writebuff[deviceId].position() == 0) {
+			if (!initialized || error || writeBuffer[deviceId].position() == 0) {
 				return WState.ERROR;
 			}
 
-			int pkgstowrite = (((writebuff[deviceId].position() - 1) / USB_PACKAGE_SIZE) + 1);
+			int pkgstowrite = ((writeBuffer[deviceId].position() - 1) / USB_PACKAGE_SIZE) + 1;
 			int writesize = pkgstowrite * USB_PACKAGE_SIZE;
-			writebuff[deviceId].clear();
+			writeBuffer[deviceId].clear();
 
 			if (!sync) {
 				// stream based async Isoch stream feed
@@ -362,7 +362,7 @@ public class HardSIDUSB {
 				// sync mode direct file write
 
 				byte[] toWrite = new byte[writesize];
-				System.arraycopy(writebuff[deviceId].array(), 0, toWrite, 0, writesize);
+				System.arraycopy(writeBuffer[deviceId].array(), 0, toWrite, 0, writesize);
 
 				int sent = outPipeBulk[deviceId].syncSubmit(toWrite);
 				if (sent != writesize) {
@@ -391,14 +391,14 @@ public class HardSIDUSB {
 			return WState.ERROR;
 		}
 
-		if (sync && (writebuff[deviceId].position() == (buffsize - 2))) {
+		if (sync && (writeBuffer[deviceId].position() == (bufferSize - 2))) {
 			WState ws = hardsid_usb_sync(deviceId);
 			if (ws != WState.OK)
 				return ws;
 		}
 
-		writebuff[deviceId].putShort((short) (((reg & 0xff) << 8) | (data & 0xff)));
-		if (writebuff[deviceId].position() == buffsize) {
+		writeBuffer[deviceId].putShort((short) (((reg & 0xff) << 8) | (data & 0xff)));
+		if (writeBuffer[deviceId].position() == bufferSize) {
 			return hardsid_usb_write_internal(deviceId);
 		}
 
@@ -417,7 +417,7 @@ public class HardSIDUSB {
 		try {
 			byte newsidmask;
 
-			switch (devtypes[deviceId]) {
+			switch (deviceTypes[deviceId]) {
 			case HS4U:
 				return hardsid_usb_write_direct(deviceId, reg, data);
 			case HSUP:
@@ -434,11 +434,11 @@ public class HardSIDUSB {
 							newsidmask = (byte) 0xa0;
 						}
 
-						while (lastrelayswitch > 0 && (System.currentTimeMillis() - lastrelayswitch) < 250) {
+						while (lastRelaySwitch > 0 && (System.currentTimeMillis() - lastRelaySwitch) < 250) {
 							Thread.sleep(0);
 						}
 						// timediff = GetTickCount() - lastrelayswitch;
-						lastrelayswitch = System.currentTimeMillis();
+						lastRelaySwitch = System.currentTimeMillis();
 
 						// runtime = GetTickCount();
 
@@ -588,18 +588,17 @@ public class HardSIDUSB {
 				return hardsid_usb_write_direct(deviceId, (byte) 0xef, (byte) (cycles >> 8)); // long delay command
 			} else {
 				// long delay with low order byte
-				if (sync && (writebuff[deviceId].position() == (buffsize - 2))) {
+				if (sync && (writeBuffer[deviceId].position() == (bufferSize - 2))) {
 					WState ws;
 					ws = hardsid_usb_write_direct(deviceId, (byte) 0xff, (byte) 0xff);
 					if (ws != WState.OK)
 						return ws;
-				} else if (sync && (writebuff[deviceId].position() == (buffsize - 4))) {
+				} else if (sync && (writeBuffer[deviceId].position() == (bufferSize - 4))) {
 					WState ws;
 					ws = hardsid_usb_sync(deviceId);
 					if (ws != WState.OK)
 						return ws;
 				}
-
 				hardsid_usb_write_direct(deviceId, (byte) 0xef, (byte) (cycles >> 8)); // long delay command
 				hardsid_usb_write_direct(deviceId, (byte) 0xee, (byte) (cycles & 0xff)); // short delay command
 			}
@@ -624,15 +623,15 @@ public class HardSIDUSB {
 				return WState.ERROR;
 			}
 
-			if (writebuff[deviceId].position() > 0) {
-				if (sync && buffchk) {
+			if (writeBuffer[deviceId].position() > 0) {
+				if (sync && buffChk) {
 					WState ws;
 					ws = hardsid_usb_sync(deviceId);
 					if (ws != WState.OK)
 						return ws;
 				}
-				if ((writebuff[deviceId].position() % WRITEBUFF_SIZE) > 0) {
-					writebuff[deviceId].putShort((short) 0xffff);
+				if ((writeBuffer[deviceId].position() % WRITEBUFF_SIZE) > 0) {
+					writeBuffer[deviceId].putShort((short) 0xffff);
 				}
 				hardsid_usb_write_internal(deviceId);
 			}
@@ -655,16 +654,16 @@ public class HardSIDUSB {
 		try {
 			// fixed: 2010.01.26 - after Wilfred's testcase
 			// abort the software buffer anyway
-			writebuff[deviceId].clear();
+			writeBuffer[deviceId].clear();
 
 			if (hardsid_usb_readstate(deviceId) != WState.OK) {
 				error = true;
 				return;
 			}
 
-			if (pkgcount == 0)
+			if (pkgCount == 0) {
 				return;
-
+			}
 			hardsid_usb_write_direct(deviceId, (byte) 0xff, (byte) 0xff);
 			hardsid_usb_write_direct(deviceId, (byte) 0xff, (byte) 0xff);
 			hardsid_usb_write_internal(deviceId);
@@ -673,7 +672,7 @@ public class HardSIDUSB {
 					error = true;
 					break;
 				} else {
-					if (pkgcount == 0) {
+					if (pkgCount == 0) {
 						break;
 					}
 				}
@@ -696,7 +695,7 @@ public class HardSIDUSB {
 			if (newsysmode != SysMode.SIDPLAY) {
 				throw new RuntimeException("Only SIDPLAY mode currently supported!");
 			}
-			if (newsysmode == SysMode.VST && devtypes[0] != DevType.HS4U) {
+			if (newsysmode == SysMode.VST && deviceTypes[0] != DevType.HS4U) {
 				error = true;
 				return WState.ERROR;
 			}
@@ -706,7 +705,7 @@ public class HardSIDUSB {
 				return WState.ERROR;
 			}
 
-			if ((sysmode & 0x0f) == newsysmode.getSysMode())
+			if ((sysMode & 0x0f) == newsysmode.getSysMode())
 				return WState.OK;
 
 			hardsid_usb_abortplay(deviceId);
@@ -719,11 +718,11 @@ public class HardSIDUSB {
 					error = true;
 					break;
 				} else {
-					if (sysmode == (newsysmode.getSysMode() | 0x80))
+					if (sysMode == (newsysmode.getSysMode() | 0x80)) {
 						break;
+					}
 				}
 			}
-
 			if (error)
 				return WState.ERROR;
 			else
