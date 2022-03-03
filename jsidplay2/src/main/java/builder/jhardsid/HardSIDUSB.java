@@ -253,8 +253,6 @@ public class HardSIDUSB {
 					writebuff[devcount] = ByteBuffer.allocate(buffsize).order(ByteOrder.LITTLE_ENDIAN);
 					devcount++;
 					return true;
-				} else {
-					System.out.println(device);
 				}
 			}
 			return false;

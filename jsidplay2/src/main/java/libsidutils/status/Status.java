@@ -77,6 +77,7 @@ public class Status {
 			}
 			break;
 		case HARDSID:
+		case JHARDSID:
 		case SIDBLASTER:
 		case EXSID:
 			Integer deviceCount = player.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceCount(), null);

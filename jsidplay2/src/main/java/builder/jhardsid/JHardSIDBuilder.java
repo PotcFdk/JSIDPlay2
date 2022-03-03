@@ -295,6 +295,11 @@ public class JHardSIDBuilder implements HardwareSIDBuilder, Mixer {
 			lastSIDWriteTime += REGULAR_DELAY;
 
 			while (hardSID.hardsid_usb_delay(deviceID, REGULAR_DELAY >> fastForwardFactor) == WState.BUSY) {
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		return REGULAR_DELAY;
