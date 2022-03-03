@@ -240,6 +240,14 @@ public class HardSIDUSB {
 						}
 					}
 					devhandles[deviceCount] = device;
+
+					try {
+						System.out.println("Open device:");
+						for (byte i = 0; i < 128; i++) {
+							System.out.println(device.getUsbStringDescriptor(i));
+						}
+					} catch (Exception e) {
+					}
 					// XXX hard-wired for now (where to get?)
 					deviceTypes[deviceCount] = DevType.HS4U;
 					lastaccsids[deviceCount] = (byte) 0xff;
