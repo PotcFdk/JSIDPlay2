@@ -11,6 +11,8 @@ public enum Engine {
 	NETSID,
 	/** Hardware (HardSID4U USB device) */
 	HARDSID,
+	/** Hardware (HardSID4U Java-USB device) */
+	JHARDSID,
 	/** Hardware (SidBlaster USB device) */
 	SIDBLASTER,
 	/** Hardware (ExSID USB device) */

@@ -41,6 +41,7 @@ import javax.sound.sampled.LineUnavailableException;
 
 import builder.exsid.ExSIDBuilder;
 import builder.hardsid.HardSIDBuilder;
+import builder.jhardsid.JHardSIDBuilder;
 import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
 import builder.resid.SIDMixer;
@@ -802,6 +803,8 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
 		case HARDSID:
 			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
+		case JHARDSID:
+			return new JHardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case SIDBLASTER:
 			return new SIDBlasterBuilder(c64.getEventScheduler(), config, cpuClock);
 		case EXSID:
@@ -941,6 +944,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			if ((getAudioDriver().isRecording() || stateProperty.get() != QUIT) && getAudioDriver().buffer() != null) {
 				getAudioDriver().write();
 			}
+			sidBuilder.destroy();
 		} catch (Throwable e) {
 			// ignore exceptions near close
 		} finally {

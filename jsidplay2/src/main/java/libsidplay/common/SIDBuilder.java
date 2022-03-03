@@ -41,4 +41,7 @@ public interface SIDBuilder {
 	 */
 	void unlock(SIDEmu device);
 
+	default void destroy() {
+	}
+
 }
