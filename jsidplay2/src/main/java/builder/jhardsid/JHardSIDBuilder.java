@@ -27,7 +27,7 @@ import sidplay.audio.AudioDriver;
  */
 public class JHardSIDBuilder implements HardwareSIDBuilder, Mixer {
 
-	private static final short REGULAR_DELAY = 128;
+	private static final short REGULAR_DELAY = 512;
 
 	/**
 	 * System event context.
@@ -294,7 +294,7 @@ public class JHardSIDBuilder implements HardwareSIDBuilder, Mixer {
 		if (diff > REGULAR_DELAY) {
 			lastSIDWriteTime += REGULAR_DELAY;
 
-			while (hardSID.hardsid_usb_delay(deviceID, (short) (REGULAR_DELAY >> fastForwardFactor)) == WState.BUSY) {
+			while (hardSID.hardsid_usb_delay(deviceID, REGULAR_DELAY >> fastForwardFactor) == WState.BUSY) {
 			}
 		}
 		return REGULAR_DELAY;

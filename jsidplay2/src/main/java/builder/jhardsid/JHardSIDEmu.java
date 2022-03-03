@@ -164,7 +164,7 @@ public class JHardSIDEmu extends ReSIDfp {
 
 		doWriteDelayed(() -> {
 			if (clocksSinceLastAccess > 0) {
-				while (hardSID.hardsid_usb_delay(deviceID, clocksSinceLastAccess) == WState.BUSY) {
+				while (hardSID.hardsid_usb_delay(deviceID, clocksSinceLastAccess & 0xffff) == WState.BUSY) {
 					try {
 						Thread.sleep(0);
 					} catch (InterruptedException e) {

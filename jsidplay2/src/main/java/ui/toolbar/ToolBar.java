@@ -227,7 +227,7 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioBufferSize.valueProperty().bindBidirectional(audioSection.audioBufferSizeProperty());
 
 		engineBox.setConverter(new EnumToStringConverter<Engine>(bundle));
-		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.EMULATION, /*Engine.JHARDSID, */Engine.NETSID,
+		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.EMULATION, Engine.JHARDSID, Engine.NETSID,
 				Engine.HARDSID, Engine.SIDBLASTER, Engine.EXSID));
 		engineBox.valueProperty().addListener((obj, o, n) -> {
 			hardsid6581Box.setDisable(!Engine.HARDSID.equals(n));

@@ -107,7 +107,7 @@ public class HardSIDUSB {
 			sync = syncmode;
 
 			if (sync)
-				buffsize = WRITEBUFF_SIZE_SYNC * 2;
+				buffsize = WRITEBUFF_SIZE_SYNC;
 			else
 				buffsize = WRITEBUFF_SIZE;
 
@@ -737,13 +737,4 @@ public class HardSIDUSB {
 		}
 	}
 
-//	/**
-//	 * returns the device type (HardSID 4U, HardSID UPlay, etc...)
-//	 * 
-//	 * @param deviceId device ID
-//	 * @return type of USB device
-//	 */
-//	private DevType hardsid_usb_getdevicetype(int deviceId) {
-//		return devtypes[deviceId];
-//	}
 }
