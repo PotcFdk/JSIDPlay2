@@ -773,14 +773,14 @@ public class HardSIDUSB {
 		try {
 			System.out.println("Open device:");
 			for (byte i = 1; i < 128; i++) {
-				String descriptorString = device.getUsbStringDescriptor(i).toString();
+				String descriptorString = device.getUsbStringDescriptor(i).getString();
 				System.out.println(descriptorString);
-				if (i == 4) {
-					if ("HSQTTRUSB".equals(descriptorString)) {
+				if (i == 2) {
+					if (descriptorString.startsWith("HardSID 4U")) {
 						devType = DevType.HS4U;
 					} else {
 						// XXX other hardware, HSUNO, HSUP?
-						System.err.println("Unknown device, expected \"HSQTTRUSB\", but is " + descriptorString);
+						System.err.println("Unknown device, expected \"HardSID 4U\", but is " + descriptorString);
 					}
 				}
 			}
