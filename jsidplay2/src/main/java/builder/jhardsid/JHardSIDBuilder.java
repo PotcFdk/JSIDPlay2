@@ -5,6 +5,10 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardsid.usb.driver.HardSIDUSB;
+import com.hardsid.usb.driver.SysMode;
+import com.hardsid.usb.driver.WState;
+
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;
