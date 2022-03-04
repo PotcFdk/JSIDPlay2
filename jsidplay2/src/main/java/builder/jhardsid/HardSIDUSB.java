@@ -228,28 +228,25 @@ public class HardSIDUSB {
 					UsbConfiguration configuration = device.getActiveUsbConfiguration();
 					iface = configuration.getUsbInterface((byte) 0);
 					try {
-						// force claiming USB device, if supported!
+						// try to forcefully claim USB device, if supported!
 						iface.claim(usbInterface -> true);
 					} catch (UsbException e) {
-						System.err.println("WARN: failed to force to claim device!");
-						// try to just claim USB device, if supported!
+						// try to just claim USB device
 						try {
 							iface.claim();
 						} catch (UsbException e2) {
-							System.err.println("WARN: failed to claim device!");
+							System.err.println(e2.getMessage());
+							printInstallationHint();
+							return false;
 						}
 					}
 					devhandles[deviceCount] = device;
 
-					try {
-						System.out.println("Open device:");
-						for (byte i = 0; i < 128; i++) {
-							System.out.println(device.getUsbStringDescriptor(i));
-						}
-					} catch (Exception e) {
+					DevType devType = getDeviceType(device);
+					if (devType == DevType.UNKNOWN) {
+						return false;
 					}
-					// XXX hard-wired for now (where to get?)
-					deviceTypes[deviceCount] = DevType.HS4U;
+					deviceTypes[deviceCount] = devType;
 					lastaccsids[deviceCount] = (byte) 0xff;
 
 					outPipeBulk[deviceCount] = iface.getUsbEndpoint((byte) 0x02).getUsbPipe();
@@ -740,6 +737,56 @@ public class HardSIDUSB {
 			error = true;
 			return WState.ERROR;
 		}
+	}
+
+	public static void printInstallationHint() {
+		if (OS.get() == OS.WINDOWS) {
+			printWindowsInstallationHint();
+		} else if (OS.get() == OS.LINUX) {
+			printLinuxInstallationHint();
+		} else if (OS.get() == OS.MAC) {
+			printMacInstallationHint();
+		}
+	}
+
+	private static void printLinuxInstallationHint() {
+		System.err.println("\"To give proper permissions, please type the following commands:\"");
+		System.err.println();
+		System.err.println("sudo vi /etc/udev/rules.d/hardsid4u.rules");
+		System.err.println("\"Now, add the following single line:\"");
+		System.err.println(
+				"SUBSYSTEM==\"usb\",ATTR{idVendor}==\"6581\",ATTR{idProduct}==\"8580\",MODE=\"0660\",GROUP=\"plugdev\"");
+		System.err.println("\"And finally type this command to refresh device configuration:\"");
+		System.err.println("sudo udevadm trigger");
+	}
+
+	private static void printMacInstallationHint() {
+		System.err.println("Unknown things to do... N.Y.T");
+	}
+
+	private static void printWindowsInstallationHint() {
+		System.err.println("Unknown things to do... N.Y.T");
+	}
+
+	private DevType getDeviceType(UsbDevice device) {
+		DevType devType = DevType.UNKNOWN;
+		try {
+			System.out.println("Open device:");
+			for (byte i = 1; i < 128; i++) {
+				String descriptorString = device.getUsbStringDescriptor(i).toString();
+				System.out.println(descriptorString);
+				if (i == 4) {
+					if ("HSQTTRUSB".equals(descriptorString)) {
+						devType = DevType.HS4U;
+					} else {
+						// XXX other hardware, HSUNO, HSUP?
+						System.err.println("Unknown device, expected \"HSQTTRUSB\", but is " + descriptorString);
+					}
+				}
+			}
+		} catch (Exception e) {
+		}
+		return devType;
 	}
 
 }
