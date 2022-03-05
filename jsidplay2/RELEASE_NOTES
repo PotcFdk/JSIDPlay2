@@ -1,8 +1,8 @@
 Release Notes:
 ==============
+
+HardSID4U, HardSID UNO and HardSID UPlay now supported on ALL platforms
+
 JSIDPlay2Server:
-Live videos: disk swapping added
-Live videos: change default chip model and emulation
-Live videos: send keyboard events
-kind-of DDOS protection limits maximum requests for playback
+Live videos: can be controlled by web-page
 Live video now shows infos in a status bar
