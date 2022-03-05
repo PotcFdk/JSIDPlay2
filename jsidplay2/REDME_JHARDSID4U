@@ -1,5 +1,0 @@
-sudo vi /etc/udev/rules.d/hardsid4u.rules
-
-SUBSYSTEM=="usb",ATTR{idVendor}=="6581",ATTR{idProduct}=="8580",MODE="0660",GROUP="plugdev"
-
-sudo udevadm trigger

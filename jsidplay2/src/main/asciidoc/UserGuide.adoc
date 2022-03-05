@@ -538,10 +538,6 @@ Create a software or hardware replacement for a SID by implementing the Network 
 
 <<netsiddev.ad#NetSIDDev,Network SID Device>>
 
-=== HardSID4U
-
-link:https://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/[HardSID4U driver and signing instructions is explained in README]
-
 == Troubleshooting
 
 [glossary]
