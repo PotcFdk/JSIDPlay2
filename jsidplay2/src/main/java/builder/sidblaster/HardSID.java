@@ -3,8 +3,6 @@ package builder.sidblaster;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
 
-import builder.hardsid.WState;
-
 public interface HardSID extends Library {
 
 	// Version 2 Interface (Cycle exact interface)

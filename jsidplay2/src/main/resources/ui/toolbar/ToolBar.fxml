@@ -111,7 +111,7 @@
 						</TypeTextField>
 					</VBox>
 				</TitledPane>
-				<TitledPane text="%HARDSID" expanded="false">
+				<TitledPane text="%JHARDSID" expanded="false">
 					<VBox>
 						<Label text="%6581" fx:id="hardsid6581Label" />
 						<ComboBox fx:id="hardsid6581Box" onAction="#setSid6581">

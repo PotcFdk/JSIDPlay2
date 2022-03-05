@@ -4,7 +4,6 @@ import static libsidplay.components.pla.PLA.MAX_SIDS;
 
 import java.util.List;
 
-import builder.hardsid.WState;
 import builder.resid.residfp.ReSIDfp;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;

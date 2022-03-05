@@ -40,7 +40,6 @@ import java.util.function.IntFunction;
 import javax.sound.sampled.LineUnavailableException;
 
 import builder.exsid.ExSIDBuilder;
-import builder.hardsid.HardSIDBuilder;
 import builder.jhardsid.JHardSIDBuilder;
 import builder.netsiddev.NetSIDDevBuilder;
 import builder.resid.ReSIDBuilder;
@@ -801,8 +800,6 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 			return new ReSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case NETSID:
 			return new NetSIDDevBuilder(c64.getEventScheduler(), config, cpuClock);
-		case HARDSID:
-			return new HardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case JHARDSID:
 			return new JHardSIDBuilder(c64.getEventScheduler(), config, cpuClock);
 		case SIDBLASTER:
@@ -1352,7 +1349,7 @@ public class Player extends HardwareEnsemble implements VideoDriver, SIDListener
 		credits.append(builder.resid.residfp.ReSIDfp.credits());
 		credits.append(builder.exsid.ExSIDEmu.credits());
 		credits.append(builder.sidblaster.SIDBlasterEmu.credits());
-		credits.append(builder.hardsid.HardSIDEmu.credits());
+		credits.append(builder.jhardsid.JHardSIDEmu.credits());
 		return credits.toString();
 	}
 

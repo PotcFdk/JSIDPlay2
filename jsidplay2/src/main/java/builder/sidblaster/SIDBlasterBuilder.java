@@ -15,7 +15,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.platform.EnumConverter;
 
-import builder.hardsid.WState;
 import libsidplay.common.CPUClock;
 import libsidplay.common.ChipModel;
 import libsidplay.common.Event;

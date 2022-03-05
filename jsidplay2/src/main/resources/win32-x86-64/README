@@ -1,3 +1,2 @@
 hardsid.dll     - SIDBlaster USB driver library (https://github.com/kenchis/SIDBlasterUSB_HardSID-emulation-driver/tree/apple)
-hardsid_usb.dll - HardSID4U USB driver library (https://bitbucket.org/HardSID/hardsid-usb-driver-interface-library-x64/src/master/)
 libexsid.so     - ExSID USB driver library (https://sourceforge.net/p/jsidplay2/code/HEAD/tree/trunk/jsidplay2/src/test/resources/sid/exsid/)

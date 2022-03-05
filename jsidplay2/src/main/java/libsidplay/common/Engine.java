@@ -9,9 +9,7 @@ public enum Engine {
 	EMULATION,
 	/** Software (Network SID Device via socket connection) */
 	NETSID,
-	/** Hardware (HardSID4U USB device) */
-	HARDSID,
-	/** Hardware (HardSID4U Java-USB device) */
+	/** Hardware (HardSID4U, HardSID Uno and HardSID UPlay - USB devices) */
 	JHARDSID,
 	/** Hardware (SidBlaster USB device) */
 	SIDBLASTER,

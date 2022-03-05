@@ -227,13 +227,13 @@ public class ToolBar extends C64VBox implements UIPart {
 		audioBufferSize.valueProperty().bindBidirectional(audioSection.audioBufferSizeProperty());
 
 		engineBox.setConverter(new EnumToStringConverter<Engine>(bundle));
-		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.EMULATION, Engine.JHARDSID, Engine.NETSID,
-				Engine.HARDSID, Engine.SIDBLASTER, Engine.EXSID));
+		engineBox.setItems(FXCollections.<Engine>observableArrayList(Engine.EMULATION, Engine.NETSID, Engine.JHARDSID,
+				Engine.SIDBLASTER, Engine.EXSID));
 		engineBox.valueProperty().addListener((obj, o, n) -> {
-			hardsid6581Box.setDisable(!Engine.HARDSID.equals(n) && !Engine.JHARDSID.equals(n));
-			hardsid8580Box.setDisable(!Engine.HARDSID.equals(n) && !Engine.JHARDSID.equals(n));
-			hardsid6581Label.setDisable(!Engine.HARDSID.equals(n) && !Engine.JHARDSID.equals(n));
-			hardsid8580Label.setDisable(!Engine.HARDSID.equals(n) && !Engine.JHARDSID.equals(n));
+			hardsid6581Box.setDisable(!Engine.JHARDSID.equals(n));
+			hardsid8580Box.setDisable(!Engine.JHARDSID.equals(n));
+			hardsid6581Label.setDisable(!Engine.JHARDSID.equals(n));
+			hardsid8580Label.setDisable(!Engine.JHARDSID.equals(n));
 
 			hostnameLabel.setDisable(!Engine.NETSID.equals(n));
 			hostname.setDisable(!Engine.NETSID.equals(n));

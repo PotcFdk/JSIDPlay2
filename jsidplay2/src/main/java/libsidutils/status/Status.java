@@ -76,7 +76,6 @@ public class Status {
 				}
 			}
 			break;
-		case HARDSID:
 		case JHARDSID:
 		case SIDBLASTER:
 		case EXSID:

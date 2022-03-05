@@ -1043,7 +1043,6 @@ public interface IEmulationSection {
 		case MOS6581:
 			switch (engine) {
 			case EMULATION:
-			case HARDSID:
 			case JHARDSID:
 			case SIDBLASTER:
 			case EXSID:
@@ -1103,7 +1102,6 @@ public interface IEmulationSection {
 		case MOS8580:
 			switch (engine) {
 			case EMULATION:
-			case HARDSID:
 			case JHARDSID:
 			case SIDBLASTER:
 			case EXSID:
@@ -1182,7 +1180,6 @@ public interface IEmulationSection {
 		case MOS6581:
 			switch (engine) {
 			case EMULATION:
-			case HARDSID:
 			case JHARDSID:
 			case SIDBLASTER:
 			case EXSID:
@@ -1254,7 +1251,6 @@ public interface IEmulationSection {
 		case MOS8580:
 			switch (engine) {
 			case EMULATION:
-			case HARDSID:
 			case JHARDSID:
 			case SIDBLASTER:
 			case EXSID:
