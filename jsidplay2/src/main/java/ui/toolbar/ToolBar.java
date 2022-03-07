@@ -85,6 +85,7 @@ import ui.common.C64VBox;
 import ui.common.C64Window;
 import ui.common.UIPart;
 import ui.common.converter.EnumToStringConverter;
+import ui.common.converter.HardSIDSlotToIntegerConverter;
 import ui.common.converter.MinimumNumberToStringConverter;
 import ui.common.converter.MixerInfoToStringConverter;
 import ui.common.converter.TimeToStringConverter;
@@ -222,7 +223,9 @@ public class ToolBar extends C64VBox implements UIPart {
 		videoStandardBox.valueProperty().bindBidirectional(emulationSection.userClockSpeedProperty());
 		videoStandardBox.setItems(FXCollections.<CPUClock>observableArrayList(CPUClock.values()));
 
+		hardsid6581Box.setConverter(new HardSIDSlotToIntegerConverter(util.getBundle()));
 		hardsid6581Box.valueProperty().bindBidirectional(emulationSection.hardsid6581Property());
+		hardsid8580Box.setConverter(new HardSIDSlotToIntegerConverter(util.getBundle()));
 		hardsid8580Box.valueProperty().bindBidirectional(emulationSection.hardsid8580Property());
 		audioBufferSize.valueProperty().bindBidirectional(audioSection.audioBufferSizeProperty());
 

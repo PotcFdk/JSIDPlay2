@@ -119,7 +119,7 @@ public class Status {
 				.getHardwareSIDBuilderInfo(sidBuilder -> sidBuilder.getDeviceChipModel(sidNum), null);
 		if (deviceId != null) {
 			result.append(String.format(resourceBundle.getString("DEVICE"), emulationSection.getEngine().name(),
-					deviceId, Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
+					deviceId + 1, Optional.ofNullable(deviceChipModel).orElse(ChipModel.AUTO),
 					Optional.ofNullable(deviceName).orElse("")));
 		} else {
 			result.append(emulationSection.getEngine().name());
